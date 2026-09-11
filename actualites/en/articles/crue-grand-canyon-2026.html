@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Crue meurtrière dans le Grand Canyon — 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #b22234;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #b22234; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #3c3b6e; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #b22234; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #b22234; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #b22234; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#b22234; border-color:#b22234; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  /* Article styles */
+  .ap-band { background: linear-gradient(90deg, #3c3b6e, #b22234, #3c3b6e); text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(10,10,28,0.95); padding:12px 60px; border-bottom: 1px solid rgba(178,34,52,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#e8c84a; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(178,34,52,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(178,34,52,0.2);  color:#f08080; border:1px solid rgba(178,34,52,0.35); }
+  .ap-tag-navy   { background:rgba(60,59,110,0.4);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #e8c84a; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(178,34,52,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(232,200,74,0.7); }
+
+  /* Rich components */
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#e8c84a; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(232,200,74,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#071422,#0d2540); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat.navy   { background:linear-gradient(135deg,#0e0e3a,#2a2870); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #e8c84a; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(178,34,52,0.06),rgba(178,34,52,0.02)); border-left:3px solid #e8c84a; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(232,200,74,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(232,200,74,0.7); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(10,10,28,0.9),rgba(5,5,18,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(178,34,52,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#e8c84a; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(178,34,52,0.06); border:1px solid rgba(178,34,52,0.15); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(232,200,74,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#e8c84a; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(232,200,74,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#e8c84a; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(10,10,28,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-en-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-en.html">Anglais</a>
+    <span class="sep">/</span>
+    <a href="../etats-unis.html">États-Unis</a>
+    <span class="sep">/</span>
+    <span class="current">Crue dans le Grand Canyon</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-en" class="ap-lang-btn" onclick="setLang('en')">🇺🇸 EN</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇺🇸 Crue meurtrière dans le Grand Canyon</div>
+<div class="ap-back-bar">
+  <a href="../etats-unis.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+    <div class="ap-hero-img-wrap">
+      <img class="ap-hero-img" src="../images/crue-grand-canyon-2026.jpg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'">
+    </div>
+
+    <!-- ══ SECTION FR ══ -->
+    <div class="ap-fr-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-navy">🇺🇸 États-Unis</span>
+          <span class="ap-tag ap-tag-green">Environnement</span>
+          <span class="ap-tag ap-tag-orange">Climat</span>
+          <span class="ap-tag ap-tag-blue">Infrastructures</span>
+          <span class="ap-tag ap-tag-gold">Tourisme</span>
+        </div>
+        <div class="ap-date">Août 2026 — ECG Prépa · États-Unis</div>
+        <h1 class="ap-title">Crue meurtrière dans le Grand Canyon : un parc mythique rattrapé par le dérèglement climatique</h1>
+        <p class="ap-intro">Le 29 août 2026, vers 14 h 30, une crue éclair d'une violence exceptionnelle a dévalé Bright Angel Creek, au fond du Grand Canyon, en Arizona. Deux randonneurs texans ont perdu la vie, un troisième reste porté disparu, et environ 82 personnes ont dû être hélitreuillées. Au-delà du bilan humain, la catastrophe a détruit la quasi-totalité des passerelles du canyon intérieur et endommagé près de 40 % de l'unique conduite d'eau qui alimente l'un des parcs nationaux les plus fréquentés des États-Unis.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red"><span class="ap-stat-num">2 morts</span><span class="ap-stat-desc">et un randonneur<br>toujours porté disparu</span></div>
+          <div class="ap-stat"><span class="ap-stat-num">82</span><span class="ap-stat-desc">personnes secourues<br>et évacuées par hélicoptère</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">≈ 40 %</span><span class="ap-stat-desc">du Transcanyon Waterline<br>endommagé ou détruit</span></div>
+          <div class="ap-stat navy"><span class="ap-stat-num">208 M$</span><span class="ap-stat-desc">chantier de rénovation<br>de la conduite compromis</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Un mur d'eau en quelques minutes</div>
+            <p>Le samedi 29 août 2026, une série d'orages liés à la mousson d'Arizona s'abat sur le plateau de Kaibab et sur la rive nord du Grand Canyon. Les intensités relevées atteignent jusqu'à 25 mm de pluie par heure ; au plus fort de l'épisode, près de 17 mm tombent en un quart d'heure. Sur un relief abrupt, minéral et faiblement végétalisé, l'eau ne s'infiltre pas : elle ruisselle et se concentre dans les gorges étroites qui convergent vers Bright Angel Creek.</p>
+            <p>Vers 14 h 30, le ruisseau se transforme en torrent. Le niveau grimpe de plus d'un mètre cinquante en dix minutes ; des témoins évoquent des vagues chargées de boue et de blocs atteignant jusqu'à cinq mètres de hauteur. La crue emporte des bâtiments, des véhicules de chantier et le matériel de construction stocké au fond du canyon, tout en déclenchant chutes de blocs, glissements de terrain et coulées de boue.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Date et heure</div><div class="ap-fact-val">29 août 2026, ~14h30 (MST)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Lieu</div><div class="ap-fact-val">Bright Angel Creek, Arizona</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Bilan humain</div><div class="ap-fact-val">2 morts, 1 disparu</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Secours</div><div class="ap-fact-val">≈ 82 personnes évacuées</div></div>
+            </div>
+
+            <div class="ap-quote">
+              <p>« [Nous avons vu] des cascades surgir de nulle part, des blocs, de la boue, des glissements de terrain partout. »</p>
+              <cite>— Parth Desai, rescapé, cité par l'Associated Press</cite>
+            </div>
+
+            <div class="ap-sub">Une opération de secours hors norme</div>
+            <p>Le National Park Service, appuyé par l'Arizona Department of Public Safety, lance dès le samedi soir une vaste opération d'hélitreuillage. Soixante-deux personnes sont extraites de Phantom Ranch et du bas du North Kaibab Trail dans la matinée du 30 août ; au total, environ 82 visiteurs sont secourus. Les évacués sont regroupés à la cafétéria du Maswik Lodge, sur la rive sud, où la Croix-Rouge américaine coordonne l'assistance.</p>
+            <p>Le décompte des personnes non localisées illustre la confusion des premières heures : plus de vingt le dimanche, quinze le lundi matin, puis douze, avant de tomber à une seule. Les rangers ont passé des centaines d'appels et relevé les plaques d'immatriculation des parkings pour retrouver la trace des randonneurs partis sans réseau.</p>
+            <p>Les corps de John Giusti, 46 ans, chiropracteur, et de Brent Rosenkranz, 42 ans, gérant d'un club d'arts martiaux, tous deux originaires de Granbury (Texas), ont été retrouvés les 30 et 31 août — le premier près des Crystal Rapids, sur le Colorado. Leur ami d'enfance Timothy Allen Smith, 53 ans, pilote installé dans le Wyoming, reste introuvable. Les recherches, menées avec des équipes cynophiles, des drones et des patrouilles fluviales, ont été à plusieurs reprises interrompues par de nouveaux orages.</p>
+
+            <div class="ap-sub">Chronologie de la catastrophe</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">29 août — 14h30</div><p class="ap-tl-text">La crue éclair dévale Bright Angel Creek. Phantom Ranch, le Bright Angel Campground et le North Kaibab Trail sont submergés ou coupés.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">30 août</div><p class="ap-tl-text">62 personnes hélitreuillées. Le corps d'un homme de 46 ans est retrouvé près des Crystal Rapids. Le Colorado est fermé à la navigation.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">31 août — 12h00</div><p class="ap-tl-text">Entrée en vigueur des restrictions d'eau de « stade 4 » sur la rive sud : fermeture de tous les hébergements du parc, camping sec, interdiction totale du feu.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">1<sup>er</sup> sept.</div><p class="ap-tl-text">Le NPS identifie les deux victimes. Le nombre de personnes non localisées tombe à une seule. L'estimation des dégâts sur la conduite atteint 40 %.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Début sept.</div><p class="ap-tl-text">Les recherches se poursuivent pour Timothy Smith, avec l'appui du BORSTAR (patrouille frontalière) et du Coconino County Search and Rescue.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">Le Transcanyon Waterline, talon d'Achille du parc</div>
+            <p>La conséquence la plus lourde n'est pas immédiatement visible. Le Transcanyon Waterline, une conduite de 20 kilomètres construite dans les années 1960-1970, achemine l'eau depuis une source du canyon intérieur jusqu'à la rive sud, en passant sous le Colorado. C'est l'unique source d'eau potable pour environ six millions de visiteurs annuels et quelque 2 500 résidents permanents ; elle alimente aussi le réseau de défense incendie des bâtiments du parc.</p>
+            <p>Après des survols de reconnaissance, les responsables du parc estiment que près de 40 % de la conduite a été endommagée ou détruite. L'ouvrage était déjà à bout de souffle : plus de 85 ruptures majeures depuis 2010, chaque réparation coûtant souvent plus de 25 000 dollars et nécessitant un acheminement par hélicoptère. Un chantier de remplacement de 208 millions de dollars, lancé en 2023 après plus d'une décennie d'études, était en cours au moment de la crue — et se trouve désormais lui-même endommagé.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Site</th><th>Nature</th><th>État après la crue</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Passerelles de Bright Angel Creek</td><td>Accès piéton canyon</td><td style="color:#f08080">❌ Quasi toutes détruites</td></tr>
+                <tr><td class="ap-cell-bold">Phantom Ranch</td><td>Lodge de 1922</td><td style="color:#f08080">❌ Fermé, dégâts en cours d'évaluation</td></tr>
+                <tr><td class="ap-cell-bold">North Kaibab Trail</td><td>Sentier majeur</td><td style="color:#f08080">❌ Fermé sur toute sa longueur</td></tr>
+                <tr><td class="ap-cell-bold">Transcanyon Waterline</td><td>Adduction d'eau</td><td style="color:#f08080">❌ ≈ 40 % hors service</td></tr>
+                <tr><td class="ap-cell-bold">Rive sud (South Rim)</td><td>Accueil du public</td><td style="color:#ffb74d">⚠ Ouverte en journée seulement</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">💧</div>
+              <div class="ap-info-text"><strong>Le « stade 4 », mesure de dernier recours :</strong> depuis le 31 août à midi, le parc a coupé tous les hébergements exploités par les concessionnaires — El Tovar, Bright Angel Lodge, Maswik Lodge, Yavapai Lodge, Trailer Village et Phantom Ranch —, imposé le camping sec, fermé les points d'eau des campings et interdit tout feu. Le parc reste ouvert à la visite en journée, mais aucune date de retour à la normale n'a été annoncée.</div>
+            </div>
+
+            <div class="ap-sub">Une conjonction de facteurs climatiques</div>
+            <p>Les crues éclair ne sont pas une nouveauté dans le Grand Canyon : la saison de la mousson nord-américaine, de juin à septembre, en produit chaque année. Mais plusieurs éléments ont amplifié celle-ci. Les hydroclimatologues soulignent d'abord la présence d'un épisode El Niño marqué, qui a chargé l'atmosphère du Sud-Ouest américain en vapeur d'eau, restituée sous forme de précipitations plus intenses.</p>
+            <p>S'y ajoute une tendance de fond. Le climatologue Daniel Swain et ses coauteurs ont publié en 2026, dans <em>Weather and Climate Extremes</em>, une étude concluant que les averses estivales de courte durée dans l'Ouest américain ont gagné environ 10 % d'intensité depuis 2000. Enfin, la crue s'est déclenchée sous la cicatrice d'incendie laissée en juillet 2025 par le Dragon Bravo Fire — qui avait ravagé plus de 145 000 acres et détruit le Grand Canyon Lodge de la rive nord : un sol brûlé, hydrophobe, accélère considérablement le ruissellement. La sécheresse persistante du bassin du Colorado a fait le reste.</p>
+
+            <div class="ap-quote">
+              <p>« Presque toutes les passerelles enjambant Bright Angel Creek ont été détruites. »</p>
+              <cite>— National Park Service, communiqué du 30 août 2026</cite>
+            </div>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Un canyon devenu laboratoire du risque climatique</div>
+              <p>En treize mois, le Grand Canyon a perdu son unique hôtel de la rive nord dans un mégafeu, puis vu son cœur historique dévasté par une crue. Deux visages du même phénomène : la multiplication d'événements extrêmes qui se renforcent mutuellement — l'incendie prépare le terrain de l'inondation. La leçon dépasse largement l'Arizona. Elle interroge la capacité des sociétés développées à maintenir des infrastructures anciennes, coûteuses et difficiles d'accès, dans un climat qui ne ressemble plus à celui pour lequel elles ont été dimensionnées. Une conduite d'eau conçue dans les années 1960 pour un régime hydrologique stable devient un point de rupture unique dont dépendent six millions de visiteurs. Restaurer Phantom Ranch et le Transcanyon Waterline ne sera pas seulement une opération de génie civil : ce sera un arbitrage politique et budgétaire sur ce que les États-Unis acceptent encore de dépenser pour rendre habitable un patrimoine naturel devenu, saison après saison, plus imprévisible.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-fr-section -->
+
+    <!-- ══ SECTION EN ══ -->
+    <div class="ap-en-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-navy">🇺🇸 United States</span>
+          <span class="ap-tag ap-tag-green">Environment</span>
+          <span class="ap-tag ap-tag-orange">Climate</span>
+          <span class="ap-tag ap-tag-blue">Infrastructure</span>
+          <span class="ap-tag ap-tag-gold">Tourism</span>
+        </div>
+        <div class="ap-date">August 2026 — ECG Prépa · United States</div>
+        <h1 class="ap-title">Deadly Flash Flood in the Grand Canyon: An Iconic Park Caught by a Changing Climate</h1>
+        <p class="ap-intro">On August 29, 2026, at around 2:30 p.m., an exceptionally violent flash flood tore down Bright Angel Creek at the bottom of the Grand Canyon in Arizona. Two Texan hikers were killed, a third remains missing, and roughly 82 people had to be airlifted to safety. Beyond the human toll, the disaster destroyed almost every footbridge in the inner canyon and damaged close to 40% of the single pipeline supplying water to one of America's most visited national parks.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red"><span class="ap-stat-num">2 dead</span><span class="ap-stat-desc">with one hiker<br>still unaccounted for</span></div>
+          <div class="ap-stat"><span class="ap-stat-num">82</span><span class="ap-stat-desc">people rescued<br>and airlifted out</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">≈ 40%</span><span class="ap-stat-desc">of the Transcanyon Waterline<br>damaged or destroyed</span></div>
+          <div class="ap-stat navy"><span class="ap-stat-num">$208m</span><span class="ap-stat-desc">pipeline overhaul project<br>thrown into disarray</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">A Wall of Water in Minutes</div>
+            <p>On Saturday, August 29, 2026, a series of thunderstorms fed by the Arizona monsoon swept across the Kaibab Plateau and the canyon's North Rim. Rainfall rates reached up to an inch an hour; at the storm's peak, two-thirds of an inch fell in a quarter of an hour. On steep, rocky, sparsely vegetated terrain, the water did not soak in — it ran off and funnelled into the narrow side gorges feeding Bright Angel Creek.</p>
+            <p>By around 2:30 p.m. the creek had become a torrent. Water levels rose more than five feet in ten minutes; witnesses described walls of mud and boulders reaching some fifteen feet high. The flood swept away buildings, construction vehicles and equipment stored on the canyon floor, while triggering rockfalls, landslides and mudflows.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Date and time</div><div class="ap-fact-val">August 29, 2026, ~2:30 p.m. MST</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Location</div><div class="ap-fact-val">Bright Angel Creek, Arizona</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Human toll</div><div class="ap-fact-val">2 dead, 1 missing</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Rescues</div><div class="ap-fact-val">≈ 82 people evacuated</div></div>
+            </div>
+
+            <div class="ap-quote">
+              <p>"[We saw] waterfalls coming up out of nowhere, boulders, mud, landslides happening everywhere."</p>
+              <cite>— Parth Desai, survivor, quoted by the Associated Press</cite>
+            </div>
+
+            <div class="ap-sub">A Rescue Operation on an Unusual Scale</div>
+            <p>The National Park Service, supported by the Arizona Department of Public Safety, launched a large-scale helicopter evacuation from Saturday evening onwards. Sixty-two people were lifted out of Phantom Ranch and the lower North Kaibab Trail on the morning of August 30; in total, some 82 visitors were rescued. Evacuees were gathered at the Maswik Lodge cafeteria on the South Rim, where the American Red Cross coordinated assistance.</p>
+            <p>The shifting count of unaccounted-for visitors captures the confusion of those first hours: more than twenty on Sunday, fifteen by Monday morning, then twelve, before falling to a single person. Rangers made hundreds of phone calls and checked licence plates in trailhead car parks to trace hikers who had set off beyond mobile coverage.</p>
+            <p>The bodies of John Giusti, 46, a chiropractor, and Brent Rosenkranz, 42, who ran a martial arts studio — both from Granbury, Texas — were recovered on August 30 and 31, the first near Crystal Rapids on the Colorado River. Their childhood friend Timothy Allen Smith, 53, a pilot living in Wyoming, is still missing. The search, using scent-detection dog teams, drones and river patrols, has repeatedly been suspended by further storms.</p>
+
+            <div class="ap-sub">Timeline of the Disaster</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">Aug. 29 — 2:30 p.m.</div><p class="ap-tl-text">The flash flood surges down Bright Angel Creek. Phantom Ranch, Bright Angel Campground and the North Kaibab Trail are inundated or cut off.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Aug. 30</div><p class="ap-tl-text">62 people airlifted out. The body of a 46-year-old man is recovered near Crystal Rapids. The Colorado River is closed to river traffic.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Aug. 31 — noon</div><p class="ap-tl-text">Stage 4 water restrictions take effect on the South Rim: all in-park lodging closed, dry camping only, a total ban on fires.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Sept. 1</div><p class="ap-tl-text">The NPS identifies the two victims. The number of unaccounted-for visitors drops to one. Damage to the waterline is put at roughly 40%.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Early Sept.</div><p class="ap-tl-text">The search for Timothy Smith continues, with support from Border Patrol's BORSTAR unit and Coconino County Search and Rescue.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">The Transcanyon Waterline: The Park's Achilles Heel</div>
+            <p>The heaviest consequence is not immediately visible. The Transcanyon Waterline, a 12.5-mile pipe built in the 1960s and 1970s, carries water from a spring in the inner canyon up to the South Rim, crossing beneath the Colorado River on the way. It is the only source of drinking water for roughly six million annual visitors and some 2,500 year-round residents, and it also feeds the fire-suppression system for the park's buildings.</p>
+            <p>After reconnaissance flyovers, park officials estimated that about 40% of the line had been damaged or destroyed. The structure was already at the end of its life: more than 85 major breaks since 2010, each repair often costing over $25,000 and typically requiring helicopter access. A $208 million replacement project, launched in 2023 after more than a decade of design and funding work, was under way when the flood struck — and has itself been damaged.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Site</th><th>Function</th><th>Status after the flood</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Bright Angel Creek footbridges</td><td>Inner canyon access</td><td style="color:#f08080">❌ Nearly all destroyed</td></tr>
+                <tr><td class="ap-cell-bold">Phantom Ranch</td><td>1922 lodge</td><td style="color:#f08080">❌ Closed, damage being assessed</td></tr>
+                <tr><td class="ap-cell-bold">North Kaibab Trail</td><td>Major trail</td><td style="color:#f08080">❌ Closed along its full length</td></tr>
+                <tr><td class="ap-cell-bold">Transcanyon Waterline</td><td>Water supply</td><td style="color:#f08080">❌ ≈ 40% out of service</td></tr>
+                <tr><td class="ap-cell-bold">South Rim</td><td>Visitor services</td><td style="color:#ffb74d">⚠ Open for day use only</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">💧</div>
+              <div class="ap-info-text"><strong>Stage 4: A Last-Resort Measure:</strong> since noon on August 31, the park has shut down every concession-run hotel — El Tovar, Bright Angel Lodge, Maswik Lodge, Yavapai Lodge, Trailer Village and Phantom Ranch — imposed dry camping, switched off campground water spigots and banned all fires. The park remains open for daytime visits, but no date has been announced for a return to normal operations.</div>
+            </div>
+
+            <div class="ap-sub">A Convergence of Climate Factors</div>
+            <p>Flash floods are nothing new in the Grand Canyon: the North American monsoon season, running from June to September, produces them every year. But several factors amplified this one. Hydroclimatologists point first to a strong El Niño episode, which loaded the atmosphere over the American Southwest with water vapour that was then wrung out as more intense rainfall.</p>
+            <p>A longer-term trend compounds this. Climate scientist Daniel Swain and co-authors published a study in 2026 in <em>Weather and Climate Extremes</em> concluding that short, intense summer downpours in the American West have grown roughly 10% stronger since 2000. Finally, the flood was triggered beneath the burn scar left in July 2025 by the Dragon Bravo Fire, which had scorched more than 145,000 acres and destroyed the North Rim's Grand Canyon Lodge: burnt, water-repellent soil dramatically accelerates runoff. Persistent drought across the Colorado basin did the rest.</p>
+
+            <div class="ap-quote">
+              <p>"Nearly all footbridges spanning Bright Angel Creek were destroyed."</p>
+              <cite>— National Park Service, press release, August 30, 2026</cite>
+            </div>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">A Canyon as a Laboratory of Climate Risk</div>
+              <p>In thirteen months, the Grand Canyon has lost its only North Rim hotel to a megafire and seen its historic heart devastated by a flood. These are two faces of the same phenomenon: a proliferation of extreme events that reinforce one another, with fire preparing the ground for flooding. The lesson reaches far beyond Arizona. It raises the question of whether developed societies can maintain ageing, expensive and hard-to-reach infrastructure in a climate that no longer resembles the one it was designed for. A water pipeline built in the 1960s for a stable hydrological regime becomes a single point of failure on which six million visitors depend. Rebuilding Phantom Ranch and the Transcanyon Waterline will not merely be a civil engineering exercise: it will be a political and budgetary judgement about what the United States is still willing to spend to keep a natural heritage habitable in a world that grows, season by season, less predictable.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-en-section -->
+
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — États-Unis — Août 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-en').classList.toggle('active', lang === 'en');
+  const isEn = lang === 'en';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEn ? 'none' : 'block');
+  document.querySelectorAll('.ap-en-section').forEach(el => el.style.display = isEn ? 'block' : 'none');
+
+  const band = document.getElementById('ap-band');
+  if (band) band.textContent = isEn
+    ? '🇺🇸 Deadly Flash Flood in the Grand Canyon'
+    : '🇺🇸 Crue meurtrière dans le Grand Canyon';
+}
+setLang('fr');
+</script>
+</body>
+</html>

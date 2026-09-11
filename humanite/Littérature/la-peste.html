@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Littérature — La Peste</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F1F0E7;
+    --dark: #161613;
+    --teal: #96923B;
+    --teal-dark: #3B3B1E;
+    --teal-mid: #B7B26B;
+    --teal-light: #E7E4C9;
+    --teal-border: #D2CDA0;
+    --cyan: #C9B94A;
+    --muted: #6B6A55;
+    --accent: #96923B;
+    --accent-soft: #96923B22;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--dark); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px; border-bottom: 1px solid rgba(58,68,72,0.25);
+    background: var(--teal-dark); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--cyan); cursor: pointer; letter-spacing: 0.02em; }
+  .nav-logo a { color: inherit; text-decoration: none; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(241,240,231,0.5); flex-wrap: wrap; }
+  .breadcrumb a { color: inherit; text-decoration: none; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb a:hover span, .breadcrumb span:hover { color: var(--cyan); }
+  .breadcrumb .sep { color: rgba(241,240,231,0.25); }
+  .breadcrumb .current { color: #EFF0EC; cursor: default; }
+
+  /* ─── HERO ─── */
+  .ch-hero {
+    background: var(--teal-dark);
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ch-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%230D7377' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--cyan); margin-bottom: 1.5rem; opacity: 0.85; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 4rem); color: var(--cream); font-weight: 900; max-width: 900px; margin: 0 auto 1.5rem; line-height: 1.1; position: relative; z-index: 1; }
+  .ch-hero p { color: rgba(241,240,231,0.45); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  /* ─── TOC ─── */
+  .toc-bar { background: #EEF0EE; padding: 2rem; border-bottom: 1px solid #D7DAD3; }
+  .toc-inner { max-width: 960px; margin: 0 auto; }
+  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
+  .toc-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; list-style: none; }
+  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: #1E2220; font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
+  .toc-list a:hover { border-color: var(--teal-border); background: white; color: #000; }
+  .toc-num { font-family: "DM Mono", monospace; font-size: 0.65rem; color: var(--teal); flex-shrink: 0; margin-top: 0.15rem; }
+
+  /* ─── CONTENT ─── */
+  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 8rem; }
+
+  /* PART */
+  .hgg-part { margin-bottom: 5rem; }
+  .hgg-part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--teal); }
+  .hgg-part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: #A8B8BB; line-height: 1; flex-shrink: 0; }
+  .hgg-part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--dark); line-height: 1.25; }
+
+  /* SECTION */
+  .hgg-section { margin-bottom: 3.5rem; }
+  .hgg-section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--teal-dark); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--teal); scroll-margin-top: 2rem; }
+  .hgg-subsection-title { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--teal); margin: 2rem 0 0.75rem; }
+
+  /* TEXT */
+  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: #17170F; line-height: 1.75; font-weight: 300; }
+  .content strong { color: var(--dark); font-weight: 600; }
+
+  /* KEY FACT */
+  .hgg-key-fact { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 0.6rem; padding: 0.85rem 1.1rem; background: white; border: 1px solid var(--teal-light); border-radius: 6px; }
+  .hgg-key-bullet { width: 6px; height: 6px; background: var(--teal); border-radius: 50%; flex-shrink: 0; margin-top: 0.5rem; }
+  .hgg-key-fact > div { font-size: 0.91rem; color: #17170F; line-height: 1.65; font-weight: 300; }
+
+  /* CONCEPT BOX */
+  .hgg-concept { background: var(--teal-dark); color: var(--cream); padding: 1.75rem; margin: 2rem 0; position: relative; border-radius: 4px; }
+  .hgg-concept::before { content: '→'; position: absolute; top: 1.25rem; right: 1.25rem; color: var(--cyan); font-size: 1.3rem; }
+  .hgg-concept .concept-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--cyan); margin-bottom: 0.7rem; }
+  .hgg-concept p { color: rgba(241,240,231,0.82); font-size: 0.93rem; margin: 0; }
+  .hgg-concept strong { color: var(--cyan); }
+
+  /* HIGHLIGHT */
+  .hgg-highlight { background: var(--teal-light); border-left: 4px solid var(--teal); padding: 1.25rem 1.75rem; margin: 1.5rem 0; font-style: italic; color: var(--teal-dark); font-size: 0.93rem; line-height: 1.7; border-radius: 0 6px 6px 0; }
+
+  /* AUTHOR CARD */
+  .hgg-author { background: var(--teal-dark); color: var(--cream); padding: 1.75rem; margin: 1.2rem 0; position: relative; border-radius: 4px; border-left: 4px solid var(--teal-mid); }
+  .hgg-author::before { content: '✎'; position: absolute; top: 1.25rem; right: 1.25rem; color: var(--teal-mid); font-size: 1.1rem; opacity: 0.7; }
+  .hgg-author .author-name { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; color: #A9C0C2; margin-bottom: 0.7rem; font-weight: 700; }
+  .hgg-author p { color: rgba(241,240,231,0.85); font-size: 0.93rem; margin: 0; line-height: 1.7; font-weight: 300; }
+  .hgg-author strong { color: #A9C0C2; }
+
+  /* STATS GRID */
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: var(--teal-border); margin: 1.5rem 0; border: 1px solid var(--teal-border); border-radius: 6px; overflow: hidden; }
+  .hgg-stat-cell { background: white; padding: 1.3rem; text-align: center; }
+  .hgg-stat-num { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 900; color: var(--teal); display: block; }
+  .hgg-stat-label { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; font-family: 'DM Mono', monospace; }
+
+  /* BIG QUOTE */
+  .big-quote { background: var(--teal-dark); color: var(--cream); padding: 1.6rem 2rem; margin: 1.5rem 0; border-radius: 8px; text-align: center; position: relative; }
+  .big-quote::before { content: '\201C'; font-family: 'Playfair Display', serif; font-size: 5rem; color: var(--teal-mid); position: absolute; top: -1rem; left: 1.5rem; line-height: 1; opacity: 0.3; }
+  .big-quote blockquote { font-family: 'Playfair Display', serif; font-size: clamp(0.88rem, 1.6vw, 1rem); font-style: italic; line-height: 1.6; color: var(--cream); position: relative; z-index: 1; margin-bottom: 0.6rem; }
+  .big-quote cite { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cyan); }
+
+  /* COMPARE BOX */
+  .compare-box { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 1.5rem 0; border-radius: 8px; overflow: hidden; border: 1px solid rgba(0,0,0,0.1); }
+  .compare-side { padding: 1.3rem 1.5rem; }
+  .compare-side h5 { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.7rem; }
+  .compare-side p { font-size: 0.85rem; line-height: 1.65; margin-bottom: 0.5rem; font-weight: 300; }
+  .compare-side p:last-child { margin-bottom: 0; }
+  .compare-a { background: rgba(58,68,72,0.07); }
+  .compare-a h5 { color: var(--teal); }
+  .compare-b { background: rgba(140,158,162,0.1); }
+  .compare-b h5 { color: #4A5C5F; }
+
+  /* TWO COL */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+  .col-card { border-radius: 8px; padding: 1.2rem 1.4rem; border: 1px solid; }
+  .col-card h5 { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.6rem; }
+  .col-card p { margin: 0; font-size: 0.85rem; line-height: 1.6; font-weight: 300; }
+  .col-teal { background: rgba(58,68,72,0.07); border-color: rgba(58,68,72,0.3); }
+  .col-teal h5 { color: var(--teal); }
+  .col-teal p { color: #1D1D12; }
+  .col-cyan { background: rgba(140,158,162,0.1); border-color: rgba(140,158,162,0.35); }
+  .col-cyan h5 { color: #4A5C5F; }
+  .col-cyan p { color: #1D1D12; }
+  .col-dark { background: rgba(26,30,28,0.06); border-color: rgba(26,30,28,0.2); }
+  .col-dark h5 { color: var(--teal-dark); }
+  .col-dark p { color: #1D1D12; }
+
+  /* DEF CARD */
+  .def-card { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 12px rgba(13,115,119,0.10), 0 0 0 1px rgba(58,68,72,0.12); display: flex; margin-bottom: 0.75rem; }
+  .def-accent-bar { width: 5px; background: linear-gradient(180deg, var(--teal-mid) 0%, var(--teal-dark) 100%); flex-shrink: 0; }
+  .def-body { padding: 1.1rem 1.4rem; flex: 1; }
+  .def-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.65rem; }
+  .def-term { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--teal-dark); }
+  .def-tag { margin-left: auto; font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--teal-mid); background: var(--teal-light); padding: 2px 8px; border-radius: 20px; }
+  .def-text { font-size: 0.91rem; color: #17170F; line-height: 1.7; font-weight: 300; margin: 0 !important; }
+  .def-text strong { color: var(--teal-dark); font-weight: 600; }
+
+  /* CRISIS CARD (preuve card) */
+  .crisis-card { border-radius: 10px; padding: 1.4rem 1.6rem; margin: 1rem 0; border: 1px solid rgba(58,68,72,0.2); border-left: 4px solid var(--teal); background: white; }
+  .crisis-date { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--teal); margin-bottom: 0.4rem; font-weight: 700; }
+  .crisis-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--dark); margin-bottom: 0.5rem; }
+  .crisis-card p { margin: 0 0 0.5rem; font-size: 0.88rem; color: #17170F; line-height: 1.65; font-weight: 300; }
+  .crisis-card p:last-child { margin-bottom: 0; }
+
+  /* PARI TABLE */
+  .pari-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; border-radius: 8px; overflow: hidden; border: 1px solid var(--teal-border); font-size: 0.88rem; }
+  .pari-table thead { background: var(--teal-dark); color: var(--cream); }
+  .pari-table thead th { padding: 0.85rem 1.1rem; font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 500; text-align: left; }
+  .pari-table tbody tr:nth-child(odd) { background: white; }
+  .pari-table tbody tr:nth-child(even) { background: var(--teal-light); }
+  .pari-table td { padding: 0.85rem 1.1rem; color: #17170F; line-height: 1.55; vertical-align: top; }
+  .pari-table td:first-child { font-weight: 600; color: var(--teal-dark); font-family: 'Playfair Display', serif; }
+  .td-gain { color: var(--teal); font-weight: 600; }
+  .td-loss { color: #8B3030; font-weight: 600; }
+
+  /* PHILO TABLE */
+  .philo-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; border-radius: 8px; overflow: hidden; border: 1px solid var(--teal-border); font-size: 0.88rem; }
+  .philo-table thead { background: var(--teal); color: var(--cream); }
+  .philo-table thead th { padding: 0.85rem 1.1rem; font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 500; text-align: left; }
+  .philo-table tbody tr { border-bottom: 1px solid var(--teal-light); }
+  .philo-table tbody tr:last-child { border-bottom: none; }
+  .philo-table tbody tr:nth-child(odd) { background: white; }
+  .philo-table tbody tr:nth-child(even) { background: #F1F2EF; }
+  .philo-table td { padding: 0.85rem 1.1rem; color: #17170F; line-height: 1.6; vertical-align: top; }
+  .philo-table td:first-child { font-family: 'Playfair Display', serif; font-weight: 700; color: var(--teal-dark); width: 22%; }
+  .philo-table td:nth-child(2) { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--teal-mid); width: 20%; }
+
+  /* PROBLEMATIQUE BANNER */
+  .prob-banner { background: linear-gradient(135deg, var(--teal-dark) 0%, #2E3A3C 100%); border-radius: 10px; padding: 2rem 2.5rem; margin: 2rem 0; text-align: center; }
+  .prob-banner .prob-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--cyan); margin-bottom: 0.9rem; }
+  .prob-banner p { font-family: 'Playfair Display', serif; font-size: clamp(1rem, 2.5vw, 1.3rem); font-style: italic; color: var(--cream); line-height: 1.55; margin: 0; }
+
+  /* TRANSITION */
+  .transition-block { background: rgba(58,68,72,0.06); border: 1px dashed rgba(58,68,72,0.35); border-radius: 8px; padding: 1.25rem 1.6rem; margin: 2.5rem 0; }
+  .transition-block .t-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--teal); margin-bottom: 0.5rem; }
+  .transition-block p { font-style: italic; font-size: 0.92rem; color: var(--teal-dark); line-height: 1.65; margin: 0; font-weight: 300; }
+
+  /* ─── NEW: STEP BLOCK (numérotation narrative) ─── */
+  .step-block { display: flex; gap: 1rem; margin-bottom: 1.1rem; align-items: flex-start; }
+  .step-num { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 900; color: var(--teal-border); line-height: 1.2; flex-shrink: 0; width: 2rem; text-align: right; }
+  .step-content { flex: 1; font-size: 0.93rem; color: #17170F; line-height: 1.7; font-weight: 300; padding-top: 0.1rem; }
+  .step-content strong { color: var(--dark); font-weight: 600; }
+
+  /* ─── NEW: MINI CALLOUT (texte court mis en lumière) ─── */
+  .mini-callout { border-radius: 6px; padding: 0.9rem 1.2rem; margin: 1.2rem 0; background: white; border: 1px solid var(--teal-border); display: flex; align-items: center; gap: 0.8rem; }
+  .mini-callout-icon { font-size: 1.1rem; flex-shrink: 0; color: var(--teal); }
+  .mini-callout-text { font-size: 0.9rem; color: #17170F; line-height: 1.6; font-weight: 300; }
+  .mini-callout-text strong { color: var(--teal-dark); font-weight: 600; }
+
+  /* ─── NEW: INLINE TAG ─── */
+  .tag { display: inline-block; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; background: var(--teal-light); color: var(--teal); padding: 2px 7px; border-radius: 4px; vertical-align: middle; margin-left: 4px; }
+
+  /* ─── NEW: PREUVE STRIP (titre de preuve sans carte) ─── */
+  .preuve-strip { border-top: 1px solid var(--teal-light); margin: 2rem 0 0.5rem; padding-top: 1rem; display: flex; align-items: baseline; gap: 0.8rem; flex-wrap: wrap; }
+  .preuve-strip .ps-num { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--teal); letter-spacing: 0.25em; }
+  .preuve-strip .ps-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--dark); }
+  .preuve-strip .ps-sub { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; }
+
+  /* ─── NEW: RETENIR BOX ─── */
+  .retenir-box { background: #EEF0EE; border: 1px solid #CCD2CB; border-radius: 8px; padding: 1.4rem 1.6rem; margin: 2rem 0; }
+  .retenir-box .rb-label { display: block; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--teal-mid); margin-bottom: 0.75rem !important; }
+  .retenir-box .rb-items { display: block; }
+  .retenir-box .rb-item { display: block; font-size: 0.9rem; color: #17170F; line-height: 1.65; font-weight: 300; padding: 0.45rem 0 0.45rem 1.4rem; border-bottom: 1px dashed rgba(58,68,72,0.15); margin: 0 !important; position: relative; }
+  .retenir-box .rb-item:last-child { border-bottom: none; }
+  .retenir-box .rb-item::before { content: '—'; color: var(--teal); position: absolute; left: 0; top: 0.45rem; }
+
+  /* Neutraliser le margin global sur les <p> dans les boîtes spéciales */
+  .retenir-box p, .transition-block p, .hgg-concept p,
+  .hgg-author p, .crisis-card p, .col-card p { margin-bottom: 0 !important; }
+  .crisis-card p + p { margin-top: 0.5rem; }
+
+  /* FOOTER */
+  .site-footer { background: var(--teal-dark); border-top: 1px solid rgba(58,68,72,0.35); padding: 2.5rem 2rem; text-align: center; }
+  .site-footer .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--cyan); letter-spacing: 0.02em; margin-bottom: 0.4rem; }
+  .site-footer .footer-meta { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(241,240,231,0.35); }
+
+  /* BACK TO TOP */
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--teal); color: var(--cream); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 4px 14px rgba(58,68,72,0.45); opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 200; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+  .back-to-top:hover { background: var(--teal-mid); }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .toc-list { grid-template-columns: 1fr; }
+    .two-col, .three-col, .compare-box { grid-template-columns: 1fr; }
+    .ch-hero { padding: 3rem 1.5rem 2.5rem; }
+  }
+
+  /* ═══════════════════════════════════════════
+     STYLES D'IMPRESSION
+  ═══════════════════════════════════════════ */
+  @media print {
+    /* — Mise en page — */
+    @page {
+      size: A4;
+      margin: 18mm 15mm 18mm 15mm;
+    }
+
+    /* — Éléments masqués à l'impression — */
+    nav,
+    .back-to-top,
+    .toc-bar,
+    .site-footer {
+      display: none !important;
+    }
+
+    /* — Reset fond & couleurs — */
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
+    }
+
+    html, body {
+      background: white !important;
+      color: #000 !important;
+      font-size: 10pt;
+    }
+
+    /* — Hero : bandeau compact — */
+    .ch-hero {
+      background: #3B3B1E !important;
+      padding: 0.9rem 1rem 0.7rem !important;
+      min-height: unset !important;
+      height: auto !important;
+    }
+    .ch-hero::before { display: none !important; }
+    .ch-hero h1 {
+      font-size: 16pt !important;
+      color: #fff !important;
+      margin-bottom: 0.3rem !important;
+    }
+    .ch-hero .chap-label {
+      font-size: 7pt !important;
+      color: #C9B94A !important;
+      margin-bottom: 0.4rem !important;
+    }
+    .ch-hero p {
+      font-size: 7pt !important;
+      color: #C9B94A !important;
+      margin: 0 !important;
+    }
+
+    /* — Contenu — */
+    .content {
+      max-width: 100% !important;
+      padding: 0.8rem 0 !important;
+      margin: 0 !important;
+    }
+
+    /* — Pas de saut de page forcé — le contenu s'enchaîne naturellement — */
+    .hgg-part {
+      page-break-before: auto;
+      break-before: auto;
+      margin-bottom: 1rem;
+    }
+
+    /* Titres : ne pas les laisser seuls en bas de page */
+    .hgg-part-header,
+    .hgg-section-title,
+    .hgg-subsection-title,
+    .preuve-strip,
+    .crisis-date {
+      page-break-after: avoid;
+      break-after: avoid;
+    }
+
+    /* Sections : autoriser les coupures à l'intérieur */
+    .hgg-section {
+      page-break-inside: auto;
+      break-inside: auto;
+      margin-bottom: 1rem;
+    }
+
+    /* Petits blocs : éviter d'être coupés */
+    .hgg-key-fact,
+    .hgg-author,
+    .hgg-concept,
+    .hgg-highlight,
+    .hgg-stat-cell,
+    .def-card,
+    .crisis-card,
+    .mini-callout,
+    .retenir-box,
+    .transition-block,
+    .step-block,
+    .big-quote,
+    .prob-banner,
+    .col-card,
+    .compare-side {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    /* — Part header — */
+    .hgg-part-header {
+      border-bottom: 2pt solid #96923B !important;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .hgg-part-num {
+      font-size: 2.5rem !important;
+      color: #C9B94A !important;
+    }
+    .hgg-part-title {
+      font-size: 14pt !important;
+    }
+
+    /* — Titres de section — */
+    .hgg-section-title {
+      font-size: 11pt !important;
+      border-left: 3pt solid #96923B !important;
+      padding-left: 0.6rem !important;
+      margin-bottom: 0.6rem !important;
+      color: #3B3B1E !important;
+    }
+    .hgg-subsection-title {
+      font-size: 8pt !important;
+      color: #96923B !important;
+      margin: 0.8rem 0 0.4rem !important;
+    }
+
+    /* — Texte courant — */
+    .content p {
+      font-size: 9.5pt !important;
+      line-height: 1.55 !important;
+      margin-bottom: 0.5rem !important;
+      color: #000 !important;
+    }
+
+    /* — Key facts — */
+    .hgg-key-fact {
+      background: #E7E4C9 !important;
+      border: 1pt solid #C9B94A !important;
+      padding: 0.5rem 0.7rem !important;
+      margin-bottom: 0.35rem !important;
+    }
+    .hgg-key-fact > div {
+      font-size: 9pt !important;
+      color: #000 !important;
+    }
+
+    /* — Concept box (fond sombre) — */
+    .hgg-concept {
+      background: #3B3B1E !important;
+      color: #F1F0E7 !important;
+      padding: 0.9rem 1rem !important;
+      margin: 0.8rem 0 !important;
+      border-radius: 4px;
+    }
+    .hgg-concept p {
+      color: #E7E4C9 !important;
+      font-size: 9pt !important;
+    }
+    .hgg-concept .concept-label {
+      color: #C9B94A !important;
+      font-size: 7pt !important;
+    }
+    .hgg-concept strong { color: #C9B94A !important; }
+    .hgg-concept::before { display: none; }
+
+    /* — Author card (fond sombre) — */
+    .hgg-author {
+      background: #3B3B1E !important;
+      color: #F1F0E7 !important;
+      padding: 0.9rem 1rem !important;
+      margin: 0.8rem 0 !important;
+    }
+    .hgg-author p {
+      color: #E7E4C9 !important;
+      font-size: 9pt !important;
+    }
+    .hgg-author .author-name {
+      color: #B7B26B !important;
+      font-size: 7pt !important;
+    }
+    .hgg-author strong { color: #B7B26B !important; }
+    .hgg-author::before { display: none; }
+
+    /* — Highlight — */
+    .hgg-highlight {
+      background: #E7E4C9 !important;
+      border-left: 3pt solid #96923B !important;
+      padding: 0.7rem 1rem !important;
+      margin: 0.8rem 0 !important;
+      font-size: 9pt !important;
+      color: #3B3B1E !important;
+    }
+
+    /* — Stats grid — */
+    .hgg-stats {
+      border: 1pt solid #C9B94A !important;
+      margin: 0.8rem 0 !important;
+    }
+    .hgg-stat-cell {
+      background: white !important;
+      padding: 0.8rem !important;
+    }
+    .hgg-stat-num {
+      font-size: 12pt !important;
+      color: #96923B !important;
+    }
+    .hgg-stat-label {
+      font-size: 7.5pt !important;
+      color: #6B6A55 !important;
+    }
+
+    /* — Big quote — */
+    .big-quote {
+      background: #3B3B1E !important;
+      color: #F1F0E7 !important;
+      padding: 1rem 1.4rem !important;
+      margin: 0.8rem 0 !important;
+    }
+    .big-quote blockquote {
+      font-size: 10pt !important;
+      color: #F1F0E7 !important;
+    }
+    .big-quote cite { color: #C9B94A !important; font-size: 7pt !important; }
+    .big-quote::before { font-size: 3rem !important; top: -0.3rem !important; }
+
+    /* — Compare box — */
+    .compare-box { margin: 0.7rem 0 !important; }
+    .compare-side { padding: 0.7rem 0.9rem !important; }
+    .compare-side p { font-size: 8.5pt !important; }
+    .compare-side h5 { font-size: 6.5pt !important; }
+
+    /* — Grilles 2 et 3 colonnes — */
+    .two-col {
+      grid-template-columns: 1fr 1fr !important;
+      gap: 0.5rem !important;
+      margin: 0.6rem 0 !important;
+    }
+    .three-col {
+      grid-template-columns: 1fr 1fr 1fr !important;
+      gap: 0.5rem !important;
+      margin: 0.6rem 0 !important;
+    }
+    .col-card { padding: 0.7rem 0.9rem !important; }
+    .col-card p { font-size: 8.5pt !important; }
+    .col-card h5 { font-size: 6.5pt !important; }
+
+    /* — Def cards — */
+    .def-card {
+      box-shadow: none !important;
+      border: 1pt solid #C9B94A !important;
+      margin-bottom: 0.5rem !important;
+    }
+    .def-term { font-size: 10pt !important; }
+    .def-text { font-size: 9pt !important; color: #000 !important; }
+    .def-accent-bar { background: #96923B !important; }
+
+    /* — Crisis card — */
+    .crisis-card {
+      background: white !important;
+      border: 1pt solid #96923B !important;
+      border-left: 4pt solid #96923B !important;
+      padding: 0.7rem 1rem !important;
+      margin: 0.5rem 0 !important;
+    }
+    .crisis-card p { font-size: 8.5pt !important; }
+    .crisis-title { font-size: 10pt !important; }
+    .crisis-date { font-size: 6.5pt !important; color: #96923B !important; }
+
+    /* — Mini callout — */
+    .mini-callout {
+      background: #E7E4C9 !important;
+      border: 1pt solid #C9B94A !important;
+      padding: 0.5rem 0.8rem !important;
+      margin: 0.6rem 0 !important;
+    }
+    .mini-callout-text { font-size: 8.5pt !important; color: #000 !important; }
+    .mini-callout-icon { font-size: 0.9rem !important; }
+
+    /* — Retenir box — */
+    .retenir-box {
+      background: #E7E4C9 !important;
+      border: 1pt solid #D2CDA0 !important;
+      padding: 0.8rem 1rem !important;
+      margin: 0.8rem 0 !important;
+    }
+    .retenir-box .rb-label {
+      font-size: 7pt !important;
+      color: #B7B26B !important;
+    }
+    .retenir-box .rb-item { font-size: 9pt !important; color: #000 !important; }
+
+    /* — Transition block — */
+    .transition-block {
+      background: rgba(150,146,59,0.05) !important;
+      border: 1pt dashed rgba(150,146,59,0.4) !important;
+      padding: 0.7rem 1rem !important;
+      margin: 0.8rem 0 !important;
+    }
+    .transition-block .t-label { font-size: 7pt !important; color: #96923B !important; }
+    .transition-block p { font-size: 9pt !important; color: #3B3B1E !important; }
+
+    /* — Step blocks — */
+    .step-block { margin-bottom: 0.5rem !important; }
+    .step-num { font-size: 1.1rem !important; color: #C9B94A !important; }
+    .step-content { font-size: 9pt !important; color: #000 !important; }
+
+    /* — Preuve strip — */
+    .preuve-strip {
+      border-top: 1pt solid #E7E4C9 !important;
+      margin: 1rem 0 0.4rem !important;
+      padding-top: 0.6rem !important;
+    }
+    .preuve-strip .ps-num { font-size: 7pt !important; color: #96923B !important; }
+    .preuve-strip .ps-title { font-size: 10pt !important; }
+    .preuve-strip .ps-sub { font-size: 7pt !important; }
+
+    /* — Prob banner — */
+    .prob-banner {
+      background: #3B3B1E !important;
+      padding: 1rem 1.4rem !important;
+      margin: 0.8rem 0 !important;
+    }
+    .prob-banner .prob-label { font-size: 7pt !important; color: #C9B94A !important; }
+    .prob-banner p { font-size: 10pt !important; color: #F1F0E7 !important; }
+
+    /* — Tableaux — */
+    .pari-table, .philo-table {
+      font-size: 8.5pt !important;
+      margin: 0.7rem 0 !important;
+    }
+    .pari-table thead th, .philo-table thead th {
+      font-size: 7pt !important;
+      padding: 0.5rem 0.7rem !important;
+      background: #3B3B1E !important;
+      color: #C9B94A !important;
+    }
+    .pari-table td, .philo-table td {
+      padding: 0.5rem 0.7rem !important;
+      color: #000 !important;
+    }
+
+    /* — Liens — */
+    a { text-decoration: none !important; color: inherit !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">/</span>
+    <a href="../../humanite.html"><span>L'Humanité</span></a>
+    <span class="sep">/</span>
+    <a href="litterature.html"><span>Littérature</span></a>
+    <span class="sep">/</span>
+    <span class="current">La Peste</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="chap-label">Littérature · L'Humanité</div>
+  <h1>La Peste</h1>
+  <p>Albert Camus · 1947 · Roman</p>
+</div>
+
+<!-- ─── TOC ─── -->
+<div class="toc-bar">
+  <div class="toc-inner">
+    <div class="toc-title">Plan de la fiche</div>
+    <ul class="toc-list">
+      <li><a href="#intro"><span class="toc-num">I —</span> Présentation de l'œuvre</a></li>
+      <li><a href="#p1"><span class="toc-num">II —</span> Résumé</a></li>
+      <li><a href="#p2"><span class="toc-num">III —</span> L'humanité comme solidarité face à l'absurde</a></li>
+      <li><a href="#p3"><span class="toc-num">IV —</span> Pistes pour la dissertation</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ─── CONTENT ─── -->
+<div class="content">
+
+<!-- ══════════════════════════════════════ -->
+<!--  PARTIE I — PRÉSENTATION              -->
+<!-- ══════════════════════════════════════ -->
+<div class="hgg-part" id="intro">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">I</div>
+    <div class="hgg-part-title">Présentation de l'œuvre</div>
+  </div>
+
+  <p><strong>La Peste</strong> est un roman publié en 1947 par <strong>Albert Camus</strong>, prix Nobel de littérature en 1957. Il raconte l'épidémie fictive qui frappe la ville d'Oran, en Algérie française, coupée du monde par la mise en quarantaine. Le roman est unanimement lu comme une <strong>allégorie de l'Occupation</strong> et de la montée des totalitarismes, sans jamais nommer explicitement le nazisme.</p>
+
+  <div class="hgg-stats">
+    <div class="hgg-stat-cell"><span class="hgg-stat-num">1947</span><div class="hgg-stat-label">Date de publication</div></div>
+    <div class="hgg-stat-cell"><span class="hgg-stat-num">194.</span><div class="hgg-stat-label">Année fictive de l'épidémie</div></div>
+    <div class="hgg-stat-cell"><span class="hgg-stat-num">5</span><div class="hgg-stat-label">Personnages principaux</div></div>
+  </div>
+
+  <p>Le roman s'inscrit dans ce que Camus appelait le « <strong>cycle de la révolte</strong> », après le « cycle de l'absurde » (<em>L'Étranger</em>, <em>Le Mythe de Sisyphe</em>). Il y déplace la question : non plus seulement « le monde a-t-il un sens ? », mais « comment agir humainement dans un monde qui n'en a pas ? ».</p>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  PARTIE II — RÉSUMÉ                   -->
+<!-- ══════════════════════════════════════ -->
+<div class="hgg-part" id="p1">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">II</div>
+    <div class="hgg-part-title">Résumé</div>
+  </div>
+
+  <div class="hgg-section" id="s1-1">
+    <div class="hgg-section-title">1 — L'irruption du fléau et la fermeture de la ville</div>
+
+    <p>Des rats meurent par milliers dans les rues d'Oran, avant que l'épidémie de peste ne se déclare parmi les habitants. Le docteur <strong>Rieux</strong>, narrateur qui ne se dévoile qu'à la fin du roman, alerte en vain les autorités, hésitantes à admettre la gravité de la situation. Lorsque la ville est finalement mise en <strong>quarantaine</strong>, ses habitants se retrouvent coupés du monde, séparés parfois de leurs proches, plongés dans un exil intérieur.</p>
+
+    <div class="hgg-key-fact">
+      <div class="hgg-key-bullet"></div>
+      <div>Face au fléau, les personnages réagissent différemment : Rieux soigne sans relâche par devoir ; le journaliste Rambert cherche d'abord à s'échapper pour retrouver sa femme, avant de choisir de rester combattre ; le fonctionnaire Grand rédige inlassablement la même phrase d'un roman qu'il n'achèvera jamais ; le trafiquant Cottard, seul à profiter du fléau, redoute au contraire la fin de l'épidémie.</div>
+    </div>
+
+    <p><strong>Jean Tarrou</strong>, personnage énigmatique, organise des équipes sanitaires bénévoles et tient un carnet où il consigne son ambition : devenir « un saint sans Dieu », c'est-à-dire un homme moralement exemplaire sans recourir à la religion.</p>
+  </div>
+
+  <div class="hgg-section" id="s1-2">
+    <div class="hgg-section-title">2 — Le sermon du Père Paneloux et le combat sans fin</div>
+
+    <p>Le prêtre <strong>Paneloux</strong> prononce d'abord un sermon présentant la peste comme un châtiment divin mérité ; mais la mort atroce d'un enfant innocent, à laquelle il assiste aux côtés de Rieux, ébranle profondément sa théologie. Il en vient à un second sermon plus nuancé, tout en refusant, contrairement à Rieux, de se faire soigner lorsqu'il tombe malade à son tour.</p>
+
+    <div class="hgg-concept">
+      <div class="concept-label">La fin de l'épidémie, sans triomphe</div>
+      <p>Après des mois de lutte, l'épidémie recule enfin et <strong>les portes de la ville rouvrent</strong>, dans une liesse populaire à laquelle Rieux, qui vient de perdre son ami Tarrou emporté par la maladie au tout dernier moment, ne peut pleinement se joindre. Le roman se referme sur une mise en garde : le bacille de la peste ne meurt ni ne disparaît jamais tout à fait, il peut « rester des dizaines d'années endormi » avant de réveiller un jour ses rats.</p>
+    </div>
+
+    <div class="info-box">Rieux révèle alors qu'il est l'auteur du récit : il a choisi d'écrire cette chronique pour témoigner, contre l'oubli, de ce que les hommes ordinaires d'Oran ont accompli face au fléau.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  PARTIE III — ANALYSE                 -->
+<!-- ══════════════════════════════════════ -->
+<div class="hgg-part" id="p2">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">III</div>
+    <div class="hgg-part-title">L'humanité comme solidarité face à l'absurde</div>
+  </div>
+
+  <div class="hgg-section" id="s2-1">
+    <div class="hgg-section-title">1 — Être un homme, selon Tarrou</div>
+
+    <p>Pour Camus, la peste — comme l'absurde en général — ne se laisse jamais totalement vaincre : elle ne se justifie pas et ne disparaît jamais définitivement. L'humanité ne consiste donc pas à triompher du mal, mais à <strong>refuser de s'y résigner</strong> et à combattre malgré tout, sans espoir de victoire totale ni recours à une transcendance qui donnerait sens à la souffrance.</p>
+
+    <div class="two-col">
+      <div class="col-card col-teal">
+        <h5>🩺 Rieux, l'humanisme du devoir</h5>
+        <p>« Ça n'a pas de sens, mais on sait ce qu'il faut faire » : Rieux soigne sans attendre de victoire, par <strong>simple fidélité</strong> à sa fonction de médecin et à l'humanité souffrante.</p>
+      </div>
+      <div class="col-card col-cyan">
+        <h5>📓 Tarrou, la sainteté sans Dieu</h5>
+        <p>Tarrou cherche à ne jamais, même indirectement, être complice d'une mort — <strong>un projet éthique exigeant</strong>, fondé sur la seule volonté humaine, sans garantie religieuse.</p>
+      </div>
+    </div>
+
+    <div class="hgg-highlight">
+      « Il y a dans les hommes plus de choses à admirer que de choses à mépriser » : cette phrase, prêtée à Tarrou, résume l'humanisme lucide mais non naïf de Camus — conscient du mal, mais fondé sur la confiance en l'action collective.
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-2">
+    <div class="hgg-section-title">2 — Cottard et Paneloux : les tentations du renoncement</div>
+
+    <p>Face au fléau, Camus met en scène deux figures qui refusent la solidarité active : <strong>Cottard</strong>, qui profite du désordre et de la peur pour prospérer par le marché noir, incarne l'égoïsme opportuniste ; le premier <strong>Paneloux</strong>, qui explique le mal par une punition méritée, incarne la démission de la pensée devant la souffrance réelle — un fatalisme religieux qui dispense d'agir.</p>
+
+    <div class="hgg-author">
+      <div class="author-name">La mort de l'enfant, un tournant</div>
+      <p>La scène de l'agonie du petit Philippe Othon, à laquelle assistent ensemble Rieux et Paneloux, est <strong>le centre moral du roman</strong> : devant une souffrance qu'aucune justification théologique ne peut apaiser, Rieux refuse toute explication qui « accepterait » le mal, tandis que Paneloux est contraint de nuancer sa doctrine.</p>
+    </div>
+
+    <div class="mini-callout">
+      <span class="mini-callout-icon">🐀</span>
+      <span class="mini-callout-text">La peste fonctionne comme une <strong>allégorie</strong> du nazisme et, plus largement, de tout mal collectif : la vigilance et l'action solidaire, non l'attente passive, sont seules capables d'en limiter les ravages.</span>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-3">
+    <div class="hgg-section-title">3 — Une éthique de la révolte sans espérance</div>
+
+    <p>Camus refuse aussi bien l'optimisme naïf que le désespoir stérile : la révolte contre l'absurde ne promet pas la victoire finale, mais elle fonde une <strong>solidarité concrète</strong> entre les hommes — les équipes sanitaires de Tarrou, le dévouement de Rieux, le choix final de Rambert de rester combattre plutôt que de fuir. L'humanité s'y définit moins par une nature que par une <strong>pratique</strong> répétée, quotidienne, du courage ordinaire.</p>
+
+    <div class="compare-box">
+      <div class="compare-side compare-a">
+        <h5>🚪 Fuir ou profiter du mal</h5>
+        <p>Cottard et, un temps, Rambert : deux façons de <strong>se soustraire à la solidarité collective</strong>, l'une par intérêt, l'autre par attachement légitime à un bonheur individuel.</p>
+      </div>
+      <div class="compare-side compare-b">
+        <h5>🤲 Combattre sans illusion</h5>
+        <p>Rieux, Tarrou, puis Rambert : <strong>agir malgré l'absence de sens</strong> et de garantie de succès — la définition camusienne de l'humanité en acte.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  PARTIE IV — PISTES DE DISSERTATION   -->
+<!-- ══════════════════════════════════════ -->
+<div class="hgg-part" id="p3">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">IV</div>
+    <div class="hgg-part-title">Pistes pour la dissertation</div>
+  </div>
+
+  <div class="hgg-section" id="s3-1">
+    <div class="hgg-section-title">Comment mobiliser cette œuvre dans une copie ?</div>
+
+    <div class="retenir-box">
+      <div class="rb-label">Idées à retenir</div>
+      <div class="rb-items">
+        <div class="rb-item">L'humanité ne se prouve pas par la victoire sur le mal, mais par le <strong>refus de s'y résigner</strong> et l'engagement dans une lutte sans garantie de succès.</div>
+        <div class="rb-item">Le roman distingue plusieurs postures face au malheur collectif : l'indifférence administrative, l'opportunisme (Cottard), le fatalisme religieux (Paneloux), et l'engagement solidaire (Rieux, Tarrou).</div>
+        <div class="rb-item">La peste fonctionne comme une <strong>allégorie</strong> de tout mal collectif et totalitaire, jamais définitivement vaincu, qui exige une vigilance permanente.</div>
+        <div class="rb-item">Camus fonde une éthique de la solidarité <strong>sans transcendance</strong> : être humain, c'est agir pour autrui sans attendre de récompense ni de sens garanti.</div>
+      </div>
+    </div>
+
+    <div class="hgg-subsection-title">→ Notions du thème « L'Humanité » éclairées par l'œuvre</div>
+    <div class="three-col">
+      <div class="col-card col-teal">
+        <h5>🔥 La révolte comme fondement de l'humain</h5>
+        <p>Face à l'absurde, l'humanité de Rieux et Tarrou se définit par <strong>le refus actif de la résignation</strong>, non par l'espoir d'une victoire finale.</p>
+      </div>
+      <div class="col-card col-cyan">
+        <h5>🤝 La solidarité, une pratique plus qu'une nature</h5>
+        <p>Les équipes sanitaires bénévoles montrent que l'humanité se construit dans <strong>l'action collective quotidienne</strong>, non dans une essence donnée d'avance.</p>
+      </div>
+      <div class="col-card col-dark">
+        <h5>⚠️ La vigilance contre le mal qui revient</h5>
+        <p>Le bacille jamais tout à fait mort rappelle qu'<strong>aucune victoire</strong> sur la déshumanisation collective n'est définitivement acquise.</p>
+      </div>
+    </div>
+
+    <div class="hgg-concept">
+      <div class="concept-label">À rapprocher</div>
+      <p>Robert Antelme, <em>L'Espèce humaine</em> (1947) : récit du retour de déportation de l'auteur, qui affirme, contre l'entreprise nazie de déshumanisation totale, <strong>l'unité indestructible de l'espèce humaine</strong> — une conviction qui rejoint, sur un mode testimonial plutôt que romanesque, l'humanisme lucide et combatif de Camus face au fléau.</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<footer class="site-footer">
+  <div class="footer-logo">La Peste — Albert Camus</div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
+
+<script>
+  document.querySelectorAll('.toc-list a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>

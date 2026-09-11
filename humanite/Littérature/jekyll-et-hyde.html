@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Littérature — L'Étrange Cas du docteur Jekyll et de M. Hyde</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --cream: #EDEEE6;
+    --dark: #0F1410;
+    --ink: #161C15;
+    --accent: #4A6B3A;
+    --accent-deep: #1B2418;
+    --accent-mid: #7E9C5E;
+    --glow: #C9D97A;
+    --muted: #57604E;
+    --accent2: #5A5048;
+    --pale: #A8C17E;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--dark); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px; border-bottom: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+    background: var(--accent-deep); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--glow); cursor: pointer; letter-spacing: 0.02em; }
+  .nav-logo a { color: inherit; text-decoration: none; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: color-mix(in srgb, var(--cream) 50%, transparent); flex-wrap: wrap; }
+  .breadcrumb a { color: inherit; text-decoration: none; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb a:hover span, .breadcrumb span:hover { color: var(--glow); }
+  .breadcrumb .sep { color: color-mix(in srgb, var(--cream) 25%, transparent); }
+  .breadcrumb .current { color: var(--cream); cursor: default; }
+
+  .ch-hero {
+    background: var(--accent-deep);
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ch-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234A6B3A' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--glow); margin-bottom: 1.5rem; opacity: 0.85; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 4rem); color: var(--cream); font-weight: 900; max-width: 900px; margin: 0 auto 1.5rem; line-height: 1.1; position: relative; z-index: 1; }
+  .ch-hero p { color: color-mix(in srgb, var(--cream) 45%, transparent); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  .toc-bar { background: color-mix(in srgb, var(--accent) 8%, var(--cream)); padding: 2rem; border-bottom: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); }
+  .toc-inner { max-width: 960px; margin: 0 auto; }
+  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
+  .toc-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; list-style: none; }
+  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: var(--dark); font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
+  .toc-list a:hover { border-color: color-mix(in srgb, var(--accent) 45%, transparent); background: white; color: #000; }
+  .toc-num { font-family: "DM Mono", monospace; font-size: 0.65rem; color: var(--accent); flex-shrink: 0; margin-top: 0.15rem; }
+
+  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 8rem; }
+
+  .hgg-part { margin-bottom: 5rem; }
+  .hgg-part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--accent); }
+  .hgg-part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: var(--pale); line-height: 1; flex-shrink: 0; }
+  .hgg-part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--dark); line-height: 1.25; }
+
+  .hgg-section { margin-bottom: 3.5rem; }
+  .hgg-section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--accent-deep); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--accent); scroll-margin-top: 2rem; }
+  .hgg-subsection-title { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin: 2rem 0 0.75rem; }
+
+  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: var(--ink); line-height: 1.75; font-weight: 300; }
+  .content strong { color: var(--dark); font-weight: 600; }
+
+  .hgg-key-fact { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 0.6rem; padding: 0.85rem 1.1rem; background: white; border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--cream)); border-radius: 6px; }
+  .hgg-key-bullet { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; flex-shrink: 0; margin-top: 0.5rem; }
+  .hgg-key-fact > div { font-size: 0.91rem; color: var(--ink); line-height: 1.65; font-weight: 300; }
+
+  .hgg-concept { background: var(--accent-deep); color: var(--cream); padding: 1.75rem; margin: 2rem 0; position: relative; border-radius: 4px; }
+  .hgg-concept::before { content: '→'; position: absolute; top: 1.25rem; right: 1.25rem; color: var(--glow); font-size: 1.3rem; }
+  .hgg-concept .concept-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--glow); margin-bottom: 0.7rem; }
+  .hgg-concept p { color: color-mix(in srgb, var(--cream) 82%, transparent); font-size: 0.93rem; margin: 0; }
+  .hgg-concept strong { color: var(--glow); }
+
+  .hgg-highlight { background: color-mix(in srgb, var(--accent) 12%, var(--cream)); border-left: 4px solid var(--accent); padding: 1.25rem 1.75rem; margin: 1.5rem 0; font-style: italic; color: var(--accent-deep); font-size: 0.93rem; line-height: 1.7; border-radius: 0 6px 6px 0; }
+
+  .hgg-author { background: var(--accent-deep); color: var(--cream); padding: 1.75rem; margin: 1.2rem 0; position: relative; border-radius: 4px; border-left: 4px solid var(--accent-mid); }
+  .hgg-author::before { content: '✎'; position: absolute; top: 1.25rem; right: 1.25rem; color: var(--accent-mid); font-size: 1.1rem; opacity: 0.7; }
+  .hgg-author .author-name { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--glow); margin-bottom: 0.7rem; font-weight: 700; }
+  .hgg-author p { color: color-mix(in srgb, var(--cream) 85%, transparent); font-size: 0.93rem; margin: 0; line-height: 1.7; font-weight: 300; }
+  .hgg-author strong { color: var(--glow); }
+
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: color-mix(in srgb, var(--accent) 40%, var(--cream)); margin: 1.5rem 0; border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--cream)); border-radius: 6px; overflow: hidden; }
+  .hgg-stat-cell { background: white; padding: 1.3rem; text-align: center; }
+  .hgg-stat-num { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 900; color: var(--accent); display: block; }
+  .hgg-stat-label { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; font-family: 'DM Mono', monospace; }
+
+  .big-quote { background: var(--accent-deep); color: var(--cream); padding: 1.6rem 2rem; margin: 1.5rem 0; border-radius: 8px; text-align: center; position: relative; }
+  .big-quote::before { content: '\201C'; font-family: 'Playfair Display', serif; font-size: 5rem; color: var(--accent-mid); position: absolute; top: -1rem; left: 1.5rem; line-height: 1; opacity: 0.3; }
+  .big-quote blockquote { font-family: 'Playfair Display', serif; font-size: clamp(0.88rem, 1.6vw, 1rem); font-style: italic; line-height: 1.6; color: var(--cream); position: relative; z-index: 1; margin-bottom: 0.6rem; }
+  .big-quote cite { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--glow); }
+
+  .compare-box { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 1.5rem 0; border-radius: 8px; overflow: hidden; border: 1px solid rgba(0,0,0,0.1); }
+  .compare-side { padding: 1.3rem 1.5rem; }
+  .compare-side h5 { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.7rem; }
+  .compare-side p { font-size: 0.85rem; line-height: 1.65; margin-bottom: 0.5rem; font-weight: 300; }
+  .compare-side p:last-child { margin-bottom: 0; }
+  .compare-a { background: color-mix(in srgb, var(--accent) 8%, white); }
+  .compare-a h5 { color: var(--accent); }
+  .compare-b { background: color-mix(in srgb, var(--accent2) 12%, white); }
+  .compare-b h5 { color: var(--accent2); }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+  .col-card { border-radius: 8px; padding: 1.2rem 1.4rem; border: 1px solid; }
+  .col-card h5 { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.6rem; }
+  .col-card p { margin: 0; font-size: 0.85rem; line-height: 1.6; font-weight: 300; }
+  .col-teal { background: color-mix(in srgb, var(--accent) 8%, white); border-color: color-mix(in srgb, var(--accent) 30%, transparent); }
+  .col-teal h5 { color: var(--accent); }
+  .col-teal p { color: var(--dark); }
+  .col-cyan { background: color-mix(in srgb, var(--accent2) 12%, white); border-color: color-mix(in srgb, var(--accent2) 35%, transparent); }
+  .col-cyan h5 { color: var(--accent2); }
+  .col-cyan p { color: var(--dark); }
+  .col-dark { background: color-mix(in srgb, var(--accent-deep) 6%, white); border-color: color-mix(in srgb, var(--accent-deep) 20%, transparent); }
+  .col-dark h5 { color: var(--accent-deep); }
+  .col-dark p { color: var(--dark); }
+
+  .def-card { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 12px color-mix(in srgb, var(--accent) 10%, transparent), 0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent); display: flex; margin-bottom: 0.75rem; }
+  .def-accent-bar { width: 5px; background: linear-gradient(180deg, var(--accent-mid) 0%, var(--accent-deep) 100%); flex-shrink: 0; }
+  .def-body { padding: 1.1rem 1.4rem; flex: 1; }
+  .def-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.65rem; }
+  .def-term { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--accent-deep); }
+  .def-tag { margin-left: auto; font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent-mid); background: color-mix(in srgb, var(--accent) 12%, var(--cream)); padding: 2px 8px; border-radius: 20px; }
+  .def-text { font-size: 0.91rem; color: var(--ink); line-height: 1.7; font-weight: 300; margin: 0 !important; }
+  .def-text strong { color: var(--accent-deep); font-weight: 600; }
+
+  .crisis-card { border-radius: 10px; padding: 1.4rem 1.6rem; margin: 1rem 0; border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent); border-left: 4px solid var(--accent); background: white; }
+  .crisis-date { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.4rem; font-weight: 700; }
+  .crisis-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--dark); margin-bottom: 0.5rem; }
+  .crisis-card p { margin: 0 0 0.5rem; font-size: 0.88rem; color: var(--ink); line-height: 1.65; font-weight: 300; }
+  .crisis-card p:last-child { margin-bottom: 0; }
+
+  .pari-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; border-radius: 8px; overflow: hidden; border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--cream)); font-size: 0.88rem; }
+  .pari-table thead { background: var(--accent-deep); color: var(--cream); }
+  .pari-table thead th { padding: 0.85rem 1.1rem; font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 500; text-align: left; }
+  .pari-table tbody tr:nth-child(odd) { background: white; }
+  .pari-table tbody tr:nth-child(even) { background: color-mix(in srgb, var(--accent) 10%, var(--cream)); }
+  .pari-table td { padding: 0.85rem 1.1rem; color: var(--ink); line-height: 1.55; vertical-align: top; }
+  .pari-table td:first-child { font-weight: 600; color: var(--accent-deep); font-family: 'Playfair Display', serif; }
+  .td-gain { color: var(--accent); font-weight: 600; }
+  .td-loss { color: #8B3030; font-weight: 600; }
+
+  .philo-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; border-radius: 8px; overflow: hidden; border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--cream)); font-size: 0.88rem; }
+  .philo-table thead { background: var(--accent); color: var(--cream); }
+  .philo-table thead th { padding: 0.85rem 1.1rem; font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 500; text-align: left; }
+  .philo-table tbody tr { border-bottom: 1px solid color-mix(in srgb, var(--accent) 12%, var(--cream)); }
+  .philo-table tbody tr:last-child { border-bottom: none; }
+  .philo-table tbody tr:nth-child(odd) { background: white; }
+  .philo-table tbody tr:nth-child(even) { background: color-mix(in srgb, var(--accent) 5%, white); }
+  .philo-table td { padding: 0.85rem 1.1rem; color: var(--ink); line-height: 1.6; vertical-align: top; }
+  .philo-table td:first-child { font-family: 'Playfair Display', serif; font-weight: 700; color: var(--accent-deep); width: 22%; }
+  .philo-table td:nth-child(2) { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--accent-mid); width: 20%; }
+
+  .prob-banner { background: linear-gradient(135deg, var(--accent-deep) 0%, color-mix(in srgb, var(--accent-deep) 70%, black) 100%); border-radius: 10px; padding: 2rem 2.5rem; margin: 2rem 0; text-align: center; }
+  .prob-banner .prob-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--glow); margin-bottom: 0.9rem; }
+  .prob-banner p { font-family: 'Playfair Display', serif; font-size: clamp(1rem, 2.5vw, 1.3rem); font-style: italic; color: var(--cream); line-height: 1.55; margin: 0; }
+
+  .transition-block { background: color-mix(in srgb, var(--accent) 6%, transparent); border: 1px dashed color-mix(in srgb, var(--accent) 35%, transparent); border-radius: 8px; padding: 1.25rem 1.6rem; margin: 2.5rem 0; }
+  .transition-block .t-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; }
+  .transition-block p { font-style: italic; font-size: 0.92rem; color: var(--accent-deep); line-height: 1.65; margin: 0; font-weight: 300; }
+
+  .step-block { display: flex; gap: 1rem; margin-bottom: 1.1rem; align-items: flex-start; }
+  .step-num { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 900; color: color-mix(in srgb, var(--accent) 40%, var(--cream)); line-height: 1.2; flex-shrink: 0; width: 2rem; text-align: right; }
+  .step-content { flex: 1; font-size: 0.93rem; color: var(--ink); line-height: 1.7; font-weight: 300; padding-top: 0.1rem; }
+  .step-content strong { color: var(--dark); font-weight: 600; }
+
+  .mini-callout { border-radius: 6px; padding: 0.9rem 1.2rem; margin: 1.2rem 0; background: white; border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--cream)); display: flex; align-items: center; gap: 0.8rem; }
+  .mini-callout-icon { font-size: 1.1rem; flex-shrink: 0; color: var(--accent); }
+  .mini-callout-text { font-size: 0.9rem; color: var(--ink); line-height: 1.6; font-weight: 300; }
+  .mini-callout-text strong { color: var(--accent-deep); font-weight: 600; }
+
+  .tag { display: inline-block; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; background: color-mix(in srgb, var(--accent) 12%, var(--cream)); color: var(--accent); padding: 2px 7px; border-radius: 4px; vertical-align: middle; margin-left: 4px; }
+
+  .preuve-strip { border-top: 1px solid color-mix(in srgb, var(--accent) 15%, var(--cream)); margin: 2rem 0 0.5rem; padding-top: 1rem; display: flex; align-items: baseline; gap: 0.8rem; flex-wrap: wrap; }
+  .preuve-strip .ps-num { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--accent); letter-spacing: 0.25em; }
+  .preuve-strip .ps-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--dark); }
+  .preuve-strip .ps-sub { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; }
+
+  .retenir-box { background: color-mix(in srgb, var(--accent) 8%, var(--cream)); border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--cream)); border-radius: 8px; padding: 1.4rem 1.6rem; margin: 2rem 0; }
+  .retenir-box .rb-label { display: block; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-mid); margin-bottom: 0.75rem !important; }
+  .retenir-box .rb-items { display: block; }
+  .retenir-box .rb-item { display: block; font-size: 0.9rem; color: var(--ink); line-height: 1.65; font-weight: 300; padding: 0.45rem 0 0.45rem 1.4rem; border-bottom: 1px dashed color-mix(in srgb, var(--accent) 15%, transparent); margin: 0 !important; position: relative; }
+  .retenir-box .rb-item:last-child { border-bottom: none; }
+  .retenir-box .rb-item::before { content: '—'; color: var(--accent); position: absolute; left: 0; top: 0.45rem; }
+
+  .retenir-box p, .transition-block p, .hgg-concept p,
+  .hgg-author p, .crisis-card p, .col-card p { margin-bottom: 0 !important; }
+  .crisis-card p + p { margin-top: 0.5rem; }
+
+  .site-footer { background: var(--accent-deep); border-top: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); padding: 2.5rem 2rem; text-align: center; }
+  .site-footer .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--glow); letter-spacing: 0.02em; margin-bottom: 0.4rem; }
+  .site-footer .footer-meta { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase; color: color-mix(in srgb, var(--cream) 35%, transparent); }
+
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--accent); color: var(--cream); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 45%, transparent); opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 200; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+  .back-to-top:hover { background: var(--accent-mid); }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .toc-list { grid-template-columns: 1fr; }
+    .two-col, .three-col, .compare-box { grid-template-columns: 1fr; }
+    .ch-hero { padding: 3rem 1.5rem 2.5rem; }
+  }
+
+  @media print {
+    @page { size: A4; margin: 18mm 15mm 18mm 15mm; }
+    nav, .back-to-top, .toc-bar, .site-footer { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    html, body { background: white !important; color: #000 !important; font-size: 10pt; }
+    .ch-hero { background: var(--accent-deep) !important; padding: 0.9rem 1rem 0.7rem !important; min-height: unset !important; height: auto !important; }
+    .ch-hero::before { display: none !important; }
+    .ch-hero h1 { font-size: 16pt !important; color: #fff !important; margin-bottom: 0.3rem !important; }
+    .ch-hero .chap-label { font-size: 7pt !important; color: var(--glow) !important; margin-bottom: 0.4rem !important; }
+    .ch-hero p { font-size: 7pt !important; color: var(--glow) !important; margin: 0 !important; }
+    .content { max-width: 100% !important; padding: 0.8rem 0 !important; margin: 0 !important; }
+    .hgg-part { page-break-before: auto; break-before: auto; margin-bottom: 1rem; }
+    .hgg-part-header, .hgg-section-title, .hgg-subsection-title, .preuve-strip, .crisis-date { page-break-after: avoid; break-after: avoid; }
+    .hgg-section { page-break-inside: auto; break-inside: auto; margin-bottom: 1rem; }
+    .hgg-key-fact, .hgg-author, .hgg-concept, .hgg-highlight, .hgg-stat-cell, .def-card, .crisis-card, .mini-callout, .retenir-box, .transition-block, .step-block, .big-quote, .prob-banner, .col-card, .compare-side { page-break-inside: avoid; break-inside: avoid; }
+    .hgg-part-header { border-bottom: 2pt solid var(--accent) !important; padding-bottom: 0.5rem; margin-bottom: 1rem; }
+    .hgg-part-num { font-size: 2.5rem !important; color: var(--glow) !important; }
+    .hgg-part-title { font-size: 14pt !important; }
+    .hgg-section-title { font-size: 11pt !important; border-left: 3pt solid var(--accent) !important; padding-left: 0.6rem !important; margin-bottom: 0.6rem !important; color: var(--accent-deep) !important; }
+    .hgg-subsection-title { font-size: 8pt !important; color: var(--accent) !important; margin: 0.8rem 0 0.4rem !important; }
+    .content p { font-size: 9.5pt !important; line-height: 1.55 !important; margin-bottom: 0.5rem !important; color: #000 !important; }
+    .hgg-key-fact { background: color-mix(in srgb, var(--accent) 12%, white) !important; border: 1pt solid var(--accent) !important; padding: 0.5rem 0.7rem !important; margin-bottom: 0.35rem !important; }
+    .hgg-key-fact > div { font-size: 9pt !important; color: #000 !important; }
+    .hgg-concept { background: var(--accent-deep) !important; color: var(--cream) !important; padding: 0.9rem 1rem !important; margin: 0.8rem 0 !important; border-radius: 4px; }
+    .hgg-concept p { color: color-mix(in srgb, var(--cream) 90%, transparent) !important; font-size: 9pt !important; }
+    .hgg-concept .concept-label { color: var(--glow) !important; font-size: 7pt !important; }
+    .hgg-concept strong { color: var(--glow) !important; }
+    .hgg-concept::before { display: none; }
+    .hgg-author { background: var(--accent-deep) !important; color: var(--cream) !important; padding: 0.9rem 1rem !important; margin: 0.8rem 0 !important; }
+    .hgg-author p { color: color-mix(in srgb, var(--cream) 90%, transparent) !important; font-size: 9pt !important; }
+    .hgg-author .author-name { color: var(--accent-mid) !important; font-size: 7pt !important; }
+    .hgg-author strong { color: var(--accent-mid) !important; }
+    .hgg-author::before { display: none; }
+    .hgg-highlight { background: color-mix(in srgb, var(--accent) 12%, white) !important; border-left: 3pt solid var(--accent) !important; padding: 0.7rem 1rem !important; margin: 0.8rem 0 !important; font-size: 9pt !important; color: var(--accent-deep) !important; }
+    .hgg-stats { border: 1pt solid var(--accent) !important; margin: 0.8rem 0 !important; }
+    .hgg-stat-cell { background: white !important; padding: 0.8rem !important; }
+    .hgg-stat-num { font-size: 12pt !important; color: var(--accent) !important; }
+    .hgg-stat-label { font-size: 7.5pt !important; color: var(--muted) !important; }
+    .big-quote { background: var(--accent-deep) !important; color: var(--cream) !important; padding: 1rem 1.4rem !important; margin: 0.8rem 0 !important; }
+    .big-quote blockquote { font-size: 10pt !important; color: var(--cream) !important; }
+    .big-quote cite { color: var(--glow) !important; font-size: 7pt !important; }
+    .big-quote::before { font-size: 3rem !important; top: -0.3rem !important; }
+    .compare-box { margin: 0.7rem 0 !important; }
+    .compare-side { padding: 0.7rem 0.9rem !important; }
+    .compare-side p { font-size: 8.5pt !important; }
+    .compare-side h5 { font-size: 6.5pt !important; }
+    .two-col { grid-template-columns: 1fr 1fr !important; gap: 0.5rem !important; margin: 0.6rem 0 !important; }
+    .three-col { grid-template-columns: 1fr 1fr 1fr !important; gap: 0.5rem !important; margin: 0.6rem 0 !important; }
+    .col-card { padding: 0.7rem 0.9rem !important; }
+    .col-card p { font-size: 8.5pt !important; }
+    .col-card h5 { font-size: 6.5pt !important; }
+    .def-card { box-shadow: none !important; border: 1pt solid var(--accent) !important; margin-bottom: 0.5rem !important; }
+    .def-term { font-size: 10pt !important; }
+    .def-text { font-size: 9pt !important; color: #000 !important; }
+    .def-accent-bar { background: var(--accent) !important; }
+    .crisis-card { background: white !important; border: 1pt solid var(--accent) !important; border-left: 4pt solid var(--accent) !important; padding: 0.7rem 1rem !important; margin: 0.5rem 0 !important; }
+    .crisis-card p { font-size: 8.5pt !important; }
+    .crisis-title { font-size: 10pt !important; }
+    .crisis-date { font-size: 6.5pt !important; color: var(--accent) !important; }
+    .mini-callout { background: color-mix(in srgb, var(--accent) 12%, white) !important; border: 1pt solid var(--accent) !important; padding: 0.5rem 0.8rem !important; margin: 0.6rem 0 !important; }
+    .mini-callout-text { font-size: 8.5pt !important; color: #000 !important; }
+    .mini-callout-icon { font-size: 0.9rem !important; }
+    .retenir-box { background: color-mix(in srgb, var(--accent) 12%, white) !important; border: 1pt solid var(--accent) !important; padding: 0.8rem 1rem !important; margin: 0.8rem 0 !important; }
+    .retenir-box .rb-label { font-size: 7pt !important; color: var(--accent-mid) !important; }
+    .retenir-box .rb-item { font-size: 9pt !important; color: #000 !important; }
+    .transition-block { background: color-mix(in srgb, var(--accent) 5%, white) !important; border: 1pt dashed var(--accent) !important; padding: 0.7rem 1rem !important; margin: 0.8rem 0 !important; }
+    .transition-block .t-label { font-size: 7pt !important; color: var(--accent) !important; }
+    .transition-block p { font-size: 9pt !important; color: var(--accent-deep) !important; }
+    .step-block { margin-bottom: 0.5rem !important; }
+    .step-num { font-size: 1.1rem !important; color: var(--glow) !important; }
+    .step-content { font-size: 9pt !important; color: #000 !important; }
+    .preuve-strip { border-top: 1pt solid color-mix(in srgb, var(--accent) 15%, white) !important; margin: 1rem 0 0.4rem !important; padding-top: 0.6rem !important; }
+    .preuve-strip .ps-num { font-size: 7pt !important; color: var(--accent) !important; }
+    .preuve-strip .ps-title { font-size: 10pt !important; }
+    .preuve-strip .ps-sub { font-size: 7pt !important; }
+    .prob-banner { background: var(--accent-deep) !important; padding: 1rem 1.4rem !important; margin: 0.8rem 0 !important; }
+    .prob-banner .prob-label { font-size: 7pt !important; color: var(--glow) !important; }
+    .prob-banner p { font-size: 10pt !important; color: var(--cream) !important; }
+    .pari-table, .philo-table { font-size: 8.5pt !important; margin: 0.7rem 0 !important; }
+    .pari-table thead th, .philo-table thead th { font-size: 7pt !important; padding: 0.5rem 0.7rem !important; background: var(--accent-deep) !important; color: var(--glow) !important; }
+    .pari-table td, .philo-table td { padding: 0.5rem 0.7rem !important; color: #000 !important; }
+    a { text-decoration: none !important; color: inherit !important; }
+  }
+
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">/</span>
+    <a href="../../humanite.html"><span>L'Humanité</span></a>
+    <span class="sep">/</span>
+    <a href="litterature.html"><span>Littérature</span></a>
+    <span class="sep">/</span>
+    <span class="current">L'Étrange Cas du docteur Jekyll et de M. Hyde</span>
+  </div>
+</nav>
+
+<div class="ch-hero">
+  <div class="chap-label">Littérature · L'Humanité</div>
+  <h1>L'Étrange Cas du docteur Jekyll et de M. Hyde</h1>
+  <p>Robert Louis Stevenson · 1886 · Roman fantastique victorien</p>
+</div>
+
+<div class="toc-bar">
+  <div class="toc-inner">
+    <div class="toc-title">Plan de la fiche</div>
+    <ul class="toc-list">
+      <li><a href="#intro"><span class="toc-num">I —</span> Présentation de l'œuvre</a></li>
+      <li><a href="#p1"><span class="toc-num">II —</span> Résumé</a></li>
+      <li><a href="#p2"><span class="toc-num">III —</span> Une réflexion sur la dualité de la nature humaine</a></li>
+      <li><a href="#p3"><span class="toc-num">IV —</span> Pistes pour la dissertation</a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="content">
+
+<div class="hgg-part" id="intro">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">I</div>
+    <div class="hgg-part-title">Présentation de l'œuvre</div>
+  </div>
+
+  <p><strong>L'Étrange Cas du docteur Jekyll et de M. Hyde</strong> est un court roman fantastique de l'écrivain écossais <strong>Robert Louis Stevenson</strong>, publié en 1886. Le récit met en scène un respectable médecin londonien qui, par une expérience scientifique, parvient à séparer physiquement les deux natures — vertueuse et vicieuse — qu'il sent coexister en lui.</p>
+
+  <div class="hgg-stats">
+    <div class="hgg-stat-cell"><span class="hgg-stat-num">1886</span><div class="hgg-stat-label">Date de publication</div></div>
+    <div class="hgg-stat-cell"><span class="hgg-stat-num">Londres</span><div class="hgg-stat-label">Cadre du récit</div></div>
+    <div class="hgg-stat-cell"><span class="hgg-stat-num">2</span><div class="hgg-stat-label">Natures coexistant en un seul homme</div></div>
+  </div>
+
+  <p>Le texte relève du <strong>roman gothique et fantastique victorien</strong> : construit comme une enquête menée par l'avoué Utterson, il ne révèle sa véritable nature — la confession de Jekyll lui-même — que dans ses toutes dernières pages.</p>
+</div>
+
+<div class="hgg-part" id="p1">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">II</div>
+    <div class="hgg-part-title">Résumé</div>
+  </div>
+
+  <div class="hgg-section" id="s1-1">
+    <div class="hgg-section-title">1 — L'énigme de M. Hyde</div>
+
+    <p>L'avoué <strong>Utterson</strong> s'inquiète du testament de son ami, le docteur Jekyll, qui désigne comme unique héritier un certain <strong>M. Hyde</strong> — individu à l'allure repoussante, associé à des actes d'une cruauté choquante, comme le fait de piétiner une fillette ou d'assassiner un vieux gentleman en pleine rue.</p>
+
+    <div class="hgg-key-fact">
+      <div class="hgg-key-bullet"></div>
+      <div>Personne ne parvient à expliquer précisément pourquoi <strong>Hyde inspire un dégoût instinctif</strong> à tous ceux qui le croisent, comme si le mal se lisait sur son visage sans qu'aucun trait particulier ne le justifie.</div>
+    </div>
+
+    <p>L'enquête d'Utterson se heurte à l'étrange lien qui semble unir cet homme abject au respectable docteur Jekyll, jusqu'à ce que ce dernier disparaisse mystérieusement, laissant derrière lui une confession écrite.</p>
+  </div>
+
+  <div class="hgg-section" id="s1-2">
+    <div class="hgg-section-title">2 — La confession et la révélation de la dualité</div>
+
+    <p>Le testament de Jekyll révèle qu'il a mis au point une <strong>potion capable de dissocier ses deux natures</strong> : Hyde n'est autre que la matérialisation de sa part vicieuse, libérée de toute contrainte sociale et morale, tandis que Jekyll incarne sa façade publique respectable.</p>
+
+    <div class="hgg-concept">
+      <div class="concept-label">Le dénouement</div>
+      <p>Peu à peu, les transformations en Hyde deviennent <strong>incontrôlables et spontanées</strong>, jusqu'à ce que Jekyll, à court de l'ingrédient rare nécessaire à l'antidote, se retrouve prisonnier de son double criminel. Traqué, il se donne la mort sous les traits de Hyde plutôt que d'être capturé, laissant à Utterson sa confession pour seule explication.</p>
+    </div>
+  </div>
+</div>
+
+<div class="hgg-part" id="p2">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">III</div>
+    <div class="hgg-part-title">Une réflexion sur la dualité de la nature humaine</div>
+  </div>
+
+  <div class="hgg-section" id="s2-1">
+    <div class="hgg-section-title">1 — Le bien et le mal, deux faces d'un même être</div>
+
+    <p>Dans sa confession, Jekyll formule la <strong>thèse centrale du roman</strong> : l'homme n'est pas véritablement un, mais véritablement deux — voire, suggère-t-il, une multitude d'identités contradictoires coexistant sous une même apparence.</p>
+
+    <div class="hgg-concept">
+      <div class="concept-label">La confession de Jekyll</div>
+      <p>Jekyll explique avoir voulu <strong>séparer physiquement</strong> ces deux natures pour libérer sa part vicieuse sans compromettre sa réputation — révélant que la science, loin de créer un monstre extérieur comme chez Frankenstein, se contente ici de <strong>rendre visible un mal déjà présent</strong> en tout être humain.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-2">
+    <div class="hgg-section-title">2 — Le masque social et l'hypocrisie victorienne</div>
+
+    <p>Le besoin de Jekyll de dissocier ses vices de sa personne publique reflète l'<strong>hypocrisie morale de la société victorienne</strong>, qui exige une respectabilité irréprochable en façade tout en tolérant, dans l'ombre, bien des vices inavouables.</p>
+
+    <div class="two-col">
+      <div class="col-card col-teal">
+        <h5>🎩 Le docteur Jekyll</h5>
+        <p>Incarne la <strong>respectabilité publique</strong> : philanthropie, science, statut social — le visage que la société victorienne exige de voir.</p>
+      </div>
+      <div class="col-card col-cyan">
+        <h5>👤 M. Hyde</h5>
+        <p>Incarne des <strong>pulsions sans entrave</strong>, la violence et le désir libérés de toute règle morale ou sociale — ce que Jekyll ne peut assumer publiquement.</p>
+      </div>
+    </div>
+
+    <div class="hgg-highlight">
+      Le dégoût instinctif que Hyde inspire, <strong>sans raison identifiable</strong>, suggère que le mal se reconnaît intuitivement chez autrui — une intuition morale que la raison peine pourtant à justifier clairement.
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-3">
+    <div class="hgg-section-title">3 — La science qui libère l'ombre plutôt qu'elle ne la maîtrise</div>
+
+    <p>Contrairement à Frankenstein, où la science engendre un monstre extérieur à son créateur, l'expérience de Jekyll révèle un mal <strong>déjà tapi en lui-même</strong>. Or cette libération se révèle impossible à maîtriser : Hyde, une fois éveillé, prend progressivement le dessus de manière involontaire.</p>
+
+    <div class="compare-box">
+      <div class="compare-side compare-a">
+        <h5>🧪 Le contrôle rationnel</h5>
+        <p>Jekyll croit pouvoir <strong>doser et maîtriser</strong> ses métamorphoses comme une simple expérience scientifique réversible.</p>
+      </div>
+      <div class="compare-side compare-b">
+        <h5>🌑 La domination du désir</h5>
+        <p>Hyde, une fois libéré, <strong>s'impose peu à peu de lui-même</strong> — une vision pessimiste de la capacité humaine à maîtriser sa part d'ombre une fois qu'elle a goûté à la liberté.</p>
+      </div>
+    </div>
+
+    <div class="mini-callout">
+      <span class="mini-callout-icon">🌫️</span>
+      <span class="mini-callout-text">Ce basculement progressif interroge une inquiétude propre à la fin du XIXe siècle : la <strong>maîtrise de soi</strong> promise par la raison et la science est-elle aussi solide qu'elle le prétend ?</span>
+    </div>
+  </div>
+</div>
+
+<div class="hgg-part" id="p3">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">IV</div>
+    <div class="hgg-part-title">Pistes pour la dissertation</div>
+  </div>
+
+  <div class="hgg-section" id="s3-1">
+    <div class="hgg-section-title">Comment mobiliser cette œuvre dans une copie ?</div>
+
+    <div class="retenir-box">
+      <div class="rb-label">Idées à retenir</div>
+      <div class="rb-items">
+        <div class="rb-item">Jekyll révèle que l'homme n'est <strong>pas un mais deux</strong> — le bien et le mal coexistant en toute conscience humaine.</div>
+        <div class="rb-item">La séparation des deux natures traduit l'<strong>hypocrisie sociale victorienne</strong>, exigeant une respectabilité de façade.</div>
+        <div class="rb-item">La science ne crée pas ici de monstre extérieur : elle <strong>révèle et libère</strong> un mal déjà présent en l'homme.</div>
+        <div class="rb-item">Une fois libérée, la part obscure de l'homme tend à <strong>s'imposer d'elle-même</strong>, questionnant la solidité de la maîtrise de soi.</div>
+      </div>
+    </div>
+
+    <div class="hgg-subsection-title">→ Notions du thème « L'Humanité » éclairées par l'œuvre</div>
+    <div class="three-col">
+      <div class="col-card col-teal">
+        <h5>🎭 Une nature humaine double</h5>
+        <p>Chaque être humain porte en lui, selon Jekyll, une <strong>coexistence irréductible</strong> du bien et du mal.</p>
+      </div>
+      <div class="col-card col-cyan">
+        <h5>🎩 L'hypocrisie de la respectabilité</h5>
+        <p>La société exige un <strong>masque social irréprochable</strong>, quitte à tolérer le vice tant qu'il reste caché.</p>
+      </div>
+      <div class="col-card col-dark">
+        <h5>🌑 La perte de la maîtrise de soi</h5>
+        <p>Une fois libérée, la part sombre de l'homme <strong>menace de dominer</strong> la volonté qui prétendait la contenir.</p>
+      </div>
+    </div>
+
+    <div class="hgg-concept">
+      <div class="concept-label">À rapprocher</div>
+      <p>Oscar Wilde, <em>Le Portrait de Dorian Gray</em> (1890) : Dorian conserve une jeunesse et une beauté parfaites tandis que son portrait, caché dans un grenier, se <strong>charge de toute la laideur morale</strong> de ses vices — comme Hyde pour Jekyll, le tableau devient le réceptacle visible d'une part d'ombre que le personnage refuse d'assumer publiquement, jusqu'à ce que cette double vie le détruise.</p>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<footer class="site-footer">
+  <div class="footer-logo">L'Étrange Cas du docteur Jekyll et de M. Hyde — Robert Louis Stevenson</div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
+
+<script>
+  document.querySelectorAll('.toc-list a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>

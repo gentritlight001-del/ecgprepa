@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Maths Chapitre 8 : Probabilités sur un univers fini</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<style>
+
+  :root {
+    --cream: #FBF1F1;
+    --dark: #260A0A;
+    --red: #B81E2D;
+    --red-dark: #4A0E14;
+    --red-mid: #D6363E;
+    --red-light: #FAE1E1;
+    --red-border: #EFB4B7;
+    --gold: #FF6B6B;
+    --muted: #7A4040;
+    --accent: #B81E2D;
+    --accent-soft: #B81E2D22;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--dark); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid rgba(184,30,45,0.25);
+    background: var(--red-dark); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--gold); cursor: pointer; letter-spacing: 0.02em; }
+  .nav-logo a { color: inherit; text-decoration: none; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(251,241,241,0.5); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: inherit; text-decoration: none; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb a:hover span, .breadcrumb span:hover { color: var(--gold); }
+  .breadcrumb .sep { color: rgba(251,241,241,0.25); }
+  .breadcrumb .current { color: #FBF1F1; cursor: default; }
+
+  /* ─── HERO ─── */
+  .ch-hero {
+    background: var(--red-dark);
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ch-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23B81E2D' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; opacity: 0.85; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.7rem, 4.2vw, 3.4rem); color: var(--cream); font-weight: 900; max-width: 1100px; margin: 0 auto 1.5rem; line-height: 1.1; position: relative; z-index: 1; white-space: nowrap; }
+  .ch-hero p { color: rgba(251,241,241,0.55); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  /* ─── TOC ─── */
+  .toc-bar { background: #FBDCDD; padding: 2rem; border-bottom: 1px solid #EFB4B7; }
+  .toc-inner { max-width: 960px; margin: 0 auto; }
+  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
+  .toc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.4rem; list-style: none; }
+  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: #4A0E14; font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
+  .toc-list a:hover { border-color: var(--red-border); background: white; color: #000; }
+  .toc-num { font-family: "DM Mono", monospace; font-size: 0.65rem; color: var(--red); flex-shrink: 0; margin-top: 0.15rem; }
+
+  /* ─── CONTENT ─── */
+  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 8rem; }
+
+  /* PART */
+  .math-part { margin-bottom: 5rem; }
+  .math-part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--red); }
+  .math-part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: var(--red-border); line-height: 1; flex-shrink: 0; }
+  .math-part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--dark); line-height: 1.25; }
+
+  /* SECTION */
+  .math-section { margin-bottom: 3.5rem; }
+  .math-section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--red-dark); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--red); scroll-margin-top: 2rem; }
+  .math-subsection-title { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--red); margin: 2rem 0 0.75rem; }
+
+  /* TEXT */
+  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: #35100F; line-height: 1.85; font-weight: 300; }
+  .content strong { color: var(--dark); font-weight: 600; }
+
+  /* DÉFINITION CARD */
+  .def-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(184,30,45,0.10), 0 0 0 1px rgba(184,30,45,0.12);
+    display: flex;
+    margin: 1.4rem 0;
+  }
+  .def-accent-bar {
+    width: 5px;
+    background: linear-gradient(180deg, #D6363E 0%, #4A0E14 100%);
+    flex-shrink: 0;
+    border-radius: 10px 0 0 10px;
+  }
+  .def-body { padding: 1.2rem 1.5rem; flex: 1; }
+  .def-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.65rem; }
+  .def-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--red); font-weight: 500; }
+  .def-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--red-dark); }
+  .def-body p { margin-bottom: 0.5rem; font-size: 0.93rem; line-height: 1.75; }
+  .def-body p:last-child { margin-bottom: 0; }
+  .def-body ul { margin: 0 0 0.5rem 1.2rem; }
+  .def-body li { font-size: 0.93rem; line-height: 1.75; margin-bottom: 0.3rem; }
+
+  /* PROPRIÉTÉ CARD */
+  .prop-card {
+    background: var(--red-light);
+    border-radius: 8px;
+    border: 1px solid var(--red-border);
+    border-left: 4px solid var(--red);
+    padding: 1.2rem 1.5rem;
+    margin: 1.4rem 0;
+  }
+  .prop-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--red-dark); font-weight: 700; margin-bottom: 0.6rem; }
+  .prop-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--red-dark); margin-bottom: 0.7rem; }
+  .prop-card p { margin-bottom: 0.5rem; font-size: 0.93rem; color: var(--red-dark); line-height: 1.75; }
+  .prop-card p:last-child { margin-bottom: 0; }
+  .prop-card ul { margin: 0 0 0.5rem 1.2rem; }
+  .prop-card li { font-size: 0.93rem; line-height: 1.75; margin-bottom: 0.3rem; color: var(--red-dark); }
+
+  /* THÉORÈME / MÉTHODE CARD */
+  .thm-card {
+    background: var(--red-dark);
+    color: var(--cream);
+    border-radius: 8px;
+    padding: 1.5rem 1.75rem;
+    margin: 1.4rem 0;
+    position: relative;
+  }
+  .thm-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.5rem; }
+  .thm-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--cream); margin-bottom: 0.75rem; }
+  .thm-card p { color: rgba(251,241,241,0.88); font-size: 0.93rem; margin-bottom: 0.5rem; line-height: 1.75; }
+  .thm-card p:last-child { margin-bottom: 0; }
+  .thm-card ul { margin: 0 0 0.5rem 1.2rem; }
+  .thm-card li { color: rgba(251,241,241,0.88); font-size: 0.93rem; line-height: 1.75; margin-bottom: 0.3rem; }
+
+  /* REMARQUE */
+  .remark { background: white; border-left: 3px solid var(--red-border); padding: 1rem 1.4rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; font-size: 0.9rem; color: #4A1414; line-height: 1.7; font-style: italic; }
+  .remark::before { content: 'Remarque — '; font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--red); display: block; margin-bottom: 0.3rem; }
+  .remark ul { margin: 0.3rem 0 0 1.2rem; font-style: normal; }
+  .remark li { margin-bottom: 0.25rem; }
+
+  /* FORMULE DISPLAY */
+  .formula-block {
+    background: white;
+    border: 1px solid var(--red-border);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.2rem 0;
+    text-align: center;
+    overflow-x: auto;
+  }
+  .formula-block .katex-display { margin: 0; }
+  .formula-block .katex { font-size: 1.05em; }
+
+  /* INLINE MATH */
+  .katex { font-size: 1em; }
+  .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.2rem 0; }
+
+  /* HIGHLIGHT BOX */
+  .math-highlight { background: var(--red-light); border-left: 4px solid var(--red); padding: 1.25rem 1.75rem; margin: 1.5rem 0; color: var(--red-dark); font-size: 0.93rem; line-height: 1.75; border-radius: 0 6px 6px 0; }
+
+  /* FOOTER */
+  .site-footer { background: var(--red-dark); border-top: 1px solid rgba(184,30,45,0.35); padding: 2.5rem 2rem; text-align: center; }
+  .site-footer .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--gold); letter-spacing: 0.02em; }
+
+  /* BACK TO TOP */
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--red); color: var(--cream); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 4px 14px rgba(184,30,45,0.45); opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 200; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+  .back-to-top:hover { background: var(--red-mid); }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--red-border); border-radius: 3px; }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .ch-hero h1 { white-space: normal; }
+  }
+
+  @media print {
+    @page { size: A4; margin: 15mm 14mm 15mm 14mm; }
+    nav, .back-to-top, .toc-bar, .site-footer { display: none !important; }
+    html, body { background: white !important; color: #000 !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left"><div class="nav-logo"><a href="../../index.html">ECG Prépa</a></div></div>
+  <div class="breadcrumb">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">/</span>
+    <a href="index.html"><span>Mathématiques</span></a>
+    <span class="sep">/</span>
+    <span class="current">Chapitre 8</span>
+  </div>
+<div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="chap-label">&#x2015;&nbsp; Chapitre 8 · Mathématiques approfondies &nbsp;&#x2015;</div>
+  <h1>Probabilités sur un univers fini</h1>
+  <p>Événements · Probabilités conditionnelles · Lois discrètes usuelles</p>
+</div>
+
+<!-- TOC -->
+<div class="toc-bar">
+  <div class="toc-inner">
+    <div class="toc-title">Table des matières</div>
+    <ul class="toc-list">
+      <li><a href="#part1"><span class="toc-num">I</span> Espaces probabilisés, variable aléatoire</a></li>
+      <li><a href="#part2"><span class="toc-num">II</span> Calcul de probabilités sur un univers fini</a></li>
+      <li><a href="#part3"><span class="toc-num">III</span> Lois discrètes finies usuelles</a></li>
+      <li><a href="#part4"><span class="toc-num">IV</span> Retour sur l'indépendance</a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════════
+     PARTIE I — ESPACES PROBABILISÉS
+════════════════════════════════════════ -->
+<div class="math-part" id="part1">
+  <div class="math-part-header">
+    <div class="math-part-num">I</div>
+    <div class="math-part-title">Espaces probabilisés, variable aléatoire</div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="math-section" id="s1-1">
+    <div class="math-section-title">1 — Résultats d'une expérience aléatoire. Événements</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span></div>
+        <ul>
+          <li>On appelle <strong>expérience aléatoire</strong> toute expérience pour laquelle on ne peut pas prédire, avant de l'exécuter, le résultat qu'elle va donner.</li>
+          <li>L'ensemble des résultats d'une expérience aléatoire s'appelle l'<strong>univers</strong> de l'expérience aléatoire. On le note \(\Omega\).</li>
+          <li>Un <strong>événement</strong> est un fait qui peut se produire ou ne pas se produire lorsqu'on réalise l'expérience.</li>
+          <li>Tout événement est identifié à l'ensemble des résultats qui le réalisent.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="remark">Un événement \(A\) est représenté par un sous-ensemble de \(\Omega\). Il y a deux niveaux dans l'étude des événements : le langage usuel (description entre guillemets) et la traduction ensembliste (écriture avec des accolades).</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 2</span></div>
+        <p>Soit \(E\) un ensemble à \(n\) éléments avec \(E = \{x_1, x_2, \dots, x_n\}\) et soit \(p \in \mathbb{N}^*\).</p>
+        <ul>
+          <li>On appelle <strong>\(p\)-liste</strong> d'éléments de \(E\) (ou \(p\)-uplet) tout élément \(\omega\) du type \(\omega = (x_1, x_2, \dots, x_p)\) avec \(\forall i \in [\![1,p]\!],\ x_i \in E\). Ainsi une \(p\)-liste de \(E\) est un élément de \(E^p\). Le nombre de \(p\)-listes est \(n^p\).</li>
+          <li>On appelle <strong>combinaison</strong> de \(p\) éléments de \(E\) tout sous-ensemble constitué de \(p\) éléments de \(E\). Le nombre de combinaisons de \(p\) éléments de \(E\) est \(\binom{n}{p} = \dfrac{n!}{p!(n-p)!}\) si \(p \in [\![0,n]\!]\) ; \(0\) si \(p > n\).</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="remark">Pour écrire une liste, on utilise des parenthèses ; pour écrire une combinaison, on utilise des accolades.</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 3</span></div>
+        <ul>
+          <li>Un événement est <strong>impossible</strong> lorsqu'il est représenté par \(\emptyset\).</li>
+          <li>Un événement est <strong>certain</strong> lorsqu'il est représenté par \(\Omega\).</li>
+          <li>On appelle événement <strong>élémentaire</strong> tout événement représenté par un singleton.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 4</span></div>
+        <p>Soit \(\mathcal{E}\) une expérience aléatoire et \(\Omega\) l'univers de cette expérience aléatoire.</p>
+        <p>1) Soit \(A\) et \(B\) deux événements :</p>
+        <ul>
+          <li>L'événement « \(A\) n'est pas réalisé » est représenté par \(\overline{A}\).</li>
+          <li>L'événement « \(A\) et \(B\) sont réalisés simultanément » est représenté par \(A \cap B\).</li>
+          <li>L'événement « \(A\) ou \(B\) est réalisé » est représenté par \(A \cup B\).</li>
+        </ul>
+        <p>2) Soit \((A_n)_{n \in I}\) une famille d'événements (avec \(I \subset \mathbb{N}\)) :</p>
+        <ul>
+          <li>L'événement « l'un au moins des \(A_n\) est réalisé » est représenté par \(\displaystyle\bigcup_{n \in I} A_n\).</li>
+          <li>L'événement « tous les \(A_n\) sont réalisés simultanément » est représenté par \(\displaystyle\bigcap_{n \in I} A_n\).</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="remark">L'écriture ensembliste découle souvent de la description en français des événements.</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 5</span></div>
+        <ul>
+          <li>\(A\) et \(B\) sont <strong>incompatibles</strong> lorsque \(A \cap B = \emptyset\).</li>
+          <li>\(A\) et \(B\) sont <strong>contraires</strong> lorsque \(A = \overline{B}\).</li>
+          <li>\(A\) <strong>implique</strong> \(B\) lorsque la réalisation de \(A\) entraîne automatiquement celle de \(B\). Ainsi, l'événement « \(A\) implique \(B\) » est réalisé lorsque \(A \subset B\).</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 6</span><span class="def-name">Système complet d'événements</span></div>
+        <p>Soit \(\Omega\) l'univers d'une expérience aléatoire. On dit que \(\{A_1, A_2, \dots, A_n\}\) forment un <strong>système complet d'événements</strong> (s.c.e.) ssi</p>
+        <div class="formula-block">
+          \[\forall (i,j) \in [\![1,n]\!]^2 \text{ avec } i \neq j,\quad A_i \cap A_j = \emptyset \quad \text{et} \quad \bigcup_{i=1}^n A_i = \Omega.\]
+        </div>
+      </div>
+    </div>
+
+    <div class="remark">Une famille d'événements est un s.c.e. ssi un et un seul d'entre eux est forcément réalisé à l'issue de l'expérience.</div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="math-section" id="s1-2">
+    <div class="math-section-title">2 — Définition d'une probabilité sur un univers fini</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 7</span></div>
+        <p>Soit \(\Omega\) un ensemble fini. On note \(\mathcal{P}(\Omega)\) l'ensemble des parties de \(\Omega\). On appelle <strong>probabilité</strong> sur \((\Omega, \mathcal{P}(\Omega))\) toute application \(\mathbb{P} : \mathcal{P}(\Omega) \to [0,1]\), \(A \mapsto \mathbb{P}(A)\) vérifiant :</p>
+        <ul>
+          <li>\(\mathbb{P}(\Omega) = 1\)</li>
+          <li>Si \(A\) et \(B \in \mathcal{P}(\Omega)\) avec \(A \cap B = \emptyset\), alors \(\mathbb{P}(A \cup B) = \mathbb{P}(A) + \mathbb{P}(B)\).</li>
+        </ul>
+        <p>Le triplet \((\Omega, \mathcal{P}(\Omega), \mathbb{P})\) s'appelle <strong>espace probabilisé</strong>.</p>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <div class="prop-title">Propriétés d'une probabilité</div>
+      <p>Soient \(A\) et \(B\) deux événements. On a :</p>
+      <ul>
+        <li>\(\mathbb{P}(\overline{A}) = 1 - \mathbb{P}(A)\)</li>
+        <li>\(\mathbb{P}(\emptyset) = 0\)</li>
+        <li>Si \(A \cap B = \emptyset\) alors \(\mathbb{P}(A \cup B) = \mathbb{P}(A) + \mathbb{P}(B)\). Dans le cas général, \(\mathbb{P}(A \cup B) = \mathbb{P}(A) + \mathbb{P}(B) - \mathbb{P}(A \cap B)\).</li>
+        <li>Si \(A \subset B\) alors \(\mathbb{P}(A) \leq \mathbb{P}(B)\) et \(\mathbb{P}(B \setminus A) = \mathbb{P}(B) - \mathbb{P}(A)\).</li>
+      </ul>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 8</span><span class="def-name">Situation d'équiprobabilité</span></div>
+        <p>On dit qu'une expérience aléatoire présente une situation d'<strong>équiprobabilité</strong> lorsque \(\Omega\) est fini et qu'aucun événement élémentaire n'est privilégié par rapport aux autres quant à sa réalisation. Pour ce type d'expérience, on utilise la <strong>probabilité uniforme</strong> :</p>
+        <div class="formula-block">
+          \[\forall A \in \mathcal{P}(\Omega), \quad \mathbb{P}(A) = \frac{\operatorname{card}(A)}{\operatorname{card}(\Omega)}.\]
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="math-section" id="s1-3">
+    <div class="math-section-title">3 — Variable aléatoire discrète</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 9</span></div>
+        <p>Une <strong>variable aléatoire discrète</strong> est une application qui associe un nombre à chaque résultat de l'expérience. On note \(X(\Omega)\) l'ensemble des valeurs prises par la var. \(X\), et pour des réels \(a, b\) avec \(a < b\), on note \((X=a)\), \((X \geq a)\), \((a \leq X < b)\), etc. pour désigner les événements qui réalisent ces relations.</p>
+      </div>
+    </div>
+
+    <div class="remark">
+      <ul>
+        <li>On peut utiliser sur les événements exprimés à l'aide de \(X\) les opérations sur les ensembles : ainsi \(\overline{(X \leq a)} = (X > a)\) et \((a \leq X < b) = (X \leq b) \cap (X \geq a) = (X < b) \cap \overline{(X < a)}\).</li>
+        <li>Dans ce chapitre, \(\Omega\) est un univers fini, donc \(X(\Omega)\) est un ensemble fini.</li>
+      </ul>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 10</span><span class="def-name">Loi d'une variable discrète</span></div>
+        <p>Soit \(X\) une variable aléatoire discrète. <strong>Déterminer la loi de \(X\)</strong>, c'est préciser \(X(\Omega)\) puis calculer, pour tout \(k \in X(\Omega)\), \(\mathbb{P}(X=k)\).</p>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 2</div>
+      <p>Soit \(X\) une variable aléatoire discrète. La famille \(\{(X=k)\}_{k \in X(\Omega)}\) est un s.c.e. et on a</p>
+      <div class="formula-block">
+        \[\sum_{k \in X(\Omega)} \mathbb{P}(X=k) = 1.\]
+      </div>
+    </div>
+
+    <div class="remark">Cette propriété permet de vérifier la loi trouvée pour une var. : il faut avoir \(\sum\) proba \(= 1\), ou de trouver l'une des valeurs de la loi lorsque toutes les autres sont déterminées.</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 11</span></div>
+        <p>Soit \(X\) une var. discrète. On appelle <strong>espérance</strong> de \(X\) le nombre réel défini par :</p>
+        <div class="formula-block">
+          \[\mathbb{E}(X) = \sum_{k \in X(\Omega)} k\, \mathbb{P}(X=k).\]
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE II — CALCUL DE PROBABILITÉS
+════════════════════════════════════════ -->
+<div class="math-part" id="part2">
+  <div class="math-part-header">
+    <div class="math-part-num">II</div>
+    <div class="math-part-title">Calcul de probabilités sur un univers fini</div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="math-section" id="s2-1">
+    <div class="math-section-title">1 — Probabilité d'une intersection à l'aide des probabilités conditionnelles</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span></div>
+        <p>Pour deux événements \(A\) et \(B\) (avec \(\mathbb{P}(A) \neq 0\)), on pourra calculer la probabilité de réaliser \(B\) sachant que \(A\) est réalisé. On la note \(\mathbb{P}_A(B)\). On a alors :</p>
+        <div class="formula-block">
+          \[\mathbb{P}(A \cap B) = \mathbb{P}(A) \times \mathbb{P}_A(B).\]
+        </div>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <div class="prop-title">Probabilité d'une intersection de trois événements</div>
+      <p>Soit \(A, B, C\) des événements avec \(\mathbb{P}(A \cap B) \neq 0\). On a :</p>
+      <p>\(\mathbb{P}(A \cap B \cap C) = \mathbb{P}(A) \times \mathbb{P}_A(B) \times \mathbb{P}_{A \cap B}(C)\).</p>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 2</div>
+      <div class="prop-title">Formule des probabilités composées</div>
+      <p>Soit \(n \in \mathbb{N}\) avec \(n \geq 2\) et \((\Omega, \mathcal{P}(\Omega), \mathbb{P})\) un espace probabilisé. Soit \(A_1, \dots, A_n\) des événements tels que \(\mathbb{P}(A_1 \cap A_2 \cap \dots \cap A_{n-1}) \neq 0\). On a :</p>
+      <div class="formula-block">
+        \[\mathbb{P}(A_1 \cap \dots \cap A_n) = \mathbb{P}(A_1) \times \mathbb{P}_{A_1}(A_2) \times \mathbb{P}_{A_1 \cap A_2}(A_3) \times \dots \times \mathbb{P}_{A_1 \cap \dots \cap A_{n-1}}(A_n).\]
+      </div>
+    </div>
+
+    <div class="remark">Cette formule s'utilise lorsqu'on peut calculer directement chacune des probabilités conditionnelles.</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 3</div>
+      <div class="prop-title">Cas d'événements indépendants</div>
+      <p>Lorsque la réalisation de \(B\) n'est pas influencée par la réalisation ou non de \(A\), on dit que \(A\) et \(B\) sont <strong>indépendants</strong> et on a \(\mathbb{P}_A(B) = \mathbb{P}(B)\). Dans ce cas, on a :</p>
+      <div class="formula-block">
+        \[\mathbb{P}(A \cap B) = \mathbb{P}(A) \times \mathbb{P}(B) \qquad \text{et} \qquad \mathbb{P}\Big(\bigcap_{i=1}^n A_i\Big) = \prod_{i=1}^n \mathbb{P}(A_i).\]
+      </div>
+      <p><em>(C'est notamment le cas des résultats successifs d'un lancer de dé, d'une pièce, ou d'un tirage avec remise dans une urne.)</em></p>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="math-section" id="s2-2">
+    <div class="math-section-title">2 — Probabilité d'une réunion</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 4</div>
+      <div class="prop-title">Réunion de 2 événements</div>
+      <ul>
+        <li>Si \(A \cap B = \emptyset\) alors \(\mathbb{P}(A \cup B) = \mathbb{P}(A) + \mathbb{P}(B)\).</li>
+        <li>Dans le cas général, \(\mathbb{P}(A \cup B) = \mathbb{P}(A) + \mathbb{P}(B) - \mathbb{P}(A \cap B)\).</li>
+      </ul>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 5</div>
+      <div class="prop-title">Probabilité d'une réunion de n événements</div>
+      <p>Soient \(A_1, \dots, A_n\) des événements.</p>
+      <ul>
+        <li>Si les \(A_i\) sont deux à deux incompatibles (\(A_i \cap A_j = \emptyset\) pour \(i \neq j\)) alors \(\displaystyle \mathbb{P}\Big(\bigcup_{i=1}^n A_i\Big) = \sum_{i=1}^n \mathbb{P}(A_i)\).</li>
+        <li>Cas d'une réunion quelconque (on ne traite que le cas de 2 et 3 événements ; on ne sait pas faire \(n\) quelconque) :</li>
+      </ul>
+      <div class="formula-block">
+        \[\mathbb{P}(A \cup B) = \mathbb{P}(A) + \mathbb{P}(B) - \mathbb{P}(A \cap B)\]
+        \[\mathbb{P}(A \cup B \cup C) = \big[\mathbb{P}(A)+\mathbb{P}(B)+\mathbb{P}(C)\big] - \big[\mathbb{P}(A\cap B)+\mathbb{P}(A\cap C)+\mathbb{P}(B\cap C)\big] + \mathbb{P}(A\cap B\cap C)\]
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="math-section" id="s2-3">
+    <div class="math-section-title">3 — Formule des probabilités totales</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 6</div>
+      <div class="prop-title">Formule des probabilités totales</div>
+      <p>Soit \((\Omega, \mathcal{P}(\Omega), \mathbb{P})\) un espace probabilisé et soit \(\{A_i\}_{1 \leq i \leq n}\) un système complet d'événements. Pour tout événement \(B\), on a :</p>
+      <div class="formula-block">
+        \[\mathbb{P}(B) = \sum_{i=1}^n \mathbb{P}(A_i \cap B).\]
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 7</div>
+      <div class="prop-title">Formule de Bayes</div>
+      <p>Soit \((\Omega, \mathcal{P}(\Omega), \mathbb{P})\) un espace probabilisé, \(\{A_j\}_{1 \leq j \leq n}\) un système complet d'événements. On suppose que \(\forall j \in [\![1,n]\!]\), \(\mathbb{P}(A_j) \neq 0\). Soit \(B\) un événement avec \(\mathbb{P}(B) \neq 0\) ; on a \(\forall i_0 \in [\![1,n]\!]\),</p>
+      <div class="formula-block">
+        \[\mathbb{P}_B(A_{i_0}) = \frac{\mathbb{P}(A_{i_0}) \times \mathbb{P}_{A_{i_0}}(B)}{\mathbb{P}(B)}.\]
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE III — LOIS DISCRÈTES FINIES USUELLES
+════════════════════════════════════════ -->
+<div class="math-part" id="part3">
+  <div class="math-part-header">
+    <div class="math-part-num">III</div>
+    <div class="math-part-title">Lois discrètes finies usuelles</div>
+  </div>
+
+  <!-- SECTION a -->
+  <div class="math-section" id="s3-1">
+    <div class="math-section-title">a — Loi uniforme</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Loi uniforme</span></div>
+        <p>\(X\) suit une loi uniforme sur \([\![1,n]\!]\) ssi \(X\) prend chaque valeur de \([\![1,n]\!]\) avec la même probabilité. On note alors \(X \hookrightarrow \mathcal{U}([\![1,n]\!])\) :</p>
+        <div class="formula-block">
+          \[X \hookrightarrow \mathcal{U}([\![1,n]\!]) \iff X(\Omega) = [\![1,n]\!] \text{ et } \forall k \in [\![1,n]\!], \ \mathbb{P}(X=k) = \frac{1}{n}.\]
+        </div>
+        <ul>
+          <li><strong>Situation type</strong> : on choisit au hasard un numéro entre 1 et \(n\). \(X =\) numéro choisi, alors \(X \hookrightarrow \mathcal{U}([\![1,n]\!])\).</li>
+          <li><strong>Espérance</strong> : si \(X \hookrightarrow \mathcal{U}([\![1,n]\!])\) alors \(\mathbb{E}(X) = \dfrac{n+1}{2}\).</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="remark">Pour \(a, b\) entiers tels que \(a < b\), on dit que \(X \hookrightarrow \mathcal{U}([\![a,b]\!])\) ssi \(X(\Omega) = [\![a,b]\!]\) et \(\forall k \in [\![a,b]\!]\), \(\mathbb{P}(X=k) = \) cte.</div>
+  </div>
+
+  <!-- SECTION b -->
+  <div class="math-section" id="s3-2">
+    <div class="math-section-title">b — Loi de Bernoulli</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Loi de Bernoulli</span></div>
+        <p>\(X\) suit une loi de Bernoulli ssi \(X(\Omega) = \{0,1\}\). On note alors \(X \hookrightarrow \mathcal{B}(p)\) avec \(p = \) paramètre de la loi \(= \) proba du succès \(= \mathbb{P}(X=1)\). Ainsi, on a :</p>
+        <div class="formula-block">
+          \[X \hookrightarrow \mathcal{B}(p) \iff X(\Omega) = \{0,1\} \text{ et } \mathbb{P}(X=1) = p,\ \mathbb{P}(X=0) = 1-p.\]
+        </div>
+        <ul>
+          <li><strong>Situation type</strong> : on obtient une loi de Bernoulli à chaque fois qu'on réalise une expérience à deux issues possibles : un succès (marqué 1, réalisé avec la proba \(p\)) ou un échec (marqué 0, réalisé avec la proba \(q = 1-p\)).</li>
+          <li><strong>Espérance</strong> : si \(X \hookrightarrow \mathcal{B}(p)\) alors \(\mathbb{E}(X) = p\).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION c -->
+  <div class="math-section" id="s3-3">
+    <div class="math-section-title">c — Loi binomiale</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Loi binomiale</span></div>
+        <p>On dit que \(X\) suit une loi binomiale de paramètre \(n, p\) ssi \(X\) compte le nombre total de succès obtenus en répétant \(n\) fois la même expérience de Bernoulli de paramètre \(p\). On note alors \(X \hookrightarrow \mathcal{B}(n,p)\). On a :</p>
+        <div class="formula-block">
+          \[X \hookrightarrow \mathcal{B}(n,p) \iff X(\Omega) = [\![0,n]\!] \text{ et } \forall k \in [\![0,n]\!], \ \mathbb{P}(X=k) = \binom{n}{k} p^k (1-p)^{n-k}.\]
+        </div>
+        <ul>
+          <li><strong>Situation type</strong> : on répète \(n\) fois la même expérience de Bernoulli (où \(p = \) proba du succès de chaque Bernoulli). Soit \(X\) la var. égale au nombre total de succès obtenus. Alors \(X \hookrightarrow \mathcal{B}(n,p)\).</li>
+          <li><strong>Espérance</strong> : si \(X \hookrightarrow \mathcal{B}(n,p)\) alors \(\mathbb{E}(X) = n \times p\).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE IV — RETOUR SUR L'INDÉPENDANCE
+════════════════════════════════════════ -->
+<div class="math-part" id="part4">
+  <div class="math-part-header">
+    <div class="math-part-num">IV</div>
+    <div class="math-part-title">Retour sur l'indépendance et les probabilités conditionnelles</div>
+  </div>
+
+  <p><em>Dans tout ce paragraphe, \((\Omega, \mathcal{P}(\Omega), \mathbb{P})\) est un espace probabilisé quelconque.</em></p>
+
+  <div class="def-card">
+    <div class="def-accent-bar"></div>
+    <div class="def-body">
+      <div class="def-header"><span class="def-label">Définition 1</span><span class="def-name">Notion d'indépendance</span></div>
+      <p>Soit \((\Omega, \mathcal{P}(\Omega), \mathbb{P})\) un espace probabilisé.</p>
+      <ul>
+        <li>On dit que deux événements \(A\) et \(B\) sont <strong>indépendants</strong> ssi \(\mathbb{P}(A \cap B) = \mathbb{P}(A) \times \mathbb{P}(B)\).</li>
+        <li>On dit que des événements \(A_1, A_2, \dots, A_n\) sont <strong>indépendants deux à deux</strong> ssi \(\forall (i,j) \in [\![1,n]\!]^2\) avec \(i \neq j\), \(\mathbb{P}(A_i \cap A_j) = \mathbb{P}(A_i) \times \mathbb{P}(A_j)\).</li>
+        <li>On dit que \(A_1, A_2, \dots, A_n\) sont <strong>mutuellement indépendants</strong> ssi la probabilité de toute intersection est égale au produit des probas, c'est-à-dire ssi \(\forall N \in [\![2,n]\!]\), \(\forall (i_1, i_2, \dots, i_N) \in [\![1,n]\!]^N\) distincts 2 à 2, on a :</li>
+      </ul>
+      <div class="formula-block">
+        \[\mathbb{P}(A_{i_1} \cap A_{i_2} \cap \dots \cap A_{i_N}) = \mathbb{P}(A_{i_1}) \times \mathbb{P}(A_{i_2}) \times \dots \times \mathbb{P}(A_{i_N}).\]
+      </div>
+    </div>
+  </div>
+
+  <div class="remark">Cette définition mathématique de l'indépendance dépend de la probabilité choisie.</div>
+
+  <div class="def-card">
+    <div class="def-accent-bar"></div>
+    <div class="def-body">
+      <div class="def-header"><span class="def-label">Définition 2</span><span class="def-name">Probabilité conditionnelle</span></div>
+      <p>Soit \(A\) un événement avec \(\mathbb{P}(A) \neq 0\). On appelle <strong>probabilité conditionnelle</strong> sachant que \(A\) est réalisé l'application \(\mathbb{P}_A\) définie sur \(\mathcal{P}(\Omega)\) par :</p>
+      <div class="formula-block">
+        \[\forall B \in \mathcal{P}(\Omega), \quad \mathbb{P}_A(B) = \frac{\mathbb{P}(A \cap B)}{\mathbb{P}(A)}.\]
+      </div>
+      <p>\(\mathbb{P}_A(B)\) se note aussi \(\mathbb{P}(B \mid A)\) et s'appelle « probabilité que \(B\) se réalise sachant que \(A\) est réalisé ».</p>
+    </div>
+  </div>
+
+  <div class="prop-card">
+    <div class="prop-label">Proposition 1</div>
+    <p>\(\mathbb{P}_A\) définie ci-dessus est une probabilité. Elle possède donc les propriétés d'une probabilité. Ainsi :</p>
+    <ul>
+      <li>\(\mathbb{P}_A(C \cup D) = \mathbb{P}_A(C) + \mathbb{P}_A(D) - \mathbb{P}_A(C \cap D)\)</li>
+      <li>\(\mathbb{P}_A(\overline{D}) = 1 - \mathbb{P}_A(D)\)</li>
+      <li>Soit \(B_1, B_2, \dots, B_n\) des événements 2 à 2 incompatibles. On a \(\displaystyle \mathbb{P}_A\Big(\bigcup_{i=1}^n B_i\Big) = \sum_{i=1}^n \mathbb{P}_A(B_i)\).</li>
+    </ul>
+  </div>
+
+  <div class="thm-card">
+    <div class="thm-label">Récapitulatif</div>
+    <div class="thm-title">Probabilité d'une intersection</div>
+    <p>Si \(A = \displaystyle\bigcap_{i=1}^n B_i\) alors on regarde si les événements \((B_i)_i\) sont indépendants :</p>
+    <ul>
+      <li>si indépendance : \(\displaystyle \mathbb{P}(A) = \mathbb{P}\Big(\bigcap_{i=1}^n B_i\Big) = \prod_{i=1}^n \mathbb{P}(B_i)\)</li>
+      <li>sinon : utiliser la formule des probabilités composées : \(\displaystyle \mathbb{P}(A) = \mathbb{P}\Big(\bigcap_{i=1}^n B_i\Big) = \mathbb{P}(B_1) \times \mathbb{P}_{B_1}(B_2) \times \mathbb{P}_{B_1 \cap B_2}(B_3) \times \dots \times \mathbb{P}_{B_1 \cap \dots \cap B_{n-1}}(B_n)\)</li>
+    </ul>
+  </div>
+</div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="site-footer">
+  <div class="footer-logo">Chapitre 8 : Probabilités sur un univers fini</div>
+</div>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">&#x2191;</button>
+
+<script>
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: '\\[', right: '\\]', display: true },
+      { left: '\\(', right: '\\)', display: false }
+    ],
+    throwOnError: false,
+    strict: false,
+    trust: true
+  });
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  document.querySelectorAll('.toc-list a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+</script>
+</body>
+</html>

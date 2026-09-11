@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Littérature — Magnifica Humanitas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F5F3E8;
+    --dark: #0F1A2E;
+    --teal: #1B4D8C;
+    --teal-dark: #0A2647;
+    --teal-mid: #4A7FB5;
+    --teal-light: #DCE6F0;
+    --teal-border: #A9C4DE;
+    --cyan: #5BC2E8;
+    --muted: #4A5A70;
+    --accent: #1B4D8C;
+    --accent-soft: #1B4D8C22;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--dark); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px; border-bottom: 1px solid rgba(27,77,140,0.25);
+    background: var(--teal-dark); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--cyan); cursor: pointer; letter-spacing: 0.02em; }
+  .nav-logo a { color: inherit; text-decoration: none; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(240,247,247,0.5); flex-wrap: wrap; }
+  .breadcrumb a { color: inherit; text-decoration: none; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb a:hover span, .breadcrumb span:hover { color: var(--cyan); }
+  .breadcrumb .sep { color: rgba(240,247,247,0.25); }
+  .breadcrumb .current { color: #F0F7F7; cursor: default; }
+
+  /* ─── HERO ─── */
+  .ch-hero {
+    background: var(--teal-dark);
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ch-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%230D7377' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--cyan); margin-bottom: 1.5rem; opacity: 0.85; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 4rem); color: var(--cream); font-weight: 900; max-width: 900px; margin: 0 auto 1.5rem; line-height: 1.1; position: relative; z-index: 1; }
+  .ch-hero p { color: rgba(240,247,247,0.45); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  /* ─── TOC ─── */
+  .toc-bar { background: #EAF0F5; padding: 2rem; border-bottom: 1px solid #C5D6E0; }
+  .toc-inner { max-width: 960px; margin: 0 auto; }
+  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
+  .toc-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; list-style: none; }
+  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: #0F1A2E; font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
+  .toc-list a:hover { border-color: var(--teal-border); background: white; color: #000; }
+  .toc-num { font-family: "DM Mono", monospace; font-size: 0.65rem; color: var(--teal); flex-shrink: 0; margin-top: 0.15rem; }
+
+  /* ─── CONTENT ─── */
+  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 8rem; }
+
+  /* PART */
+  .hgg-part { margin-bottom: 5rem; }
+  .hgg-part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--teal); }
+  .hgg-part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: #A9C4DE; line-height: 1; flex-shrink: 0; }
+  .hgg-part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--dark); line-height: 1.25; }
+
+  /* SECTION */
+  .hgg-section { margin-bottom: 3.5rem; }
+  .hgg-section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--teal-dark); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--teal); scroll-margin-top: 2rem; }
+  .hgg-subsection-title { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--teal); margin: 2rem 0 0.75rem; }
+
+  /* TEXT */
+  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: #14213A; line-height: 1.75; font-weight: 300; }
+  .content strong { color: var(--dark); font-weight: 600; }
+
+  /* KEY FACT */
+  .hgg-key-fact { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 0.6rem; padding: 0.85rem 1.1rem; background: white; border: 1px solid var(--teal-light); border-radius: 6px; }
+  .hgg-key-bullet { width: 6px; height: 6px; background: var(--teal); border-radius: 50%; flex-shrink: 0; margin-top: 0.5rem; }
+  .hgg-key-fact > div { font-size: 0.91rem; color: #14213A; line-height: 1.65; font-weight: 300; }
+
+  /* CONCEPT BOX */
+  .hgg-concept { background: var(--teal-dark); color: var(--cream); padding: 1.75rem; margin: 2rem 0; position: relative; border-radius: 4px; }
+  .hgg-concept::before { content: '→'; position: absolute; top: 1.25rem; right: 1.25rem; color: var(--cyan); font-size: 1.3rem; }
+  .hgg-concept .concept-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--cyan); margin-bottom: 0.7rem; }
+  .hgg-concept p { color: rgba(240,247,247,0.82); font-size: 0.93rem; margin: 0; }
+  .hgg-concept strong { color: var(--cyan); }
+
+  /* HIGHLIGHT */
+  .hgg-highlight { background: var(--teal-light); border-left: 4px solid var(--teal); padding: 1.25rem 1.75rem; margin: 1.5rem 0; font-style: italic; color: var(--teal-dark); font-size: 0.93rem; line-height: 1.7; border-radius: 0 6px 6px 0; }
+
+  /* AUTHOR CARD */
+  .hgg-author { background: var(--teal-dark); color: var(--cream); padding: 1.75rem; margin: 1.2rem 0; position: relative; border-radius: 4px; border-left: 4px solid var(--teal-mid); }
+  .hgg-author::before { content: '✎'; position: absolute; top: 1.25rem; right: 1.25rem; color: var(--teal-mid); font-size: 1.1rem; opacity: 0.7; }
+  .hgg-author .author-name { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--cyan); margin-bottom: 0.7rem; font-weight: 700; }
+  .hgg-author p { color: rgba(240,247,247,0.85); font-size: 0.93rem; margin: 0; line-height: 1.7; font-weight: 300; }
+  .hgg-author strong { color: var(--cyan); }
+
+  /* STATS GRID */
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: var(--teal-border); margin: 1.5rem 0; border: 1px solid var(--teal-border); border-radius: 6px; overflow: hidden; }
+  .hgg-stat-cell { background: white; padding: 1.3rem; text-align: center; }
+  .hgg-stat-num { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 900; color: var(--teal); display: block; }
+  .hgg-stat-label { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; font-family: 'DM Mono', monospace; }
+
+  /* COMPARE BOX */
+  .compare-box { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 1.5rem 0; border-radius: 8px; overflow: hidden; border: 1px solid rgba(0,0,0,0.1); }
+  .compare-side { padding: 1.3rem 1.5rem; }
+  .compare-side h5 { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.7rem; }
+  .compare-side p { font-size: 0.85rem; line-height: 1.65; margin-bottom: 0.5rem; font-weight: 300; }
+  .compare-side p:last-child { margin-bottom: 0; }
+  .compare-a { background: rgba(27,77,140,0.07); }
+  .compare-a h5 { color: var(--teal); }
+  .compare-b { background: rgba(91,194,232,0.12); }
+  .compare-b h5 { color: #1274A0; }
+
+  /* TWO COL */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+  .col-card { border-radius: 8px; padding: 1.2rem 1.4rem; border: 1px solid; }
+  .col-card h5 { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.6rem; }
+  .col-card p { margin: 0; font-size: 0.85rem; line-height: 1.6; font-weight: 300; }
+  .col-teal { background: rgba(27,77,140,0.07); border-color: rgba(27,77,140,0.3); }
+  .col-teal h5 { color: var(--teal); }
+  .col-teal p { color: #14213A; }
+  .col-cyan { background: rgba(91,194,232,0.12); border-color: rgba(91,194,232,0.35); }
+  .col-cyan h5 { color: #1274A0; }
+  .col-cyan p { color: #14213A; }
+  .col-dark { background: rgba(10,38,71,0.06); border-color: rgba(10,38,71,0.2); }
+  .col-dark h5 { color: var(--teal-dark); }
+  .col-dark p { color: #14213A; }
+
+  /* MINI CALLOUT */
+  .mini-callout { border-radius: 6px; padding: 0.9rem 1.2rem; margin: 1.2rem 0; background: white; border: 1px solid var(--teal-border); display: flex; align-items: center; gap: 0.8rem; }
+  .mini-callout-icon { font-size: 1.1rem; flex-shrink: 0; color: var(--teal); }
+  .mini-callout-text { font-size: 0.9rem; color: #14213A; line-height: 1.6; font-weight: 300; }
+  .mini-callout-text strong { color: var(--teal-dark); font-weight: 600; }
+
+  /* RETENIR BOX */
+  .retenir-box { background: #EAF0F5; border: 1px solid #B4CBDD; border-radius: 8px; padding: 1.4rem 1.6rem; margin: 2rem 0; }
+  .retenir-box .rb-label { display: block; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--teal-mid); margin-bottom: 0.75rem !important; }
+  .retenir-box .rb-items { display: block; }
+  .retenir-box .rb-item { display: block; font-size: 0.9rem; color: #14213A; line-height: 1.65; font-weight: 300; padding: 0.45rem 0 0.45rem 1.4rem; border-bottom: 1px dashed rgba(27,77,140,0.15); margin: 0 !important; position: relative; }
+  .retenir-box .rb-item:last-child { border-bottom: none; }
+  .retenir-box .rb-item::before { content: '—'; color: var(--teal); position: absolute; left: 0; top: 0.45rem; }
+
+  /* Neutraliser le margin global sur les <p> dans les boîtes spéciales */
+  .retenir-box p, .hgg-concept p, .hgg-author p, .col-card p { margin-bottom: 0 !important; }
+
+  /* FOOTER */
+  .site-footer { background: var(--teal-dark); border-top: 1px solid rgba(27,77,140,0.35); padding: 2.5rem 2rem; text-align: center; }
+  .site-footer .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--cyan); letter-spacing: 0.02em; margin-bottom: 0.4rem; }
+  .site-footer .footer-meta { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(240,247,247,0.35); }
+
+  /* BACK TO TOP */
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--teal); color: var(--cream); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 4px 14px rgba(27,77,140,0.45); opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 200; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+  .back-to-top:hover { background: var(--teal-mid); }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .toc-list { grid-template-columns: 1fr; }
+    .two-col, .three-col, .compare-box { grid-template-columns: 1fr; }
+    .ch-hero { padding: 3rem 1.5rem 2.5rem; }
+  }
+
+  /* ═══════════════════════════════════════════
+     STYLES D'IMPRESSION
+  ═══════════════════════════════════════════ */
+  @media print {
+    @page { size: A4; margin: 18mm 15mm 18mm 15mm; }
+    nav, .back-to-top, .toc-bar, .site-footer { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    html, body { background: white !important; color: #000 !important; font-size: 10pt; }
+    .ch-hero { background: #0A2647 !important; padding: 0.9rem 1rem 0.7rem !important; min-height: unset !important; height: auto !important; }
+    .ch-hero::before { display: none !important; }
+    .ch-hero h1 { font-size: 16pt !important; color: #fff !important; margin-bottom: 0.3rem !important; }
+    .ch-hero .chap-label { font-size: 7pt !important; color: #5BC2E8 !important; margin-bottom: 0.4rem !important; }
+    .ch-hero p { font-size: 7pt !important; color: #5BC2E8 !important; margin: 0 !important; }
+    .content { max-width: 100% !important; padding: 0.8rem 0 !important; margin: 0 !important; }
+    .hgg-part { page-break-before: auto; break-before: auto; margin-bottom: 1rem; }
+    .hgg-part-header, .hgg-section-title, .hgg-subsection-title { page-break-after: avoid; break-after: avoid; }
+    .hgg-section { page-break-inside: auto; break-inside: auto; margin-bottom: 1rem; }
+    .hgg-key-fact, .hgg-author, .hgg-concept, .hgg-highlight, .hgg-stat-cell, .mini-callout, .retenir-box, .col-card, .compare-side { page-break-inside: avoid; break-inside: avoid; }
+    .hgg-part-header { border-bottom: 2pt solid #1B4D8C !important; padding-bottom: 0.5rem; margin-bottom: 1rem; }
+    .hgg-part-num { font-size: 2.5rem !important; color: #A9C4DE !important; }
+    .hgg-part-title { font-size: 14pt !important; }
+    .hgg-section-title { font-size: 11pt !important; border-left: 3pt solid #1B4D8C !important; padding-left: 0.6rem !important; margin-bottom: 0.6rem !important; color: #0A2647 !important; }
+    .hgg-subsection-title { font-size: 8pt !important; color: #1B4D8C !important; margin: 0.8rem 0 0.4rem !important; }
+    .content p { font-size: 9.5pt !important; line-height: 1.55 !important; margin-bottom: 0.5rem !important; color: #000 !important; }
+    .hgg-key-fact { background: #DCE6F0 !important; border: 1pt solid #A9C4DE !important; padding: 0.5rem 0.7rem !important; margin-bottom: 0.35rem !important; }
+    .hgg-key-fact > div { font-size: 9pt !important; color: #000 !important; }
+    .hgg-concept { background: #0A2647 !important; color: #F5F3E8 !important; padding: 0.9rem 1rem !important; margin: 0.8rem 0 !important; border-radius: 4px; }
+    .hgg-concept p { color: #DCE6F0 !important; font-size: 9pt !important; }
+    .hgg-concept .concept-label { color: #5BC2E8 !important; font-size: 7pt !important; }
+    .hgg-concept strong { color: #5BC2E8 !important; }
+    .hgg-concept::before { display: none; }
+    .hgg-author { background: #0A2647 !important; color: #F5F3E8 !important; padding: 0.9rem 1rem !important; margin: 0.8rem 0 !important; }
+    .hgg-author p { color: #DCE6F0 !important; font-size: 9pt !important; }
+    .hgg-author .author-name { color: #5BC2E8 !important; font-size: 7pt !important; }
+    .hgg-author strong { color: #5BC2E8 !important; }
+    .hgg-author::before { display: none; }
+    .hgg-highlight { background: #DCE6F0 !important; border-left: 3pt solid #1B4D8C !important; padding: 0.7rem 1rem !important; margin: 0.8rem 0 !important; font-size: 9pt !important; color: #0A2647 !important; }
+    .hgg-stats { border: 1pt solid #A9C4DE !important; margin: 0.8rem 0 !important; }
+    .hgg-stat-cell { background: white !important; padding: 0.8rem !important; }
+    .hgg-stat-num { font-size: 12pt !important; color: #1B4D8C !important; }
+    .hgg-stat-label { font-size: 7.5pt !important; color: #4A5A70 !important; }
+    .compare-box { margin: 0.7rem 0 !important; }
+    .compare-side { padding: 0.7rem 0.9rem !important; }
+    .compare-side p { font-size: 8.5pt !important; }
+    .compare-side h5 { font-size: 6.5pt !important; }
+    .two-col { grid-template-columns: 1fr 1fr !important; gap: 0.5rem !important; margin: 0.6rem 0 !important; }
+    .three-col { grid-template-columns: 1fr 1fr 1fr !important; gap: 0.5rem !important; margin: 0.6rem 0 !important; }
+    .col-card { padding: 0.7rem 0.9rem !important; }
+    .col-card p { font-size: 8.5pt !important; }
+    .col-card h5 { font-size: 6.5pt !important; }
+    .mini-callout { background: #DCE6F0 !important; border: 1pt solid #A9C4DE !important; padding: 0.5rem 0.8rem !important; margin: 0.6rem 0 !important; }
+    .mini-callout-text { font-size: 8.5pt !important; color: #000 !important; }
+    .mini-callout-icon { font-size: 0.9rem !important; }
+    .retenir-box { background: #DCE6F0 !important; border: 1pt solid #A9C4DE !important; padding: 0.8rem 1rem !important; margin: 0.8rem 0 !important; }
+    .retenir-box .rb-label { font-size: 7pt !important; color: #4A7FB5 !important; }
+    .retenir-box .rb-item { font-size: 9pt !important; color: #000 !important; }
+    a { text-decoration: none !important; color: inherit !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">/</span>
+    <a href="../../humanite.html"><span>L'Humanité</span></a>
+    <span class="sep">/</span>
+    <a href="litterature.html"><span>Littérature</span></a>
+    <span class="sep">/</span>
+    <span class="current">Magnifica Humanitas</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="chap-label">Littérature · L'Humanité</div>
+  <h1>Magnifica Humanitas</h1>
+  <p>Pape Léon XIV · 2026 · Lettre encyclique</p>
+</div>
+
+<!-- ─── TOC ─── -->
+<div class="toc-bar">
+  <div class="toc-inner">
+    <div class="toc-title">Plan de la fiche</div>
+    <ul class="toc-list">
+      <li><a href="#intro"><span class="toc-num">I —</span> Présentation de l'œuvre</a></li>
+      <li><a href="#p1"><span class="toc-num">II —</span> Résumé</a></li>
+      <li><a href="#p2"><span class="toc-num">III —</span> Trois manières de préserver l'humain face à la machine</a></li>
+      <li><a href="#p3"><span class="toc-num">IV —</span> Pistes pour la dissertation</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ─── CONTENT ─── -->
+<div class="content">
+
+<!-- ══════════════════════════════════════ -->
+<!--  PARTIE I — PRÉSENTATION              -->
+<!-- ══════════════════════════════════════ -->
+<div class="hgg-part" id="intro">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">I</div>
+    <div class="hgg-part-title">Présentation de l'œuvre</div>
+  </div>
+
+  <p><strong>Magnifica Humanitas</strong> est la première lettre encyclique du <strong>pape Léon XIV</strong> (Robert Prevost), premier pape américain de l'histoire, élu en mai 2025. Signée le 15 mai 2026 puis publiée le 25 mai, à l'occasion du 135<sup>e</sup> anniversaire de <em>Rerum Novarum</em> de Léon XIII, elle prolonge la tradition de la doctrine sociale de l'Église en l'appliquant à un défi inédit : l'intelligence artificielle.</p>
+
+  <div class="hgg-stats">
+    <div class="hgg-stat-cell"><span class="hgg-stat-num">2026</span><div class="hgg-stat-label">Date de publication</div></div>
+    <div class="hgg-stat-cell"><span class="hgg-stat-num">5</span><div class="hgg-stat-label">Chapitres, hors introduction et conclusion</div></div>
+    <div class="hgg-stat-cell"><span class="hgg-stat-num">135</span><div class="hgg-stat-label">Anniversaire de Rerum Novarum</div></div>
+  </div>
+
+  <p>Le texte appartient au genre de la <strong>lettre encyclique</strong> : document doctrinal solennel adressé par le pape à l'ensemble de l'Église et, au-delà, à tout homme de bonne volonté. Léon XIV y inscrit son pontificat dans la continuité de la doctrine sociale inaugurée par Léon XIII face à la révolution industrielle, qu'il actualise ici face à la révolution numérique.</p>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  PARTIE II — RÉSUMÉ                   -->
+<!-- ══════════════════════════════════════ -->
+<div class="hgg-part" id="p1">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">II</div>
+    <div class="hgg-part-title">Résumé</div>
+  </div>
+
+  <div class="hgg-section" id="s1-1">
+    <div class="hgg-section-title">1 — Une pensée fidèle à l'Évangile, une dignité à protéger</div>
+
+    <p>Les deux premiers chapitres posent les fondations du texte. Le premier retrace l'évolution de la <strong>doctrine sociale de l'Église</strong> depuis <em>Rerum Novarum</em> jusqu'au magistère récent, la présentant non comme un ensemble figé de règles mais comme un chemin de discernement renouvelé à chaque époque. Le second en expose les principes : la <strong>dignité de la personne humaine</strong>, créée à l'image de Dieu, ne s'acquiert ni ne se mérite — elle précède toute production et toute performance.</p>
+
+    <div class="hgg-key-fact">
+      <div class="hgg-key-bullet"></div>
+      <div>Léon XIV y défend l'inviolabilité de la vie, les droits des minorités et des femmes, et le <strong>bien commun</strong>, compris comme la reconnaissance du droit de chaque peuple à exister et à préserver son identité propre.</div>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s1-2">
+    <div class="hgg-section-title">2 — Technique et domination : l'intelligence artificielle en question</div>
+
+    <p>Le troisième chapitre affronte directement la question de l'<strong>intelligence artificielle</strong>. Léon XIV met en garde contre le paradigme technocratique — cette tendance à ne juger chaque choix qu'à l'aune de l'efficacité et du profit. L'IA peut imiter l'humain, mais elle ne possède ni conscience morale ni capacité affective réelle : elle doit donc être encadrée par un code éthique partagé, et non laissée à la discrétion des seuls acteurs les plus puissants.</p>
+
+    <div class="hgg-concept">
+      <div class="concept-label">Le dénouement</div>
+      <p>Le cinquième et dernier chapitre élargit la réflexion à la guerre à l'ère numérique. Léon XIV dénonce une culture de la puissance qui banalise le recours aux armes autonomes, et appelle à dépasser la théorie de la guerre juste au profit d'un dialogue fondé sur la vérité, la justice et le pardon.</p>
+    </div>
+
+    <div class="mini-callout">
+      <span class="mini-callout-icon">🕊️</span>
+      <span class="mini-callout-text">L'encyclique se referme sur un appel à ne laisser l'intelligence artificielle ni remplacer ni dépasser l'humanité — une humanité que Léon XIV décrit comme magnifique et pourtant blessée.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  PARTIE III — ANALYSE                 -->
+<!-- ══════════════════════════════════════ -->
+<div class="hgg-part" id="p2">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">III</div>
+    <div class="hgg-part-title">Trois manières de préserver l'humain face à la machine</div>
+  </div>
+
+  <div class="hgg-section" id="s2-1">
+    <div class="hgg-section-title">1 — Une dignité qui ne se mérite pas</div>
+
+    <p>Face à des logiques économiques qui tendent à réduire la personne à ce qu'elle produit ou rapporte, Léon XIV réaffirme un principe fondateur de la doctrine sociale : la dignité humaine est <strong>inconditionnelle</strong>. Elle ne dépend ni de l'utilité, ni de la performance, ni de la capacité à rivaliser avec une machine toujours plus efficace.</p>
+
+    <div class="compare-box">
+      <div class="compare-side compare-a">
+        <h5>⚙️ La personne-ressource</h5>
+        <p>Réduite à ce qu'elle produit ou rapporte, évaluée selon des critères de rentabilité — la dérive que dénonce le paradigme technocratique.</p>
+      </div>
+      <div class="compare-side compare-b">
+        <h5>👤 La personne-image de Dieu</h5>
+        <p>Sa dignité précède toute production : elle ne s'acquiert pas et n'a besoin d'aucune démonstration pour exister pleinement.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-2">
+    <div class="hgg-section-title">2 — La limite, dimension constitutive de l'humain</div>
+
+    <p>Contre les discours transhumanistes qui présentent le dépassement des limites biologiques comme un progrès en soi, Léon XIV soutient que la <strong>fragilité et la finitude</strong> ne sont pas des défauts à corriger par la technique, mais les conditions mêmes où mûrissent la relation, la sollicitude et l'ouverture à autrui.</p>
+
+    <div class="hgg-author">
+      <div class="author-name">Faire progresser la technique sans faire régresser le cœur</div>
+      <p>L'enjeu, pour Léon XIV, n'est pas de choisir entre enthousiasme et peur face à la technologie, mais entre deux manières de construire le progrès : au service de la personne, ou au service des seules logiques de pouvoir.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-3">
+    <div class="hgg-section-title">3 — Babel ou Jérusalem</div>
+
+    <p>Dès son ouverture, l'encyclique pose une alternative fondatrice, empruntée à la tradition augustinienne : l'humanité doit choisir entre ériger une nouvelle <strong>tour de Babel</strong> — une unité construite sur la domination et la confusion — ou bâtir la <strong>cité</strong> où Dieu et l'humanité habitent ensemble.</p>
+
+    <div class="mini-callout">
+      <span class="mini-callout-icon">🏛️</span>
+      <span class="mini-callout-text">Chaque choix technologique individuel — utiliser l'intelligence artificielle pour dominer ou pour servir — participe, à son échelle, à la construction de l'une ou l'autre de ces deux cités.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  PARTIE IV — PISTES DE DISSERTATION   -->
+<!-- ══════════════════════════════════════ -->
+<div class="hgg-part" id="p3">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">IV</div>
+    <div class="hgg-part-title">Pistes pour la dissertation</div>
+  </div>
+
+  <div class="hgg-section" id="s3-1">
+    <div class="hgg-section-title">Comment mobiliser cette œuvre dans une copie ?</div>
+
+    <div class="retenir-box">
+      <div class="rb-label">Idées à retenir</div>
+      <div class="rb-items">
+        <div class="rb-item">La <strong>dignité humaine</strong> précède toute production ou performance : elle ne se mérite pas, contrairement à ce que suggèrent les logiques de rentabilité appliquées à la personne.</div>
+        <div class="rb-item">La <strong>limite et la fragilité</strong> ne sont pas des défauts à éliminer par la technique, mais des dimensions constitutives de l'humain, où se déploient la relation et l'amour.</div>
+        <div class="rb-item">L'intelligence artificielle n'est pas neutre : elle reflète ceux qui la conçoivent, la financent et l'utilisent — d'où la nécessité d'un <strong>code éthique partagé</strong>, non laissé aux seuls acteurs puissants.</div>
+        <div class="rb-item">L'alternative entre <strong>Babel et Jérusalem</strong> fait de chaque choix technologique un choix moral sur le type d'humanité que l'on construit collectivement.</div>
+      </div>
+    </div>
+
+    <div class="hgg-subsection-title">→ Notions du thème « L'Humanité » éclairées par l'œuvre</div>
+    <div class="three-col">
+      <div class="col-card col-teal">
+        <h5>👑 Dignité inconditionnelle</h5>
+        <p>La dignité de la personne ne dépend ni de son utilité ni de sa productivité : elle échappe par principe à toute logique de comparaison avec la machine.</p>
+      </div>
+      <div class="col-card col-cyan">
+        <h5>🌱 La limite habitée</h5>
+        <p>Loin d'être un défaut que la technique devrait corriger, la fragilité humaine est le lieu même où se nouent la relation, la sollicitude et l'amour.</p>
+      </div>
+      <div class="col-card col-dark">
+        <h5>🏛️ Babel ou Jérusalem</h5>
+        <p>Toute avancée technologique engage un choix moral : construire une unité fondée sur la domination, ou une cité où l'humain et le divin cohabitent.</p>
+      </div>
+    </div>
+
+    <div class="hgg-concept">
+      <div class="concept-label">À rapprocher</div>
+      <p>Günther Anders, <em>L'Obsolescence de l'homme</em> (1956) : bien avant l'intelligence artificielle, ce philosophe allemand décrivait déjà l'homme moderne pris de vertige devant ses propres créations techniques, devenues plus puissantes et plus « parfaites » que lui — une inquiétude que Léon XIV reformule en avertissant que l'humanité ne doit être <strong>ni remplacée ni dépassée</strong> par ce qu'elle fabrique.</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<footer class="site-footer">
+  <div class="footer-logo">Magnifica Humanitas — Pape Léon XIV</div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
+
+<script>
+  document.querySelectorAll('.toc-list a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>

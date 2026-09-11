@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Abandon de Mercator : l'avènement de la projection Eckert IV</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #c62828;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #6b0000; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #003a5a; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #8a0000; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #7ca8c9; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #7ca8c9; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+
+  .ap-band { background: #b5131f; text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(5,10,20,0.95); padding:12px 60px; border-bottom: 1px solid rgba(0,86,214,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#e8a04a; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(0,86,214,0.25); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+
+  .ap-hero-placeholder {
+    width:100%; aspect-ratio: 16/7; position:relative;
+    background: linear-gradient(135deg, #001233 0%, #023047 30%, #7a5c10 65%, #2b1400 100%);
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
+  }
+  .ap-hero-placeholder::before {
+    content: '🗺️';
+    font-size: 7rem;
+    filter: grayscale(0.2) drop-shadow(0 4px 32px rgba(0,0,0,0.8));
+    opacity: 0.55;
+  }
+  .ap-hero-placeholder::after {
+    content:''; position:absolute; inset:0;
+    background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.88) 100%);
+  }
+
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(181,19,31,0.2);  color:#f08080; border:1px solid rgba(181,19,31,0.35); }
+  .ap-tag-navy   { background:rgba(0,48,135,0.4);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #e8a04a; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(0,86,214,0.2); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(232,160,74,0.7); }
+
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#e8a04a; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(232,160,74,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#071422,#0d2540); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat.blue   { background:linear-gradient(135deg,#0a1a40,#1a3a6e); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #e8a04a; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(0,40,107,0.08),rgba(0,40,107,0.02)); border-left:3px solid #e8a04a; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(232,160,74,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(232,160,74,0.7); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(5,10,25,0.9),rgba(3,5,12,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(0,86,214,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#e8a04a; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(0,40,107,0.08); border:1px solid rgba(0,86,214,0.22); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(232,160,74,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#e8a04a; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(232,160,74,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#e8a04a; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(5,10,25,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-monde.html">Monde</a>
+    <span class="sep">/</span>
+    <a href="../tous-monde.html">Toutes les régions</a>
+    <span class="sep">/</span>
+    <span class="current">Abandon de Mercator</span>
+  </div>
+</nav>
+
+<div class="ap-band">🗺️ CARTOGRAPHIE · MERCATOR CÈDE LA PLACE</div>
+<div class="ap-back-bar">
+  <a href="../tous-monde.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+
+    <div class="ap-hero-img-wrap">
+      <img class="ap-hero-img" src="../images/abandon-mercator-eckert.jpg" alt="Illustration comparant la projection de Mercator à la projection Eckert IV">
+    </div>
+
+    <div class="ap-header">
+      <div class="ap-tags">
+        <span class="ap-tag ap-tag-red">🌍 Monde</span>
+        <span class="ap-tag ap-tag-navy">Diplomatie</span>
+        <span class="ap-tag ap-tag-gold">Cartographie</span>
+        <span class="ap-tag ap-tag-purple">ONU</span>
+        <span class="ap-tag ap-tag-green">Afrique</span>
+        <span class="ap-tag ap-tag-teal">Éducation</span>
+      </div>
+      <div class="ap-date">Septembre 2026 — ECG Prépa · Monde</div>
+      <h1 class="ap-title">Adieu Mercator : la France et l'ONU basculent vers une carte du monde plus fidèle</h1>
+      <p class="ap-intro">Le 4 septembre 2026, le Quai d'Orsay a officiellement annoncé l'abandon de la projection de Mercator pour ses cartes diplomatiques, au profit de la projection Eckert IV. Le même jour, l'Assemblée générale des Nations unies adoptait une résolution portée par le Togo et soutenue par l'Union africaine, encourageant gouvernements, écoles et entreprises technologiques à privilégier des projections dites « équivalentes », qui respectent les proportions réelles des superficies. Une bascule symbolique qui relance le débat, vieux de plusieurs décennies, sur la neutralité — ou non — des cartes.</p>
+    </div>
+
+    <div class="ap-body">
+
+      <div class="ap-stats">
+        <div class="ap-stat red"><span class="ap-stat-num">1569</span><span class="ap-stat-desc">Année de création<br>de la projection de Mercator</span></div>
+        <div class="ap-stat gold"><span class="ap-stat-num">164</span><span class="ap-stat-desc">États ayant voté la résolution<br>onusienne « Corriger la carte »</span></div>
+        <div class="ap-stat blue"><span class="ap-stat-num">1906</span><span class="ap-stat-desc">Année de création d'Eckert IV,<br>projection choisie par Paris</span></div>
+        <div class="ap-stat green"><span class="ap-stat-num">2021</span><span class="ap-stat-desc">Début du retrait progressif<br>de Mercator par la diplomatie française</span></div>
+      </div>
+
+      <div class="ap-cols">
+
+        <!-- COLONNE GAUCHE -->
+        <div>
+          <div class="ap-sub">Une carte pensée pour naviguer, pas pour comparer</div>
+          <p>La projection de Mercator doit son nom au géographe flamand Gerardus Mercator, qui la met au point en 1569. Sa qualité principale — et la raison de son succès durable — tient à ce qu'elle conserve les angles : une ligne droite tracée sur la carte correspond à un cap constant, ce qui en fait un outil précieux pour la navigation maritime à l'aide d'un compas. Mais cet avantage technique a un coût : pour conserver les angles, la projection doit dilater les surfaces à mesure que l'on s'éloigne de l'équateur, si bien que les régions proches des pôles apparaissent démesurément agrandies par rapport à celles qui se trouvent sous les tropiques.</p>
+          <p>Le décalage entre taille perçue et taille réelle est spectaculaire : sur une carte de Mercator, le Groenland semble presque aussi vaste que le continent africain, alors qu'en réalité l'Afrique lui est environ quatorze fois supérieure en superficie. La Russie, le Canada ou l'Europe se trouvent de la même manière visuellement surreprésentés, tandis que l'Afrique, l'Amérique latine ou l'Asie du Sud-Est paraissent plus modestes qu'elles ne le sont. Cette distorsion, longtemps enseignée comme un simple détail technique, est de plus en plus interrogée comme le vecteur d'une vision du monde héritée des puissances cartographiques européennes du XVIe siècle.</p>
+
+          <div class="ap-facts">
+            <div class="ap-fact"><div class="ap-fact-label">Concepteur</div><div class="ap-fact-val">Gerardus Mercator (1569)</div></div>
+            <div class="ap-fact"><div class="ap-fact-label">Usage d'origine</div><div class="ap-fact-val">Navigation maritime (caps constants)</div></div>
+            <div class="ap-fact"><div class="ap-fact-label">Principal biais</div><div class="ap-fact-val">Zones polaires surdimensionnées</div></div>
+            <div class="ap-fact"><div class="ap-fact-label">Exemple emblématique</div><div class="ap-fact-val">Groenland ≈ Afrique (à tort)</div></div>
+            <div class="ap-fact"><div class="ap-fact-label">Alternative française</div><div class="ap-fact-val">Projection Eckert IV (1906)</div></div>
+            <div class="ap-fact"><div class="ap-fact-label">Alternative onusienne</div><div class="ap-fact-val">Projection Equal Earth (2018)</div></div>
+          </div>
+
+          <div class="ap-sub">De Boston à l'Union africaine, une contestation ancienne</div>
+          <p>La remise en cause de Mercator ne date pas de 2026. Dès 1973, l'historien allemand Arno Peters popularise une projection concurrente, dite Gall-Peters, qui respecte les superficies au prix de formes très étirées. En mars 2017, les écoles publiques de Boston avaient marqué les esprits en devenant l'un des premiers grands systèmes scolaires à basculer vers une projection équivalente pour l'ensemble de leurs planisphères. Plus récemment, une campagne baptisée « Correct the Map », lancée en 2025, a recueilli plusieurs milliers de signatures pour demander l'abandon de Mercator dans l'enseignement et les organisations internationales. L'Union africaine, elle, a franchi le pas dès mars 2026 en adoptant officiellement la projection Equal Earth pour ses propres cartes.</p>
+
+          <div class="ap-sub">Cinq siècles de cartographie, en quelques dates</div>
+          <div class="ap-tl">
+            <div class="ap-tl-item">
+              <div class="ap-tl-date">1569</div>
+              <p class="ap-tl-text">Gerardus Mercator conçoit sa projection cylindrique, conforme aux angles, pour faciliter la navigation maritime.</p>
+            </div>
+            <div class="ap-tl-item">
+              <div class="ap-tl-date">1906</div>
+              <p class="ap-tl-text">Le géographe allemand Max Eckert met au point la projection Eckert IV, une projection équivalente qui préserve les superficies.</p>
+            </div>
+            <div class="ap-tl-item">
+              <div class="ap-tl-date">1973 — 2017</div>
+              <p class="ap-tl-text">Arno Peters popularise la projection Gall-Peters ; les écoles publiques de Boston l'adoptent en 2017, une première aux États-Unis.</p>
+            </div>
+            <div class="ap-tl-item">
+              <div class="ap-tl-date">2018</div>
+              <p class="ap-tl-text">Les cartographes Bojan Šavrič, Tom Patterson et Bernhard Jenny publient la projection Equal Earth, conçue pour limiter les déformations de forme.</p>
+            </div>
+            <div class="ap-tl-item">
+              <div class="ap-tl-date">Mars 2026</div>
+              <p class="ap-tl-text">L'Union africaine adopte officiellement la projection Equal Earth pour ses cartes institutionnelles.</p>
+            </div>
+            <div class="ap-tl-item">
+              <div class="ap-tl-date">4 septembre 2026</div>
+              <p class="ap-tl-text">Le Quai d'Orsay abandonne Mercator pour Eckert IV ; l'Assemblée générale de l'ONU adopte la résolution « Corriger la carte ».</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- COLONNE DROITE -->
+        <div>
+          <div class="ap-sub">Barrot officialise le tournant à la Sorbonne</div>
+          <p>C'est lors d'un événement grand public consacré à la diplomatie, organisé à la Sorbonne, que le ministre français de l'Europe et des Affaires étrangères, Jean-Noël Barrot, a annoncé que ses services renonçaient à la projection de Mercator au profit d'Eckert IV. Il a rappelé qu'une carte n'est jamais un objet neutre et que les superficies perçues sur une carte de Mercator ne correspondent pas aux superficies réelles, donnant une importance visuelle disproportionnée à certains pays au détriment de l'Afrique, de l'Amérique latine ou de l'Asie du Sud-Est.</p>
+
+          <div class="ap-quote">
+            <p>« Changer de carte ne change évidemment pas le monde. »</p>
+            <cite>— Jean-Noël Barrot, ministre de l'Europe et des Affaires étrangères, propos rapportés par Euronews (2026)</cite>
+          </div>
+
+          <p>Le ministère précise que le mouvement n'est pas soudain : dès 2021, les cartes en projection de Mercator ont commencé à être retirées progressivement des supports numériques de la diplomatie française, dans l'optique de donner une représentation plus juste du monde. Le Quai d'Orsay reconnaît toutefois que Mercator conserve une utilité réelle dans certains cas précis, notamment pour la navigation et pour des cartes régionales centrées sur la zone équatoriale, où les déformations de la projection sont minimes.</p>
+
+          <p>Au même moment, à New York, l'Assemblée générale des Nations unies adoptait la résolution non contraignante « Corriger la carte », portée par le Togo et coparrainée par la France. Le texte encourage les gouvernements, les établissements scolaires, les organisations internationales et les entreprises technologiques à recourir à la projection Equal Earth ou à d'autres projections équivalentes. Il ne bannit pas Mercator pour autant, et n'impose aucune carte unique aux États membres.</p>
+
+          <table class="ap-table">
+            <thead><tr><th>Projection</th><th>Créée en</th><th>Particularité</th></tr></thead>
+            <tbody>
+              <tr><td class="ap-cell-bold">Mercator</td><td>1569</td><td>Conforme aux angles, distord fortement les superficies</td></tr>
+              <tr><td class="ap-cell-bold">Gall-Peters</td><td>1973</td><td>Superficies exactes, formes très étirées</td></tr>
+              <tr><td class="ap-cell-bold">Eckert IV</td><td>1906</td><td>Superficies exactes, adoptée par la France en 2026</td></tr>
+              <tr><td class="ap-cell-bold">Equal Earth</td><td>2018</td><td>Superficies exactes, recommandée par l'ONU</td></tr>
+            </tbody>
+          </table>
+
+          <div class="ap-info">
+            <div class="ap-info-icon">🗳️</div>
+            <div class="ap-info-text"><strong>Un vote massif, mais pas unanime :</strong> la résolution « Corriger la carte » a recueilli 164 voix pour. Seuls les États-Unis ont voté contre, dénonçant une démarche jugée idéologique. Six pays — Estonie, Géorgie, Lituanie, Moldavie, Serbie et Ukraine — se sont abstenus, Kiev estimant que la Crimée annexée apparaissait, sur la carte Equal Earth, dans une couleur différente de celle du reste du territoire ukrainien.</div>
+          </div>
+
+          <div class="ap-ctx">
+            <div class="ap-ctx-label">Une carte, un rapport de force</div>
+            <p>Ni Eckert IV ni Equal Earth ne mettent fin au problème que pose toute carte plane d'une planète ronde : représenter la Terre sans aucune déformation reste mathématiquement impossible, et chaque projection doit arbitrer entre fidélité des angles, des distances ou des superficies. Le choix français, comme la résolution onusienne, reste avant tout symbolique — Mercator continuera d'équiper les cartes de navigation et certaines applications numériques grand public. Mais le geste rappelle que la carte n'a jamais été un simple outil neutre : elle a aussi toujours été un langage du pouvoir. Reste à savoir si l'Éducation nationale, où l'immense majorité des planisphères scolaires sont encore en Mercator, suivra à son tour le mouvement engagé par la diplomatie française.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — Monde · Cartographie — Septembre 2026</div>
+
+</body>
+</html>

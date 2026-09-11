@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cinéma — Blade Runner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0d;
+    --surface: #141319;
+    --surface2: #191822;
+    --surface3: #1f1e2a;
+    --border: #2a2836;
+    --border-soft: #3a3648;
+    --accent: #e2823c;
+    --accent-dim: #e2823c99;
+    --accent-soft: #e2823c1a;
+    --accent2: #4fc3d9;
+    --accent2-soft: #4fc3d91a;
+    --accent3: #9ecba0;
+    --accent3-soft: #9ecba01a;
+    --accent4: #d1559a;
+    --accent4-soft: #d1559a1a;
+    --text: #ece8e6;
+    --text-dim: #9d97a3;
+    --text-faint: #565164;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--accent); cursor: pointer; letter-spacing: 0.02em; }
+  .nav-logo a { color: inherit; text-decoration: none; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .breadcrumb a { color: inherit; text-decoration: none; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb a:hover span, .breadcrumb span:hover { color: var(--accent); }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); cursor: default; }
+
+  /* ─── HERO ─── */
+  .ch-hero {
+    background: var(--surface2);
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+  .ch-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C8A96E' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem; opacity: 0.9; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 4rem); color: var(--text); font-weight: 900; max-width: 900px; margin: 0 auto 1.5rem; line-height: 1.1; position: relative; z-index: 1; }
+  .ch-hero p { color: var(--text-dim); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  /* ─── TOC ─── */
+  .toc-bar { background: var(--surface); padding: 2rem; border-bottom: 1px solid var(--border); }
+  .toc-inner { max-width: 960px; margin: 0 auto; }
+  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 1.2rem; }
+  .toc-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; list-style: none; }
+  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: var(--text); font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
+  .toc-list a:hover { border-color: var(--border-soft); background: var(--surface2); color: var(--accent); }
+  .toc-num { font-family: "DM Mono", monospace; font-size: 0.65rem; color: var(--accent); flex-shrink: 0; margin-top: 0.15rem; }
+
+  /* ─── CONTENT ─── */
+  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 8rem; }
+
+  /* PART */
+  .hgg-part { margin-bottom: 5rem; }
+  .hgg-part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--accent); }
+  .hgg-part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: var(--border-soft); line-height: 1; flex-shrink: 0; }
+  .hgg-part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--text); line-height: 1.25; }
+
+  /* SECTION */
+  .hgg-section { margin-bottom: 3.5rem; }
+  .hgg-section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--accent); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--accent); scroll-margin-top: 2rem; }
+  .hgg-subsection-title { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin: 2rem 0 0.75rem; }
+
+  /* TEXT */
+  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: var(--text); line-height: 1.75; font-weight: 300; }
+  .content strong { color: var(--text); font-weight: 600; }
+  .content em { color: var(--text-dim); }
+
+  /* KEY FACT */
+  .hgg-key-fact { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 0.6rem; padding: 0.85rem 1.1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; }
+  .hgg-key-bullet { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; flex-shrink: 0; margin-top: 0.5rem; }
+  .hgg-key-fact > div { font-size: 0.91rem; color: var(--text); line-height: 1.65; font-weight: 300; }
+
+  /* CONCEPT BOX */
+  .hgg-concept { background: var(--surface2); color: var(--text); padding: 1.75rem; margin: 2rem 0; position: relative; border-radius: 4px; border: 1px solid var(--border); }
+  .hgg-concept::before { content: '→'; position: absolute; top: 1.25rem; right: 1.25rem; color: var(--accent2); font-size: 1.3rem; }
+  .hgg-concept .concept-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent2); margin-bottom: 0.7rem; }
+  .hgg-concept p { color: var(--text-dim); font-size: 0.93rem; margin: 0; }
+  .hgg-concept strong { color: var(--accent2); }
+
+  /* HIGHLIGHT */
+  .hgg-highlight { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 1.25rem 1.75rem; margin: 1.5rem 0; font-style: italic; color: var(--text); font-size: 0.93rem; line-height: 1.7; border-radius: 0 6px 6px 0; }
+
+  /* AUTHOR CARD */
+  .hgg-author { background: var(--surface2); color: var(--text); padding: 1.75rem; margin: 1.2rem 0; position: relative; border-radius: 4px; border-left: 4px solid var(--accent4); border-top: 1px solid var(--border); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .hgg-author::before { content: '✎'; position: absolute; top: 1.25rem; right: 1.25rem; color: var(--accent4); font-size: 1.1rem; opacity: 0.8; }
+  .hgg-author .author-name { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent4); margin-bottom: 0.7rem; font-weight: 700; }
+  .hgg-author p { color: var(--text-dim); font-size: 0.93rem; margin: 0; line-height: 1.7; font-weight: 300; }
+  .hgg-author strong { color: var(--accent4); }
+
+  /* STATS GRID */
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: var(--border); margin: 1.5rem 0; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .hgg-stat-cell { background: var(--surface); padding: 1.3rem; text-align: center; }
+  .hgg-stat-num { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 900; color: var(--accent); display: block; }
+  .hgg-stat-label { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.2rem; font-family: 'DM Mono', monospace; }
+
+  /* BIG QUOTE */
+  .big-quote { background: var(--surface2); color: var(--text); padding: 1.6rem 2rem; margin: 1.5rem 0; border-radius: 8px; text-align: center; position: relative; border: 1px solid var(--border); }
+  .big-quote::before { content: '\201C'; font-family: 'Playfair Display', serif; font-size: 5rem; color: var(--accent); position: absolute; top: -1rem; left: 1.5rem; line-height: 1; opacity: 0.3; }
+  .big-quote blockquote { font-family: 'Playfair Display', serif; font-size: clamp(0.88rem, 1.6vw, 1rem); font-style: italic; line-height: 1.6; color: var(--text); position: relative; z-index: 1; margin-bottom: 0.6rem; }
+  .big-quote cite { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); }
+
+  /* COMPARE BOX */
+  .compare-box { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 1.5rem 0; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+  .compare-side { padding: 1.3rem 1.5rem; }
+  .compare-side h5 { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.7rem; }
+  .compare-side p { font-size: 0.85rem; line-height: 1.65; margin-bottom: 0.5rem; font-weight: 300; color: var(--text-dim); }
+  .compare-side p:last-child { margin-bottom: 0; }
+  .compare-a { background: var(--accent-soft); }
+  .compare-a h5 { color: var(--accent); }
+  .compare-b { background: var(--accent2-soft); }
+  .compare-b h5 { color: var(--accent2); }
+
+  /* TWO COL */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+  .col-card { border-radius: 8px; padding: 1.2rem 1.4rem; border: 1px solid; }
+  .col-card h5 { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.6rem; }
+  .col-card p { margin: 0; font-size: 0.85rem; line-height: 1.6; font-weight: 300; }
+  .col-teal { background: var(--accent-soft); border-color: var(--accent-dim); }
+  .col-teal h5 { color: var(--accent); }
+  .col-teal p { color: var(--text-dim); }
+  .col-cyan { background: var(--accent2-soft); border-color: #4fc3d955; }
+  .col-cyan h5 { color: var(--accent2); }
+  .col-cyan p { color: var(--text-dim); }
+  .col-dark { background: var(--accent4-soft); border-color: #d1559a55; }
+  .col-dark h5 { color: var(--accent4); }
+  .col-dark p { color: var(--text-dim); }
+  .col-green { background: var(--accent3-soft); border-color: #9ecba055; }
+  .col-green h5 { color: var(--accent3); }
+  .col-green p { color: var(--text-dim); }
+
+  /* DEF CARD */
+  .def-card { background: var(--surface); border-radius: 10px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.25), 0 0 0 1px var(--border); display: flex; margin-bottom: 0.75rem; }
+  .def-accent-bar { width: 5px; background: linear-gradient(180deg, var(--accent) 0%, var(--accent4) 100%); flex-shrink: 0; }
+  .def-body { padding: 1.1rem 1.4rem; flex: 1; }
+  .def-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.65rem; }
+  .def-term { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--accent); }
+  .def-tag { margin-left: auto; font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); padding: 2px 8px; border-radius: 20px; }
+  .def-text { font-size: 0.91rem; color: var(--text-dim); line-height: 1.7; font-weight: 300; margin: 0 !important; }
+  .def-text strong { color: var(--text); font-weight: 600; }
+
+  /* CRISIS CARD (preuve card) */
+  .crisis-card { border-radius: 10px; padding: 1.4rem 1.6rem; margin: 1rem 0; border: 1px solid var(--border); border-left: 4px solid var(--accent); background: var(--surface); }
+  .crisis-date { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.4rem; font-weight: 700; }
+  .crisis-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
+  .crisis-card p { margin: 0 0 0.5rem; font-size: 0.88rem; color: var(--text-dim); line-height: 1.65; font-weight: 300; }
+  .crisis-card p:last-child { margin-bottom: 0; }
+
+  /* PROBLEMATIQUE BANNER */
+  .prob-banner { background: linear-gradient(135deg, var(--surface2) 0%, #100f16 100%); border-radius: 10px; padding: 2rem 2.5rem; margin: 2rem 0; text-align: center; border: 1px solid var(--border); }
+  .prob-banner .prob-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--accent2); margin-bottom: 0.9rem; }
+  .prob-banner p { font-family: 'Playfair Display', serif; font-size: clamp(1rem, 2.5vw, 1.3rem); font-style: italic; color: var(--text); line-height: 1.55; margin: 0; }
+
+  /* TRANSITION */
+  .transition-block { background: var(--accent-soft); border: 1px dashed var(--accent-dim); border-radius: 8px; padding: 1.25rem 1.6rem; margin: 2.5rem 0; }
+  .transition-block .t-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; }
+  .transition-block p { font-style: italic; font-size: 0.92rem; color: var(--text); line-height: 1.65; margin: 0; font-weight: 300; }
+
+  /* STEP BLOCK */
+  .step-block { display: flex; gap: 1rem; margin-bottom: 1.1rem; align-items: flex-start; }
+  .step-num { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 900; color: var(--border-soft); line-height: 1.2; flex-shrink: 0; width: 2rem; text-align: right; }
+  .step-content { flex: 1; font-size: 0.93rem; color: var(--text-dim); line-height: 1.7; font-weight: 300; padding-top: 0.1rem; }
+  .step-content strong { color: var(--text); font-weight: 600; }
+
+  /* MINI CALLOUT */
+  .mini-callout { border-radius: 6px; padding: 0.9rem 1.2rem; margin: 1.2rem 0; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; gap: 0.8rem; }
+  .mini-callout-icon { font-size: 1.1rem; flex-shrink: 0; color: var(--accent); }
+  .mini-callout-text { font-size: 0.9rem; color: var(--text-dim); line-height: 1.6; font-weight: 300; }
+  .mini-callout-text strong { color: var(--text); font-weight: 600; }
+
+  /* INLINE TAG */
+  .tag { display: inline-block; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; background: var(--accent-soft); color: var(--accent); padding: 2px 7px; border-radius: 4px; vertical-align: middle; margin-left: 4px; }
+
+  /* PREUVE STRIP */
+  .preuve-strip { border-top: 1px solid var(--border); margin: 2rem 0 0.5rem; padding-top: 1rem; display: flex; align-items: baseline; gap: 0.8rem; flex-wrap: wrap; }
+  .preuve-strip .ps-num { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--accent); letter-spacing: 0.25em; }
+  .preuve-strip .ps-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--text); }
+  .preuve-strip .ps-sub { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--text-faint); letter-spacing: 0.1em; }
+
+  /* RETENIR BOX */
+  .retenir-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.4rem 1.6rem; margin: 2rem 0; }
+  .retenir-box .rb-label { display: block; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem !important; }
+  .retenir-box .rb-items { display: block; }
+  .retenir-box .rb-item { display: block; font-size: 0.9rem; color: var(--text-dim); line-height: 1.65; font-weight: 300; padding: 0.45rem 0 0.45rem 1.4rem; border-bottom: 1px dashed var(--border); margin: 0 !important; position: relative; }
+  .retenir-box .rb-item:last-child { border-bottom: none; }
+  .retenir-box .rb-item::before { content: '—'; color: var(--accent); position: absolute; left: 0; top: 0.45rem; }
+  .retenir-box .rb-item strong { color: var(--text); }
+
+  /* Neutraliser le margin global sur les <p> dans les boîtes spéciales */
+  .retenir-box p, .transition-block p, .hgg-concept p,
+  .hgg-author p, .crisis-card p, .col-card p { margin-bottom: 0 !important; }
+  .crisis-card p + p { margin-top: 0.5rem; }
+
+  /* FOOTER */
+  .site-footer { background: var(--surface2); border-top: 1px solid var(--border); padding: 2.5rem 2rem; text-align: center; }
+  .site-footer .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--accent); letter-spacing: 0.02em; margin-bottom: 0.4rem; }
+  .site-footer .footer-meta { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-faint); }
+
+  /* BACK TO TOP */
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--accent); color: #100f16; border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 4px 14px rgba(0,0,0,0.5); opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 200; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+  .back-to-top:hover { background: var(--accent2); }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .toc-list { grid-template-columns: 1fr; }
+    .two-col, .three-col, .compare-box { grid-template-columns: 1fr; }
+    .ch-hero { padding: 3rem 1.5rem 2.5rem; }
+  }
+
+  /* ═══════════════════════════════════════════
+     STYLES D'IMPRESSION
+  ═══════════════════════════════════════════ */
+  @media print {
+    @page { size: A4; margin: 18mm 15mm 18mm 15mm; }
+    nav, .back-to-top, .toc-bar, .site-footer { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    html, body { background: white !important; color: #000 !important; font-size: 10pt; }
+    .ch-hero { background: #16161a !important; padding: 0.9rem 1rem 0.7rem !important; min-height: unset !important; height: auto !important; }
+    .ch-hero::before { display: none !important; }
+    .ch-hero h1 { font-size: 16pt !important; color: #fff !important; margin-bottom: 0.3rem !important; }
+    .ch-hero .chap-label { font-size: 7pt !important; color: #e2823c !important; margin-bottom: 0.4rem !important; }
+    .ch-hero p { font-size: 7pt !important; color: #e2823c !important; margin: 0 !important; }
+    .content { max-width: 100% !important; padding: 0.8rem 0 !important; margin: 0 !important; }
+    .hgg-part { page-break-before: auto; break-before: auto; margin-bottom: 1rem; }
+    .hgg-part-header, .hgg-section-title, .hgg-subsection-title, .preuve-strip, .crisis-date { page-break-after: avoid; break-after: avoid; }
+    .hgg-section { page-break-inside: auto; break-inside: auto; margin-bottom: 1rem; }
+    .hgg-key-fact, .hgg-author, .hgg-concept, .hgg-highlight, .hgg-stat-cell, .def-card, .crisis-card, .mini-callout, .retenir-box, .transition-block, .step-block, .big-quote, .prob-banner, .col-card, .compare-side {
+      page-break-inside: avoid; break-inside: avoid;
+    }
+    .hgg-part-header { border-bottom: 2pt solid #e2823c !important; padding-bottom: 0.5rem; margin-bottom: 1rem; }
+    .hgg-part-num { font-size: 2.5rem !important; color: #8a8880 !important; }
+    .hgg-part-title { font-size: 14pt !important; color: #000 !important; }
+    .hgg-section-title { font-size: 11pt !important; border-left: 3pt solid #e2823c !important; padding-left: 0.6rem !important; margin-bottom: 0.6rem !important; color: #a04e18 !important; }
+    .hgg-subsection-title { font-size: 8pt !important; color: #a04e18 !important; margin: 0.8rem 0 0.4rem !important; }
+    .content p { font-size: 9.5pt !important; line-height: 1.55 !important; margin-bottom: 0.5rem !important; color: #000 !important; }
+    .hgg-key-fact { background: #fdf3ec !important; border: 1pt solid #e2823c !important; padding: 0.5rem 0.7rem !important; margin-bottom: 0.35rem !important; }
+    .hgg-key-fact > div { font-size: 9pt !important; color: #000 !important; }
+    .hgg-concept { background: #16161a !important; color: #F0F0EC !important; padding: 0.9rem 1rem !important; margin: 0.8rem 0 !important; border-radius: 4px; }
+    .hgg-concept p { color: #dcdcd6 !important; font-size: 9pt !important; }
+    .hgg-concept .concept-label { color: #4fc3d9 !important; font-size: 7pt !important; }
+    .hgg-concept strong { color: #4fc3d9 !important; }
+    .hgg-concept::before { display: none; }
+    .hgg-author { background: #16161a !important; color: #F0F0EC !important; padding: 0.9rem 1rem !important; margin: 0.8rem 0 !important; }
+    .hgg-author p { color: #dcdcd6 !important; font-size: 9pt !important; }
+    .hgg-author .author-name { color: #d1559a !important; font-size: 7pt !important; }
+    .hgg-author strong { color: #d1559a !important; }
+    .hgg-author::before { display: none; }
+    .hgg-highlight { background: #fdf1e6 !important; border-left: 3pt solid #e2823c !important; padding: 0.7rem 1rem !important; margin: 0.8rem 0 !important; font-size: 9pt !important; color: #3a2410 !important; }
+    .hgg-stats { border: 1pt solid #e2823c !important; margin: 0.8rem 0 !important; }
+    .hgg-stat-cell { background: white !important; padding: 0.8rem !important; }
+    .hgg-stat-num { font-size: 12pt !important; color: #a04e18 !important; }
+    .hgg-stat-label { font-size: 7.5pt !important; color: #55524a !important; }
+    .big-quote { background: #16161a !important; color: #F0F0EC !important; padding: 1rem 1.4rem !important; margin: 0.8rem 0 !important; }
+    .big-quote blockquote { font-size: 10pt !important; color: #F0F0EC !important; }
+    .big-quote cite { color: #e2823c !important; font-size: 7pt !important; }
+    .big-quote::before { font-size: 3rem !important; top: -0.3rem !important; }
+    .compare-box { margin: 0.7rem 0 !important; }
+    .compare-side { padding: 0.7rem 0.9rem !important; }
+    .compare-side p { font-size: 8.5pt !important; }
+    .compare-side h5 { font-size: 6.5pt !important; }
+    .two-col { grid-template-columns: 1fr 1fr !important; gap: 0.5rem !important; margin: 0.6rem 0 !important; }
+    .three-col { grid-template-columns: 1fr 1fr 1fr !important; gap: 0.5rem !important; margin: 0.6rem 0 !important; }
+    .col-card { padding: 0.7rem 0.9rem !important; }
+    .col-card p { font-size: 8.5pt !important; }
+    .col-card h5 { font-size: 6.5pt !important; }
+    .def-card { box-shadow: none !important; border: 1pt solid #e2823c !important; margin-bottom: 0.5rem !important; }
+    .def-term { font-size: 10pt !important; }
+    .def-text { font-size: 9pt !important; color: #000 !important; }
+    .def-accent-bar { background: #e2823c !important; }
+    .crisis-card { background: white !important; border: 1pt solid #e2823c !important; border-left: 4pt solid #e2823c !important; padding: 0.7rem 1rem !important; margin: 0.5rem 0 !important; }
+    .crisis-card p { font-size: 8.5pt !important; }
+    .crisis-title { font-size: 10pt !important; color: #000 !important; }
+    .crisis-date { font-size: 6.5pt !important; color: #a04e18 !important; }
+    .mini-callout { background: #fdf3ec !important; border: 1pt solid #e2823c !important; padding: 0.5rem 0.8rem !important; margin: 0.6rem 0 !important; }
+    .mini-callout-text { font-size: 8.5pt !important; color: #000 !important; }
+    .mini-callout-icon { font-size: 0.9rem !important; }
+    .retenir-box { background: #fdf3ec !important; border: 1pt solid #e2823c !important; padding: 0.8rem 1rem !important; margin: 0.8rem 0 !important; }
+    .retenir-box .rb-label { font-size: 7pt !important; color: #a04e18 !important; }
+    .retenir-box .rb-item { font-size: 9pt !important; color: #000 !important; }
+    .transition-block { background: rgba(226,130,60,0.1) !important; border: 1pt dashed #e2823c !important; padding: 0.7rem 1rem !important; margin: 0.8rem 0 !important; }
+    .transition-block .t-label { font-size: 7pt !important; color: #a04e18 !important; }
+    .transition-block p { font-size: 9pt !important; color: #3a2410 !important; }
+    .step-block { margin-bottom: 0.5rem !important; }
+    .step-num { font-size: 1.1rem !important; color: #e2823c !important; }
+    .step-content { font-size: 9pt !important; color: #000 !important; }
+    .preuve-strip { border-top: 1pt solid #f5e3d3 !important; margin: 1rem 0 0.4rem !important; padding-top: 0.6rem !important; }
+    .preuve-strip .ps-num { font-size: 7pt !important; color: #a04e18 !important; }
+    .preuve-strip .ps-title { font-size: 10pt !important; color: #000 !important; }
+    .preuve-strip .ps-sub { font-size: 7pt !important; }
+    .prob-banner { background: #16161a !important; padding: 1rem 1.4rem !important; margin: 0.8rem 0 !important; }
+    .prob-banner .prob-label { font-size: 7pt !important; color: #e2823c !important; }
+    .prob-banner p { font-size: 10pt !important; color: #F0F0EC !important; }
+    a { text-decoration: none !important; color: inherit !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">/</span>
+    <a href="../../humanite.html"><span>L'Humanité</span></a>
+    <span class="sep">/</span>
+    <a href="cinema.html"><span>Cinéma</span></a>
+    <span class="sep">/</span>
+    <span class="current">Blade Runner</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="chap-label">🎬 Cinéma · L'Humanité</div>
+  <h1>Blade Runner</h1>
+  <p>Ridley Scott · 1982 · Science-fiction, néo-noir</p>
+</div>
+
+<!-- ─── TOC ─── -->
+<div class="toc-bar">
+  <div class="toc-inner">
+    <div class="toc-title">Plan de la fiche</div>
+    <ul class="toc-list">
+      <li><a href="#intro"><span class="toc-num">I —</span> Présentation de l'œuvre</a></li>
+      <li><a href="#p1"><span class="toc-num">II —</span> Résumé</a></li>
+      <li><a href="#p2"><span class="toc-num">III —</span> Une fable sur les frontières de l'humain</a></li>
+      <li><a href="#p3"><span class="toc-num">IV —</span> Pistes pour la dissertation</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ─── CONTENT ─── -->
+<div class="content">
+
+<!-- ══════════════════════════════════════ -->
+<!--  PARTIE I — PRÉSENTATION              -->
+<!-- ══════════════════════════════════════ -->
+<div class="hgg-part" id="intro">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">I</div>
+    <div class="hgg-part-title">Présentation de l'œuvre</div>
+  </div>
+
+  <p><strong>Blade Runner</strong> est un film américain de science-fiction réalisé par <strong>Ridley Scott</strong>, sorti en 1982 et librement adapté du roman de Philip K. Dick <em>Do Androids Dream of Electric Sheep?</em>. Dans un Los Angeles crépusculaire et pluvieux de 2019, l'ancien policier <strong>Rick Deckard</strong> (Harrison Ford) est chargé de traquer des <strong>réplicants</strong> — des androïdes bio-mécaniques quasiment indiscernables des humains — revenus illégalement sur Terre.</p>
+
+  <div class="hgg-stats">
+    <div class="hgg-stat-cell"><span class="hgg-stat-num">1982</span><div class="hgg-stat-label">Année de sortie</div></div>
+    <div class="hgg-stat-cell"><span class="hgg-stat-num">4</span><div class="hgg-stat-label">Réplicants Nexus-6 traqués par Deckard</div></div>
+    <div class="hgg-stat-cell"><span class="hgg-stat-num">1</span><div class="hgg-stat-label">Test d'empathie : le Voight-Kampff</div></div>
+  </div>
+
+  <p>Fabriqués par la Tyrell Corporation pour le travail et le combat dans les colonies extraterrestres, les réplicants sont dotés d'une force et d'une intelligence supérieures à celles des humains — mais leur créateur affiche, en guise de slogan, l'ambition de les rendre <strong>« plus humains que l'humain »</strong>. Le film interroge alors directement ce qui, une fois cette frontière biologique brouillée, permet encore de distinguer un homme d'une machine à son image.</p>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  PARTIE II — RÉSUMÉ                   -->
+<!-- ══════════════════════════════════════ -->
+<div class="hgg-part" id="p1">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">II</div>
+    <div class="hgg-part-title">Résumé</div>
+  </div>
+
+  <div class="hgg-section" id="s1-1">
+    <div class="hgg-section-title">1 — La traque des réplicants</div>
+
+    <p>Quatre réplicants Nexus-6, menés par <strong>Roy Batty</strong>, se sont introduits clandestinement sur Terre pour retrouver leur créateur, Eldon Tyrell, et tenter d'obtenir une prolongation de leur durée de vie, limitée à quatre années par construction. Deckard est rappelé en service pour les éliminer un à un, à l'aide du test du <strong>Voight-Kampff</strong>, censé démasquer un réplicant par l'absence ou la lenteur de ses réactions émotionnelles face à des questions troublantes.</p>
+
+    <div class="hgg-key-fact">
+      <div class="hgg-key-bullet"></div>
+      <div>Deckard rencontre <strong>Rachael</strong>, une réplicante expérimentale dotée de faux souvenirs d'enfance si convaincants qu'elle ignore elle-même sa véritable nature — brouillant encore un peu plus, pour Deckard comme pour le spectateur, la frontière entre l'humain et l'artificiel.</div>
+    </div>
+
+    <p>Au fil de la traque, Deckard élimine plusieurs réplicants, non sans que le film ne s'attarde sur leur détresse, leur colère et leur soif de vivre — des réactions que rien, dans le film, ne permet de disqualifier comme moins authentiques que celles d'un être humain.</p>
+  </div>
+
+  <div class="hgg-section" id="s1-2">
+    <div class="hgg-section-title">2 — La confrontation finale avec Roy Batty</div>
+
+    <p>Après avoir affronté son créateur Tyrell, qui lui refuse toute prolongation de vie, Roy Batty le tue puis traque Deckard jusqu'à l'affrontement final sur les toits pluvieux de la ville. Alors qu'il pourrait le laisser mourir en chutant dans le vide, Roy Batty le hisse in extremis vers la sécurité, quelques instants avant que sa propre durée de vie programmée n'arrive à son terme.</p>
+
+    <div class="hgg-concept">
+      <div class="concept-label">Le dernier geste de Roy Batty</div>
+      <p>Sur le point de mourir, le réplicant que tout désignait comme la menace la plus dangereuse du film accomplit un geste de compassion gratuite envers celui qui le traquait. Juste avant sa mort, il évoque, dans un dernier monologue, la beauté fugitive de ce qu'il a vu et vécu — souvenirs voués à disparaître avec lui comme n'importe quel souvenir humain à l'instant de la mort.</p>
+    </div>
+
+    <div class="hgg-highlight">Le film s'achève sur Deckard et Rachael quittant la ville ensemble, sans que le spectateur sache jamais avec certitude si Deckard lui-même est ou non un réplicant — ambiguïté centrale, jamais levée, sur laquelle le film construit tout son propos.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  PARTIE III — ANALYSE                 -->
+<!-- ══════════════════════════════════════ -->
+<div class="hgg-part" id="p2">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">III</div>
+    <div class="hgg-part-title">Une fable sur les frontières de l'humain</div>
+  </div>
+
+  <div class="hgg-section" id="s2-1">
+    <div class="hgg-section-title">1 — L'empathie comme dernier critère de l'humanité</div>
+
+    <p>Puisque les réplicants sont physiquement indiscernables des humains, le film déplace le critère de l'humanité du corps vers la <strong>capacité d'empathie</strong> : le test Voight-Kampff ne mesure rien d'autre que l'aptitude à ressentir, ou à simuler, une émotion face à la souffrance d'un être vivant. Mais ce critère se révèle lui-même fragile, puisque plusieurs réplicants du film manifestent un attachement, une peur de la mort et une soif de sens qui n'ont rien à envier à ceux des humains qui les traquent.</p>
+
+    <div class="two-col">
+      <div class="col-card col-teal">
+        <h5>🧪 Un test devenu insuffisant</h5>
+        <p>Le Voight-Kampff, censé garantir une frontière nette, échoue à distinguer clairement des réplicants perfectionnés d'êtres réellement humains.</p>
+      </div>
+      <div class="col-card col-cyan">
+        <h5>💭 Des souvenirs sans passé réel</h5>
+        <p>Rachael découvre que ses souvenirs d'enfance, aussi vivaces soient-ils, ont été implantés — remettant en cause l'idée que la mémoire garantirait, à elle seule, une identité humaine authentique.</p>
+      </div>
+    </div>
+
+    <div class="hgg-highlight">
+      Le film suggère ainsi qu'aucun critère isolé — corps, mémoire, test scientifique — ne suffit à définir l'humanité avec certitude : elle se loge peut-être davantage dans la capacité à se soucier d'autrui que dans une origine biologique vérifiable.
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-2">
+    <div class="hgg-section-title">2 — Les réplicants, plus humains que leurs créateurs ?</div>
+
+    <p>Le slogan de la Tyrell Corporation — rendre les réplicants « plus humains que l'humain » — se retourne contre ses concepteurs : ce sont les réplicants, condamnés à une vie brève et sans avenir, qui manifestent le désir de vivre, l'amour et, au moment décisif, la compassion la plus pure du film, tandis que les humains qui les traquent ou les exploitent font souvent preuve d'une indifférence proche de la cruauté.</p>
+
+    <div class="hgg-author">
+      <div class="author-name">Roy Batty, une humanité conquise</div>
+      <p>Rien, dans sa conception, ne prédisposait Roy Batty à la compassion : il a été fabriqué pour le combat. Pourtant, face à sa propre fin, il choisit librement d'épargner son ennemi — geste qui n'est dicté par aucune programmation mais semble naître d'une conscience de sa propre finitude. Le film suggère que l'humanité ne serait peut-être pas un donné biologique, mais une conquête, accessible même à une créature artificielle confrontée à sa propre mortalité.</p>
+    </div>
+
+    <div class="mini-callout">
+      <span class="mini-callout-icon">🌧️</span>
+      <span class="mini-callout-text">Cette idée d'une <strong>humanité acquise plutôt qu'innée</strong> fait écho aux réflexions philosophiques sur la conscience de la mort comme moteur du sens que nous donnons à notre existence.</span>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-3">
+    <div class="hgg-section-title">3 — L'ambiguïté de Deckard : et si le chasseur était lui-même une machine ?</div>
+
+    <p>En laissant planer un doute permanent sur la nature réelle de Deckard, le film pousse le spectateur à s'interroger sur ses propres critères de jugement : si Deckard se révélait être un réplicant sans le savoir, cela changerait-il quoi que ce soit à l'authenticité de son amour pour Rachael, ou à la valeur morale de ses choix ? Cette ambiguïté, jamais résolue, constitue la véritable force philosophique du film.</p>
+
+    <div class="compare-box">
+      <div class="compare-side compare-a">
+        <h5>🔫 Deckard, chasseur d'artificiel</h5>
+        <p>Sa fonction officielle consiste à éliminer ce qui n'est, en principe, qu'une imitation de vie humaine dépourvue de droits.</p>
+      </div>
+      <div class="compare-side compare-b">
+        <h5>❤️ Deckard, être aimant et doutant</h5>
+        <p>Ses hésitations, sa relation avec Rachael et son propre doute sur sa nature le rapprochent, à chaque scène, de ceux qu'il est chargé de traquer.</p>
+      </div>
+    </div>
+
+    <p>Le film refuse ainsi de trancher la question par une révélation finale, invitant à conclure que l'important n'est peut-être pas de savoir avec certitude ce que l'on est, mais comment on choisit d'agir envers autrui.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  PARTIE IV — PISTES DE DISSERTATION   -->
+<!-- ══════════════════════════════════════ -->
+<div class="hgg-part" id="p3">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">IV</div>
+    <div class="hgg-part-title">Pistes pour la dissertation</div>
+  </div>
+
+  <div class="hgg-section" id="s3-1">
+    <div class="hgg-section-title">Comment mobiliser cette œuvre dans une copie ?</div>
+
+    <div class="retenir-box">
+      <div class="rb-label">Idées à retenir</div>
+      <div class="rb-items">
+        <div class="rb-item">Lorsque le corps ne suffit plus à distinguer l'humain de l'artificiel, l'<strong>empathie</strong> et le souci d'autrui deviennent les derniers critères possibles de l'humanité.</div>
+        <div class="rb-item">La conscience de sa propre <strong>mortalité</strong> peut être, paradoxalement, ce qui rapproche le plus une créature artificielle de la condition humaine.</div>
+        <div class="rb-item">Une créature conçue sans intention d'humanité peut néanmoins la <strong>conquérir</strong> par un acte libre de compassion.</div>
+        <div class="rb-item">L'ambiguïté sur la nature de Deckard suggère que l'important n'est peut-être pas l'origine d'un être, mais la manière dont il <strong>agit envers les autres</strong>.</div>
+      </div>
+    </div>
+
+    <div class="hgg-subsection-title">→ Notions du thème « L'Humanité » éclairées par l'œuvre</div>
+    <div class="three-col">
+      <div class="col-card col-teal">
+        <h5>🫀 L'empathie comme critère</h5>
+        <p>Le film déplace la définition de l'humain du corps biologique vers la capacité à ressentir pour autrui.</p>
+      </div>
+      <div class="col-card col-cyan">
+        <h5>⏳ Mortalité et sens de la vie</h5>
+        <p>La conscience de sa propre fin pousse Roy Batty à un acte de compassion qui l'humanise pleinement.</p>
+      </div>
+      <div class="col-card col-dark">
+        <h5>❓ L'identité incertaine</h5>
+        <p>L'ambiguïté sur la nature de Deckard interroge si l'origine d'un être prime sur ses actes.</p>
+      </div>
+    </div>
+
+    <div class="hgg-concept">
+      <div class="concept-label">À rapprocher</div>
+      <p>René Descartes et le critère du langage dans le <em>Discours de la méthode</em> (1637) : Descartes jugeait qu'aucune machine ne pourrait jamais répondre avec à-propos à n'importe quelle situation comme le fait un homme. Blade Runner met précisément ce critère à l'épreuve en imaginant des réplicants capables non seulement de langage adapté, mais d'émotions, de doute et de choix moraux — obligeant à repenser, trois siècles plus tard, ce qui distingue réellement l'homme de la machine qu'il façonne à son image.</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<footer class="site-footer">
+  <div class="footer-logo">Blade Runner — Ridley Scott</div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
+
+<script>
+  document.querySelectorAll('.toc-list a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>

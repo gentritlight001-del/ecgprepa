@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Accord pétrolier Venezuela-États-Unis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #c62828;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #c62828; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #ffd600; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #1565c0; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #c62828; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #c62828; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#c62828; border-color:#c62828; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  /* Article styles */
+  .ap-band { background: linear-gradient(90deg, #c62828, #ffd600, #1565c0, #ffd600, #c62828); text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(13,27,42,0.95); padding:12px 60px; border-bottom: 1px solid rgba(198,40,40,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#ffd600; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(198,40,40,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(181,19,31,0.2);  color:#f08080; border:1px solid rgba(181,19,31,0.35); }
+  .ap-tag-navy   { background:rgba(13,27,42,0.6);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #ffd600; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(198,40,40,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(255,214,0,0.7); }
+
+  /* Rich article components */
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#ffd600; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(255,214,0,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#1a0a0a,#2d1010); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat.blue   { background:linear-gradient(135deg,#0a1e42,#1a3a7a); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #ffd600; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(255,214,0,0.06),rgba(255,214,0,0.02)); border-left:3px solid #ffd600; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(255,214,0,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,214,0,0.7); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(13,27,42,0.9),rgba(7,16,28,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(198,40,40,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#ffd600; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(198,40,40,0.06); border:1px solid rgba(198,40,40,0.18); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(255,214,0,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#ffd600; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(255,214,0,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#ffd600; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(13,27,42,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-es-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-es.html">Espagnol</a>
+    <span class="sep">/</span>
+    <a href="../venezuela.html">Venezuela</a>
+    <span class="sep">/</span>
+    <span class="current">Accord pétrolier Venezuela-USA</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-es" class="ap-lang-btn" onclick="setLang('es')">🇻🇪 ES</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇻🇪 Accord pétrolier Venezuela-USA</div>
+<div class="ap-back-bar">
+  <a href="../venezuela.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+    <div class="ap-hero-img-wrap"><img class="ap-hero-img" src="../images/accord-petrolier-venezuela-usa.jpg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+    <!-- ══ SECTION FR ══ -->
+    <div class="ap-fr-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-red">🇻🇪 Venezuela</span>
+          <span class="ap-tag ap-tag-gold">Énergie</span>
+          <span class="ap-tag ap-tag-green">Économie</span>
+          <span class="ap-tag ap-tag-navy">Diplomatie</span>
+          <span class="ap-tag ap-tag-purple">Géopolitique</span>
+        </div>
+        <div class="ap-date">Août 2026 — ECG Prépa · Venezuela</div>
+        <h1 class="ap-title">Accord pétrolier Venezuela–États-Unis : l'or noir au cœur de la refondation post-Maduro</h1>
+        <p class="ap-intro">Neuf mois après la capture spectaculaire de Nicolás Maduro par l'armée américaine, Washington et Caracas ont annoncé fin août 2026 un accord pétrolier qualifié d'« historique » par Donald Trump, donnant aux États-Unis le contrôle majoritaire de plus de 65 milliards de barils de réserves vénézuéliennes. Présenté comme une relance salvatrice pour une industrie exsangue, le texte suscite autant d'espoirs de reprise économique que de doutes sur la souveraineté réelle laissée à Caracas.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red"><span class="ap-stat-num">65 Mds</span><span class="ap-stat-desc">Barils sous contrôle<br>majoritaire américain</span></div>
+          <div class="ap-stat"><span class="ap-stat-num">100 Mds $</span><span class="ap-stat-desc">Investissements privés<br>annoncés</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">209 Mds $</span><span class="ap-stat-desc">Recettes fiscales<br>promises à l'État</span></div>
+          <div class="ap-stat blue"><span class="ap-stat-num">17</span><span class="ap-stat-desc">Champs pétroliers<br>stratégiques concernés</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Le contexte : de la capture de Maduro à la présidence par intérim</div>
+            <p>Pour comprendre cet accord, il faut remonter à la nuit du 2 au 3 janvier 2026. Sur ordre de Donald Trump, l'armée américaine mène une opération militaire baptisée <strong>« Absolute Resolve »</strong> — volet final d'une campagne de pression navale déployée depuis août 2025 sous le nom « Lance du Sud », qui avait progressivement mobilisé près de 20 % de l'US Navy. Les forces spéciales américaines frappent plusieurs sites au nord du pays, dont Caracas, puis capturent Nicolás Maduro et son épouse Cilia Flores, aussitôt transférés à New York pour y être jugés pour narcoterrorisme.</p>
+            <p>La Cour suprême vénézuélienne charge alors la vice-présidente <strong>Delcy Rodriguez</strong> d'assurer l'intérim, avec le soutien de l'armée. Donald Trump annonce que Washington va « diriger » la transition et prévient Mme Rodriguez qu'elle subira le même sort que Maduro si elle ne fait pas « ce qu'il faut ». C'est dans ce rapport de force très asymétrique que s'engagent, mois après mois, les négociations qui aboutiront à l'accord pétrolier d'août 2026.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Présidente par intérim</div><div class="ap-fact-val">Delcy Rodriguez, depuis janv. 2026</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Ex-président détenu</div><div class="ap-fact-val">N. Maduro, à New York</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Opération de capture</div><div class="ap-fact-val">« Absolute Resolve », 3 janv. 2026</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Chefs d'accusation</div><div class="ap-fact-val">Narcoterrorisme</div></div>
+            </div>
+
+            <div class="ap-sub">Les termes de l'accord : une annonce spectaculaire, un texte encore flou</div>
+            <p>Le 28 août 2026, Donald Trump annonce sur son réseau Truth Social ce qu'il présente comme « le plus grand accord pétrolier de l'histoire mondiale », qui donnerait aux États-Unis le contrôle majoritaire de plus de <strong>65 milliards de barils</strong> des réserves vénézuéliennes — de quoi, selon lui, plus que doubler les réserves américaines et faire durablement baisser le prix de l'essence, sans coût pour le contribuable.</p>
+            <p>Dès le lendemain, Caracas confirme la signature. Selon Delcy Rodriguez, l'accord prévoit le développement de <strong>17 champs stratégiques</strong>, pour un investissement privé supérieur à 100 milliards de dollars et plus de 209 milliards de dollars de recettes fiscales attendues pour l'État vénézuélien. Le secrétaire d'État américain Marco Rubio confirme de son côté près de 100 milliards de dollars d'investissements privés, présentés comme un soutien à l'emploi et à la reconstruction économique du pays.</p>
+
+            <div class="ap-sub">Chronologie : de la capture de Maduro à l'accord pétrolier</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">Jan. 2026</div><p class="ap-tl-text">Capture de Nicolás Maduro lors de l'opération « Absolute Resolve ». Delcy Rodriguez assure l'intérim avec le soutien de l'armée et de la Cour suprême.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Fév. 2026</div><p class="ap-tl-text">Le secrétaire américain à l'Énergie Chris Wright se rend sur le site de la coentreprise Chevron-PDVSA Petropiar, signe du maintien opérationnel des compagnies américaines.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Print. 2026</div><p class="ap-tl-text">Rodriguez promulgue des réformes ouvrant le pétrole et les mines au capital privé, y compris étranger. Washington assouplit en parallèle les sanctions pétrolières héritées de l'ère Maduro.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Juil. 2026</div><p class="ap-tl-text">La production pétrolière progresse de 29,8 % depuis janvier, atteignant environ 1,2 million de barils par jour — loin toutefois des 3 millions extraits à la fin du siècle dernier.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">28 août 2026</div><p class="ap-tl-text">Donald Trump annonce sur Truth Social la conclusion de l'accord pétrolier « historique » avec le Venezuela.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">29-30 août</div><p class="ap-tl-text">Caracas confirme la signature. Delcy Rodriguez défend l'accord dans un discours télévisé et insiste sur le maintien de la souveraineté vénézuélienne.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">Une souveraineté sous tension : le bras de fer sur le contrôle du pétrole</div>
+            <p>Le manque de détails publics sur le texte de l'accord a immédiatement nourri rumeurs et spéculations quant à des clauses potentiellement très favorables à Washington. Face à ces doutes, Delcy Rodriguez a tenu, dans un discours télévisé, à clarifier les choses : « une chose doit être absolument claire », a-t-elle affirmé, insistant sur le fait que le Venezuela demeure propriétaire de ses ressources. Elle présente l'accord comme un choix de la diplomatie plutôt que de l'affrontement, apportant capital, technologie et capacité opérationnelle à une industrie exsangue.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Indicateur</th><th>Avant l'accord (déc. 2025)</th><th>Après l'annonce (août 2026)</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Production pétrolière</td><td>~925 000 b/j</td><td class="ap-cell-bold">~1,2 M b/j (juil. 2026)</td></tr>
+                <tr><td class="ap-cell-bold">Sanctions pétrolières US</td><td>Renforcées (ère Maduro)</td><td class="ap-cell-bold">Largement assouplies</td></tr>
+                <tr><td class="ap-cell-bold">Accès au capital privé</td><td>Monopole d'État (PDVSA)</td><td class="ap-cell-bold">Ouvert au privé étranger</td></tr>
+                <tr><td class="ap-cell-bold">Réserves prouvées</td><td>~303 Mds de barils</td><td class="ap-cell-bold">65 Mds sous contrôle US revendiqué</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">⚠️</div>
+              <div class="ap-info-text"><strong>Une transparence contestée :</strong> l'économiste pétrolier Francisco Monaldi (Institut Baker, université Rice) a calculé que la valeur revenant au Venezuela équivaudrait à environ 3,20 dollars par baril sur les 65 milliards concernés, tout en pointant le manque de transparence chronique de la politique pétrolière vénézuélienne. Plusieurs experts rappellent aussi que PDVSA ne dispose pas, seule, des moyens financiers pour exploiter ces gisements : sans garant étranger, ils resteraient probablement en sommeil pendant dix à quinze ans.</div>
+            </div>
+
+            <div class="ap-sub">Les entreprises engagées : retour des géants pétroliers</div>
+            <p><strong>Chevron</strong> demeure la seule grande compagnie pétrolière américaine à avoir maintenu une présence continue au Venezuela, via ses coentreprises historiques avec PDVSA, y compris pendant les années de sanctions les plus strictes. Delcy Rodriguez a par ailleurs évoqué des discussions en cours avec <strong>Eni, Shell et BP</strong>, tandis que des contrats seraient sur le point d'être signés avec le groupe américain de services pétroliers SLB et la société texane Hunt Oil.</p>
+            <p>En interne, l'accord ne fait cependant pas l'unanimité : des cadres chavistes de la ligne dure ont mis en cause sa légalité et accusé le gouvernement de brader la souveraineté nationale, alors même que l'Assemblée nationale venait d'approuver une réforme, soutenue par Washington, du mode de désignation des juges de la Cour suprême. La popularité de Delcy Rodriguez s'est par ailleurs affaiblie après les critiques sur la gestion gouvernementale des séismes meurtriers de juin 2026.</p>
+
+            <div class="ap-quote">
+              <p>« Cette transaction historique fera considérablement baisser le prix de l'essence. »</p>
+              <cite>— Donald Trump, Truth Social, 28 août 2026</cite>
+            </div>
+            <div class="ap-quote">
+              <p>« Le Venezuela conserve la propriété et la souveraineté sur ses ressources. »</p>
+              <cite>— Delcy Rodriguez, discours télévisé, 30 août 2026</cite>
+            </div>
+
+            <div class="ap-sub">Les enjeux géopolitiques : Chine, Russie et le nouvel ordre régional</div>
+            <p>La chute de Maduro et la mainmise américaine sur le secteur pétrolier rebattent les alliances construites en deux décennies de bolivarisme. La <strong>Chine</strong>, l'un des partenaires les plus proches du régime déchu, voit son influence reculer dans un pays où elle avait massivement investi ; la <strong>Russie</strong>, longtemps soutien militaire et diplomatique de Caracas, perd elle aussi un point d'appui stratégique dans l'hémisphère occidental. Pour certains analystes, ce précédent d'un changement de régime obtenu par la force pourrait inquiéter — ou inspirer — d'autres puissances observant la scène depuis l'extérieur.</p>
+            <p>Sur le plan intérieur, le politologue Benigno Alarcón relève un paradoxe : à mesure que les investissements américains augmentent, Washington pourrait développer un intérêt économique à la stabilité du gouvernement Rodriguez plutôt qu'à une transition politique rapide. Un scénario qui interroge la figure de <strong>María Corina Machado</strong>, prix Nobel de la paix 2025 pour son combat démocratique, elle-même partisane déclarée d'une privatisation de PDVSA et d'un Venezuela transformé en hub énergétique pour les États-Unis et le continent américain.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Le pétrole, nouvel arbitre de la souveraineté vénézuélienne</div>
+              <p>Cet accord marque un tournant, mais ne répond pas à la question qui agite le Venezuela depuis 2024 : la rente pétrolière, désormais canalisée par des capitaux américains plutôt que par l'État chaviste, profitera-t-elle réellement à une population dont près de 40 % vit sous le seuil de pauvreté et dont 7,7 millions de membres vivent en exil ? Ou s'agit-il simplement d'un nouveau visage de la dépendance, la question démocratique restant, elle, en suspens ? Les experts s'accordent sur un point : entre l'annonce et l'exploitation effective des gisements, plusieurs années s'écouleront — le véritable test de cet « accord historique » reste donc encore à venir.</p>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-fr-section -->
+
+    <!-- ══ SECTION ES ══ -->
+    <div class="ap-es-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-red">🇻🇪 Venezuela</span>
+          <span class="ap-tag ap-tag-gold">Energía</span>
+          <span class="ap-tag ap-tag-green">Economía</span>
+          <span class="ap-tag ap-tag-navy">Diplomacia</span>
+          <span class="ap-tag ap-tag-purple">Geopolítica</span>
+        </div>
+        <div class="ap-date">Agosto 2026 — ECG Prépa · Venezuela</div>
+        <h1 class="ap-title">Acuerdo petrolero Venezuela–Estados Unidos: el oro negro en el corazón de la refundación post-Maduro</h1>
+        <p class="ap-intro">Nueve meses después de la espectacular captura de Nicolás Maduro por el ejército estadounidense, Washington y Caracas anunciaron a finales de agosto de 2026 un acuerdo petrolero calificado de «histórico» por Donald Trump, que otorga a Estados Unidos el control mayoritario de más de 65.000 millones de barriles de reservas venezolanas. Presentado como una relanzamiento salvador para una industria exhausta, el texto suscita tantas esperanzas de reactivación económica como dudas sobre la soberanía real que conserva Caracas.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red"><span class="ap-stat-num">65 000 M</span><span class="ap-stat-desc">Barriles bajo control<br>mayoritario estadounidense</span></div>
+          <div class="ap-stat"><span class="ap-stat-num">100 000 M $</span><span class="ap-stat-desc">Inversiones privadas<br>anunciadas</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">209 000 M $</span><span class="ap-stat-desc">Ingresos fiscales<br>prometidos al Estado</span></div>
+          <div class="ap-stat blue"><span class="ap-stat-num">17</span><span class="ap-stat-desc">Campos petroleros<br>estratégicos implicados</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">El contexto: de la captura de Maduro a la presidencia interina</div>
+            <p>Para entender este acuerdo hay que remontarse a la noche del 2 al 3 de enero de 2026. Por orden de Donald Trump, el ejército estadounidense lleva a cabo una operación militar bautizada <strong>«Absolute Resolve»</strong> —fase final de una campaña de presión naval desplegada desde agosto de 2025 bajo el nombre «Lanza del Sur», que había movilizado progresivamente cerca del 20 % de la Marina estadounidense. Las fuerzas especiales atacan varios puntos del norte del país, incluida Caracas, y capturan a Nicolás Maduro y a su esposa Cilia Flores, trasladados de inmediato a Nueva York para ser juzgados por narcoterrorismo.</p>
+            <p>El Tribunal Supremo venezolano encarga entonces a la vicepresidenta <strong>Delcy Rodríguez</strong> asumir la interinidad, con el respaldo del ejército. Donald Trump anuncia que Washington va a «dirigir» la transición y advierte a Rodríguez de que correrá la misma suerte que Maduro si no hace «lo que corresponde». En este marco de fuerzas muy asimétrico se desarrollan, mes tras mes, las negociaciones que desembocarán en el acuerdo petrolero de agosto de 2026.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Presidenta interina</div><div class="ap-fact-val">Delcy Rodríguez, desde ene. 2026</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Expresidente detenido</div><div class="ap-fact-val">N. Maduro, en Nueva York</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Operación de captura</div><div class="ap-fact-val">«Absolute Resolve», 3 ene. 2026</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Cargos imputados</div><div class="ap-fact-val">Narcoterrorismo</div></div>
+            </div>
+
+            <div class="ap-sub">Los términos del acuerdo: un anuncio espectacular, un texto aún impreciso</div>
+            <p>El 28 de agosto de 2026, Donald Trump anuncia en su red Truth Social lo que presenta como «el mayor acuerdo petrolero de la historia mundial», que otorgaría a Estados Unidos el control mayoritario de más de <strong>65.000 millones de barriles</strong> de las reservas venezolanas —suficiente, según él, para más que duplicar las reservas estadounidenses y hacer bajar de forma duradera el precio de la gasolina, sin coste para el contribuyente.</p>
+            <p>Al día siguiente, Caracas confirma la firma. Según Delcy Rodríguez, el acuerdo prevé el desarrollo de <strong>17 campos estratégicos</strong>, con una inversión privada superior a los 100.000 millones de dólares y más de 209.000 millones de dólares de ingresos fiscales previstos para el Estado venezolano. El secretario de Estado estadounidense Marco Rubio confirma, por su parte, cerca de 100.000 millones de dólares de inversión privada, presentados como un apoyo al empleo y a la reconstrucción económica del país.</p>
+
+            <div class="ap-sub">Cronología: de la captura de Maduro al acuerdo petrolero</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">Ene. 2026</div><p class="ap-tl-text">Captura de Nicolás Maduro en la operación «Absolute Resolve». Delcy Rodríguez asume la interinidad con el apoyo del ejército y del Tribunal Supremo.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Feb. 2026</div><p class="ap-tl-text">El secretario de Energía estadounidense Chris Wright visita la planta de la empresa conjunta Chevron-PDVSA Petropiar, señal de la continuidad operativa de las compañías estadounidenses.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Prim. 2026</div><p class="ap-tl-text">Rodríguez promulga reformas que abren el petróleo y la minería al capital privado, incluido el extranjero. Washington flexibiliza en paralelo las sanciones petroleras heredadas de la era Maduro.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Jul. 2026</div><p class="ap-tl-text">La producción petrolera aumenta un 29,8 % desde enero, alcanzando cerca de 1,2 millones de barriles diarios — todavía lejos de los 3 millones extraídos a finales del siglo pasado.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">28 ago. 2026</div><p class="ap-tl-text">Donald Trump anuncia en Truth Social la conclusión del acuerdo petrolero «histórico» con Venezuela.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">29-30 ago.</div><p class="ap-tl-text">Caracas confirma la firma. Delcy Rodríguez defiende el acuerdo en un discurso televisado e insiste en el mantenimiento de la soberanía venezolana.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">Una soberanía bajo tensión: el pulso por el control del petróleo</div>
+            <p>La falta de detalles públicos sobre el texto del acuerdo alimentó de inmediato rumores y especulaciones sobre cláusulas potencialmente muy favorables a Washington. Ante estas dudas, Delcy Rodríguez quiso aclarar las cosas en un discurso televisado: «una cosa debe quedar absolutamente clara», afirmó, insistiendo en que Venezuela sigue siendo propietaria de sus recursos. Presenta el acuerdo como una opción por la diplomacia en lugar del enfrentamiento, que aporta capital, tecnología y capacidad operativa a una industria exhausta.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Indicador</th><th>Antes del acuerdo (dic. 2025)</th><th>Después del anuncio (ago. 2026)</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Producción petrolera</td><td>~925.000 b/d</td><td class="ap-cell-bold">~1,2 M b/d (jul. 2026)</td></tr>
+                <tr><td class="ap-cell-bold">Sanciones petroleras EE.UU.</td><td>Reforzadas (era Maduro)</td><td class="ap-cell-bold">Ampliamente flexibilizadas</td></tr>
+                <tr><td class="ap-cell-bold">Acceso al capital privado</td><td>Monopolio estatal (PDVSA)</td><td class="ap-cell-bold">Abierto al privado extranjero</td></tr>
+                <tr><td class="ap-cell-bold">Reservas probadas</td><td>~303.000 M de barriles</td><td class="ap-cell-bold">65.000 M bajo control EE.UU. reivindicado</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">⚠️</div>
+              <div class="ap-info-text"><strong>Una transparencia cuestionada:</strong> el economista petrolero Francisco Monaldi (Instituto Baker, Universidad Rice) calculó que el valor que recibiría Venezuela equivaldría a unos 3,20 dólares por barril de los 65.000 millones implicados, señalando además la falta crónica de transparencia de la política petrolera venezolana. Varios expertos recuerdan también que PDVSA no dispone por sí sola de los recursos financieros para explotar estos yacimientos: sin un garante extranjero, probablemente permanecerían inactivos durante diez o quince años.</div>
+            </div>
+
+            <div class="ap-sub">Las empresas implicadas: el regreso de los gigantes petroleros</div>
+            <p><strong>Chevron</strong> sigue siendo la única gran petrolera estadounidense que ha mantenido una presencia continua en Venezuela, a través de sus empresas conjuntas históricas con PDVSA, incluso durante los años de sanciones más estrictas. Delcy Rodríguez mencionó además conversaciones en curso con <strong>Eni, Shell y BP</strong>, mientras que estarían a punto de firmarse contratos con el grupo estadounidense de servicios petroleros SLB y la empresa tejana Hunt Oil.</p>
+            <p>A nivel interno, sin embargo, el acuerdo no genera unanimidad: cuadros chavistas de línea dura cuestionaron su legalidad y acusaron al gobierno de ceder la soberanía nacional, justo cuando la Asamblea Nacional acababa de aprobar una reforma, respaldada por Washington, del modo de designación de los jueces del Tribunal Supremo. La popularidad de Delcy Rodríguez se debilitó además tras las críticas a la gestión gubernamental de los sismos mortales de junio de 2026.</p>
+
+            <div class="ap-quote">
+              <p>« Esta transacción histórica hará bajar considerablemente el precio de la gasolina. »</p>
+              <cite>— Donald Trump, Truth Social, 28 de agosto de 2026</cite>
+            </div>
+            <div class="ap-quote">
+              <p>« Venezuela conserva la propiedad y la soberanía sobre sus recursos. »</p>
+              <cite>— Delcy Rodríguez, discurso televisado, 30 de agosto de 2026</cite>
+            </div>
+
+            <div class="ap-sub">Los retos geopolíticos: China, Rusia y el nuevo orden regional</div>
+            <p>La caída de Maduro y el control estadounidense sobre el sector petrolero recomponen las alianzas construidas en dos décadas de bolivarianismo. <strong>China</strong>, uno de los socios más cercanos del régimen derrocado, ve retroceder su influencia en un país donde había invertido masivamente; <strong>Rusia</strong>, durante mucho tiempo apoyo militar y diplomático de Caracas, pierde también un punto de apoyo estratégico en el hemisferio occidental. Para algunos analistas, este precedente de un cambio de régimen logrado por la fuerza podría inquietar —o inspirar— a otras potencias que observan la escena desde el exterior.</p>
+            <p>En el plano interno, el politólogo Benigno Alarcón señala una paradoja: a medida que aumentan las inversiones estadounidenses, Washington podría desarrollar un interés económico en la estabilidad del gobierno de Rodríguez más que en una transición política rápida. Un escenario que interpela a la figura de <strong>María Corina Machado</strong>, premio Nobel de la Paz 2025 por su lucha democrática, ella misma partidaria declarada de una privatización de PDVSA y de un Venezuela convertido en centro energético para Estados Unidos y el continente americano.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">El petróleo, nuevo árbitro de la soberanía venezolana</div>
+              <p>Este acuerdo marca un punto de inflexión, pero no responde a la pregunta que agita a Venezuela desde 2024: ¿beneficiará realmente la renta petrolera, ahora canalizada por capitales estadounidenses en lugar de por el Estado chavista, a una población de la que casi el 40 % vive bajo el umbral de pobreza y de la que 7,7 millones de personas viven en el exilio? ¿O se trata simplemente de un nuevo rostro de la dependencia, mientras la cuestión democrática sigue en suspenso? Los expertos coinciden en un punto: entre el anuncio y la explotación efectiva de los yacimientos pasarán varios años — la verdadera prueba de este «acuerdo histórico» está, por tanto, todavía por llegar.</p>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-es-section -->
+
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — Venezuela — Août 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-es').classList.toggle('active', lang === 'es');
+  const isEs = lang === 'es';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEs ? 'none' : 'block');
+  document.querySelectorAll('.ap-es-section').forEach(el => el.style.display = isEs ? 'block' : 'none');
+}
+setLang('fr');
+</script>
+</body>
+</html>

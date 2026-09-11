@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — ESH Chapitre 1 : Les acteurs et les grandes fonctions de l'économie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F0F5F6;
+    --dark: #06161A;
+    --red: #0E6C7A;
+    --red-dark: #04303A;
+    --red-mid: #1690A2;
+    --red-light: #DCEDF0;
+    --red-border: #8FBFC8;
+    --rose: #8FBFC8;
+    --muted: #45666B;
+    --accent: #0E6C7A;
+    --accent-soft: #0E6C7A22;
+    --gold: #C9A227;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--dark); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid rgba(14,108,122,0.25);
+    background: var(--red-dark); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--rose); cursor: pointer; letter-spacing: 0.02em; }
+  .nav-logo a { color: inherit; text-decoration: none; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(240,245,246,0.5); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: inherit; text-decoration: none; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb a:hover span, .breadcrumb span:hover { color: var(--rose); }
+  .breadcrumb .sep { color: rgba(240,245,246,0.25); }
+  .breadcrumb .current { color: #F0F5F6; cursor: default; }
+
+  /* ─── CHAPTER HERO ─── */
+  .ch-hero {
+    background: var(--red-dark);
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ch-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%230E6C7A' fill-opacity='0.18'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--rose); margin-bottom: 1.5rem; opacity: 0.85; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 4rem); color: var(--cream); font-weight: 900; max-width: 900px; margin: 0 auto 1.5rem; line-height: 1.1; position: relative; z-index: 1; }
+  .ch-hero p { color: rgba(240,245,246,0.45); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  /* ─── TOC ─── */
+  .toc-bar { background: #E7F0F2; padding: 2rem; border-bottom: 1px solid #C5DCE0; }
+  .toc-inner { max-width: 960px; margin: 0 auto; }
+  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
+  .toc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.4rem; list-style: none; }
+  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: #0A2429; font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
+  .toc-list a:hover { border-color: var(--red-border); background: white; color: #000; }
+  .toc-num { font-family: "DM Mono", monospace; font-size: 0.65rem; color: var(--red); flex-shrink: 0; margin-top: 0.15rem; }
+
+  /* ─── CONTENT ─── */
+  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 8rem; }
+
+  /* PART */
+  .hgg-part { margin-bottom: 5rem; }
+  .hgg-part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--red); }
+  .hgg-part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: #8FBFC8; line-height: 1; flex-shrink: 0; }
+  .hgg-part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--dark); line-height: 1.25; }
+
+  /* SECTION */
+  .hgg-section { margin-bottom: 3.5rem; }
+  .hgg-section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--red-dark); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--red); scroll-margin-top: 2rem; }
+  .hgg-subsection-title { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--red); margin: 2rem 0 0.75rem; }
+
+  /* TEXT */
+  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: #0B1E22; line-height: 1.75; font-weight: 300; }
+  .content strong { color: var(--dark); font-weight: 600; }
+
+  /* KEY FACT */
+  .hgg-key-fact { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 0.6rem; padding: 0.85rem 1.1rem; background: white; border: 1px solid var(--red-light); border-radius: 6px; }
+  .hgg-key-bullet { width: 6px; height: 6px; background: var(--red); border-radius: 50%; flex-shrink: 0; margin-top: 0.5rem; }
+  .hgg-key-fact > div { font-size: 0.91rem; color: #0B1E22; line-height: 1.65; font-weight: 300; }
+
+  /* CONCEPT BOX */
+  .hgg-concept { background: var(--red-dark); color: var(--cream); padding: 1.75rem; margin: 2rem 0; position: relative; border-radius: 4px; }
+  .hgg-concept::before { content: '→'; position: absolute; top: 1.25rem; right: 1.25rem; color: var(--rose); font-size: 1.3rem; }
+  .hgg-concept .concept-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--rose); margin-bottom: 0.7rem; }
+  .hgg-concept p { color: rgba(240,245,246,0.82); font-size: 0.93rem; margin: 0; }
+  .hgg-concept strong { color: var(--rose); }
+
+  /* HIGHLIGHT */
+  .hgg-highlight { background: var(--red-light); border-left: 4px solid var(--red); padding: 1.25rem 1.75rem; margin: 1.5rem 0; font-style: italic; color: var(--red-dark); font-size: 0.93rem; line-height: 1.7; border-radius: 0 6px 6px 0; }
+
+  /* AUTHOR CARD */
+  .hgg-author { background: var(--red-dark); color: var(--cream); padding: 1.75rem; margin: 1.2rem 0; position: relative; border-radius: 4px; border-left: 4px solid var(--red-mid); }
+  .hgg-author::before { content: '✎'; position: absolute; top: 1.25rem; right: 1.25rem; color: var(--red-mid); font-size: 1.1rem; opacity: 0.7; }
+  .hgg-author .author-name { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; color: #9BD0DA; margin-bottom: 0.7rem; font-weight: 700; }
+  .hgg-author p { color: rgba(240,245,246,0.85); font-size: 0.93rem; margin: 0; line-height: 1.7; font-weight: 300; }
+  .hgg-author strong { color: #9BD0DA; }
+
+  /* STATS GRID */
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: var(--red-border); margin: 1.5rem 0; border: 1px solid var(--red-border); border-radius: 6px; overflow: hidden; }
+  .hgg-stat-cell { background: white; padding: 1.3rem; text-align: center; }
+  .hgg-stat-num { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 900; color: var(--red); display: block; }
+  .hgg-stat-label { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; font-family: 'DM Mono', monospace; }
+
+  /* TIMELINE */
+  .hgg-timeline { margin: 1.5rem 0; position: relative; padding-left: 2rem; }
+  .hgg-timeline::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--red-border); }
+  .hgg-timeline-item { position: relative; padding: 0.8rem 0 0.8rem 1.25rem; border-bottom: 1px solid var(--red-light); }
+  .hgg-timeline-item:last-child { border-bottom: none; }
+  .hgg-timeline-item::before { content: ''; position: absolute; left: -1.55rem; top: 1.2rem; width: 10px; height: 10px; background: var(--red); border-radius: 50%; }
+  .hgg-timeline-date { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--red); margin-bottom: 0.2rem; font-weight: 700; }
+  .hgg-timeline-item p { margin: 0; font-size: 0.88rem; color: #0B1E22; }
+
+  /* COLOR COLUMNS */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+  .col-card { border-radius: 8px; padding: 1.2rem 1.4rem; border: 1px solid; }
+  .col-card h5 { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.6rem; }
+  .col-card p { margin: 0; font-size: 0.85rem; line-height: 1.6; font-weight: 300; }
+
+  .col-red { background: rgba(14,108,122,0.07); border-color: rgba(14,108,122,0.3); }
+  .col-red h5 { color: var(--red); }
+  .col-red p { color: #0A1D21; }
+
+  .col-rose { background: rgba(143,191,200,0.14); border-color: rgba(143,191,200,0.45); }
+  .col-rose h5 { color: #16607A; }
+  .col-rose p { color: #0A1D21; }
+
+  .col-dark { background: rgba(4,48,58,0.07); border-color: rgba(4,48,58,0.22); }
+  .col-dark h5 { color: var(--red-dark); }
+  .col-dark p { color: #0A1D21; }
+
+  .col-light { background: rgba(201,162,39,0.10); border-color: rgba(201,162,39,0.35); }
+  .col-light h5 { color: #8A6E12; }
+  .col-light p { color: #0A1D21; }
+
+  /* CRISIS CARD */
+  .crisis-card { border-radius: 10px; padding: 1.4rem 1.6rem; margin: 1rem 0; border: 1px solid rgba(14,108,122,0.2); border-left: 4px solid var(--red); background: white; }
+  .crisis-date { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--red); margin-bottom: 0.4rem; font-weight: 700; }
+  .crisis-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--dark); margin-bottom: 0.5rem; }
+  .crisis-card p { margin: 0; font-size: 0.88rem; color: #0B1E22; line-height: 1.65; font-weight: 300; }
+
+  /* BIG QUOTE */
+  .big-quote { background: var(--red-dark); color: var(--cream); padding: 1.25rem 1.6rem 1.1rem; margin: 1.4rem 0; border-radius: 8px; text-align: center; position: relative; }
+  .big-quote::before { content: '"'; font-family: 'Playfair Display', serif; font-size: 3.6rem; color: var(--red-mid); position: absolute; top: -0.35rem; left: 0.9rem; line-height: 1; opacity: 0.28; }
+  .big-quote blockquote { font-family: 'Playfair Display', serif; font-size: clamp(0.9rem, 1.5vw, 1.02rem); font-style: italic; line-height: 1.55; color: var(--cream); position: relative; z-index: 1; margin: 0 auto 0.5rem; max-width: 40rem; text-wrap: balance; }
+  .big-quote cite { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--rose); line-height: 1.4; display: block; }
+
+  /* COMPARE BOX */
+  .compare-box { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 1.5rem 0; border-radius: 8px; overflow: hidden; border: 1px solid rgba(0,0,0,0.1); }
+  .compare-side { padding: 1.3rem 1.5rem; }
+  .compare-side h5 { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.7rem; }
+  .compare-side p { font-size: 0.85rem; line-height: 1.6; margin: 0; font-weight: 300; }
+  .compare-a { background: rgba(14,108,122,0.07); }
+  .compare-a h5 { color: var(--red); }
+  .compare-b { background: rgba(201,162,39,0.12); }
+  .compare-b h5 { color: #8A6E12; }
+
+  /* ─── FORMULES (spécifique ESH) ─── */
+  .formula-box {
+    background: white;
+    border: 1px solid var(--red-border);
+    border-top: 3px solid var(--red);
+    border-radius: 8px;
+    padding: 1.3rem 1.5rem;
+    margin: 1.5rem 0;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(14,108,122,0.07);
+  }
+  .formula-label {
+    font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em;
+    text-transform: uppercase; color: var(--red-mid); margin-bottom: 0.85rem;
+  }
+  .formula {
+    font-family: 'DM Mono', monospace; font-size: 0.95rem; color: var(--red-dark);
+    line-height: 2.1; font-weight: 500;
+  }
+  .formula .op { color: var(--red-mid); margin: 0 0.25rem; }
+  .formula .note { font-family: 'DM Sans', sans-serif; font-size: 0.75rem; color: var(--muted); font-weight: 300; font-style: italic; }
+  .formula .term { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; margin: 0 0.15rem; line-height: 1.35; }
+  .formula .term .t { white-space: nowrap; }
+  .formula .term .n { font-family: 'DM Sans', sans-serif; font-size: 0.68rem; color: var(--muted); font-weight: 300; font-style: italic; white-space: nowrap; }
+  .formula .unit { display: inline-flex; align-items: center; justify-content: center; flex-wrap: nowrap; margin: 0.25rem 0.9rem; }
+  .formula-sub { font-family: 'DM Sans', sans-serif; font-size: 0.8rem; color: var(--muted); margin-top: 0.7rem; font-weight: 300; line-height: 1.55; }
+  .frac { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; margin: 0 0.3rem; }
+  .frac .num { border-bottom: 1.5px solid var(--red-dark); padding: 0 0.45rem 0.12rem; font-size: 0.82rem; }
+  .frac .den { padding: 0.12rem 0.45rem 0; font-size: 0.82rem; }
+
+  /* ─── TABLEAUX (spécifique ESH) ─── */
+  .esh-table-wrap { margin: 1.5rem 0; overflow-x: auto; border-radius: 8px; border: 1px solid var(--red-border); }
+  table.esh-table { width: 100%; border-collapse: collapse; background: white; font-size: 0.85rem; }
+  table.esh-table thead th {
+    background: var(--red-dark); color: var(--cream);
+    font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em;
+    text-transform: uppercase; font-weight: 500; text-align: left;
+    padding: 0.8rem 1rem;
+  }
+  table.esh-table tbody td { padding: 0.8rem 1rem; border-top: 1px solid var(--red-light); color: #0B1E22; font-weight: 300; line-height: 1.55; vertical-align: top; }
+  table.esh-table tbody tr:nth-child(even) td { background: #F7FBFC; }
+  table.esh-table tbody td:first-child { font-weight: 500; color: var(--red-dark); white-space: nowrap; }
+  table.esh-table td strong { color: var(--red-dark); font-weight: 600; }
+
+  /* ─── FOOTER ─── */
+  .site-footer {
+    background: var(--red-dark);
+    border-top: 1px solid rgba(14,108,122,0.35);
+    padding: 2.5rem 2rem;
+    text-align: center;
+  }
+  .site-footer .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--rose);
+    letter-spacing: 0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+  /* ─── BACK TO TOP ─── */
+  .back-to-top {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 44px;
+    height: 44px;
+    background: var(--red);
+    color: var(--cream);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 14px rgba(14,108,122,0.45);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 200;
+  }
+  .back-to-top.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .back-to-top:hover {
+    background: var(--red-mid);
+  }
+
+  /* DÉFINITIONS */
+  .doctrine-block {
+    margin: 1.5rem 0;
+    position: relative;
+  }
+  .def-card {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(14,108,122,0.10), 0 0 0 1px rgba(14,108,122,0.12);
+    display: flex;
+  }
+  .def-accent-bar {
+    width: 5px;
+    background: linear-gradient(180deg, var(--red-mid) 0%, var(--red-dark) 100%);
+    flex-shrink: 0;
+  }
+  .def-body {
+    padding: 1.1rem 1.4rem;
+    flex: 1;
+  }
+  .def-header {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: 0.65rem;
+  }
+  .def-icon {
+    font-size: 0.85rem;
+    color: var(--red-mid);
+    flex-shrink: 0;
+    opacity: 0.7;
+  }
+  .def-term {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--red-dark);
+    letter-spacing: 0.01em;
+  }
+  .def-tag {
+    margin-left: auto;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--red-mid);
+    background: var(--red-light);
+    padding: 2px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .def-text {
+    font-size: 0.91rem;
+    color: #0B1E22;
+    line-height: 1.7;
+    font-weight: 300;
+    margin: 0 !important;
+  }
+  .def-text strong { color: var(--red-dark); font-weight: 600; }
+
+  /* SYNTHESIS BOX */
+  .synth-box { background: #EDF6F7; border: 2px solid var(--red); border-radius: 10px; padding: 2rem; margin: 2rem 0; }
+  .synth-title { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 900; color: var(--red-dark); margin-bottom: 1.5rem; text-align: center; border-bottom: 1px solid var(--red-border); padding-bottom: 0.9rem; }
+  .synth-section { margin-bottom: 0; }
+  .synth-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--red); font-weight: 700; margin-bottom: 0.6rem; }
+  .synth-section p { font-size: 0.9rem; color: #0A2429; margin-bottom: 0.5rem; line-height: 1.7; font-weight: 300; }
+  .synth-divider { border: none; border-top: 1px dashed var(--red-border); margin: 1.2rem 0; }
+  .synth-conclusion { background: var(--red); color: white; border-radius: 6px; padding: 1rem 1.3rem; font-family: 'Playfair Display', serif; font-size: 0.95rem; font-style: italic; line-height: 1.65; margin-top: 1.4rem; text-align: center; }
+
+  /* THINKERS GRID — style "fiche de lecture" */
+  .thinkers-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; margin: 1.4rem 0; }
+  .cite-card { position: relative; background: #FBFAF4; border: 1px solid var(--red-border); border-radius: 3px; padding: 1.05rem 1.25rem 1rem; box-shadow: 4px 4px 0 rgba(14,108,122,0.09); }
+  .cite-card::before {
+    content: '\201C'; position: absolute; top: -0.7rem; left: 1rem;
+    font-family: 'Playfair Display', serif; font-size: 3.1rem; font-weight: 900;
+    color: var(--red); opacity: 0.14; line-height: 1; pointer-events: none;
+  }
+  .cite-card::after {
+    content: ''; position: absolute; top: 0.7rem; right: 0.9rem; width: 26px; height: 10px;
+    background: rgba(143,191,200,0.45); transform: rotate(3deg);
+  }
+  .cite-top { position: relative; z-index: 1; display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-wrap: wrap; border-bottom: 1px dashed var(--red-border); padding-bottom: 0.5rem; margin-bottom: 0.7rem; }
+  .cite-id { display: flex; align-items: center; gap: 0.65rem; }
+  .cite-icon { font-size: 1.15rem; color: var(--red); flex-shrink: 0; }
+  .cite-id-text { display: flex; flex-direction: column; gap: 0.1rem; }
+  .cite-name { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.08rem; color: var(--red-dark); }
+  .cite-name .amp { font-family: 'DM Sans', sans-serif; font-weight: 400; }
+  .cite-role { font-family: 'DM Mono', monospace; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.13em; color: var(--muted); }
+  .cite-ref { font-family: 'DM Mono', monospace; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--red-dark); background: var(--red-light); border: 1px solid var(--red-border); padding: 0.28rem 0.65rem; border-radius: 3px; white-space: nowrap; }
+  .cite-text { position: relative; z-index: 1; }
+  .cite-text p { font-size: 0.89rem; color: #0A1B1F; line-height: 1.68; margin: 0 0 0.5rem; font-weight: 300; }
+  .cite-text p:last-child { margin-bottom: 0; }
+  .cite-pull { position: relative; z-index: 1; margin-top: 0.7rem; padding: 0.15rem 0 0.15rem 1.1rem; border-left: 3px solid var(--red); font-family: 'Playfair Display', serif; font-style: italic; font-size: 0.94rem; color: var(--red-dark); line-height: 1.55; }
+
+  /* NATION GRID */
+  .nation-grid { display: grid; grid-template-columns: 1fr; gap: 0.7rem; margin: 1.25rem 0; }
+  .nation-card { border-radius: 10px; padding: 1.2rem 1.4rem; border: 1px solid rgba(14,108,122,0.15); background: white; display: flex; gap: 1rem; align-items: flex-start; transition: box-shadow 0.2s; }
+  .nation-card:hover { box-shadow: 0 4px 16px rgba(14,108,122,0.12); }
+  .nation-flag-wrap { flex-shrink: 0; width: 3.2rem; height: 3.2rem; border-radius: 50%; background: var(--red-light); display: flex; align-items: center; justify-content: center; font-size: 2rem; border: 2px solid rgba(14,108,122,0.12); }
+  .nation-flag { font-size: 1.8rem; margin-bottom: 0; }
+  .nation-info { flex: 1; min-width: 0; }
+  .nation-name { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: var(--red); margin-bottom: 0.35rem; }
+  .nation-desc { font-size: 0.8rem; line-height: 1.5; color: #0B1E22; font-weight: 300; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-up { animation: fadeUp 0.5s ease forwards; }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--red-border); border-radius: 3px; }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .two-col, .three-col, .nation-grid, .compare-box { grid-template-columns: 1fr; }
+    .toc-list { grid-template-columns: 1fr; }
+    .formula { font-size: 0.82rem; }
+  }
+
+  /* ═══════════════════════════════════════════
+     STYLES D'IMPRESSION
+  ═══════════════════════════════════════════ */
+  @media print {
+    @page { size: A4; margin: 12mm 12mm 12mm 12mm; }
+    nav, .back-to-top, .toc-bar, .site-footer { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    html, body { background: white !important; color: #000 !important; font-size: 10pt; }
+    .ch-hero { background: #04303A !important; padding: 0.55rem 1rem 0.45rem !important; }
+    .ch-hero::before { display: none !important; }
+    .ch-hero h1 { font-size: 13pt !important; color: #fff !important; margin-bottom: 0.15rem !important; line-height: 1.15 !important; }
+    .ch-hero h1 br { display: none !important; }
+    .ch-hero .chap-label { font-size: 6.5pt !important; color: #8FBFC8 !important; margin-bottom: 0.2rem !important; }
+    .ch-hero p { font-size: 6.5pt !important; color: #8FBFC8 !important; margin: 0 !important; }
+    .content { max-width: 100% !important; padding: 0.5rem 0 0 !important; margin: 0 !important; }
+    /* Flux continu : aucune partie ne force un saut de page */
+    .hgg-part { page-break-before: auto !important; break-before: auto !important; margin-bottom: 0.6rem; }
+    .hgg-part-header, .hgg-section-title, .hgg-subsection-title, .crisis-date, .hgg-timeline-date, .formula-label { page-break-after: avoid; break-after: avoid; }
+    .hgg-section { page-break-inside: auto; margin-bottom: 0.6rem; }
+    /* Un titre ne reste jamais seul en bas de page */
+    .hgg-part-header { break-inside: avoid !important; page-break-inside: avoid !important; }
+    .hgg-section-title, .hgg-subsection-title { break-inside: avoid !important; }
+    .content > .hgg-part:first-child { margin-top: 0 !important; }
+    .hgg-key-fact, .def-card, .crisis-card, .nation-card, .hgg-stat-cell, .hgg-author, .hgg-concept, .hgg-highlight { page-break-inside: avoid; break-inside: avoid; }
+    /* Empêche la coupure au milieu des blocs "carte" en fin/début de page */
+    .col-card, .synth-box, .big-quote, .doctrine-block, .compare-box, .hgg-stats, .formula-box, .esh-table-wrap { page-break-inside: avoid; break-inside: avoid; }
+    /* Règles générales anti-veuves/orphelines pour le texte courant */
+    p, .hgg-key-fact > div, .def-text, .content li { orphans: 3; widows: 3; }
+    h1, h2, h3, .hgg-part-title { page-break-after: avoid; break-after: avoid; }
+    .hgg-part-header { border-bottom: 1.5pt solid #0E6C7A !important; padding-bottom: 0.3rem !important; margin-bottom: 0.55rem !important; gap: 0.8rem !important; }
+    .hgg-part-num { font-size: 1.6rem !important; color: #8FBFC8 !important; }
+    .hgg-part-title { font-size: 12pt !important; }
+    .hgg-section-title { font-size: 10.5pt !important; border-left: 3pt solid #0E6C7A !important; padding-left: 0.5rem !important; margin-bottom: 0.4rem !important; color: #04303A !important; }
+    .hgg-subsection-title { font-size: 7.5pt !important; color: #0E6C7A !important; margin: 0.5rem 0 0.25rem !important; }
+    .content p { font-size: 9pt !important; line-height: 1.45 !important; margin-bottom: 0.35rem !important; color: #000 !important; }
+    .hgg-key-fact { background: #f5fafb !important; border: 0.75pt solid #8FBFC8 !important; padding: 0.3rem 0.55rem !important; margin-bottom: 0.2rem !important; gap: 0.55rem !important; }
+    .hgg-key-fact > div { font-size: 8.5pt !important; line-height: 1.4 !important; color: #000 !important; }
+    .hgg-key-bullet { margin-top: 0.4rem !important; }
+    .hgg-concept { background: #04303A !important; color: #F0F5F6 !important; padding: 0.55rem 0.75rem !important; margin: 0.45rem 0 !important; }
+    .hgg-concept::before { display: none !important; }
+    .hgg-concept p { color: #DCEDF0 !important; font-size: 8.5pt !important; line-height: 1.45 !important; }
+    .hgg-concept .concept-label { color: #8FBFC8 !important; font-size: 6.5pt !important; margin-bottom: 0.3rem !important; }
+    .hgg-concept strong { color: #8FBFC8 !important; }
+    .hgg-author { background: #04303A !important; color: #F0F5F6 !important; padding: 0.55rem 0.75rem !important; margin: 0.45rem 0 !important; }
+    .hgg-author::before { display: none !important; }
+    .hgg-author p { color: #DCEDF0 !important; font-size: 8.5pt !important; line-height: 1.45 !important; }
+    .hgg-author .author-name { color: #9BD0DA !important; font-size: 6.5pt !important; margin-bottom: 0.3rem !important; }
+    .hgg-author strong { color: #9BD0DA !important; }
+    .hgg-highlight { background: #DCEDF0 !important; border-left: 2.5pt solid #0E6C7A !important; padding: 0.4rem 0.7rem !important; margin: 0.45rem 0 !important; font-size: 8.5pt !important; line-height: 1.45 !important; color: #04303A !important; }
+    .hgg-stats { border: 1pt solid #6BA6B1 !important; margin: 0.45rem 0 !important; }
+    .hgg-stat-cell { background: white !important; padding: 0.4rem 0.3rem !important; border-right: 1pt solid #6BA6B1 !important; }
+    .hgg-stat-num { font-size: 11.5pt !important; color: #0E6C7A !important; }
+    .hgg-stat-label { font-size: 6.5pt !important; color: #45666B !important; line-height: 1.25 !important; }
+    .hgg-timeline { padding-left: 1rem !important; margin: 0.45rem 0 !important; }
+    .hgg-timeline::before { background: #8FBFC8 !important; }
+    .hgg-timeline-item { padding: 0.28rem 0 0.28rem 0.6rem !important; break-inside: avoid !important; }
+    .hgg-timeline-item::before { background: #0E6C7A !important; top: 0.6rem !important; left: -1.3rem !important; width: 7px !important; height: 7px !important; }
+    .hgg-timeline-date { font-size: 7pt !important; color: #0E6C7A !important; margin-bottom: 0.05rem !important; }
+    .hgg-timeline-item p { font-size: 8.5pt !important; line-height: 1.4 !important; }
+    .big-quote { background: #04303A !important; color: #F0F5F6 !important; padding: 0.55rem 0.9rem 0.5rem !important; margin: 0.45rem 0 !important; }
+    .big-quote blockquote { font-size: 9pt !important; color: #F0F5F6 !important; line-height: 1.4 !important; margin-bottom: 0.25rem !important; }
+    .big-quote cite { color: #8FBFC8 !important; font-size: 6.5pt !important; }
+    .big-quote::before { display: none !important; }
+    .two-col, .three-col { grid-template-columns: 1fr 1fr !important; gap: 0.35rem !important; margin: 0.4rem 0 !important; }
+    .three-col { grid-template-columns: 1fr 1fr 1fr !important; }
+    .col-card { padding: 0.4rem 0.55rem !important; }
+    .col-card p { font-size: 8pt !important; line-height: 1.4 !important; }
+    .col-card h5 { font-size: 6pt !important; margin-bottom: 0.3rem !important; }
+    .compare-box { margin: 0.45rem 0 !important; }
+    .compare-side { padding: 0.45rem 0.6rem !important; }
+    .compare-side p { font-size: 8pt !important; line-height: 1.4 !important; }
+    .compare-side h5 { font-size: 6pt !important; margin-bottom: 0.3rem !important; }
+    .crisis-card { background: white !important; border: 1pt solid #0E6C7A !important; border-left: 4pt solid #0E6C7A !important; padding: 0.7rem 1rem !important; margin: 0.5rem 0 !important; }
+    .crisis-card p { font-size: 8.5pt !important; }
+    .crisis-title { font-size: 10pt !important; }
+    .crisis-date { font-size: 6.5pt !important; color: #0E6C7A !important; }
+    .doctrine-block { margin: 0.45rem 0 !important; }
+    .def-card { box-shadow: none !important; border: 0.75pt solid #8FBFC8 !important; }
+    .def-body { padding: 0.45rem 0.7rem !important; }
+    .def-header { margin-bottom: 0.3rem !important; }
+    .def-term { font-size: 9.5pt !important; }
+    .def-tag { font-size: 5.5pt !important; padding: 1px 5px !important; }
+    .def-text { font-size: 8.5pt !important; line-height: 1.45 !important; color: #000 !important; }
+    .def-accent-bar { background: #0E6C7A !important; width: 3px !important; }
+    .formula-box { box-shadow: none !important; border: 0.75pt solid #8FBFC8 !important; border-top: 1.5pt solid #0E6C7A !important; padding: 0.4rem 0.6rem !important; margin: 0.45rem 0 !important; }
+    .formula { font-size: 8pt !important; line-height: 1.5 !important; color: #04303A !important; }
+    .formula-label { font-size: 6pt !important; margin-bottom: 0.25rem !important; }
+    .formula .term .n { font-size: 5.5pt !important; }
+    .formula .unit { margin: 0.15rem 0.6rem !important; }
+    .formula-sub { font-size: 7pt !important; margin-top: 0.35rem !important; line-height: 1.4 !important; }
+    .esh-table-wrap { border: 0.75pt solid #8FBFC8 !important; margin: 0.45rem 0 !important; overflow: visible !important; }
+    table.esh-table { font-size: 7.5pt !important; }
+    table.esh-table thead th { background: #04303A !important; color: #fff !important; font-size: 6pt !important; padding: 0.25rem 0.4rem !important; }
+    table.esh-table tbody td { padding: 0.25rem 0.4rem !important; font-size: 7.5pt !important; line-height: 1.35 !important; color: #000 !important; }
+    table.esh-table tbody tr { break-inside: avoid !important; page-break-inside: avoid !important; }
+    .synth-box { border: 1.5pt solid #0E6C7A !important; padding: 0.9rem !important; margin: 0.7rem 0 !important; border-radius: 0 !important; background: #EDF6F7 !important; }
+    .synth-title { font-size: 10pt !important; margin-bottom: 0.6rem !important; }
+    .synth-label { font-size: 7pt !important; }
+    .synth-box p { font-size: 8.5pt !important; line-height: 1.5 !important; color: #000 !important; }
+    .synth-conclusion { font-size: 8.5pt !important; padding: 0.55rem !important; margin-top: 0.7rem !important; border-radius: 0 !important; background: #0E6C7A !important; color: white !important; page-break-inside: avoid !important; break-inside: avoid !important; }
+    .synth-divider { margin: 0.6rem 0 !important; }
+    .thinkers-grid { gap: 0.35rem !important; margin: 0.45rem 0 !important; }
+    .cite-card { box-shadow: none !important; border: 0.75pt solid #8FBFC8 !important; border-radius: 0 !important; margin-bottom: 0 !important; padding: 0.45rem 0.6rem !important; page-break-inside: avoid !important; break-inside: avoid !important; }
+    .cite-card::before, .cite-card::after { display: none !important; }
+    .cite-top { padding-bottom: 0.25rem !important; margin-bottom: 0.3rem !important; }
+    .cite-icon { display: none !important; }
+    .cite-name { font-size: 8.5pt !important; }
+    .cite-role { font-size: 5.5pt !important; }
+    .cite-ref { font-size: 5.5pt !important; padding: 0.1rem 0.3rem !important; }
+    .cite-text p { font-size: 7.5pt !important; line-height: 1.4 !important; color: #000 !important; }
+    .cite-pull { font-size: 7.5pt !important; padding-left: 0.5rem !important; margin-top: 0.35rem !important; line-height: 1.35 !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left"><div class="nav-logo"><a href="../../index.html">ECG Prépa</a></div></div>
+  <div class="breadcrumb">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">/</span>
+    <a href="index.html"><span>ESH</span></a>
+    <span class="sep">/</span>
+    <span class="current">Chapitre 1</span>
+  </div>
+  <div class="nav-right"><a href="chapitre1.pdf" download style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:var(--rose);text-decoration:none;border:1px solid rgba(240,245,246,0.25);padding:6px 14px;border-radius:6px;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='transparent'">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    PDF
+  </a></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="chap-label">ESH ECG — Chapitre 1</div>
+  <h1>Les acteurs et les grandes<br>fonctions de l'économie</h1>
+  <p>Circuit économique · Comptabilité nationale · Production · Répartition</p>
+</div>
+
+<!-- TOC -->
+<div class="toc-bar">
+  <div class="toc-inner">
+    <div class="toc-title">Sommaire du chapitre</div>
+    <ul class="toc-list">
+      <li><a href="#part1"><span class="toc-num">I</span> Une vue d'ensemble : agents, circuit et comptabilité nationale</a></li>
+      <li><a href="#part2"><span class="toc-num">II</span> La production et ses emplois : de l'équilibre emplois-ressources au PIB</a></li>
+      <li><a href="#part3"><span class="toc-num">III</span> La répartition : du partage primaire à la redistribution</a></li>
+      <li><a href="#part4"><span class="toc-num">IV</span> Comptabilité nationale : le TES et le TEE</a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════════
+     PARTIE I
+═══════════════════════════════════════ -->
+<div class="hgg-part" id="part1">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">I</div>
+    <div class="hgg-part-title">Une vue d'ensemble : agents, circuit et comptabilité nationale</div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="hgg-section" id="s1-1">
+    <div class="hgg-section-title">1 — Les représentations de l'économie</div>
+
+    <p>L'économie nationale peut être décrite comme un ensemble d'acteurs — les <strong>agents économiques</strong> — qui accomplissent un petit nombre de grandes fonctions : produire, consommer, épargner, investir, redistribuer, échanger avec l'extérieur. Encore faut-il disposer d'une représentation de cet ensemble : c'est l'objet du <strong>circuit économique</strong> et, sous une forme chiffrée et normalisée, de la <strong>comptabilité nationale</strong>.</p>
+
+    <p>Il existe <strong>deux grandes manières</strong> de se représenter l'économie. Elles ne s'opposent pas seulement par leur objet, mais par le niveau d'analyse qu'elles adoptent — l'individu ou le tout.</p>
+
+    <div class="compare-box">
+      <div class="compare-side compare-a">
+        <h5>📈 L'approche par le marché</h5>
+        <p>On part des <strong>comportements individuels</strong> et des <strong>prix</strong> : l'équilibre résulte de la confrontation d'une offre et d'une demande. Démarche <strong>micro-économique</strong>.</p>
+      </div>
+      <div class="compare-side compare-b">
+        <h5>🔄 L'approche par le circuit</h5>
+        <p>On part de l'économie prise <strong>comme un tout</strong> et on décrit les <strong>flux</strong> qui circulent entre de grands pôles d'activité. Démarche <strong>macro-économique</strong>.</p>
+      </div>
+    </div>
+
+    <div class="hgg-subsection-title">→ La logique du circuit économique</div>
+
+    <div class="doctrine-block">
+      <div class="def-card">
+        <div class="def-accent-bar"></div>
+        <div class="def-body">
+          <div class="def-header">
+            <span class="def-icon">◆</span>
+            <span class="def-term">Le circuit économique</span>
+            <span class="def-tag">Définition</span>
+          </div>
+          <p class="def-text">Représentation <strong>simplifiée et globale</strong> de l'activité économique, qui décrit l'économie comme un ensemble de <strong>flux — réels et monétaires</strong> — reliant les grands agents entre eux : ménages, entreprises, administrations publiques, institutions financières et reste du monde.</p>
+        </div>
+      </div>
+    </div>
+
+    <p>Sa logique tient en <strong>deux principes</strong> :</p>
+
+    <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>À chaque <strong>flux réel</strong> correspond un <strong>flux monétaire de sens inverse</strong> : le travail fourni contre le salaire versé, le bien livré contre le prix payé.</div></div>
+    <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>Le circuit est <strong>bouclé</strong> : ce qui sort d'un pôle entre nécessairement dans un autre — ce qui fonde les <strong>égalités comptables</strong> (emplois = ressources) sur lesquelles repose la comptabilité nationale.</div></div>
+
+    <div class="hgg-concept">
+      <div class="concept-label">Le bouclage du circuit</div>
+      <p><strong>Production → Revenus → Dépenses → Production.</strong> Toute production distribue des revenus, tout revenu se transforme en dépense, et toute dépense justifie une production. C'est cette circularité qui explique que les trois approches du PIB — production, revenus, demande — donnent par construction le même résultat.</p>
+    </div>
+
+    <div class="hgg-subsection-title">→ La comptabilité nationale : définition, fonctions, origine</div>
+
+    <div class="doctrine-block">
+      <div class="def-card">
+        <div class="def-accent-bar"></div>
+        <div class="def-body">
+          <div class="def-header">
+            <span class="def-icon">◆</span>
+            <span class="def-term">La comptabilité nationale</span>
+            <span class="def-tag">Définition</span>
+          </div>
+          <p class="def-text">Représentation <strong>quantifiée, simplifiée et normalisée</strong> de l'activité économique d'un pays. Elle traduit le circuit économique en un système de comptes cohérents, tenus <strong>en partie double</strong> (à tout emploi correspond une ressource), pour l'ensemble des agents.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="three-col">
+      <div class="col-card col-red">
+        <h5>📊 Mesurer</h5>
+        <p>Quantifier l'activité : <strong>production, revenus, dépenses</strong>.</p>
+      </div>
+      <div class="col-card col-rose">
+        <h5>⚖️ Comparer</h5>
+        <p>Dans le <strong>temps</strong> et entre <strong>pays</strong>, grâce à des normes communes.</p>
+      </div>
+      <div class="col-card col-light">
+        <h5>🔮 Prévoir</h5>
+        <p>Éclairer la <strong>décision de politique économique</strong>.</p>
+      </div>
+    </div>
+
+    <div class="hgg-timeline">
+      <div class="hgg-timeline-item">
+        <div class="hgg-timeline-date">1943 — Simon Kuznets</div>
+        <p>Le rapport de <strong>Simon Kuznets</strong> au <strong>Congrès américain</strong> estime le <strong>revenu national</strong> des <strong>États-Unis</strong>.</p>
+      </div>
+      <div class="hgg-timeline-item">
+        <div class="hgg-timeline-date">1952 — Nations unies</div>
+        <p>Élaboration du <strong>premier système de comptabilité nationale</strong> dans le cadre de l'ONU. La <strong>normalisation</strong> rend possible la comparaison internationale.</p>
+      </div>
+      <div class="hgg-timeline-item">
+        <div class="hgg-timeline-date">1995 — SEC (révision 2010)</div>
+        <p>Mise en place du <strong>Système européen des comptes (SEC)</strong>. Dernière révision en <strong>2010</strong> : le <strong>SEC 2010</strong>, aujourd'hui en vigueur.</p>
+      </div>
+    </div>
+
+    <div class="hgg-subsection-title">→ Les principes : secteurs institutionnels et opérations</div>
+
+    <p>La comptabilité nationale repose sur <strong>deux découpages fondamentaux</strong>. Le premier regroupe les agents selon leur <strong>fonction principale</strong> et leur <strong>ressource principale</strong> : ce sont les <strong>secteurs institutionnels</strong>.</p>
+
+    <div class="esh-table-wrap">
+      <table class="esh-table">
+        <thead>
+          <tr>
+            <th>Secteur institutionnel</th>
+            <th>Fonction principale / ressource principale</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Ménages et EI</td>
+            <td><strong>Consommer</strong> (et produire pour les entreprises individuelles) / revenus d'activité et de transfert</td>
+          </tr>
+          <tr>
+            <td>Sociétés non financières (SNF)</td>
+            <td><strong>Produire</strong> des biens et services marchands non financiers / recettes de ventes</td>
+          </tr>
+          <tr>
+            <td>Sociétés financières (SF)</td>
+            <td><strong>Financer, intermédier, assurer</strong> / intérêts, commissions, primes</td>
+          </tr>
+          <tr>
+            <td>Administrations publiques (APU)</td>
+            <td><strong>Produire des services non marchands et redistribuer</strong> / prélèvements obligatoires</td>
+          </tr>
+          <tr>
+            <td>ISBLSM</td>
+            <td><strong>Produire des services non marchands pour les ménages</strong> (associations, syndicats, partis) / contributions volontaires</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="hgg-highlight">
+      On y ajoute le <strong>reste du monde</strong>, qui n'est pas un secteur institutionnel à proprement parler, mais retrace <strong>toutes les opérations avec les non-résidents</strong>.
+    </div>
+
+    <p>Le second découpage porte sur les <strong>opérations</strong>, classées en trois familles.</p>
+
+    <div class="three-col">
+      <div class="col-card col-red">
+        <h5>📦 Sur produits</h5>
+        <p>Production et utilisation des biens et services : <strong>production, CI, consommation finale, investissement, importations, exportations</strong>.</p>
+      </div>
+      <div class="col-card col-rose">
+        <h5>🔁 De répartition</h5>
+        <p>Distribution et redistribution des revenus : <strong>salaires, impôts, cotisations, prestations sociales</strong>.</p>
+      </div>
+      <div class="col-card col-light">
+        <h5>💳 Financières</h5>
+        <p>Usage des instruments financiers : <strong>crédits, titres, dépôts, actions</strong>.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="hgg-section" id="s1-2">
+    <div class="hgg-section-title">2 — Les ménages et leurs fonctions</div>
+
+    <p>Le ménage remplit <strong>deux fonctions principales</strong> : il <strong>consomme</strong> et il <strong>épargne</strong>. Avant cela, il perçoit des revenus, qui suivent un enchaînement précis — du revenu primaire au revenu disponible.</p>
+
+    <div class="formula-box">
+      <div class="formula-label">Du revenu primaire au revenu disponible brut</div>
+      <div class="formula">
+        <span class="term"><span class="t">Revenus primaires</span><span class="n">travail, capital, mixtes</span></span>
+        <span class="op">+</span>
+        <span class="term"><span class="t">Revenus sociaux</span><span class="n">transferts</span></span>
+        <span class="op">−</span>
+        <span class="term"><span class="t">Prélèvements obligatoires</span><span class="n">impôts, cotisations</span></span>
+        <span class="op">=</span>
+        <span class="term"><span class="t"><strong>RDB</strong></span><span class="n">revenu disponible brut</span></span>
+      </div>
+      <div class="formula-sub">Puis : <strong>RDB = Consommation + Épargne</strong></div>
+    </div>
+
+    <div class="hgg-subsection-title">→ Deux notions de consommation</div>
+
+    <div class="doctrine-block">
+      <div class="def-card">
+        <div class="def-accent-bar"></div>
+        <div class="def-body">
+          <div class="def-header">
+            <span class="def-icon">◆</span>
+            <span class="def-term">Consommation effective des ménages</span>
+            <span class="def-tag">Définition</span>
+          </div>
+          <p class="def-text"><strong>Consommation effective = Dépense de consommation finale + Dépenses associées à des services non marchands individualisables.</strong> Les services non marchands individualisables sont ceux dont on peut <strong>identifier le bénéficiaire</strong> (éducation, santé, logement social). Les intégrer permet de comparer valablement les niveaux de consommation entre pays, indépendamment du poids plus ou moins grand de la <strong>sphère publique</strong> dans chacun d'eux.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="hgg-subsection-title">→ La progression des niveaux de consommation</div>
+
+    <p>Deux références théoriques structurent l'analyse du lien entre <strong>revenu et consommation</strong>. Elles s'opposent sur l'horizon temporel des ménages.</p>
+
+    <div class="thinkers-grid">
+      <div class="cite-card">
+        <div class="cite-top">
+          <div class="cite-id">
+            <span class="cite-icon">✦</span>
+            <div class="cite-id-text">
+              <span class="cite-name">John Maynard Keynes</span>
+              <span class="cite-role">Loi psychologique fondamentale (1936)</span>
+            </div>
+          </div>
+          <span class="cite-ref">Revenu courant</span>
+        </div>
+        <div class="cite-text">
+          <p>Lorsque le revenu augmente, la <strong>consommation augmente également, mais dans une proportion moindre</strong>. La <strong>propension marginale à consommer</strong> est donc comprise entre <strong>0 et 1</strong>, et elle <strong>décroît avec le revenu</strong>. Conséquence majeure : au fur et à mesure que le revenu global s'élève, la part épargnée grandit, ce qui peut peser sur la demande effective.</p>
+        </div>
+        <p class="cite-pull">La consommation est calée sur le <strong>revenu courant</strong> — celui d'aujourd'hui, pas celui qu'on anticipe.</p>
+      </div>
+
+      <div class="cite-card">
+        <div class="cite-top">
+          <div class="cite-id">
+            <span class="cite-icon">✦</span>
+            <div class="cite-id-text">
+              <span class="cite-name">Milton Friedman</span>
+              <span class="cite-role">Théorie du revenu permanent (1957)</span>
+            </div>
+          </div>
+          <span class="cite-ref">Revenu anticipé</span>
+        </div>
+        <div class="cite-text">
+          <p>Les ménages <strong>ne calent pas leur consommation sur leur revenu courant</strong>, mais sur le revenu qu'ils <strong>anticipent sur l'ensemble de leur cycle de vie</strong>. Les variations transitoires de revenu — une prime, un chômage passager — sont donc largement <strong>absorbées par l'épargne</strong>, et non répercutées sur la consommation.</p>
+        </div>
+        <p class="cite-pull">Conséquence de politique économique : une baisse d'impôt <strong>temporaire</strong> n'a qu'un effet limité sur la consommation.</p>
+      </div>
+    </div>
+
+    <div class="hgg-subsection-title">→ La déformation de la structure de la consommation</div>
+
+    <div class="doctrine-block">
+      <div class="def-card">
+        <div class="def-accent-bar"></div>
+        <div class="def-body">
+          <div class="def-header">
+            <span class="def-icon">◆</span>
+            <span class="def-term">Loi d'Engel (1857)</span>
+            <span class="def-tag">Loi empirique</span>
+          </div>
+          <p class="def-text">La <strong>part de la dépense alimentaire</strong> dans la dépense de consommation totale <strong>diminue lorsque le revenu augmente</strong>. C'est la première régularité statistique établie sur la structure des budgets des ménages.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="formula-box">
+      <div class="formula-label">Coefficient budgétaire</div>
+      <div class="formula">
+        Coefficient budgétaire <span class="op">=</span>
+        <span class="frac"><span class="num">Dépense de consommation du poste</span><span class="den">Dépense de consommation totale</span></span>
+        <span class="op">×</span> 100
+      </div>
+    </div>
+
+    <div class="hgg-stats">
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">70 %</span><div class="hgg-stat-label">Coeff. alimentaire, 1870</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">15 %</span><div class="hgg-stat-label">Coeff. alimentaire, 2020</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">1 € / 2</span><div class="hgg-stat-label">Part des services</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">≈ 30 %</span><div class="hgg-stat-label">Revenu arbitrable / RDB</div></div>
+    </div>
+
+    <p>Les <strong>dépenses de nature sociale</strong> (éducation, santé) sont croissantes, et les <strong>services</strong> représentent désormais environ <strong>un euro sur deux</strong> dépensé par les ménages. On observe par ailleurs une <strong>montée des dépenses pré-engagées</strong> : ce sont les dépenses engagées par contrat, <strong>difficilement renégociables à court terme</strong> (loyer, assurances, abonnements, téléphonie, énergie). Leur progression réduit d'autant la marge de manœuvre des ménages.</p>
+
+    <div class="formula-box">
+      <div class="formula-label">Revenu arbitrable</div>
+      <div class="formula">
+        Revenu arbitrable <span class="op">=</span> Revenu disponible <span class="op">−</span> Dépenses pré-engagées
+      </div>
+    </div>
+
+    <div class="hgg-subsection-title">→ Les déterminants de la consommation</div>
+
+    <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>La <strong>propension à consommer diffère selon le niveau de revenu</strong> : forte pour les ménages modestes, dont le revenu est presque intégralement consommé ; plus faible pour les ménages aisés, qui dégagent une capacité d'épargne importante.</div></div>
+    <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>Conséquence directe : une <strong>redistribution vers le bas de l'échelle soutient davantage la demande globale</strong> qu'un transfert vers le haut — argument central des politiques de relance par la consommation.</div></div>
+    <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>La consommation n'obéit pas qu'à des <strong>motifs utilitaires</strong> : elle est aussi un <strong>signe social</strong>, un marqueur de position dans la hiérarchie.</div></div>
+
+    <div class="hgg-author">
+      <div class="author-name">Thorstein Veblen (1899) — Théorie de la classe de loisir</div>
+      <p><strong>Veblen</strong> forge la notion de <strong>consommation ostentatoire</strong> : certains biens sont consommés <strong>non pour leur utilité propre</strong> mais pour la <strong>distinction sociale</strong> qu'ils procurent. Leur demande peut alors <strong>augmenter avec leur prix</strong> — plus le bien est cher, plus il signale un statut élevé — ce qui <strong>contredit frontalement la loi de la demande</strong>. C'est ce que l'on appelle l'effet Veblen.</p>
+    </div>
+
+    <div class="hgg-subsection-title">→ L'épargne des ménages</div>
+
+    <div class="formula-box">
+      <div class="formula-label">Partage du revenu et taux d'épargne</div>
+      <div class="formula">
+        <strong>R = C + S</strong><br>
+        Taux d'épargne <span class="op">=</span>
+        <span class="frac"><span class="num">Épargne brute (EB)</span><span class="den">RDB</span></span>
+        <span class="op">×</span> 100
+      </div>
+    </div>
+
+    <div class="hgg-stats">
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">≈ 19 %</span><div class="hgg-stat-label">Taux d'épargne total, 2021</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">8 %</span><div class="hgg-stat-label">Épargne financière</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">11 %</span><div class="hgg-stat-label">Épargne non financière</div></div>
+    </div>
+
+    <p>L'<strong>épargne non financière</strong> correspond pour l'essentiel à l'<strong>investissement en logement</strong> des ménages — ce qui rappelle que le ménage n'est pas seulement un consommateur, mais aussi un investisseur.</p>
+
+    <div class="hgg-subsection-title">→ Consommation et épargne dans la théorie économique</div>
+
+    <p>Deux lectures s'opposent <strong>frontalement</strong> sur le statut de l'épargne. Ce désaccord n'est pas technique : il commande des politiques économiques opposées.</p>
+
+    <div class="esh-table-wrap">
+      <table class="esh-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Pensée libérale (classique)</th>
+            <th>Vision keynésienne</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Statut de l'épargne</td>
+            <td>L'épargne est une <strong>vertu</strong> : elle est la condition du financement de l'investissement productif.</td>
+            <td>L'épargne est un <strong>vice</strong> : elle se fait au détriment de la consommation, donc de la <strong>demande effective</strong>.</td>
+          </tr>
+          <tr>
+            <td>Rôle du taux d'intérêt</td>
+            <td>Prix de la <strong>renonciation à la consommation présente</strong> : il arbitre entre consommer aujourd'hui et consommer demain.</td>
+            <td>Prix de la <strong>renonciation à la liquidité</strong> : il rémunère l'abandon temporaire de la monnaie, actif parfaitement liquide.</td>
+          </tr>
+          <tr>
+            <td>Causalité</td>
+            <td>L'<strong>épargne précède et détermine l'investissement</strong>.</td>
+            <td>L'<strong>investissement</strong>, par le revenu qu'il engendre, <strong>détermine l'épargne</strong>.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="hgg-section" id="s1-3">
+    <div class="hgg-section-title">3 — L'entreprise</div>
+
+    <p>L'entreprise est l'unité économique dont la <strong>fonction principale est la production de biens et de services marchands</strong>. Sous ce terme unique se cache une <strong>très grande hétérogénéité</strong>, que l'on peut ordonner selon plusieurs critères.</p>
+
+    <div class="three-col">
+      <div class="col-card col-red">
+        <h5>🏛️ Origine des capitaux</h5>
+        <p>Capitaux <strong>publics</strong> / capitaux <strong>privés</strong>.</p>
+      </div>
+      <div class="col-card col-rose">
+        <h5>📜 Forme juridique</h5>
+        <p><strong>Entreprise individuelle</strong> / <strong>société</strong>.</p>
+      </div>
+      <div class="col-card col-light">
+        <h5>📏 Taille</h5>
+        <p><strong>TPE, PME, ETI, grandes entreprises</strong> — selon effectifs, chiffre d'affaires, bilan.</p>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="col-card col-dark">
+        <h5>🎯 Finalité</h5>
+        <p>But <strong>lucratif</strong> / but <strong>non lucratif</strong> (économie sociale et solidaire).</p>
+      </div>
+      <div class="col-card col-red">
+        <h5>🏭 Secteur d'activité</h5>
+        <p><strong>Primaire</strong>, <strong>secondaire</strong>, <strong>tertiaire</strong>.</p>
+      </div>
+    </div>
+
+    <div class="hgg-subsection-title">→ La fonction de l'entreprise : produire, donc investir</div>
+
+    <p>La fonction de l'entreprise est la production de biens et services destinés soit aux <strong>ménages</strong> (consommation finale), soit aux <strong>autres entreprises</strong> (consommations intermédiaires). Pour produire, l'entreprise doit combiner du <strong>travail</strong> et du <strong>capital</strong> : elle doit donc <strong>investir</strong>.</p>
+
+    <div class="formula-box">
+      <div class="formula-label">Investissement et capital</div>
+      <div class="formula">
+        I <span class="op">⟶</span> ΔK <span class="note">(accumulation du stock de capital)</span> <span class="op">⟶</span> Production<br>
+        <strong>Investissement brut = Investissement net + Investissement de remplacement</strong>
+      </div>
+    </div>
+
+    <div class="hgg-highlight">
+      L'<strong>investissement de remplacement</strong> sert uniquement à compenser l'<strong>usure et l'obsolescence</strong> du capital antérieur : il maintient le stock de capital sans l'accroître. <strong>Seul l'investissement net augmente réellement les capacités productives.</strong>
+    </div>
+
+    <div class="doctrine-block">
+      <div class="def-card">
+        <div class="def-accent-bar"></div>
+        <div class="def-body">
+          <div class="def-header">
+            <span class="def-icon">◆</span>
+            <span class="def-term">FBCF — Formation Brute de Capital Fixe</span>
+            <span class="def-tag">Définition</span>
+          </div>
+          <p class="def-text">Mesure de l'investissement retenue par la <strong>comptabilité nationale</strong>. Elle correspond à l'<strong>acquisition de biens durables</strong> — d'une durée de vie supérieure à un an — <strong>utilisés dans le processus de production</strong>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="hgg-concept">
+      <div class="concept-label">Le cycle de production de l'entreprise</div>
+      <p><strong>Financement</strong> (fonds propres, emprunt, marché) → <strong>achat des facteurs de production</strong> (travail, capital, consommations intermédiaires) → <strong>production</strong> → <strong>valeur ajoutée</strong> → <strong>répartition de la VA</strong> (salaires, impôts, intérêts, dividendes) → <strong>profit conservé</strong> → <strong>autofinancement de l'investissement</strong> → nouvelle production. Le cycle se referme : c'est le circuit à l'échelle de la firme.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="hgg-section" id="s1-4">
+    <div class="hgg-section-title">4 — Les pouvoirs publics</div>
+
+    <p>L'État n'est pas seulement un arbitre extérieur au circuit : il est un <strong>agent économique à part entière</strong>, qui produit, prélève, redistribue et dépense. Sa place dans l'analyse a été fixée par une typologie devenue canonique.</p>
+
+    <div class="hgg-author">
+      <div class="author-name">Richard Musgrave (1959) — Les trois fonctions de l'État</div>
+      <p><strong>1. Fonction d'allocation</strong> : corriger les <strong>défaillances du marché</strong> par la production de biens publics et par la réglementation (externalités, monopoles naturels, asymétries d'information).<br><br>
+      <strong>2. Fonction de redistribution</strong> : corriger les <strong>inégalités issues de la répartition primaire</strong>.<br><br>
+      <strong>3. Fonction de stabilisation</strong> : pallier l'<strong>instabilité de l'économie</strong> (chômage, inflation, cycles) par les politiques conjoncturelles.</p>
+    </div>
+
+    <p>Les <strong>administrations publiques (APU)</strong> se composent de <strong>trois blocs</strong>.</p>
+
+    <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>L'<strong>administration centrale</strong> : l'État et ses organismes divers.</div></div>
+    <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>Les <strong>collectivités territoriales</strong> : communes, départements, régions.</div></div>
+    <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>Les <strong>administrations de sécurité sociale</strong> : la protection sociale, organisée en différentes caisses.</div></div>
+
+    <div class="formula-box">
+      <div class="formula-label">Le budget de l'État</div>
+      <div class="formula">
+        <strong>Dépenses</strong> <span class="op">:</span> investissement <span class="op">+</span> fonctionnement <span class="op">+</span> transferts monétaires<br>
+        <strong>Recettes</strong> <span class="op">:</span> prélèvements obligatoires <span class="op">=</span> impôts <span class="op">+</span> cotisations sociales
+      </div>
+    </div>
+
+    <div class="formula-box">
+      <div class="formula-label">Deux indicateurs du poids de l'État</div>
+      <div class="formula">
+        Part des dépenses publiques <span class="op">=</span>
+        <span class="frac"><span class="num">Dépenses publiques</span><span class="den">PIB</span></span>
+        <span class="op">×</span> 100<br>
+        Taux de prélèvements obligatoires <span class="op">=</span>
+        <span class="frac"><span class="num">Impôts + Cotisations sociales</span><span class="den">PIB</span></span>
+        <span class="op">×</span> 100
+      </div>
+    </div>
+
+    <div class="hgg-stats">
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">≈ 10 %</span><div class="hgg-stat-label">Dép. publiques / PIB, av. 1939</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">60 %</span><div class="hgg-stat-label">Dép. publiques / PIB, 2021</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">45 %</span><div class="hgg-stat-label">Taux de PO / PIB, 2021</div></div>
+    </div>
+
+    <div class="big-quote">
+      <blockquote>« Plus la société se civilise, plus l'État est dispendieux. »</blockquote>
+      <cite>Adolph Wagner — Loi de Wagner, 1872</cite>
+    </div>
+
+    <p>Autrement dit, la <strong>part des dépenses publiques dans la richesse nationale tend à croître avec le développement économique et social</strong>, du fait de l'extension des fonctions <strong>régaliennes, sociales et d'infrastructure</strong>. La progression observée de 10 % à 60 % du PIB en un siècle en donne une illustration saisissante.</p>
+
+    <div class="hgg-subsection-title">→ La contrainte financière de l'État</div>
+
+    <div class="two-col">
+      <div class="col-card col-rose">
+        <h5>✅ Excédent budgétaire</h5>
+        <p>Si <strong>recettes &gt; dépenses</strong>. Situation rare dans les économies développées contemporaines.</p>
+      </div>
+      <div class="col-card col-red">
+        <h5>⚠️ Déficit public</h5>
+        <p>Si <strong>dépenses &gt; recettes</strong>. C'est le cas en <strong>France de manière continue depuis 1974</strong>.</p>
+      </div>
+    </div>
+
+    <div class="hgg-highlight">
+      Ce déficit doit être financé : l'État réalise un <strong>emprunt obligataire</strong>, qui vient alimenter le stock de <strong>dette publique</strong>. Le <strong>déficit est un flux annuel</strong>, tandis que la <strong>dette est un stock cumulé</strong> — distinction fondamentale et régulièrement piégeuse en dissertation.
+    </div>
+
+    <div class="hgg-stats">
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">≈ 6 %</span><div class="hgg-stat-label">Déficit / PIB, France 2021</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">≈ 110 %</span><div class="hgg-stat-label">Dette / PIB, France 2021</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">3 % / 60 %</span><div class="hgg-stat-label">Critères de Maastricht</div></div>
+    </div>
+  </div>
+
+  <!-- SECTION 5 -->
+  <div class="hgg-section" id="s1-5">
+    <div class="hgg-section-title">5 — Les relations avec l'extérieur</div>
+
+    <p>Aucune économie n'est close. Les échanges avec les <strong>non-résidents</strong> sont retracés dans un document comptable unique, qui boucle le circuit à l'échelle internationale.</p>
+
+    <div class="doctrine-block">
+      <div class="def-card">
+        <div class="def-accent-bar"></div>
+        <div class="def-body">
+          <div class="def-header">
+            <span class="def-icon">◆</span>
+            <span class="def-term">Balance des paiements</span>
+            <span class="def-tag">Définition</span>
+          </div>
+          <p class="def-text">Document comptable qui recense l'<strong>ensemble des opérations économiques et financières</strong> entre les <strong>résidents</strong> d'un pays et les <strong>non-résidents</strong> sur une période donnée.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="three-col">
+      <div class="col-card col-red">
+        <h5>🔄 Transactions courantes</h5>
+        <p><strong>Biens, services, revenus, transferts courants.</strong> C'est le compte le plus commenté.</p>
+      </div>
+      <div class="col-card col-rose">
+        <h5>🏗️ Compte de capital</h5>
+        <p><strong>Transferts en capital</strong> — remises de dettes, aides à l'investissement.</p>
+      </div>
+      <div class="col-card col-light">
+        <h5>💹 Compte financier</h5>
+        <p><strong>Investissements directs, de portefeuille, réserves.</strong></p>
+      </div>
+    </div>
+
+    <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>La <strong>balance commerciale</strong>, qui recense les <strong>importations et exportations de biens</strong>, est retracée dans le <strong>compte des transactions courantes</strong>. En <strong>France</strong>, elle est <strong>déficitaire depuis 2000</strong>.</div></div>
+  </div>
+
+</div><!-- /part1 -->
+
+
+<!-- ═══════════════════════════════════════
+     PARTIE II
+═══════════════════════════════════════ -->
+<div class="hgg-part" id="part2">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">II</div>
+    <div class="hgg-part-title">La production et ses emplois : de l'équilibre emplois-ressources au PIB</div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="hgg-section" id="s2-1">
+    <div class="hgg-section-title">1 — Les ressources et les emplois</div>
+
+    <p>Toute la logique de cette partie repose sur une <strong>idée simple</strong> : sur une période donnée, tout ce dont l'économie <strong>dispose</strong> (les ressources) est nécessairement <strong>utilisé</strong> d'une manière ou d'une autre (les emplois). C'est cette identité comptable qui, une fois réarrangée, donne la définition du PIB.</p>
+
+    <div class="hgg-subsection-title">→ Les ressources en produits</div>
+
+    <p>La comptabilité nationale décompose la <strong>production</strong> en <strong>trois catégories</strong>, auxquelles s'ajoutent les <strong>importations</strong> qui complètent la production nationale.</p>
+
+    <div class="three-col">
+      <div class="col-card col-red">
+        <h5>🛒 Marchande — 83 %</h5>
+        <p>Vendue à un <strong>prix économiquement significatif</strong>, couvrant <strong>au moins la moitié des coûts</strong> de production.</p>
+      </div>
+      <div class="col-card col-rose">
+        <h5>🏫 Non marchande — 11 %</h5>
+        <p>Fournie <strong>gratuitement ou quasi gratuitement</strong>. Intégrée à la CN en <strong>1976</strong>, elle est comptabilisée <strong>à ses coûts de production</strong>, faute de prix de marché.</p>
+      </div>
+      <div class="col-card col-light">
+        <h5>🏠 Emploi final propre — 6 %</h5>
+        <p>Produite et utilisée <strong>par le même agent</strong> : logement occupé par son propriétaire, autoconsommation.</p>
+      </div>
+    </div>
+
+    <div class="hgg-subsection-title">→ Les emplois en produits</div>
+
+    <div class="two-col">
+      <div class="col-card col-red">
+        <h5>⚙️ Consommation intermédiaire (CI)</h5>
+        <p>Biens et services <strong>détruits ou transformés</strong> dans le processus de production — durée de vie <strong>&lt; 1 an</strong>.</p>
+      </div>
+      <div class="col-card col-rose">
+        <h5>🍽️ Consommation finale (CF)</h5>
+        <p>Biens et services <strong>détruits par l'usage</strong> pour la satisfaction <strong>directe</strong> des besoins.</p>
+      </div>
+    </div>
+
+    <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>L'<strong>investissement</strong>, mesuré par la <strong>FBCF</strong> : biens durables (durée de vie &gt; 1 an), <strong>matériels ou immatériels</strong> (logiciels, R&amp;D).</div></div>
+    <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>Les <strong>exportations (X)</strong>, qui adressent la production nationale au reste du monde.</div></div>
+    <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>La <strong>variation des stocks (VS)</strong>, qui <strong>assure l'équilibre comptable</strong> entre emplois et ressources : ce qui a été produit mais ni consommé, ni investi, ni exporté se retrouve en stock.</div></div>
+
+    <div class="hgg-subsection-title">→ L'équilibre des ressources et des emplois (ERE)</div>
+
+    <div class="formula-box">
+      <div class="formula-label">L'équilibre emplois-ressources</div>
+      <div class="formula">
+        P <span class="op">+</span> M <span class="op">=</span> CI <span class="op">+</span> CF <span class="op">+</span> FBCF <span class="op">+</span> VS <span class="op">+</span> X<br>
+        <span class="op">⟺</span> (P <span class="op">−</span> CI) <span class="op">+</span> M <span class="op">=</span> CF <span class="op">+</span> FBCF <span class="op">+</span> VS <span class="op">+</span> X<br>
+        <span class="op">⟺</span> <strong>PIB = CF + FBCF + VS + X − M</strong>
+      </div>
+      <div class="formula-sub">où l'on a utilisé <strong>P − CI = Σ VA ≃ PIB</strong>.</div>
+    </div>
+
+    <p>Cette écriture met en évidence les <strong>deux composantes de la demande</strong> adressée à l'économie — distinction indispensable pour analyser les moteurs de la croissance.</p>
+
+    <div class="two-col">
+      <div class="col-card col-red">
+        <h5>🏘️ Demande intérieure</h5>
+        <p><strong>CF + FBCF + VS.</strong> Consommation des ménages, investissement, stocks.</p>
+      </div>
+      <div class="col-card col-light">
+        <h5>🌍 Demande extérieure nette</h5>
+        <p><strong>X − M</strong>, soit le <strong>solde extérieur</strong>. Contribution positive ou négative à la croissance.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="hgg-section" id="s2-2">
+    <div class="hgg-section-title">2 — Le PIB, principal indicateur de richesse</div>
+
+    <div class="hgg-concept">
+      <div class="concept-label">Origine et objet du PIB</div>
+      <p>Le PIB a été créé en <strong>1934</strong>, à la demande du <strong>Congrès américain</strong>, par <strong>Simon Kuznets</strong>. C'est un <strong>indicateur synthétique de l'activité économique nationale</strong>, conçu dans un contexte de crise pour <strong>guider les orientations politiques et économiques</strong>. Il est donc, dès l'origine, un instrument de politique publique avant d'être une mesure du bien-être.</p>
+    </div>
+
+    <div class="hgg-subsection-title">→ Les trois façons de mesurer le PIB</div>
+
+    <div class="formula-box">
+      <div class="formula-label">Approche par la production</div>
+      <div class="formula">
+        PIB <span class="op">=</span> Σ VA <span class="note">[+ impôts sur les produits − subventions]</span>
+      </div>
+    </div>
+
+    <div class="formula-box">
+      <div class="formula-label">Approche par la demande</div>
+      <div class="formula">
+        PIB <span class="op">=</span> CF <span class="op">+</span> FBCF <span class="op">+</span> VS <span class="op">+</span> X <span class="op">−</span> M
+      </div>
+    </div>
+
+    <div class="formula-box">
+      <div class="formula-label">Approche par les revenus</div>
+      <div class="formula">
+        PIB <span class="op">=</span> Rémunération des salariés <span class="op">+</span> EBE <span class="op">+</span> Revenus mixtes<br>
+        <span class="note">[+ impôts à la production − subventions]</span>
+      </div>
+    </div>
+
+    <div class="hgg-highlight">
+      Ces trois approches donnent, <strong>par construction, le même résultat</strong> : c'est la traduction directe de la logique du circuit — <strong>production = revenus = dépenses</strong>.
+    </div>
+
+    <div class="hgg-subsection-title">→ Les variantes du PIB</div>
+
+    <div class="formula-box">
+      <div class="formula-label">Produit Intérieur Net</div>
+      <div class="formula">
+        PIN <span class="op">=</span> PIB <span class="op">−</span> CCF <span class="note">(consommation de capital fixe)</span>
+      </div>
+    </div>
+
+    <div class="compare-box">
+      <div class="compare-side compare-a">
+        <h5>💶 PIB en valeur (nominal)</h5>
+        <p>Calculé en <strong>euros courants</strong>. Son taux de croissance dépend à la fois de l'évolution des <strong>quantités</strong> et de celle des <strong>prix</strong>.</p>
+      </div>
+      <div class="compare-side compare-b">
+        <h5>📦 PIB en volume (réel)</h5>
+        <p>Calculé en <strong>euros constants</strong>, « <strong>déflaté</strong> » de l'inflation : il ne dépend que des <strong>quantités</strong>. C'est lui qui mesure la <strong>croissance économique réelle</strong>.</p>
+      </div>
+    </div>
+
+    <div class="formula-box">
+      <div class="formula-label">Passage de la valeur au volume</div>
+      <div class="formula">
+        PIB en volume <span class="op">=</span>
+        <span class="frac"><span class="num">PIB en valeur</span><span class="den">Indice des prix</span></span>
+        <span class="op">×</span> 100
+      </div>
+    </div>
+
+    <div class="hgg-stats">
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">+8,2 %</span><div class="hgg-stat-label">PIB en valeur, France 2021</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">+6,8 %</span><div class="hgg-stat-label">PIB en volume, France 2021</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">+9,7 %</span><div class="hgg-stat-label">RNB, France 2021</div></div>
+    </div>
+
+    <p>L'<strong>écart entre valeur et volume mesure exactement l'effet de la hausse des prix</strong> : en 2021, environ 1,4 point de croissance nominale n'était que de l'inflation.</p>
+
+    <div class="hgg-subsection-title">→ Comparer et corriger : trois apports</div>
+
+    <div class="hgg-timeline">
+      <div class="hgg-timeline-item">
+        <div class="hgg-timeline-date">Gustave Cassel — 1916</div>
+        <p>Instaure le <strong>PIB en PPA</strong> (parité de pouvoir d'achat), qui <strong>neutralise les écarts de niveaux de prix entre pays</strong> et rend les comparaisons internationales pertinentes.</p>
+      </div>
+      <div class="hgg-timeline-item">
+        <div class="hgg-timeline-date">Effet Boskin — 1995</div>
+        <p>L'inflation serait <strong>constamment surestimée</strong>, car une partie de la hausse des prix rémunère en réalité une <strong>amélioration de la qualité</strong> des biens. Corrélativement, la <strong>croissance en volume serait sous-estimée</strong>.</p>
+      </div>
+      <div class="hgg-timeline-item">
+        <div class="hgg-timeline-date">Commission Stiglitz — 2009</div>
+        <p><em>Rapport sur la mesure des performances économiques et du progrès social.</em> Propose de <strong>dépasser le PIB</strong>, notamment au profit du <strong>RNB</strong>, et d'intégrer des dimensions de <strong>soutenabilité et de qualité de vie</strong>.</p>
+      </div>
+    </div>
+
+    <div class="formula-box">
+      <div class="formula-label">Revenu National Brut</div>
+      <div class="formula">
+        <span class="term"><span class="t"><strong>RNB</strong></span><span class="n">revenu national brut</span></span>
+        <span class="op">=</span>
+        <span class="term"><span class="t">PIB</span><span class="n">produit intérieur brut</span></span>
+        <span class="op">+</span>
+        <span class="term"><span class="t">Revenus primaires reçus</span><span class="n">du reste du monde</span></span>
+        <span class="op">−</span>
+        <span class="term"><span class="t">Revenus primaires versés</span><span class="n">au reste du monde</span></span>
+      </div>
+      <div class="formula-sub">Le PIB mesure ce qui est produit <strong>sur le territoire</strong> ; le RNB mesure ce qui revient <strong>aux résidents</strong>.</div>
+    </div>
+
+    <p>Enfin, le <strong>PIB par habitant</strong> et le <strong>RNB par habitant</strong> rapportent la richesse créée au nombre d'habitants, afin d'apprécier le <strong>niveau de vie</strong> et les performances réelles d'une économie — un grand PIB pouvant simplement traduire une <strong>population nombreuse</strong>.</p>
+
+    <div class="hgg-author">
+      <div class="author-name">L'IDH (1990) — Amartya Sen et Mahbub ul Haq</div>
+      <p>Indicateur <strong>composite</strong> fondé sur <strong>trois dimensions</strong> :<br><br>
+      <strong>1. La richesse monétaire</strong> : RNB par habitant, en PPA.<br>
+      <strong>2. La santé</strong> : espérance de vie à la naissance.<br>
+      <strong>3. Le niveau d'éducation</strong> : durée de scolarisation.<br><br>
+      Il traduit l'idée que le <strong>développement ne se réduit pas à la croissance</strong> : il s'agit d'élargir les <strong>capabilités</strong> des individus — c'est-à-dire l'éventail réel des vies qu'ils peuvent choisir de mener.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="hgg-section" id="s2-3">
+    <div class="hgg-section-title">3 — Les limites du PIB</div>
+
+    <div class="big-quote">
+      <blockquote>« Une mesure du revenu national telle que nous l'avons définie ci-dessus<br>peut difficilement servir à évaluer le bien-être d'une nation. »</blockquote>
+      <cite>Simon Kuznets, 1943 — l'inventeur de l'indicateur en signale lui-même la portée limitée</cite>
+    </div>
+
+    <p>Les principales limites tiennent au <strong>champ</strong> et à la <strong>nature</strong> de ce que le PIB mesure. Elles sont au nombre de quatre, et débouchent sur une proposition de réforme.</p>
+
+    <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>Il <strong>n'intègre pas les dommages environnementaux</strong>, qui ne sont pas pris en compte dans les prix de marché : ce sont des <strong>externalités négatives non valorisées</strong>.</div></div>
+    <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>Il <strong>ignore le travail non rémunéré</strong> : travail domestique, bénévolat, activités non déclarées.</div></div>
+    <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>Il <strong>ne dit rien de la répartition</strong> : ni des inégalités, ni de la pauvreté — deux économies de PIB identique pouvant avoir des <strong>structures sociales opposées</strong>.</div></div>
+    <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>Il est sensible aux <strong>effets de réparation</strong> : une catastrophe <strong>dégrade le bien-être (↘)</strong> tout en <strong>faisant augmenter le PIB (↗)</strong> via l'activité de reconstruction.</div></div>
+
+    <div class="hgg-highlight">
+      D'où les propositions d'un « <strong>PIB vert</strong> », qui déduirait du PIB la <strong>valeur des ressources détruites</strong> et des <strong>dégradations environnementales</strong> — un indicateur de richesse <em>nette</em> plutôt que brute.
+    </div>
+  </div>
+
+</div><!-- /part2 -->
+
+
+<!-- ═══════════════════════════════════════
+     PARTIE III
+═══════════════════════════════════════ -->
+<div class="hgg-part" id="part3">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">III</div>
+    <div class="hgg-part-title">La répartition : du partage primaire à la redistribution</div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="hgg-section" id="s3-1">
+    <div class="hgg-section-title">1 — La répartition primaire des revenus</div>
+
+    <p>Une fois la richesse produite, elle doit être <strong>partagée</strong>. Ce partage se fait en <strong>deux temps</strong> : une <strong>répartition primaire</strong>, qui découle directement de la participation à la production, puis une <strong>redistribution</strong>, qui la corrige.</p>
+
+    <div class="formula-box">
+      <div class="formula-label">Les revenus primaires des ménages</div>
+      <div class="formula">
+        <strong>Rp = Rs + Rc + Rm</strong>
+      </div>
+      <div class="formula-sub">revenus salariaux (Rs) + revenus du capital (Rc) + revenus mixtes (Rm, entrepreneurs individuels)</div>
+    </div>
+
+    <p>Plusieurs <strong>distinctions</strong> doivent être maniées avec rigueur — elles sont sanctionnées en copie dès qu'elles sont confondues.</p>
+
+    <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div><strong>Salaire brut ≠ salaire net</strong> : le salaire net s'obtient <strong>après déduction des cotisations sociales salariales</strong>.</div></div>
+    <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div><strong>Salaire minimum</strong> : le <strong>SMIG</strong> est créé en <strong>1950</strong> (indexé sur les prix) ; il devient le <strong>SMIC</strong> en <strong>1970</strong> (indexé sur les prix <em>et</em> sur la croissance du salaire moyen).</div></div>
+    <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div><strong>Salaire moyen ≠ salaire médian</strong> : le salaire moyen est <strong>tiré vers le haut par les très hauts salaires</strong> ; le salaire médian décrit mieux la situation « centrale ».</div></div>
+    <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div><strong>Salaire nominal ≠ salaire réel</strong> : seul le second mesure le <strong>pouvoir d'achat</strong>.</div></div>
+
+    <div class="formula-box">
+      <div class="formula-label">Salaire réel</div>
+      <div class="formula">
+        Salaire réel <span class="op">=</span>
+        <span class="frac"><span class="num">Salaire nominal</span><span class="den">Indice des prix</span></span>
+        <span class="op">×</span> 100
+      </div>
+    </div>
+
+    <div class="hgg-stats">
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">1 960 €</span><div class="hgg-stat-label">Salaire net médian, 2021</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">2 424 €</span><div class="hgg-stat-label">Salaire net moyen, 2021</div></div>
+    </div>
+
+    <p>L'<strong>écart entre les deux est en lui-même un indicateur d'inégalité</strong> : plus la moyenne s'éloigne de la médiane, plus la distribution est concentrée vers le haut.</p>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="hgg-section" id="s3-2">
+    <div class="hgg-section-title">2 — La répartition fonctionnelle : le partage de la valeur ajoutée</div>
+
+    <p>La valeur ajoutée est partagée entre les <strong>deux facteurs de production</strong> : le <strong>travail</strong> (salaires, ≈ 2/3) et le <strong>capital</strong> (EBE, ≈ 1/3). Ce partage est l'un des grands objets de conflit de l'analyse économique.</p>
+
+    <div class="formula-box">
+      <div class="formula-label">Taux de marge et taux d'autofinancement</div>
+      <div class="formula">
+        <span class="unit">Taux de marge <span class="op">=</span>
+          <span class="frac"><span class="num">EBE</span><span class="den">VA</span></span>
+          <span class="op">×</span> 100</span>
+        <span class="unit">Taux d'autofinancement <span class="op">=</span>
+          <span class="frac"><span class="num">Épargne brute (EB)</span><span class="den">FBCF</span></span>
+          <span class="op">×</span> 100</span>
+      </div>
+      <div class="formula-sub">L'<strong>EBE</strong> remplit deux fonctions : il <strong>rémunère ceux qui apportent ou prêtent du capital</strong> (dividendes, intérêts) et il <strong>permet d'investir par autofinancement</strong>.</div>
+    </div>
+
+    <div class="hgg-subsection-title">→ Les cinq phases du partage de la VA en France</div>
+
+    <div class="esh-table-wrap">
+      <table class="esh-table">
+        <thead>
+          <tr>
+            <th>Période</th>
+            <th>Évolution</th>
+            <th>Explication</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1950–1973</td>
+            <td><strong>Stable</strong></td>
+            <td>Période de forte croissance : salaires et profits progressent <strong>de concert</strong> — c'est le <strong>compromis fordiste</strong>.</td>
+          </tr>
+          <tr>
+            <td>1973–1980</td>
+            <td><strong>↗ Salaires</strong></td>
+            <td>Les salaires <strong>résistent aux chocs pétroliers</strong> ; l'investissement et la compétitivité se dégradent.</td>
+          </tr>
+          <tr>
+            <td>1980–1990</td>
+            <td><strong>↗ EBE</strong></td>
+            <td><strong>Désinflation compétitive</strong> et politiques économiques de <strong>restauration des marges</strong>.</td>
+          </tr>
+          <tr>
+            <td>1990–2008</td>
+            <td><strong>↗ Salaires</strong></td>
+            <td>Montée de l'« <strong>actionnariat</strong> » : les salaires restent sous pression, la part versée aux actionnaires progresse.</td>
+          </tr>
+          <tr>
+            <td>Depuis 2008</td>
+            <td><strong>Variations</strong></td>
+            <td>Évolutions essentiellement <strong>conjoncturelles</strong> : crises, dispositifs de soutien.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="hgg-subsection-title">→ Les enjeux du partage : deux logiques opposées</div>
+
+    <div class="big-quote">
+      <blockquote>« Les profits d'aujourd'hui font les investissements de demain, qui font les emplois d'après-demain. »</blockquote>
+      <cite>Helmut Schmidt — Théorème de Schmidt, 1974</cite>
+    </div>
+
+    <p>Cette formule résume la <strong>logique de l'offre</strong> : <strong>restaurer le taux de marge est la condition de l'emploi futur</strong>. La décision d'investir dépend en effet de <strong>deux conditions</strong> : la <strong>rentabilité attendue</strong> et la <strong>capacité à financer</strong>. Le profit joue sur les deux tableaux — il est à la fois un <strong>indicateur de rentabilité</strong> et une <strong>source d'autofinancement</strong>.</p>
+
+    <div class="thinkers-grid">
+      <div class="cite-card">
+        <div class="cite-top">
+          <div class="cite-id">
+            <span class="cite-icon">✦</span>
+            <div class="cite-id-text">
+              <span class="cite-name">Nicholas Kaldor</span>
+              <span class="cite-role">Les faits stylisés</span>
+            </div>
+          </div>
+          <span class="cite-ref">Régularité empirique</span>
+        </div>
+        <div class="cite-text">
+          <p><strong>Kaldor</strong> affirmait que la <strong>stabilité du partage de la valeur ajoutée</strong> constituait l'un des « <strong>faits stylisés</strong> », c'est-à-dire l'une des <strong>régularités empiriques</strong> observées dans la plupart des économies industrialisées sur longue période.</p>
+        </div>
+      </div>
+
+      <div class="cite-card">
+        <div class="cite-top">
+          <div class="cite-id">
+            <span class="cite-icon">✦</span>
+            <div class="cite-id-text">
+              <span class="cite-name">Ricardo <span class="amp">&amp;</span> Malthus</span>
+              <span class="cite-role">L'antinomie de la valeur ajoutée</span>
+            </div>
+          </div>
+          <span class="cite-ref">Économie classique</span>
+        </div>
+        <div class="cite-text">
+          <p><strong>David Ricardo</strong> et <strong>Thomas Malthus</strong> mettent en évidence une <strong>tension irréductible</strong> :<br>
+          • si les <strong>salaires augmentent</strong> → la <strong>demande est favorisée</strong>, mais la <strong>rentabilité se dégrade</strong> ;<br>
+          • si les <strong>salaires diminuent</strong> → la <strong>demande est ralentie</strong>, mais l'<strong>investissement et la rentabilité s'améliorent</strong>.</p>
+        </div>
+        <p class="cite-pull">Le partage de la VA n'a donc <strong>pas d'optimum évident</strong> : tout gain d'un côté est une perte de l'autre.</p>
+      </div>
+    </div>
+
+    <div class="compare-box">
+      <div class="compare-side compare-a">
+        <h5>📉 Optique keynésienne</h5>
+        <p><strong>Salaires → revenu → demande → production → emploi.</strong><br>Conclusion : il faut <strong>valoriser la part des revenus salariaux</strong>.</p>
+      </div>
+      <div class="compare-side compare-b">
+        <h5>📈 Optique libérale</h5>
+        <p><strong>Profits → investissement → croissance → emploi</strong> (théorème de Schmidt).<br>Conclusion : il faut <strong>restaurer le taux de marge</strong>.</p>
+      </div>
+    </div>
+
+    <div class="hgg-concept">
+      <div class="concept-label">L'intra-partage</div>
+      <p>Le partage entre salaires et profits <strong>ne dit rien de ce qui se passe à l'intérieur de chaque part</strong>. L'<strong>intra-partage</strong> désigne la répartition <strong>au sein de la masse salariale</strong> et <strong>au sein des profits</strong> : il révèle des <strong>inégalités importantes</strong> — écarts de salaires, concentration des revenus du capital — que la <strong>stabilité apparente du partage global masque entièrement</strong>. C'est l'argument décisif contre une lecture trop rassurante des faits stylisés de Kaldor.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="hgg-section" id="s3-3">
+    <div class="hgg-section-title">3 — La redistribution et ses enjeux</div>
+
+    <p>La redistribution relève d'une <strong>approche normative</strong>, en relation directe avec la question de la <strong>justice sociale</strong> : elle suppose de dire <strong>ce qui doit être</strong>, et non seulement de décrire ce qui est.</p>
+
+    <div class="formula-box">
+      <div class="formula-label">Trois grandeurs de la redistribution</div>
+      <div class="formula">
+        <strong>RDB ajusté = RDB + Transferts sociaux en nature</strong><br>
+        <span class="unit">Niveau de vie <span class="op">=</span>
+          <span class="frac"><span class="num">RDB</span><span class="den">UC</span></span></span>
+        <span class="unit">Pouvoir d'achat <span class="op">=</span>
+          <span class="frac"><span class="num">RDB</span><span class="den">Indice des prix</span></span></span>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="col-card col-red">
+        <h5>👥 Le niveau de vie</h5>
+        <p>Rapporte le revenu au nombre d'<strong>unités de consommation (UC)</strong> du ménage : il permet de comparer des <strong>ménages de taille et de composition différentes</strong>.</p>
+      </div>
+      <div class="col-card col-rose">
+        <h5>🕰️ Le pouvoir d'achat</h5>
+        <p><strong>Déflate le revenu par les prix</strong> : il permet la comparaison <strong>selon les époques</strong>.</p>
+      </div>
+    </div>
+
+    <p>La redistribution poursuit <strong>deux objectifs</strong> distincts, l'un social, l'autre proprement économique.</p>
+
+    <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div><strong>Au niveau social</strong> : corriger les <strong>inégalités issues de la répartition primaire</strong>.</div></div>
+    <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div><strong>Au niveau économique</strong> : <strong>soutenir la demande de consommation</strong>, en transférant du revenu vers les ménages à <strong>forte propension à consommer</strong>.</div></div>
+
+    <div class="hgg-stats">
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">4,1</span><div class="hgg-stat-label">Rapport interdécile avant redistribution</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">2,8</span><div class="hgg-stat-label">Rapport interdécile après redistribution</div></div>
+    </div>
+
+    <div class="compare-box">
+      <div class="compare-side compare-a">
+        <h5>↔️ Redistribution horizontale</h5>
+        <p><strong>Couvrir des risques sociaux</strong> — maladie, vieillesse, chômage, famille. Logique d'<strong>assurance</strong>, <strong>indépendante du niveau de revenu</strong>.</p>
+      </div>
+      <div class="compare-side compare-b">
+        <h5>↕️ Redistribution verticale</h5>
+        <p><strong>Corriger les inégalités de revenus.</strong> Logique d'<strong>assistance</strong>, des plus aisés vers les plus modestes.</p>
+      </div>
+    </div>
+
+    <div class="hgg-author">
+      <div class="author-name">Bruno Amable (2005) — Les cinq capitalismes</div>
+      <p><strong>Amable</strong> distingue <strong>cinq aires géographiques</strong> correspondant à des <strong>modèles sociaux</strong> et à des <strong>compromis institutionnels opposés</strong> : modèle <strong>de marché</strong>, <strong>social-démocrate</strong>, <strong>continental européen</strong>, <strong>méditerranéen</strong> et <strong>asiatique</strong>. Il n'existe donc <strong>pas un arbitrage universel</strong> entre marché et protection sociale, mais des <strong>cohérences institutionnelles nationales</strong> — chaque modèle tenant par la complémentarité de ses éléments.</p>
+    </div>
+
+    <div class="hgg-subsection-title">→ Les effets de la redistribution et ses « ratés »</div>
+
+    <div class="doctrine-block">
+      <div class="def-card">
+        <div class="def-accent-bar"></div>
+        <div class="def-body">
+          <div class="def-header">
+            <span class="def-icon">◆</span>
+            <span class="def-term">Le seuil de pauvreté</span>
+            <span class="def-tag">Définition</span>
+          </div>
+          <p class="def-text">En <strong>France</strong>, dans une <strong>approche relative</strong>, le seuil de pauvreté est établi à <strong>60 % du revenu médian</strong>. Soit environ <strong>0,60 × 1 800 € ≈ 1 100 €</strong>. Le <strong>taux de pauvreté</strong> correspondant est d'environ <strong>15 % de la population</strong>.</p>
+        </div>
+      </div>
+    </div>
+
+    <p>Malgré cette architecture redistributive, les <strong>inégalités se creusent depuis 1980</strong>. Trois facteurs sont généralement avancés.</p>
+
+    <div class="three-col">
+      <div class="col-card col-red">
+        <h5>🤖 Progrès technique biaisé</h5>
+        <p>Il accroît la <strong>demande de travail qualifié</strong> et donc les <strong>salaires qualifiés (↗)</strong>, au détriment des moins qualifiés.</p>
+      </div>
+      <div class="col-card col-rose">
+        <h5>🌐 Mondialisation</h5>
+        <p>Elle met en concurrence les <strong>travailleurs peu qualifiés</strong> des pays développés avec ceux des <strong>pays à bas salaires</strong> : pression à la baisse <strong>(↘)</strong> sur leurs rémunérations.</p>
+      </div>
+      <div class="col-card col-light">
+        <h5>⚖️ Relâchement institutionnel</h5>
+        <p><strong>Flexibilisation</strong> du marché du travail, explosion des rémunérations dans la <strong>finance (↗)</strong>, progression des <strong>revenus du capital (↗)</strong>, affaiblissement de la <strong>négociation collective</strong>.</p>
+      </div>
+    </div>
+
+    <div class="thinkers-grid">
+      <div class="cite-card">
+        <div class="cite-top">
+          <div class="cite-id">
+            <span class="cite-icon">✦</span>
+            <div class="cite-id-text">
+              <span class="cite-name">Arthur Okun</span>
+              <span class="cite-role">Equality and Efficiency : The Big Tradeoff (1975)</span>
+            </div>
+          </div>
+          <span class="cite-ref">Le seau percé</span>
+        </div>
+        <div class="cite-text">
+          <p><strong>Okun</strong> met en évidence une <strong>tension entre efficacité et égalité</strong> : les deux objectifs <strong>ne peuvent être pleinement satisfaits en même temps</strong>. Toute redistribution suppose un <strong>transfert coûteux</strong> : une partie de ce qui est prélevé <strong>se perd en route</strong> — coûts administratifs, désincitations au travail et à l'investissement.</p>
+        </div>
+        <p class="cite-pull">L'image du <strong>« seau percé »</strong> : on transporte l'eau des riches vers les pauvres, mais le seau fuit en chemin.</p>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /part3 -->
+
+
+<!-- ═══════════════════════════════════════
+     PARTIE IV
+═══════════════════════════════════════ -->
+<div class="hgg-part" id="part4">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">IV</div>
+    <div class="hgg-part-title">Comptabilité nationale : le TES et le TEE</div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="hgg-section" id="s4-1">
+    <div class="hgg-section-title">1 — Le Tableau Entrées-Sorties (TES)</div>
+
+    <p>Les <strong>deux grands tableaux de synthèse</strong> de la comptabilité nationale traduisent respectivement les <strong>deux logiques du circuit</strong> : le <strong>TES</strong> décrit l'équilibre <strong>par produit et par branche</strong>, le <strong>TEE</strong> décrit l'équilibre <strong>par secteur institutionnel</strong>.</p>
+
+    <div class="hgg-author">
+      <div class="author-name">Wassily Leontief (1941) — L'analyse input-output</div>
+      <p>Étude pionnière sur les <strong>interrelations existant entre les différentes branches</strong> de l'économie américaine. <strong>Leontief</strong> montre que la <strong>production d'une branche dépend de la production de toutes les autres</strong>, dont elle utilise les produits comme <strong>consommations intermédiaires</strong>. L'économie n'est pas une juxtaposition de secteurs, mais un <strong>réseau d'interdépendances</strong>.</p>
+    </div>
+
+    <div class="doctrine-block">
+      <div class="def-card">
+        <div class="def-accent-bar"></div>
+        <div class="def-body">
+          <div class="def-header">
+            <span class="def-icon">◆</span>
+            <span class="def-term">Le TES</span>
+            <span class="def-tag">Définition</span>
+          </div>
+          <p class="def-text">Le <strong>tableau entrées-sorties</strong> est un <strong>outil statistique</strong> qui décrit l'<strong>équilibre des opérations sur biens et services</strong>, <strong>détaillé par branche d'activité</strong> — 38 branches dans la présentation usuelle.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="col-card col-red">
+        <h5>🔍 Décrire</h5>
+        <p>La <strong>structure de l'appareil productif</strong> : qui produit quoi, avec quoi.</p>
+      </div>
+      <div class="col-card col-rose">
+        <h5>📡 Prévoir</h5>
+        <p>Mesurer l'<strong>effet d'un choc de demande</strong> sur l'ensemble des branches.</p>
+      </div>
+    </div>
+
+    <div class="hgg-subsection-title">→ Une structure de cinq tableaux juxtaposés</div>
+
+    <p>Tous sont des <strong>reflets du même équilibre emplois-ressources</strong>, déclinés à des niveaux différents.</p>
+
+    <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div><strong>1. Le tableau des ressources</strong> : production + importations.</div></div>
+    <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div><strong>2. Le tableau des consommations intermédiaires</strong> — le <strong>cœur du TES</strong>, matrice croisant <strong>branches et produits</strong>.</div></div>
+    <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div><strong>3. Le tableau des emplois finals</strong> : CF, FBCF, VS, X.</div></div>
+    <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div><strong>4. Le tableau du partage de la valeur ajoutée</strong>, par branche.</div></div>
+    <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div><strong>5. Le tableau de correction</strong> : marges commerciales et de transport, impôts et subventions sur les produits — passage du <strong>prix de base</strong> au <strong>prix d'acquisition</strong>.</div></div>
+
+    <div class="formula-box">
+      <div class="formula-label">Matrice des coefficients techniques</div>
+      <div class="formula">
+        a<sub>AB</sub> <span class="op">=</span>
+        <span class="frac"><span class="num">CI de produits B nécessaires pour produire des produits A</span><span class="den">Production totale de produits A</span></span>
+      </div>
+    </div>
+
+    <div class="hgg-concept">
+      <div class="concept-label">La propagation de proche en proche</div>
+      <p>Ces coefficients décrivent la « <strong>recette</strong> » technique de chaque branche. <strong>Supposés stables à court terme</strong>, ils permettent de <strong>prévoir la production nécessaire</strong> en réponse à une évolution de la demande ou de l'offre : une <strong>hausse de la demande finale adressée à une branche se propage, de proche en proche, à toutes celles qui l'approvisionnent</strong>. C'est le fondement de l'analyse des <strong>effets d'entraînement</strong>.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="hgg-section" id="s4-2">
+    <div class="hgg-section-title">2 — Le TEE et le bouclage macro-économique</div>
+
+    <p>Le <strong>TEE</strong> retrace la <strong>séquence des comptes</strong> de chaque secteur institutionnel. Chaque compte <strong>s'équilibre par un solde</strong>, qui est <strong>reporté en ressource du compte suivant</strong> : c'est ce <strong>chaînage</strong> qui assure le bouclage du circuit.</p>
+
+    <div class="hgg-highlight">
+      <strong>Moyen mnémotechnique : PERRUC.</strong> <strong>P</strong>roduction — <strong>E</strong>xploitation — affectation des <strong>R</strong>evenus primaires — distribution secondaire du <strong>R</strong>evenu — <strong>U</strong>tilisation du revenu — compte de <strong>C</strong>apital.
+    </div>
+
+    <div class="esh-table-wrap">
+      <table class="esh-table">
+        <thead>
+          <tr>
+            <th>Compte</th>
+            <th>Ce qu'il retrace</th>
+            <th>Solde</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Production</td>
+            <td>Production, consommations intermédiaires</td>
+            <td><strong>Valeur ajoutée (VA)</strong></td>
+          </tr>
+          <tr>
+            <td>Exploitation</td>
+            <td>Rémunération des salariés, impôts sur la production</td>
+            <td><strong>Excédent brut d'exploitation (EBE)</strong></td>
+          </tr>
+          <tr>
+            <td>Affectation des revenus primaires</td>
+            <td>Revenus de la propriété reçus et versés</td>
+            <td><strong>Solde des revenus primaires</strong></td>
+          </tr>
+          <tr>
+            <td>Distribution secondaire du revenu</td>
+            <td>Impôts, cotisations, prestations sociales</td>
+            <td><strong>Revenu disponible brut (RDB)</strong></td>
+          </tr>
+          <tr>
+            <td>Utilisation du revenu</td>
+            <td>Dépense de consommation finale</td>
+            <td><strong>Épargne brute (EB)</strong></td>
+          </tr>
+          <tr>
+            <td>Compte de capital</td>
+            <td>FBCF, variation des stocks, transferts en capital</td>
+            <td><strong>Capacité (CF) ou besoin (BF) de financement</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="formula-box">
+      <div class="formula-label">Le bouclage macro-économique</div>
+      <div class="formula">
+        CF ou BF de la Nation <span class="op">=</span> Σ (CF ou BF des secteurs institutionnels)<br>
+        <strong>CF du reste du monde = − BF de la Nation</strong>
+      </div>
+    </div>
+
+    <div class="hgg-concept">
+      <div class="concept-label">Le circuit est bien fermé</div>
+      <p>Le <strong>solde de l'économie nationale</strong> n'est rien d'autre, <strong>au signe près</strong>, que le <strong>solde du reste du monde vis-à-vis d'elle</strong> : si la Nation dégage un <strong>besoin de financement</strong>, c'est que le reste du monde dispose, <strong>symétriquement</strong>, d'une <strong>capacité de financement</strong> à son égard. Rien ne se perd, rien ne se crée hors du circuit.</p>
+    </div>
+
+  </div>
+
+</div><!-- /part4 -->
+
+</div><!-- /content -->
+
+<footer class="site-footer">
+  <div class="footer-logo">Chapitre 1 : Les acteurs et les grandes fonctions de l'économie</div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut de page">↑</button>
+
+<script>
+  document.querySelectorAll('.toc-list a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
+</body>
+</html>

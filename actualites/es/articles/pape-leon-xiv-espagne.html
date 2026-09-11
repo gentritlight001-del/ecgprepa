@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Léon XIV en Espagne : le pape qui fait l'histoire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #c60b1e;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #c60b1e; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #f1bf00; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #c60b1e; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #c60b1e; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #c60b1e; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#c60b1e; border-color:#c60b1e; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  .ap-band { background: linear-gradient(90deg, #c60b1e, #f1bf00, #c60b1e); text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(28,5,8,0.95); padding:12px 60px; border-bottom: 1px solid rgba(198,11,30,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#f1bf00; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(198,11,30,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(181,19,31,0.2);  color:#f08080; border:1px solid rgba(181,19,31,0.35); }
+  .ap-tag-navy   { background:rgba(13,27,42,0.6);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #f1bf00; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(14,5,5,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(198,11,30,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(241,191,0,0.7); }
+
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#f1bf00; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(241,191,0,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#1a0204,#2e080c); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat.blue   { background:linear-gradient(135deg,#071422,#0d2540); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #f1bf00; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(241,191,0,0.06),rgba(241,191,0,0.02)); border-left:3px solid #f1bf00; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(241,191,0,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(241,191,0,0.7); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(28,5,8,0.9),rgba(14,3,4,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(198,11,30,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#f1bf00; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(198,11,30,0.06); border:1px solid rgba(198,11,30,0.18); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(241,191,0,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#f1bf00; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(241,191,0,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#f1bf00; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(28,5,8,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-es-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-es.html">Espagnol</a>
+    <span class="sep">/</span>
+    <a href="../espagne.html">Espagne</a>
+    <span class="sep">/</span>
+    <span class="current">Léon XIV en Espagne</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-es" class="ap-lang-btn" onclick="setLang('es')">🇪🇸 ES</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇪🇸 Espagne — Le pape face à l'Espagne fracturée</div>
+<div class="ap-back-bar">
+  <a href="../espagne.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main">
+<div class="ap-card fade-in">
+
+  <div class="ap-hero-img-wrap">
+    <img class="ap-hero-img" src="../images/pape-leon-xiv-espagne.jpg" alt="Léon XIV en Espagne — juin 2026" onerror="this.parentElement.style.background='linear-gradient(135deg,#1a0a0a,#2e1010)';this.style.display='none'">
+  </div>
+
+  <!-- ═══ SECTION FR ═══ -->
+  <div class="ap-fr-section">
+    <div class="ap-header">
+      <div class="ap-tags">
+        <span class="ap-tag ap-tag-red">🇪🇸 Espagne</span>
+        <span class="ap-tag ap-tag-gold">Religion &amp; État</span>
+        <span class="ap-tag ap-tag-teal">Diplomatie</span>
+        <span class="ap-tag ap-tag-navy">Migration</span>
+        <span class="ap-tag ap-tag-purple">Société</span>
+      </div>
+      <div class="ap-date">Juin 2026 — ECG Prépa · Espagne</div>
+      <h1 class="ap-title">Léon XIV en Espagne : un voyage apostolique hors normes dans un pays fracturé</h1>
+      <p class="ap-intro">Du 6 au 12 juin 2026, le pape Léon XIV a effectué son quatrième voyage apostolique hors d'Italie, en Espagne. Première visite papale dans le pays depuis Benoît XVI en 2011, ce périple de sept jours — entre Madrid, Barcelone et les îles Canaries — a été marqué par des premières historiques : discours devant le Parlement, inauguration de la tour la plus haute de la Sagrada Família, et rencontre avec les migrants aux Canaries.</p>
+    </div>
+
+    <div class="ap-body">
+
+      <div class="ap-stats">
+        <div class="ap-stat red"><span class="ap-stat-num">7 jours</span><span class="ap-stat-desc">Durée du voyage<br>6 – 12 juin 2026</span></div>
+        <div class="ap-stat gold"><span class="ap-stat-num">4 villes</span><span class="ap-stat-desc">Madrid, Barcelone,<br>Las Palmas, Tenerife</span></div>
+        <div class="ap-stat blue"><span class="ap-stat-num">172,5 m</span><span class="ap-stat-desc">Hauteur de la tour<br>de Jésus-Christ inaugurée</span></div>
+        <div class="ap-stat green"><span class="ap-stat-num">15 ans</span><span class="ap-stat-desc">Sans visite papale<br>en Espagne (depuis 2011)</span></div>
+      </div>
+
+      <div class="ap-cols">
+        <div>
+          <div class="ap-sub">Madrid : diplomatie d'État et pastorale populaire</div>
+          <p>Le pape a atterri à l'aéroport Adolfo Suárez de Madrid le 6 juin 2026, accueilli avec les honneurs d'une visite d'État par le roi Felipe VI et la reine Letizia au Palais royal. Cette réception solennelle traduit la nature hybride du voyage : à la fois mission pastorale et engagement diplomatique au plus haut niveau. Dès le premier soir, Léon XIV a visité le projet social « CEDIA 24 horas » géré par Caritas, avant de présider une veillée de prière avec les jeunes sur la Plaza de Lima.</p>
+          <p>Le lendemain, le 7 juin — fête du Corpus Christi —, il a célébré une messe solennelle sur la Plaza de Cibeles, l'une des places les plus emblématiques de la capitale. Il a ensuite rencontré les membres de son ordre, les Augustins, ainsi que des personnalités culturelles et sportives au Palacio de Deportes. Le lundi 8 juin, après un entretien avec le Premier ministre Pedro Sánchez à la nonciature, il s'est rendu au Congrès des Députés pour prononcer un discours devant les membres des deux chambres réunies en session commune — une première absolue dans l'histoire de l'Espagne, qu'aucun de ses prédécesseurs, ni Jean-Paul II ni Benoît XVI, n'avait réalisée. Après-midi, il a conduit une prière à la cathédrale de l'Almudena, puis s'est adressé à la communauté diocésaine dans l'enceinte du stade Santiago Bernabéu. Son séjour madrilène s'est conclu le 9 juin par une rencontre avec des bénévoles au Palais des Congrès de l'IFEMA.</p>
+
+          <div class="ap-sub">Une visite dans un contexte de forte polarisation</div>
+          <p>Le voyage s'est inscrit dans un contexte politique et social tendu. Les relations entre l'Église catholique et le gouvernement de gauche de Pedro Sánchez sont notoirement fraîches : l'exécutif a légalisé l'euthanasie en 2021 et réduit la place de l'enseignement religieux dans les écoles. Parallèlement, selon l'Atlas de la Polarisation de More in Common (2025), près de 5 millions d'Espagnols ont rompu une relation personnelle au cours de l'année écoulée en raison de divergences idéologiques, soit 14 % de la population adulte. Pour Léon XIV, ce voyage représentait donc aussi un appel au dialogue dans une société profondément divisée.</p>
+          <p>La devise choisie pour ce voyage apostolique, tirée de l'Évangile selon saint Jean, résume l'ambition du pontife : <em>« Levez les yeux »</em>. Une invitation à dépasser les clivages du quotidien pour retrouver une vision commune. Dans ses discours, le pape a plaidé pour la réconciliation nationale et la dignité de chaque personne, évitant de se positionner directement dans le débat politique espagnol tout en adressant des messages clairs sur les grandes questions sociales.</p>
+
+          <div class="ap-tl">
+            <div class="ap-tl-item"><div class="ap-tl-date">6 juin</div><p class="ap-tl-text">Arrivée à Madrid. Accueil au Palais royal par le roi Felipe VI. Visite du projet social Caritas, veillée de prière avec les jeunes Plaza de Lima.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">7 juin</div><p class="ap-tl-text">Messe du Corpus Christi Plaza de Cibeles. Rencontre avec les Augustins et des figures culturelles au Palacio de Deportes.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">8 juin</div><p class="ap-tl-text">Entretien avec Pedro Sánchez. Discours historique devant le Parlement espagnol. Prière à l'Almudena. Adresse à la communauté diocésaine au Bernabéu.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">9 juin</div><p class="ap-tl-text">Rencontre avec les bénévoles à l'IFEMA. Départ pour Barcelone. Liturgie des heures à la cathédrale Sainte-Eulalie. Veillée de prière au stade olympique.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">10 juin</div><p class="ap-tl-text">Visite du centre pénitentiaire « Brians 1 ». Rosaire et déjeuner à l'abbaye de Montserrat. Inauguration de la tour de Jésus-Christ à la Sagrada Família. Messe solennelle pour le centenaire de la mort de Gaudí.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">11–12 juin</div><p class="ap-tl-text">Îles Canaries : rencontre avec les migrants à Arguineguín (Gran Canaria), messe au stade de Gran Canaria, rencontre avec des réfugiés au centre Las Raíces (Tenerife), messe dans le port de Santa Cruz.</p></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="ap-sub">Barcelone : Gaudí, Montserrat et la plus haute église du monde</div>
+          <p>Arrivé à Barcelone le 9 juin, Léon XIV a d'abord célébré la liturgie des heures à la cathédrale Sainte-Eulalie, avant de présider une veillée de prière au stade olympique Lluís Companys. Le lendemain, 10 juin, il s'est rendu à l'abbaye bénédictine de Montserrat pour y réciter le chapelet, avant de déjeuner avec les moines bénédictins. L'après-midi, il a visité le centre pénitentiaire « Brians 1 », renouant avec la tradition de la « pastorale des périphéries » qui a marqué son prédécesseur François.</p>
+          <p>Le temps fort de son séjour barcelonais a été l'inauguration, en soirée du 10 juin, de la tour de Jésus-Christ de la Sagrada Família. Culminant à 172,5 mètres (566 pieds), cette tour — la plus haute de la basilique conçue par Antoni Gaudí — fait de l'édifice la plus haute église catholique du monde, dépassant la basilique Notre-Dame-de-la-Paix de Yamoussoukro en Côte d'Ivoire. La date n'est pas anodine : le 10 juin 2026 marque exactement le centième anniversaire de la mort de Gaudí, renversé par un tramway à Barcelone en 1926. Le pape a présidé une messe solennelle pour célébrer cette double commémoration.</p>
+
+          <div class="ap-quote">
+            <p>« Levad los ojos. »</p>
+            <cite>— Devise du voyage apostolique de Léon XIV en Espagne, juin 2026, tirée de l'Évangile selon saint Jean</cite>
+          </div>
+
+          <div class="ap-sub">Les îles Canaries : la voix des migrants</div>
+          <p>La dernière étape du voyage, aux Canaries les 11 et 12 juin, était placée sous le signe de la question migratoire. Les îles Canaries constituent l'un des principaux points d'entrée en Europe pour les migrants en provenance d'Afrique subsaharienne traversant l'Atlantique à bord d'embarcations de fortune. En se rendant au port d'Arguineguín à Gran Canaria, puis au centre d'accueil Las Raíces à Tenerife, Léon XIV a voulu donner une visibilité internationale à ces hommes, femmes et enfants que les circuits médiatiques ordinaires rendent souvent invisibles. Il a également célébré deux messes de plein air — au stade de Gran Canaria et dans le port de Santa Cruz de Tenerife — avant de reprendre l'avion vers Rome le 12 juin en fin d'après-midi.</p>
+          <p>Ce choix des Canaries revêt une signification symbolique forte : son prédécesseur François avait lui-même exprimé le souhait de visiter l'archipel sans jamais pouvoir le réaliser. Léon XIV a ainsi accompli un geste pastoral attendu, tout en portant un message politique clair sur la nécessité d'une réponse européenne solidaire à la crise migratoire.</p>
+
+          <table class="ap-table">
+            <thead><tr><th>Étape</th><th>Dates</th><th>Temps forts</th></tr></thead>
+            <tbody>
+              <tr><td class="ap-cell-bold">Madrid</td><td>6 – 9 juin</td><td>Accueil royal, messe Cibeles, discours Parlement, Bernabéu</td></tr>
+              <tr><td class="ap-cell-bold">Barcelone</td><td>9 – 11 juin</td><td>Montserrat, prison, inauguration Sagrada Família, messe Gaudí</td></tr>
+              <tr><td class="ap-cell-bold">Gran Canaria</td><td>11 juin</td><td>Rencontre migrants Arguineguín, messe stade Gran Canaria</td></tr>
+              <tr><td class="ap-cell-bold">Tenerife</td><td>12 juin</td><td>Centre Las Raíces, messe port Santa Cruz, retour à Rome</td></tr>
+            </tbody>
+          </table>
+
+          <div class="ap-info">
+            <div class="ap-info-icon">✝️</div>
+            <div class="ap-info-text"><strong>Qui est Léon XIV ?</strong> Élu en mai 2025, Robert Francis Prevost est le 267e pape de l'Église catholique. Premier pontife né aux États-Unis et premier issu de l'ordre de Saint-Augustin, il a passé une grande partie de sa vie missionnaire au Pérou. Son pontificat est marqué par une attention particulière aux « périphéries » — migrants, pauvres, détenus — dans la continuité de François.</div>
+          </div>
+
+          <div class="ap-ctx">
+            <div class="ap-ctx-label">Un voyage qui engage l'avenir des relations Église-État</div>
+            <p>Ce voyage apostolique de sept jours dépasse le cadre purement religieux. En prenant la parole devant le Parlement espagnol — une première dans l'histoire — Léon XIV a affirmé que l'Église entend rester un interlocuteur du débat démocratique, sans pour autant s'y dissoudre. L'Espagne, pays longtemps identifié au catholicisme traditionnel, traverse une sécularisation accélérée : la pratique religieuse recule, les demandes de baptême chez les jeunes adultes connaissent pourtant un regain notable. En inaugurant la Sagrada Família et en se rendant auprès des migrants des Canaries, le pape a tracé les deux axes de son pontificat : l'enracinement dans une civilisation chrétienne pluriséculaire et l'ouverture inconditionnelle aux « périphéries du monde ».</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <!-- /ap-fr-section -->
+
+  <!-- ═══ SECTION ES ═══ -->
+  <div class="ap-es-section">
+    <div class="ap-header">
+      <div class="ap-tags">
+        <span class="ap-tag ap-tag-red">🇪🇸 España</span>
+        <span class="ap-tag ap-tag-gold">Religión &amp; Estado</span>
+        <span class="ap-tag ap-tag-teal">Diplomacia</span>
+        <span class="ap-tag ap-tag-navy">Migración</span>
+        <span class="ap-tag ap-tag-purple">Sociedad</span>
+      </div>
+      <div class="ap-date">Junio 2026 — ECG Prépa · España</div>
+      <h1 class="ap-title">León XIV en España : un viaje apostólico histórico en un país fracturado</h1>
+      <p class="ap-intro">Del 6 al 12 de junio de 2026, el papa León XIV realizó su cuarto viaje apostólico fuera de Italia, en España. Primera visita papal al país desde Benedicto XVI en 2011, este periplo de siete días —entre Madrid, Barcelona y las islas Canarias— estuvo marcado por primeras históricas: discurso ante el Parlamento, inauguración de la torre más alta de la Sagrada Família, y encuentro con los migrantes en Canarias.</p>
+    </div>
+
+    <div class="ap-body">
+
+      <div class="ap-stats">
+        <div class="ap-stat red"><span class="ap-stat-num">7 días</span><span class="ap-stat-desc">Duración del viaje<br>6 – 12 junio 2026</span></div>
+        <div class="ap-stat gold"><span class="ap-stat-num">4 ciudades</span><span class="ap-stat-desc">Madrid, Barcelona,<br>Las Palmas, Tenerife</span></div>
+        <div class="ap-stat blue"><span class="ap-stat-num">172,5 m</span><span class="ap-stat-desc">Altura de la torre<br>de Jesucristo inaugurada</span></div>
+        <div class="ap-stat green"><span class="ap-stat-num">15 años</span><span class="ap-stat-desc">Sin visita papal<br>a España (desde 2011)</span></div>
+      </div>
+
+      <div class="ap-cols">
+        <div>
+          <div class="ap-sub">Madrid : diplomacia de Estado y pastoral popular</div>
+          <p>El papa aterrizó en el aeropuerto Adolfo Suárez de Madrid el 6 de junio de 2026, recibido con los honores de una visita de Estado por el rey Felipe VI y la reina Letizia en el Palacio Real. Esta recepción solemne refleja la naturaleza híbrida del viaje: a la vez misión pastoral y compromiso diplomático al más alto nivel. Ya el primer día, León XIV visitó el proyecto social « CEDIA 24 horas » de Cáritas, antes de presidir una vigilia de oración con los jóvenes en la Plaza de Lima.</p>
+          <p>Al día siguiente, 7 de junio —festividad del Corpus Christi—, celebró una misa solemne en la Plaza de Cibeles, una de las plazas más emblemáticas de la capital. Después se reunió con los miembros de su orden, los Agustinos, y con personalidades culturales y deportivas en el Palacio de Deportes. El lunes 8 de junio, tras una entrevista con el presidente del gobierno Pedro Sánchez en la nunciatura, acudió al Congreso de los Diputados para pronunciar un discurso ante los miembros de las dos cámaras reunidas en sesión conjunta — una primera absoluta en la historia de España, que ninguno de sus predecesores, ni Juan Pablo II ni Benedicto XVI, había realizado. Por la tarde, presidió una oración en la catedral de la Almudena y se dirigió a la comunidad diocesana en el estadio Santiago Bernabéu. Su estancia madrileña concluyó el 9 de junio con un encuentro con voluntarios en el Palacio de Congresos IFEMA.</p>
+
+          <div class="ap-sub">Un viaje en un contexto de fuerte polarización</div>
+          <p>El viaje se inscribe en un contexto político y social tenso. Las relaciones entre la Iglesia católica y el gobierno de izquierda de Pedro Sánchez son notoriamente frías: el ejecutivo legalizó la eutanasia en 2021 y ha reducido el peso de la enseñanza religiosa en las escuelas. Al mismo tiempo, según el Atlas de la Polarización de More in Common (2025), cerca de 5 millones de españoles han roto una relación personal en el último año por diferencias ideológicas, es decir, el 14 % de la población. Para León XIV, este viaje era también un llamado al diálogo en una sociedad profundamente dividida.</p>
+          <p>El lema elegido para este viaje apostólico, tomado del Evangelio según san Juan, resume la ambición del pontífice: <em>« Levad los ojos »</em>. Una invitación a superar las divisiones cotidianas para encontrar una visión común. En sus discursos, el papa abogó por la reconciliación nacional y la dignidad de cada persona.</p>
+
+          <div class="ap-tl">
+            <div class="ap-tl-item"><div class="ap-tl-date">6 jun.</div><p class="ap-tl-text">Llegada a Madrid. Recepción en el Palacio Real por el rey Felipe VI. Visita al proyecto social Cáritas, vigilia de oración con los jóvenes en la Plaza de Lima.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">7 jun.</div><p class="ap-tl-text">Misa del Corpus Christi en la Plaza de Cibeles. Encuentro con los Agustinos y figuras culturales en el Palacio de Deportes.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">8 jun.</div><p class="ap-tl-text">Entrevista con Pedro Sánchez. Discurso histórico ante el Parlamento. Oración en la Almudena. Alocución a la comunidad diocesana en el Bernabéu.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">9 jun.</div><p class="ap-tl-text">Encuentro con voluntarios en IFEMA. Llegada a Barcelona. Liturgia de las horas en la catedral de Santa Eulalia. Vigilia de oración en el estadio olímpico.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">10 jun.</div><p class="ap-tl-text">Visita al centro penitenciario « Brians 1 ». Rosario y almuerzo en la abadía de Montserrat. Inauguración de la torre de Jesucristo en la Sagrada Família. Misa solemne por el centenario de la muerte de Gaudí.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">11–12 jun.</div><p class="ap-tl-text">Islas Canarias: encuentro con migrantes en Arguineguín (Gran Canaria), misa en el estadio de Gran Canaria, encuentro con refugiados en Las Raíces (Tenerife), misa en el puerto de Santa Cruz.</p></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="ap-sub">Barcelona : Gaudí, Montserrat y la iglesia más alta del mundo</div>
+          <p>Llegado a Barcelona el 9 de junio, León XIV celebró primero la liturgia de las horas en la catedral de Santa Eulalia, antes de presidir una vigilia de oración en el estadio olímpico Lluís Companys. Al día siguiente, 10 de junio, visitó la abadía benedictina de Montserrat para rezar el rosario, almorzando luego con los monjes. Por la tarde, acudió al centro penitenciario « Brians 1 », retomando la tradición de la « pastoral de las periferias » que marcó a su predecesor Francisco.</p>
+          <p>El momento culminante de su estancia barcelonesa fue la inauguración, al anochecer del 10 de junio, de la torre de Jesucristo de la Sagrada Família. Con 172,5 metros de altura, esta torre — la más alta de la basílica diseñada por Antoni Gaudí — convierte al edificio en la iglesia católica más alta del mundo, superando a la basílica Nuestra Señora de la Paz de Yamoussoukro (Costa de Marfil). La fecha no es casual: el 10 de junio de 2026 marca exactamente el centenario de la muerte de Gaudí, atropellado por un tranvía en Barcelona en 1926. El papa presidió una misa solemne para celebrar esta doble conmemoración.</p>
+
+          <div class="ap-quote">
+            <p>« Levad los ojos. »</p>
+            <cite>— Lema del viaje apostólico de León XIV a España, junio de 2026, tomado del Evangelio según san Juan</cite>
+          </div>
+
+          <div class="ap-sub">Las islas Canarias : la voz de los migrantes</div>
+          <p>La última etapa del viaje, en Canarias los días 11 y 12 de junio, estuvo centrada en la cuestión migratoria. Las islas Canarias constituyen uno de los principales puntos de entrada a Europa para los migrantes procedentes del África subsahariana que cruzan el Atlántico en embarcaciones precarias. Al dirigirse al puerto de Arguineguín en Gran Canaria, y luego al centro de acogida Las Raíces en Tenerife, León XIV quiso dar visibilidad internacional a estos hombres, mujeres y niños que los circuitos mediáticos ordinarios a menudo vuelven invisibles. También celebró dos misas al aire libre —en el estadio de Gran Canaria y en el puerto de Santa Cruz de Tenerife— antes de emprender el regreso a Roma el 12 de junio por la tarde.</p>
+          <p>Esta elección de Canarias reviste una fuerte significación simbólica: su predecesor Francisco había expresado el deseo de visitar el archipiélago sin poder realizarlo nunca. León XIV cumplió así un gesto pastoral esperado, al tiempo que lanzó un mensaje político claro sobre la necesidad de una respuesta europea solidaria ante la crisis migratoria.</p>
+
+          <table class="ap-table">
+            <thead><tr><th>Etapa</th><th>Fechas</th><th>Momentos clave</th></tr></thead>
+            <tbody>
+              <tr><td class="ap-cell-bold">Madrid</td><td>6 – 9 jun.</td><td>Recepción real, misa Cibeles, discurso Parlamento, Bernabéu</td></tr>
+              <tr><td class="ap-cell-bold">Barcelona</td><td>9 – 11 jun.</td><td>Montserrat, prisión, inauguración Sagrada Família, misa Gaudí</td></tr>
+              <tr><td class="ap-cell-bold">Gran Canaria</td><td>11 jun.</td><td>Encuentro migrantes Arguineguín, misa estadio Gran Canaria</td></tr>
+              <tr><td class="ap-cell-bold">Tenerife</td><td>12 jun.</td><td>Centro Las Raíces, misa puerto Santa Cruz, regreso a Roma</td></tr>
+            </tbody>
+          </table>
+
+          <div class="ap-info">
+            <div class="ap-info-icon">✝️</div>
+            <div class="ap-info-text"><strong>¿Quién es León XIV?</strong> Elegido en mayo de 2025, Robert Francis Prevost es el 267.º papa de la Iglesia católica. Primer pontífice nacido en Estados Unidos y el primero procedente de la Orden de San Agustín, pasó gran parte de su vida misionera en Perú. Su pontificado está marcado por una atención especial a las « periferias » —migrantes, pobres, presos— en continuidad con Francisco.</div>
+          </div>
+
+          <div class="ap-ctx">
+            <div class="ap-ctx-label">Un viaje que compromete el futuro de las relaciones Iglesia-Estado</div>
+            <p>Este viaje apostólico de siete días trasciende el marco puramente religioso. Al tomar la palabra ante el Parlamento español —una primera en la historia—, León XIV afirmó que la Iglesia pretende seguir siendo un interlocutor del debate democrático sin disolverse en él. España, país durante mucho tiempo identificado con el catolicismo tradicional, atraviesa una acelerada secularización: la práctica religiosa retrocede, aunque las demandas de bautismo entre los jóvenes adultos conocen un notable repunte. Al inaugurar la Sagrada Família y al acudir junto a los migrantes de las Canarias, el papa trazó los dos ejes de su pontificado: el arraigo en una civilización cristiana plurisecular y la apertura incondicional a las « periferias del mundo ».</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <!-- /ap-es-section -->
+
+</div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — Espagne — Juin 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-es').classList.toggle('active', lang === 'es');
+  const isEs = lang === 'es';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEs ? 'none' : 'block');
+  document.querySelectorAll('.ap-es-section').forEach(el => el.style.display = isEs ? 'block' : 'none');
+}
+setLang('fr');
+</script>
+</body>
+</html>

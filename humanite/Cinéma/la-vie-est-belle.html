@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cinéma — La vie est belle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0a10;
+    --surface: #161222;
+    --surface2: #1c1729;
+    --surface3: #221c33;
+    --border: #2e2444;
+    --border-soft: #3d2f5c;
+    --accent: #a78bfa;
+    --accent-dim: #a78bfa99;
+    --accent-soft: #a78bfa1a;
+    --accent2: #7c9ec9;
+    --accent2-soft: #7c9ec91a;
+    --accent3: #c8a96e;
+    --accent3-soft: #c8a96e1a;
+    --accent4: #c97c9e;
+    --accent4-soft: #c97c9e1a;
+    --text: #ece7f2;
+    --text-dim: #a79cbb;
+    --text-faint: #5b4f70;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--accent); cursor: pointer; letter-spacing: 0.02em; }
+  .nav-logo a { color: inherit; text-decoration: none; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .breadcrumb a { color: inherit; text-decoration: none; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb a:hover span, .breadcrumb span:hover { color: var(--accent); }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); cursor: default; }
+
+  /* ─── HERO ─── */
+  .ch-hero {
+    background: var(--surface2);
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+  .ch-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C8A96E' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem; opacity: 0.9; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 4rem); color: var(--text); font-weight: 900; max-width: 900px; margin: 0 auto 1.5rem; line-height: 1.1; position: relative; z-index: 1; }
+  .ch-hero p { color: var(--text-dim); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  /* ─── TOC ─── */
+  .toc-bar { background: var(--surface); padding: 2rem; border-bottom: 1px solid var(--border); }
+  .toc-inner { max-width: 960px; margin: 0 auto; }
+  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 1.2rem; }
+  .toc-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; list-style: none; }
+  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: var(--text); font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
+  .toc-list a:hover { border-color: var(--border-soft); background: var(--surface2); color: var(--accent); }
+  .toc-num { font-family: "DM Mono", monospace; font-size: 0.65rem; color: var(--accent); flex-shrink: 0; margin-top: 0.15rem; }
+
+  /* ─── CONTENT ─── */
+  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 8rem; }
+
+  /* PART */
+  .hgg-part { margin-bottom: 5rem; }
+  .hgg-part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--accent); }
+  .hgg-part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: var(--border-soft); line-height: 1; flex-shrink: 0; }
+  .hgg-part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--text); line-height: 1.25; }
+
+  /* SECTION */
+  .hgg-section { margin-bottom: 3.5rem; }
+  .hgg-section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--accent); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--accent); scroll-margin-top: 2rem; }
+  .hgg-subsection-title { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin: 2rem 0 0.75rem; }
+
+  /* TEXT */
+  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: var(--text); line-height: 1.75; font-weight: 300; }
+  .content strong { color: var(--text); font-weight: 600; }
+  .content em { color: var(--text-dim); }
+
+  /* KEY FACT */
+  .hgg-key-fact { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 0.6rem; padding: 0.85rem 1.1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; }
+  .hgg-key-bullet { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; flex-shrink: 0; margin-top: 0.5rem; }
+  .hgg-key-fact > div { font-size: 0.91rem; color: var(--text); line-height: 1.65; font-weight: 300; }
+
+  /* CONCEPT BOX */
+  .hgg-concept { background: var(--surface2); color: var(--text); padding: 1.75rem; margin: 2rem 0; position: relative; border-radius: 4px; border: 1px solid var(--border); }
+  .hgg-concept::before { content: '→'; position: absolute; top: 1.25rem; right: 1.25rem; color: var(--accent2); font-size: 1.3rem; }
+  .hgg-concept .concept-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent2); margin-bottom: 0.7rem; }
+  .hgg-concept p { color: var(--text-dim); font-size: 0.93rem; margin: 0; }
+  .hgg-concept strong { color: var(--accent2); }
+
+  /* HIGHLIGHT */
+  .hgg-highlight { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 1.25rem 1.75rem; margin: 1.5rem 0; font-style: italic; color: var(--text); font-size: 0.93rem; line-height: 1.7; border-radius: 0 6px 6px 0; }
+
+  /* AUTHOR CARD */
+  .hgg-author { background: var(--surface2); color: var(--text); padding: 1.75rem; margin: 1.2rem 0; position: relative; border-radius: 4px; border-left: 4px solid var(--accent4); border-top: 1px solid var(--border); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .hgg-author::before { content: '✎'; position: absolute; top: 1.25rem; right: 1.25rem; color: var(--accent4); font-size: 1.1rem; opacity: 0.8; }
+  .hgg-author .author-name { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent4); margin-bottom: 0.7rem; font-weight: 700; }
+  .hgg-author p { color: var(--text-dim); font-size: 0.93rem; margin: 0; line-height: 1.7; font-weight: 300; }
+  .hgg-author strong { color: var(--accent4); }
+
+  /* STATS GRID */
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: var(--border); margin: 1.5rem 0; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .hgg-stat-cell { background: var(--surface); padding: 1.3rem; text-align: center; }
+  .hgg-stat-num { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 900; color: var(--accent); display: block; }
+  .hgg-stat-label { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.2rem; font-family: 'DM Mono', monospace; }
+
+  /* BIG QUOTE */
+  .big-quote { background: var(--surface2); color: var(--text); padding: 1.6rem 2rem; margin: 1.5rem 0; border-radius: 8px; text-align: center; position: relative; border: 1px solid var(--border); }
+  .big-quote::before { content: '\201C'; font-family: 'Playfair Display', serif; font-size: 5rem; color: var(--accent); position: absolute; top: -1rem; left: 1.5rem; line-height: 1; opacity: 0.3; }
+  .big-quote blockquote { font-family: 'Playfair Display', serif; font-size: clamp(0.88rem, 1.6vw, 1rem); font-style: italic; line-height: 1.6; color: var(--text); position: relative; z-index: 1; margin-bottom: 0.6rem; }
+  .big-quote cite { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); }
+
+  /* COMPARE BOX */
+  .compare-box { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 1.5rem 0; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+  .compare-side { padding: 1.3rem 1.5rem; }
+  .compare-side h5 { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.7rem; }
+  .compare-side p { font-size: 0.85rem; line-height: 1.65; margin-bottom: 0.5rem; font-weight: 300; color: var(--text-dim); }
+  .compare-side p:last-child { margin-bottom: 0; }
+  .compare-a { background: var(--accent-soft); }
+  .compare-a h5 { color: var(--accent); }
+  .compare-b { background: var(--accent2-soft); }
+  .compare-b h5 { color: var(--accent2); }
+
+  /* TWO COL */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+  .col-card { border-radius: 8px; padding: 1.2rem 1.4rem; border: 1px solid; }
+  .col-card h5 { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.6rem; }
+  .col-card p { margin: 0; font-size: 0.85rem; line-height: 1.6; font-weight: 300; }
+  .col-teal { background: var(--accent-soft); border-color: var(--accent-dim); }
+  .col-teal h5 { color: var(--accent); }
+  .col-teal p { color: var(--text-dim); }
+  .col-cyan { background: var(--accent2-soft); border-color: #c8a96e55; }
+  .col-cyan h5 { color: var(--accent2); }
+  .col-cyan p { color: var(--text-dim); }
+  .col-dark { background: var(--accent4-soft); border-color: #c97c9e55; }
+  .col-dark h5 { color: var(--accent4); }
+  .col-dark p { color: var(--text-dim); }
+  .col-green { background: var(--accent3-soft); border-color: #9ecba055; }
+  .col-green h5 { color: var(--accent3); }
+  .col-green p { color: var(--text-dim); }
+
+  /* DEF CARD */
+  .def-card { background: var(--surface); border-radius: 10px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.25), 0 0 0 1px var(--border); display: flex; margin-bottom: 0.75rem; }
+  .def-accent-bar { width: 5px; background: linear-gradient(180deg, var(--accent) 0%, var(--accent4) 100%); flex-shrink: 0; }
+  .def-body { padding: 1.1rem 1.4rem; flex: 1; }
+  .def-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.65rem; }
+  .def-term { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--accent); }
+  .def-tag { margin-left: auto; font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); padding: 2px 8px; border-radius: 20px; }
+  .def-text { font-size: 0.91rem; color: var(--text-dim); line-height: 1.7; font-weight: 300; margin: 0 !important; }
+  .def-text strong { color: var(--text); font-weight: 600; }
+
+  /* CRISIS CARD (preuve card) */
+  .crisis-card { border-radius: 10px; padding: 1.4rem 1.6rem; margin: 1rem 0; border: 1px solid var(--border); border-left: 4px solid var(--accent); background: var(--surface); }
+  .crisis-date { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.4rem; font-weight: 700; }
+  .crisis-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
+  .crisis-card p { margin: 0 0 0.5rem; font-size: 0.88rem; color: var(--text-dim); line-height: 1.65; font-weight: 300; }
+  .crisis-card p:last-child { margin-bottom: 0; }
+
+  /* PROBLEMATIQUE BANNER */
+  .prob-banner { background: linear-gradient(135deg, var(--surface2) 0%, #14141a 100%); border-radius: 10px; padding: 2rem 2.5rem; margin: 2rem 0; text-align: center; border: 1px solid var(--border); }
+  .prob-banner .prob-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--accent2); margin-bottom: 0.9rem; }
+  .prob-banner p { font-family: 'Playfair Display', serif; font-size: clamp(1rem, 2.5vw, 1.3rem); font-style: italic; color: var(--text); line-height: 1.55; margin: 0; }
+
+  /* TRANSITION */
+  .transition-block { background: var(--accent-soft); border: 1px dashed var(--accent-dim); border-radius: 8px; padding: 1.25rem 1.6rem; margin: 2.5rem 0; }
+  .transition-block .t-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; }
+  .transition-block p { font-style: italic; font-size: 0.92rem; color: var(--text); line-height: 1.65; margin: 0; font-weight: 300; }
+
+  /* STEP BLOCK */
+  .step-block { display: flex; gap: 1rem; margin-bottom: 1.1rem; align-items: flex-start; }
+  .step-num { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 900; color: var(--border-soft); line-height: 1.2; flex-shrink: 0; width: 2rem; text-align: right; }
+  .step-content { flex: 1; font-size: 0.93rem; color: var(--text-dim); line-height: 1.7; font-weight: 300; padding-top: 0.1rem; }
+  .step-content strong { color: var(--text); font-weight: 600; }
+
+  /* MINI CALLOUT */
+  .mini-callout { border-radius: 6px; padding: 0.9rem 1.2rem; margin: 1.2rem 0; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; gap: 0.8rem; }
+  .mini-callout-icon { font-size: 1.1rem; flex-shrink: 0; color: var(--accent); }
+  .mini-callout-text { font-size: 0.9rem; color: var(--text-dim); line-height: 1.6; font-weight: 300; }
+  .mini-callout-text strong { color: var(--text); font-weight: 600; }
+
+  /* INLINE TAG */
+  .tag { display: inline-block; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; background: var(--accent-soft); color: var(--accent); padding: 2px 7px; border-radius: 4px; vertical-align: middle; margin-left: 4px; }
+
+  /* PREUVE STRIP */
+  .preuve-strip { border-top: 1px solid var(--border); margin: 2rem 0 0.5rem; padding-top: 1rem; display: flex; align-items: baseline; gap: 0.8rem; flex-wrap: wrap; }
+  .preuve-strip .ps-num { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--accent); letter-spacing: 0.25em; }
+  .preuve-strip .ps-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--text); }
+  .preuve-strip .ps-sub { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--text-faint); letter-spacing: 0.1em; }
+
+  /* RETENIR BOX */
+  .retenir-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.4rem 1.6rem; margin: 2rem 0; }
+  .retenir-box .rb-label { display: block; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem !important; }
+  .retenir-box .rb-items { display: block; }
+  .retenir-box .rb-item { display: block; font-size: 0.9rem; color: var(--text-dim); line-height: 1.65; font-weight: 300; padding: 0.45rem 0 0.45rem 1.4rem; border-bottom: 1px dashed var(--border); margin: 0 !important; position: relative; }
+  .retenir-box .rb-item:last-child { border-bottom: none; }
+  .retenir-box .rb-item::before { content: '—'; color: var(--accent); position: absolute; left: 0; top: 0.45rem; }
+  .retenir-box .rb-item strong { color: var(--text); }
+
+  .info-box { background: var(--accent-soft); border: 1px solid var(--accent-dim); border-radius: 8px; padding: 1.1rem 1.4rem; margin: 1.5rem 0; font-size: 0.9rem; color: var(--text-dim); line-height: 1.7; font-weight: 300; }
+  .info-box strong { color: var(--text); }
+
+  /* Neutraliser le margin global sur les <p> dans les boîtes spéciales */
+  .retenir-box p, .transition-block p, .hgg-concept p,
+  .hgg-author p, .crisis-card p, .col-card p { margin-bottom: 0 !important; }
+  .crisis-card p + p { margin-top: 0.5rem; }
+
+  /* FOOTER */
+  .site-footer { background: var(--surface2); border-top: 1px solid var(--border); padding: 2.5rem 2rem; text-align: center; }
+  .site-footer .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--accent); letter-spacing: 0.02em; margin-bottom: 0.4rem; }
+  .site-footer .footer-meta { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-faint); }
+
+  /* BACK TO TOP */
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--accent); color: #0d0d0f; border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 4px 14px rgba(0,0,0,0.5); opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 200; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+  .back-to-top:hover { background: var(--accent2); }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .toc-list { grid-template-columns: 1fr; }
+    .two-col, .three-col, .compare-box { grid-template-columns: 1fr; }
+    .ch-hero { padding: 3rem 1.5rem 2.5rem; }
+  }
+
+  /* ═══════════════════════════════════════════
+     STYLES D'IMPRESSION
+  ═══════════════════════════════════════════ */
+  @media print {
+    @page { size: A4; margin: 18mm 15mm 18mm 15mm; }
+    nav, .back-to-top, .toc-bar, .site-footer { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    html, body { background: white !important; color: #000 !important; font-size: 10pt; }
+    .ch-hero { background: #16121c !important; padding: 0.9rem 1rem 0.7rem !important; min-height: unset !important; height: auto !important; }
+    .ch-hero::before { display: none !important; }
+    .ch-hero h1 { font-size: 16pt !important; color: #fff !important; margin-bottom: 0.3rem !important; }
+    .ch-hero .chap-label { font-size: 7pt !important; color: #a78bfa !important; margin-bottom: 0.4rem !important; }
+    .ch-hero p { font-size: 7pt !important; color: #a78bfa !important; margin: 0 !important; }
+    .content { max-width: 100% !important; padding: 0.8rem 0 !important; margin: 0 !important; }
+    .hgg-part { page-break-before: auto; break-before: auto; margin-bottom: 1rem; }
+    .hgg-part-header, .hgg-section-title, .hgg-subsection-title, .preuve-strip, .crisis-date { page-break-after: avoid; break-after: avoid; }
+    .hgg-section { page-break-inside: auto; break-inside: auto; margin-bottom: 1rem; }
+    .hgg-key-fact, .hgg-author, .hgg-concept, .hgg-highlight, .hgg-stat-cell, .def-card, .crisis-card, .mini-callout, .retenir-box, .transition-block, .step-block, .big-quote, .prob-banner, .col-card, .compare-side {
+      page-break-inside: avoid; break-inside: avoid;
+    }
+    .hgg-part-header { border-bottom: 2pt solid #a78bfa !important; padding-bottom: 0.5rem; margin-bottom: 1rem; }
+    .hgg-part-num { font-size: 2.5rem !important; color: #8a8880 !important; }
+    .hgg-part-title { font-size: 14pt !important; color: #000 !important; }
+    .hgg-section-title { font-size: 11pt !important; border-left: 3pt solid #a78bfa !important; padding-left: 0.6rem !important; margin-bottom: 0.6rem !important; color: #4e3d75 !important; }
+    .hgg-subsection-title { font-size: 8pt !important; color: #4e3d75 !important; margin: 0.8rem 0 0.4rem !important; }
+    .content p { font-size: 9.5pt !important; line-height: 1.55 !important; margin-bottom: 0.5rem !important; color: #000 !important; }
+    .hgg-key-fact { background: #f5f2fa !important; border: 1pt solid #a78bfa !important; padding: 0.5rem 0.7rem !important; margin-bottom: 0.35rem !important; }
+    .hgg-key-fact > div { font-size: 9pt !important; color: #000 !important; }
+    .hgg-concept { background: #16121c !important; color: #F0F0EC !important; padding: 0.9rem 1rem !important; margin: 0.8rem 0 !important; border-radius: 4px; }
+    .hgg-concept p { color: #dcdcd6 !important; font-size: 9pt !important; }
+    .hgg-concept .concept-label { color: #c8a96e !important; font-size: 7pt !important; }
+    .hgg-concept strong { color: #c8a96e !important; }
+    .hgg-concept::before { display: none; }
+    .hgg-author { background: #16121c !important; color: #F0F0EC !important; padding: 0.9rem 1rem !important; margin: 0.8rem 0 !important; }
+    .hgg-author p { color: #dcdcd6 !important; font-size: 9pt !important; }
+    .hgg-author .author-name { color: #c97c9e !important; font-size: 7pt !important; }
+    .hgg-author strong { color: #c97c9e !important; }
+    .hgg-author::before { display: none; }
+    .hgg-highlight { background: #f2edf9 !important; border-left: 3pt solid #a78bfa !important; padding: 0.7rem 1rem !important; margin: 0.8rem 0 !important; font-size: 9pt !important; color: #2e2340 !important; }
+    .hgg-stats { border: 1pt solid #a78bfa !important; margin: 0.8rem 0 !important; }
+    .hgg-stat-cell { background: white !important; padding: 0.8rem !important; }
+    .hgg-stat-num { font-size: 12pt !important; color: #4e3d75 !important; }
+    .hgg-stat-label { font-size: 7.5pt !important; color: #55524a !important; }
+    .big-quote { background: #16121c !important; color: #F0F0EC !important; padding: 1rem 1.4rem !important; margin: 0.8rem 0 !important; }
+    .big-quote blockquote { font-size: 10pt !important; color: #F0F0EC !important; }
+    .big-quote cite { color: #a78bfa !important; font-size: 7pt !important; }
+    .big-quote::before { font-size: 3rem !important; top: -0.3rem !important; }
+    .compare-box { margin: 0.7rem 0 !important; }
+    .compare-side { padding: 0.7rem 0.9rem !important; }
+    .compare-side p { font-size: 8.5pt !important; }
+    .compare-side h5 { font-size: 6.5pt !important; }
+    .two-col { grid-template-columns: 1fr 1fr !important; gap: 0.5rem !important; margin: 0.6rem 0 !important; }
+    .three-col { grid-template-columns: 1fr 1fr 1fr !important; gap: 0.5rem !important; margin: 0.6rem 0 !important; }
+    .col-card { padding: 0.7rem 0.9rem !important; }
+    .col-card p { font-size: 8.5pt !important; }
+    .col-card h5 { font-size: 6.5pt !important; }
+    .def-card { box-shadow: none !important; border: 1pt solid #a78bfa !important; margin-bottom: 0.5rem !important; }
+    .def-term { font-size: 10pt !important; }
+    .def-text { font-size: 9pt !important; color: #000 !important; }
+    .def-accent-bar { background: #a78bfa !important; }
+    .crisis-card { background: white !important; border: 1pt solid #a78bfa !important; border-left: 4pt solid #a78bfa !important; padding: 0.7rem 1rem !important; margin: 0.5rem 0 !important; }
+    .crisis-card p { font-size: 8.5pt !important; }
+    .crisis-title { font-size: 10pt !important; color: #000 !important; }
+    .crisis-date { font-size: 6.5pt !important; color: #4e3d75 !important; }
+    .mini-callout { background: #f5f2fa !important; border: 1pt solid #a78bfa !important; padding: 0.5rem 0.8rem !important; margin: 0.6rem 0 !important; }
+    .mini-callout-text { font-size: 8.5pt !important; color: #000 !important; }
+    .mini-callout-icon { font-size: 0.9rem !important; }
+    .retenir-box { background: #f5f2fa !important; border: 1pt solid #a78bfa !important; padding: 0.8rem 1rem !important; margin: 0.8rem 0 !important; }
+    .retenir-box .rb-label { font-size: 7pt !important; color: #4e3d75 !important; }
+    .retenir-box .rb-item { font-size: 9pt !important; color: #000 !important; }
+    .transition-block { background: rgba(167,139,250,0.08) !important; border: 1pt dashed #a78bfa !important; padding: 0.7rem 1rem !important; margin: 0.8rem 0 !important; }
+    .transition-block .t-label { font-size: 7pt !important; color: #4e3d75 !important; }
+    .transition-block p { font-size: 9pt !important; color: #2e2340 !important; }
+    .step-block { margin-bottom: 0.5rem !important; }
+    .step-num { font-size: 1.1rem !important; color: #a78bfa !important; }
+    .step-content { font-size: 9pt !important; color: #000 !important; }
+    .preuve-strip { border-top: 1pt solid #e5ddc8 !important; margin: 1rem 0 0.4rem !important; padding-top: 0.6rem !important; }
+    .preuve-strip .ps-num { font-size: 7pt !important; color: #4e3d75 !important; }
+    .preuve-strip .ps-title { font-size: 10pt !important; color: #000 !important; }
+    .preuve-strip .ps-sub { font-size: 7pt !important; }
+    .prob-banner { background: #16121c !important; padding: 1rem 1.4rem !important; margin: 0.8rem 0 !important; }
+    .prob-banner .prob-label { font-size: 7pt !important; color: #a78bfa !important; }
+    .prob-banner p { font-size: 10pt !important; color: #F0F0EC !important; }
+    a { text-decoration: none !important; color: inherit !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">/</span>
+    <a href="../../humanite.html"><span>L'Humanité</span></a>
+    <span class="sep">/</span>
+    <a href="cinema.html"><span>Cinéma</span></a>
+    <span class="sep">/</span>
+    <span class="current">La vie est belle</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="chap-label">🎬 Cinéma · L'Humanité</div>
+  <h1>La vie est belle</h1>
+  <p>Roberto Benigni · 1997 · Comédie dramatique</p>
+</div>
+
+<!-- ─── TOC ─── -->
+<div class="toc-bar">
+  <div class="toc-inner">
+    <div class="toc-title">Plan de la fiche</div>
+    <ul class="toc-list">
+      <li><a href="#intro"><span class="toc-num">I —</span> Présentation de l'œuvre</a></li>
+      <li><a href="#p1"><span class="toc-num">II —</span> Résumé</a></li>
+      <li><a href="#p2"><span class="toc-num">III —</span> Une fable sur l'humanité mise à l'épreuve</a></li>
+      <li><a href="#p3"><span class="toc-num">IV —</span> Pistes pour la dissertation</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ─── CONTENT ─── -->
+<div class="content">
+
+<!-- ══════════════════════════════════════ -->
+<!--  PARTIE I — PRÉSENTATION              -->
+<!-- ══════════════════════════════════════ -->
+<div class="hgg-part" id="intro">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">I</div>
+    <div class="hgg-part-title">Présentation de l'œuvre</div>
+  </div>
+
+  <p><strong>La vie est belle</strong> (<em>La vita è bella</em>) est un film italien réalisé par <strong>Roberto Benigni</strong>, sorti en 1997, dans lequel le réalisateur interprète lui-même le rôle principal, Guido Orefice. Le film se déroule en deux temps : d'abord une comédie légère et burlesque en Toscane à la fin des années 1930, puis un basculement brutal dans la tragédie lorsque Guido, juif italien, est déporté avec son fils Giosuè dans un camp de concentration nazi.</p>
+
+  <div class="hgg-stats">
+    <div class="hgg-stat-cell"><span class="hgg-stat-num">1997</span><div class="hgg-stat-label">Année de sortie</div></div>
+    <div class="hgg-stat-cell"><span class="hgg-stat-num">3</span><div class="hgg-stat-label">Oscars remportés (dont meilleur acteur)</div></div>
+    <div class="hgg-stat-cell"><span class="hgg-stat-num">1</span><div class="hgg-stat-label">Jeu inventé pour sauver un enfant</div></div>
+  </div>
+
+  <p>Pour préserver l'innocence de son fils face à l'horreur concentrationnaire, Guido invente un mensonge : il fait croire à Giosuè que la déportation n'est qu'un <strong>jeu compliqué</strong>, dont le premier à totaliser mille points remportera un authentique char d'assaut. Cette fiction, sans cesse réajustée à mesure que le réel devient plus menaçant, devient le fil conducteur du film et le lieu où se joue, littéralement, la survie de l'humanité de l'enfant.</p>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  PARTIE II — RÉSUMÉ                   -->
+<!-- ══════════════════════════════════════ -->
+<div class="hgg-part" id="p1">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">II</div>
+    <div class="hgg-part-title">Résumé</div>
+  </div>
+
+  <div class="hgg-section" id="s1-1">
+    <div class="hgg-section-title">1 — Arezzo, avant la guerre : la conquête burlesque</div>
+
+    <p>Dans les années 1930, Guido, jeune juif italien plein d'esprit et de fantaisie, arrive à Arezzo pour y ouvrir une librairie. Il tombe amoureux de <strong>Dora</strong>, institutrice promise à un notable fasciste, et la séduit par une série de <strong>quiproquos et de mises en scène improvisées</strong> — un cheval peint aux couleurs qu'elle préfère, des rencontres arrangées comme par miracle. Cette première partie, tournée comme une comédie italienne classique, installe le personnage de Guido : un homme qui transforme la réalité la plus contrainte en un jeu par la seule force de son <strong>imagination</strong>.</p>
+
+    <div class="hgg-key-fact">
+      <div class="hgg-key-bullet"></div>
+      <div>Dès cette première partie, des signes discrets de la montée du fascisme et de l'antisémitisme affleurent (inscriptions, lois raciales, humiliations) sans jamais rompre le ton comique — Benigni construit ainsi, en contrepoint, la menace qui submergera la seconde partie du film.</div>
+    </div>
+
+    <p>Guido épouse Dora ; quelques années plus tard, le couple a un fils, Giosuè. La famille mène une vie paisible, jusqu'au jour de l'anniversaire de l'enfant, où Guido et Giosuè sont arrêtés et déportés — Dora, non juive, choisit alors de monter volontairement dans le même train qu'eux.</p>
+  </div>
+
+  <div class="hgg-section" id="s1-2">
+    <div class="hgg-section-title">2 — Le camp : inventer un jeu pour sauver un enfant</div>
+
+    <p>Arrivé au camp, Guido comprend immédiatement l'ampleur du danger, mais décide de le dissimuler entièrement à Giosuè. Il invente sur-le-champ un <strong>jeu</strong> : les hommes en uniforme, la discipline brutale, la faim, tout n'est qu'une compétition dont le vainqueur remportera un char d'assaut ; il faut pour cela cumuler des points en se faisant discret, en évitant de pleurer, en ne réclamant jamais sa mère.</p>
+
+    <div class="hgg-concept">
+      <div class="concept-label">Le mensonge salvateur</div>
+      <p>Chaque jour, Guido doit réinventer et complexifier son mensonge pour l'ajuster à une réalité de plus en plus effroyable — travail de la chambre à gaz, disparitions, épuisement. Le film montre ainsi que protéger l'humanité d'un enfant, dans un système conçu pour la détruire, exige une <strong>invention de tous les instants</strong> : le mensonge devient ici un acte moral, non une lâcheté.</p>
+    </div>
+
+    <div class="info-box">Dans la scène finale, alors que le camp est sur le point d'être libéré et que Guido est exécuté hors du champ de vision de son fils, un char d'assaut américain apparaît réellement devant Giosuè — le mensonge se réalise, littéralement, au moment même où celui qui l'a inventé disparaît. Giosuè retrouve sa mère, persuadé d'avoir gagné le jeu.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  PARTIE III — ANALYSE                 -->
+<!-- ══════════════════════════════════════ -->
+<div class="hgg-part" id="p2">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">III</div>
+    <div class="hgg-part-title">Une fable sur l'humanité mise à l'épreuve</div>
+  </div>
+
+  <div class="hgg-section" id="s2-1">
+    <div class="hgg-section-title">1 — Une machine à déshumaniser, une résistance par la fiction</div>
+
+    <p>Le camp nazi, tel que le filme Benigni, fonctionne comme une <strong>entreprise systématique de déshumanisation</strong> : réduction des détenus à des numéros, épuisement des corps, arbitraire absolu de la violence. Face à cette machine, Guido n'oppose ni force ni résistance armée, mais un acte purement <strong>symbolique</strong> — imposer, par le langage et l'invention, un sens humain à ce qui n'en a aucun.</p>
+
+    <div class="two-col">
+      <div class="col-card col-teal">
+        <h5>⚙️ La machine concentrationnaire</h5>
+        <p>Un système qui vise à annuler toute subjectivité, tout affect, toute trace d'enfance chez ceux qu'il enferme.</p>
+      </div>
+      <div class="col-card col-cyan">
+        <h5>🎭 Le jeu de Guido</h5>
+        <p>Une fiction opposée point par point à cette logique : elle réintroduit du sens, du choix, de l'espoir — donc, de l'humain.</p>
+      </div>
+    </div>
+
+    <div class="hgg-highlight">
+      Le film suggère que l'humanité ne se défend pas seulement par la résistance physique, mais aussi par la capacité à <strong>fabriquer du récit</strong> face à l'absurde et à l'inhumain — geste dérisoire en apparence, vital dans ses effets.
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-2">
+    <div class="hgg-section-title">2 — Préserver l'enfance, dernier rempart de l'humain</div>
+
+    <p>Ce que Guido protège avant tout, ce n'est pas la vie biologique de Giosuè — qu'il ne maîtrise pas —, mais son <strong>regard d'enfant</strong> sur le monde : sa capacité à jouer, à espérer, à ne pas connaître la haine. Le film fait ainsi de l'enfance un lieu où se joue la définition même de l'humanité : tant que Giosuè croit jouer, il demeure un enfant et non une victime.</p>
+
+    <div class="hgg-author">
+      <div class="author-name">Guido, le père-conteur</div>
+      <p>Le personnage de Guido déplace la figure classique du héros de guerre : son courage ne consiste pas à combattre, mais à <strong>maintenir un mensonge crédible</strong> jusqu'à son dernier instant, y compris au prix de sa propre vie, pour que son fils ne sache jamais qu'il a traversé un camp d'extermination.</p>
+    </div>
+
+    <div class="mini-callout">
+      <span class="mini-callout-icon">🎈</span>
+      <span class="mini-callout-text">Cette idée peut être rapprochée des réflexions sur la <strong>résilience</strong> et sur le rôle protecteur du récit et de l'imaginaire face au traumatisme, en particulier chez l'enfant.</span>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-3">
+    <div class="hgg-section-title">3 — Comédie et tragédie : un pari esthétique et moral</div>
+
+    <p>Le choix de traiter la Shoah sur le mode de la <strong>comédie</strong> a suscité une controverse durable : certains y voient un risque de banalisation de l'extermination, d'autres une manière inédite de rendre sensible, par le contraste, l'horreur qu'un réalisme frontal aurait pu rendre inaccessible ou insoutenable.</p>
+
+    <div class="compare-box">
+      <div class="compare-side compare-a">
+        <h5>😂 Avant le camp : le rire</h5>
+        <p>Une comédie <strong>insouciante</strong>, où l'imagination de Guido transforme la réalité par pur plaisir de jouer et de séduire.</p>
+      </div>
+      <div class="compare-side compare-b">
+        <h5>🕯️ Dans le camp : le rire comme rempart</h5>
+        <p>Le même ressort comique, désormais mis au service d'un <strong>combat vital</strong> — faire rire un enfant pour lui épargner la terreur.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  PARTIE IV — PISTES DE DISSERTATION   -->
+<!-- ══════════════════════════════════════ -->
+<div class="hgg-part" id="p3">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">IV</div>
+    <div class="hgg-part-title">Pistes pour la dissertation</div>
+  </div>
+
+  <div class="hgg-section" id="s3-1">
+    <div class="hgg-section-title">Comment mobiliser cette œuvre dans une copie ?</div>
+
+    <div class="retenir-box">
+      <div class="rb-label">Idées à retenir</div>
+      <div class="rb-items">
+        <div class="rb-item">Face à une entreprise de <strong>déshumanisation systématique</strong>, l'humanité peut se défendre par des moyens symboliques : le récit, le jeu, l'invention de sens.</div>
+        <div class="rb-item">Protéger l'<strong>enfance</strong> et son regard sur le monde peut être une manière de préserver l'humain, y compris au cœur de l'inhumain.</div>
+        <div class="rb-item">Le mensonge n'est pas toujours une faute morale : il peut devenir un <strong>acte de protection</strong>, voire de sacrifice, lorsqu'il vise à sauver autrui.</div>
+        <div class="rb-item">Le rire et la fiction, loin de banaliser la souffrance, peuvent constituer une <strong>résistance</strong> face à ce qui menace de l'anéantir.</div>
+      </div>
+    </div>
+
+    <div class="hgg-subsection-title">→ Notions du thème « L'Humanité » éclairées par l'œuvre</div>
+    <div class="three-col">
+      <div class="col-card col-teal">
+        <h5>🕳️ La déshumanisation</h5>
+        <p>Le camp incarne un système qui tente de réduire l'homme à sa seule fonction biologique de survie.</p>
+      </div>
+      <div class="col-card col-cyan">
+        <h5>📖 Le récit comme résistance</h5>
+        <p>Inventer une fiction peut être une manière d'opposer du sens humain à l'arbitraire et à la violence.</p>
+      </div>
+      <div class="col-card col-dark">
+        <h5>👶 L'enfance protégée</h5>
+        <p>Préserver l'innocence d'un enfant devient, dans le film, l'ultime enjeu moral d'un père dépossédé de tout le reste.</p>
+      </div>
+    </div>
+
+    <div class="hgg-concept">
+      <div class="concept-label">À rapprocher</div>
+      <p>Primo Levi, <em>Si c'est un homme</em> (1947) : le témoignage de Levi décrit, de l'intérieur, le même processus de réduction de l'homme à un simple matricule que Benigni figure de manière allégorique. Mais là où Levi analyse froidement les mécanismes de la survie et de la perte d'humanité, Benigni choisit de montrer un <strong>sursaut d'humanité volontaire</strong> — celui d'un père qui refuse, jusqu'au bout, que son fils devienne lui aussi une victime au sens plein du terme.</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<footer class="site-footer">
+  <div class="footer-logo">La vie est belle — Roberto Benigni</div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
+
+<script>
+  document.querySelectorAll('.toc-list a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>

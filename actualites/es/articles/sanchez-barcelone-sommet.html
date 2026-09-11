@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Barcelone, capitale progressiste mondiale</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #c60b1e;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #c60b1e; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #f1bf00; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #c60b1e; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #c60b1e; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #c60b1e; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#c60b1e; border-color:#c60b1e; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  /* Article styles */
+  .ap-band { background: linear-gradient(90deg, #c60b1e, #f1bf00, #c60b1e); text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(28,5,8,0.95); padding:12px 60px; border-bottom: 1px solid rgba(198,11,30,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#f1bf00; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(198,11,30,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(181,19,31,0.2);  color:#f08080; border:1px solid rgba(181,19,31,0.35); }
+  .ap-tag-navy   { background:rgba(13,27,42,0.6);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #f1bf00; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(14,5,5,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(198,11,30,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(241,191,0,0.7); }
+
+  /* Rich article components */
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#f1bf00; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(241,191,0,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#1a0204,#2e080c); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat.blue   { background:linear-gradient(135deg,#071422,#0d2540); }
+  .ap-stat.purple { background:linear-gradient(135deg,#2a0540,#4a0f6e); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #f1bf00; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(241,191,0,0.06),rgba(241,191,0,0.02)); border-left:3px solid #f1bf00; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(241,191,0,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(241,191,0,0.7); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(28,5,8,0.9),rgba(14,3,4,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(198,11,30,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#f1bf00; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(198,11,30,0.06); border:1px solid rgba(198,11,30,0.18); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(241,191,0,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#f1bf00; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(241,191,0,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#f1bf00; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(28,5,8,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-es-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-es.html">Espagnol</a>
+    <span class="sep">/</span>
+    <a href="../espagne.html">Espagne</a>
+    <span class="sep">/</span>
+    <span class="current">Sommet de Barcelone</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-es" class="ap-lang-btn" onclick="setLang('es')">🇪🇸 ES</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇪🇸 Barcelone, capitale progressiste mondiale — 17-18 avril 2026</div>
+<div class="ap-back-bar">
+  <a href="../espagne.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+    <div class="ap-hero-img-wrap"><img class="ap-hero-img" src="../images/sanchez-barcelone-sommet.jpg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+
+    <!-- ═══ SECTION FR ═══ -->
+    <div class="ap-fr-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-red">🇪🇸 Espagne</span>
+          <span class="ap-tag ap-tag-blue">Géopolitique</span>
+          <span class="ap-tag ap-tag-teal">Multilatéralisme</span>
+          <span class="ap-tag ap-tag-gold">Politique intérieure</span>
+          <span class="ap-tag ap-tag-navy">Internationale socialiste</span>
+        </div>
+        <div class="ap-date">Avril 2026 — ECG Prépa · Espagne</div>
+        <h1 class="ap-title">Barcelone, capitale progressiste : le pari diplomatique de Pedro Sánchez</h1>
+        <p class="ap-intro">Les 17 et 18 avril 2026, Pedro Sánchez a réuni à Barcelone plus d'une vingtaine de dirigeants progressistes du monde entier pour la première édition de la Global Progressive Mobilisation et la IVe Réunion en défense de la démocratie. Un double sommet présenté comme la réponse organisée de la gauche internationale à la montée des mouvements réactionnaires — mais aussi un levier soigneusement calculé pour renforcer la stature internationale d'un chef de gouvernement fragilisé sur la scène intérieure espagnole.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat blue"><span class="ap-stat-num">20+</span><span class="ap-stat-desc">Gouvernements<br>représentés à Barcelone</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">3 000+</span><span class="ap-stat-desc">Participants au total<br>(délégués, syndicats, ONG)</span></div>
+          <div class="ap-stat green"><span class="ap-stat-num">40+</span><span class="ap-stat-desc">Pays représentés à la<br>Global Progressive Mobilisation</span></div>
+          <div class="ap-stat purple"><span class="ap-stat-num">IV<sup style="font-size:14px">e</sup></span><span class="ap-stat-desc">Édition de la Réunion<br>en défense de la démocratie</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Un double sommet, deux formats complémentaires</div>
+            <p>Le week-end barcelonais s'est articulé autour de deux événements distincts mais convergents. Le vendredi 17 avril s'est ouvert la <strong>Global Progressive Mobilisation (GPM)</strong>, forum inédit co-organisé par l'Internationale socialiste (dont Sánchez est président), le Parti socialiste européen et l'Alliance progressiste. Ce format, voulu ouvert et inclusif, a rassemblé non seulement des chefs d'État et de gouvernement, mais aussi des représentants de syndicats, de think tanks et d'organisations de la société civile issus de plus de quarante pays. Le samedi 18 avril a ensuite accueilli la <strong>IVe Réunion en défense de la démocratie</strong>, format plus institutionnel, réservé aux chefs d'État et de gouvernement.</p>
+            <p>Les deux événements se sont déroulés à la Fira de Barcelona, au pied de Montjuïc. Le samedi soir, Sánchez a également pris la parole devant quelque 6 500 personnes dans le pavillon 8 du parc des expositions, clôturant les sommets dans un format quasi-militant, le tout couronné par son slogan désormais iconique : « Non à la guerre. » La journée du vendredi avait été précédée, en début d'après-midi, d'un sommet bilatéral Espagne-Brésil — une première entre les deux pays —, qui a notamment vu Lula saluer le refus de Madrid d'ouvrir ses bases militaires aux États-Unis lors des frappes contre l'Iran.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Lieu</div><div class="ap-fact-val">Fira de Barcelona, Montjuïc</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Dates</div><div class="ap-fact-val">17-18 avril 2026</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Co-organisateurs</div><div class="ap-fact-val">IS, PSE, Alliance progressiste</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Précédent</div><div class="ap-fact-val">Sommet de Santiago du Chili, juillet 2025</div></div>
+            </div>
+
+            <div class="ap-sub">Les participants : un front large, aux contours hétérogènes</div>
+            <p>Le casting du sommet reflète l'ambition géographique de Sánchez. Côté Amérique latine, figuraient le président brésilien <strong>Luiz Inácio Lula da Silva</strong>, la présidente mexicaine <strong>Claudia Sheinbaum</strong>, le président colombien <strong>Gustavo Petro</strong> et l'Uruguayen <strong>Yamandú Orsi</strong>. Côté africain, le président sud-africain <strong>Cyril Ramaphosa</strong>. Du côté européen, la présidence du Conseil européen était représentée par <strong>António Costa</strong> (socialiste portugais), accompagné de la secrétaire du Parti démocrate italien Elly Schlein et du vice-Premier ministre britannique David Lammy. L'Allemagne, récemment entrée dans la coalition, était représentée par le vice-chancelier <strong>Lars Klingbeil</strong>.</p>
+            <p>Parmi les nouveaux pays intégrant le groupe en défense de la démocratie figurent notamment l'Australie, l'Autriche, la Barbade, le Botswana, le Ghana, l'Irlande, la Lituanie, la Namibie, la République dominicaine et la Slovaquie. En revanche, le Chili du nouveau président José Antonio Kast, la Bolivie, le Honduras, le Sénégal et Saint-Vincent-et-les-Grenadines n'y participaient pas. La présence de Claudia Sheinbaum revêtait une dimension symbolique particulière : quelques semaines plus tôt, le roi Felipe VI avait, pour la première fois, reconnu officiellement de « nombreux abus » commis lors de la conquête espagnole de l'Amérique.</p>
+
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">Sept. 2024</div><p class="ap-tl-text">En marge de l'Assemblée générale de l'ONU à New York, Sánchez et Lula conviennent de l'idée d'une coordination progressiste transnationale.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Juil. 2025</div><p class="ap-tl-text">Premier sommet de travail à Santiago du Chili, en présence de Sánchez, Lula, Petro, Orsi et Boric. Barcelone désignée ville hôte du prochain rendez-vous.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">22 jan. 2026</div><p class="ap-tl-text">Stefan Löfven, président du PSE, confirme officiellement Barcelone comme ville hôte, en marge d'un Conseil européen consacré aux tensions avec Donald Trump.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">17 avr. 2026</div><p class="ap-tl-text">Sommet bilatéral Espagne-Brésil (une première). Ouverture de la Global Progressive Mobilisation. Plus de 3 000 participants et une centaine d'organisations.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">18 avr. 2026</div><p class="ap-tl-text">IVe Réunion en défense de la démocratie avec plus de 20 chefs d'État et de gouvernement. Clôture par Sánchez devant 6 500 personnes.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">Les thèmes : démocratie, multilatéralisme et justice sociale</div>
+            <p>L'ordre du jour des sommets couvrait un spectre intentionnellement large. La défense du multilatéralisme et la réforme des institutions internationales ont occupé une place centrale : Sánchez a plaidé pour un renouvellement de l'ONU, suggérant notamment qu'elle soit dirigée par une femme, « non seulement par justice, mais aussi par crédibilité ». La crise du multilatéralisme face au retrait américain, les guerres culturelles, la montée des inégalités, l'urgence climatique et la justice fiscale — dont la taxation des milliardaires, défendue par l'économiste Gabriel Zucman présent à Barcelone — ont également structuré les débats.</p>
+            <p>Un fil rouge unissait les discours : l'opposition à ce que Sánchez a nommé la « vague réactionnaire mondiale », sans jamais citer explicitement Donald Trump. Le président colombien Gustavo Petro a quant à lui décrit le sommet comme « une sorte de phare qui, au milieu de la confusion, trace une ligne, la direction de la vie, et non celle de la mort », récusant l'étiquette de sommet anti-Trump. Lula, de son côté, a fustigé l'extrémisme négationniste et lancé un avertissement solennel : « Lorsque la démocratie recule, un Hitler apparaît. »</p>
+
+            <div class="ap-quote">
+              <p>« Quand nous, socialistes, gouvernons, les États ne s'agenouillent pas devant les élites : nous les remettons à leur place. »</p>
+              <cite>— Pedro Sánchez, discours de clôture, Barcelone, 18 avril 2026</cite>
+            </div>
+            <div class="ap-quote">
+              <p>« Merci Pedro pour ton leadership. Merci d'avoir démontré que le programme progressiste fonctionne. »</p>
+              <cite>— Elly Schlein, secrétaire du Parti démocrate (Italie), 18 avril 2026</cite>
+            </div>
+
+            <div class="ap-sub">Un miroir tendu vers Milan et Madrid</div>
+            <p>Le choix de la date n'était pas anodin. Le même samedi 18 avril, Matteo Salvini réunissait à Milan les représentants de l'extrême droite européenne — « Patriotes pour l'Europe » — dont Jordan Bardella et Geert Wilders. Le face-à-face symbolique Barcelone-Milan illustrait une polarisation assumée de l'espace politique européen. À Madrid, simultanément, l'opposante vénézuélienne María Corina Machado, prix Nobel de la paix, rencontrait Alberto Núñez Feijóo et Isabel Díaz Ayuso, refusant toute entrevue avec Sánchez — signe des lignes de fracture géopolitiques traversant le camp qui se définit comme progressiste.</p>
+            <p>Le sommet s'est également tenu dans le contexte de la guerre en Iran, contre laquelle Sánchez a pris des positions tranchées : refus d'accès aux bases militaires espagnoles pour des frappes américaines, et appel répété à la désescalade au Moyen-Orient. Ces prises de position, saluées par Lula, lui ont valu les critiques virulentes de Donald Trump, contribuant paradoxalement à renforcer son aura internationale au sein du camp progressiste.</p>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">🌐</div>
+              <div class="ap-info-text"><strong>Internationale socialiste :</strong> Fondée en 1951, l'Internationale socialiste (IS) regroupe la plupart des partis sociaux-démocrates, socialistes et travaillistes du monde. Pedro Sánchez en est le président depuis 2023. L'IS avait déjà organisé ses congrès mondiaux, mais la GPM de Barcelone marque une nouveauté : un format délibérément ouvert à la société civile, aux syndicats et aux think tanks, pensé comme un espace de coordination transnationale entre partis et mouvements progressistes.</div>
+            </div>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Sánchez, entre vitrine internationale et fragilité intérieure</div>
+              <p>La tenue du sommet à Barcelone — en Catalogne, loin de Madrid — n'est pas sans signification politique. Alors que Sánchez gouverne en minorité depuis 2023 et que plusieurs de ses proches, alliés et membres de sa famille font l'objet d'enquêtes judiciaires, la scène internationale lui offre un terrain où il domine. Les sondages du CIS d'avril 2026 créditent le PSOE de 36,4 % des intentions de vote, soit une avance de près de 13 points sur la droite — chiffre qui témoigne d'une stabilisation, mais aussi d'une dépendance croissante à un profil extérieur construit sur l'opposition frontale à Trump et sur la posture de paix au Moyen-Orient. Pour les analystes, le sommet de Barcelone aura été davantage une déclaration d'intention qu'un programme d'action : les divergences économiques et géopolitiques entre participants — notamment entre l'Europe et le « Sud Global » sur la guerre en Ukraine ou la taxation internationale — demeurent profondes. Mais dans un paysage mondial où les droites réactionnaires ont su tisser leurs propres réseaux transnationaux, la gauche internationale a, pour la première fois depuis les années 1990, affiché à Barcelone quelque chose qui ressemble à une coordination.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-fr-section -->
+
+    <!-- ═══ SECTION ES ═══ -->
+    <div class="ap-es-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-red">🇪🇸 España</span>
+          <span class="ap-tag ap-tag-blue">Geopolítica</span>
+          <span class="ap-tag ap-tag-teal">Multilateralismo</span>
+          <span class="ap-tag ap-tag-gold">Política interior</span>
+          <span class="ap-tag ap-tag-navy">Internacional Socialista</span>
+        </div>
+        <div class="ap-date">Abril 2026 — ECG Prépa · España</div>
+        <h1 class="ap-title">Barcelona, capital progresista mundial: la apuesta diplomática de Pedro Sánchez</h1>
+        <p class="ap-intro">Los días 17 y 18 de abril de 2026, Pedro Sánchez reunió en Barcelona a más de una veintena de dirigentes progresistas de todo el mundo para la primera edición de la Global Progressive Mobilisation y la IV Reunión en Defensa de la Democracia. Una doble cumbre presentada como la respuesta organizada de la izquierda internacional al auge de los movimientos reaccionarios, pero también como una palanca calculada para reforzar la posición internacional de un jefe de gobierno debilitado en la escena política española.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat blue"><span class="ap-stat-num">20+</span><span class="ap-stat-desc">Gobiernos<br>representados en Barcelona</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">3 000+</span><span class="ap-stat-desc">Participantes en total<br>(delegados, sindicatos, ONG)</span></div>
+          <div class="ap-stat green"><span class="ap-stat-num">40+</span><span class="ap-stat-desc">Países representados en la<br>Global Progressive Mobilisation</span></div>
+          <div class="ap-stat purple"><span class="ap-stat-num">IV<sup style="font-size:14px">ª</sup></span><span class="ap-stat-desc">Edición de la Reunión<br>en Defensa de la Democracia</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Una doble cumbre, dos formatos complementarios</div>
+            <p>El fin de semana barcelonés se articuló en torno a dos eventos distintos pero convergentes. El viernes 17 de abril se abrió la <strong>Global Progressive Mobilisation (GPM)</strong>, un foro inédito coorganizado por la Internacional Socialista (de la que Sánchez es presidente), el Partido Socialista Europeo y la Alianza Progresista. Este formato, concebido como abierto e inclusivo, reunió no solo a jefes de Estado y de gobierno, sino también a representantes de sindicatos, think tanks y organizaciones de la sociedad civil de más de cuarenta países. El sábado 18 de abril acogió la <strong>IV Reunión en Defensa de la Democracia</strong>, un formato más institucional reservado a los jefes de Estado y de gobierno.</p>
+            <p>Los dos eventos se desarrollaron en la Fira de Barcelona, al pie de Montjuïc. El sábado por la noche, Sánchez también intervino ante unas 6 500 personas en el pabellón 8 del recinto ferial, cerrando las cumbres en un formato cuasi-militante, coronado por su ya icónico eslogan: «No a la guerra.» La jornada del viernes había estado precedida, a primera hora de la tarde, por una cumbre bilateral España-Brasil — la primera entre ambos países —, en la que Lula elogió la negativa de Madrid a abrir sus bases militares a Estados Unidos durante los ataques contra Irán.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Lugar</div><div class="ap-fact-val">Fira de Barcelona, Montjuïc</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Fechas</div><div class="ap-fact-val">17-18 de abril de 2026</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Coorganizadores</div><div class="ap-fact-val">IS, PSE, Alianza Progresista</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Precedente</div><div class="ap-fact-val">Cumbre de Santiago de Chile, julio 2025</div></div>
+            </div>
+
+            <div class="ap-sub">Los participantes: un frente amplio y heterogéneo</div>
+            <p>El reparto de la cumbre refleja la ambición geográfica de Sánchez. Por parte de América Latina, figuraban el presidente brasileño <strong>Luiz Inácio Lula da Silva</strong>, la presidenta mexicana <strong>Claudia Sheinbaum</strong>, el presidente colombiano <strong>Gustavo Petro</strong> y el uruguayo <strong>Yamandú Orsi</strong>. Por África, el presidente sudafricano <strong>Cyril Ramaphosa</strong>. En el flanco europeo, la presidencia del Consejo Europeo estuvo representada por <strong>António Costa</strong>, acompañado de la secretaria del Partido Democrático italiano Elly Schlein y del viceprimer ministro británico David Lammy. Alemania, integrada recientemente en la coalición, estuvo representada por el vicecanciller <strong>Lars Klingbeil</strong>.</p>
+            <p>Entre los nuevos países que se sumaron al grupo de defensa de la democracia figuran Australia, Austria, Barbados, Botsuana, Ghana, Irlanda, Lituania, Namibia, República Dominicana y Eslovaquia. En cambio, el Chile del nuevo presidente José Antonio Kast, Bolivia, Honduras, Senegal y San Vicente y las Granadinas no participaron. La presencia de Claudia Sheinbaum tenía un carácter simbólico especial: pocas semanas antes, el rey Felipe VI había reconocido oficialmente, por primera vez, los «numerosos abusos» cometidos durante la conquista española de América.</p>
+
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">Sept. 2024</div><p class="ap-tl-text">En los márgenes de la Asamblea General de la ONU en Nueva York, Sánchez y Lula acuerdan la idea de una coordinación progresista transnacional.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Jul. 2025</div><p class="ap-tl-text">Primera cumbre de trabajo en Santiago de Chile, con Sánchez, Lula, Petro, Orsi y Boric. Barcelona designada como ciudad anfitriona del próximo encuentro.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">22 ene. 2026</div><p class="ap-tl-text">Stefan Löfven, presidente del PSE, confirma oficialmente Barcelona como sede, en vísperas de un Consejo Europeo sobre las tensiones con Donald Trump.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">17 abr. 2026</div><p class="ap-tl-text">Cumbre bilateral España-Brasil (la primera). Apertura de la Global Progressive Mobilisation. Más de 3 000 participantes y un centenar de organizaciones.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">18 abr. 2026</div><p class="ap-tl-text">IV Reunión en Defensa de la Democracia con más de 20 jefes de Estado y de gobierno. Clausura de Sánchez ante 6 500 personas.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">Los temas: democracia, multilateralismo y justicia social</div>
+            <p>El orden del día de las cumbres cubría un espectro intencionalmente amplio. La defensa del multilateralismo y la reforma de las instituciones internacionales ocuparon un lugar central: Sánchez abogó por una renovación de la ONU, sugiriendo incluso que fuera dirigida por una mujer, «no solo por justicia, sino también por credibilidad». La crisis del multilateralismo ante la retirada estadounidense, las guerras culturales, el auge de las desigualdades, la urgencia climática y la justicia fiscal — incluida la tributación de los multimillonarios, defendida por el economista Gabriel Zucman, presente en Barcelona — estructuraron igualmente los debates.</p>
+            <p>Un hilo conductor unió los discursos: la oposición a lo que Sánchez denominó la «oleada reaccionaria mundial», sin nombrar explícitamente a Donald Trump. El presidente colombiano Gustavo Petro describió la cumbre como «una especie de faro que, en medio de la confusión, traza una línea, la dirección de la vida, y no la de la muerte», rechazando la etiqueta de cumbre anti-Trump. Lula, por su parte, fustigó el extremismo negacionista y lanzó una solemne advertencia: «Cuando la democracia retrocede, aparece un Hitler.»</p>
+
+            <div class="ap-quote">
+              <p>« Cuando nosotros, los socialistas, gobernamos, los Estados no se arrodillan ante las élites: los devolvemos a su lugar. »</p>
+              <cite>— Pedro Sánchez, discurso de clausura, Barcelona, 18 de abril de 2026</cite>
+            </div>
+            <div class="ap-quote">
+              <p>« Gracias Pedro por tu liderazgo. Gracias por haber demostrado que el programa progresista funciona. »</p>
+              <cite>— Elly Schlein, secretaria del Partido Democrático (Italia), 18 de abril de 2026</cite>
+            </div>
+
+            <div class="ap-sub">Un espejo tendido hacia Milán y Madrid</div>
+            <p>La elección de la fecha no era casual. El mismo sábado 18 de abril, Matteo Salvini reunía en Milán a representantes de la extrema derecha europea — «Patriotas por Europa» — entre ellos Jordan Bardella y Geert Wilders. El cara a cara simbólico Barcelona-Milán ilustraba una polarización asumida del espacio político europeo. En Madrid, simultáneamente, la opositora venezolana María Corina Machado, Premio Nobel de la Paz, se reunió con Alberto Núñez Feijóo e Isabel Díaz Ayuso, rechazando cualquier encuentro con Sánchez — un signo de las líneas de fractura geopolítica que atraviesan incluso el campo que se autodefine como progresista.</p>
+            <p>La cumbre se celebró también en el contexto de la guerra en Irán, contra la que Sánchez adoptó posiciones tajantes: negativa a abrir las bases militares españolas para ataques estadounidenses y llamadas reiteradas a la desescalada en Oriente Medio. Estas tomas de posición, elogiadas por Lula, le granjearon las duras críticas de Donald Trump, contribuyendo paradójicamente a reforzar su aura internacional dentro del campo progresista.</p>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">🌐</div>
+              <div class="ap-info-text"><strong>Internacional Socialista:</strong> Fundada en 1951, la Internacional Socialista (IS) agrupa a la mayoría de los partidos socialdemócratas, socialistas y laboristas del mundo. Pedro Sánchez es su presidente desde 2023. La IS ya había organizado sus congresos mundiales, pero la GPM de Barcelona supone una novedad: un formato deliberadamente abierto a la sociedad civil, los sindicatos y los think tanks, concebido como un espacio de coordinación transnacional entre partidos y movimientos progresistas.</div>
+            </div>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Sánchez, entre el escaparate internacional y la fragilidad interior</div>
+              <p>La celebración de la cumbre en Barcelona — en Cataluña, lejos de Madrid — no carece de significado político. Mientras Sánchez gobierna en minoría desde 2023 y varios de sus allegados, aliados y familiares se encuentran en el centro de investigaciones judiciales, la escena internacional le ofrece un terreno donde domina. Las encuestas del CIS de abril de 2026 otorgan al PSOE un 36,4 % de intención de voto, con una ventaja de casi 13 puntos sobre la derecha — cifra que refleja una estabilización, pero también una dependencia creciente de un perfil exterior construido sobre la oposición frontal a Trump y la postura de paz en Oriente Medio. Para los analistas, la cumbre de Barcelona habrá sido más una declaración de intenciones que un programa de acción: las divergencias económicas y geopolíticas entre los participantes — especialmente entre Europa y el «Sur Global» sobre la guerra en Ucrania o la fiscalidad internacional — siguen siendo profundas. Pero en un panorama mundial donde las derechas reaccionarias han sabido tejer sus propias redes transnacionales, la izquierda internacional mostró en Barcelona, por primera vez desde los años noventa, algo parecido a una coordinación real.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-es-section -->
+
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — Espagne — Avril 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-es').classList.toggle('active', lang === 'es');
+  const isEs = lang === 'es';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEs ? 'none' : 'block');
+  document.querySelectorAll('.ap-es-section').forEach(el => el.style.display = isEs ? 'block' : 'none');
+}
+setLang('fr');
+</script>
+</body>
+</html>

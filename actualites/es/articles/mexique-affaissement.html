@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Mexique : Mexico s'enfonce</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #006847;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #006847; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #ce1126; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #ffffff; top: 40%; left: 30%; opacity: 0.03; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #006847; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #006847; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#006847; border-color:#006847; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  /* Article styles */
+  .ap-band { background: linear-gradient(90deg, #006847, #ce1126, #006847); text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(0,20,10,0.95); padding:12px 60px; border-bottom: 1px solid rgba(0,104,71,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#ce1126; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(0,104,71,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(206,17,38,0.2);  color:#f08080; border:1px solid rgba(206,17,38,0.35); }
+  .ap-tag-navy   { background:rgba(13,27,42,0.6);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(0,104,71,0.25);  color:#4caf7d; border:1px solid rgba(76,175,125,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #ce1126; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(0,104,71,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(206,17,38,0.8); }
+
+  /* Rich article components */
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#ce1126; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(206,17,38,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#071422,#0d2540); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#003a1a,#006832); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #ce1126; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(206,17,38,0.06),rgba(206,17,38,0.02)); border-left:3px solid #ce1126; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(206,17,38,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(206,17,38,0.8); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(0,30,15,0.9),rgba(0,15,8,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(0,104,71,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#4caf7d; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(0,104,71,0.06); border:1px solid rgba(0,104,71,0.18); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info.warning { background:rgba(206,17,38,0.06); border-color:rgba(206,17,38,0.18); }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(206,17,38,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#ce1126; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(206,17,38,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#ce1126; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(0,30,15,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-es-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-es.html">Espagnol</a>
+    <span class="sep">/</span>
+    <a href="../mexique.html">Mexique</a>
+    <span class="sep">/</span>
+    <span class="current">Mexico s'enfonce</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-es" class="ap-lang-btn" onclick="setLang('es')">🇲🇽 ES</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇲🇽 Mexique — Environnement urbain & crise hydrique</div>
+<div class="ap-back-bar">
+  <a href="../mexique.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+    <div class="ap-hero-img-wrap"><img class="ap-hero-img" src="../images/mexique-affaissement.jpg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+
+    <!-- ═══ SECTION FR ═══ -->
+    <div class="ap-fr-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-green">🇲🇽 Mexique</span>
+          <span class="ap-tag ap-tag-teal">Environnement</span>
+          <span class="ap-tag ap-tag-blue">Urbanisme</span>
+          <span class="ap-tag ap-tag-orange">Crise hydrique</span>
+          <span class="ap-tag ap-tag-navy">NASA · NISAR</span>
+        </div>
+        <div class="ap-date">MAI 2026 — ECG PRÉPA</div>
+        <h1 class="ap-title">Mexico s'enfonce : quand une métropole de 22 millions d'habitants disparaît centimètre par centimètre</h1>
+        <p class="ap-intro">Visible depuis l'espace grâce au satellite NISAR de la NASA, l'affaissement de Mexico est désormais mesuré en temps quasi réel. Certaines zones s'enfoncent de plus de 2 centimètres par mois. Derrière les chiffres, une catastrophe lente et irréversible, aux racines coloniales et aux conséquences humaines, infrastructurelles et géopolitiques profondes.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red">
+            <span class="ap-stat-num">~25 cm</span>
+            <span class="ap-stat-desc">d'affaissement annuel moyen<br>dans les zones lacustres</span>
+          </div>
+          <div class="ap-stat gold">
+            <span class="ap-stat-num">~10 m</span>
+            <span class="ap-stat-desc">d'affaissement total<br>depuis le début du XXe siècle</span>
+          </div>
+          <div class="ap-stat green">
+            <span class="ap-stat-num">150 ans</span>
+            <span class="ap-stat-desc">de compaction supplémentaire<br>prévue (étude Oregon, 2021)</span>
+          </div>
+          <div class="ap-stat">
+            <span class="ap-stat-num">22 M</span>
+            <span class="ap-stat-desc">habitants exposés<br>aire métropolitaine</span>
+          </div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Une ville bâtie sur un lac : origines d'un désastre annoncé</div>
+            <p>Le problème de Mexico remonte à sa fondation même. En 1325, les Mexicas — ancêtres des Aztèques — érigèrent Tenochtitlán sur une île au cœur du lac Texcoco. Après la conquête espagnole du XVIe siècle, les autorités coloniales asséchèrent progressivement ce lac pour étendre l'espace urbain. Au début du XXe siècle, la totalité de la vallée avait été drainée artificiellement par un canal de 40 kilomètres et un tunnel creusé à travers les montagnes.</p>
+            <p>Il reste alors à Mexico ce que les géologues appellent un <strong>lit lacustre argileux</strong> : des couches d'argile gorgée d'eau, extrêmement compressibles. Construire une métropole de 22 millions d'habitants sur une telle fondation équivaut à poser un immeuble sur une éponge. Dès que l'eau est extraite, l'éponge se compacte — et ne revient jamais à sa forme initiale.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Altitude de Mexico</div><div class="ap-fact-val">2 200 m (non littorale)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">1ère documentation</div><div class="ap-fact-val">1925, ingénieur mexicain</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Puits exploités</div><div class="ap-fact-val">~1 500 (jusqu'à 3 000 m)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Part d'eau souterraine</div><div class="ap-fact-val">~60–70 % de l'approvisionnement</div></div>
+            </div>
+
+            <div class="ap-sub">NISAR : la NASA mesure l'invisible</div>
+            <p>Entre octobre 2025 et janvier 2026, le satellite <strong>NISAR</strong> — fruit de la collaboration entre la NASA et l'agence spatiale indienne ISRO, lancé le 30 juillet 2025 — a cartographié avec une précision millimétrique les mouvements du sol sous Mexico. Les données confirment que certaines zones s'enfoncent de plus de <strong>2 centimètres par mois</strong> dans les secteurs les plus critiques, confirmant un affaissement moyen d'environ <strong>25 centimètres par an</strong> dans les zones bâties sur l'ancien lit lacustre.</p>
+            <p>Les zones les plus critiques incluent l'<strong>aéroport international Benito Juárez</strong> et le secteur du <strong>Paseo de la Reforma</strong>, l'artère emblématique de la capitale. David Bekaert, chef de projet à l'Institut flamand de recherche technologique et membre de l'équipe scientifique de NISAR, a déclaré que Mexico est « un point critique connu en matière d'affaissements » et que les données à venir seraient encore plus révélatrices.</p>
+
+            <div class="ap-info warning">
+              <div class="ap-info-icon">📡</div>
+              <div class="ap-info-text"><strong>Technologie inédite :</strong> NISAR utilise un radar à synthèse d'ouverture à double fréquence (L-band et S-band). Il peut mesurer des variations de surface au millimètre près, sans être gêné par les nuages ni la végétation — une avancée décisive pour la surveillance des villes en zone tropicale.</div>
+            </div>
+
+            <div class="ap-sub">Chronologie d'un effondrement centenaire</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">1325</div><p class="ap-tl-text">Fondation de Tenochtitlán sur le lac Texcoco par les Mexicas.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">XVIe – XIXe s.</div><p class="ap-tl-text">Drainage progressif du lac Texcoco par les autorités coloniales espagnoles puis mexicaines. Fin du drainage total vers 1900.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">1925</div><p class="ap-tl-text">Premier ingénieur à documenter scientifiquement l'affaissement du sol à Mexico.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Années 1990–2000</div><p class="ap-tl-text">Certaines zones s'affaissaient d'environ 35 cm par an, endommageant les infrastructures dont le métro.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Mars 2021</div><p class="ap-tl-text">Publication d'une étude de l'Université d'État de l'Oregon dans JGR Solid Earth : affaissement moyen de 50 cm/an dans certaines zones ; le compactage continuera 150 ans, entraînant jusqu'à 30 m d'affaissement supplémentaire.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2024</div><p class="ap-tl-text">Crise du « Jour Zéro » : le système Cutzamala tombe à 34,7 % de sa capacité en avril 2024. Des camions-citernes ravitaillent des quartiers entiers. Le scénario catastrophe est finalement évité grâce aux pluies de saison.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Juil. 2025</div><p class="ap-tl-text">Lancement du satellite NISAR par la NASA et l'ISRO depuis le Centre spatial Satish Dhawan (Inde).</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Oct. 2025 – Jan. 2026</div><p class="ap-tl-text">NISAR cartographie Mexico en temps quasi réel : certaines zones s'enfoncent de plus de 2 cm/mois. Les données confirment que l'aéroport Benito Juárez figure parmi les secteurs les plus touchés.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">Infrastructures sous pression : le prix du naufrage</div>
+            <p>L'affaissement n'est pas uniforme, et c'est précisément ce qui le rend si destructeur. Lorsque deux zones voisines s'enfoncent à des rythmes différents, les structures qui les relient — canalisations, voies ferrées, fondations — se déforment et se fissurent. Ce phénomène de <strong>subsidence différentielle</strong> est au cœur des dégâts observés dans toute la ville.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Infrastructure</th><th>Impact observé</th><th>Niveau de risque</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Métro (12 lignes)</td><td>Fractures de rails, pentes anormales, réductions de vitesse, effondrement de viaduc (2021)</td><td style="color:#f08080">Critique</td></tr>
+                <tr><td class="ap-cell-bold">Réseaux d'eau</td><td>Ruptures de canalisations : jusqu'à 40 % des eaux perdues en fuites</td><td style="color:#f08080">Critique</td></tr>
+                <tr><td class="ap-cell-bold">Aéroport Benito Juárez</td><td>Zone parmi les plus affaissées selon NISAR (oct. 2025 – jan. 2026)</td><td style="color:#ffb74d">Élevé</td></tr>
+                <tr><td class="ap-cell-bold">Centre historique</td><td>Cathédrale métropolitaine inclinée ; bâtiments coloniaux fissurés</td><td style="color:#ffb74d">Élevé</td></tr>
+                <tr><td class="ap-cell-bold">Système de drainage</td><td>Pentes inversées, risque d'inondation accru en saison des pluies</td><td style="color:#ffb74d">Élevé</td></tr>
+              </tbody>
+            </table>
+
+            <p>Le symbole le plus parlant reste l'<strong>Ange de l'Indépendance</strong>, monument inauguré en 1910 sur le Paseo de la Reforma : depuis sa construction, les autorités ont dû ajouter <strong>14 marches</strong> à sa base, au fur et à mesure que le sol se dérobait sous lui. La cathédrale métropolitaine, édifiée entre 1573 et 1813, penche visiblement — son sol n'est plus au niveau, victime de siècles d'affaissement différentiel.</p>
+
+            <div class="ap-sub">La double peine : moins d'eau, plus d'affaissement</div>
+            <p>Le paradoxe central de Mexico tient en une équation cruelle : <strong>plus la ville pompe d'eau dans l'aquifère pour alimenter ses habitants, plus elle s'enfonce</strong>. Or, pomper moins signifie potentiellement manquer d'eau. Actuellement, environ 60 à 70 % de l'eau potable de la ville provient de l'extraction souterraine, une surexploitation telle que moins de la moitié de ce qui est prélevé chaque année est naturellement renouvelé.</p>
+            <p>La crise du « Jour Zéro » de 2024 a mis en lumière cette dépendance structurelle : lorsque le système Cutzamala — qui assure environ 25 % de l'approvisionnement via des réservoirs extérieurs — est tombé à 34,7 % de sa capacité en avril 2024, la tentation de pomper davantage dans l'aquifère s'est renforcée, aggravant mécaniquement l'affaissement. Un expert de l'UNAM résume la situation : « plus l'aquifère se vide, plus Mexico s'enfonce ».</p>
+
+            <div class="ap-quote">
+              <p>« L'affaissement de Mexico est une catastrophe au ralenti. Sa vitesse peut varier selon les zones, mais il est permanent et irréversible. »</p>
+              <cite>— Efraín Ovando Shelley, chercheur à l'UNAM, Institut d'ingénierie</cite>
+            </div>
+            <div class="ap-quote">
+              <p>« Même en récupérant un niveau d'eau plus élevé dans les nappes, le compactage se poursuivrait malgré tout en raison de la faible conductivité hydraulique des argiles. »</p>
+              <cite>— Étude de l'Université d'État de l'Oregon, JGR Solid Earth, 2021</cite>
+            </div>
+
+            <div class="ap-sub">Quelles réponses pour une crise irréversible ?</div>
+            <p>Les autorités mexicaines et les experts internationaux s'accordent sur plusieurs pistes, sans qu'aucune ne constitue une solution miracle. La réparation des fuites dans le réseau d'eau — qui représentent jusqu'à 40 % des pertes — est présentée comme la mesure la plus immédiate et la plus rentable. La recharge artificielle des aquifères, qui consiste à réinjecter de l'eau traitée dans le sous-sol, est expérimentée à petite échelle. Le gouvernement de Mexico City vise une utilisation durable de l'aquifère d'ici 2040, un objectif jugé ambitieux par la majorité des hydrologues. Enfin, la surveillance satellitaire via NISAR ouvre la voie à un suivi bâtiment par bâtiment, permettant d'anticiper les effondrements et de prioriser les interventions d'urgence.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Un symbole des crises urbaines du XXIe siècle</div>
+              <p>Mexico concentre à elle seule plusieurs des défis les plus aigus du siècle : surpopulation urbaine, épuisement des ressources en eau, héritage colonial d'une planification environnementale désastreuse, et vulnérabilité sismique dans une ville qui s'est effondrée en 1985 sous un séisme de magnitude 8,1. L'affaissement ajoute une dimension supplémentaire à ce portrait : un risque lent, difficilement visible, mais dont les effets cumulés sur les infrastructures, la santé publique et les inégalités sociales sont déjà considérables. La ville la plus peuplée d'Amérique du Nord disparaît centimètre par centimètre sous le poids de sa propre histoire.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-fr-section -->
+
+    <!-- ═══ SECTION ES ═══ -->
+    <div class="ap-es-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-green">🇲🇽 México</span>
+          <span class="ap-tag ap-tag-teal">Medio ambiente</span>
+          <span class="ap-tag ap-tag-blue">Urbanismo</span>
+          <span class="ap-tag ap-tag-orange">Crisis hídrica</span>
+          <span class="ap-tag ap-tag-navy">NASA · NISAR</span>
+        </div>
+        <div class="ap-date">MAYO 2026 — ECG PRÉPA</div>
+        <h1 class="ap-title">Ciudad de México se hunde: cuando una metrópolis de 22 millones de habitantes desaparece centímetro a centímetro</h1>
+        <p class="ap-intro">Visible desde el espacio gracias al satélite NISAR de la NASA, el hundimiento de Ciudad de México se mide ahora en tiempo casi real. Algunas zonas se hunden más de 2 centímetros al mes. Detrás de las cifras, una catástrofe lenta e irreversible, con raíces coloniales y consecuencias humanas, infraestructurales y geopolíticas profundas.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red">
+            <span class="ap-stat-num">~25 cm</span>
+            <span class="ap-stat-desc">de hundimiento anual medio<br>en las zonas lacustres</span>
+          </div>
+          <div class="ap-stat gold">
+            <span class="ap-stat-num">~10 m</span>
+            <span class="ap-stat-desc">de hundimiento total<br>desde principios del siglo XX</span>
+          </div>
+          <div class="ap-stat green">
+            <span class="ap-stat-num">150 años</span>
+            <span class="ap-stat-desc">de compactación adicional<br>prevista (estudio Oregon, 2021)</span>
+          </div>
+          <div class="ap-stat">
+            <span class="ap-stat-num">22 M</span>
+            <span class="ap-stat-desc">habitantes expuestos<br>área metropolitana</span>
+          </div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Una ciudad construida sobre un lago: orígenes de un desastre anunciado</div>
+            <p>El problema de Ciudad de México se remonta a su propia fundación. En 1325, los mexicas fundaron Tenochtitlán en una isla en el corazón del lago Texcoco. Tras la conquista española del siglo XVI, las autoridades coloniales fueron drenando progresivamente el lago para expandir el espacio urbano. A principios del siglo XX, todo el valle había sido drenado artificialmente mediante un canal de 40 kilómetros y un túnel perforado a través de las montañas.</p>
+            <p>Lo que quedó bajo Ciudad de México es lo que los geólogos denominan un <strong>lecho lacustre arcilloso</strong>: capas de arcilla saturada de agua, extremadamente compresibles. Construir una metrópolis de 22 millones de habitantes sobre semejante cimiento equivale a levantar un edificio sobre una esponja. En cuanto se extrae el agua, la esponja se compacta — y nunca vuelve a su forma original.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Altitud de CDMX</div><div class="ap-fact-val">2 200 m (no costera)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Primera documentación</div><div class="ap-fact-val">1925, ingeniero mexicano</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Pozos explotados</div><div class="ap-fact-val">~1 500 (hasta 3 000 m)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Agua subterránea</div><div class="ap-fact-val">~60–70 % del suministro</div></div>
+            </div>
+
+            <div class="ap-sub">NISAR: la NASA mide lo invisible</div>
+            <p>Entre octubre de 2025 y enero de 2026, el satélite <strong>NISAR</strong> — fruto de la colaboración entre la NASA y la agencia espacial india ISRO, lanzado el 30 de julio de 2025 — cartografió con precisión milimétrica los movimientos del suelo bajo Ciudad de México. Los datos confirman que algunas zonas se hunden más de <strong>2 centímetros al mes</strong> en los sectores más críticos, confirmando un hundimiento medio de aproximadamente <strong>25 centímetros al año</strong> en las zonas edificadas sobre el antiguo lecho lacustre.</p>
+            <p>Las zonas más críticas incluyen el <strong>aeropuerto internacional Benito Juárez</strong> y el sector del <strong>Paseo de la Reforma</strong>. David Bekaert, jefe de proyecto en el Instituto Flamenco de Investigación Tecnológica y miembro del equipo científico de NISAR, declaró que Ciudad de México es «un punto crítico conocido en materia de subsidencias» y que los datos por recopilar serán aún más reveladores.</p>
+
+            <div class="ap-sub">Cronología de un hundimiento centenario</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">1325</div><p class="ap-tl-text">Fundación de Tenochtitlán sobre el lago Texcoco por los mexicas.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">S. XVI – XIX</div><p class="ap-tl-text">Drenaje progresivo del lago Texcoco. El valle queda completamente drenado hacia 1900.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">1925</div><p class="ap-tl-text">Primer registro científico del hundimiento del suelo en Ciudad de México.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Años 1990–2000</div><p class="ap-tl-text">Algunas zonas se hundían unos 35 cm al año, dañando infraestructuras como el metro.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Marzo 2021</div><p class="ap-tl-text">Estudio de la Universidad de Oregon (JGR Solid Earth): hundimiento medio de 50 cm/año en ciertas zonas; la compactación continuará 150 años más, con hasta 30 m adicionales de hundimiento.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2024</div><p class="ap-tl-text">Crisis del «Día Cero»: el sistema Cutzamala cae al 34,7 % de su capacidad en abril de 2024. Camiones cisterna abastecen barrios enteros.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Oct. 2025 – En. 2026</div><p class="ap-tl-text">NISAR cartografía Ciudad de México en tiempo casi real: algunas zonas se hunden más de 2 cm/mes. El aeropuerto Benito Juárez figura entre los sectores más afectados.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">Infraestructuras bajo presión: el precio del naufragio</div>
+            <p>El hundimiento no es uniforme, y es precisamente eso lo que lo hace tan destructivo. Cuando dos zonas vecinas se hunden a ritmos distintos, las estructuras que las conectan — tuberías, vías férreas, cimientos — se deforman y agrietan. Este fenómeno de <strong>subsidencia diferencial</strong> es el principal responsable de los daños observados en toda la ciudad.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Infraestructura</th><th>Impacto observado</th><th>Nivel de riesgo</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Metro (12 líneas)</td><td>Fracturas de raíles, pendientes anómalas, derrumbe de viaducto (2021)</td><td style="color:#f08080">Crítico</td></tr>
+                <tr><td class="ap-cell-bold">Redes de agua</td><td>Roturas de tuberías: hasta el 40 % del agua se pierde en fugas</td><td style="color:#f08080">Crítico</td></tr>
+                <tr><td class="ap-cell-bold">Aeropuerto Benito Juárez</td><td>Zona de mayor hundimiento según NISAR (oct. 2025 – en. 2026)</td><td style="color:#ffb74d">Alto</td></tr>
+                <tr><td class="ap-cell-bold">Centro histórico</td><td>Catedral metropolitana inclinada; edificios coloniales con grietas</td><td style="color:#ffb74d">Alto</td></tr>
+                <tr><td class="ap-cell-bold">Sistema de drenaje</td><td>Pendientes invertidas, mayor riesgo de inundación en temporada de lluvias</td><td style="color:#ffb74d">Alto</td></tr>
+              </tbody>
+            </table>
+
+            <p>El símbolo más elocuente es el <strong>Ángel de la Independencia</strong>, monumento inaugurado en 1910 sobre el Paseo de la Reforma: desde su construcción, las autoridades han tenido que añadir <strong>14 escalones</strong> a su base, a medida que el suelo se hundía bajo él. La catedral metropolitana, construida entre 1573 y 1813, se inclina visiblemente — consecuencia de siglos de subsidencia diferencial.</p>
+
+            <div class="ap-sub">La doble penalización: menos agua, más hundimiento</div>
+            <p>La paradoja central de Ciudad de México se resume en una ecuación cruel: <strong>cuanta más agua extrae del acuífero para abastecer a sus habitantes, más se hunde</strong>. Pero extraer menos significa potencialmente quedarse sin agua. Actualmente, entre el 60 y el 70 % del agua potable de la ciudad proviene de la extracción subterránea — una sobreexplotación tal que menos de la mitad de lo extraído cada año se renueva de forma natural.</p>
+            <p>La crisis del «Día Cero» de 2024 puso de manifiesto esta dependencia estructural: cuando el sistema Cutzamala cayó al 34,7 % de su capacidad en abril de 2024, la tentación de bombear más del acuífero se intensificó, agravando mecánicamente el hundimiento. Un experto de la UNAM lo resume así: «cuanto más se vacía el acuífero, más se hunde Ciudad de México».</p>
+
+            <div class="ap-quote">
+              <p>«El hundimiento de Ciudad de México es un desastre de acción lenta. Su velocidad puede variar según las zonas, pero es permanente e irreversible.»</p>
+              <cite>— Efraín Ovando Shelley, investigador de la UNAM, Instituto de Ingeniería</cite>
+            </div>
+            <div class="ap-quote">
+              <p>«Incluso recuperando niveles de agua más altos en los acuíferos, la compactación continuaría igualmente debido a la baja conductividad hidráulica de las arcillas.»</p>
+              <cite>— Estudio de la Universidad Estatal de Oregon, JGR Solid Earth, 2021</cite>
+            </div>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Un símbolo de las crisis urbanas del siglo XXI</div>
+              <p>Ciudad de México concentra por sí sola varios de los desafíos más agudos del siglo: superpoblación urbana, agotamiento de los recursos hídricos, herencia colonial de una planificación medioambiental desastrosa y vulnerabilidad sísmica — la ciudad se derrumbó en 1985 bajo un terremoto de magnitud 8,1. El hundimiento añade una dimensión adicional: un riesgo lento, difícilmente visible, pero cuyos efectos acumulados sobre las infraestructuras, la salud pública y las desigualdades sociales ya son considerables. La ciudad más poblada de América del Norte desaparece centímetro a centímetro bajo el peso de su propia historia.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-es-section -->
+
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — Mexique — Mai 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-es').classList.toggle('active', lang === 'es');
+  const isEs = lang === 'es';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEs ? 'none' : 'block');
+  document.querySelectorAll('.ap-es-section').forEach(el => el.style.display = isEs ? 'block' : 'none');
+}
+setLang('fr');
+</script>
+</body>
+</html>

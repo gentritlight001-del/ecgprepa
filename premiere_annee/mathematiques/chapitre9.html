@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Maths Chapitre 9 : Polynômes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false}]});"></script>
+<style>
+  :root {
+    --cream: #F7FEE7;
+    --dark: #1A2E05;
+    --indigo: #65A30D;
+    --indigo-dark: #365314;
+    --indigo-mid: #A3E635;
+    --indigo-light: #ECFCCB;
+    --indigo-border: #D9F99D;
+    --violet: #BEF264;
+    --muted: #4D7C0F;
+    --accent: #65A30D;
+    --accent-soft: #65A30D22;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--dark); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid rgba(101,163,13,0.25);
+    background: var(--indigo-dark); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--violet); cursor: pointer; letter-spacing: 0.02em; }
+  .nav-logo a { color: inherit; text-decoration: none; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(247,254,231,0.5); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: inherit; text-decoration: none; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb a:hover span, .breadcrumb span:hover { color: var(--violet); }
+  .breadcrumb .sep { color: rgba(247,254,231,0.25); }
+  .breadcrumb .current { color: #F7FEE7; cursor: default; }
+
+  /* ─── HERO ─── */
+  .ch-hero {
+    background: var(--indigo-dark);
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ch-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2384CC16' fill-opacity='0.18'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--violet); margin-bottom: 1.5rem; opacity: 0.85; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 4rem); color: var(--cream); font-weight: 900; max-width: 900px; margin: 0 auto 1.5rem; line-height: 1.1; position: relative; z-index: 1; }
+  .ch-hero p { color: rgba(247,254,231,0.55); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  /* ─── TOC ─── */
+  .toc-bar { background: #ECFCCB; padding: 2rem; border-bottom: 1px solid var(--indigo-border); }
+  .toc-inner { max-width: 960px; margin: 0 auto; }
+  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
+  .toc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.4rem; list-style: none; }
+  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: #1A2E05; font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
+  .toc-list a:hover { border-color: var(--indigo-border); background: white; color: #000; }
+  .toc-num { font-family: "DM Mono", monospace; font-size: 0.65rem; color: var(--indigo); flex-shrink: 0; margin-top: 0.15rem; }
+
+  /* ─── CONTENT ─── */
+  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 8rem; }
+
+  /* PART */
+  .math-part { margin-bottom: 5rem; }
+  .math-part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--indigo); }
+  .math-part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: var(--indigo-border); line-height: 1; flex-shrink: 0; }
+  .math-part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--dark); line-height: 1.25; }
+
+  /* SECTION */
+  .math-section { margin-bottom: 3.5rem; }
+  .math-section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--indigo-dark); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--indigo); scroll-margin-top: 2rem; }
+  .math-subsection-title { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--indigo); margin: 2rem 0 0.75rem; }
+
+  /* TEXT */
+  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: #1A2E05; line-height: 1.85; font-weight: 300; }
+  .content strong { color: var(--dark); font-weight: 600; }
+
+  /* DÉFINITION CARD */
+  .def-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(101,163,13,0.10), 0 0 0 1px rgba(101,163,13,0.12);
+    display: flex;
+    margin: 1.4rem 0;
+  }
+  .def-accent-bar {
+    width: 5px;
+    background: linear-gradient(180deg, #A3E635 0%, #365314 100%);
+    flex-shrink: 0;
+    border-radius: 10px 0 0 10px;
+  }
+  .def-body { padding: 1.2rem 1.5rem; flex: 1; }
+  .def-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.65rem; }
+  .def-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--indigo); font-weight: 500; }
+  .def-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--indigo-dark); }
+  .def-body p { margin-bottom: 0.5rem; font-size: 0.93rem; line-height: 1.75; }
+  .def-body p:last-child { margin-bottom: 0; }
+  .def-body ul, .def-body ol { padding-left: 1.4rem; margin-top: 0.3rem; margin-bottom: 0.5rem; }
+  .def-body ul li, .def-body ol li { font-size: 0.93rem; line-height: 1.75; margin-bottom: 0.35rem; color: #1A2E05; }
+
+  /* PROPRIÉTÉ CARD */
+  .prop-card {
+    background: var(--indigo-light);
+    border-radius: 8px;
+    border: 1px solid var(--indigo-border);
+    border-left: 4px solid var(--indigo);
+    padding: 1.2rem 1.5rem;
+    margin: 1.4rem 0;
+  }
+  .prop-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--indigo-dark); font-weight: 700; margin-bottom: 0.6rem; }
+  .prop-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--indigo-dark); margin-bottom: 0.7rem; }
+  .prop-card p { margin-bottom: 0.5rem; font-size: 0.93rem; color: var(--indigo-dark); line-height: 1.75; }
+  .prop-card p:last-child { margin-bottom: 0; }
+  .prop-card ol, .prop-card ul { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .prop-card ol li, .prop-card ul li { font-size: 0.93rem; color: var(--indigo-dark); line-height: 1.8; margin-bottom: 0.35rem; }
+
+  /* THÉORÈME CARD */
+  .thm-card {
+    background: var(--indigo-dark);
+    color: var(--cream);
+    border-radius: 8px;
+    padding: 1.5rem 1.75rem;
+    margin: 1.4rem 0;
+  }
+  .thm-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--violet); margin-bottom: 0.5rem; }
+  .thm-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--cream); margin-bottom: 0.75rem; }
+  .thm-card p { color: rgba(247,254,231,0.88); font-size: 0.93rem; margin-bottom: 0.5rem; line-height: 1.75; }
+  .thm-card p:last-child { margin-bottom: 0; }
+  .thm-card ol, .thm-card ul { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .thm-card ol li, .thm-card ul li { color: rgba(247,254,231,0.88); font-size: 0.93rem; line-height: 1.8; margin-bottom: 0.35rem; }
+
+  /* REMARQUE */
+  .remark { background: white; border-left: 3px solid var(--indigo-border); padding: 1rem 1.4rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; font-size: 0.9rem; color: #1A2E05; line-height: 1.7; font-style: italic; }
+  .remark::before { content: 'Remarque — '; font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--indigo); display: block; margin-bottom: 0.3rem; }
+
+  /* MÉTHODE (highlight box réutilisé, label dédié) */
+  .method-box { background: var(--indigo-light); border-left: 3px solid var(--indigo); padding: 1rem 1.4rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; font-size: 0.9rem; color: var(--indigo-dark); line-height: 1.7; }
+  .method-box::before { content: 'Méthode — '; font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--indigo-dark); display: block; margin-bottom: 0.4rem; font-weight: 700; }
+  .method-box ol, .method-box ul { padding-left: 1.4rem; margin-top: 0.3rem; }
+  .method-box ol li, .method-box ul li { margin-bottom: 0.3rem; }
+
+  /* ATTENTION */
+  .attention { background: #FFF7ED; border-left: 3px solid #F59E0B; padding: 1rem 1.4rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; font-size: 0.9rem; line-height: 1.7; }
+  .attention::before { content: 'Attention — '; font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: #B45309; display: block; margin-bottom: 0.3rem; }
+
+  /* FORMULE DISPLAY */
+  .formula-block {
+    background: white;
+    border: 1px solid var(--indigo-border);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.2rem 0;
+    text-align: center;
+    overflow-x: auto;
+  }
+  .formula-block .katex-display { margin: 0; }
+  .formula-block .katex { font-size: 1.05em; }
+
+  /* TABLE */
+  .math-table-wrap { overflow-x: auto; margin: 1.5rem 0; border-radius: 8px; border: 1px solid var(--indigo-border); box-shadow: 0 2px 8px rgba(101,163,13,0.08); }
+  .math-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .math-table th { background: var(--indigo-dark); color: var(--cream); font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.75rem 1rem; text-align: center; font-weight: 500; border: 1px solid rgba(255,255,255,0.1); }
+  .math-table td { padding: 0.65rem 1rem; text-align: left; border: 1px solid var(--indigo-light); color: #1A2E05; vertical-align: middle; background: white; line-height: 1.6; }
+  .math-table tr:nth-child(even) td { background: #F7FEE7; }
+  .math-table tr:hover td { background: var(--indigo-light); }
+  .math-table td.left { text-align: left; }
+  .math-table .katex { font-size: 0.95em; }
+
+  /* KEY FACT */
+  .math-key { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 0.6rem; padding: 0.85rem 1.1rem; background: white; border: 1px solid var(--indigo-light); border-radius: 6px; }
+  .math-key-bullet { width: 6px; height: 6px; background: var(--indigo); border-radius: 50%; flex-shrink: 0; margin-top: 0.55rem; }
+  .math-key > div { font-size: 0.91rem; color: #1A2E05; line-height: 1.75; font-weight: 300; }
+
+  /* INLINE MATH */
+  .katex { font-size: 1em; }
+  .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.2rem 0; }
+
+  /* DEUX COLONNES */
+  .two-col-formulas { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
+  .two-col-formulas .formula-block { margin: 0; }
+
+  /* TROIS COLONNES */
+  .three-col-formulas { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
+  .three-col-formulas .formula-block { margin: 0; }
+
+  /* HIGHLIGHT BOX */
+  .math-highlight { background: var(--indigo-light); border-left: 4px solid var(--indigo); padding: 1.25rem 1.75rem; margin: 1.5rem 0; color: var(--indigo-dark); font-size: 0.93rem; line-height: 1.75; border-radius: 0 6px 6px 0; }
+
+  /* FOOTER */
+  .site-footer { background: var(--indigo-dark); border-top: 1px solid rgba(101,163,13,0.35); padding: 2.5rem 2rem; text-align: center; }
+  .site-footer .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--violet); letter-spacing: 0.02em; margin-bottom: 0.5rem; }
+  .site-footer .footer-meta { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(247,254,231,0.35); }
+
+  /* BACK TO TOP */
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--indigo); color: var(--cream); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 4px 14px rgba(101,163,13,0.45); opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 200; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+  .back-to-top:hover { background: var(--indigo-mid); }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--indigo-border); border-radius: 3px; }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .two-col-formulas { grid-template-columns: 1fr; }
+    .three-col-formulas { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    @page { size: A4; margin: 15mm 14mm 15mm 14mm; }
+    nav, .back-to-top, .toc-bar, .site-footer { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    html, body { background: white !important; color: #000 !important; font-size: 10pt; width: 100% !important; }
+    .ch-hero { background: #365314 !important; padding: 0.9rem 1rem 0.7rem !important; }
+    .ch-hero::before { display: none !important; }
+    .ch-hero h1 { font-size: 16pt !important; color: #fff !important; margin-bottom: 0.3rem !important; }
+    .ch-hero .chap-label { font-size: 7pt !important; color: #D9F99D !important; margin-bottom: 0.4rem !important; }
+    .ch-hero p { font-size: 7pt !important; color: #D9F99D !important; margin: 0 !important; }
+    .content { max-width: 100% !important; padding: 0.6rem 0 !important; margin: 0 !important; }
+    .content p { font-size: 9pt !important; line-height: 1.5 !important; margin-bottom: 0.45rem !important; color: #000 !important; }
+    .math-part { margin-bottom: 0.8rem; page-break-inside: auto; }
+    .math-part-header { page-break-after: avoid; padding-bottom: 0.6rem !important; margin-bottom: 1rem !important; border-bottom: 2pt solid #65A30D !important; }
+    .math-part-num { font-size: 2rem !important; color: #D9F99D !important; }
+    .math-part-title { font-size: 13pt !important; }
+    .math-section { page-break-inside: auto; margin-bottom: 0.8rem; }
+    .math-section-title { page-break-after: avoid; font-size: 11pt !important; padding-left: 0.7rem !important; border-left: 2.5pt solid #65A30D !important; margin-bottom: 0.55rem !important; color: #365314 !important; }
+    .math-subsection-title { page-break-after: avoid; font-size: 7pt !important; margin: 0.65rem 0 0.35rem !important; color: #65A30D !important; }
+    .def-card { page-break-inside: avoid; box-shadow: none !important; border: 1pt solid #D9F99D !important; display: flex !important; border-radius: 0 !important; margin: 0.55rem 0 !important; }
+    .def-accent-bar { background: #65A30D !important; width: 4px !important; border-radius: 0 !important; }
+    .def-body { padding: 0.7rem 1rem !important; }
+    .def-body p { font-size: 8.5pt !important; line-height: 1.5 !important; color: #000 !important; }
+    .prop-card { page-break-inside: avoid; background: #ECFCCB !important; border-left: 2.5pt solid #65A30D !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .prop-card p, .prop-card li { font-size: 8.5pt !important; line-height: 1.5 !important; color: #365314 !important; }
+    .thm-card { page-break-inside: avoid; background: #365314 !important; padding: 0.75rem 1rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .thm-label { font-size: 6pt !important; color: #D9F99D !important; }
+    .thm-title { font-size: 9.5pt !important; color: #fff !important; }
+    .thm-card p, .thm-card li { font-size: 8.5pt !important; color: rgba(247,254,231,0.9) !important; line-height: 1.5 !important; }
+    .remark { page-break-inside: avoid; border-left: 2pt solid #D9F99D !important; padding: 0.5rem 0.9rem !important; margin: 0.45rem 0 !important; font-size: 8pt !important; border-radius: 0 !important; }
+    .method-box { page-break-inside: avoid; border-left: 2pt solid #65A30D !important; padding: 0.5rem 0.9rem !important; margin: 0.45rem 0 !important; font-size: 8pt !important; border-radius: 0 !important; }
+    .formula-block { page-break-inside: avoid; border: 1pt solid #D9F99D !important; padding: 0.5rem 0.8rem !important; margin: 0.45rem 0 !important; border-radius: 0 !important; }
+    .math-key { page-break-inside: avoid; padding: 0.4rem 0.8rem !important; margin-bottom: 0.3rem !important; border: 1pt solid #ECFCCB !important; border-radius: 0 !important; }
+    .math-key > div { font-size: 8.5pt !important; line-height: 1.45 !important; color: #000 !important; }
+    .math-highlight { page-break-inside: avoid; background: #ECFCCB !important; border-left: 2.5pt solid #65A30D !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; font-size: 8.5pt !important; color: #365314 !important; border-radius: 0 !important; }
+    .math-table-wrap { page-break-inside: avoid; margin: 0.55rem 0 !important; border: 1pt solid #D9F99D !important; border-radius: 0 !important; box-shadow: none !important; }
+    .math-table th { background: #365314 !important; color: #D9F99D !important; font-size: 6.5pt !important; padding: 0.4rem 0.6rem !important; }
+    .math-table td { font-size: 8pt !important; padding: 0.4rem 0.6rem !important; border: 0.5pt solid #ECFCCB !important; }
+    .two-col-formulas, .three-col-formulas { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 0.5rem !important; margin: 0.45rem 0 !important; }
+    .katex { font-size: 0.82em !important; }
+    .katex-display { margin: 0.15rem 0 !important; overflow: visible !important; }
+    .katex-html { white-space: normal !important; }
+    .katex .base { display: inline !important; white-space: nowrap !important; }
+    .def-body p, .prop-card p, .thm-card p, .remark, .math-key > div, .content p { overflow: visible !important; word-break: break-word !important; }
+    .formula-block { overflow: visible !important; height: auto !important; min-height: 0 !important; text-align: center !important; }
+    .formula-block .katex-display { overflow-x: visible !important; overflow-y: visible !important; text-align: center !important; }
+    .katex *, .katex-html * { position: static !important; top: auto !important; bottom: auto !important; left: auto !important; right: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left"><div class="nav-logo"><a href="../../index.html">ECG Prépa</a></div></div>
+  <div class="breadcrumb">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">/</span>
+    <a href="index.html"><span>Mathématiques</span></a>
+    <span class="sep">/</span>
+    <span class="current">Chapitre 9</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="chap-label">&#x2015;&nbsp; Chapitre 9 · Mathématiques approfondies &nbsp;&#x2015;</div>
+  <h1>Polynômes</h1>
+  <p>Degré · Dérivée · Formule de Taylor · Division euclidienne · Racines · Factorisation</p>
+</div>
+
+<!-- TOC -->
+<div class="toc-bar">
+  <div class="toc-inner">
+    <div class="toc-title">Table des matières</div>
+    <ul class="toc-list">
+      <li><a href="#part1"><span class="toc-num">I</span> L'ensemble $\mathbb{R}[x]$ des polynômes</a></li>
+      <li><a href="#part2"><span class="toc-num">II</span> Polynôme dérivée</a></li>
+      <li><a href="#part3"><span class="toc-num">III</span> Division euclidienne</a></li>
+      <li><a href="#part4"><span class="toc-num">IV</span> Racines et factorisation d'un polynôme</a></li>
+      <li><a href="#part5"><span class="toc-num">V</span> Factorisation des polynômes</a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════════
+     PARTIE I — L'ENSEMBLE R[X] DES POLYNÔMES
+════════════════════════════════════════ -->
+<div class="math-part" id="part1">
+  <div class="math-part-header">
+    <div class="math-part-num">I</div>
+    <div class="math-part-title">L'ensemble $\mathbb{R}[x]$ des polynômes</div>
+  </div>
+
+  <div class="math-section" id="s1-1">
+    <div class="math-section-title">1 — Écriture d'un polynôme, degré et coefficient dominant</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span></div>
+        <p>On appelle <strong>polynôme</strong> à coefficients dans $\mathbb{R}$ toute fonction du type :</p>
+        \[\forall x \in \mathbb{R}, \quad P(x) = a_0 + a_1 x + a_2 x^2 + a_3 x^3 + \cdots + a_n x^n = \sum_{k=0}^{n} a_k x^k\]
+        <p>Les nombres réels $a_0, a_1, \dots, a_n$ s'appellent les coefficients du polynôme $P$.</p>
+        <ul>
+          <li>On appelle <strong>polynôme nul</strong> le polynôme dont tous les coefficients sont nuls. On le note $0_{\mathbb{R}[x]}$.</li>
+          <li>L'ensemble des polynômes à coefficients réels se note $\mathbb{R}[x]$.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="remark">
+      Un polynôme est une fonction définie sur $\mathbb{R}$. Quand on écrit un polynôme, on écrit les puissances présentes dans l'ordre croissant ou dans l'ordre décroissant. Un polynôme est une somme de <strong>puissances entières</strong>.
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 2</span></div>
+        <ul>
+          <li>On appelle <strong>degré</strong> du polynôme $P(x)$ la plus grande puissance de $x$ présente dans l'expression de $P(x)$. Par convention, si $P = 0_{\mathbb{R}[x]}$, on pose $\deg(P) = -\infty$.</li>
+          <li>Un polynôme de degré $n$ s'écrit donc : $P(x) = a_n x^n + \underbrace{\cdots}_{\text{termes de deg} \le n-1}$ ou $P(x) = \displaystyle\sum_{k=0}^n a_k x^k$ avec $a_n \neq 0$. $a_n$ s'appelle <strong>coefficient dominant</strong> ; c'est donc le coefficient de la plus grande puissance de $x$.</li>
+          <li>On dit que $P$ est un <strong>polynôme unitaire</strong> lorsque son coefficient dominant vaut $1$.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="remark">
+      Un polynôme constant est un polynôme du type $P(x) = c$ où $c \in \mathbb{R}$. On peut donc l'écrire $P(x) = c\,x^0$ et, si $c \neq 0$, on a $\deg(P) = 0$.
+    </div>
+  </div>
+
+  <div class="math-section" id="s1-2">
+    <div class="math-section-title">2 — Opérations sur les polynômes</div>
+    <p>Soient $P$ et $Q$ deux polynômes. On définit dans $\mathbb{R}[x]$ les quatre opérations suivantes dont le résultat est un polynôme :</p>
+    <ul style="padding-left:1.4rem; margin-bottom:1.1rem;">
+      <li style="margin-bottom:0.4rem;">une <strong>somme</strong>, notée $P(x) + Q(x)$</li>
+      <li style="margin-bottom:0.4rem;">une <strong>multiplication par un nombre</strong> notée $a.P(x)$ où $a \in \mathbb{R}$</li>
+      <li style="margin-bottom:0.4rem;">un <strong>produit</strong> noté $P(x) \times Q(x)$ ou $P(x)Q(x)$</li>
+      <li style="margin-bottom:0.4rem;">une <strong>composition</strong> notée $P\big(Q(x)\big)$</li>
+    </ul>
+    <p>Le calcul d'un polynôme sera terminé lorsqu'on aura une somme de <strong>puissances entières</strong> de $x$ (rangées dans l'ordre croissant ou dans l'ordre décroissant).</p>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <p>Un produit de polynômes est nul ssi l'un des polynômes du produit est nul. Ainsi, on a l'équivalence :</p>
+      \[P(x) \times Q(x) = 0_{\mathbb{R}[x]} \quad \Leftrightarrow \quad P(x) = 0_{\mathbb{R}[x]} \text{ ou } Q(x) = 0_{\mathbb{R}[x]}\]
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 2</div>
+      <div class="prop-title">Égalité de polynômes</div>
+      <p>Tout polynôme s'écrit de manière unique sous la forme $P(x) = a_0 + a_1 x + a_2 x^2 + a_3 x^3 + \cdots + a_n x^n$.</p>
+      <p>Ainsi, <strong>deux polynômes sont égaux si et seulement si leurs coefficients respectifs sont égaux</strong>.</p>
+    </div>
+  </div>
+
+  <div class="math-section" id="s1-3">
+    <div class="math-section-title">3 — Calcul du degré d'un polynôme, ensemble $\mathbb{R}_n[x]$</div>
+    <p>Le degré d'un polynôme, c'est la plus grande puissance de $x$. Pour le déterminer, inutile de calculer tous les coefficients !</p>
+
+    <div class="method-box">
+      Pour trouver le degré d'un polynôme, on cherche le terme de plus haut degré à partir du terme de plus degré de chaque partie du polynôme et en utilisant des pointillés jusqu'à trouver le plus grand coefficient non nul.
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 3</div>
+      <p>Soient $(P,Q) \in \mathbb{R}[x]^2$.</p>
+      <ul>
+        <li><strong>Degré d'un produit</strong> : $\deg(P \times Q) = \deg(P) + \deg(Q)$ et $\deg(P^r(x)) = r\deg(P)$. En particulier, si $a \neq 0$ alors $\deg((ax+b)^r) = r$.</li>
+        <li><strong>Degré d'une somme</strong> : si $\deg(P) \neq \deg(Q)$ alors $\deg(P+Q) = \max\big(\deg(P), \deg(Q)\big)$. Par contre, si $\deg(P) = \deg(Q)$ alors il n'y a pas de règle : il faut revenir à la recherche du terme de plus haut degré.</li>
+      </ul>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 3</span></div>
+        <p>On appelle $\mathbb{R}_n[x]$ l'ensemble des polynômes de degré $\le n$. Ainsi</p>
+        \[\mathbb{R}_n[x] = \{ P \in \mathbb{R}[x] \ \text{tq} \ \deg(P) \le n \} = \{ P(x) = a_0 + a_1 x + a_2 x^2 + \cdots + a_n x^n \ \text{où} \ (a_0, a_1, \dots, a_n) \in \mathbb{R}^{n+1} \}\]
+      </div>
+    </div>
+
+    <div class="math-subsection-title">Récapitulatif des équivalences à connaître</div>
+    <div class="math-table-wrap">
+      <table class="math-table">
+        <thead>
+          <tr><th>Énoncé</th><th>Traduction</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="left">$P \in \mathbb{R}_n[x]$</td>
+            <td class="left">$\Leftrightarrow \ \deg(P) \le n$</td>
+          </tr>
+          <tr>
+            <td class="left"></td>
+            <td class="left">$\Leftrightarrow \ \exists (a_0,\dots,a_n) \in \mathbb{R}^{n+1} \ \text{tq} \ P(x) = a_n x^n + \cdots + a_1 x + a_0 = \sum_{k=0}^n a_k x^k$</td>
+          </tr>
+          <tr>
+            <td class="left"></td>
+            <td class="left">$\Leftrightarrow \ P(x) = a_n x^n + \underbrace{\cdots}_{\text{termes de deg} \le n-1}$</td>
+          </tr>
+          <tr>
+            <td class="left">$P$ polynôme unitaire de degré $n$</td>
+            <td class="left">$\Leftrightarrow \ P(x) = 1.x^n + \underbrace{\cdots}_{\text{termes de deg} \le n-1}$</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE II — POLYNÔME DÉRIVÉE
+════════════════════════════════════════ -->
+<div class="math-part" id="part2">
+  <div class="math-part-header">
+    <div class="math-part-num">II</div>
+    <div class="math-part-title">Polynôme dérivée</div>
+  </div>
+
+  <div class="math-section" id="s2-1">
+    <div class="math-section-title">1 — Dérivées successives d'un polynôme</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span></div>
+        <ul>
+          <li>On appelle <strong>polynôme dérivé</strong> de $P$ le polynôme $P'(x)$ obtenu en calculant la dérivée de $P(x)$. Ainsi, si $P(x) = \sum_{k=0}^n a_k x^k$ alors $P'(x) = \sum_{k=0}^n k\,a_k x^{k-1} = \sum_{i=0}^{n-1}(i+1)a_{i+1}x^i$</li>
+          <li>Pour $k \in \mathbb{N}^*$, on appelle <strong>dérivée $k^{\text{ième}}$</strong> de $P$ le polynôme obtenu en dérivant $k$ fois le polynôme $P$. On le note $P^{(k)}$.</li>
+          <li>Par convention, on pose $P^{(0)} = P$.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <div class="prop-title">Dérivées successives et degré</div>
+      <p>Soit $P \in \mathbb{R}[x]$ avec $\deg(P) = n \ge 1$.</p>
+      <ul>
+        <li>$\deg[P'] = n-1$, $\deg[P^{(2)}] = n-2$ et pour tout $j \in \llbracket 0,n\rrbracket$, $\ \deg[P^{(j)}] = n-j$</li>
+        <li>$P^{(j)} = 0_{\mathbb{R}[x]}$ pour tout $j > n$</li>
+        <li>$P^{(n)} = a_n.n!$ où $a_n$ est le coefficient dominant de $P$</li>
+      </ul>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 2</div>
+      <div class="prop-title">Règles de calculs</div>
+      <ul>
+        <li>Un polynôme admet une dérivée à n'importe quel ordre.</li>
+        <li>Les règles de calcul d'une dérivée $k^{\text{ième}}$ sont les mêmes que celles utilisées pour les fonctions. En particulier, $\forall k \in \mathbb{N}$, $\ (P+Q)^{(k)} = P^{(k)} + Q^{(k)}$ et $\forall \lambda \in \mathbb{R}$, $\ (\lambda P)^{(k)} = \lambda P^{(k)}$</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="math-section" id="s2-2">
+    <div class="math-section-title">2 — Formule de Taylor</div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 3</div>
+      <div class="thm-title">Formule de Taylor pour les polynômes</div>
+      <p>Soit $P$ un polynôme de degré $n \in \mathbb{N}$ et soit $\alpha \in \mathbb{R}$. On a la formule suivante, appelée formule de Taylor :</p>
+      \[P(x) = P(\alpha) + P'(\alpha)(x-\alpha) + \frac{P^{(2)}(\alpha)}{2!}(x-\alpha)^2 + \cdots + \frac{P^{(n)}(\alpha)}{n!}(x-\alpha)^n \quad \text{càd} \quad P(x) = \sum_{k=0}^n \frac{P^{(k)}(\alpha)}{k!}(x-\alpha)^k\]
+    </div>
+  </div>
+
+  <div class="math-section" id="s2-3">
+    <div class="math-section-title">3 — Décomposition dans une base</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 2</span></div>
+        <p>On dit qu'une famille $(R_0, R_1, R_2, \dots, R_n)$ est une <strong>base</strong> de $\mathbb{R}_n[x]$ si tout polynôme de $\mathbb{R}_n[x]$ peut s'écrire de manière unique sous la forme :</p>
+        \[P(x) = c_0 R_0 + c_1 R_1 + \cdots + c_n R_n\]
+        <p>Le $n$-uplet $(c_0, \dots, c_n)$ s'appelle <strong>coordonnées</strong> de $P$ dans la base $(R_0, R_1, \dots, R_n)$.</p>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 4</div>
+      <p>Soit $n \in \mathbb{N}$ et $a \in \mathbb{R}$. La famille $\big((x-a)^0, (x-a)^1, (x-a)^2, \dots, (x-a)^n\big)$ est une base de $\mathbb{R}_n[x]$.</p>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 3</span></div>
+        <p>On dit qu'une famille $(P_0, P_1, P_2, \dots, P_n)$ est constituée de polynômes de <strong>degrés échelonnés</strong> si $\forall k \in \llbracket 0,n \rrbracket$, $\ \deg(P_k) = k$.</p>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 5</div>
+      <p>Toute famille $(P_0, P_1, P_2, \dots, P_n)$ constituée de $n+1$ polynômes de degrés échelonnés de $0$ à $n$ est une base de $\mathbb{R}_n[x]$.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE III — DIVISION EUCLIDIENNE
+════════════════════════════════════════ -->
+<div class="math-part" id="part3">
+  <div class="math-part-header">
+    <div class="math-part-num">III</div>
+    <div class="math-part-title">Division euclidienne</div>
+  </div>
+
+  <div class="math-section" id="s3-1">
+    <div class="thm-card">
+      <div class="thm-label">Proposition 1</div>
+      <div class="thm-title">Théorème de la division euclidienne</div>
+      <ul>
+        <li>Soit $A \in \mathbb{R}[x]$ et $B \in \mathbb{R}[x]$ avec $B \neq 0_{\mathbb{R}[x]}$. Il existe un unique couple $(Q,R) \in \mathbb{R}[x]^2$ tels que :</li>
+      </ul>
+      \[A(x) = B(x)Q(x) + R(x) \quad \text{avec} \quad \deg(R) < \deg(B) \qquad (*)\]
+      <p>$Q$ et $R$ s'appellent respectivement le <strong>quotient</strong> et le <strong>reste</strong> de la division euclidienne de $A$ par $B$.</p>
+      <p>Lorsque $R(x) = 0_{\mathbb{R}[x]}$, on dit que $B(x)$ <strong>divise</strong> $A(x)$.</p>
+    </div>
+
+    <div class="method-box">
+      <strong style="color:var(--indigo-dark);">Calcul de reste sans faire toute la division —</strong> on écrira le diviseur $B$ sous forme de produit, puis on utilisera les racines de $B$ pour créer un système ayant pour inconnues les coefficients du reste :
+      <ol>
+        <li>Écrire le théorème de division euclidienne. À l'aide de la condition sur les degrés, donner l'allure du reste ($=$ les inconnues à trouver).</li>
+        <li>Choisir des valeurs de « $x$ » particulières pour créer autant d'équations que d'inconnues.</li>
+        <li>Résoudre le système obtenu pour trouver les coefficients du reste.</li>
+      </ol>
+      <em>(Si une racine de $B$ est double, on dérive l'égalité de la division euclidienne pour créer une deuxième équation.)</em>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE IV — RACINES ET FACTORISATION D'UN POLYNÔME
+════════════════════════════════════════ -->
+<div class="math-part" id="part4">
+  <div class="math-part-header">
+    <div class="math-part-num">IV</div>
+    <div class="math-part-title">Racines d'un polynôme, factorisation d'un polynôme</div>
+  </div>
+
+  <div class="math-section" id="s4-1">
+    <div class="math-section-title">1 — Polynôme du second degré</div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 1</div>
+      <div class="thm-title">Factorisation du polynôme du second degré</div>
+      <p>On considère un polynôme $P(x) = ax^2 + bx + c$ (avec $a \neq 0$ donc $\deg(P) = 2$). On note $\Delta$ le discriminant de l'équation $P(x) = 0$.</p>
+      <ul>
+        <li>Si $\Delta \ge 0$ alors l'équation $P(x)=0$ admet deux solutions réelles $x_1$ et $x_2$ (éventuellement confondues). Le polynôme $P(x)$ se factorise alors en :</li>
+      </ul>
+      \[P(x) = a(x-x_1)(x-x_2)\]
+      <ul>
+        <li>Si $\Delta < 0$ alors l'équation $P(x) = 0$ n'a pas de solution dans $\mathbb{R}$, le polynôme $P$ ne se factorise pas.</li>
+      </ul>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 2</div>
+      <div class="prop-title">Somme et produit de racines</div>
+      <p>Soient $x_1$ et $x_2$ les solutions de l'équation $(E)$ : $ax^2 + bx + c = 0$. On a les formules suivantes :</p>
+      \[x_1 \times x_2 = \frac{c}{a} \qquad \text{et} \qquad x_1 + x_2 = -\frac{b}{a}\]
+    </div>
+
+    <div class="remark">
+      Cette formule sert à trouver l'autre racine lorsque l'une des deux est évidente.
+    </div>
+  </div>
+
+  <div class="math-section" id="s4-2">
+    <div class="math-section-title">2 — Racine d'un polynôme</div>
+    <p>Dans tout ce paragraphe, $P$ est un polynôme non nul cad $P \in \mathbb{R}[x]$ avec $P \neq 0_{\mathbb{R}[x]}$.</p>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span></div>
+        <p>On dit qu'un réel $\alpha$ est une <strong>racine</strong> de $P$ ssi $P(\alpha) = 0$.</p>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 3</div>
+      <p>Soit $P \in \mathbb{R}[x]$, $\alpha_1, \alpha_2, \dots, \alpha_r$ des réels 2 à 2 distincts.</p>
+      <ol>
+        <li>$\alpha_1$ est racine de $P$ $\Leftrightarrow$ $P(\alpha_1) = 0$ $\Leftrightarrow$ $(x-\alpha_1)$ divise $P$ $\Leftrightarrow$ $\exists Q \in \mathbb{R}[x]$ tq $P(x) = (x-\alpha_1)Q(x)$</li>
+        <li>$\alpha_1, \alpha_2, \dots, \alpha_r$ racines deux à deux distinctes de $P$ $\Leftrightarrow$ $\exists Q \in \mathbb{R}[x]$ tq $P(x) = \displaystyle\prod_{i=1}^{r}(x-\alpha_i)\,Q(x)$</li>
+      </ol>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 2</span></div>
+        <p>On dit qu'un réel $\alpha$ est une <strong>racine de $P$ de multiplicité $k$</strong> (ou racine de $P$ d'ordre $k$), avec $k \in \mathbb{N}^*$, ssi il existe un polynôme $Q \in \mathbb{R}[x]$ tel que $P(x) = (x-\alpha)^k Q(x)$ avec $Q(\alpha) \neq 0$.</p>
+      </div>
+    </div>
+
+    <div class="remark">
+      La multiplicité de $\alpha$ est la plus grande puissance de $(x-\alpha)$ que l'on peut mettre en facteur dans $P$.<br>
+      Lorsque $k=1$, on dit que $\alpha$ est racine simple ; lorsque $k=2$, on dit que $\alpha$ est une racine double.<br>
+      Dans un polynôme non nul de degré $n$, la somme des multiplicités des racines est $\le n$.
+    </div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 4</div>
+      <div class="thm-title">Critère pour trouver la multiplicité d'une racine</div>
+      <p>Soit $P \in \mathbb{R}[x]$ avec $P \neq 0_{\mathbb{R}[x]}$. Soit $\alpha \in \mathbb{R}$ tel que $P(\alpha) = 0$ ($\alpha$ est donc une racine de $P$).</p>
+      <ol>
+        <li>Si on a : $P(\alpha) = P'(\alpha) = P^{(2)}(\alpha) = \cdots = P^{(r-1)}(\alpha) = 0$ (avec $r \in \mathbb{N}^*$ fixé) alors $(x-\alpha)^r$ divise $P$ donc $\alpha$ est une racine de $P$ de multiplicité au moins $r$ donc $P(x) = (x-\alpha)^r Q(x)$.</li>
+        <li>$\alpha$ est une racine d'ordre $r \in \mathbb{N}$ de $P$ ssi $P(\alpha) = P'(\alpha) = P^{(2)}(\alpha) = \cdots = P^{(r-1)}(\alpha) = 0$ et $P^{(r)}(\alpha) \neq 0$</li>
+      </ol>
+    </div>
+
+    <div class="remark">
+      Ceci est une bonne méthode pour trouver la multiplicité d'une racine $\alpha$ de $P$ : c'est le premier entier $r$ tel que $P^{(r)}(\alpha) \neq 0$ (et on écrit $r$ égalités à $0$ : $P^{(k)}(\alpha) = 0$ pour $0 \le k \le r-1$).
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE V — FACTORISATION DES POLYNÔMES
+════════════════════════════════════════ -->
+<div class="math-part" id="part5">
+  <div class="math-part-header">
+    <div class="math-part-num">V</div>
+    <div class="math-part-title">Factorisation des polynômes</div>
+  </div>
+
+  <div class="math-section" id="s5-1">
+    <div class="math-section-title">1 — Factorisation des polynômes</div>
+    <p>Factoriser un polynôme $P$ dans $\mathbb{R}[x]$ c'est l'écrire sous forme d'un produit de termes de degré 1 ou de degré 2 sans racine réelle, c'est à dire avec $\Delta < 0$.</p>
+
+    <div class="method-box">
+      <ul>
+        <li>Chercher une racine et sa multiplicité pour mettre en facteur le terme correspondant.</li>
+        <li>Recommencer sur la partie restante que l'on peut déterminer grâce à la division euclidienne.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</div><!-- fin .content -->
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-logo">Chapitre 9 : Polynômes</div>
+</footer>
+
+<button class="back-to-top" id="btt" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Retour en haut">↑</button>
+
+<script>
+  const btt = document.getElementById('btt');
+  window.addEventListener('scroll', () => {
+    btt.classList.toggle('visible', window.scrollY > 400);
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Maths Chapitre 17 : Couples de variables aléatoires</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false}]});"></script>
+<style>
+  :root {
+    /* ── Palette "Encre indigo & Or bruni" ── */
+    --cream: #FAF5EA;
+    --dark: #1C1233;
+    --teal: #6E4FA0;        /* violet améthyste — accent principal */
+    --teal-dark: #170F2C;   /* indigo quasi-noir — nav / hero / thm */
+    --teal-mid: #9E86C9;    /* violet moyen */
+    --teal-light: #EFE7F8;  /* lavande pâle — fonds des cartes prop */
+    --teal-border: #CBB9EA; /* bordure lavande */
+    --mint: #C99CE8;        /* orchidée clair — même famille violette, contrastée sur fond sombre */
+    --muted: #6A5E82;
+    --accent: #6E4FA0;
+    --accent-soft: #6E4FA022;
+    --gold-soft: #C99CE822;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--dark); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid rgba(217,169,78,0.25);
+    background: var(--teal-dark); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--mint); cursor: pointer; letter-spacing: 0.02em; }
+  .nav-logo a { color: inherit; text-decoration: none; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(250,245,234,0.5); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: inherit; text-decoration: none; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb a:hover span, .breadcrumb span:hover { color: var(--mint); }
+  .breadcrumb .sep { color: rgba(250,245,234,0.25); }
+  .breadcrumb .current { color: #FAF5EA; cursor: default; }
+
+  /* ─── HERO ─── */
+  .ch-hero {
+    background: var(--teal-dark);
+    padding: 5rem 1rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ch-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C99CE8' fill-opacity='0.16'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--mint); margin-bottom: 1.5rem; opacity: 0.9; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.7rem, 4.2vw, 3.4rem); color: var(--cream); font-weight: 900; max-width: 1100px; margin: 0 auto 1.5rem; line-height: 1.15; position: relative; z-index: 1; white-space: nowrap; }
+  .ch-hero p { color: rgba(250,245,234,0.5); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  /* ─── TOC ─── */
+  .toc-bar { background: #EFE7F8; padding: 2rem; border-bottom: 1px solid var(--teal-border); }
+  .toc-inner { max-width: 960px; margin: 0 auto; }
+  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
+  .toc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.4rem; list-style: none; }
+  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: #2A1F45; font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
+  .toc-list a:hover { border-color: var(--teal-border); background: white; color: #000; }
+  .toc-num { font-family: "DM Mono", monospace; font-size: 0.65rem; color: var(--teal); flex-shrink: 0; margin-top: 0.15rem; }
+
+  /* ─── CONTENT ─── */
+  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 3rem; }
+
+  /* PART */
+  .math-part { margin-bottom: 5rem; }
+  .math-part:last-of-type { margin-bottom: 0; }
+  .math-part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--teal); }
+  .math-part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: var(--teal-border); line-height: 1; flex-shrink: 0; }
+  .math-part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--dark); line-height: 1.25; }
+
+  /* SECTION */
+  .math-section { margin-bottom: 3.5rem; }
+  .math-section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--teal-dark); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--teal); scroll-margin-top: 2rem; }
+  .math-subsection-title { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--teal); margin: 2rem 0 0.75rem; }
+
+  /* TEXT */
+  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: #241A3D; line-height: 1.85; font-weight: 300; }
+  .content strong { color: var(--dark); font-weight: 600; }
+
+  /* DÉFINITION CARD */
+  .def-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(110,79,160,0.12), 0 0 0 1px rgba(110,79,160,0.14);
+    display: flex;
+    margin: 1.4rem 0;
+  }
+  .def-accent-bar {
+    width: 5px;
+    background: linear-gradient(180deg, #9E86C9 0%, #170F2C 100%);
+    flex-shrink: 0;
+    border-radius: 10px 0 0 10px;
+  }
+  .def-body { padding: 1.2rem 1.5rem; flex: 1; }
+  .def-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.65rem; }
+  .def-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--teal); font-weight: 500; }
+  .def-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--teal-dark); }
+  .def-body p { margin-bottom: 0.5rem; font-size: 0.93rem; line-height: 1.75; }
+  .def-body p:last-child { margin-bottom: 0; }
+
+  /* PROPRIÉTÉ CARD */
+  .prop-card {
+    background: var(--teal-light);
+    border-radius: 8px;
+    border: 1px solid var(--teal-border);
+    border-left: 4px solid var(--teal);
+    padding: 1.2rem 1.5rem;
+    margin: 1.4rem 0;
+  }
+  .prop-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--teal-dark); font-weight: 700; margin-bottom: 0.6rem; }
+  .prop-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--teal-dark); margin-bottom: 0.7rem; }
+  .prop-card p { margin-bottom: 0.5rem; font-size: 0.93rem; color: var(--teal-dark); line-height: 1.75; }
+  .prop-card p:last-child { margin-bottom: 0; }
+  .prop-card ol, .prop-card ul { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .prop-card ol li, .prop-card ul li { font-size: 0.93rem; color: var(--teal-dark); line-height: 1.8; margin-bottom: 0.35rem; }
+
+  /* THÉORÈME CARD */
+  .thm-card {
+    background: var(--teal-dark);
+    color: var(--cream);
+    border-radius: 8px;
+    padding: 1.5rem 1.75rem;
+    margin: 1.4rem 0;
+  }
+  .thm-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--mint); margin-bottom: 0.5rem; }
+  .thm-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--cream); margin-bottom: 0.75rem; }
+  .thm-card p { color: rgba(250,245,234,0.88); font-size: 0.93rem; margin-bottom: 0.5rem; line-height: 1.75; }
+  .thm-card p:last-child { margin-bottom: 0; }
+
+  /* MÉTHODE / DÉMONSTRATION CARD */
+  .meth-card {
+    background: white;
+    border: 2px solid var(--teal);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.4rem 0;
+  }
+  .meth-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--teal); font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+  .meth-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--teal-dark); margin-bottom: 0.7rem; }
+  .meth-card p { font-size: 0.93rem; line-height: 1.75; margin-bottom: 0.5rem; }
+  .meth-card p:last-child { margin-bottom: 0; }
+  .meth-card ul, .meth-card ol { padding-left: 1.4rem; margin: 0.3rem 0 0.5rem; }
+  .meth-card li { font-size: 0.93rem; line-height: 1.8; margin-bottom: 0.3rem; }
+
+  /* REMARQUE */
+  .remark { background: white; border-left: 3px solid var(--teal-border); padding: 1rem 1.4rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; font-size: 0.9rem; color: #291F45; line-height: 1.7; font-style: italic; }
+  .remark::before { content: 'Remarque — '; font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--teal); display: block; margin-bottom: 0.3rem; }
+
+  /* FORMULE DISPLAY */
+  .formula-block {
+    background: white;
+    border: 1px solid var(--teal-border);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.2rem 0;
+    text-align: center;
+    overflow-x: auto;
+  }
+  .formula-block .katex-display { margin: 0; }
+  .formula-block .katex { font-size: 1.05em; }
+
+  /* TABLE */
+  .math-table-wrap { overflow-x: auto; margin: 1.5rem 0; border-radius: 8px; border: 1px solid var(--teal-border); box-shadow: 0 2px 8px rgba(110,79,160,0.10); }
+  .math-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .math-table th { background: var(--teal-dark); color: var(--cream); font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.75rem 1rem; text-align: center; font-weight: 500; border: 1px solid rgba(255,255,255,0.1); }
+  .math-table td { padding: 0.65rem 1rem; text-align: center; border: 1px solid var(--teal-light); color: #241A3D; vertical-align: middle; background: white; line-height: 1.6; }
+  .math-table tr:nth-child(even) td { background: #FAF5EA; }
+  .math-table tr:hover td { background: var(--teal-light); }
+  .math-table td.left { text-align: left; }
+  .math-table .katex { font-size: 0.95em; }
+
+  /* KEY FACT */
+  .math-key { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 0.6rem; padding: 0.85rem 1.1rem; background: white; border: 1px solid var(--teal-light); border-radius: 6px; }
+  .math-key-bullet { width: 6px; height: 6px; background: var(--mint); border-radius: 50%; flex-shrink: 0; margin-top: 0.55rem; }
+  .math-key > div { font-size: 0.91rem; color: #241A3D; line-height: 1.75; font-weight: 300; }
+
+  /* INLINE MATH */
+  .katex { font-size: 1em; }
+  .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.2rem 0; }
+
+  /* DEUX / TROIS COLONNES */
+  .two-col-formulas { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
+  .two-col-formulas .formula-block { margin: 0; }
+  .three-col-formulas { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
+  .three-col-formulas .formula-block { margin: 0; }
+
+  /* HIGHLIGHT BOX */
+  .math-highlight { background: var(--teal-light); border-left: 4px solid var(--mint); padding: 1.25rem 1.75rem; margin: 1.5rem 0; color: var(--teal-dark); font-size: 0.93rem; line-height: 1.75; border-radius: 0 6px 6px 0; }
+
+  /* FOOTER */
+  .site-footer {
+    background: var(--teal-dark);
+    border-top: 1px solid rgba(217,169,78,0.3);
+    padding: 2.5rem 2rem;
+    text-align: center;
+  }
+  .site-footer .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--mint);
+    letter-spacing: 0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+  /* BACK TO TOP */
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--teal); color: var(--cream); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 4px 14px rgba(23,15,44,0.45); opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 200; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+  .back-to-top:hover { background: var(--teal-mid); }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--teal-border); border-radius: 3px; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .ch-hero h1 { white-space: normal; font-size: clamp(1.5rem, 7vw, 2.2rem); }
+    .two-col-formulas { grid-template-columns: 1fr; }
+    .three-col-formulas { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    @page { size: A4; margin: 15mm 14mm 15mm 14mm; }
+    nav, .back-to-top, .toc-bar, .site-footer { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    html, body { background: white !important; color: #000 !important; font-size: 10pt; width: 100% !important; }
+    .ch-hero { background: #170F2C !important; padding: 0.9rem 1rem 0.7rem !important; }
+    .ch-hero::before { display: none !important; }
+    .ch-hero h1 { font-size: 16pt !important; color: #fff !important; margin-bottom: 0.3rem !important; }
+    .ch-hero .chap-label { font-size: 7pt !important; color: #C99CE8 !important; margin-bottom: 0.4rem !important; }
+    .ch-hero p { font-size: 7pt !important; color: #C99CE8 !important; margin: 0 !important; }
+    .content { max-width: 100% !important; padding: 0.6rem 0 !important; margin: 0 !important; }
+    .content p { font-size: 9pt !important; line-height: 1.5 !important; margin-bottom: 0.45rem !important; color: #000 !important; }
+    .math-part { margin-bottom: 0.8rem; page-break-inside: auto; }
+    .math-part-header { page-break-after: avoid; padding-bottom: 0.6rem !important; margin-bottom: 1rem !important; border-bottom: 2pt solid #6E4FA0 !important; }
+    .math-part-num { font-size: 2rem !important; color: #CBB9EA !important; }
+    .math-part-title { font-size: 13pt !important; }
+    .math-section { page-break-inside: auto; margin-bottom: 0.8rem; }
+    .math-section-title { page-break-after: avoid; font-size: 11pt !important; padding-left: 0.7rem !important; border-left: 2.5pt solid #6E4FA0 !important; margin-bottom: 0.55rem !important; color: #170F2C !important; }
+    .math-subsection-title { page-break-after: avoid; font-size: 7pt !important; margin: 0.65rem 0 0.35rem !important; color: #6E4FA0 !important; }
+    .def-card { page-break-inside: avoid; box-shadow: none !important; border: 1pt solid #CBB9EA !important; display: flex !important; border-radius: 0 !important; margin: 0.55rem 0 !important; }
+    .def-accent-bar { background: #6E4FA0 !important; width: 4px !important; border-radius: 0 !important; }
+    .def-body { padding: 0.7rem 1rem !important; }
+    .def-body p { font-size: 8.5pt !important; line-height: 1.5 !important; color: #000 !important; }
+    .prop-card { page-break-inside: avoid; background: #EFE7F8 !important; border: 1pt solid #CBB9EA !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .prop-card p, .prop-card li { font-size: 8.5pt !important; line-height: 1.5 !important; }
+    .thm-card { page-break-inside: avoid; background: #170F2C !important; padding: 0.7rem 1rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .thm-label { font-size: 6pt !important; color: #C99CE8 !important; }
+    .thm-title { font-size: 9.5pt !important; color: #fff !important; }
+    .thm-card p { font-size: 8.5pt !important; line-height: 1.5 !important; color: #F0EAF9 !important; }
+    .meth-card { page-break-inside: avoid; border: 1.5pt solid #6E4FA0 !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .remark { page-break-inside: avoid; padding: 0.55rem 0.8rem !important; margin: 0.5rem 0 !important; font-size: 8.5pt !important; border-radius: 0 !important; }
+    .formula-block { page-break-inside: avoid; padding: 0.6rem 0.8rem !important; margin: 0.5rem 0 !important; border-radius: 0 !important; }
+    .math-table th { background: #170F2C !important; color: #C99CE8 !important; font-size: 6.5pt !important; padding: 0.4rem 0.6rem !important; }
+    .math-table td { font-size: 8pt !important; padding: 0.4rem 0.6rem !important; border: 0.5pt solid #EFE7F8 !important; }
+    .two-col-formulas, .three-col-formulas { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 0.5rem !important; margin: 0.45rem 0 !important; }
+    .katex { font-size: 0.82em !important; }
+    .katex-display { margin: 0.15rem 0 !important; overflow: visible !important; }
+    .katex-html { white-space: normal !important; }
+    .katex .base { display: inline !important; white-space: nowrap !important; }
+    .def-body p, .prop-card p, .thm-card p, .remark, .math-key > div, .content p { overflow: visible !important; word-break: break-word !important; }
+    .formula-block .katex-display { overflow-x: visible !important; overflow-y: visible !important; text-align: center !important; }
+    .math-table td, .math-table th { overflow: visible !important; word-break: break-word !important; }
+    .katex *, .katex-html * { position: static !important; top: auto !important; bottom: auto !important; left: auto !important; right: auto !important; }
+    .math-table .katex { font-size: 0.75em !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left"><div class="nav-logo"><a href="../../index.html">ECG Prépa</a></div></div>
+  <div class="breadcrumb">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">/</span>
+    <a href="index.html"><span>Mathématiques</span></a>
+    <span class="sep">/</span>
+    <span class="current">Chapitre 17</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="chap-label">&#x2015;&nbsp; Chapitre 17 · Mathématiques approfondies &nbsp;&#x2015;</div>
+  <h1>Couples de variables aléatoires</h1>
+  <p>Loi conjointe · Lois marginales · Indépendance</p>
+</div>
+
+<!-- TOC -->
+<div class="toc-bar">
+  <div class="toc-inner">
+    <div class="toc-title">Table des matières</div>
+    <ul class="toc-list">
+      <li><a href="#part1"><span class="toc-num">I</span> Couples de variables aléatoires</a></li>
+      <li><a href="#part2"><span class="toc-num">II</span> Variables du type Z = φ(X,Y)</a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════════
+     PARTIE I — COUPLES DE VARIABLES ALÉATOIRES
+════════════════════════════════════════ -->
+<div class="math-part" id="part1">
+  <div class="math-part-header">
+    <div class="math-part-num">I</div>
+    <div class="math-part-title">Couples de variables aléatoires</div>
+  </div>
+
+  <p>Dans ce chapitre \((\Omega,\mathcal{A},\mathbb{P})\) est un espace probabilisé, \(X\) et \(Y\) sont deux variables aléatoires discrètes.</p>
+
+  <!-- SECTION 1 : Loi d'un couple -->
+  <div class="math-section" id="s1-1">
+    <div class="math-section-title">1 — Loi d'un couple</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span><span class="def-name">Loi conjointe</span></div>
+        <p>On appelle <strong>loi du couple</strong> \((X,Y)\), appelée aussi <strong>loi conjointe</strong>, la donnée de :</p>
+        <div class="formula-block">\[X(\Omega)\ ,\ Y(\Omega)\ ,\quad \forall i \in X(\Omega),\ \forall j \in Y(\Omega),\quad \mathbb{P}\big[(X=i)\cap(Y=j)\big] = \mathbb{P}(X=i,Y=j)\]</div>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <p>Soient \(X\) et \(Y\) deux variables aléatoires discrètes, alors</p>
+      <div class="formula-block">\[\sum_{i\in X(\Omega)}\ \sum_{j\in Y(\Omega)} \mathbb{P}(X=i \cap Y=j) = 1\]</div>
+    </div>
+
+    <div class="remark">Ceci permet de vérifier qu'on ne s'est pas trompé en cherchant la loi du couple. Si \((p_{i,j})_{(i,j)\in I\times J}\) est une famille de réels positifs avec \(\displaystyle\sum_{(i,j)\in I\times J} p_{i,j}=1\), alors il existe deux variables aléatoires \(X\) et \(Y\) telles que \(X(\Omega)=I\), \(Y(\Omega)=J\) et \(\mathbb{P}((X=i)\cap(Y=j))=p_{i,j}\).</div>
+  </div>
+
+  <!-- SECTION 2 : Lois marginales, lois conditionnelles -->
+  <div class="math-section" id="s1-2">
+    <div class="math-section-title">2 — Lois marginales, lois conditionnelles</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 2</span><span class="def-name">Lois marginales</span></div>
+        <p>La loi de \(X\) et la loi de \(Y\) sont appelées <strong>lois marginales</strong> du couple \((X,Y)\).</p>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 2</div>
+      <p>On a les formules suivantes :</p>
+      <ul>
+        <li>\(\displaystyle \forall k \in X(\Omega),\quad \mathbb{P}(X=k) = \sum_{j\in Y(\Omega)} \mathbb{P}\big[(X=k)\cap(Y=j)\big]\)</li>
+        <li>\(\displaystyle \forall k \in Y(\Omega),\quad \mathbb{P}(Y=k) = \sum_{i\in X(\Omega)} \mathbb{P}\big[(X=i)\cap(Y=k)\big]\)</li>
+      </ul>
+    </div>
+
+    <div class="meth-card">
+      <div class="meth-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Démonstration
+      </div>
+      <p>Utiliser la formule des probabilités totales car \(\{(Y=j)\}_{j\in Y(\Omega)}\) est un système complet d'événements.</p>
+    </div>
+
+    <div class="remark">Les formules précédentes permettent de trouver les lois de \(X\) et \(Y\) à partir de la loi de \((X,Y)\) (et c'est parfois plus simple qu'une recherche directe de chacune). Lorsque \(X(\Omega)\) et \(Y(\Omega)\) sont finis, on peut mettre la loi de \((X,Y)\) dans un tableau. On retrouve alors les lois de \(X\) et de \(Y\) dans les marges de ce tableau, d'où le nom de lois marginales.</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 3</span><span class="def-name">Loi conditionnelle</span></div>
+        <p>Soit \(j_0 \in Y(\Omega)\) tel que \(\mathbb{P}(Y=j_0)\neq 0\). On appelle <strong>loi conditionnelle</strong> de \(X\) sachant \((Y=j_0)\) réalisé la loi de la variable aléatoire \(Z\) notée \(Z=X_{|(Y=j_0)}\) définie par :</p>
+        <div class="formula-block">\[Z(\Omega) = X(\Omega)\quad\text{et}\quad \forall i \in X(\Omega),\quad \mathbb{P}(Z=i) = \mathbb{P}_{(Y=j_0)}(X=i) = \frac{\mathbb{P}\big[(X=i)\cap(Y=j_0)\big]}{\mathbb{P}(Y=j_0)}\]</div>
+      </div>
+    </div>
+
+    <div class="remark">On définirait de même, pour \(i_0 \in X(\Omega)\) tel que \(\mathbb{P}(X=i_0)\neq 0\), la variable \(T=Y_{|(X=i_0)}\) en posant : \(\displaystyle\forall j \in Y(\Omega),\ \mathbb{P}(T=j) = \mathbb{P}_{(X=i_0)}(Y=j) = \frac{\mathbb{P}[(X=i_0)\cap(Y=j)]}{\mathbb{P}(X=i_0)}\)</div>
+  </div>
+
+  <!-- SECTION 3 : Indépendance -->
+  <div class="math-section" id="s1-3">
+    <div class="math-section-title">3 — Indépendance de deux variables aléatoires</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 4</span><span class="def-name">Indépendance</span></div>
+        <p>Soient \(X\) et \(Y\) deux variables aléatoires. On dit que \(X\) et \(Y\) sont <strong>indépendantes</strong> ssi</p>
+        <div class="formula-block">\[\forall (i,j) \in X(\Omega)\times Y(\Omega), \quad \mathbb{P}\big[(X=i)\cap(Y=j)\big] = \mathbb{P}(X=i)\times\mathbb{P}(Y=j)\]</div>
+        <p>Ainsi \(X\) et \(Y\) sont indépendantes ssi \(\forall (i,j)\in X(\Omega)\times Y(\Omega)\) les événements \((X=i)\) et \((Y=j)\) sont indépendants.</p>
+      </div>
+    </div>
+
+    <div class="remark">Il existe des situations où l'on peut affirmer sans calcul que deux variables aléatoires sont indépendantes. Par exemple : on lance deux fois un dé et les variables aléatoires désignent les numéros obtenus à chacun des lancers ; ou on réalise deux tirages avec remise dans une urne et les variables aléatoires sont les numéros obtenus.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE II — VARIABLES DU TYPE Z = φ(X,Y)
+════════════════════════════════════════ -->
+<div class="math-part" id="part2">
+  <div class="math-part-header">
+    <div class="math-part-num">II</div>
+    <div class="math-part-title">Variables du type Z = φ(X,Y)</div>
+  </div>
+
+  <!-- SECTION 1 : Cas de la somme -->
+  <div class="math-section" id="s2-1">
+    <div class="math-section-title">1 — Cas de la somme</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <p>Soient \(X\) et \(Y\) deux variables aléatoires discrètes. On pose \(Z=X+Y\). La loi de \(Z=X+Y\) est donnée par :</p>
+      <div class="formula-block">\[\forall k \in Z(\Omega),\quad \mathbb{P}(Z=k) = \sum_{\substack{i\in X(\Omega) \\ \text{et } k-i \in Y(\Omega)}} \mathbb{P}\big[(X=i)\cap(Y=k-i)\big]\]</div>
+    </div>
+
+    <div class="meth-card">
+      <div class="meth-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Démonstration
+      </div>
+      <p>C'est la formule des probabilités totales car \(\{(X=i)\}_{i\in X(\Omega)}\) est un système complet d'événements.</p>
+    </div>
+
+    <div class="remark">Pour déterminer la loi d'une somme, il faut donc connaître celle du couple. On aurait aussi pu écrire une formule avec le système complet d'événements \(\{(Y=j)\}_{j\in Y(\Omega)}\). Lorsqu'on utilise cette formule, on modifie alors les bornes du \(\Sigma\) en utilisant les conditions : \(i\in X(\Omega)\) et \(k-i\in Y(\Omega)\) (si \(k-i \notin Y(\Omega)\) alors \(\mathbb{P}(Y=k-i)=0\)).</div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 2</div>
+      <div class="thm-title">Théorème de stabilité</div>
+      <p>Si \(X \hookrightarrow \mathcal{P}(\lambda)\), \(Y \hookrightarrow \mathcal{P}(\mu)\) avec \(X\) et \(Y\) indépendantes, alors \(X+Y \hookrightarrow \mathcal{P}(\lambda+\mu)\).</p>
+      <p>Si \(X \hookrightarrow \mathcal{B}(n,p)\), \(Y \hookrightarrow \mathcal{B}(m,p)\) avec \(X\) et \(Y\) indépendantes, alors \(X+Y \hookrightarrow \mathcal{B}(n+m,p)\).</p>
+    </div>
+  </div>
+
+  <!-- SECTION 2 : Cas général -->
+  <div class="math-section" id="s2-2">
+    <div class="math-section-title">2 — Cas général Z = φ(X,Y) avec φ quelconque</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span></div>
+        <p>Soient \(X\) et \(Y\) deux variables aléatoires et \(\varphi : X(\Omega)\times Y(\Omega) \to \mathbb{R}\) une fonction. On pose \(Z=\varphi(X,Y)\). \(Z\) est une variable aléatoire dont la loi est donnée par :</p>
+        <div class="formula-block">\[Z(\Omega) = \{\varphi(i,j)\ \text{où}\ i\in X(\Omega),\ j\in Y(\Omega)\}\]</div>
+        <p>et</p>
+        <div class="formula-block">\[\forall k \in Z(\Omega),\quad \mathbb{P}(Z=k) = \sum_{i\in X(\Omega)} \mathbb{P}\big[(X=i)\cap(Z=k)\big] = \sum_{j\in Y(\Omega)} \mathbb{P}\big[(Y=j)\cap(Z=k)\big]\]</div>
+      </div>
+    </div>
+
+    <div class="remark">On a déjà vu le cas de \(\varphi(X,Y)=X+Y\). Pour appliquer cette formule, on exprime \((X=i,Z=k)\) à l'aide du couple \((X,Y)\).</div>
+  </div>
+
+  <!-- SECTION 3 : Espérance -->
+  <div class="math-section" id="s2-3">
+    <div class="math-section-title">3 — Espérance de φ(X,Y)</div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 3</div>
+      <div class="thm-title">Théorème de transfert</div>
+      <p>Soient \(X\) et \(Y\) deux variables aléatoires discrètes et \(\varphi : X(\Omega)\times Y(\Omega) \to \mathbb{R}\) une fonction.</p>
+      <p>\(Z=\varphi(X,Y)\) admet une espérance si et seulement si \(\displaystyle\sum_{(i,j)\in X(\Omega)\times Y(\Omega)} |\varphi(i,j)|\, \mathbb{P}\big[(X=i)\cap(Y=j)\big]\) converge.</p>
+      <p>Dans ce cas on a :</p>
+      <div class="formula-block" style="background:rgba(250,245,234,0.06); border-color: rgba(217,169,78,0.35);">\[\mathbb{E}(Z) = \mathbb{E}[\varphi(X,Y)] = \sum_{(i,j)\in X(\Omega)\times Y(\Omega)} \varphi(i,j)\, \mathbb{P}\big[(X=i)\cap(Y=j)\big]\]</div>
+    </div>
+
+    <div class="remark">La formule précédente permet de calculer \(\mathbb{E}(\varphi(X,Y))\) sans avoir à déterminer la loi de \(\varphi(X,Y)\). C'est l'analogue pour les couples de variables du théorème de transfert calculant \(E[\varphi(X)]\). Lorsque \(X(\Omega)\) et \(Y(\Omega)\) sont finis, pas de problème d'existence.</div>
+
+    <p>En particulier, sous réserve de convergence, on a :</p>
+
+    <div class="math-key"><div class="math-key-bullet"></div><div>\(\displaystyle \mathbb{E}(X+Y) = \sum_{(i,j)\in X(\Omega)\times Y(\Omega)} (i+j)\, \mathbb{P}\big[(X=i)\cap(Y=j)\big]\)</div></div>
+    <div class="math-key"><div class="math-key-bullet"></div><div>\(\displaystyle \mathbb{E}(XY) = \sum_{(i,j)\in X(\Omega)\times Y(\Omega)} ij\, \mathbb{P}\big[(X=i)\cap(Y=j)\big]\)</div></div>
+    <div class="math-key"><div class="math-key-bullet"></div><div>\(\displaystyle \mathbb{E}[\min(X,Y)] = \sum_{(i,j)\in X(\Omega)\times Y(\Omega)} \min(i,j)\, \mathbb{P}\big[(X=i)\cap(Y=j)\big]\)</div></div>
+
+    <div class="prop-card" style="margin-top:1.6rem;">
+      <div class="prop-label">Proposition 4</div>
+      <div class="prop-title">Linéarité de l'espérance</div>
+      <ul>
+        <li>Soient \(X\) et \(Y\) deux variables aléatoires discrètes telles que \(\mathbb{E}(X)\) et \(\mathbb{E}(Y)\) existent. Soit \((a,b)\in\mathbb{R}^2\), alors \(Z=aX+bY\) admet une espérance et \(\mathbb{E}(aX+bY) = a\,\mathbb{E}(X) + b\,\mathbb{E}(Y)\).</li>
+        <li>Soient \(X_1,\dots,X_n\) des variables aléatoires discrètes telles que \(\forall i \in \llbracket 1,n\rrbracket\), \(\mathbb{E}(X_i)\) existe. Pour tous réels \((a_1,\dots,a_n)\), on a : \(\displaystyle\mathbb{E}\Big(\sum_{i=1}^n a_i X_i\Big)\) existe et \(\displaystyle\mathbb{E}\Big(\sum_{i=1}^n a_i X_i\Big) = \sum_{i=1}^n a_i\,\mathbb{E}(X_i)\)</li>
+      </ul>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 5</div>
+      <p>Soient \(X\) et \(Y\) deux variables aléatoires telles que \(\mathbb{E}(X)\), \(\mathbb{E}(Y)\) et \(\mathbb{E}(XY)\) existent.</p>
+      <p>Si \(X\) et \(Y\) sont indépendantes alors \(\mathbb{E}(XY) = \mathbb{E}(X)\,\mathbb{E}(Y)\).</p>
+    </div>
+
+    <div class="meth-card">
+      <div class="meth-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Démonstration
+      </div>
+      <p>Utiliser le théorème de transfert et l'indépendance de \(X\) et \(Y\).</p>
+    </div>
+
+    <div class="remark">Cette propriété est <strong>fausse</strong> si \(X\) et \(Y\) ne sont pas indépendantes !</div>
+  </div>
+</div>
+
+</div><!-- fin .content -->
+
+<footer class="site-footer">
+  <div class="footer-logo">Chapitre 17 : Couples de variables aléatoires</div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut de page">↑</button>
+
+<script>
+  document.querySelectorAll('.toc-list a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Costa Rica : l'ère Fernández</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #1a6b3a;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #1a6b3a; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #c8102e; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #1a6b3a; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #1a6b3a; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #1a6b3a; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#1a6b3a; border-color:#1a6b3a; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  /* Article styles */
+  .ap-band { background: linear-gradient(90deg, #002B7F, #FFFFFF, #CE1126); text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#002B7F; letter-spacing: 0.25em; font-weight:700; }
+  .ap-back-bar { background: rgba(0,20,10,0.95); padding:12px 60px; border-bottom: 1px solid rgba(26,107,58,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#4dbd74; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative;z-index:1;}
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(26,107,58,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(181,19,31,0.2);  color:#f08080; border:1px solid rgba(181,19,31,0.35); }
+  .ap-tag-navy   { background:rgba(13,27,42,0.6);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(26,107,58,0.25); color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #4dbd74; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(26,107,58,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(77,189,116,0.7); }
+
+  /* Rich article components */
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#4dbd74; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(77,189,116,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#071422,#0d2540); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#004d1a,#0a7a30); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #4dbd74; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(77,189,116,0.06),rgba(77,189,116,0.02)); border-left:3px solid #4dbd74; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(77,189,116,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(77,189,116,0.8); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(0,30,15,0.9),rgba(0,20,10,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(26,107,58,0.3); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#4dbd74; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(26,107,58,0.06); border:1px solid rgba(26,107,58,0.2); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(77,189,116,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#4dbd74; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(77,189,116,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#4dbd74; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(0,30,15,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-es-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-es.html">Espagnol</a>
+    <span class="sep">/</span>
+    <a href="../costa-rica.html">Costa Rica</a>
+    <span class="sep">/</span>
+    <span class="current">Élection 2026</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-es" class="ap-lang-btn" onclick="setLang('es')">🇨🇷 ES</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇨🇷 Élections 2026 au Costa Rica</div>
+<div class="ap-back-bar">
+  <a href="../costa-rica.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+    <div class="ap-hero-img-wrap"><img class="ap-hero-img" src="../images/costa-rica-politique.jpg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+    <!-- SECTION FR -->
+    <div class="ap-fr-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-green">🇨🇷 Costa Rica</span>
+          <span class="ap-tag ap-tag-gold">Politique</span>
+          <span class="ap-tag ap-tag-red">Sécurité</span>
+          <span class="ap-tag ap-tag-navy">Démocratie</span>
+          <span class="ap-tag ap-tag-orange">Narcotrafic</span>
+        </div>
+        <div class="ap-date">Avril 2026 — ECG Prépa · Costa Rica</div>
+        <h1 class="ap-title">Costa Rica 2026 : la fin de l'exception démocratique ?</h1>
+        <p class="ap-intro">Le 1er février 2026, le Costa Rica a élu Laura Fernández Delgado à la présidence dès le premier tour, avec 48,5 % des suffrages. Héritière du populaire sortant Rodrigo Chaves et portée par une promesse de fermeté sécuritaire, cette victoire consacre une rupture historique pour un pays longtemps considéré comme le modèle démocratique d'Amérique centrale.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat green"><span class="ap-stat-num">48,5 %</span><span class="ap-stat-desc">Votes obtenus par<br>Fernández au 1er tour</span></div>
+          <div class="ap-stat"><span class="ap-stat-num">30/57</span><span class="ap-stat-desc">Sièges du PPSO<br>à l'Assemblée</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">+50 %</span><span class="ap-stat-desc">Hausse du taux d'homicides<br>depuis 2022</span></div>
+          <div class="ap-stat red"><span class="ap-stat-num">69 %</span><span class="ap-stat-desc">Participation<br>électorale</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Le contexte : un modèle sous pression</div>
+            <p>Le Costa Rica jouit d'une image internationale d'exception. Seul pays d'Amérique centrale sans armée depuis 1948, doté d'institutions démocratiques stables, d'un indice de développement humain parmi les plus élevés de la région et d'un engagement pionnier pour la biodiversité — plus de 25 % de son territoire est protégé — il fait figure de modèle dans un isthme marqué par l'instabilité.</p>
+            <p>Pourtant, à l'aube de l'élection de 2026, le pays est confronté à une crise sécuritaire sans précédent dans son histoire récente. L'essor du trafic de drogue, lié à la réorganisation des cartels mexicains et colombiens en Amérique centrale, a fait du Costa Rica un pays de transit stratégique. Le taux d'homicides a <strong>bondi de plus de 50 % depuis 2022</strong>, mettant à mal l'image de havre de paix du pays.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Élection</div><div class="ap-fact-val">1er février 2026</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Parti vainqueur</div><div class="ap-fact-val">PPSO (Peuple Souverain)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Investiture</div><div class="ap-fact-val">8 mai 2026</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Statut</div><div class="ap-fact-val">2e femme présidente du C.R.</div></div>
+            </div>
+
+            <div class="ap-sub">La montée du populisme conservateur sous Chaves (2022–2026)</div>
+            <p>La présidence de <strong>Rodrigo Chaves Robles</strong> (2022–2026) a opéré une première rupture politique majeure. Outsider se présentant contre « le système », Chaves a bénéficié de résultats macroéconomiques favorables — baisse de l'inflation, excédent budgétaire primaire maintenu, croissance du PIB autour de 4 % en 2024 — mais a entretenu des relations conflictuelles avec les contre-pouvoirs.</p>
+            <p>Son gouvernement a mené des tensions répétées avec le Tribunal suprême électoral, les médias indépendants et le pouvoir judiciaire. En septembre 2025, le TSE a demandé la levée de l'immunité présidentielle pour permettre des poursuites judiciaires à son encontre. La Constitution lui interdisant de briguer un second mandat consécutif, Chaves a reporté son capital politique sur sa ministre Laura Fernández Delgado.</p>
+
+            <div class="ap-sub">Chronologie : un tournant politique en accéléré</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">2022</div><p class="ap-tl-text">Élection de Rodrigo Chaves. Première victoire d'un outsider anti-système au Costa Rica. Début de la montée de la violence liée aux cartels.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2024</div><p class="ap-tl-text">La Constitution est amendée pour autoriser l'extradition de narcotrafiquants. Chaves propose un référendum sur des réformes clés (« loi Jaguar »). Popularité maintenue malgré les tensions institutionnelles.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Sept. 2025</div><p class="ap-tl-text">Le Tribunal suprême électoral demande la levée de l'immunité présidentielle de Chaves. Lancement officiel de la campagne électorale.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">1er fév. 2026</div><p class="ap-tl-text">Laura Fernández élue présidente dès le premier tour avec 48,5 % des voix. Le PPSO obtient 30 des 57 sièges de l'Assemblée législative.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">8 mai 2026</div><p class="ap-tl-text">Investiture de Fernández. Chaves nommé au gouvernement. Annonce des premières mesures sécuritaires et du chantier de la méga-prison.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">Une élection dominée par la question sécuritaire</div>
+            <p>La campagne de Laura Fernández a été quasi-exclusivement centrée sur la lutte contre l'insécurité. S'inspirant ouvertement du modèle de <strong>Nayib Bukele</strong> au Salvador — dont la politique de mégaprison et d'état d'urgence dans les zones contrôlées par les gangs a fait des émules en Amérique latine —, elle a promis de finaliser la construction d'une méga-prison calquée sur le CECOT salvadorien et de déclarer l'état d'urgence dans les zones gangstérisées.</p>
+            <p>Cette rhétorique sécuritaire s'est imposée dans un contexte de forte anxiété populaire. Avec un taux de participation en hausse à 69 %, l'élection a mobilisé un électorat en quête de résultats concrets, loin des arrangements institutionnels des partis historiques (PLN, PAC) réduits à un rôle marginal.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Candidat</th><th>Parti</th><th>Score</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Laura Fernández</td><td>PPSO</td><td class="ap-cell-bold">48,5 %</td></tr>
+                <tr><td class="ap-cell-bold">Álvaro Ramos Chaves</td><td>PLN</td><td class="ap-cell-bold">33,3 %</td></tr>
+                <tr><td>Autres candidats (×18)</td><td>—</td><td>&lt; 5 % chacun</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">⚠️</div>
+              <div class="ap-info-text"><strong>Un modèle qui fait débat :</strong> le recours au « modèle Bukele » inquiète les organisations de défense des droits humains, qui soulignent les dérives observées au Salvador — détentions arbitraires, surpopulation carcérale, suspensions de garanties constitutionnelles. La question est de savoir si le Costa Rica, avec sa tradition démocratique centenaire, peut importer ces méthodes sans mettre en péril son État de droit.</div>
+            </div>
+
+            <div class="ap-sub">Un paysage politique recomposé</div>
+            <p>La victoire du PPSO s'accompagne d'une recomposition profonde du paysage parlementaire. Avec 30 sièges sur 57, Fernández dispose d'une majorité relative confortable, inédite pour un exécutif qui avait souffert sous Chaves du fractionnement de l'Assemblée. Les partis historiques — le Parti de libération nationale (PLN) fondé en 1951 et le Parti d'action citoyenne (PAC) — sont relégués dans l'opposition.</p>
+            <p>La décision de nommer l'ancien président <strong>Rodrigo Chaves au gouvernement</strong> constitue un signal fort : la continuité politique est assumée, et le capital de popularité de Chaves (encore à 58 % d'approbation en janvier 2026) est mis au service du nouvel exécutif.</p>
+
+            <div class="ap-quote">
+              <p>« Vous pouvez être sûrs que la sécurité restera l'une des principales priorités de ce gouvernement. »</p>
+              <cite>— Laura Fernández Delgado, discours de victoire, 1er février 2026</cite>
+            </div>
+            <div class="ap-quote">
+              <p>« J'ai voté pour elle parce que j'ai peur de sortir le soir dans mon quartier. Ce n'était pas le cas il y a cinq ans. »</p>
+              <cite>— Carlos, commerçant de San José, 44 ans, février 2026</cite>
+            </div>
+
+            <div class="ap-sub">Un modèle économique à consolider</div>
+            <p>Sur le plan économique, le Costa Rica affiche des fondamentaux solides : la croissance du PIB devrait avoisiner 3,6 % en 2026 selon l'OCDE, portée par les exportations de dispositifs médicaux et les services aux entreprises, qui ont supplanté le tourisme et l'agriculture comme premiers postes d'exportation. Les investissements directs étrangers restent à des niveaux élevés, attirés par la stabilité institutionnelle et la qualification de la main-d'œuvre.</p>
+            <p>Cependant, la croissance reste inégalement répartie. Les « zones franches » bénéficient de la dynamique exportatrice, mais l'économie domestique peine à en ressentir les effets. L'inflation, quasi-nulle fin 2025, devrait repartir légèrement à la hausse, et les inégalités sociales demeurent un défi structurel sous-jacent à la crise sécuritaire.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Un modèle démocratique à l'épreuve</div>
+              <p>La victoire de Laura Fernández marque indéniablement un tournant. Longtemps perçu comme l'exception démocratique d'une Amérique centrale tourmentée, le Costa Rica semble désormais rejoindre la tendance régionale au populisme conservateur centré sur la sécurité. L'enjeu des prochaines années sera de mesurer si la promesse sécuritaire peut être tenue sans éroder les contre-pouvoirs qui ont fait la singularité costaricienne — indépendance de la justice, liberté de la presse, neutralité électorale — et sans laquelle la stabilité institutionnelle du pays risquerait de se fragiliser durablement.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-fr-section -->
+
+    <!-- ══ SECTION ES ══ -->
+    <div class="ap-es-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-green">🇨🇷 Costa Rica</span>
+          <span class="ap-tag ap-tag-gold">Política</span>
+          <span class="ap-tag ap-tag-red">Seguridad</span>
+          <span class="ap-tag ap-tag-navy">Democracia</span>
+          <span class="ap-tag ap-tag-orange">Narcotráfico</span>
+        </div>
+        <div class="ap-date">Abril 2026 — ECG Prépa · Costa Rica</div>
+        <h1 class="ap-title">Costa Rica 2026: ¿el fin de la excepción democrática?</h1>
+        <p class="ap-intro">El 1 de febrero de 2026, Costa Rica eligió a Laura Fernández Delgado como presidenta desde la primera vuelta, con el 48,5 % de los votos. Heredera del popular saliente Rodrigo Chaves y impulsada por una promesa de mano dura en seguridad, esta victoria marca una ruptura histórica para un país durante mucho tiempo considerado como el modelo democrático de América Central.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat green"><span class="ap-stat-num">48,5 %</span><span class="ap-stat-desc">Votos obtenidos por<br>Fernández en 1ª vuelta</span></div>
+          <div class="ap-stat"><span class="ap-stat-num">30/57</span><span class="ap-stat-desc">Escaños del PPSO<br>en la Asamblea</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">+50 %</span><span class="ap-stat-desc">Aumento en la tasa<br>de homicidios desde 2022</span></div>
+          <div class="ap-stat red"><span class="ap-stat-num">69 %</span><span class="ap-stat-desc">Participación<br>electoral</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">El contexto: un modelo bajo presión</div>
+            <p>Costa Rica goza de una imagen internacional de excepción. Único país de América Central sin ejército desde 1948, con instituciones democráticas estables, un índice de desarrollo humano de los más altos de la región y un compromiso pionero con la biodiversidad —más del 25 % de su territorio está protegido—, figura como modelo en un istmo marcado por la inestabilidad.</p>
+            <p>Sin embargo, ante las elecciones de 2026, el país enfrenta una crisis de seguridad sin precedentes en su historia reciente. El auge del narcotráfico, vinculado a la reorganización de los cárteles mexicanos y colombianos en América Central, ha convertido a Costa Rica en un país de tránsito estratégico. La tasa de homicidios <strong>aumentó más del 50 % desde 2022</strong>, poniendo en entredicho la imagen de paraíso tranquilo del país.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Elección</div><div class="ap-fact-val">1 de febrero de 2026</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Partido ganador</div><div class="ap-fact-val">PPSO (Pueblo Soberano)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Investidura</div><div class="ap-fact-val">8 de mayo de 2026</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Estatus</div><div class="ap-fact-val">2ª presidenta de C.R.</div></div>
+            </div>
+
+            <div class="ap-sub">El auge del populismo conservador bajo Chaves (2022–2026)</div>
+            <p>La presidencia de <strong>Rodrigo Chaves Robles</strong> (2022–2026) representó la primera ruptura política mayor. Outsider presentándose contra «el sistema», Chaves se benefició de resultados macroeconómicos favorables —baja inflación, superávit fiscal primario, crecimiento del PIB de alrededor del 4 % en 2024—, pero mantuvo relaciones conflictivas con los contrapoderes.</p>
+            <p>Su gobierno generó tensiones repetidas con el Tribunal Supremo Electoral, los medios independientes y el poder judicial. En septiembre de 2025, el TSE solicitó el levantamiento de la inmunidad presidencial para permitir acciones judiciales en su contra. Al no poder presentarse a un segundo mandato consecutivo, Chaves trasladó su capital político a su ministra Laura Fernández Delgado.</p>
+
+            <div class="ap-sub">Cronología: un giro político acelerado</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">2022</div><p class="ap-tl-text">Elección de Rodrigo Chaves. Primera victoria de un outsider antisistema en Costa Rica. Inicio del auge de la violencia vinculada a los cárteles.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2024</div><p class="ap-tl-text">La Constitución se modifica para autorizar la extradición de narcotraficantes. Chaves propone un referéndum sobre reformas clave («ley Jaguar»). Popularidad mantenida a pesar de las tensiones institucionales.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Sept. 2025</div><p class="ap-tl-text">El Tribunal Supremo Electoral solicita el levantamiento de la inmunidad presidencial de Chaves. Inicio oficial de la campaña electoral.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">1 feb. 2026</div><p class="ap-tl-text">Laura Fernández elegida presidenta desde la primera vuelta con el 48,5 % de los votos. El PPSO obtiene 30 de los 57 escaños de la Asamblea.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">8 may. 2026</div><p class="ap-tl-text">Investidura de Fernández. Chaves nombrado en el gobierno. Anuncio de las primeras medidas de seguridad y del proyecto de la megacárcel.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">Unas elecciones dominadas por la cuestión de seguridad</div>
+            <p>La campaña de Laura Fernández giró casi exclusivamente en torno a la lucha contra la inseguridad. Inspirándose abiertamente en el modelo de <strong>Nayib Bukele</strong> en El Salvador —cuya política de megacárcel y estado de excepción en zonas controladas por pandillas ha generado imitadores en América Latina—, prometió completar la construcción de una megacárcel inspirada en el CECOT salvadoreño y declarar el estado de emergencia en las zonas dominadas por bandas.</p>
+            <p>Esta retórica de seguridad se impuso en un contexto de fuerte ansiedad popular. Con una participación en alza del 69 %, las elecciones movilizaron a un electorado en busca de resultados concretos, lejos de los arreglos institucionales de los partidos históricos (PLN, PAC), relegados a un papel marginal.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Candidato</th><th>Partido</th><th>Resultado</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Laura Fernández</td><td>PPSO</td><td class="ap-cell-bold">48,5 %</td></tr>
+                <tr><td class="ap-cell-bold">Álvaro Ramos Chaves</td><td>PLN</td><td class="ap-cell-bold">33,3 %</td></tr>
+                <tr><td>Otros candidatos (×18)</td><td>—</td><td>&lt; 5 % cada uno</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">⚠️</div>
+              <div class="ap-info-text"><strong>Un modelo que genera debate:</strong> la aplicación del «modelo Bukele» preocupa a las organizaciones de derechos humanos, que señalan las derivas observadas en El Salvador —detenciones arbitrarias, hacinamiento carcelario, suspensión de garantías constitucionales—. La pregunta es si Costa Rica, con su tradición democrática centenaria, puede importar estos métodos sin poner en riesgo su Estado de derecho.</div>
+            </div>
+
+            <div class="ap-sub">Un paisaje político recompuesto</div>
+            <p>La victoria del PPSO va acompañada de una recomposición profunda del panorama parlamentario. Con 30 de 57 escaños, Fernández dispone de una mayoría relativa cómoda, inédita para un ejecutivo que bajo Chaves había sufrido la fragmentación de la Asamblea. Los partidos históricos —el PLN fundado en 1951 y el PAC— quedan relegados a la oposición.</p>
+            <p>La decisión de nombrar al expresidente <strong>Rodrigo Chaves en el gobierno</strong> es una señal clara: se asume la continuidad política y el capital de popularidad de Chaves (aún con un 58 % de aprobación en enero de 2026) se pone al servicio del nuevo ejecutivo.</p>
+
+            <div class="ap-quote">
+              <p>« Pueden estar seguros de que la seguridad seguirá siendo una de las principales prioridades de este gobierno. »</p>
+              <cite>— Laura Fernández Delgado, discurso de victoria, 1 de febrero de 2026</cite>
+            </div>
+            <div class="ap-quote">
+              <p>« Voté por ella porque tengo miedo de salir por la noche en mi barrio. Hace cinco años eso no pasaba. »</p>
+              <cite>— Carlos, comerciante de San José, 44 años, febrero de 2026</cite>
+            </div>
+
+            <div class="ap-sub">Un modelo económico por consolidar</div>
+            <p>En materia económica, Costa Rica muestra fundamentos sólidos: el crecimiento del PIB debería rondar el 3,6 % en 2026 según la OCDE, impulsado por las exportaciones de dispositivos médicos y servicios empresariales, que han desplazado al turismo y la agricultura como principales rubros de exportación. La inversión extranjera directa se mantiene en niveles elevados, atraída por la estabilidad institucional y la mano de obra cualificada.</p>
+            <p>Sin embargo, el crecimiento sigue siendo desigual. Las «zonas francas» se benefician de la dinámica exportadora, pero la economía doméstica apenas lo percibe. La inflación, casi nula a finales de 2025, debería repuntar ligeramente, y la desigualdad social sigue siendo un desafío estructural subyacente a la crisis de seguridad.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Un modelo democrático a prueba</div>
+              <p>La victoria de Laura Fernández marca sin duda un punto de inflexión. Considerado durante mucho tiempo como la excepción democrática de una América Central convulsa, Costa Rica parece sumarse ahora a la tendencia regional hacia el populismo conservador centrado en la seguridad. El desafío de los próximos años será evaluar si la promesa de seguridad puede cumplirse sin erosionar los contrapoderes que han definido la singularidad costarricense —independencia judicial, libertad de prensa, neutralidad electoral— y sin los cuales la estabilidad institucional del país podría debilitarse de forma duradera.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-es-section -->
+
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — Costa Rica — Avril 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-es').classList.toggle('active', lang === 'es');
+  const isEs = lang === 'es';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEs ? 'none' : 'block');
+  document.querySelectorAll('.ap-es-section').forEach(el => el.style.display = isEs ? 'block' : 'none');
+  document.getElementById('ap-band').textContent = isEs
+    ? '🇨🇷 COSTA RICA — POLÍTICA — ELECCIONES 2026 — LAURA FERNÁNDEZ 🇨🇷'
+    : '🇨🇷 COSTA RICA — POLITIQUE — ÉLECTIONS 2026 — LAURA FERNÁNDEZ 🇨🇷';
+}
+setLang('fr');
+</script>
+</body>
+</html>

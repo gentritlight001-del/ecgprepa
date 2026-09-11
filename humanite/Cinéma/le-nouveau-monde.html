@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cinéma — Le Nouveau Monde</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0b0d;
+    --surface: #1a1417;
+    --surface2: #20181c;
+    --surface3: #261d22;
+    --border: #33272c;
+    --border-soft: #45333a;
+    --accent: #f0b8d0;
+    --accent-dim: #f0b8d099;
+    --accent-soft: #f0b8d01a;
+    --accent2: #7c9ec9;
+    --accent2-soft: #7c9ec91a;
+    --accent3: #9ecba0;
+    --accent3-soft: #9ecba01a;
+    --accent4: #c8a96e;
+    --accent4-soft: #c8a96e1a;
+    --text: #f0e8ea;
+    --text-dim: #ab999f;
+    --text-faint: #5e4c52;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--accent); cursor: pointer; letter-spacing: 0.02em; }
+  .nav-logo a { color: inherit; text-decoration: none; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .breadcrumb a { color: inherit; text-decoration: none; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb a:hover span, .breadcrumb span:hover { color: var(--accent); }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); cursor: default; }
+
+  /* ─── HERO ─── */
+  .ch-hero {
+    background: var(--surface2);
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+  .ch-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C8A96E' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem; opacity: 0.9; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 4rem); color: var(--text); font-weight: 900; max-width: 900px; margin: 0 auto 1.5rem; line-height: 1.1; position: relative; z-index: 1; }
+  .ch-hero p { color: var(--text-dim); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  /* ─── TOC ─── */
+  .toc-bar { background: var(--surface); padding: 2rem; border-bottom: 1px solid var(--border); }
+  .toc-inner { max-width: 960px; margin: 0 auto; }
+  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 1.2rem; }
+  .toc-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; list-style: none; }
+  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: var(--text); font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
+  .toc-list a:hover { border-color: var(--border-soft); background: var(--surface2); color: var(--accent); }
+  .toc-num { font-family: "DM Mono", monospace; font-size: 0.65rem; color: var(--accent); flex-shrink: 0; margin-top: 0.15rem; }
+
+  /* ─── CONTENT ─── */
+  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 8rem; }
+
+  /* PART */
+  .hgg-part { margin-bottom: 5rem; }
+  .hgg-part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--accent); }
+  .hgg-part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: var(--border-soft); line-height: 1; flex-shrink: 0; }
+  .hgg-part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--text); line-height: 1.25; }
+
+  /* SECTION */
+  .hgg-section { margin-bottom: 3.5rem; }
+  .hgg-section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--accent); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--accent); scroll-margin-top: 2rem; }
+  .hgg-subsection-title { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin: 2rem 0 0.75rem; }
+
+  /* TEXT */
+  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: var(--text); line-height: 1.75; font-weight: 300; }
+  .content strong { color: var(--text); font-weight: 600; }
+  .content em { color: var(--text-dim); }
+
+  /* KEY FACT */
+  .hgg-key-fact { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 0.6rem; padding: 0.85rem 1.1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; }
+  .hgg-key-bullet { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; flex-shrink: 0; margin-top: 0.5rem; }
+  .hgg-key-fact > div { font-size: 0.91rem; color: var(--text); line-height: 1.65; font-weight: 300; }
+
+  /* CONCEPT BOX */
+  .hgg-concept { background: var(--surface2); color: var(--text); padding: 1.75rem; margin: 2rem 0; position: relative; border-radius: 4px; border: 1px solid var(--border); }
+  .hgg-concept::before { content: '→'; position: absolute; top: 1.25rem; right: 1.25rem; color: var(--accent2); font-size: 1.3rem; }
+  .hgg-concept .concept-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent2); margin-bottom: 0.7rem; }
+  .hgg-concept p { color: var(--text-dim); font-size: 0.93rem; margin: 0; }
+  .hgg-concept strong { color: var(--accent2); }
+
+  /* HIGHLIGHT */
+  .hgg-highlight { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 1.25rem 1.75rem; margin: 1.5rem 0; font-style: italic; color: var(--text); font-size: 0.93rem; line-height: 1.7; border-radius: 0 6px 6px 0; }
+
+  /* AUTHOR CARD */
+  .hgg-author { background: var(--surface2); color: var(--text); padding: 1.75rem; margin: 1.2rem 0; position: relative; border-radius: 4px; border-left: 4px solid var(--accent4); border-top: 1px solid var(--border); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .hgg-author::before { content: '✎'; position: absolute; top: 1.25rem; right: 1.25rem; color: var(--accent4); font-size: 1.1rem; opacity: 0.8; }
+  .hgg-author .author-name { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent4); margin-bottom: 0.7rem; font-weight: 700; }
+  .hgg-author p { color: var(--text-dim); font-size: 0.93rem; margin: 0; line-height: 1.7; font-weight: 300; }
+  .hgg-author strong { color: var(--accent4); }
+
+  /* STATS GRID */
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: var(--border); margin: 1.5rem 0; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .hgg-stat-cell { background: var(--surface); padding: 1.3rem; text-align: center; }
+  .hgg-stat-num { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 900; color: var(--accent); display: block; }
+  .hgg-stat-label { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.2rem; font-family: 'DM Mono', monospace; }
+
+  /* BIG QUOTE */
+  .big-quote { background: var(--surface2); color: var(--text); padding: 1.6rem 2rem; margin: 1.5rem 0; border-radius: 8px; text-align: center; position: relative; border: 1px solid var(--border); }
+  .big-quote::before { content: '\201C'; font-family: 'Playfair Display', serif; font-size: 5rem; color: var(--accent); position: absolute; top: -1rem; left: 1.5rem; line-height: 1; opacity: 0.3; }
+  .big-quote blockquote { font-family: 'Playfair Display', serif; font-size: clamp(0.88rem, 1.6vw, 1rem); font-style: italic; line-height: 1.6; color: var(--text); position: relative; z-index: 1; margin-bottom: 0.6rem; }
+  .big-quote cite { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); }
+
+  /* COMPARE BOX */
+  .compare-box { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 1.5rem 0; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+  .compare-side { padding: 1.3rem 1.5rem; }
+  .compare-side h5 { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.7rem; }
+  .compare-side p { font-size: 0.85rem; line-height: 1.65; margin-bottom: 0.5rem; font-weight: 300; color: var(--text-dim); }
+  .compare-side p:last-child { margin-bottom: 0; }
+  .compare-a { background: var(--accent-soft); }
+  .compare-a h5 { color: var(--accent); }
+  .compare-b { background: var(--accent2-soft); }
+  .compare-b h5 { color: var(--accent2); }
+
+  /* TWO COL */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+  .col-card { border-radius: 8px; padding: 1.2rem 1.4rem; border: 1px solid; }
+  .col-card h5 { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.6rem; }
+  .col-card p { margin: 0; font-size: 0.85rem; line-height: 1.6; font-weight: 300; }
+  .col-teal { background: var(--accent-soft); border-color: var(--accent-dim); }
+  .col-teal h5 { color: var(--accent); }
+  .col-teal p { color: var(--text-dim); }
+  .col-cyan { background: var(--accent2-soft); border-color: #c8a96e55; }
+  .col-cyan h5 { color: var(--accent2); }
+  .col-cyan p { color: var(--text-dim); }
+  .col-dark { background: var(--accent4-soft); border-color: #c8a96e55; }
+  .col-dark h5 { color: var(--accent4); }
+  .col-dark p { color: var(--text-dim); }
+  .col-green { background: var(--accent3-soft); border-color: #9ecba055; }
+  .col-green h5 { color: var(--accent3); }
+  .col-green p { color: var(--text-dim); }
+
+  /* DEF CARD */
+  .def-card { background: var(--surface); border-radius: 10px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.25), 0 0 0 1px var(--border); display: flex; margin-bottom: 0.75rem; }
+  .def-accent-bar { width: 5px; background: linear-gradient(180deg, var(--accent) 0%, var(--accent4) 100%); flex-shrink: 0; }
+  .def-body { padding: 1.1rem 1.4rem; flex: 1; }
+  .def-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.65rem; }
+  .def-term { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--accent); }
+  .def-tag { margin-left: auto; font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); padding: 2px 8px; border-radius: 20px; }
+  .def-text { font-size: 0.91rem; color: var(--text-dim); line-height: 1.7; font-weight: 300; margin: 0 !important; }
+  .def-text strong { color: var(--text); font-weight: 600; }
+
+  /* CRISIS CARD (preuve card) */
+  .crisis-card { border-radius: 10px; padding: 1.4rem 1.6rem; margin: 1rem 0; border: 1px solid var(--border); border-left: 4px solid var(--accent); background: var(--surface); }
+  .crisis-date { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.4rem; font-weight: 700; }
+  .crisis-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
+  .crisis-card p { margin: 0 0 0.5rem; font-size: 0.88rem; color: var(--text-dim); line-height: 1.65; font-weight: 300; }
+  .crisis-card p:last-child { margin-bottom: 0; }
+
+  /* PROBLEMATIQUE BANNER */
+  .prob-banner { background: linear-gradient(135deg, var(--surface2) 0%, #150f12 100%); border-radius: 10px; padding: 2rem 2.5rem; margin: 2rem 0; text-align: center; border: 1px solid var(--border); }
+  .prob-banner .prob-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--accent2); margin-bottom: 0.9rem; }
+  .prob-banner p { font-family: 'Playfair Display', serif; font-size: clamp(1rem, 2.5vw, 1.3rem); font-style: italic; color: var(--text); line-height: 1.55; margin: 0; }
+
+  /* TRANSITION */
+  .transition-block { background: var(--accent-soft); border: 1px dashed var(--accent-dim); border-radius: 8px; padding: 1.25rem 1.6rem; margin: 2.5rem 0; }
+  .transition-block .t-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; }
+  .transition-block p { font-style: italic; font-size: 0.92rem; color: var(--text); line-height: 1.65; margin: 0; font-weight: 300; }
+
+  /* STEP BLOCK */
+  .step-block { display: flex; gap: 1rem; margin-bottom: 1.1rem; align-items: flex-start; }
+  .step-num { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 900; color: var(--border-soft); line-height: 1.2; flex-shrink: 0; width: 2rem; text-align: right; }
+  .step-content { flex: 1; font-size: 0.93rem; color: var(--text-dim); line-height: 1.7; font-weight: 300; padding-top: 0.1rem; }
+  .step-content strong { color: var(--text); font-weight: 600; }
+
+  /* MINI CALLOUT */
+  .mini-callout { border-radius: 6px; padding: 0.9rem 1.2rem; margin: 1.2rem 0; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; gap: 0.8rem; }
+  .mini-callout-icon { font-size: 1.1rem; flex-shrink: 0; color: var(--accent); }
+  .mini-callout-text { font-size: 0.9rem; color: var(--text-dim); line-height: 1.6; font-weight: 300; }
+  .mini-callout-text strong { color: var(--text); font-weight: 600; }
+
+  /* INLINE TAG */
+  .tag { display: inline-block; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; background: var(--accent-soft); color: var(--accent); padding: 2px 7px; border-radius: 4px; vertical-align: middle; margin-left: 4px; }
+
+  /* PREUVE STRIP */
+  .preuve-strip { border-top: 1px solid var(--border); margin: 2rem 0 0.5rem; padding-top: 1rem; display: flex; align-items: baseline; gap: 0.8rem; flex-wrap: wrap; }
+  .preuve-strip .ps-num { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--accent); letter-spacing: 0.25em; }
+  .preuve-strip .ps-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--text); }
+  .preuve-strip .ps-sub { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--text-faint); letter-spacing: 0.1em; }
+
+  /* RETENIR BOX */
+  .retenir-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.4rem 1.6rem; margin: 2rem 0; }
+  .retenir-box .rb-label { display: block; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem !important; }
+  .retenir-box .rb-items { display: block; }
+  .retenir-box .rb-item { display: block; font-size: 0.9rem; color: var(--text-dim); line-height: 1.65; font-weight: 300; padding: 0.45rem 0 0.45rem 1.4rem; border-bottom: 1px dashed var(--border); margin: 0 !important; position: relative; }
+  .retenir-box .rb-item:last-child { border-bottom: none; }
+  .retenir-box .rb-item::before { content: '—'; color: var(--accent); position: absolute; left: 0; top: 0.45rem; }
+  .retenir-box .rb-item strong { color: var(--text); }
+
+  /* Neutraliser le margin global sur les <p> dans les boîtes spéciales */
+  .retenir-box p, .transition-block p, .hgg-concept p,
+  .hgg-author p, .crisis-card p, .col-card p { margin-bottom: 0 !important; }
+  .crisis-card p + p { margin-top: 0.5rem; }
+
+  /* FOOTER */
+  .site-footer { background: var(--surface2); border-top: 1px solid var(--border); padding: 2.5rem 2rem; text-align: center; }
+  .site-footer .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--accent); letter-spacing: 0.02em; margin-bottom: 0.4rem; }
+  .site-footer .footer-meta { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-faint); }
+
+  /* BACK TO TOP */
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--accent); color: #26141a; border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 4px 14px rgba(0,0,0,0.5); opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 200; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+  .back-to-top:hover { background: var(--accent2); }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .toc-list { grid-template-columns: 1fr; }
+    .two-col, .three-col, .compare-box { grid-template-columns: 1fr; }
+    .ch-hero { padding: 3rem 1.5rem 2.5rem; }
+  }
+
+  /* ═══════════════════════════════════════════
+     STYLES D'IMPRESSION
+  ═══════════════════════════════════════════ */
+  @media print {
+    @page { size: A4; margin: 18mm 15mm 18mm 15mm; }
+    nav, .back-to-top, .toc-bar, .site-footer { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    html, body { background: white !important; color: #000 !important; font-size: 10pt; }
+    .ch-hero { background: #16161a !important; padding: 0.9rem 1rem 0.7rem !important; min-height: unset !important; height: auto !important; }
+    .ch-hero::before { display: none !important; }
+    .ch-hero h1 { font-size: 16pt !important; color: #fff !important; margin-bottom: 0.3rem !important; }
+    .ch-hero .chap-label { font-size: 7pt !important; color: #f0b8d0 !important; margin-bottom: 0.4rem !important; }
+    .ch-hero p { font-size: 7pt !important; color: #f0b8d0 !important; margin: 0 !important; }
+    .content { max-width: 100% !important; padding: 0.8rem 0 !important; margin: 0 !important; }
+    .hgg-part { page-break-before: auto; break-before: auto; margin-bottom: 1rem; }
+    .hgg-part-header, .hgg-section-title, .hgg-subsection-title, .preuve-strip, .crisis-date { page-break-after: avoid; break-after: avoid; }
+    .hgg-section { page-break-inside: auto; break-inside: auto; margin-bottom: 1rem; }
+    .hgg-key-fact, .hgg-author, .hgg-concept, .hgg-highlight, .hgg-stat-cell, .def-card, .crisis-card, .mini-callout, .retenir-box, .transition-block, .step-block, .big-quote, .prob-banner, .col-card, .compare-side {
+      page-break-inside: avoid; break-inside: avoid;
+    }
+    .hgg-part-header { border-bottom: 2pt solid #f0b8d0 !important; padding-bottom: 0.5rem; margin-bottom: 1rem; }
+    .hgg-part-num { font-size: 2.5rem !important; color: #8a8880 !important; }
+    .hgg-part-title { font-size: 14pt !important; color: #000 !important; }
+    .hgg-section-title { font-size: 11pt !important; border-left: 3pt solid #f0b8d0 !important; padding-left: 0.6rem !important; margin-bottom: 0.6rem !important; color: #9c3f66 !important; }
+    .hgg-subsection-title { font-size: 8pt !important; color: #9c3f66 !important; margin: 0.8rem 0 0.4rem !important; }
+    .content p { font-size: 9.5pt !important; line-height: 1.55 !important; margin-bottom: 0.5rem !important; color: #000 !important; }
+    .hgg-key-fact { background: #fdf3f7 !important; border: 1pt solid #f0b8d0 !important; padding: 0.5rem 0.7rem !important; margin-bottom: 0.35rem !important; }
+    .hgg-key-fact > div { font-size: 9pt !important; color: #000 !important; }
+    .hgg-concept { background: #16161a !important; color: #F0F0EC !important; padding: 0.9rem 1rem !important; margin: 0.8rem 0 !important; border-radius: 4px; }
+    .hgg-concept p { color: #dcdcd6 !important; font-size: 9pt !important; }
+    .hgg-concept .concept-label { color: #7c9ec9 !important; font-size: 7pt !important; }
+    .hgg-concept strong { color: #7c9ec9 !important; }
+    .hgg-concept::before { display: none; }
+    .hgg-author { background: #16161a !important; color: #F0F0EC !important; padding: 0.9rem 1rem !important; margin: 0.8rem 0 !important; }
+    .hgg-author p { color: #dcdcd6 !important; font-size: 9pt !important; }
+    .hgg-author .author-name { color: #c8a96e !important; font-size: 7pt !important; }
+    .hgg-author strong { color: #c8a96e !important; }
+    .hgg-author::before { display: none; }
+    .hgg-highlight { background: #fdf0f5 !important; border-left: 3pt solid #f0b8d0 !important; padding: 0.7rem 1rem !important; margin: 0.8rem 0 !important; font-size: 9pt !important; color: #3a2028 !important; }
+    .hgg-stats { border: 1pt solid #f0b8d0 !important; margin: 0.8rem 0 !important; }
+    .hgg-stat-cell { background: white !important; padding: 0.8rem !important; }
+    .hgg-stat-num { font-size: 12pt !important; color: #9c3f66 !important; }
+    .hgg-stat-label { font-size: 7.5pt !important; color: #55524a !important; }
+    .big-quote { background: #16161a !important; color: #F0F0EC !important; padding: 1rem 1.4rem !important; margin: 0.8rem 0 !important; }
+    .big-quote blockquote { font-size: 10pt !important; color: #F0F0EC !important; }
+    .big-quote cite { color: #f0b8d0 !important; font-size: 7pt !important; }
+    .big-quote::before { font-size: 3rem !important; top: -0.3rem !important; }
+    .compare-box { margin: 0.7rem 0 !important; }
+    .compare-side { padding: 0.7rem 0.9rem !important; }
+    .compare-side p { font-size: 8.5pt !important; }
+    .compare-side h5 { font-size: 6.5pt !important; }
+    .two-col { grid-template-columns: 1fr 1fr !important; gap: 0.5rem !important; margin: 0.6rem 0 !important; }
+    .three-col { grid-template-columns: 1fr 1fr 1fr !important; gap: 0.5rem !important; margin: 0.6rem 0 !important; }
+    .col-card { padding: 0.7rem 0.9rem !important; }
+    .col-card p { font-size: 8.5pt !important; }
+    .col-card h5 { font-size: 6.5pt !important; }
+    .def-card { box-shadow: none !important; border: 1pt solid #f0b8d0 !important; margin-bottom: 0.5rem !important; }
+    .def-term { font-size: 10pt !important; }
+    .def-text { font-size: 9pt !important; color: #000 !important; }
+    .def-accent-bar { background: #f0b8d0 !important; }
+    .crisis-card { background: white !important; border: 1pt solid #f0b8d0 !important; border-left: 4pt solid #f0b8d0 !important; padding: 0.7rem 1rem !important; margin: 0.5rem 0 !important; }
+    .crisis-card p { font-size: 8.5pt !important; }
+    .crisis-title { font-size: 10pt !important; color: #000 !important; }
+    .crisis-date { font-size: 6.5pt !important; color: #9c3f66 !important; }
+    .mini-callout { background: #fdf3f7 !important; border: 1pt solid #f0b8d0 !important; padding: 0.5rem 0.8rem !important; margin: 0.6rem 0 !important; }
+    .mini-callout-text { font-size: 8.5pt !important; color: #000 !important; }
+    .mini-callout-icon { font-size: 0.9rem !important; }
+    .retenir-box { background: #fdf3f7 !important; border: 1pt solid #f0b8d0 !important; padding: 0.8rem 1rem !important; margin: 0.8rem 0 !important; }
+    .retenir-box .rb-label { font-size: 7pt !important; color: #9c3f66 !important; }
+    .retenir-box .rb-item { font-size: 9pt !important; color: #000 !important; }
+    .transition-block { background: rgba(240,184,208,0.12) !important; border: 1pt dashed #f0b8d0 !important; padding: 0.7rem 1rem !important; margin: 0.8rem 0 !important; }
+    .transition-block .t-label { font-size: 7pt !important; color: #9c3f66 !important; }
+    .transition-block p { font-size: 9pt !important; color: #3a2028 !important; }
+    .step-block { margin-bottom: 0.5rem !important; }
+    .step-num { font-size: 1.1rem !important; color: #f0b8d0 !important; }
+    .step-content { font-size: 9pt !important; color: #000 !important; }
+    .preuve-strip { border-top: 1pt solid #f5dde6 !important; margin: 1rem 0 0.4rem !important; padding-top: 0.6rem !important; }
+    .preuve-strip .ps-num { font-size: 7pt !important; color: #9c3f66 !important; }
+    .preuve-strip .ps-title { font-size: 10pt !important; color: #000 !important; }
+    .preuve-strip .ps-sub { font-size: 7pt !important; }
+    .prob-banner { background: #16161a !important; padding: 1rem 1.4rem !important; margin: 0.8rem 0 !important; }
+    .prob-banner .prob-label { font-size: 7pt !important; color: #f0b8d0 !important; }
+    .prob-banner p { font-size: 10pt !important; color: #F0F0EC !important; }
+    a { text-decoration: none !important; color: inherit !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">/</span>
+    <a href="../../humanite.html"><span>L'Humanité</span></a>
+    <span class="sep">/</span>
+    <a href="cinema.html"><span>Cinéma</span></a>
+    <span class="sep">/</span>
+    <span class="current">Le Nouveau Monde</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="chap-label">🎬 Cinéma · L'Humanité</div>
+  <h1>Le Nouveau Monde</h1>
+  <p>Terrence Malick · 2005 · Drame historique et contemplatif</p>
+</div>
+
+<!-- ─── TOC ─── -->
+<div class="toc-bar">
+  <div class="toc-inner">
+    <div class="toc-title">Plan de la fiche</div>
+    <ul class="toc-list">
+      <li><a href="#intro"><span class="toc-num">I —</span> Présentation de l'œuvre</a></li>
+      <li><a href="#p1"><span class="toc-num">II —</span> Résumé</a></li>
+      <li><a href="#p2"><span class="toc-num">III —</span> Une fable sur la rencontre de deux humanités</a></li>
+      <li><a href="#p3"><span class="toc-num">IV —</span> Pistes pour la dissertation</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ─── CONTENT ─── -->
+<div class="content">
+
+<!-- ══════════════════════════════════════ -->
+<!--  PARTIE I — PRÉSENTATION              -->
+<!-- ══════════════════════════════════════ -->
+<div class="hgg-part" id="intro">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">I</div>
+    <div class="hgg-part-title">Présentation de l'œuvre</div>
+  </div>
+
+  <p><strong>Le Nouveau Monde</strong> (<em>The New World</em>) est un film américain réalisé par <strong>Terrence Malick</strong>, sorti en 2005, avec <strong>Colin Farrell</strong> dans le rôle du capitaine John Smith et <strong>Q'orianka Kilcher</strong> dans celui de Pocahontas. Le film reconstitue, dans un style contemplatif fait de voix off murmurées et de plans sur la nature, la fondation de la colonie anglaise de <strong>Jamestown</strong> en 1607 et la rencontre entre les colons et le peuple Powhatan.</p>
+
+  <div class="hgg-stats">
+    <div class="hgg-stat-cell"><span class="hgg-stat-num">1607</span><div class="hgg-stat-label">Fondation de Jamestown, première colonie anglaise pérenne</div></div>
+    <div class="hgg-stat-cell"><span class="hgg-stat-num">2</span><div class="hgg-stat-label">Mondes mis en présence : colons européens et peuple Powhatan</div></div>
+    <div class="hgg-stat-cell"><span class="hgg-stat-num">2005</span><div class="hgg-stat-label">Année de sortie</div></div>
+  </div>
+
+  <p>Le titre même du film — « le Nouveau Monde » — porte en germe une <strong>ambiguïté</strong> essentielle : une terre n'est « nouvelle » que du point de vue de ceux qui la découvrent, alors qu'elle est depuis toujours habitée, cultivée et habitée de sens par un peuple qui n'a rien demandé à être « découvert ». Le film interroge ainsi, dès son titre, ce que devient l'humanité de l'autre lorsque le regard qu'on porte sur lui commence par nier sa présence antérieure.</p>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  PARTIE II — RÉSUMÉ                   -->
+<!-- ══════════════════════════════════════ -->
+<div class="hgg-part" id="p1">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">II</div>
+    <div class="hgg-part-title">Résumé</div>
+  </div>
+
+  <div class="hgg-section" id="s1-1">
+    <div class="hgg-section-title">1 — L'arrivée à Jamestown et la rencontre avec Pocahontas</div>
+
+    <p>Trois navires anglais accostent sur les rives de la baie de Chesapeake pour y fonder une colonie. Envoyé en éclaireur, le capitaine <strong>John Smith</strong> est capturé par les Powhatan et échappe à l'exécution grâce à l'intervention de <strong>Pocahontas</strong>, la fille du chef. Entre les deux naît une relation faite d'émerveillement mutuel, filmée par Malick comme un retour à un état presque édénique, avant tout langage commun et avant tout calcul.</p>
+
+    <div class="hgg-key-fact">
+      <div class="hgg-key-bullet"></div>
+      <div>Malick choisit de filmer cette rencontre presque sans dialogue articulé : gestes, regards, immersion dans la nature — comme si la communication la plus vraie entre les deux mondes se situait avant, ou en dehors, du langage qui les sépare.</div>
+    </div>
+
+    <p>Mais très vite, la colonie sombre dans la famine, les conflits internes et l'hostilité croissante envers les Powhatan, qui finissent par rompre leur aide. Pocahontas, bannie par son propre peuple pour avoir aidé les colons, se retrouve elle-même prise entre deux mondes qui ne l'acceptent plus tout à fait ni l'un ni l'autre.</p>
+  </div>
+
+  <div class="hgg-section" id="s1-2">
+    <div class="hgg-section-title">2 — Le mariage avec Rolfe et le voyage vers l'Angleterre</div>
+
+    <p>Séparée de Smith, qui la laisse croire à sa mort pour mieux s'effacer de sa vie, Pocahontas épouse le colon <strong>John Rolfe</strong>, se convertit au christianisme et prend le nom de <strong>Rebecca</strong>. Elle apprend les usages, la langue et les vêtements anglais, avant d'être emmenée en Angleterre où elle est présentée à la cour comme une curiosité — la preuve vivante que le « sauvage » peut être « civilisé ».</p>
+
+    <div class="hgg-concept">
+      <div class="concept-label">Le costume comme frontière</div>
+      <p>Le basculement de Pocahontas de la robe légère des Powhatan à la robe corsetée anglaise n'est jamais présenté comme un simple changement d'habit : c'est tout un rapport au corps, à la nature et à la liberté de mouvement qui se referme sur elle. Le film suggère qu'une conversion à une autre civilisation se paie toujours d'une part de soi qu'on abandonne en chemin.</p>
+    </div>
+
+    <div class="hgg-highlight">Le film se referme sur la mort prématurée de Pocahontas en Angleterre, loin de sa terre natale, tandis que son jeune fils court librement dans les jardins d'un manoir anglais — dernière image ambivalente, entre la promesse d'un avenir métissé et le deuil silencieux d'un monde englouti.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  PARTIE III — ANALYSE                 -->
+<!-- ══════════════════════════════════════ -->
+<div class="hgg-part" id="p2">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">III</div>
+    <div class="hgg-part-title">Une fable sur la rencontre de deux humanités</div>
+  </div>
+
+  <div class="hgg-section" id="s2-1">
+    <div class="hgg-section-title">1 — Le mythe du Nouveau Monde comme Éden perdu</div>
+
+    <p>Malick filme la nature de Virginie — fleuves, roseaux, lumière rasante — avec une insistance qui la transforme presque en <strong>paradis originel</strong>, un état d'innocence antérieur à toute propriété et à toute hiérarchie. Cette vision, portée par le regard émerveillé de Smith, reste toutefois celle d'un <strong>étranger</strong> projetant sur une terre déjà habitée le fantasme européen d'un monde vierge à conquérir — fantasme que le film met discrètement en question plutôt qu'il ne l'endosse.</p>
+
+    <div class="two-col">
+      <div class="col-card col-teal">
+        <h5>🌿 Le regard du colon</h5>
+        <p>Smith découvre chez les Powhatan un mode de vie en harmonie avec la nature qu'il perçoit comme supérieur au sien — sans toujours voir qu'il continue, malgré son admiration, à penser cette terre comme disponible pour lui.</p>
+      </div>
+      <div class="col-card col-cyan">
+        <h5>🏹 Un peuple déjà présent</h5>
+        <p>Le film prend soin de montrer l'organisation, les rites et l'autorité du peuple Powhatan — rappelant que la terre dite « nouvelle » possédait déjà sa propre civilisation, pleinement humaine.</p>
+      </div>
+    </div>
+
+    <div class="hgg-highlight">
+      Le titre du film porte ainsi sa propre critique : ce « Nouveau Monde » n'est neuf que dans l'œil de celui qui l'ignore encore — signe que la reconnaissance de l'humanité de l'autre commence par renoncer à se croire le premier à le découvrir.
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-2">
+    <div class="hgg-section-title">2 — L'amour comme langage au-delà des mots</div>
+
+    <p>La relation entre Smith et Pocahontas se noue avant tout par les gestes, les regards et l'attention portée à l'autre, sans que le langage — profondément différent d'une culture à l'autre — vienne jamais s'interposer. Malick semble suggérer que l'humanité la plus élémentaire, celle qui permet la <strong>reconnaissance mutuelle</strong>, ne dépend pas d'abord d'un code linguistique commun mais d'une disposition intérieure à accueillir l'autre.</p>
+
+    <div class="hgg-author">
+      <div class="author-name">Deux visages de l'amour</div>
+      <p>L'amour de Smith reste marqué par l'hésitation et le calcul — il choisit finalement sa carrière et laisse croire Pocahontas à sa mort. Celui de Rolfe, plus discret, se construit dans la durée et le respect de ce qu'elle est devenue. Le film oppose ainsi deux manières d'aimer l'autre : l'une qui reste tournée vers soi malgré l'émerveillement initial, l'autre qui accepte de faire une place réelle à l'altérité.</p>
+    </div>
+
+    <div class="mini-callout">
+      <span class="mini-callout-icon">🤍</span>
+      <span class="mini-callout-text">Cette idée d'une <strong>communication au-delà du langage</strong> fait écho aux réflexions philosophiques sur l'empathie et la reconnaissance d'autrui comme fondement, plus profond que la parole, du lien humain.</span>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-3">
+    <div class="hgg-section-title">3 — Devenir « civilisée » : une humanité recomposée ou amputée ?</div>
+
+    <p>La transformation de Pocahontas en « Rebecca » pose frontalement la question de ce que la <strong>civilisation</strong> exige de celui qu'elle intègre. En adoptant la langue, la religion et les usages anglais, Pocahontas gagne une place dans un monde qui, jusque-là, la rejetait comme une curiosité exotique — mais elle perd, dans le même mouvement, une part de son rapport originel à la nature et à son propre peuple.</p>
+
+    <div class="compare-box">
+      <div class="compare-side compare-a">
+        <h5>🍃 Pocahontas chez les Powhatan</h5>
+        <p>Un rapport <strong>direct et sensoriel</strong> à la nature et à la communauté, avant toute conversion, toute hiérarchie sociale rigide.</p>
+      </div>
+      <div class="compare-side compare-b">
+        <h5>👑 Rebecca à la cour d'Angleterre</h5>
+        <p>Une existence <strong>codifiée</strong> — costume, étiquette, religion — qui lui offre une reconnaissance sociale au prix d'un exil intérieur.</p>
+      </div>
+    </div>
+
+    <p>Le film ne tranche pas entre ces deux humanités mais montre leur coût respectif : rester fidèle à son monde d'origine expose à l'exclusion par les siens comme par les autres ; l'adopter pleinement suppose de sacrifier une part de ce que l'on était. Cette tension invite à interroger si l'accès à une autre civilisation enrichit nécessairement l'humanité de celui qui s'y intègre, ou s'il peut aussi l'amputer de quelque chose d'essentiel.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  PARTIE IV — PISTES DE DISSERTATION   -->
+<!-- ══════════════════════════════════════ -->
+<div class="hgg-part" id="p3">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">IV</div>
+    <div class="hgg-part-title">Pistes pour la dissertation</div>
+  </div>
+
+  <div class="hgg-section" id="s3-1">
+    <div class="hgg-section-title">Comment mobiliser cette œuvre dans une copie ?</div>
+
+    <div class="retenir-box">
+      <div class="rb-label">Idées à retenir</div>
+      <div class="rb-items">
+        <div class="rb-item">Nommer une terre « nouvelle » revient à effacer symboliquement l'humanité de <strong>ceux qui l'habitent déjà</strong> — le regard du découvreur n'est jamais neutre.</div>
+        <div class="rb-item">La reconnaissance de l'autre peut se nouer par les <strong>gestes et l'attention</strong>, avant même tout langage commun, suggérant un fondement pré-linguistique du lien humain.</div>
+        <div class="rb-item">S'intégrer à une autre civilisation suppose souvent d'en payer le prix par le sacrifice d'une part de <strong>son identité d'origine</strong>.</div>
+        <div class="rb-item">Le film refuse le manichéisme : ni la nature des Powhatan ni la civilisation anglaise ne sont présentées comme un absolu, chacune ayant sa propre grandeur et ses propres limites.</div>
+      </div>
+    </div>
+
+    <div class="hgg-subsection-title">→ Notions du thème « L'Humanité » éclairées par l'œuvre</div>
+    <div class="three-col">
+      <div class="col-card col-teal">
+        <h5>🌎 La rencontre de l'autre</h5>
+        <p>Le film interroge ce qui se joue, moralement, dans le premier regard porté sur un peuple jusque-là inconnu.</p>
+      </div>
+      <div class="col-card col-cyan">
+        <h5>💬 Au-delà du langage</h5>
+        <p>La relation entre Smith et Pocahontas suggère qu'un lien humain authentique peut naître avant tout code linguistique partagé.</p>
+      </div>
+      <div class="col-card col-dark">
+        <h5>👑 Civilisation et identité</h5>
+        <p>Le devenir « Rebecca » de Pocahontas pose la question du prix identitaire de l'assimilation à une autre culture.</p>
+      </div>
+    </div>
+
+    <div class="hgg-concept">
+      <div class="concept-label">À rapprocher</div>
+      <p>Jean-Jacques Rousseau et le mythe du <em>bon sauvage</em> : comme Rousseau, Malick idéalise en partie une humanité proche de la nature, non corrompue par les artifices de la société civilisée — mais le film, en montrant la destinée tragique de Pocahontas, refuse de céder à une nostalgie naïve : aucun des deux mondes filmés n'est présenté comme purement innocent ni comme purement coupable.</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<footer class="site-footer">
+  <div class="footer-logo">Le Nouveau Monde — Terrence Malick</div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
+
+<script>
+  document.querySelectorAll('.toc-list a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>

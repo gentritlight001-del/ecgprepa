@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Philosophie · Notion 3 : L'État</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F5F0E8;
+    --dark: #1A1208;
+    --brown: #3D2B1F;
+    --gold: #C9A84C;
+    --muted: #7A6A5A;
+    --light-brown: #E8DDD0;
+    --rust: #8B3A2A;
+    /* STATE PALETTE — deep navy/slate */
+    --st-dark:   #0E0F1C;
+    --st-deep:   #1B1E3A;
+    --st-mid:    #3A4A9C;
+    --st-accent: #6874D0;
+    --st-bright: #9BA8E8;
+    --st-light:  #EEF0FB;
+    --st-pale:   #E2E5F5;
+    --st-text:   #1A1E50;
+    --st-green:  #2E6B5A;
+    --st-red:    #8B2A2A;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--dark); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px; border-bottom: 1px solid rgba(58,74,156,0.3);
+    background: var(--st-dark); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--st-bright); cursor: pointer; letter-spacing: 0.02em; }
+  .nav-logo a { color: inherit; text-decoration: none; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(245,240,232,0.5); flex-wrap: wrap; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb span:hover { color: var(--st-bright); }
+  .breadcrumb .sep { color: rgba(245,240,232,0.25); }
+  .breadcrumb .current { color: #F5F0E8; cursor: default; }
+
+  /* ─── HERO ─── */
+  .ch-hero {
+    background: var(--st-dark);
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ch-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%236874D0' fill-opacity='0.07'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  /* SVG illustration left */
+  .hero-columns {
+    position: absolute; left: 4%; top: 50%; transform: translateY(-50%);
+    opacity: 0.07; pointer-events: none; display: none;
+  }
+  @media(min-width:900px){ .hero-columns { display: block; } }
+  .hero-balance {
+    position: absolute; right: 5%; top: 50%; transform: translateY(-50%);
+    opacity: 0.06; pointer-events: none; display: none;
+  }
+  @media(min-width:900px){ .hero-balance { display: block; } }
+
+  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--st-bright); margin-bottom: 1.5rem; opacity: 0.85; position: relative; z-index: 1; display: block; }
+  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 4rem); color: var(--cream); font-weight: 900; max-width: 900px; margin: 0 auto 1.5rem; line-height: 1.1; position: relative; z-index: 1; }
+  .ch-hero p { color: rgba(245,240,232,0.45); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  /* ─── DEFINITION BOX (hero) ─── */
+  .hero-def {
+    position: relative; z-index: 1;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(155,168,232,0.25);
+    border-radius: 8px;
+    padding: 1.4rem 2rem;
+    max-width: 700px;
+    margin: 1.5rem auto 0;
+    font-size: 0.92rem;
+    color: rgba(245,240,232,0.8);
+    line-height: 1.7;
+  }
+  .hero-def strong { color: var(--st-bright); }
+
+  /* ─── TOC ─── */
+  .toc-bar { background: var(--st-light); padding: 2rem; border-bottom: 1px solid rgba(0,0,0,0.08); }
+  .toc-inner { max-width: 960px; margin: 0 auto; }
+  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
+  .toc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.4rem; list-style: none; }
+  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: var(--st-text); font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
+  .toc-list a:hover { border-color: var(--st-mid); background: white; color: var(--dark); }
+  .toc-num { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--st-mid); flex-shrink: 0; margin-top: 0.15rem; }
+
+  /* ─── CONTENT ─── */
+  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 8rem; }
+
+  /* PART */
+  .part { margin-bottom: 5rem; }
+  .part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--st-mid); }
+  .part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: var(--st-pale); line-height: 1; flex-shrink: 0; }
+  .part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--dark); line-height: 1.25; }
+
+  /* SECTION */
+  .section { margin-bottom: 3.5rem; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--st-deep); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--st-mid); scroll-margin-top: 2rem; display: flex; align-items: center; gap: 0.8rem; }
+  .section-title .s-icon { font-size: 1.2rem; }
+  .subsection { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--st-mid); margin: 2rem 0 0.75rem; }
+
+  /* TEXT */
+  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: #1A1F3D; line-height: 1.75; font-weight: 300; }
+  .content strong { color: var(--dark); font-weight: 600; }
+
+  /* KEY FACT */
+  .key-fact { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 0.6rem; padding: 0.85rem 1.1rem; background: white; border: 1px solid var(--st-pale); border-radius: 6px; }
+  .key-bullet { width: 6px; height: 6px; background: var(--st-mid); border-radius: 50%; flex-shrink: 0; margin-top: 0.55rem; }
+  .key-fact > div { font-size: 0.91rem; color: #1A1F3D; line-height: 1.65; font-weight: 300; }
+
+  /* CONCEPT BOX */
+  .concept { background: var(--st-dark); color: var(--cream); padding: 1.75rem; margin: 2rem 0; position: relative; border-radius: 4px; }
+  .concept::before { content: '→'; position: absolute; top: 1.25rem; right: 1.25rem; color: var(--st-bright); font-size: 1.3rem; }
+  .concept .concept-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--st-bright); margin-bottom: 0.7rem; }
+  .concept p { color: rgba(245,240,232,0.82); font-size: 0.93rem; margin: 0; }
+  .concept strong { color: #A8BFFF; }
+
+  /* HIGHLIGHT / QUOTE */
+  .highlight { background: var(--st-light); border-left: 4px solid var(--st-mid); padding: 1.25rem 1.75rem; margin: 1.5rem 0; font-style: italic; color: var(--st-deep); font-size: 0.93rem; line-height: 1.7; border-radius: 0 6px 6px 0; }
+  .highlight cite { display: block; margin-top: 0.6rem; font-style: normal; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; font-family: 'DM Mono', monospace; color: var(--muted); }
+
+  /* AUTHOR CARD */
+  .author { border: 1px solid var(--st-pale); padding: 1.25rem 1.75rem; margin: 1.2rem 0; background: white; border-radius: 6px; display: flex; gap: 1.2rem; align-items: flex-start; }
+  .author-icon { font-size: 2.4rem; flex-shrink: 0; margin-top: 0.1rem; }
+  .author .author-name { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--st-deep); }
+  .author .author-dates { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; margin: 0.25rem 0 0.5rem; }
+  .author p { font-size: 0.91rem; color: #1A1F3D; line-height: 1.65; font-weight: 300; margin: 0; }
+
+  /* TWO COL / THREE COL */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0; }
+  .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0; }
+  @media(max-width:680px) { .two-col, .three-col { grid-template-columns: 1fr; } }
+
+  .col-card { border-radius: 6px; padding: 1.2rem 1.4rem; font-size: 0.88rem; line-height: 1.65; font-weight: 300; }
+  .col-card h5 { font-size: 0.82rem; font-weight: 600; margin-bottom: 0.5rem; font-family: 'DM Sans', sans-serif; }
+  .col-card p { margin: 0; font-size: 0.86rem; }
+  .col-blue { background: var(--st-light); border: 1px solid var(--st-pale); color: var(--st-text); }
+  .col-blue h5 { color: var(--st-mid); }
+  .col-dark { background: var(--st-dark); border: 1px solid rgba(155,168,232,0.2); color: rgba(245,240,232,0.8); }
+  .col-dark h5 { color: var(--st-bright); }
+  .col-warm { background: #FBF5E8; border: 1px solid #EDD9A0; color: var(--brown); }
+  .col-warm h5 { color: var(--rust); }
+  .col-green { background: #EAF3EF; border: 1px solid #B5D9CA; color: #1D3D2F; }
+  .col-green h5 { color: var(--st-green); }
+  .col-red { background: #FBF0EE; border: 1px solid #E8BEB7; color: #3D1A1A; }
+  .col-red h5 { color: var(--st-red); }
+
+  /* WEBER BOX */
+  .weber-box {
+    background: linear-gradient(135deg, var(--st-deep) 0%, #12184A 100%);
+    border: 1px solid rgba(155,168,232,0.3);
+    border-radius: 8px;
+    padding: 2rem 2.25rem;
+    margin: 2rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .weber-box::after {
+    content: '⚖';
+    position: absolute; right: 2rem; top: 1.5rem;
+    font-size: 4rem; opacity: 0.08; pointer-events: none;
+  }
+  .weber-box .wb-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--st-bright); margin-bottom: 1rem; }
+  .weber-box blockquote { font-family: 'Playfair Display', serif; font-style: italic; color: rgba(245,240,232,0.9); font-size: 1.1rem; line-height: 1.65; margin-bottom: 0.75rem; }
+  .weber-box cite { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.12em; color: var(--st-bright); text-transform: uppercase; }
+
+  /* 4 ELEMENTS GRID */
+  .elem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--st-pale); border: 1px solid var(--st-pale); border-radius: 8px; overflow: hidden; margin: 1.5rem 0; }
+  .elem-cell { background: white; padding: 1.5rem; }
+  .elem-num { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 900; color: var(--st-pale); line-height: 1; }
+  .elem-title { font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 0.95rem; color: var(--st-mid); margin: 0.3rem 0 0.4rem; text-transform: uppercase; letter-spacing: 0.05em; font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.2em; }
+  .elem-desc { font-size: 0.85rem; color: #1A1F3D; line-height: 1.6; font-weight: 300; }
+  @media(max-width:560px){ .elem-grid { grid-template-columns: 1fr; } }
+
+  /* LEVIATHAN ILLUSTRATION */
+  .leviathan-img {
+    width: 100%;
+    border-radius: 6px;
+    margin: 1.5rem 0;
+    overflow: hidden;
+    background: var(--st-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    border: 1px solid rgba(155,168,232,0.15);
+  }
+
+  /* PYRAMID */
+  .pyramid-wrap { display: flex; flex-direction: column; align-items: center; gap: 0; margin: 2rem 0 2.5rem; }
+  .pyr-level { text-align: center; padding: 1.1rem 1.4rem; }
+  .pyr-level-1 { width: 36%; background: #f0eaf5; border: 2px solid var(--st-mid); border-bottom: none; clip-path: polygon(10% 100%, 90% 100%, 100% 0%, 0% 0%); padding-bottom: 1.4rem; }
+  .pyr-level-2 { width: 63%; background: #e8ecf7; border: 2px solid var(--st-mid); border-top: none; border-bottom: none; }
+  .pyr-level-3 { width: 90%; background: #dde3f2; border: 2px solid var(--st-mid); border-top: none; clip-path: polygon(0% 0%, 100% 0%, 88% 100%, 12% 100%); padding-top: 1.4rem; }
+  .pyr-eyebrow { font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--st-mid); margin-bottom: 4px; }
+  .pyr-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--dark); }
+  .pyr-sub { font-size: 0.75rem; color: var(--muted); margin-top: 3px; font-style: italic; }
+  .pyr-tag { font-size: 0.68rem; color: var(--rust); margin-top: 3px; font-family: 'DM Mono', monospace; }
+
+  /* 3 POUVOIRS */
+  .pouv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0; }
+  @media(max-width:600px){ .pouv-grid { grid-template-columns: 1fr; } }
+  .pouv-card { background: white; border: 1px solid var(--st-pale); border-radius: 6px; padding: 1.4rem; text-align: center; position: relative; }
+  .pouv-icon { font-size: 2rem; display: block; margin-bottom: 0.5rem; }
+  .pouv-label { font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--st-mid); margin-bottom: 0.4rem; }
+  .pouv-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--st-deep); margin-bottom: 0.4rem; }
+  .pouv-desc { font-size: 0.8rem; color: var(--muted); font-weight: 300; }
+  .pouv-card::after { content: ''; position: absolute; bottom: -1px; left: 50%; transform: translateX(-50%); width: 40%; height: 2px; background: var(--st-mid); }
+
+  /* CONTRAT TIMELINE */
+  .contract-flow { display: flex; align-items: center; gap: 0.5rem; margin: 1.5rem 0; flex-wrap: wrap; }
+  .cf-step { background: white; border: 1px solid var(--st-pale); border-radius: 6px; padding: 0.9rem 1.1rem; font-size: 0.83rem; flex: 1; min-width: 120px; text-align: center; }
+  .cf-step .cf-title { font-weight: 600; color: var(--st-mid); font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.25rem; }
+  .cf-step p { color: #1A1F3D; margin: 0; font-size: 0.82rem; }
+  .cf-arrow { color: var(--st-mid); font-size: 1.2rem; flex-shrink: 0; }
+
+  /* CITATION STRONG */
+  .quote-strong {
+    background: var(--st-dark);
+    color: rgba(245,240,232,0.9);
+    border-radius: 6px;
+    padding: 1.5rem 2rem;
+    margin: 1.5rem 0;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1rem;
+    line-height: 1.65;
+    border-left: 3px solid var(--st-bright);
+  }
+  .quote-strong cite { display: block; margin-top: 0.7rem; font-style: normal; font-size: 0.65rem; font-family: 'DM Mono', monospace; letter-spacing: 0.12em; text-transform: uppercase; color: var(--st-bright); }
+
+  /* DANGERS LIST */
+  .danger-list { list-style: none; margin: 1rem 0; }
+  .danger-list li { display: flex; gap: 0.75rem; align-items: flex-start; padding: 0.65rem 0; border-bottom: 1px solid var(--st-pale); font-size: 0.9rem; color: #1A1F3D; font-weight: 300; line-height: 1.6; }
+  .danger-list li:last-child { border-bottom: none; }
+  .danger-list .di { font-size: 1rem; flex-shrink: 0; }
+
+  /* SUMMARY TABLE */
+  .sum-table { width: 100%; border-collapse: collapse; margin: 2rem 0; font-size: 0.84rem; border-radius: 6px; overflow: hidden; }
+  .sum-table thead tr { background: var(--st-dark); }
+  .sum-table thead th { padding: 10px 14px; text-align: left; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--st-bright); font-weight: 400; }
+  .sum-table tbody tr { border-bottom: 1px solid var(--st-pale); }
+  .sum-table tbody tr:nth-child(even) { background: rgba(238,240,251,0.5); }
+  .sum-table tbody tr:hover { background: var(--st-light); }
+  .sum-table td { padding: 10px 14px; color: var(--st-text); line-height: 1.5; }
+  .sum-table td:first-child { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 0.95rem; }
+  .sum-table .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 0.65rem; font-family: 'DM Mono', monospace; }
+  .tag-blue  { background: rgba(58,74,156,0.12); color: var(--st-mid); }
+  .tag-green { background: rgba(46,107,90,0.12); color: var(--st-green); }
+  .tag-red   { background: rgba(139,42,42,0.12); color: var(--st-red); }
+  .tag-gold  { background: rgba(201,168,76,0.15); color: #7A5A1A; }
+
+  /* SCROLL */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--st-pale); border-radius: 3px; }
+
+  @media(max-width: 768px) {
+    nav { padding: 14px 20px; }
+    .content { padding: 3rem 1.25rem 5rem; }
+    .weber-box blockquote { font-size: 0.95rem; }
+  }
+
+  /* ─── FOOTER ─── */
+  .site-footer {
+    background: var(--st-dark);
+    border-top: 1px solid rgba(0,0,0,0.15);
+    padding: 2.5rem 2rem;
+    text-align: center;
+  }
+  .site-footer .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--st-bright);
+    letter-spacing: 0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb">
+    <span onclick="window.location.href='../../index.html'">Accueil</span>
+    <span class="sep">/</span>
+    <span onclick="window.location.href='index.html'">Notions</span>
+    <span class="sep">/</span>
+    <span class="current">Notion 3 — L'État</span>
+  </div>
+</nav>
+
+<!-- ─── HERO ─── -->
+<div class="ch-hero">
+  <!-- Colonnes SVG gauche -->
+  <svg class="hero-columns" width="180" height="300" viewBox="0 0 180 300" fill="none">
+    <rect x="10" y="260" width="30" height="40" fill="white"/>
+    <rect x="10" y="20" width="30" height="240" rx="2" fill="white"/>
+    <rect x="10" y="10" width="30" height="15" rx="1" fill="white"/>
+    <rect x="60" y="260" width="30" height="40" fill="white"/>
+    <rect x="60" y="20" width="30" height="240" rx="2" fill="white"/>
+    <rect x="60" y="10" width="30" height="15" rx="1" fill="white"/>
+    <rect x="110" y="260" width="30" height="40" fill="white"/>
+    <rect x="110" y="20" width="30" height="240" rx="2" fill="white"/>
+    <rect x="110" y="10" width="30" height="15" rx="1" fill="white"/>
+    <rect x="0" y="274" width="180" height="8" rx="2" fill="white"/>
+  </svg>
+  <!-- Balance SVG droite -->
+  <svg class="hero-balance" width="200" height="240" viewBox="0 0 200 240" fill="none">
+    <line x1="100" y1="10" x2="100" y2="60" stroke="white" stroke-width="4"/>
+    <line x1="20" y1="80" x2="180" y2="80" stroke="white" stroke-width="4"/>
+    <line x1="20" y1="80" x2="20" y2="180" stroke="white" stroke-width="3"/>
+    <line x1="180" y1="80" x2="180" y2="160" stroke="white" stroke-width="3"/>
+    <ellipse cx="20" cy="185" rx="35" ry="14" fill="none" stroke="white" stroke-width="3"/>
+    <ellipse cx="180" cy="165" rx="35" ry="14" fill="none" stroke="white" stroke-width="3"/>
+    <circle cx="100" cy="8" r="8" fill="white"/>
+  </svg>
+
+  <span class="chap-label">Philosophie ECG · 2ème Année</span>
+  <h1>L'État</h1>
+  <div class="hero-def">
+    <strong>État :</strong> Ensemble des institutions politiques, juridiques, militaires, économiques qui exercent une autorité sur les citoyens d'un pays.
+  </div>
+
+</div>
+
+<!-- ─── TOC ─── -->
+<div class="toc-bar">
+  <div class="toc-inner">
+    <div class="toc-title">Sommaire</div>
+    <ul class="toc-list">
+      <li><a href="#s1-weber"><span class="toc-num">1.</span>Weber — Définition & éléments constitutifs</a></li>
+      <li><a href="#s2-hobbes"><span class="toc-num">2.</span>Hobbes — L'état de nature & le Léviathan</a></li>
+      <li><a href="#s2-rousseau"><span class="toc-num">3.</span>Rousseau — La volonté générale</a></li>
+      <li><a href="#s2-locke"><span class="toc-num">4.</span>Locke — Les droits naturels</a></li>
+      <li><a href="#s3-tocqueville"><span class="toc-num">5.</span>Tocqueville — Le despotisme doux</a></li>
+      <li><a href="#s3-marx"><span class="toc-num">6.</span>Marx — Instrument de classe</a></li>
+      <li><a href="#s3-bakounine"><span class="toc-num">7.</span>Bakounine — L'anarchisme</a></li>
+      <li><a href="#s4-platon"><span class="toc-num">8.</span>Platon — La cité idéale</a></li>
+      <li><a href="#s4-montesquieu"><span class="toc-num">9.</span>Montesquieu — Séparation des pouvoirs</a></li>
+      <li><a href="#s4-machiavel"><span class="toc-num">10.</span>Machiavel — Le Prince</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ─── CONTENT ─── -->
+<div class="content">
+
+  <!-- ════ PARTIE I ════ -->
+  <div class="part" id="s1-weber">
+    <div class="part-header">
+      <div class="part-num">I</div>
+      <div class="part-title">Qu'est-ce que l'État ? La définition fondatrice</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="s-icon">⚖️</span>Max Weber — Définition de l'État</div>
+      <div class="author">
+        <div class="author-icon">🎓</div>
+        <div>
+          <div class="author-name">Max Weber</div>
+          <div class="author-dates">1864 – 1920 · Le Savant et le Politique (1919)</div>
+          <p>Sociologue et philosophe allemand. Sa définition de l'État est la plus opératoire en philosophie politique — elle est <strong>descriptive et non normative</strong>.</p>
+        </div>
+      </div>
+
+      <div class="weber-box">
+        <div class="wb-label">Définition fondatrice</div>
+        <blockquote>« L'État est une communauté humaine qui, dans les limites d'un territoire déterminé, revendique avec succès pour son propre compte le monopole de la violence physique légitime. »</blockquote>
+        <cite>— Max Weber, Le Savant et le Politique (1919)</cite>
+      </div>
+
+      <p>Cette définition est fondatrice pour deux raisons : elle est <strong>descriptive et non normative</strong> (Weber ne dit pas que l'État est bon ou juste), et elle pointe la <strong>tension centrale</strong> : la violence devient légitime dès lors qu'elle est exercée par l'État — mais sur quel fondement ?</p>
+
+      <div class="subsection">→ Les 4 éléments constitutifs de l'État</div>
+      <div class="elem-grid">
+        <div class="elem-cell">
+          <div class="elem-num">1</div>
+          <div class="elem-title">Le territoire</div>
+          <div class="elem-desc">L'État contrôle effectivement un <strong>espace délimité par des frontières reconnues</strong>. Sans territoire, pas d'État — seulement un gouvernement en exil.</div>
+        </div>
+        <div class="elem-cell">
+          <div class="elem-num">2</div>
+          <div class="elem-title">La population</div>
+          <div class="elem-desc">L'État s'exerce sur des individus liés à lui par la <strong>citoyenneté ou la résidence</strong>.</div>
+        </div>
+        <div class="elem-cell">
+          <div class="elem-num">3</div>
+          <div class="elem-title">La souveraineté</div>
+          <div class="elem-desc">Pouvoir suprême <strong>intérieur</strong> (droit exclusif d'édicter les lois) et <strong>extérieur</strong> (indépendance vis-à-vis des autres États).</div>
+        </div>
+        <div class="elem-cell">
+          <div class="elem-num">4</div>
+          <div class="elem-title">Monopole de la violence légitime</div>
+          <div class="elem-desc">Seul l'État peut légalement contraindre — <strong>armée, police, justice</strong>. La justice privée est par définition illégitime.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ PARTIE II ════ -->
+  <div class="part">
+    <div class="part-header">
+      <div class="part-num">II</div>
+      <div class="part-title">Fondements du contrat social — pourquoi l'État ?</div>
+    </div>
+
+    <!-- HOBBES -->
+    <div class="section" id="s2-hobbes">
+      <div class="section-title"><span class="s-icon">🐺</span>Hobbes — État de nature & le Léviathan</div>
+      <div class="author">
+        <div class="author-icon">📖</div>
+        <div>
+          <div class="author-name">Thomas Hobbes</div>
+          <div class="author-dates">1588 – 1679 · Léviathan (1651)</div>
+          <p>Philosophe anglais. Défenseur d'un État fort pour sortir du chaos naturel.</p>
+        </div>
+      </div>
+
+      <p>Pour Hobbes, sans État, les hommes vivent dans un <strong>état de nature</strong> — une situation sans lois ni autorité — qui conduit inévitablement à la violence.</p>
+
+      <div class="subsection">→ L'état de nature chez Hobbes</div>
+      <div class="three-col">
+        <div class="col-card col-red">
+          <h5>🟰 Égalité naturelle</h5>
+          <p>Tous les hommes sont à peu près égaux en force et en intelligence.</p>
+        </div>
+        <div class="col-card col-red">
+          <h5>⚔️ Survie & méfiance</h5>
+          <p>Chacun cherche à survivre et se méfie des autres, ce qui crée des conflits permanents.</p>
+        </div>
+        <div class="col-card col-red">
+          <h5>💀 Guerre de tous</h5>
+          <p><em>« L'homme est un loup pour l'homme »</em> — la vie est solitaire, misérable, dangereuse et brève.</p>
+        </div>
+      </div>
+
+      <div class="subsection">→ Du contrat au Léviathan</div>
+      <div class="contract-flow">
+        <div class="cf-step"><div class="cf-title">État de nature</div><p>Guerre permanente, insécurité totale</p></div>
+        <span class="cf-arrow">→</span>
+        <div class="cf-step"><div class="cf-title">Contrat social</div><p>Abandon d'une partie de la liberté au souverain</p></div>
+        <span class="cf-arrow">→</span>
+        <div class="cf-step"><div class="cf-title">Le Léviathan</div><p>État tout-puissant garant de la paix</p></div>
+      </div>
+
+      <div class="concept">
+        <div class="concept-label">La thèse hobbesienne</div>
+        <p>On obéit à l'État non parce qu'il est juste ou démocratique, mais parce qu'il <strong>protège contre le chaos</strong>. Hobbes préfère la monarchie absolue : un pouvoir faible ramènerait la guerre civile. <strong>Sans État, c'est la guerre — avec un État fort, il y a la paix.</strong></p>
+      </div>
+    </div>
+
+    <!-- ROUSSEAU -->
+    <div class="section" id="s2-rousseau">
+      <div class="section-title"><span class="s-icon">🌿</span>Rousseau — La volonté générale</div>
+      <div class="author">
+        <div class="author-icon">🖊️</div>
+        <div>
+          <div class="author-name">Jean-Jacques Rousseau</div>
+          <div class="author-dates">1712 – 1778 · Du Contrat social (1762)</div>
+          <p>Philosophe genevois. Contrairement à Hobbes, il pense que <strong>l'homme est naturellement bon</strong>.</p>
+        </div>
+      </div>
+
+      <p>Dans l'état de nature, les hommes vivent libres, relativement égaux, guidés par la <strong>pitié</strong> et l'<strong>amour de soi</strong>. Mais la société transforme cette situation.</p>
+
+      <div class="subsection">→ La corruption par la société</div>
+      <div class="two-col">
+        <div class="col-card col-warm">
+          <h5>🏠 La propriété privée</h5>
+          <p>Le moment décisif : quand quelqu'un dit « ceci est à moi », les inégalités commencent. Jalousie, envie, compétition, domination apparaissent.</p>
+        </div>
+        <div class="col-card col-warm">
+          <h5>⚠️ Les États existants</h5>
+          <p>Rousseau critique les États réels : ils servent souvent les <strong>intérêts des plus riches</strong> au lieu de l'intérêt commun.</p>
+        </div>
+      </div>
+
+      <div class="subsection">→ La volonté générale</div>
+      <p>Dans le contrat social, chacun renonce à sa <em>volonté particulière</em> pour obéir à la <strong>volonté générale</strong> — ce qui est bon pour l'ensemble de la communauté (≠ dictature de la majorité).</p>
+
+      <div class="quote-strong">
+        « Obéir à la loi qu'on s'est prescrite est liberté. »
+        <cite>— Rousseau, Du Contrat social (1762)</cite>
+      </div>
+
+      <div class="concept">
+        <div class="concept-label">L'État idéal selon Rousseau</div>
+        <p>Une <strong>démocratie</strong> où le peuple est souverain et fait lui-même les lois. Quand un citoyen obéit à la loi qu'il a lui-même contribué à faire, <strong>il reste libre</strong>.</p>
+      </div>
+    </div>
+
+    <!-- LOCKE -->
+    <div class="section" id="s2-locke">
+      <div class="section-title"><span class="s-icon">🔑</span>Locke — Les droits naturels</div>
+      <div class="author">
+        <div class="author-icon">📜</div>
+        <div>
+          <div class="author-name">John Locke</div>
+          <div class="author-dates">1632 – 1704 · Traité du gouvernement civil (1690)</div>
+          <p>Philosophe anglais. Père du libéralisme politique, inspirateur des démocraties modernes.</p>
+        </div>
+      </div>
+
+      <p>Pour Locke, dans l'état de nature, les hommes sont <strong>libres, égaux et raisonnables</strong> — pas en guerre permanente. Chacun possède naturellement trois droits fondamentaux :</p>
+
+      <div class="three-col">
+        <div class="col-card col-green">
+          <h5>🫀 Droit à la vie</h5>
+          <p>Droit naturel inaliénable et premier de tout être humain.</p>
+        </div>
+        <div class="col-card col-green">
+          <h5>🕊️ Droit à la liberté</h5>
+          <p>Liberté naturelle de chaque individu, antérieure à toute société.</p>
+        </div>
+        <div class="col-card col-green">
+          <h5>🌾 Droit à la propriété</h5>
+          <p>On devient propriétaire par le <strong>travail</strong> : cultiver un champ, c'est le faire sien.</p>
+        </div>
+      </div>
+
+      <div class="subsection">→ La fonction limitée de l'État</div>
+      <p>Le défaut de l'état de nature : sans autorité commune, chacun se fait justice lui-même. Les hommes créent un État, mais sa fonction est <strong>limitée : protéger les droits naturels</strong>.</p>
+
+      <div class="two-col">
+        <div class="col-card col-blue">
+          <h5>✅ État libéral</h5>
+          <p>Locke refuse l'État absolu. Le pouvoir doit être <strong>limité par les lois et le consentement du peuple</strong>.</p>
+        </div>
+        <div class="col-card col-blue">
+          <h5>✊ Droit de résistance</h5>
+          <p>Si un gouvernement devient injuste ou tyrannique, les citoyens ont le <strong>droit de résister et de le renverser</strong>.</p>
+        </div>
+      </div>
+
+      <div class="quote-strong">
+        « Là où cesse la loi, la tyrannie commence. »
+        <cite>— Locke, Traité du gouvernement civil (1690)</cite>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ PARTIE III ════ -->
+  <div class="part">
+    <div class="part-header">
+      <div class="part-num">III</div>
+      <div class="part-title">Critiques de l'État — domination, classe, despotisme</div>
+    </div>
+
+    <!-- TOCQUEVILLE -->
+    <div class="section" id="s3-tocqueville">
+      <div class="section-title"><span class="s-icon">🗳️</span>Tocqueville — Le despotisme doux</div>
+      <div class="author">
+        <div class="author-icon">🇺🇸</div>
+        <div>
+          <div class="author-name">Alexis de Tocqueville</div>
+          <div class="author-dates">1805 – 1859 · De la démocratie en Amérique (1835–1840)</div>
+          <p>Aristocrate français, observateur de la démocratie américaine. Il en admire les principes tout en signalant les dangers.</p>
+        </div>
+      </div>
+
+      <p>Les sociétés modernes tendent vers l'égalité. Cette évolution est positive, mais comporte un danger : les individus égaux ont tendance à <strong>se replier sur leur vie privée</strong>, laissant l'État gérer le reste.</p>
+
+      <div class="subsection">→ Le mécanisme du despotisme doux</div>
+      <div class="contract-flow">
+        <div class="cf-step"><div class="cf-title">Individualisme</div><p>Chacun s'occupe de sa famille, son travail, ses loisirs</p></div>
+        <span class="cf-arrow">→</span>
+        <div class="cf-step"><div class="cf-title">Retrait du citoyen</div><p>Plus de participation à la vie publique</p></div>
+        <span class="cf-arrow">→</span>
+        <div class="cf-step"><div class="cf-title">État tutélaire</div><p>Un pouvoir « immense et tutélaire » traite les citoyens comme des enfants</p></div>
+      </div>
+
+      <div class="concept">
+        <div class="concept-label">Le despotisme doux</div>
+        <p>Ce n'est pas une dictature brutale : les citoyens conservent le droit de vote, mais ne participent plus réellement à la vie politique. <strong>L'État pense et agit à leur place.</strong> Les citoyens deviennent passifs et dépendants.</p>
+      </div>
+
+      <div class="subsection">→ Comment éviter ce danger ?</div>
+      <ul class="danger-list">
+        <li><span class="di">🗳️</span> Voter lors des élections</li>
+        <li><span class="di">💬</span> Débattre entre citoyens</li>
+        <li><span class="di">🤝</span> S'engager dans des associations</li>
+        <li><span class="di">🏛️</span> Exercer des responsabilités locales</li>
+      </ul>
+      <div class="highlight">La liberté dépend moins des lois que de <strong>l'habitude de participer</strong>.</div>
+    </div>
+
+    <!-- MARX -->
+    <div class="section" id="s3-marx">
+      <div class="section-title"><span class="s-icon">⚒️</span>Marx — L'État, instrument de classe</div>
+      <div class="author">
+        <div class="author-icon">📕</div>
+        <div>
+          <div class="author-name">Karl Marx</div>
+          <div class="author-dates">1818 – 1883 · Manifeste du parti communiste (1848)</div>
+          <p>Philosophe et économiste allemand. Fondateur du matérialisme historique.</p>
+        </div>
+      </div>
+
+      <p>Marx refuse l'idée que l'État représente l'intérêt général. Dans la société capitaliste, il y a une <strong>lutte entre classes sociales opposées</strong>.</p>
+
+      <div class="two-col">
+        <div class="col-card col-dark">
+          <h5>🏭 La bourgeoisie</h5>
+          <p style="color:rgba(245,240,232,0.85)">Possède les usines, les entreprises et l'argent — les <em>moyens de production</em>.</p>
+        </div>
+        <div class="col-card col-dark">
+          <h5>👷 Le prolétariat</h5>
+          <p style="color:rgba(245,240,232,0.85)">Ne possède que sa <em>force de travail</em>. Il est exploité par la bourgeoisie.</p>
+        </div>
+      </div>
+
+      <div class="subsection">→ L'État au service des dominants</div>
+      <div class="key-fact"><div class="key-bullet"></div><div>Les <strong>lois</strong> protègent la propriété privée.</div></div>
+      <div class="key-fact"><div class="key-bullet"></div><div>La <strong>police</strong> défend l'ordre établi.</div></div>
+      <div class="key-fact"><div class="key-bullet"></div><div>La <strong>justice</strong> sanctionne ceux qui menacent ce système.</div></div>
+
+      <div class="quote-strong">
+        « Le gouvernement de l'État moderne n'est qu'un comité qui gère les affaires communes de toute la classe bourgeoise. »
+        <cite>— Marx, Manifeste du parti communiste (1848)</cite>
+      </div>
+
+      <div class="subsection">→ La révolution et le dépérissement de l'État</div>
+      <div class="contract-flow">
+        <div class="cf-step"><div class="cf-title">Révolution</div><p>Le prolétariat prend le pouvoir, abolit la propriété privée</p></div>
+        <span class="cf-arrow">→</span>
+        <div class="cf-step"><div class="cf-title">Dictature du prolétariat</div><p>Période de transition</p></div>
+        <span class="cf-arrow">→</span>
+        <div class="cf-step"><div class="cf-title">Dépérissement de l'État</div><p>Société sans État, sans domination ni exploitation</p></div>
+      </div>
+    </div>
+
+    <!-- BAKOUNINE -->
+    <div class="section" id="s3-bakounine">
+      <div class="section-title"><span class="s-icon">🔥</span>Bakounine — L'anarchisme</div>
+      <div class="author">
+        <div class="author-icon">✊</div>
+        <div>
+          <div class="author-name">Mikhaïl Bakounine</div>
+          <div class="author-dates">1814 – 1876 · L'État et l'Anarchie (1873)</div>
+          <p>Principal théoricien de l'anarchisme. Contemporain et adversaire de Marx au sein de la Ire Internationale.</p>
+        </div>
+      </div>
+
+      <p>Bakounine pense que <strong>l'État est toujours une forme de domination</strong> et qu'il faut le supprimer. Même quand il prétend défendre le peuple, l'État repose sur la contrainte.</p>
+
+      <div class="quote-strong">
+        « Qui dit État dit domination. »
+        <cite>— Bakounine, L'État et l'Anarchie (1873)</cite>
+      </div>
+
+      <div class="subsection">→ Opposition à Marx</div>
+      <div class="two-col">
+        <div class="col-card col-blue">
+          <h5>Marx</h5>
+          <p>Après la révolution, une <em>dictature du prolétariat</em> provisoire est nécessaire.</p>
+        </div>
+        <div class="col-card col-red">
+          <h5>Bakounine</h5>
+          <p>Non ! Tout nouvel État, même au nom du peuple, deviendra oppressif. Il faut supprimer <strong>immédiatement</strong> l'État.</p>
+        </div>
+      </div>
+
+      <div class="concept">
+        <div class="concept-label">La société anarchiste idéale</div>
+        <p>Organisation libre à partir de <strong>petites communautés et d'associations volontaires</strong>, fondée sur la liberté, l'égalité, la coopération et l'<strong>absence de hiérarchie politique</strong>. Les hommes s'organisent eux-mêmes, sans chef ni gouvernement central.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ PARTIE IV ════ -->
+  <div class="part">
+    <div class="part-header">
+      <div class="part-num">IV</div>
+      <div class="part-title">Modèles alternatifs — qui doit gouverner et comment ?</div>
+    </div>
+
+    <!-- PLATON -->
+    <div class="section" id="s4-platon">
+      <div class="section-title"><span class="s-icon">🏛️</span>Platon — La cité idéale</div>
+      <div class="author">
+        <div class="author-icon">🦉</div>
+        <div>
+          <div class="author-name">Platon</div>
+          <div class="author-dates">428 – 348 av. J.-C. · La République</div>
+          <p>Élève de Socrate, maître d'Aristote. Fonde l'Académie à Athènes.</p>
+        </div>
+      </div>
+
+      <p>Pour Platon, <strong>gouverner est un art qui demande du savoir</strong>. Il critique la démocratie : tout le monde peut gouverner, même des personnes ignorantes ou manipulées — comme si on laissait n'importe qui naviguer un navire.</p>
+
+      <div class="subsection">→ Les trois classes de la cité idéale</div>
+      <div class="pyramid-wrap">
+        <div class="pyr-level pyr-level-1">
+          <div class="pyr-eyebrow">Sommet</div>
+          <div class="pyr-name">Philosophes-rois</div>
+          <div class="pyr-sub">Guidés par la <em>raison</em></div>
+          <div class="pyr-tag">→ Gouvernent la cité</div>
+        </div>
+        <div class="pyr-level pyr-level-2">
+          <div class="pyr-eyebrow">Milieu</div>
+          <div class="pyr-name">Guerriers</div>
+          <div class="pyr-sub">Guidés par le <em>courage</em></div>
+          <div class="pyr-tag">→ Défendent la cité</div>
+        </div>
+        <div class="pyr-level pyr-level-3">
+          <div class="pyr-eyebrow">Base</div>
+          <div class="pyr-name">Producteurs</div>
+          <div class="pyr-sub">Guidés par le <em>désir</em></div>
+          <div class="pyr-tag">Agriculteurs, artisans, commerçants</div>
+        </div>
+      </div>
+
+      <div class="concept">
+        <div class="concept-label">L'aristocratie des meilleurs</div>
+        <p>Un État est juste lorsque chaque groupe accomplit sa fonction <strong>sans empiéter sur celle des autres</strong>. Platon défend une <strong>aristocratie des meilleurs</strong> — non une démocratie.</p>
+      </div>
+    </div>
+
+    <!-- MONTESQUIEU -->
+    <div class="section" id="s4-montesquieu">
+      <div class="section-title"><span class="s-icon">⚖️</span>Montesquieu — La séparation des pouvoirs</div>
+      <div class="author">
+        <div class="author-icon">📚</div>
+        <div>
+          <div class="author-name">Montesquieu</div>
+          <div class="author-dates">1689 – 1755 · De l'Esprit des lois (1748)</div>
+          <p>Juriste et philosophe français. Sa théorie inspire la Constitution américaine de 1787 et les démocraties modernes.</p>
+        </div>
+      </div>
+
+      <p>Montesquieu cherche avant tout à <strong>protéger la liberté des citoyens</strong>. Le principal danger : un pouvoir non limité devient tyrannique.</p>
+
+      <div class="subsection">→ Les trois pouvoirs séparés</div>
+      <div class="pouv-grid">
+        <div class="pouv-card">
+          <span class="pouv-icon">📜</span>
+          <div class="pouv-label">Pouvoir</div>
+          <div class="pouv-title">Législatif</div>
+          <div class="pouv-desc">Vote les lois</div>
+        </div>
+        <div class="pouv-card">
+          <span class="pouv-icon">🏛️</span>
+          <div class="pouv-label">Pouvoir</div>
+          <div class="pouv-title">Exécutif</div>
+          <div class="pouv-desc">Applique les lois</div>
+        </div>
+        <div class="pouv-card">
+          <span class="pouv-icon">⚖️</span>
+          <div class="pouv-label">Pouvoir</div>
+          <div class="pouv-title">Judiciaire</div>
+          <div class="pouv-desc">Juge les infractions</div>
+        </div>
+      </div>
+
+      <div class="quote-strong">
+        « Pour qu'on ne puisse abuser du pouvoir, il faut que, par la disposition des choses, le pouvoir arrête le pouvoir. »
+        <cite>— Montesquieu, De l'Esprit des lois (1748)</cite>
+      </div>
+
+      <p>Montesquieu admire le système politique anglais où le roi, le Parlement et les juges se <strong>limitent mutuellement</strong>. Cette théorie est devenue un fondement des démocraties modernes.</p>
+    </div>
+
+    <!-- MACHIAVEL -->
+    <div class="section" id="s4-machiavel">
+      <div class="section-title"><span class="s-icon">🦁</span>Machiavel — Le Prince, réalisme politique</div>
+      <div class="author">
+        <div class="author-icon">🗡️</div>
+        <div>
+          <div class="author-name">Nicolas Machiavel</div>
+          <div class="author-dates">1469 – 1527 · Le Prince (1513)</div>
+          <p>Diplomate florentin. Père du réalisme politique — veut comprendre comment le pouvoir fonctionne réellement, non comment il devrait fonctionner.</p>
+        </div>
+      </div>
+
+      <p>Machiavel ne cherche pas un État idéal. Les hommes sont souvent <strong>égoïstes, ingrats, changeants</strong> — un dirigeant ne peut pas gouverner uniquement avec la bonté ou la morale.</p>
+
+      <div class="subsection">→ Le prince doit être à la fois...</div>
+      <div class="two-col">
+        <div class="col-card col-warm">
+          <h5>🦁 Un lion</h5>
+          <p>Pour faire peur à ses ennemis et imposer son autorité par la force.</p>
+        </div>
+        <div class="col-card col-warm">
+          <h5>🦊 Un renard</h5>
+          <p>Pour être rusé, éviter les pièges et ne pas toujours tenir sa parole si l'État est en danger.</p>
+        </div>
+      </div>
+
+      <div class="concept">
+        <div class="concept-label">« La fin justifie les moyens »</div>
+        <p>La violence n'est acceptable que si elle sert à <strong>préserver l'État</strong>. Un dirigeant trop faible provoque le désordre. Il vaut mieux être <strong>craint qu'aimé</strong> — mais sans jamais se faire détester, sinon c'est la révolte.</p>
+      </div>
+    </div>
+
+
+</div><!-- end content -->
+
+<footer class="site-footer">
+  <div class="footer-logo">Notion 3 : L'État</div>
+</footer>
+
+<script>
+  document.querySelectorAll('.breadcrumb span:not(.current)').forEach(s => {
+    s.addEventListener('click', () => window.location.href = 'index.html');
+  });
+</script>
+</body>
+</html>

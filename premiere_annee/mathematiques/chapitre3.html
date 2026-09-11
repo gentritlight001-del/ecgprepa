@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Maths Chapitre 3 : Calcul matriciel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false}]});"></script>
+<style>
+  :root {
+    --cream: #F5F3FF;
+    --dark: #1A0040;
+    --indigo: #4F46E5;
+    --indigo-dark: #2D1A7A;
+    --indigo-mid: #7C6FE8;
+    --indigo-light: #DDD6FE;
+    --indigo-border: #A78BFA;
+    --violet: #C4B5FD;
+    --muted: #5B4B8A;
+    --accent: #4F46E5;
+    --accent-soft: #4F46E522;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--dark); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid rgba(79,70,229,0.25);
+    background: var(--indigo-dark); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--violet); cursor: pointer; letter-spacing: 0.02em; }
+  .nav-logo a { color: inherit; text-decoration: none; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(245,243,255,0.5); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: inherit; text-decoration: none; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb a:hover span, .breadcrumb span:hover { color: var(--violet); }
+  .breadcrumb .sep { color: rgba(245,243,255,0.25); }
+  .breadcrumb .current { color: #F5F3FF; cursor: default; }
+
+  /* ─── HERO ─── */
+  .ch-hero {
+    background: var(--indigo-dark);
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ch-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234F46E5' fill-opacity='0.18'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--violet); margin-bottom: 1.5rem; opacity: 0.85; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 4rem); color: var(--cream); font-weight: 900; max-width: 900px; margin: 0 auto 1.5rem; line-height: 1.1; position: relative; z-index: 1; }
+  .ch-hero p { color: rgba(245,243,255,0.45); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  /* ─── TOC ─── */
+  .toc-bar { background: #EDE9FE; padding: 2rem; border-bottom: 1px solid var(--indigo-border); }
+  .toc-inner { max-width: 960px; margin: 0 auto; }
+  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
+  .toc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.4rem; list-style: none; }
+  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: #1A0040; font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
+  .toc-list a:hover { border-color: var(--indigo-border); background: white; color: #000; }
+  .toc-num { font-family: "DM Mono", monospace; font-size: 0.65rem; color: var(--indigo); flex-shrink: 0; margin-top: 0.15rem; }
+
+  /* ─── CONTENT ─── */
+  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 8rem; }
+
+  /* PART */
+  .math-part { margin-bottom: 5rem; }
+  .math-part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--indigo); }
+  .math-part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: var(--indigo-border); line-height: 1; flex-shrink: 0; }
+  .math-part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--dark); line-height: 1.25; }
+
+  /* SECTION */
+  .math-section { margin-bottom: 3.5rem; }
+  .math-section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--indigo-dark); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--indigo); scroll-margin-top: 2rem; }
+  .math-subsection-title { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--indigo); margin: 2rem 0 0.75rem; }
+
+  /* TEXT */
+  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: #1A0040; line-height: 1.85; font-weight: 300; }
+  .content strong { color: var(--dark); font-weight: 600; }
+
+  /* DÉFINITION CARD */
+  .def-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(79,70,229,0.10), 0 0 0 1px rgba(79,70,229,0.12);
+    display: flex;
+    margin: 1.4rem 0;
+  }
+  .def-accent-bar {
+    width: 5px;
+    background: linear-gradient(180deg, #7C6FE8 0%, #2D1A7A 100%);
+    flex-shrink: 0;
+    border-radius: 10px 0 0 10px;
+  }
+  .def-body { padding: 1.2rem 1.5rem; flex: 1; }
+  .def-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.65rem; }
+  .def-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--indigo); font-weight: 500; }
+  .def-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--indigo-dark); }
+  .def-body p { margin-bottom: 0.5rem; font-size: 0.93rem; line-height: 1.75; }
+  .def-body p:last-child { margin-bottom: 0; }
+
+  /* PROPRIÉTÉ CARD */
+  .prop-card {
+    background: var(--indigo-light);
+    border-radius: 8px;
+    border: 1px solid var(--indigo-border);
+    border-left: 4px solid var(--indigo);
+    padding: 1.2rem 1.5rem;
+    margin: 1.4rem 0;
+  }
+  .prop-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--indigo-dark); font-weight: 700; margin-bottom: 0.6rem; }
+  .prop-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--indigo-dark); margin-bottom: 0.7rem; }
+  .prop-card p { margin-bottom: 0.5rem; font-size: 0.93rem; color: var(--indigo-dark); line-height: 1.75; }
+  .prop-card p:last-child { margin-bottom: 0; }
+  .prop-card ol, .prop-card ul { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .prop-card ol li, .prop-card ul li { font-size: 0.93rem; color: var(--indigo-dark); line-height: 1.8; margin-bottom: 0.35rem; }
+
+  /* THÉORÈME CARD */
+  .thm-card {
+    background: var(--indigo-dark);
+    color: var(--cream);
+    border-radius: 8px;
+    padding: 1.5rem 1.75rem;
+    margin: 1.4rem 0;
+  }
+  .thm-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--violet); margin-bottom: 0.5rem; }
+  .thm-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--cream); margin-bottom: 0.75rem; }
+  .thm-card p { color: rgba(245,243,255,0.88); font-size: 0.93rem; margin-bottom: 0.5rem; line-height: 1.75; }
+  .thm-card p:last-child { margin-bottom: 0; }
+  .thm-card ol, .thm-card ul { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .thm-card ol li, .thm-card ul li { color: rgba(245,243,255,0.88); font-size: 0.93rem; line-height: 1.8; margin-bottom: 0.35rem; }
+
+  /* REMARQUE */
+  .remark { background: white; border-left: 3px solid var(--indigo-border); padding: 1rem 1.4rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; font-size: 0.9rem; color: #1A0040; line-height: 1.7; font-style: italic; }
+  .remark::before { content: 'Remarque — '; font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--indigo); display: block; margin-bottom: 0.3rem; }
+
+  /* ATTENTION */
+  .attention { background: #FFF7ED; border-left: 3px solid #F59E0B; padding: 1rem 1.4rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; font-size: 0.9rem; line-height: 1.7; }
+  .attention::before { content: 'Attention — '; font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: #B45309; display: block; margin-bottom: 0.3rem; }
+
+  /* FORMULE DISPLAY */
+  .formula-block {
+    background: white;
+    border: 1px solid var(--indigo-border);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.2rem 0;
+    text-align: center;
+    overflow-x: auto;
+  }
+  .formula-block .katex-display { margin: 0; }
+  .formula-block .katex { font-size: 1.05em; }
+
+  /* TABLE */
+  .math-table-wrap { overflow-x: auto; margin: 1.5rem 0; border-radius: 8px; border: 1px solid var(--indigo-border); box-shadow: 0 2px 8px rgba(79,70,229,0.08); }
+  .math-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .math-table th { background: var(--indigo-dark); color: var(--cream); font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.75rem 1rem; text-align: center; font-weight: 500; border: 1px solid rgba(255,255,255,0.1); }
+  .math-table td { padding: 0.65rem 1rem; text-align: center; border: 1px solid var(--indigo-light); color: #1A0040; vertical-align: middle; background: white; line-height: 1.6; }
+  .math-table tr:nth-child(even) td { background: #F5F3FF; }
+  .math-table tr:hover td { background: var(--indigo-light); }
+  .math-table td.left { text-align: left; }
+  .math-table .katex { font-size: 0.95em; }
+
+  /* KEY FACT */
+  .math-key { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 0.6rem; padding: 0.85rem 1.1rem; background: white; border: 1px solid var(--indigo-light); border-radius: 6px; }
+  .math-key-bullet { width: 6px; height: 6px; background: var(--indigo); border-radius: 50%; flex-shrink: 0; margin-top: 0.55rem; }
+  .math-key > div { font-size: 0.91rem; color: #1A0040; line-height: 1.75; font-weight: 300; }
+
+  /* INLINE MATH */
+  .katex { font-size: 1em; }
+  .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.2rem 0; }
+
+  /* DEUX COLONNES */
+  .two-col-formulas { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
+  .two-col-formulas .formula-block { margin: 0; }
+
+  /* TROIS COLONNES */
+  .three-col-formulas { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
+  .three-col-formulas .formula-block { margin: 0; }
+
+  /* HIGHLIGHT BOX */
+  .math-highlight { background: var(--indigo-light); border-left: 4px solid var(--indigo); padding: 1.25rem 1.75rem; margin: 1.5rem 0; color: var(--indigo-dark); font-size: 0.93rem; line-height: 1.75; border-radius: 0 6px 6px 0; }
+
+  /* CODE PYTHON */
+  .code-block { background: #0F0B2E; border-radius: 8px; padding: 1.2rem 1.5rem; margin: 1.2rem 0; overflow-x: auto; }
+  .code-block pre { font-family: 'DM Mono', monospace; font-size: 0.83rem; color: #C4B5FD; line-height: 1.7; }
+  .code-block .kw { color: var(--violet); font-weight: 500; }
+  .code-block .cm { color: #6E5F9E; font-style: italic; }
+  .code-block .fn { color: #A78BFA; }
+
+  /* FOOTER */
+  .site-footer { background: var(--indigo-dark); border-top: 1px solid rgba(79,70,229,0.35); padding: 2.5rem 2rem; text-align: center; }
+  .site-footer .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--violet); letter-spacing: 0.02em; margin-bottom: 0.5rem; }
+  .site-footer .footer-meta { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(245,243,255,0.35); }
+
+  /* BACK TO TOP */
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--indigo); color: var(--cream); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 4px 14px rgba(79,70,229,0.45); opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 200; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+  .back-to-top:hover { background: var(--indigo-mid); }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--indigo-border); border-radius: 3px; }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .two-col-formulas { grid-template-columns: 1fr; }
+    .three-col-formulas { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    @page { size: A4; margin: 15mm 14mm 15mm 14mm; }
+    nav, .back-to-top, .toc-bar, .site-footer { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    html, body { background: white !important; color: #000 !important; font-size: 10pt; width: 100% !important; }
+    .ch-hero { background: #2D1A7A !important; padding: 0.9rem 1rem 0.7rem !important; }
+    .ch-hero::before { display: none !important; }
+    .ch-hero h1 { font-size: 16pt !important; color: #fff !important; margin-bottom: 0.3rem !important; }
+    .ch-hero .chap-label { font-size: 7pt !important; color: #C4B5FD !important; margin-bottom: 0.4rem !important; }
+    .ch-hero p { font-size: 7pt !important; color: #C4B5FD !important; margin: 0 !important; }
+    .content { max-width: 100% !important; padding: 0.6rem 0 !important; margin: 0 !important; }
+    .content p { font-size: 9pt !important; line-height: 1.5 !important; margin-bottom: 0.45rem !important; color: #000 !important; }
+    .math-part { margin-bottom: 0.8rem; page-break-inside: auto; }
+    .math-part-header { page-break-after: avoid; padding-bottom: 0.6rem !important; margin-bottom: 1rem !important; border-bottom: 2pt solid #4F46E5 !important; }
+    .math-part-num { font-size: 2rem !important; color: #A78BFA !important; }
+    .math-part-title { font-size: 13pt !important; }
+    .math-section { page-break-inside: auto; margin-bottom: 0.8rem; }
+    .math-section-title { page-break-after: avoid; font-size: 11pt !important; padding-left: 0.7rem !important; border-left: 2.5pt solid #4F46E5 !important; margin-bottom: 0.55rem !important; color: #2D1A7A !important; }
+    .math-subsection-title { page-break-after: avoid; font-size: 7pt !important; margin: 0.65rem 0 0.35rem !important; color: #4F46E5 !important; }
+    .def-card { page-break-inside: avoid; box-shadow: none !important; border: 1pt solid #A78BFA !important; display: flex !important; border-radius: 0 !important; margin: 0.55rem 0 !important; }
+    .def-accent-bar { background: #4F46E5 !important; width: 4px !important; border-radius: 0 !important; }
+    .def-body { padding: 0.7rem 1rem !important; }
+    .def-body p { font-size: 8.5pt !important; line-height: 1.5 !important; color: #000 !important; }
+    .prop-card { page-break-inside: avoid; background: #DDD6FE !important; border-left: 2.5pt solid #4F46E5 !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .prop-card p, .prop-card li { font-size: 8.5pt !important; line-height: 1.5 !important; color: #2D1A7A !important; }
+    .thm-card { page-break-inside: avoid; background: #2D1A7A !important; padding: 0.75rem 1rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .thm-label { font-size: 6pt !important; color: #C4B5FD !important; }
+    .thm-title { font-size: 9.5pt !important; color: #fff !important; }
+    .thm-card p, .thm-card li { font-size: 8.5pt !important; color: rgba(245,243,255,0.9) !important; line-height: 1.5 !important; }
+    .remark { page-break-inside: avoid; border-left: 2pt solid #A78BFA !important; padding: 0.5rem 0.9rem !important; margin: 0.45rem 0 !important; font-size: 8pt !important; border-radius: 0 !important; }
+    .formula-block { page-break-inside: avoid; border: 1pt solid #A78BFA !important; padding: 0.5rem 0.8rem !important; margin: 0.45rem 0 !important; border-radius: 0 !important; }
+    .math-key { page-break-inside: avoid; padding: 0.4rem 0.8rem !important; margin-bottom: 0.3rem !important; border: 1pt solid #DDD6FE !important; border-radius: 0 !important; }
+    .math-key > div { font-size: 8.5pt !important; line-height: 1.45 !important; color: #000 !important; }
+    .math-highlight { page-break-inside: avoid; background: #DDD6FE !important; border-left: 2.5pt solid #4F46E5 !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; font-size: 8.5pt !important; color: #2D1A7A !important; border-radius: 0 !important; }
+    .math-table-wrap { page-break-inside: avoid; margin: 0.55rem 0 !important; border: 1pt solid #A78BFA !important; border-radius: 0 !important; box-shadow: none !important; }
+    .math-table th { background: #2D1A7A !important; color: #C4B5FD !important; font-size: 6.5pt !important; padding: 0.4rem 0.6rem !important; }
+    .math-table td { font-size: 8pt !important; padding: 0.4rem 0.6rem !important; border: 0.5pt solid #DDD6FE !important; }
+    .code-block { page-break-inside: avoid; background: #0F0B2E !important; padding: 0.6rem 0.9rem !important; margin: 0.45rem 0 !important; border-radius: 0 !important; }
+    .code-block pre { font-size: 7.5pt !important; }
+    .two-col-formulas, .three-col-formulas { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 0.5rem !important; margin: 0.45rem 0 !important; }
+    .katex { font-size: 0.82em !important; }
+    .katex-display { margin: 0.15rem 0 !important; overflow: visible !important; }
+    .katex-html { white-space: normal !important; }
+    .katex .base { display: inline !important; white-space: nowrap !important; }
+    .def-body p, .prop-card p, .thm-card p, .remark, .math-key > div, .content p { overflow: visible !important; word-break: break-word !important; }
+    .formula-block { overflow: visible !important; height: auto !important; min-height: 0 !important; text-align: center !important; }
+    .formula-block .katex-display { overflow-x: visible !important; overflow-y: visible !important; text-align: center !important; }
+    .katex *, .katex-html * { position: static !important; top: auto !important; bottom: auto !important; left: auto !important; right: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left"><div class="nav-logo"><a href="../../index.html">ECG Prépa</a></div></div>
+  <div class="breadcrumb">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">/</span>
+    <a href="index.html"><span>Mathématiques</span></a>
+    <span class="sep">/</span>
+    <span class="current">Chapitre 3</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="chap-label">&#x2015;&nbsp; Chapitre 3 · Mathématiques approfondies &nbsp;&#x2015;</div>
+  <h1>Calcul matriciel</h1>
+  <p>Matrices · Opérations · Transposition · Puissances · Inversibilité</p>
+</div>
+
+<!-- TOC -->
+<div class="toc-bar">
+  <div class="toc-inner">
+    <div class="toc-title">Table des matières</div>
+    <ul class="toc-list">
+      <li><a href="#part1"><span class="toc-num">I</span> L'ensemble $\mathcal{M}_{n,p}(\mathbb{R})$</a></li>
+      <li><a href="#part2"><span class="toc-num">II</span> Opérations sur les matrices</a></li>
+      <li><a href="#part3"><span class="toc-num">III</span> Complément sur les matrices carrées</a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════════
+     PARTIE I — L'ENSEMBLE M_{n,p}(R)
+════════════════════════════════════════ -->
+<div class="math-part" id="part1">
+  <div class="math-part-header">
+    <div class="math-part-num">I</div>
+    <div class="math-part-title">L'ensemble $\mathcal{M}_{n,p}(\mathbb{R})$ et l'ensemble $\mathcal{M}_{n}(\mathbb{R})$</div>
+  </div>
+
+  <!-- SECTION 1 : Définitions -->
+  <div class="math-section" id="s1-1">
+    <div class="math-section-title">1 — Définitions générales</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span><span class="def-name">Matrice</span></div>
+        <p>On appelle <strong>matrice à $n$ lignes et $p$ colonnes</strong>, avec $(n,p)\in(\mathbb{N}^*)^2$, tout tableau du type :</p>
+        \[A = \begin{pmatrix} a_{11} & a_{12} & \cdots & a_{1p} \\ a_{21} & a_{22} & \cdots & a_{2p} \\ \vdots & \vdots & & \vdots \\ a_{n1} & a_{n2} & \cdots & a_{np} \end{pmatrix}\]
+        <p>Une telle matrice se note $A = (a_{i,j})_{i,j}$ et se lit et s'écrit <strong>en colonnes</strong>. $a_{i,j} \in \mathbb{R}$ est appelé <strong>coefficient</strong> de la matrice ; il se situe à l'intersection de la $i$-ième ligne et de la $j$-ième colonne. On note ce coefficient $a_{i,j}$ ou $A[i,j]$.</p>
+        <p>L'ensemble des matrices à $n$ lignes et $p$ colonnes à coefficients réels se note $\mathcal{M}_{n,p}(\mathbb{R})$.</p>
+        <p>Si $p = n$, $A$ est une <strong>matrice carrée d'ordre $n$</strong>. L'ensemble de ces matrices se note $\mathcal{M}_n(\mathbb{R})$.</p>
+      </div>
+    </div>
+
+    <div class="remark">
+      Si $K \in \mathcal{M}_{n,1}(\mathbb{R})$, on dit que $K$ est une <strong>matrice colonne</strong>.
+      Si $L \in \mathcal{M}_{1,p}(\mathbb{R})$, on dit que $L$ est une <strong>matrice ligne</strong>.
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 2</span><span class="def-name">Matrice nulle</span></div>
+        <p>On appelle <strong>matrice nulle</strong> à $n$ lignes et $p$ colonnes la matrice dont tous les coefficients sont nuls. On la note $O_{n,p}$ ou simplement $O_n$ si $n = p$.</p>
+      </div>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 3</span><span class="def-name">Égalité de matrices</span></div>
+        <p>Deux matrices $A = (a_{i,j})_{i,j}$ et $B = (b_{i,j})_{i,j}$ de $\mathcal{M}_{n,p}(\mathbb{R})$ sont <strong>égales</strong> si et seulement si tous leurs coefficients sont égaux :</p>
+        \[\forall i \in \llbracket 1,n \rrbracket,\quad \forall j \in \llbracket 1,p \rrbracket,\quad a_{i,j} = b_{i,j}\]
+        <p>On note alors $A = B$.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2 : Matrices carrées particulières -->
+  <div class="math-section" id="s1-2">
+    <div class="math-section-title">2 — Matrices carrées particulières</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 4</span><span class="def-name">Matrice unité</span></div>
+        <p>On appelle <strong>matrice unité d'ordre $n$</strong> la matrice notée $I_n$ ayant des "1" sur la diagonale et des "0" ailleurs. Elle est définie par :</p>
+        \[I_n = (\delta_{i,j})_{i,j} \quad \text{où} \quad \delta_{i,j} = \begin{cases} 1 & \text{si } i = j \\ 0 & \text{si } i \neq j \end{cases}\]
+      </div>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 5</span><span class="def-name">Matrice diagonale</span></div>
+        <p>Soit $A = (a_{i,j})_{i,j} \in \mathcal{M}_n(\mathbb{R})$. On dit que $A$ est une <strong>matrice diagonale</strong> ssi $a_{i,j} = 0$ pour $i \neq j$. Une matrice $A$ est diagonale ssi elle est du type :</p>
+        \[A = \begin{pmatrix} a_{11} & 0 & \cdots & 0 \\ 0 & a_{22} & & \vdots \\ \vdots & & \ddots & 0 \\ 0 & \cdots & 0 & a_{nn} \end{pmatrix}\]
+        <p>L'ensemble des matrices diagonales se note $D_n(\mathbb{R})$. On a $I_n \in D_n(\mathbb{R})$ et $O_n \in D_n(\mathbb{R})$.</p>
+      </div>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 6</span><span class="def-name">Matrice triangulaire</span></div>
+        <p>Soit $A = (a_{i,j})_{i,j} \in \mathcal{M}_n(\mathbb{R})$.</p>
+        <p>$A$ est <strong>triangulaire supérieure</strong> ssi $a_{i,j} = 0$ pour $i > j$ (zéros sous la diagonale).</p>
+        <p>$A$ est <strong>triangulaire inférieure</strong> ssi $a_{i,j} = 0$ pour $i < j$ (zéros au-dessus de la diagonale).</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE II — OPÉRATIONS
+════════════════════════════════════════ -->
+<div class="math-part" id="part2">
+  <div class="math-part-header">
+    <div class="math-part-num">II</div>
+    <div class="math-part-title">Opérations sur les matrices</div>
+  </div>
+
+  <!-- SECTION 1 : Les trois opérations -->
+  <div class="math-section" id="s2-1">
+    <div class="math-section-title">1 — Les trois opérations "+", "." et "×"</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span><span class="def-name">Somme et multiplication scalaire</span></div>
+        <p>Soit $A = (a_{i,j})_{i,j} \in \mathcal{M}_{n,p}(\mathbb{R})$, $B = (b_{i,j})_{i,j} \in \mathcal{M}_{n,p}(\mathbb{R})$ et $\lambda \in \mathbb{R}$.</p>
+        <p><strong>La somme $A + B$</strong> est la matrice $C = (c_{i,j})_{i,j} \in \mathcal{M}_{n,p}(\mathbb{R})$ définie par :</p>
+        \[\forall i \in \llbracket 1,n \rrbracket,\; \forall j \in \llbracket 1,p \rrbracket,\quad c_{i,j} = a_{i,j} + b_{i,j}\]
+        <p><strong>La multiplication par $\lambda$</strong> est la matrice $D = \lambda.A \in \mathcal{M}_{n,p}(\mathbb{R})$ définie par :</p>
+        \[\forall i \in \llbracket 1,n \rrbracket,\; \forall j \in \llbracket 1,p \rrbracket,\quad d_{i,j} = \lambda \cdot a_{i,j}\]
+      </div>
+    </div>
+
+    <div class="remark">
+      On construit la matrice résultat <strong>colonne par colonne</strong>. La multiplication par un nombre se note "." et non "×" et on écrit toujours $\lambda.A$, jamais $A.\lambda$.
+      On pose $-A = (-1).A$, donc $-A = (-a_{i,j})_{i,j}$.
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 2</span><span class="def-name">Combinaison linéaire</span></div>
+        <p>Soient $A$, $B$ deux matrices de $\mathcal{M}_n(\mathbb{R})$. On note $\text{Vect}(A,B) = \{M = \lambda.A + \mu.B \mid \lambda, \mu \in \mathbb{R}\}$.</p>
+        <p>On a $M \in \text{Vect}(A,B) \Leftrightarrow \exists(\lambda,\mu)\in\mathbb{R}^2$ tels que $M = \lambda.A + \mu.B$.</p>
+        <p>On dit alors que $M$ est une <strong>combinaison linéaire</strong> de $A$ et de $B$.</p>
+      </div>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 3</span><span class="def-name">Produit — matrice × colonne</span></div>
+        <p>Soit $A = (a_{i,j})_{i,j} \in \mathcal{M}_{n,r}(\mathbb{R})$ et $B = \begin{pmatrix}b_1 \\ b_2 \\ \vdots \\ b_r\end{pmatrix} \in \mathcal{M}_{r,1}(\mathbb{R})$. On pose $A \times B = C$ avec :</p>
+        \[C = \begin{pmatrix} a_{11}b_1 + a_{12}b_2 + \cdots + a_{1r}b_r \\ a_{21}b_1 + a_{22}b_2 + \cdots + a_{2r}b_r \\ \vdots \\ a_{n1}b_1 + a_{n2}b_2 + \cdots + a_{nr}b_r \end{pmatrix} \in \mathcal{M}_{n,1}(\mathbb{R})\]
+        <p>Pour calculer un produit matriciel, on utilisera une présentation sous forme de tableau ($B$ en haut, $A$ à gauche, coefficients de $C$ dans le tableau).</p>
+      </div>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 4</span><span class="def-name">Produit matriciel général</span></div>
+        <p>Soit $A = (a_{i,j})_{i,j} \in \mathcal{M}_{n,r}(\mathbb{R})$ et $B = (b_{i,j})_{i,j} \in \mathcal{M}_{r,p}(\mathbb{R})$. On appelle <strong>produit matriciel</strong> de $A$ par $B$ la matrice $C = A \times B$ définie par :</p>
+        \[C = (c_{i,j})_{i,j} \in \mathcal{M}_{n,p}(\mathbb{R}) \quad \text{avec} \quad c_{i,j} = \sum_{k=1}^{r} a_{i,k}\, b_{k,j}\]
+        <p>On construit $C$ <strong>colonne par colonne</strong> : la $i$-ième colonne de $C$ est $C_i = A \times B_i$.</p>
+      </div>
+    </div>
+
+    <div class="attention">
+      Pour pouvoir effectuer $A \times B$, on doit avoir : <strong>nombre de colonnes de $A$ = nombre de lignes de $B$</strong>.
+    </div>
+  </div>
+
+  <!-- SECTION 2 : Propriétés -->
+  <div class="math-section" id="s2-2">
+    <div class="math-section-title">2 — Propriétés des opérations</div>
+
+    <p>Dans tout ce paragraphe, $A$, $B$, $C$ sont des matrices et $\lambda$, $\mu$ des nombres.</p>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <div class="prop-title">Règles de calcul</div>
+      <ol>
+        <li><strong>Associativité :</strong> $A + (B+C) = (A+B)+C$ ;  $A\times(B\times C) = (A\times B)\times C$ ;  $\lambda.(\mu.A) = (\lambda\mu).A$</li>
+        <li><strong>Distributivité :</strong> $A\times(B+C) = A\times B + A\times C$ et $(B+C)\times A = B\times A + C\times A$ ; $(\lambda+\mu).A = \lambda.A + \mu.A$ et $\lambda.(A+B) = \lambda.A + \lambda.B$</li>
+        <li><strong>Regroupement des scalaires :</strong> $(\lambda.A)\times B = A\times(\lambda.B) = \lambda.(A\times B)$ et $(\lambda.A)\times(\mu.B) = (\lambda\mu).A\times B$</li>
+        <li><strong>La "+" est commutative ; "×" ne l'est pas :</strong> $A+B = B+A$ mais en général $A\times B \neq B\times A$</li>
+      </ol>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 5</span><span class="def-name">Commutativité</span></div>
+        <p>On dit que deux matrices $A$ et $B$ de $\mathcal{M}_n(\mathbb{R})$ <strong>commutent</strong> ssi $A\times B = B\times A$.</p>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 2</div>
+      <div class="prop-title">Rôle du zéro et de l'unité</div>
+      <ol>
+        <li>Action des réels : $0.A = O_{n,p}$ et $1.A = A$</li>
+        <li>Action des matrices :
+          \[A + O_{n,p} = O_{n,p} + A = A\]
+          \[A\times O_p = O_n\times A = O_{n,p}\]
+          \[A\times I_p = I_n\times A = A\]
+        </li>
+      </ol>
+    </div>
+
+    <div class="remark">
+      On peut avoir $A\times B = O_n$ avec $A \neq O_n$ et $B \neq O_n$. Cela implique qu'on peut avoir $A\times B = A\times C$ avec $B \neq C$.
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 3</div>
+      <div class="prop-title">Opérations sur les matrices diagonales</div>
+      <p>Soit $D = \text{diag}(d_1,\dots,d_n)$ et $\Delta = \text{diag}(\delta_1,\dots,\delta_n)$ deux matrices diagonales :</p>
+      <p>$D + \Delta$ est une matrice diagonale : $D + \Delta = \text{diag}(d_1+\delta_1, \dots, d_n+\delta_n)$</p>
+      <p>$D\times\Delta$ est une matrice diagonale : $D\times\Delta = \text{diag}(d_1\delta_1, \dots, d_n\delta_n)$</p>
+      <p><em>Remarque :</em> Le résultat d'une opération sur des matrices triangulaires est aussi une matrice du même type.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 3 : Transposition -->
+  <div class="math-section" id="s2-3">
+    <div class="math-section-title">3 — Transposition</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 6</span><span class="def-name">Transposée</span></div>
+        <p>Soit $A = (a_{i,j})_{i,j} \in \mathcal{M}_{n,p}(\mathbb{R})$. On appelle <strong>transposée de $A$</strong> la matrice notée ${}^tA$ obtenue en faisant une symétrie par rapport à la diagonale (les lignes de ${}^tA$ sont les colonnes de $A$). Elle est définie par :</p>
+        \[{}^tA = (b_{i,j})_{i,j} \in \mathcal{M}_{p,n}(\mathbb{R}) \quad \text{où} \quad \forall(i,j)\in\llbracket 1,p\rrbracket\times\llbracket 1,n\rrbracket,\quad b_{i,j} = a_{j,i}\]
+        <p>Ainsi, la $k$-ième colonne de $A$ devient la $k$-ième ligne de ${}^tA$.</p>
+      </div>
+    </div>
+
+    <div class="remark">
+      (1) Si $A$ est triangulaire supérieure, alors ${}^tA$ est triangulaire inférieure.&emsp;
+      (2) Si $A$ est diagonale, ${}^tA = A$.
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 7</span><span class="def-name">Symétrique / antisymétrique</span></div>
+        <p>Soit $M = (m_{i,j})_{i,j} \in \mathcal{M}_n(\mathbb{R})$.</p>
+        <p>$M$ est une <strong>matrice symétrique</strong> ssi ${}^tM = M$.</p>
+        <p>$M$ est une <strong>matrice antisymétrique</strong> ssi ${}^tM = -M$. En particulier, les coefficients diagonaux d'une matrice antisymétrique sont tous nuls.</p>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 4</div>
+      <div class="prop-title">Transposition et opérations</div>
+      <p>Soit $A$ et $B$ deux éléments de $\mathcal{M}_{n,p}(\mathbb{R})$ (ou $\mathcal{M}_n(\mathbb{R})$) et $\lambda \in \mathbb{R}$ :</p>
+      <div class="two-col-formulas" style="margin-top:0.7rem;">
+        <div class="formula-block">${}^t(A+B) = {}^tA + {}^tB$</div>
+        <div class="formula-block">${}^t({}^tA) = A$</div>
+        <div class="formula-block">${}^t(\lambda.A) = \lambda.\,{}^tA$</div>
+        <div class="formula-block">${}^t(A\times B) = {}^tB\times {}^tA$</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE III — COMPLÉMENT MATRICES CARRÉES
+════════════════════════════════════════ -->
+<div class="math-part" id="part3">
+  <div class="math-part-header">
+    <div class="math-part-num">III</div>
+    <div class="math-part-title">Complément sur les matrices carrées</div>
+  </div>
+
+  <!-- SECTION 1 : Puissance -->
+  <div class="math-section" id="s3-1">
+    <div class="math-section-title">1 — Puissance d'une matrice carrée</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span><span class="def-name">Puissance entière</span></div>
+        <p>Soit $A \in \mathcal{M}_n(\mathbb{R})$. On pose :</p>
+        \[A^0 = I_n \qquad \text{et} \qquad \forall k \in \mathbb{N}^*,\quad A^k = \underbrace{A\times A\times\cdots\times A}_{k \text{ fois}}\]
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <div class="prop-title">Propriétés de la puissance</div>
+      <ol>
+        <li>La matrice unité $I_n$ commute avec toute matrice $A \in \mathcal{M}_n(\mathbb{R})$ et avec toute puissance de $A$.</li>
+        <li>$A$ commute avec toute puissance de $A$ : $\forall k \in \mathbb{N},\; A\times A^k = A^k\times A = A^{k+1}$</li>
+        <li>Si $B$ commute avec $A$, alors $\forall k \in \mathbb{N}$ : $A\times B^k = B^k\times A$ et $(A\times B)^k = A^k\times B^k$</li>
+      </ol>
+      <p style="margin-top:0.5rem;"><em>Attention :</em> Si $A$ et $B$ ne commutent pas, on ne peut rien dire. Notamment $(AB)^n \neq A^n B^n$ en général.</p>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 2</div>
+      <div class="prop-title">Puissance d'une matrice diagonale</div>
+      <p>Si $D = \text{diag}(d_1,\dots,d_n)$ est une matrice diagonale, alors $\forall k \in \mathbb{N}$, $D^k$ est une matrice diagonale et :</p>
+      \[D^k = \text{diag}(d_1^k, \dots, d_n^k)\]
+    </div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 3</div>
+      <div class="thm-title">Formule du binôme de Newton pour matrices qui commutent</div>
+      <p>Soit $A$ et $B$ deux matrices de $\mathcal{M}_r(\mathbb{R})$ telles que $A\times B = B\times A$. On a pour tout $n \in \mathbb{N}$ :</p>
+      \[(A+B)^n = \sum_{k=0}^{n} \binom{n}{k} A^k \times B^{n-k} = B^n + \binom{n}{1}A\,B^{n-1} + \binom{n}{2}A^2\,B^{n-2} + \cdots + A^n\]
+    </div>
+  </div>
+
+  <!-- SECTION 2 : Matrice inversible -->
+  <div class="math-section" id="s3-2">
+    <div class="math-section-title">2 — Matrice inversible</div>
+
+    <div class="math-subsection-title">a) Définition et propriétés</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 2</span><span class="def-name">Matrice inversible</span></div>
+        <p>On dit qu'une matrice $A$ de $\mathcal{M}_n(\mathbb{R})$ est <strong>inversible</strong> ssi il existe une matrice $B \in \mathcal{M}_n(\mathbb{R})$ telle que :</p>
+        \[A\times B = I_n \quad \text{ou} \quad B\times A = I_n\]
+        <p>$B$ est alors <strong>unique</strong> et s'appelle l'<strong>inverse de $A$</strong>, noté $A^{-1}$. On a :</p>
+        \[\boxed{A \text{ est inversible} \iff A^{-1} \text{ existe} \iff A\times A^{-1} = A^{-1}\times A = I_n}\]
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 4</div>
+      <div class="prop-title">Propriétés de l'inverse</div>
+      <ol>
+        <li>$I_n$ est inversible avec $(I_n)^{-1} = I_n$ ; par contre, $O_n$ n'est pas inversible.</li>
+        <li>Si $A$ est inversible alors $A^{-1}$ est inversible et $(A^{-1})^{-1} = A$.</li>
+        <li>Le produit de matrices inversibles est inversible : si $A$ et $B$ sont inversibles alors $(A\times B)^{-1} = B^{-1}\times A^{-1}$.</li>
+        <li>La transposée d'une matrice inversible est inversible : $({}^tA)^{-1} = {}^t(A^{-1})$.</li>
+        <li>Si $A$ est inversible alors $\forall k \in \mathbb{N}$, $A^k$ est inversible et $(A^k)^{-1} = (A^{-1})^k$.</li>
+      </ol>
+    </div>
+
+    <div class="math-subsection-title">b) Critères d'inversibilité dans des cas particuliers</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 5</div>
+      <div class="prop-title">Inversibilité des matrices diagonales</div>
+      <p>Une matrice diagonale $D = \text{diag}(d_1, d_2, \dots, d_n)$ est inversible ssi tous ses coefficients diagonaux sont différents de zéro :</p>
+      \[D \text{ est inversible} \iff \forall i \in \llbracket 1,n\rrbracket,\; d_i \neq 0 \quad \Rightarrow \quad D^{-1} = \text{diag}\!\left(\tfrac{1}{d_1}, \tfrac{1}{d_2}, \dots, \tfrac{1}{d_n}\right)\]
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 6</div>
+      <div class="prop-title">Inversibilité des matrices triangulaires</div>
+      <p>Une matrice triangulaire est inversible ssi tous ses coefficients diagonaux sont différents de zéro. Ainsi pour $T = (t_{ij})$ triangulaire :</p>
+      \[T \text{ est inversible} \iff \forall i \in \llbracket 1,n\rrbracket,\; t_{ii} \neq 0\]
+      <p>L'inverse $T^{-1}$ est alors une matrice triangulaire du même type, avec $\frac{1}{t_{ii}}$ sur la diagonale.</p>
+    </div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 7</div>
+      <div class="thm-title">Inversibilité des matrices $2 \times 2$</div>
+      <p>Soit $M = \begin{pmatrix} a & c \\ b & d \end{pmatrix} \in \mathcal{M}_2(\mathbb{R})$. On a :</p>
+      \[M \text{ est inversible} \iff ad - bc \neq 0 \qquad \text{et dans ce cas} \quad M^{-1} = \frac{1}{ad-bc}\begin{pmatrix} d & -c \\ -b & a \end{pmatrix}\]
+      <p>La quantité $ad - bc$ s'appelle le <strong style="color:var(--cream);">déterminant</strong> de $M$.</p>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 8</div>
+      <div class="prop-title">Critère sur les colonnes et les lignes</div>
+      <ul>
+        <li>Si la matrice contient une colonne (ou ligne) nulle, elle n'est <strong>pas inversible</strong>.</li>
+        <li>Une matrice ayant deux colonnes (ou deux lignes) proportionnelles n'est <strong>pas inversible</strong>.</li>
+        <li>Si l'on peut recréer une colonne nulle à l'aide des autres colonnes (ou lignes), la matrice n'est <strong>pas inversible</strong>.</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- fin .content -->
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-logo">Chapitre 3 : Calcul matriciel</div>
+</footer>
+
+<button class="back-to-top" id="btt" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Retour en haut">↑</button>
+
+<script>
+  const btt = document.getElementById('btt');
+  window.addEventListener('scroll', () => {
+    btt.classList.toggle('visible', window.scrollY > 400);
+  });
+</script>
+
+</body>
+</html>

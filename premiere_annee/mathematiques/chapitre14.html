@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Maths Chapitre 14 : Variables aléatoires discrètes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false}]});"></script>
+<style>
+  :root {
+    --cream: #F8F5F7;
+    --dark: #1A1418;
+    --teal: #A31D6B;
+    --teal-dark: #3B1030;
+    --teal-mid: #C24B93;
+    --teal-light: #F3E1EC;
+    --teal-border: #DBA8C7;
+    --mint: #F2C9E2;
+    --muted: #7A5C70;
+    --accent: #A31D6B;
+    --accent-soft: #A31D6B22;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--dark); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid rgba(163,29,107,0.25);
+    background: var(--teal-dark); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--mint); cursor: pointer; letter-spacing: 0.02em; }
+  .nav-logo a { color: inherit; text-decoration: none; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(248,245,247,0.5); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: inherit; text-decoration: none; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb a:hover span, .breadcrumb span:hover { color: var(--mint); }
+  .breadcrumb .sep { color: rgba(248,245,247,0.25); }
+  .breadcrumb .current { color: #F8F5F7; cursor: default; }
+
+  /* ─── HERO ─── */
+  .ch-hero {
+    background: var(--teal-dark);
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ch-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23A31D6B' fill-opacity='0.18'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--mint); margin-bottom: 1.5rem; opacity: 0.85; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 4rem); color: var(--cream); font-weight: 900; max-width: 900px; margin: 0 auto 1.5rem; line-height: 1.1; position: relative; z-index: 1; }
+  .ch-hero p { color: rgba(248,245,247,0.45); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  /* ─── TOC ─── */
+  .toc-bar { background: #F1E0EC; padding: 2rem; border-bottom: 1px solid var(--teal-border); }
+  .toc-inner { max-width: 960px; margin: 0 auto; }
+  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
+  .toc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.4rem; list-style: none; }
+  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: #351929; font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
+  .toc-list a:hover { border-color: var(--teal-border); background: white; color: #000; }
+  .toc-num { font-family: "DM Mono", monospace; font-size: 0.65rem; color: var(--teal); flex-shrink: 0; margin-top: 0.15rem; }
+
+  /* ─── CONTENT ─── */
+  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 3rem; }
+
+  /* PART */
+  .math-part { margin-bottom: 5rem; }
+  .math-part:last-of-type { margin-bottom: 0; }
+  .math-part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--teal); }
+  .math-part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: var(--teal-border); line-height: 1; flex-shrink: 0; }
+  .math-part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--dark); line-height: 1.25; }
+
+  /* SECTION */
+  .math-section { margin-bottom: 3.5rem; }
+  .math-section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--teal-dark); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--teal); scroll-margin-top: 2rem; }
+  .math-subsection-title { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--teal); margin: 2rem 0 0.75rem; }
+
+  /* TEXT */
+  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: #241820; line-height: 1.85; font-weight: 300; }
+  .content strong { color: var(--dark); font-weight: 600; }
+
+  /* DÉFINITION CARD */
+  .def-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(163,29,107,0.10), 0 0 0 1px rgba(163,29,107,0.12);
+    display: flex;
+    margin: 1.4rem 0;
+  }
+  .def-accent-bar {
+    width: 5px;
+    background: linear-gradient(180deg, #D24E9C 0%, #4A0E38 100%);
+    flex-shrink: 0;
+    border-radius: 10px 0 0 10px;
+  }
+  .def-body { padding: 1.2rem 1.5rem; flex: 1; }
+  .def-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.65rem; }
+  .def-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--teal); font-weight: 500; }
+  .def-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--teal-dark); }
+  .def-body p { margin-bottom: 0.5rem; font-size: 0.93rem; line-height: 1.75; }
+  .def-body p:last-child { margin-bottom: 0; }
+
+  /* PROPRIÉTÉ CARD */
+  .prop-card {
+    background: var(--teal-light);
+    border-radius: 8px;
+    border: 1px solid var(--teal-border);
+    border-left: 4px solid var(--teal);
+    padding: 1.2rem 1.5rem;
+    margin: 1.4rem 0;
+  }
+  .prop-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--teal-dark); font-weight: 700; margin-bottom: 0.6rem; }
+  .prop-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--teal-dark); margin-bottom: 0.7rem; }
+  .prop-card p { margin-bottom: 0.5rem; font-size: 0.93rem; color: var(--teal-dark); line-height: 1.75; }
+  .prop-card p:last-child { margin-bottom: 0; }
+  .prop-card ol, .prop-card ul { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .prop-card ol li, .prop-card ul li { font-size: 0.93rem; color: var(--teal-dark); line-height: 1.8; margin-bottom: 0.35rem; }
+
+  /* THÉORÈME CARD */
+  .thm-card {
+    background: var(--teal-dark);
+    color: var(--cream);
+    border-radius: 8px;
+    padding: 1.5rem 1.75rem;
+    margin: 1.4rem 0;
+  }
+  .thm-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--mint); margin-bottom: 0.5rem; }
+  .thm-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--cream); margin-bottom: 0.75rem; }
+  .thm-card p { color: rgba(248,245,247,0.88); font-size: 0.93rem; margin-bottom: 0.5rem; line-height: 1.75; }
+  .thm-card p:last-child { margin-bottom: 0; }
+
+  /* MÉTHODE CARD */
+  .meth-card {
+    background: white;
+    border: 2px solid var(--teal);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.4rem 0;
+  }
+  .meth-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--teal); font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+  .meth-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--teal-dark); margin-bottom: 0.7rem; }
+  .meth-card p { font-size: 0.93rem; line-height: 1.75; margin-bottom: 0.5rem; }
+  .meth-card p:last-child { margin-bottom: 0; }
+  .meth-card ul, .meth-card ol { padding-left: 1.4rem; margin: 0.3rem 0 0.5rem; }
+  .meth-card li { font-size: 0.93rem; line-height: 1.8; margin-bottom: 0.3rem; }
+
+  /* REMARQUE */
+  .remark { background: white; border-left: 3px solid var(--teal-border); padding: 1rem 1.4rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; font-size: 0.9rem; color: #262624; line-height: 1.7; font-style: italic; }
+  .remark::before { content: 'Remarque — '; font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--teal); display: block; margin-bottom: 0.3rem; }
+
+  /* FORMULE DISPLAY */
+  .formula-block {
+    background: white;
+    border: 1px solid var(--teal-border);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.2rem 0;
+    text-align: center;
+    overflow-x: auto;
+  }
+  .formula-block .katex-display { margin: 0; }
+  .formula-block .katex { font-size: 1.05em; }
+
+  /* TABLE */
+  .math-table-wrap { overflow-x: auto; margin: 1.5rem 0; border-radius: 8px; border: 1px solid var(--teal-border); box-shadow: 0 2px 8px rgba(163,29,107,0.08); }
+  .math-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .math-table th { background: var(--teal-dark); color: var(--cream); font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.75rem 1rem; text-align: center; font-weight: 500; border: 1px solid rgba(255,255,255,0.1); }
+  .math-table td { padding: 0.65rem 1rem; text-align: center; border: 1px solid var(--teal-light); color: #241820; vertical-align: middle; background: white; line-height: 1.6; }
+  .math-table tr:nth-child(even) td { background: #F8F5F7; }
+  .math-table tr:hover td { background: var(--teal-light); }
+  .math-table td.left { text-align: left; }
+  .math-table .katex { font-size: 0.95em; }
+
+  /* KEY FACT */
+  .math-key { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 0.6rem; padding: 0.85rem 1.1rem; background: white; border: 1px solid var(--teal-light); border-radius: 6px; }
+  .math-key-bullet { width: 6px; height: 6px; background: var(--teal); border-radius: 50%; flex-shrink: 0; margin-top: 0.55rem; }
+  .math-key > div { font-size: 0.91rem; color: #241820; line-height: 1.75; font-weight: 300; }
+
+  /* INLINE MATH */
+  .katex { font-size: 1em; }
+  .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.2rem 0; }
+
+  /* DEUX COLONNES */
+  .two-col-formulas { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
+  .two-col-formulas .formula-block { margin: 0; }
+
+  /* TROIS COLONNES */
+  .three-col-formulas { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
+  .three-col-formulas .formula-block { margin: 0; }
+
+  /* HIGHLIGHT BOX */
+  .math-highlight { background: var(--teal-light); border-left: 4px solid var(--teal); padding: 1.25rem 1.75rem; margin: 1.5rem 0; color: var(--teal-dark); font-size: 0.93rem; line-height: 1.75; border-radius: 0 6px 6px 0; }
+
+  /* FOOTER */
+  .site-footer {
+    background: var(--teal-dark);
+    border-top: 1px solid rgba(163,29,107,0.35);
+    padding: 2.5rem 2rem;
+    text-align: center;
+  }
+  .site-footer .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--mint);
+    letter-spacing: 0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+  /* BACK TO TOP */
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--teal); color: var(--cream); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 4px 14px rgba(163,29,107,0.45); opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 200; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+  .back-to-top:hover { background: var(--teal-mid); }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--teal-border); border-radius: 3px; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .two-col-formulas { grid-template-columns: 1fr; }
+    .three-col-formulas { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    @page { size: A4; margin: 15mm 14mm 15mm 14mm; }
+    nav, .back-to-top, .toc-bar, .site-footer { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    html, body { background: white !important; color: #000 !important; font-size: 10pt; width: 100% !important; }
+    .ch-hero { background: #3B1030 !important; padding: 0.9rem 1rem 0.7rem !important; }
+    .ch-hero::before { display: none !important; }
+    .ch-hero h1 { font-size: 16pt !important; color: #fff !important; margin-bottom: 0.3rem !important; }
+    .ch-hero .chap-label { font-size: 7pt !important; color: #F2C9E2 !important; margin-bottom: 0.4rem !important; }
+    .ch-hero p { font-size: 7pt !important; color: #F2C9E2 !important; margin: 0 !important; }
+    .content { max-width: 100% !important; padding: 0.6rem 0 !important; margin: 0 !important; }
+    .content p { font-size: 9pt !important; line-height: 1.5 !important; margin-bottom: 0.45rem !important; color: #000 !important; }
+    .math-part { margin-bottom: 0.8rem; page-break-inside: auto; }
+    .math-part-header { page-break-after: avoid; padding-bottom: 0.6rem !important; margin-bottom: 1rem !important; border-bottom: 2pt solid #A31D6B !important; }
+    .math-part-num { font-size: 2rem !important; color: #DBA8C7 !important; }
+    .math-part-title { font-size: 13pt !important; }
+    .math-section { page-break-inside: auto; margin-bottom: 0.8rem; }
+    .math-section-title { page-break-after: avoid; font-size: 11pt !important; padding-left: 0.7rem !important; border-left: 2.5pt solid #A31D6B !important; margin-bottom: 0.55rem !important; color: #3B1030 !important; }
+    .math-subsection-title { page-break-after: avoid; font-size: 7pt !important; margin: 0.65rem 0 0.35rem !important; color: #A31D6B !important; }
+    .def-card { page-break-inside: avoid; box-shadow: none !important; border: 1pt solid #DBA8C7 !important; display: flex !important; border-radius: 0 !important; margin: 0.55rem 0 !important; }
+    .def-accent-bar { background: #A31D6B !important; width: 4px !important; border-radius: 0 !important; }
+    .def-body { padding: 0.7rem 1rem !important; }
+    .def-body p { font-size: 8.5pt !important; line-height: 1.5 !important; color: #000 !important; }
+    .prop-card { page-break-inside: avoid; background: #F3E1EC !important; border: 1pt solid #DBA8C7 !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .prop-card p, .prop-card li { font-size: 8.5pt !important; line-height: 1.5 !important; }
+    .thm-card { page-break-inside: avoid; background: #3B1030 !important; padding: 0.7rem 1rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .thm-label { font-size: 6pt !important; color: #F2C9E2 !important; }
+    .thm-title { font-size: 9.5pt !important; color: #fff !important; }
+    .thm-card p { font-size: 8.5pt !important; color: rgba(248,245,247,0.9) !important; line-height: 1.5 !important; }
+    .meth-card { page-break-inside: avoid; border: 1.5pt solid #A31D6B !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .meth-card p { font-size: 8.5pt !important; line-height: 1.5 !important; }
+    .remark { page-break-inside: avoid; border-left: 2pt solid #DBA8C7 !important; padding: 0.5rem 0.9rem !important; margin: 0.45rem 0 !important; font-size: 8pt !important; border-radius: 0 !important; }
+    .formula-block { page-break-inside: avoid; border: 1pt solid #DBA8C7 !important; padding: 0.5rem 0.8rem !important; margin: 0.45rem 0 !important; border-radius: 0 !important; }
+    .math-key { page-break-inside: avoid; padding: 0.4rem 0.8rem !important; margin-bottom: 0.3rem !important; border: 1pt solid #F3E1EC !important; border-radius: 0 !important; }
+    .math-key > div { font-size: 8.5pt !important; line-height: 1.45 !important; color: #000 !important; }
+    .math-highlight { page-break-inside: avoid; background: #F3E1EC !important; border-left: 2.5pt solid #A31D6B !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; font-size: 8.5pt !important; color: #3B1030 !important; border-radius: 0 !important; }
+    .math-table-wrap { page-break-inside: avoid; margin: 0.55rem 0 !important; border: 1pt solid #DBA8C7 !important; border-radius: 0 !important; box-shadow: none !important; }
+    .math-table th { background: #3B1030 !important; color: #F2C9E2 !important; font-size: 6.5pt !important; padding: 0.4rem 0.6rem !important; }
+    .math-table td { font-size: 8pt !important; padding: 0.4rem 0.6rem !important; border: 0.5pt solid #F3E1EC !important; }
+    .two-col-formulas, .three-col-formulas { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 0.5rem !important; margin: 0.45rem 0 !important; }
+    .katex { font-size: 0.82em !important; }
+    .katex-display { margin: 0.15rem 0 !important; overflow: visible !important; }
+    .katex-html { white-space: normal !important; }
+    .katex .base { display: inline !important; white-space: nowrap !important; }
+    .def-body p, .prop-card p, .thm-card p, .remark, .math-key > div, .content p { overflow: visible !important; word-break: break-word !important; }
+    .formula-block { overflow: visible !important; height: auto !important; min-height: 0 !important; text-align: center !important; }
+    .formula-block .katex-display { overflow-x: visible !important; overflow-y: visible !important; text-align: center !important; }
+    .math-table td, .math-table th { overflow: visible !important; word-break: break-word !important; }
+    .katex *, .katex-html * { position: static !important; top: auto !important; bottom: auto !important; left: auto !important; right: auto !important; }
+    .math-table .katex { font-size: 0.75em !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left"><div class="nav-logo"><a href="../../index.html">ECG Prépa</a></div></div>
+  <div class="breadcrumb">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">/</span>
+    <a href="index.html"><span>Mathématiques</span></a>
+    <span class="sep">/</span>
+    <span class="current">Chapitre 14</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="chap-label">&#x2015;&nbsp; Chapitre 14 · Mathématiques approfondies &nbsp;&#x2015;</div>
+  <h1>Variables aléatoires discrètes</h1>
+  <p>Espaces probabilisés infinis · Lois usuelles · Espérance · Variance</p>
+</div>
+
+<!-- TOC -->
+<div class="toc-bar">
+  <div class="toc-inner">
+    <div class="toc-title">Table des matières</div>
+    <ul class="toc-list">
+      <li><a href="#part1"><span class="toc-num">I</span> Espaces probabilisés sur un univers infini</a></li>
+      <li><a href="#part2"><span class="toc-num">II</span> Moments d'une variable aléatoire discrète</a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════════
+     PARTIE I — ESPACES PROBABILISÉS SUR UN UNIVERS INFINI
+════════════════════════════════════════ -->
+<div class="math-part" id="part1">
+  <div class="math-part-header">
+    <div class="math-part-num">I</div>
+    <div class="math-part-title">Espaces probabilisés sur un univers infini</div>
+  </div>
+
+  <!-- SECTION 1 : Définitions -->
+  <div class="math-section" id="s1-1">
+    <div class="math-section-title">1 — Définitions</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span></div>
+        <p>Soit \(\Omega\) l'univers d'une expérience aléatoire. On note \(\mathcal{A}\) l'ensemble des événements liés à cette expérience. \(\mathcal{A}\) est une famille d'ensembles qui contient \(\Omega\) et qui est stable par complémentaire et par réunion infinie. Ainsi :</p>
+        <ol>
+          <li>\(\Omega \in \mathcal{A}\)</li>
+          <li>Si \(A \in \mathcal{A}\) alors \(\overline{A} \in \mathcal{A}\)</li>
+          <li>Si \(\forall n \in \mathbb{N}, A_n \in \mathcal{A}\) alors \(\displaystyle\bigcup_{n\in\mathbb{N}} A_n \in \mathcal{A}\)</li>
+        </ol>
+        <p>On appelle <strong>probabilité</strong> sur \(\Omega\) toute application \(\mathbb{P} : \mathcal{A} \to [0,1]\), \(A \mapsto \mathbb{P}(A)\) telle que :</p>
+        <ol>
+          <li>\(\mathbb{P}(\Omega) = 1\)</li>
+          <li>Pour toute suite \((A_n)_{n\geq 0}\) d'événements 2 à 2 incompatibles, la série \(\sum \mathbb{P}(A_n)\) converge et \[\mathbb{P}\left(\bigcup_{n=0}^{+\infty} A_n\right) = \sum_{n=0}^{+\infty} \mathbb{P}(A_n)\]</li>
+        </ol>
+        <p>Le triplet \((\Omega, \mathcal{A}, \mathbb{P})\) est appelé <strong>espace probabilisé</strong>.</p>
+      </div>
+    </div>
+
+    <div class="remark">Si \(\Omega\) est fini alors on prend \(\mathcal{A} = \mathcal{P}(\Omega)\) et la somme du ii) est une somme finie. On retrouve la définition du chapitre précédent.</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <p>Soit \((\Omega, \mathcal{A}, \mathbb{P})\) un espace probabilisé. On retrouve les propriétés :</p>
+      <ul>
+        <li>\(\forall A \in \mathcal{A}\), \(\mathbb{P}(\overline{A}) = 1 - \mathbb{P}(A)\) et \(\mathbb{P}(\emptyset) = 0\)</li>
+        <li>\(\forall (A,B) \in \mathcal{A}^2\), \(\mathbb{P}(A \cup B) = \mathbb{P}(A) + \mathbb{P}(B) - \mathbb{P}(A \cap B)\) et si \(A \subset B\), \(\mathbb{P}(A) \leq \mathbb{P}(B)\)</li>
+        <li>Soit \((A_1, A_2, \dots, A_n)\) une famille d'événements 2 à 2 incompatibles tels que \(\forall i \neq j\), \(A_i \cap A_j = \emptyset\). Alors \[\mathbb{P}\left(\bigcup_{k=1}^{n} A_k\right) = \sum_{k=1}^{n} \mathbb{P}(A_k)\]</li>
+      </ul>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 2</span><span class="def-name">Variable aléatoire discrète</span></div>
+        <p>Soit \((\Omega, \mathcal{A}, \mathbb{P})\) un espace probabilisé. On dit qu'une application \(X : \Omega \longrightarrow \mathbb{R}\) est une <strong>variable aléatoire discrète</strong> lorsque :</p>
+        <ol>
+          <li>\(X(\Omega)\) est un ensemble fini ou dénombrable, c'est-à-dire \(X(\Omega) = \{u_0, \dots, u_n\}\) ou \(X(\Omega) = \{(u_k)_{k\in\mathbb{N}}\}\)</li>
+          <li>\(\forall i \in \mathbb{N}\), \((X = u_i)\) est un événement.</li>
+        </ol>
+        <div class="formula-block">Déterminer la loi de \(X\), c'est préciser \(X(\Omega)\) puis calculer, pour tout \(k \in X(\Omega)\), \(\mathbb{P}(X=k)\)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2 : Système complet d'événements -->
+  <div class="math-section" id="s1-2">
+    <div class="math-section-title">2 — Système complet d'événements, formule des probabilités totales</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 3</span><span class="def-name">Système complet d'événements</span></div>
+        <p>Soit \(\mathcal{E}\) une expérience aléatoire, et \((\Omega, \mathcal{A}, \mathbb{P})\) un espace probabilisé. On dit que la famille \(\{A_n\}_{n\in\mathbb{N}}\) est un <strong>système complet d'événements</strong> (s.c.e.) ssi ils créent une partition de \(\Omega\).</p>
+        <p>Ainsi, \(\{A_n\}_{n\in\mathbb{N}}\) est un s.c.e. ssi</p>
+        <div class="formula-block">\[\forall i \neq j, \quad A_i \cap A_j = \emptyset \qquad \text{et} \qquad \bigcup_{i=0}^{+\infty} A_i = \Omega\]</div>
+      </div>
+    </div>
+
+    <div class="remark">Une famille d'événements est un s.c.e ssi l'un d'entre eux, et un seul à la fois, est obligatoirement réalisé.</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 2</div>
+      <p>Soit \((\Omega, \mathcal{A}, \mathbb{P})\) un espace probabilisé et \(X\) une variable aléatoire discrète.</p>
+      <ul>
+        <li>Si \(\{A_n\}_{n\in\mathbb{N}}\) est un système complet d'événements alors la série \(\sum \mathbb{P}(A_n)\) converge et \(\displaystyle\sum_{n=0}^{+\infty} \mathbb{P}(A_n) = 1\).</li>
+        <li>La famille \(\{(X=k)\}_{k\in X(\Omega)}\) est un s.c.e. On a donc \(\displaystyle\sum_{k\in X(\Omega)} \mathbb{P}(X=k) = 1\).</li>
+      </ul>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 4</span></div>
+        <ul style="padding-left:1.4rem;">
+          <li style="margin-bottom:0.4rem;">On dit qu'un événement \(A\) est <strong>négligeable</strong> ssi \(\mathbb{P}(A) = 0\)</li>
+          <li>On dit qu'un événement \(A\) est <strong>presque certain</strong> ssi \(\mathbb{P}(A) = 1\)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 3</div>
+      <div class="thm-title">Formule des probabilités totales</div>
+      <p>Soit \((\Omega, \mathcal{A}, \mathbb{P})\) un espace probabilisé. Si \(\{A_n\}_{n\in\mathbb{N}}\) est un système complet d'événements alors, pour tout événement \(B\), on a :</p>
+      <div class="formula-block" style="background:rgba(255,255,255,0.06); border-color:rgba(248,245,247,0.2);">\[\mathbb{P}(B) = \sum_{n=0}^{+\infty} \mathbb{P}(B \cap A_n) = \sum_{n=0}^{+\infty} \mathbb{P}(A_n)\,\mathbb{P}_{A_n}(B)\]</div>
+    </div>
+  </div>
+
+  <!-- SECTION 3 : Probabilité conditionnelle -->
+  <div class="math-section" id="s1-3">
+    <div class="math-section-title">3 — Probabilité conditionnelle et formule des probabilités composées</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 5</span><span class="def-name">Probabilité conditionnelle</span></div>
+        <p>Soit \((\Omega, \mathcal{A}, \mathbb{P})\) un espace probabilisé et \(B\) un événement avec \(\mathbb{P}(B) \neq 0\). On appelle <strong>probabilité conditionnelle</strong> sachant que \(B\) est réalisé la probabilité \(\mathbb{P}_B\) définie sur \(\mathcal{A}\) par :</p>
+        <div class="formula-block">\[\forall A \in \mathcal{A}, \quad \mathbb{P}_B(A) = \frac{\mathbb{P}(A \cap B)}{\mathbb{P}(B)}\]</div>
+      </div>
+    </div>
+
+    <div class="remark">\(\mathbb{P}_B\) est une probabilité ; cette application possède donc les propriétés d'une probabilité. Ainsi, par exemple, si \(A\) et \(C\) sont des événements incompatibles, \(\mathbb{P}_B(A \cup C) = \mathbb{P}_B(A) + \mathbb{P}_B(C)\)</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 4</div>
+      <div class="prop-title">Formule des probabilités composées</div>
+      <p>Soit \((\Omega, \mathcal{A}, \mathbb{P})\) un espace probabilisé et \(A_1, A_2, \dots, A_n\) des événements (où \(n \in \mathbb{N}\) avec \(n \geq 2\)). On suppose que \(\mathbb{P}(A_1 \cap A_2 \cap \dots \cap A_{n-1}) \neq 0\). On a :</p>
+      <div class="formula-block">\[\mathbb{P}(A_1 \cap A_2 \cap \dots \cap A_n) = \mathbb{P}(A_1) \times \mathbb{P}_{A_1}(A_2) \times \mathbb{P}_{A_1\cap A_2}(A_3) \times \dots \times \mathbb{P}_{A_1\cap A_2\cap\dots\cap A_{n-1}}(A_n)\]</div>
+    </div>
+  </div>
+
+  <!-- SECTION 4 : Réunion/intersection infinie -->
+  <div class="math-section" id="s1-4">
+    <div class="math-section-title">4 — Probabilité d'une réunion et d'une intersection infinie</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 5</div>
+      <div class="prop-title">Cas général</div>
+      <p>Soit \((A_k)_{k\in I}\) une famille d'événements.</p>
+      <ul>
+        <li>Probabilité d'une réunion infinie d'événements :
+          <div class="formula-block" style="margin-top:0.5rem;">\[\mathbb{P}\left(\bigcup_{n=0}^{+\infty} A_n\right) = \lim_{N\to+\infty} \mathbb{P}\left(\bigcup_{n=0}^{N} A_n\right)\]</div>
+        </li>
+        <li>Probabilité d'une intersection infinie :
+          <div class="formula-block" style="margin-top:0.5rem;">\[\mathbb{P}\left(\bigcap_{n=0}^{+\infty} A_n\right) = \lim_{N\to+\infty} \mathbb{P}\left(\bigcap_{n=0}^{N} A_n\right)\]</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 6</div>
+      <div class="thm-title">Cas d'une suite monotone d'événements</div>
+      <p>Soit \((\Omega, \tau(\Omega), \mathbb{P})\) un espace probabilisé et soit \(\{A_n\}_{n\in\mathbb{N}}\) une suite d'événements.</p>
+      <p>— Si les événements \((A_n)_{n\in\mathbb{N}}\) forment une suite croissante d'événements (i.e. tq \(\forall n \in \mathbb{N}, A_n \subset A_{n+1}\)) alors :</p>
+      <div class="formula-block" style="background:rgba(255,255,255,0.06); border-color:rgba(248,245,247,0.2);">\[\mathbb{P}\left(\bigcup_{n=0}^{+\infty} A_n\right) = \lim_{N\to+\infty} \mathbb{P}(A_N)\]</div>
+      <p>— Si les événements \((A_n)_{n\in\mathbb{N}}\) forment une suite décroissante d'événements (i.e. tq \(\forall n \in \mathbb{N}, A_{n+1} \subset A_n\)) alors :</p>
+      <div class="formula-block" style="background:rgba(255,255,255,0.06); border-color:rgba(248,245,247,0.2);">\[\mathbb{P}\left(\bigcap_{n=0}^{+\infty} A_n\right) = \lim_{N\to+\infty} \mathbb{P}(A_N)\]</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE II — MOMENTS D'UNE VARIABLE ALÉATOIRE DISCRÈTE
+════════════════════════════════════════ -->
+<div class="math-part" id="part2">
+  <div class="math-part-header">
+    <div class="math-part-num">II</div>
+    <div class="math-part-title">Moments d'une variable aléatoire discrète</div>
+  </div>
+
+  <!-- SECTION 1 : Espérance et lois usuelles -->
+  <div class="math-section" id="s2-1">
+    <div class="math-section-title">1 — Espérance et lois usuelles</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span></div>
+        <p>Soit \(X\) une variable aléatoire discrète. On appelle <strong>espérance</strong> de \(X\) le nombre réel défini (sous réserve d'existence) par :</p>
+        <div class="formula-block">\[\mathbb{E}(X) = \sum_{k \in X(\Omega)} k\,\mathbb{P}(X=k)\]</div>
+      </div>
+    </div>
+
+    <div class="remark">Si \(X(\Omega)\) est fini alors \(\mathbb{E}(X)\) existe toujours et \(\mathbb{E}(X)\) est une somme finie. Si \(X(\Omega)\) est infini : \(\mathbb{E}(X)\) existe ssi la série \(\sum |x_k|\,\mathbb{P}(X=x_k)\) converge. Dans ce cas, on a \(\displaystyle\mathbb{E}(X) = \sum_{x_k\in X(\Omega)} x_k\,\mathbb{P}(X=x_k)\)</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 2</span><span class="def-name">Loi géométrique</span></div>
+        <p>On dit que \(X\) suit une <strong>loi géométrique</strong> de paramètre \(p\) et on note \(X \hookrightarrow \mathcal{G}(p)\) ssi on a :</p>
+        <div class="formula-block">\[X \hookrightarrow \mathcal{G}(p) \iff X(\Omega) = \mathbb{N}^* \ \text{ et } \ \forall k \in \mathbb{N}^*, \ \mathbb{P}(X=k) = (1-p)^{k-1}p\]</div>
+        <p><strong>Situation type :</strong> \(X\) = temps d'attente du premier succès lorsqu'on répète une même expérience de Bernoulli (proba du succès \(=p\)), les répétitions étant indépendantes.</p>
+      </div>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 3</span><span class="def-name">Loi de Poisson</span></div>
+        <p>Soit \(\lambda > 0\). On dit que \(X\) suit une <strong>loi de Poisson</strong> de paramètre \(\lambda\) et on note \(X \hookrightarrow \mathcal{P}(\lambda)\) ssi on a :</p>
+        <div class="formula-block">\[X \hookrightarrow \mathcal{P}(\lambda) \iff X(\Omega) = \mathbb{N} \ \text{ et } \ \forall k \in \mathbb{N}, \ \mathbb{P}(X=k) = e^{-\lambda}\frac{\lambda^k}{k!}\]</div>
+        <p><strong>Situation type :</strong> pas de situation type.</p>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <div class="prop-title">Espérance des lois discrètes usuelles</div>
+      <div class="math-table-wrap">
+        <table class="math-table">
+          <tbody>
+            <tr><td class="left">Loi uniforme : si \(X \hookrightarrow \mathcal{U}(\llbracket 1,n\rrbracket)\) alors \(\mathbb{E}(X) = \dfrac{n+1}{2}\)</td><td class="left">Loi géométrique : si \(X \hookrightarrow \mathcal{G}(p)\) alors \(\mathbb{E}(X) = \dfrac{1}{p}\)</td></tr>
+            <tr><td class="left">Loi binomiale : si \(X \hookrightarrow \mathcal{B}(n,p)\) alors \(\mathbb{E}(X) = np\)</td><td class="left">Loi de Poisson : si \(X \hookrightarrow \mathcal{P}(\lambda)\) alors \(\mathbb{E}(X) = \lambda\)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="remark">Si \(X \hookrightarrow \mathcal{B}(p)\) alors \(\mathbb{E}(X) = p = 1 \times p\) (la loi de Bernoulli correspond à la loi binomiale \(\mathcal{B}(1,p)\))</div>
+  </div>
+
+  <!-- SECTION 2 : Propriétés de l'espérance -->
+  <div class="math-section" id="s2-2">
+    <div class="math-section-title">2 — Propriétés de l'espérance et théorème de transfert</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 2</div>
+      <div class="prop-title">Propriétés de l'espérance</div>
+      <p>Soit \(X\) une variable aléatoire admettant une espérance.</p>
+      <ul>
+        <li>\(\forall (a,b) \in \mathbb{R}^2\), la variable \(aX+b\) admet une espérance et on a : \(\mathbb{E}(aX+b) = a\,\mathbb{E}(X) + b\)</li>
+        <li>Soit \(X\) et \(Y\) deux variables admettant des espérances. La variable \(X+Y\) admet une espérance donnée par : \(\mathbb{E}(X+Y) = \mathbb{E}(X) + \mathbb{E}(Y)\)</li>
+        <li>Si \(X\) et \(Y\) sont deux variables aléatoires avec \(0 \leq |X| \leq Y\) et \(\mathbb{E}(Y)\) existe, alors \(\mathbb{E}(X)\) existe et \(|\mathbb{E}(X)| \leq \mathbb{E}(Y)\).</li>
+      </ul>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 4</span><span class="def-name">Variables aléatoires du type \(Y = \varphi(X)\)</span></div>
+        <p>Soit \(X\) une variable aléatoire discrète et soit \(\varphi : X(\Omega) \longrightarrow \mathbb{R}\). L'application \(Y = \varphi(X)\) est une variable aléatoire réelle discrète dont la loi est donnée par :</p>
+        <div class="formula-block">\[Y(\Omega) = \{\varphi(k),\, k \in X(\Omega)\} \qquad \text{et} \qquad \forall n \in Y(\Omega), \ \mathbb{P}(Y=n) = \sum_{\substack{k\in X(\Omega) \\ \varphi(k)=n}} \mathbb{P}(X=k)\]</div>
+      </div>
+    </div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 3</div>
+      <div class="thm-title">Théorème de transfert</div>
+      <p>Soit \(X\) une variable aléatoire discrète et soit \(\varphi : X(\Omega) \to \mathbb{R}\). La variable \(Y = \varphi(X)\) admet une espérance donnée (sous réserve d'existence) par :</p>
+      <div class="formula-block" style="background:rgba(255,255,255,0.06); border-color:rgba(248,245,247,0.2);">\[\mathbb{E}(Y) = \mathbb{E}[\varphi(X)] = \sum_{k\in X(\Omega)} \varphi(k)\,\mathbb{P}(X=k)\]</div>
+      <p>En particulier, on a :</p>
+      <div class="formula-block" style="background:rgba(255,255,255,0.06); border-color:rgba(248,245,247,0.2);">\[\mathbb{E}(X^2) = \sum_{k\in X(\Omega)} k^2\,\mathbb{P}(X=k) \qquad \text{et} \qquad \mathbb{E}[X(X-1)] = \sum_{k\in X(\Omega)} k(k-1)\,\mathbb{P}(X=k)\]</div>
+    </div>
+
+    <div class="remark">Ce théorème permet de transférer la loi de \(X\) au calcul de \(\mathbb{E}(Y)\). Ainsi, on calcule \(\mathbb{E}(Y)\) sans avoir à déterminer la loi de \(Y\). Lorsque \(X(\Omega)\) est fini, la somme définissant l'espérance est finie ; sinon, c'est une somme de série.</div>
+  </div>
+
+  <!-- SECTION 3 : Variance -->
+  <div class="math-section" id="s2-3">
+    <div class="math-section-title">3 — Variance</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 5</span><span class="def-name">Variance d'une variable discrète</span></div>
+        <p>Soit \(X\) une variable aléatoire discrète.</p>
+        <ul>
+          <li>On dit que \(X\) admet une variance ssi \(\mathbb{E}(X)\) et \(\mathbb{E}(X^2)\) existent. Dans ce cas, on pose :
+            <div class="formula-block" style="margin-top:0.5rem;">\[V(X) = \mathbb{E}(X^2) - [\mathbb{E}(X)]^2 \quad \text{(formule de Kœnig)}\]</div>
+          </li>
+          <li>On appelle <strong>écart-type</strong> de \(X\) le nombre \(\sigma(X) = \sqrt{V(X)}\)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="remark">Pour calculer la variance, il faut donc calculer d'abord \(\mathbb{E}(X)\) et \(\mathbb{E}(X^2)\). Pour les lois usuelles, on obtient \(\mathbb{E}(X^2)\) à partir de \(\mathbb{E}[X(X-1)]\).</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 4</div>
+      <div class="prop-title">Variance des lois usuelles infinies (à connaître par cœur et à savoir recalculer)</div>
+      <div class="math-table-wrap">
+        <table class="math-table">
+          <tbody>
+            <tr><td class="left">Loi uniforme : si \(X \hookrightarrow \mathcal{U}(\llbracket 1,n\rrbracket)\) alors \(V(X) = \dfrac{n^2-1}{12}\)</td></tr>
+            <tr><td class="left">Loi binomiale : si \(X \hookrightarrow \mathcal{B}(n,p)\) alors \(V(X) = npq\) avec \(q = (1-p)\)</td></tr>
+            <tr><td class="left">Loi géométrique : si \(X \hookrightarrow \mathcal{G}(p)\) alors \(V(X) = \dfrac{1-p}{p^2}\)</td></tr>
+            <tr><td class="left">Loi de Poisson : si \(X \hookrightarrow \mathcal{P}(\lambda)\) alors \(V(X) = \lambda\)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 5</div>
+      <div class="prop-title">Propriété de la variance</div>
+      <p>Soit \(X\) une variable aléatoire discrète admettant une variance. \(\forall (a,b) \in \mathbb{R}^2\), la variable \(aX+b\) admet une variance donnée par :</p>
+      <div class="formula-block">\[V(aX+b) = a^2\,V(X)\]</div>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 6</span><span class="def-name">Variable centrée, réduite</span></div>
+        <ul style="padding-left:1.4rem;">
+          <li style="margin-bottom:0.4rem;">\(X\) est une variable <strong>centrée</strong> ssi \(\mathbb{E}(X) = 0\)</li>
+          <li>\(X\) est une variable <strong>réduite</strong> ssi \(V(X) = 1\)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 6</div>
+      <p>Soit \(X\) une variable aléatoire discrète admettant une espérance \(\mathbb{E}(X) = m\) et une variance \(V(X) = \sigma^2\).</p>
+      <ul>
+        <li>La var \(X^* = X - m\) est la variable centrée associée à \(X\). On a donc : \(\mathbb{E}(X^*) = \mathbb{E}(X) - m = 0\)</li>
+        <li>La variable \(Y = \dfrac{1}{\sigma}[X-m]\) est une variable centrée réduite.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</div><!-- fin .content -->
+
+<footer class="site-footer">
+  <div class="footer-logo">Chapitre 14 : Variables aléatoires discrètes</div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut de page">↑</button>
+
+<script>
+  document.querySelectorAll('.toc-list a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
+
+</body>
+</html>

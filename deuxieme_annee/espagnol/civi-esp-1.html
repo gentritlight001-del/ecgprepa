@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="espagnol">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L'histoire de l'Espagne — Civilisation Hispanophone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     TEMPLATE UNIVERSEL DE COURS DE CIVILISATION — v1
+     Pour créer un nouveau cours : dupliquer ce fichier, ne modifier QUE
+     le bloc de données (id="donnees") tout en bas. Rien d'autre à toucher.
+     ══════════════════════════════════════════════════════════════════════ -->
+
+<style>
+  /* ─── PALETTE DE BASE (identique au site) ─── */
+  :root{
+    --bg:#0d0d0f; --surface:#16161a; --surface2:#1e1e24; --border:#2a2a35;
+    --text:#e8e6e0; --text-dim:#8a8880; --text-faint:#4a4845;
+    --radius:14px;
+  }
+  /* ─── THÈMES PAR LANGUE — change data-theme sur <html> ─── */
+  html[data-theme="anglais"] { --a1:#c8a96e; --a2:#7c9ec9; --a3:#9ecba0; --a4:#c97c9e; --hero:#16233d; }
+  html[data-theme="anglais2"] { --a1:#c9633f; --a2:#5b8f6f; --a3:#6c8fc7; --a4:#a06bb0; --hero:#16241b; }
+  html[data-theme="espagnol"]{ --a1:#e0a93e; --a2:#c8553d; --a3:#7fae7a; --a4:#b06fa8; --hero:#3a1a18; }
+  html[data-theme="allemand"]{ --a1:#d8b44a; --a2:#8fa4bd; --a3:#84b58e; --a4:#c06060; --hero:#241f1a; }
+  html[data-theme="italien"] { --a1:#d5a94e; --a2:#6fae8f; --a3:#a8c07a; --a4:#c4695e; --hero:#152a24; }
+  html[data-theme="chinois"] { --a1:#d9a441; --a2:#c05a4a; --a3:#83a98f; --a4:#a97fb0; --hero:#2c1618; }
+  html[data-theme="anglais3"]{ --a1:#c1a24b; --a2:#8b3a3a; --a3:#3f6b8a; --a4:#5f7a52; --hero:#241512; }
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden}
+
+  /* ─── FOND ─── */
+  .bg-orb{position:fixed;border-radius:50%;filter:blur(140px);pointer-events:none;opacity:.08;z-index:0}
+  .orb1{width:700px;height:700px;background:var(--a1);top:-300px;right:-250px}
+  .orb2{width:600px;height:600px;background:var(--a2);bottom:-250px;left:-250px}
+
+  /* ─── BARRE DE PROGRESSION ─── */
+  #progress{position:fixed;top:0;left:0;height:2px;width:0;z-index:200;
+    background:linear-gradient(90deg,var(--a1),var(--a2),var(--a4));transition:width .1s linear}
+
+  /* ─── NAV ─── */
+  nav{display:flex;align-items:center;justify-content:space-between;gap:20px;
+    padding:16px 40px;border-bottom:1px solid var(--border);
+    background:rgba(13,13,15,.9);backdrop-filter:blur(16px);position:sticky;top:0;z-index:100}
+  .nav-logo{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--a1);cursor:pointer}
+  .breadcrumb{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--text-dim);flex-wrap:wrap}
+  .breadcrumb span{cursor:pointer;transition:color .2s}
+  .breadcrumb span:hover{color:var(--a1)}
+  .breadcrumb .sep{color:var(--text-faint);cursor:default}
+  .breadcrumb .current{color:var(--text);cursor:default}
+  .nav-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+  .ap-lang-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);
+    color:rgba(255,255,255,.6);font-family:'DM Mono',monospace;font-size:10px;font-weight:700;
+    letter-spacing:.12em;padding:5px 14px;border-radius:4px;cursor:pointer;transition:all .2s;text-transform:uppercase}
+  .ap-lang-btn.active{background:var(--a1);border-color:var(--a1);color:#12100c}
+  .ap-lang-btn:hover:not(.active){background:rgba(255,255,255,.15);color:#fff}
+
+  /* ─── HERO ─── */
+  .hero{position:relative;z-index:1;padding:76px 40px 56px;text-align:center;overflow:hidden;
+    background:linear-gradient(160deg,var(--hero),#0d0d0f 85%);border-bottom:1px solid var(--border)}
+  .hero::after{content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);
+    width:80px;height:2px;background:var(--a1)}
+  .hero-flag{font-size:2.6rem;line-height:1;margin-bottom:18px;display:block}
+  .hero-label{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.3em;
+    text-transform:uppercase;color:var(--a1);margin-bottom:18px}
+  .hero h1{font-family:'Playfair Display',serif;font-weight:900;line-height:1.05;
+    font-size:clamp(2.4rem,6vw,4.6rem);max-width:900px;margin:0 auto 18px}
+  .hero-sub{font-size:1rem;color:var(--text-dim);max-width:640px;margin:0 auto;line-height:1.6}
+
+  /* ─── LAYOUT ─── */
+  .layout{display:flex;gap:48px;max-width:1320px;margin:0 auto;padding:48px 40px 100px;position:relative;z-index:1}
+  main{flex:1;min-width:0;max-width:840px}
+
+  /* ─── COLONNE CHRONOLOGIE ─── */
+  .rail{width:262px;flex-shrink:0;position:sticky;top:88px;align-self:flex-start;
+    max-height:calc(100vh - 118px);overflow-y:auto;padding-right:8px}
+  .rail-title{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--a1);margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+  .rail .tl{padding-left:20px;margin:0 0 0 4px}
+  .rail .tl-item{padding-bottom:16px}
+  .rail .tl-item::before{left:-26px;top:4px;width:7px;height:7px}
+  .rail .tl-d{font-size:.66rem;letter-spacing:.08em}
+  .rail .tl-c{font-size:.79rem;line-height:1.5}
+  .rail::-webkit-scrollbar{width:3px}
+  .rail::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  .chrono-mobile{display:none}
+
+  /* ─── BLOC GÉNÉRIQUE ─── */
+  .bloc{margin-bottom:64px;scroll-margin-top:88px}
+  .bloc-head{display:flex;align-items:baseline;gap:14px;margin-bottom:24px;
+    padding-bottom:12px;border-bottom:1px solid var(--border)}
+  .bloc-kicker{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.28em;
+    text-transform:uppercase;color:var(--k,var(--a1))}
+  .bloc-title{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--text)}
+
+  /* ─── L'ESSENTIEL ─── */
+  .essentiel{background:linear-gradient(135deg,rgba(255,255,255,.045),rgba(255,255,255,.015));
+    border:1px solid var(--border);border-left:3px solid var(--a1);border-radius:var(--radius);
+    padding:28px 30px;margin-bottom:36px}
+  .essentiel-label{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.28em;
+    text-transform:uppercase;color:var(--a1);margin-bottom:14px}
+  .essentiel p{font-size:.98rem;line-height:1.75;color:var(--text);margin-bottom:0}
+  .essentiel p strong{color:var(--a1);font-weight:500}
+
+  /* ─── STATS ─── */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:22px 0}
+  .stat{border-radius:10px;padding:18px 16px;text-align:center;border:1px solid rgba(255,255,255,.08);
+    background:linear-gradient(135deg,color-mix(in srgb,var(--c,var(--a1)) 26%,#101014),
+    color-mix(in srgb,var(--c,var(--a1)) 8%,#101014))}
+  .stat-n{font-family:'DM Mono',monospace;font-size:1.5rem;font-weight:500;color:var(--text);display:block;line-height:1.1}
+  .stat-d{font-size:.7rem;color:var(--text-dim);margin-top:7px;display:block;line-height:1.45}
+
+  /* ─── PARTIES ─── */
+  .partie{margin-bottom:78px;scroll-margin-top:88px}
+  .partie-head{display:flex;align-items:center;gap:22px;margin-bottom:34px;
+    padding-bottom:18px;border-bottom:2px solid var(--p)}
+  .partie-num{font-family:'Playfair Display',serif;font-size:3.4rem;font-weight:900;
+    color:var(--p);opacity:.35;line-height:.9;flex-shrink:0}
+  .partie-title{font-family:'Playfair Display',serif;font-size:clamp(1.35rem,3vw,1.95rem);
+    font-weight:700;line-height:1.2}
+  .partie-kicker{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--p);margin-bottom:6px}
+
+  .section{margin-bottom:44px;scroll-margin-top:88px}
+  .section-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;
+    color:var(--text);margin-bottom:18px;padding-left:16px;border-left:3px solid var(--p)}
+  .section-num{color:var(--p);font-weight:900}
+
+  /* ─── TEXTE ─── */
+  .prose{font-size:.96rem;line-height:1.8;color:rgba(232,230,224,.78);margin-bottom:16px}
+  .prose strong{color:var(--text);font-weight:500}
+  .prose em{color:var(--p,var(--a1));font-style:normal;font-weight:500}
+  .en{font-family:'DM Mono',monospace;font-size:.86em;color:var(--a2)}
+
+  /* ─── LISTE ─── */
+  .liste{list-style:none;margin:14px 0 20px}
+  .liste li{font-size:.93rem;line-height:1.65;color:rgba(232,230,224,.75);
+    padding:9px 0 9px 22px;position:relative;border-bottom:1px solid rgba(255,255,255,.05)}
+  .liste li:last-child{border-bottom:none}
+  .liste li::before{content:'';position:absolute;left:0;top:17px;width:6px;height:6px;
+    border-radius:50%;background:var(--p,var(--a1))}
+  .liste li strong{color:var(--text);font-weight:500}
+
+  /* ─── FAITS CLÉS ─── */
+  .faits{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:9px;margin:20px 0}
+  .fait{background:rgba(255,255,255,.03);border:1px solid var(--border);
+    border-left:3px solid var(--p,var(--a1));border-radius:8px;padding:13px 15px}
+  .fait-l{font-family:'DM Mono',monospace;font-size:.6rem;color:var(--text-faint);
+    text-transform:uppercase;letter-spacing:.14em;margin-bottom:5px}
+  .fait-v{font-size:.86rem;font-weight:500;color:var(--text);line-height:1.4}
+
+  /* ─── CITATION ─── */
+  .citation{background:linear-gradient(135deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+    border:1px solid var(--border);border-left:3px solid var(--a1);border-radius:0 10px 10px 0;
+    padding:20px 24px;margin:22px 0}
+  .citation p{font-family:'Playfair Display',serif;font-style:italic;font-size:1.02rem;
+    line-height:1.6;color:var(--text);margin-bottom:9px}
+  .citation cite{font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.08em;
+    color:var(--a1);font-style:normal}
+
+  /* ─── ENCADRÉ ─── */
+  .encadre{display:flex;gap:15px;align-items:flex-start;border-radius:10px;padding:17px 20px;margin:20px 0;
+    background:color-mix(in srgb,var(--c,var(--a2)) 7%,transparent);
+    border:1px solid color-mix(in srgb,var(--c,var(--a2)) 26%,transparent)}
+  .encadre-ic{font-size:1.5rem;flex-shrink:0;line-height:1.2}
+  .encadre-t{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--c,var(--a2));margin-bottom:7px;font-weight:500}
+  .encadre-c{font-size:.89rem;line-height:1.7;color:rgba(232,230,224,.75)}
+  .encadre-c strong{color:var(--text);font-weight:500}
+
+  /* ─── DÉFINITION ─── */
+  .def{border:1px dashed var(--border);border-radius:10px;padding:15px 18px;margin:18px 0;
+    background:rgba(255,255,255,.02)}
+  .def-mot{font-family:'Playfair Display',serif;font-weight:700;font-size:1rem;color:var(--a3);margin-bottom:6px}
+  .def-c{font-size:.88rem;line-height:1.7;color:rgba(232,230,224,.72)}
+
+  /* ─── TABLEAU ─── */
+  .tbl-wrap{overflow-x:auto;margin:20px 0;border:1px solid var(--border);border-radius:10px}
+  table{width:100%;border-collapse:collapse;font-size:.83rem}
+  thead{background:rgba(255,255,255,.04)}
+  thead th{padding:11px 15px;text-align:left;font-family:'DM Mono',monospace;font-size:.6rem;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--text-dim);white-space:nowrap}
+  tbody tr{border-top:1px solid var(--border)}
+  tbody tr:nth-child(even){background:rgba(255,255,255,.015)}
+  tbody td{padding:11px 15px;color:rgba(232,230,224,.75);line-height:1.5}
+  tbody td:first-child{color:var(--text);font-weight:500}
+
+  /* ─── CHRONOLOGIE ─── */
+  .tl{border-left:2px solid var(--border);padding-left:26px;margin:8px 0 8px 6px}
+  .tl-item{position:relative;padding-bottom:22px}
+  .tl-item:last-child{padding-bottom:0}
+  .tl-item::before{content:'';position:absolute;left:-33px;top:5px;width:9px;height:9px;border-radius:50%;
+    background:var(--c,var(--a1));box-shadow:0 0 0 3px rgba(13,13,15,1),0 0 0 5px color-mix(in srgb,var(--c,var(--a1)) 35%,transparent)}
+  .tl-d{font-family:'DM Mono',monospace;font-size:.72rem;font-weight:500;letter-spacing:.1em;
+    color:var(--c,var(--a1));margin-bottom:4px}
+  .tl-c{font-size:.9rem;line-height:1.6;color:rgba(232,230,224,.75)}
+  .tl-c strong{color:var(--text);font-weight:500}
+
+  /* ─── ACTEURS ─── */
+  .acteurs{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+  .acteur{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;
+    transition:all .25s;position:relative;overflow:hidden}
+  .acteur:hover{border-color:var(--c,var(--a1));transform:translateY(-3px);background:var(--surface2)}
+  .acteur-nom{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;margin-bottom:3px}
+  .acteur-role{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--c,var(--a1));margin-bottom:10px}
+  .acteur-c{font-size:.82rem;line-height:1.6;color:var(--text-dim)}
+
+  /* ─── DÉBAT ─── */
+  .debat{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .debat-col{border:1px solid var(--border);border-radius:12px;padding:20px 22px;background:rgba(255,255,255,.02)}
+  .debat-col.oui{border-top:3px solid var(--a3)}
+  .debat-col.non{border-top:3px solid var(--a4)}
+  .debat-t{font-family:'DM Mono',monospace;font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:14px}
+  .debat-col.oui .debat-t{color:var(--a3)}
+  .debat-col.non .debat-t{color:var(--a4)}
+  .debat-col li{font-size:.87rem;line-height:1.6;color:rgba(232,230,224,.75);
+    padding:9px 0 9px 18px;position:relative;list-style:none;border-bottom:1px solid rgba(255,255,255,.05)}
+  .debat-col li:last-child{border-bottom:none}
+  .debat-col li::before{content:'';position:absolute;left:0;top:16px;width:5px;height:5px;border-radius:50%}
+  .debat-col.oui li::before{background:var(--a3)}
+  .debat-col.non li::before{background:var(--a4)}
+  .debat-col li strong{color:var(--text);font-weight:500}
+
+  /* ─── LEXIQUE ─── */
+  .lex-search{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;
+    color:var(--text);font-family:'DM Sans',sans-serif;font-size:.88rem;padding:11px 15px;margin-bottom:14px}
+  .lex-search:focus{outline:none;border-color:var(--a1)}
+  .lex-search::placeholder{color:var(--text-faint)}
+  .lex td:first-child{font-family:'DM Mono',monospace;color:var(--a2);font-weight:500}
+
+  /* ─── SUJETS ─── */
+  .sujet{border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:10px;
+    background:var(--surface);display:flex;gap:16px;align-items:flex-start;transition:all .2s}
+  .sujet:hover{border-color:var(--a4);transform:translateX(4px)}
+  .sujet-n{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:var(--text-faint);line-height:1;flex-shrink:0}
+  .sujet-q{font-size:.94rem;line-height:1.6;color:var(--text);margin-bottom:5px;font-weight:400}
+  .sujet-h{font-size:.79rem;color:var(--text-dim);line-height:1.55}
+
+  /* ─── À RETENIR ─── */
+  .retenir{background:linear-gradient(135deg,color-mix(in srgb,var(--a1) 12%,transparent),rgba(255,255,255,.02));
+    border:1px solid color-mix(in srgb,var(--a1) 30%,transparent);border-radius:var(--radius);padding:28px 30px}
+  .retenir li{font-size:.93rem;line-height:1.65;color:rgba(232,230,224,.82);
+    padding:10px 0 10px 26px;position:relative;list-style:none;border-bottom:1px solid rgba(255,255,255,.06)}
+  .retenir li:last-child{border-bottom:none}
+  .retenir li::before{content:'✓';position:absolute;left:0;top:9px;color:var(--a1);font-size:.85rem}
+  .retenir li strong{color:var(--text);font-weight:500}
+
+  /* ─── PIED DE PAGE ─── */
+  footer{text-align:center;padding:36px 40px;border-top:1px solid var(--border);
+    font-family:'DM Mono',monospace;font-size:.7rem;color:var(--text-dim);letter-spacing:.14em;
+    text-transform:uppercase}
+
+  /* ─── ANIMATION ─── */
+  .rev{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+  .rev.vu{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.rev{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}}
+  :focus-visible{outline:2px solid var(--a1);outline-offset:3px}
+
+  /* ─── RESPONSIVE ─── */
+  @media(max-width:1080px){
+    .rail{display:none}
+    .layout{padding:32px 22px 70px}
+    .chrono-mobile{display:block}
+  }
+  @media(max-width:680px){
+    nav{padding:12px 18px;flex-wrap:wrap}
+    .breadcrumb{font-size:.7rem;order:3;width:100%}
+    .hero{padding:52px 20px 40px}
+    .debat{grid-template-columns:1fr}
+    .partie-head{gap:14px}
+    .partie-num{font-size:2.4rem}
+  }
+  /* ─── IMPRESSION ─── */
+  @media print{
+    body{background:#fff;color:#111}
+    nav,.rail,#progress,.bg-orb,.nav-right{display:none!important}
+    .hero{background:none;border-bottom:2px solid #111;padding:0 0 22px}
+    .hero h1,.prose,.liste li,.bloc-title{color:#111}
+    .layout{display:block;padding:0}
+    .partie,.bloc{break-inside:avoid;page-break-inside:avoid}
+    .rev{opacity:1;transform:none}
+    .chrono-mobile{display:block!important}
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+
+<nav>
+  <div class="nav-logo" onclick="location.href='../../index.html'">ECG Prépa</div>
+  <div class="breadcrumb">
+    <span onclick="location.href='../../index.html'">Accueil</span>
+    <span class="sep">/</span>
+    <span onclick="location.href='../index.html'">2ème Année</span>
+    <span class="sep">/</span>
+    <span onclick="location.href='index.html'">Civilisation</span>
+    <span class="sep">/</span>
+    <span class="current" id="bc-titre">—</span>
+  </div>
+  <div class="nav-right">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-es" class="ap-lang-btn" onclick="setLang('es')">🇪🇸 ES</button>
+  </div>
+</nav>
+
+<header class="hero" id="hero"></header>
+
+<div class="layout">
+  <aside class="rail" id="rail"></aside>
+  <main id="cours"></main>
+</div>
+
+<footer id="ft"></footer>
+
+
+<!-- ══════════════════════════════════════════════════════════════════
+     ⬇⬇⬇  SEULE PARTIE À MODIFIER POUR UN NOUVEAU COURS  ⬇⬇⬇
+     ══════════════════════════════════════════════════════════════════ -->
+<script id="donnees">
+const COURS = {
+
+  /* ─── 1. IDENTITÉ DU COURS ───────────────────────────────────────── */
+  meta: {
+    theme:     "espagnol",                   // anglais | anglais2 | anglais3 | espagnol | allemand | italien | chinois
+    drapeau:   "🇪🇸",
+    chapitre:  "1",
+    label:     { fr:"Espagne · Chapitre 01", es:"España · Capítulo 01" },
+    titre:     { fr:"L'histoire de l'Espagne", es:"La historia de España" },
+    sousTitre: { fr:"De l'Hispanie romaine à l'Espagne démocratique : unification, empire, déclin et renaissance d'une nation ibérique.",
+                 es:"De la Hispania romana a la España democrática: unificación, imperio, declive y renacimiento de una nación ibérica." }
+  },
+
+  /* ─── 2. L'ESSENTIEL + CHIFFRES CLÉS ─────────────────────────────── */
+  essentiel: {
+    fr:"L'histoire de l'Espagne est celle d'une <strong>unification tardive et fragile</strong> — une péninsule longtemps morcelée entre royaumes chrétiens et musulmans, réunie en 1492 par les Rois Catholiques — suivie de l'édification du <strong>premier empire mondial</strong> de l'Histoire, puis d'un déclin aussi long que la grandeur avait été fulgurante. De la Reconquista à la découverte de l'Amérique, du Siècle d'or à la perte des dernières colonies en 1898, jusqu'à la Seconde République, la Guerre civile puis la dictature franquiste, l'Espagne a connu des ruptures d'une rare violence, avant de se réinventer en quelques décennies comme une démocratie européenne stable. Cette histoire heurtée explique la vivacité, aujourd'hui encore, des débats sur l'unité nationale, la mémoire et la place des régions dans l'État espagnol.",
+    es:"La historia de España es la de una <strong>unificación tardía y frágil</strong> — una península largo tiempo fragmentada entre reinos cristianos y musulmanes, reunida en 1492 por los Reyes Católicos — seguida de la construcción del <strong>primer imperio mundial</strong> de la Historia, y luego de un declive tan prolongado como fulgurante había sido su grandeza. Desde la Reconquista hasta el descubrimiento de América, desde el Siglo de Oro hasta la pérdida de las últimas colonias en 1898, pasando por la Segunda República, la Guerra Civil y la dictadura franquista, España ha vivido rupturas de una violencia poco frecuente, antes de reinventarse en pocas décadas como una democracia europea estable. Esta historia accidentada explica la vivacidad, todavía hoy, de los debates sobre la unidad nacional, la memoria y el lugar de las regiones en el Estado español."
+  },
+  chiffres: [
+    { n:"1492", d:{ fr:"prise de Grenade : fin de la Reconquista et unification de l'Espagne", es:"toma de Granada: fin de la Reconquista y unificación de España" } },
+    { n:"781", d:{ fr:"années entre le début de la conquête musulmane (711) et la chute de Grenade (1492)", es:"años entre el inicio de la conquista musulmana (711) y la caída de Granada (1492)" } },
+    { n:"1898", d:{ fr:"« Désastre » : perte de Cuba, Porto Rico et des Philippines", es:"«Desastre»: pérdida de Cuba, Puerto Rico y Filipinas" } },
+    { n:"1978", d:{ fr:"Constitution espagnole, fondation de la démocratie actuelle", es:"Constitución española, fundación de la democracia actual" } }
+  ],
+
+  /* ─── 3. CHRONOLOGIE ─────────────────────────────────────────────── */
+  chronologie: [
+    { d:{fr:"218 av. J.-C.",es:"218 a. C."}, c:{fr:"Début de la <strong>conquête romaine</strong> de la péninsule Ibérique, achevée sous Auguste.", es:"Comienzo de la <strong>conquista romana</strong> de la península Ibérica, culminada bajo Augusto."} },
+    { d:{fr:"409-711",es:"409-711"}, c:{fr:"Royaume <strong>wisigoth</strong> de Tolède, christianisé, dernier État unifié avant huit siècles de fragmentation.", es:"Reino <strong>visigodo</strong> de Toledo, cristianizado, último Estado unificado antes de ocho siglos de fragmentación."} },
+    { d:{fr:"711",es:"711"}, c:{fr:"<strong>Invasion musulmane</strong> : victoire de Tariq ibn Ziyad, effondrement du royaume wisigoth.", es:"<strong>Invasión musulmana</strong>: victoria de Tariq ibn Ziyad, colapso del reino visigodo."} },
+    { d:{fr:"722",es:"722"}, c:{fr:"Bataille de <strong>Covadonga</strong>, traditionnellement présentée comme le début de la Reconquista.", es:"Batalla de <strong>Covadonga</strong>, tradicionalmente presentada como el inicio de la Reconquista."} },
+    { d:{fr:"929",es:"929"}, c:{fr:"<em>Califat de Cordoue</em> : apogée politique et culturelle d'Al-Andalus sous Abd al-Rahman III.", es:"<em>Califato de Córdoba</em>: apogeo político y cultural de Al-Ándalus bajo Abderramán III."} },
+    { d:{fr:"1085",es:"1085"}, c:{fr:"Prise de <strong>Tolède</strong> par Alphonse VI de Castille, tournant majeur de la Reconquista.", es:"Toma de <strong>Toledo</strong> por Alfonso VI de Castilla, punto de inflexión de la Reconquista."} },
+    { d:{fr:"1212",es:"1212"}, c:{fr:"<strong>Las Navas de Tolosa</strong> : victoire chrétienne décisive contre les Almohades.", es:"<strong>Las Navas de Tolosa</strong>: victoria cristiana decisiva contra los almohades."} },
+    { d:{fr:"1469",es:"1469"}, c:{fr:"Mariage d'<strong>Isabelle de Castille</strong> et de <strong>Ferdinand d'Aragon</strong>, union dynastique fondatrice.", es:"Matrimonio de <strong>Isabel de Castilla</strong> y <strong>Fernando de Aragón</strong>, unión dinástica fundacional."} },
+    { d:{fr:"1492",es:"1492"}, c:{fr:"<strong>Prise de Grenade</strong>, expulsion des juifs, et voyage de Christophe Colomb vers les Amériques.", es:"<strong>Toma de Granada</strong>, expulsión de los judíos y viaje de Cristóbal Colón hacia las Américas."} },
+    { d:{fr:"1516",es:"1516"}, c:{fr:"<strong>Charles Ier</strong> (futur Charles Quint) devient roi d'Espagne, réunissant un empire immense.", es:"<strong>Carlos I</strong> (futuro Carlos V) se convierte en rey de España, reuniendo un imperio inmenso."} },
+    { d:{fr:"1571",es:"1571"}, c:{fr:"Victoire navale de <strong>Lépante</strong> contre l'Empire ottoman.", es:"Victoria naval de <strong>Lepanto</strong> contra el Imperio otomano."} },
+    { d:{fr:"1588",es:"1588"}, c:{fr:"Défaite de l'<em>Invincible Armada</em> face à l'Angleterre, premier signe du déclin naval espagnol.", es:"Derrota de la <em>Armada Invencible</em> frente a Inglaterra, primera señal del declive naval español."} },
+    { d:{fr:"1700-1714",es:"1700-1714"}, c:{fr:"<strong>Guerre de Succession d'Espagne</strong> : avènement des Bourbons avec Philippe V.", es:"<strong>Guerra de Sucesión española</strong>: llegada de los Borbones con Felipe V."} },
+    { d:{fr:"1808-1814",es:"1808-1814"}, c:{fr:"<strong>Guerre d'indépendance</strong> contre l'occupation napoléonienne.", es:"<strong>Guerra de la Independencia</strong> contra la ocupación napoleónica."} },
+    { d:{fr:"1812",es:"1812"}, c:{fr:"Constitution de <strong>Cadix</strong>, première charte libérale espagnole.", es:"Constitución de <strong>Cádiz</strong>, primera carta liberal española."} },
+    { d:{fr:"1898",es:"1898"}, c:{fr:"<strong>Désastre de 98</strong> : guerre contre les États-Unis, perte de Cuba, Porto Rico et des Philippines.", es:"<strong>Desastre del 98</strong>: guerra contra Estados Unidos, pérdida de Cuba, Puerto Rico y Filipinas."} },
+    { d:{fr:"1931",es:"1931"}, c:{fr:"Proclamation de la <strong>Seconde République</strong> ; Alphonse XIII s'exile.", es:"Proclamación de la <strong>Segunda República</strong>; Alfonso XIII se exilia."} },
+    { d:{fr:"1936-1939",es:"1936-1939"}, c:{fr:"<strong>Guerre civile espagnole</strong>, victoire des nationalistes menés par Franco.", es:"<strong>Guerra Civil española</strong>, victoria de los nacionales encabezados por Franco."} },
+    { d:{fr:"1939-1975",es:"1939-1975"}, c:{fr:"<strong>Dictature franquiste</strong>, jusqu'à la mort du général Franco.", es:"<strong>Dictadura franquista</strong>, hasta la muerte del general Franco."} },
+    { d:{fr:"1978",es:"1978"}, c:{fr:"Adoption de la <strong>Constitution</strong> qui fonde l'Espagne démocratique et l'État des autonomies.", es:"Aprobación de la <strong>Constitución</strong> que funda la España democrática y el Estado de las autonomías."} },
+    { d:{fr:"1986",es:"1986"}, c:{fr:"Entrée de l'Espagne dans la <strong>Communauté économique européenne</strong>.", es:"Entrada de España en la <strong>Comunidad Económica Europea</strong>."} }
+  ],
+
+  /* ─── 4. LE COURS : PARTIES > SECTIONS > BLOCS ───────────────────── */
+  parties: [
+  {
+    num:"I",
+    kicker:{fr:"Origines",es:"Orígenes"},
+    titre:{fr:"D'Hispanie en Al-Andalus : huit siècles vers l'unification",
+           es:"De Hispania a Al-Ándalus: ocho siglos hacia la unificación"},
+    couleur:"var(--a2)",
+    sections:[
+      {
+        titre:{fr:"L'Hispanie romaine et le royaume wisigoth",
+               es:"La Hispania romana y el reino visigodo"},
+        blocs:[
+          { t:"p", c:{
+            fr:"La péninsule Ibérique entre dans l'orbite romaine à partir de 218 av. J.-C., pendant la deuxième guerre punique contre Carthage. La province d'<em>Hispanie</em>, pleinement conquise sous Auguste, devient l'une des plus prospères de l'Empire : elle donne à Rome des empereurs (Trajan, Hadrien), des écrivains (Sénèque, Quintilien) et un réseau routier, urbain et agricole encore visible aujourd'hui.",
+            es:"La península Ibérica entra en la órbita romana a partir de 218 a. C., durante la segunda guerra púnica contra Cartago. La provincia de <em>Hispania</em>, plenamente conquistada bajo Augusto, se convierte en una de las más prósperas del Imperio: da a Roma emperadores (Trajano, Adriano), escritores (Séneca, Quintiliano) y una red de caminos, ciudades y explotaciones agrícolas todavía visible hoy."} },
+          { t:"p", c:{
+            fr:"Après l'effondrement de l'Empire romain d'Occident, les <strong>Wisigoths</strong>, peuple germanique christianisé, s'installent dans la péninsule et fondent un royaume centré sur <strong>Tolède</strong> à partir de 507. Ce royaume, unifié religieusement au concile de 589, reste néanmoins fragile : rivalités nobiliaires et crises de succession l'affaiblissent durablement, jusqu'à son effondrement soudain en 711.",
+            es:"Tras el colapso del Imperio romano de Occidente, los <strong>visigodos</strong>, pueblo germánico cristianizado, se instalan en la península y fundan un reino centrado en <strong>Toledo</strong> a partir del año 507. Este reino, unificado religiosamente en el concilio de 589, sigue siendo frágil: las rivalidades nobiliarias y las crisis de sucesión lo debilitan de forma duradera, hasta su repentino colapso en 711."} },
+          { t:"faits", items:[
+            { l:{fr:"Empereurs hispaniques",es:"Emperadores hispanos"}, v:{fr:"Trajan, Hadrien, Marc Aurèle (par adoption)",es:"Trajano, Adriano, Marco Aurelio (por adopción)"} },
+            { l:{fr:"507",es:"507"}, v:{fr:"Tolède devient capitale du royaume wisigoth",es:"Toledo se convierte en capital del reino visigodo"} },
+            { l:{fr:"589",es:"589"}, v:{fr:"IIIe concile de Tolède : conversion au catholicisme",es:"III Concilio de Toledo: conversión al catolicismo"} }
+          ]}
+        ]
+      },
+      {
+        titre:{fr:"711 : la conquête musulmane et la naissance d'Al-Andalus",
+               es:"711: la conquista musulmana y el nacimiento de Al-Ándalus"},
+        blocs:[
+          { t:"p", c:{
+            fr:"En 711, une armée arabo-berbère commandée par <strong>Tariq ibn Ziyad</strong> franchit le détroit de Gibraltar et défait le roi wisigoth Rodéric. En quelques années seulement, la quasi-totalité de la péninsule tombe sous domination musulmane : naît <strong>Al-Andalus</strong>, dont Cordoue devient la capitale. Seule une frange montagneuse au nord, les <em>Asturies</em>, échappe à la conquête et devient le berceau de la résistance chrétienne.",
+            es:"En 711, un ejército arabo-bereber comandado por <strong>Tariq ibn Ziyad</strong> cruza el estrecho de Gibraltar y derrota al rey visigodo Rodrigo. En apenas unos años, casi toda la península cae bajo dominio musulmán: nace <strong>Al-Ándalus</strong>, cuya capital es Córdoba. Solo una franja montañosa al norte, <em>Asturias</em>, escapa a la conquista y se convierte en la cuna de la resistencia cristiana."} },
+          { t:"p", c:{
+            fr:"Sous le <strong>califat de Cordoue</strong> (929-1031), Al-Andalus connaît un âge d'or : la ville rivalise avec Bagdad et Constantinople, dotée de bibliothèques, de mosquées monumentales et d'une vie intellectuelle où cohabitent, avec des tensions variables selon les époques, musulmans, chrétiens et juifs. Cette période transmet à l'Europe médiévale une part décisive du savoir grec, mathématique et médical conservé et enrichi par les savants arabes.",
+            es:"Bajo el <strong>califato de Córdoba</strong> (929-1031), Al-Ándalus vive una edad de oro: la ciudad rivaliza con Bagdad y Constantinopla, dotada de bibliotecas, mezquitas monumentales y una vida intelectual en la que conviven, con tensiones variables según las épocas, musulmanes, cristianos y judíos. Este periodo transmite a la Europa medieval una parte decisiva del saber griego, matemático y médico conservado y enriquecido por los sabios árabes."} },
+          { t:"def", mot:{fr:"Convivencia",es:"Convivencia"},
+            c:{fr:"Terme historiographique désignant la coexistence, réelle mais inégale et parfois idéalisée, des trois cultures monothéistes dans l'Espagne médiévale — un débat toujours vif entre historiens sur son ampleur réelle.",
+               es:"Término historiográfico que designa la coexistencia, real pero desigual y a veces idealizada, de las tres culturas monoteístas en la España medieval — un debate todavía vivo entre historiadores sobre su alcance real."} }
+        ]
+      },
+      {
+        titre:{fr:"La Reconquista : huit siècles de reflux musulman",
+               es:"La Reconquista: ocho siglos de repliegue musulmán"},
+        blocs:[
+          { t:"p", c:{
+            fr:"Amorcée symboliquement par la victoire chrétienne de <strong>Covadonga</strong> en 722, la <em>Reconquista</em> est un processus long, discontinu et régionalement inégal, mené par plusieurs royaumes chrétiens (Castille, Aragon, Navarre, Portugal) qui se font autant la guerre entre eux qu'ils n'affrontent Al-Andalus. La prise de <strong>Tolède</strong> en 1085 par Alphonse VI de Castille marque un tournant décisif, suivie par la victoire écrasante des <strong>Navas de Tolosa</strong> en 1212, qui ouvre la voie à la conquête de l'Andalousie.",
+            es:"Iniciada simbólicamente por la victoria cristiana de <strong>Covadonga</strong> en 722, la <em>Reconquista</em> es un proceso largo, discontinuo y desigual según las regiones, protagonizado por varios reinos cristianos (Castilla, Aragón, Navarra, Portugal) que se enfrentan entre sí tanto como combaten a Al-Ándalus. La toma de <strong>Toledo</strong> en 1085 por Alfonso VI de Castilla marca un punto de inflexión decisivo, seguida por la victoria aplastante de las <strong>Navas de Tolosa</strong> en 1212, que abre el camino a la conquista de Andalucía."} },
+          { t:"p", c:{
+            fr:"Au XIIIe siècle, seul subsiste le royaume musulman de <strong>Grenade</strong>, sous la dynastie nasride, préservé pendant deux siècles et demi grâce à des tributs versés à la Castille et à des divisions entre royaumes chrétiens. L'union dynastique de Castille et d'Aragon en 1469, puis la campagne militaire lancée par les Rois Catholiques à partir de 1482, mettent fin à cette exception.",
+            es:"En el siglo XIII, solo subsiste el reino musulmán de <strong>Granada</strong>, bajo la dinastía nazarí, preservado durante dos siglos y medio gracias a tributos pagados a Castilla y a las divisiones entre los reinos cristianos. La unión dinástica de Castilla y Aragón en 1469, y luego la campaña militar lanzada por los Reyes Católicos a partir de 1482, ponen fin a esta excepción."} },
+          { t:"encadre", icon:"⚔️", c:"var(--a4)",
+            titre:{fr:"Erreur fréquente en dissertation", es:"Error frecuente en las disertaciones"},
+            c2:{fr:"La Reconquista n'est ni linéaire ni idéologiquement homogène : rois chrétiens et musulmans ont conclu des alliances, payé des tributs et parfois combattu côte à côte contre des coreligionnaires. La lire comme une croisade continue de huit siècles est un anachronisme fréquent qu'il faut éviter.",
+                es:"La Reconquista no es ni lineal ni ideológicamente homogénea: reyes cristianos y musulmanes firmaron alianzas, pagaron tributos y a veces combatieron codo con codo contra correligionarios. Leerla como una cruzada continua de ocho siglos es un anacronismo frecuente que conviene evitar."} }
+        ]
+      },
+      {
+        titre:{fr:"1492 : les Rois Catholiques et la naissance de l'Espagne unifiée",
+               es:"1492: los Reyes Católicos y el nacimiento de la España unificada"},
+        blocs:[
+          { t:"p", c:{
+            fr:"Le mariage d'<strong>Isabelle de Castille</strong> et de <strong>Ferdinand d'Aragon</strong> en 1469 unit dynastiquement les deux principaux royaumes de la péninsule, sans pour autant fusionner leurs institutions, leurs lois ou leurs monnaies — l'Espagne reste, pour longtemps, une union de royaumes plus qu'un État unitaire. L'année <strong>1492</strong> concentre trois événements qui scellent la naissance de l'Espagne moderne : la prise de <strong>Grenade</strong> le 2 janvier, l'expulsion des juifs qui refusent la conversion, et le départ de <strong>Christophe Colomb</strong> vers les Amériques.",
+            es:"El matrimonio de <strong>Isabel de Castilla</strong> y <strong>Fernando de Aragón</strong> en 1469 une dinásticamente los dos principales reinos de la península, sin fusionar por ello sus instituciones, sus leyes o sus monedas — España sigue siendo, durante mucho tiempo, una unión de reinos más que un Estado unitario. El año <strong>1492</strong> concentra tres acontecimientos que sellan el nacimiento de la España moderna: la toma de <strong>Granada</strong> el 2 de enero, la expulsión de los judíos que rechazan la conversión, y la partida de <strong>Cristóbal Colón</strong> hacia las Américas."} },
+          { t:"p", c:{
+            fr:"Les <em>Rois Catholiques</em>, titre accordé par le pape en 1496, renforcent l'autorité royale face à la noblesse, créent l'<strong>Inquisition espagnole</strong> en 1478 pour surveiller l'orthodoxie religieuse des convertis, et posent les bases administratives d'un État moderne. La découverte du Nouveau Monde, financée par la Couronne de Castille, ouvre une ère de conquête et d'expansion sans précédent qui va transformer l'Espagne en première puissance mondiale.",
+            es:"Los <em>Reyes Católicos</em>, título concedido por el papa en 1496, refuerzan la autoridad real frente a la nobleza, crean la <strong>Inquisición española</strong> en 1478 para vigilar la ortodoxia religiosa de los conversos, y sientan las bases administrativas de un Estado moderno. El descubrimiento del Nuevo Mundo, financiado por la Corona de Castilla, abre una era de conquista y expansión sin precedentes que transformará a España en la primera potencia mundial."} },
+          { t:"faits", items:[
+            { l:{fr:"1478",es:"1478"}, v:{fr:"Création de l'Inquisition espagnole",es:"Creación de la Inquisición española"} },
+            { l:{fr:"1492",es:"1492"}, v:{fr:"Chute de Grenade, expulsion des juifs, voyage de Colomb",es:"Caída de Granada, expulsión de los judíos, viaje de Colón"} },
+            { l:{fr:"1512",es:"1512"}, v:{fr:"Annexion de la Navarre : la péninsule est presque unifiée",es:"Anexión de Navarra: la península está casi unificada"} }
+          ]}
+        ]
+      }
+    ]
+  },
+  {
+    num:"II",
+    kicker:{fr:"Empire et déclin",es:"Imperio y declive"},
+    titre:{fr:"Le premier empire mondial : apogée et déclin des Habsbourg",
+           es:"El primer imperio mundial: apogeo y declive de los Habsburgo"},
+    couleur:"var(--a3)",
+    sections:[
+      {
+        titre:{fr:"Charles Quint : un empire où le soleil ne se couche jamais",
+               es:"Carlos V: un imperio donde nunca se pone el sol"},
+        blocs:[
+          { t:"p", c:{
+            fr:"En 1516, <strong>Charles Ier</strong> hérite des couronnes de Castille et d'Aragon ; en 1519, il devient également empereur du Saint Empire romain germanique sous le nom de <strong>Charles Quint</strong>. Il règne ainsi sur un ensemble territorial sans équivalent en Europe depuis Charlemagne : Espagne, Pays-Bas, Franche-Comté, royaume de Naples, et bientôt les immenses territoires américains conquis par Cortés au Mexique (1521) et Pizarre au Pérou (1533).",
+            es:"En 1516, <strong>Carlos I</strong> hereda las coronas de Castilla y Aragón; en 1519 se convierte también en emperador del Sacro Imperio Romano Germánico bajo el nombre de <strong>Carlos V</strong>. Reina así sobre un conjunto territorial sin equivalente en Europa desde Carlomagno: España, los Países Bajos, el Franco Condado, el reino de Nápoles, y pronto los inmensos territorios americanos conquistados por Cortés en México (1521) y Pizarro en Perú (1533)."} },
+          { t:"p", c:{
+            fr:"Cette accumulation de couronnes suscite dès 1520 une révolte castillane, la <em>guerre des Comunidades</em>, réprimée en 1521, qui traduit le malaise d'une noblesse et de villes voyant leurs ressources mobilisées pour des guerres européennes menées au nom d'un souverain perçu comme étranger. Charles Quint abdique en 1556, partageant son héritage entre son fils Philippe (l'Espagne) et son frère Ferdinand (l'Empire germanique).",
+            es:"Esta acumulación de coronas suscita desde 1520 una revuelta castellana, la <em>guerra de las Comunidades</em>, reprimida en 1521, que traduce el malestar de una nobleza y de unas ciudades que ven sus recursos movilizados para guerras europeas libradas en nombre de un soberano percibido como extranjero. Carlos V abdica en 1556, repartiendo su herencia entre su hijo Felipe (España) y su hermano Fernando (el Imperio germánico)."} },
+          { t:"stats", items:[
+            { n:"1521", d:{fr:"conquête du Mexique par Hernán Cortés",es:"conquista de México por Hernán Cortés"}, c:"var(--a1)" },
+            { n:"1533", d:{fr:"conquête du Pérou par Francisco Pizarre",es:"conquista de Perú por Francisco Pizarro"}, c:"var(--a2)" },
+            { n:{fr:"≈ 20 M",es:"≈ 20 M"}, d:{fr:"habitants amérindiens décimés par les épidémies et la conquête au XVIe siècle",es:"habitantes amerindios diezmados por las epidemias y la conquista en el siglo XVI"}, c:"var(--a3)" }
+          ]}
+        ]
+      },
+      {
+        titre:{fr:"Philippe II et le Siècle d'or espagnol",
+               es:"Felipe II y el Siglo de Oro español"},
+        blocs:[
+          { t:"p", c:{
+            fr:"<strong>Philippe II</strong> (1556-1598) règne depuis l'<em>Escurial</em>, monastère-palais qu'il fait bâtir près de Madrid, sur un empire où « le soleil ne se couche jamais » : l'Espagne, les colonies américaines, les Philippines, et à partir de 1580 le Portugal et son propre empire colonial. Défenseur intransigeant du catholicisme, il engage l'Espagne dans de coûteux conflits contre les protestants des Pays-Bas, l'Angleterre d'Élisabeth Ire et la France, financés par l'or et l'argent affluant du Nouveau Monde.",
+            es:"<strong>Felipe II</strong> (1556-1598) reina desde <em>El Escorial</em>, monasterio-palacio que manda construir cerca de Madrid, sobre un imperio en el que «nunca se pone el sol»: España, las colonias americanas, Filipinas, y a partir de 1580 Portugal y su propio imperio colonial. Defensor intransigente del catolicismo, embarca a España en costosos conflictos contra los protestantes de los Países Bajos, la Inglaterra de Isabel I y Francia, financiados por el oro y la plata que afluyen del Nuevo Mundo."} },
+          { t:"p", c:{
+            fr:"C'est aussi l'époque du <strong>Siècle d'or</strong> (<em>Siglo de Oro</em>), sommet de la création artistique et littéraire espagnole : Cervantès publie <em>Don Quichotte</em> en 1605, Vélasquez peint pour la cour, Lope de Vega révolutionne le théâtre. Ce rayonnement culturel contraste avec des difficultés économiques croissantes : l'afflux massif de métaux précieux nourrit une inflation durable, tandis que l'agriculture et l'industrie castillanes restent négligées.",
+            es:"Es también la época del <strong>Siglo de Oro</strong>, cumbre de la creación artística y literaria española: Cervantes publica el <em>Quijote</em> en 1605, Velázquez pinta para la corte, Lope de Vega revoluciona el teatro. Este esplendor cultural contrasta con dificultades económicas crecientes: la afluencia masiva de metales preciosos alimenta una inflación duradera, mientras la agricultura y la industria castellanas siguen siendo descuidadas."} },
+          { t:"citation",
+            c:{fr:"Quelque chose se remue là-dedans qui n'est pas de la paille.", es:"Algo va de zaga a delantera."},
+            src:{fr:"Miguel de Cervantès, Don Quichotte, 1605", es:"Miguel de Cervantes, Don Quijote, 1605"} }
+        ]
+      },
+      {
+        titre:{fr:"1588-1700 : l'échec de l'Armada et le déclin des Habsbourg",
+               es:"1588-1700: el fracaso de la Armada y el declive de los Habsburgo"},
+        blocs:[
+          { t:"p", c:{
+            fr:"La défaite de l'<strong>Invincible Armada</strong> en 1588, flotte envoyée envahir l'Angleterre protestante, marque un choc symbolique et le premier signe visible du recul de la puissance navale espagnole. Le XVIIe siècle est celui d'un déclin lent : les rois qui succèdent à Philippe II, Philippe III puis Philippe IV et enfin <strong>Charles II</strong>, souverain infirme et sans descendance, gouvernent de plus en plus par l'intermédiaire de favoris (<em>validos</em>) tandis que les caisses de l'État se vident dans des guerres incessantes.",
+            es:"La derrota de la <strong>Armada Invencible</strong> en 1588, flota enviada a invadir la Inglaterra protestante, marca un golpe simbólico y la primera señal visible del retroceso del poder naval español. El siglo XVII es el de un declive lento: los reyes que suceden a Felipe II, Felipe III y luego Felipe IV y finalmente <strong>Carlos II</strong>, soberano enfermizo y sin descendencia, gobiernan cada vez más a través de favoritos (<em>validos</em>) mientras las arcas del Estado se vacían en guerras incesantes."} },
+          { t:"p", c:{
+            fr:"La mort sans héritier de Charles II en 1700 ouvre une crise de succession européenne majeure : il désigne pour successeur <strong>Philippe d'Anjou</strong>, petit-fils de Louis XIV, ce que refusent l'Autriche, l'Angleterre et les Provinces-Unies, craignant une union des couronnes française et espagnole. S'ensuit la <strong>guerre de Succession d'Espagne</strong> (1701-1714), qui installe finalement les <strong>Bourbons</strong> sur le trône, au prix de la perte des possessions espagnoles en Europe (Pays-Bas, Italie).",
+            es:"La muerte sin heredero de Carlos II en 1700 abre una crisis de sucesión europea mayor: designa como sucesor a <strong>Felipe de Anjou</strong>, nieto de Luis XIV, lo que rechazan Austria, Inglaterra y las Provincias Unidas, temiendo una unión de las coronas francesa y española. Se desencadena la <strong>guerra de Sucesión española</strong> (1701-1714), que finalmente instala a los <strong>Borbones</strong> en el trono, al precio de la pérdida de las posesiones españolas en Europa (Países Bajos, Italia)."} },
+          { t:"encadre", icon:"👑", c:"var(--a4)",
+            titre:{fr:"Notion clé — les Décrets de Nueva Planta", es:"Concepto clave — los Decretos de Nueva Planta"},
+            c2:{fr:"À l'issue de la guerre de Succession, Philippe V abolit entre 1707 et 1716 les <em>fueros</em> (privilèges et institutions propres) de l'Aragon, de la Catalogne et de Valence, qui avaient soutenu son rival autrichien. Cette centralisation à la française, qui n'épargne que le Pays basque et la Navarre, est encore aujourd'hui invoquée dans les débats sur le nationalisme catalan.",
+                es:"Al término de la guerra de Sucesión, Felipe V abole entre 1707 y 1716 los <em>fueros</em> (privilegios e instituciones propias) de Aragón, Cataluña y Valencia, que habían apoyado a su rival austríaco. Esta centralización de estilo francés, que solo respeta al País Vasco y Navarra, todavía se invoca hoy en los debates sobre el nacionalismo catalán."} }
+        ]
+      }
+    ]
+  },
+  {
+    num:"III",
+    kicker:{fr:"L'Espagne contemporaine",es:"La España contemporánea"},
+    titre:{fr:"Guerres, pertes coloniales et instabilité chronique (XIXe-XXe siècle)",
+           es:"Guerras, pérdidas coloniales e inestabilidad crónica (siglos XIX-XX)"},
+    couleur:"var(--a4)",
+    sections:[
+      {
+        titre:{fr:"La guerre d'indépendance et le XIXe siècle libéral",
+               es:"La guerra de la Independencia y el siglo XIX liberal"},
+        blocs:[
+          { t:"p", c:{
+            fr:"En 1808, <strong>Napoléon</strong> impose son frère Joseph Bonaparte sur le trône d'Espagne, provoquant un soulèvement populaire immortalisé par Goya (<em>Le Trois mai 1808</em>) et une guérilla acharnée : la <strong>guerre d'indépendance</strong> (1808-1814), soutenue militairement par le Royaume-Uni. Pendant le siège de Cadix, les libéraux espagnols rédigent en 1812 la première <strong>Constitution</strong> du pays, texte fondateur du libéralisme hispanique bien qu'abrogé dès le retour du roi Ferdinand VII en 1814.",
+            es:"En 1808, <strong>Napoleón</strong> impone a su hermano José Bonaparte en el trono de España, provocando un levantamiento popular inmortalizado por Goya (<em>El tres de mayo de 1808</em>) y una encarnizada guerra de guerrillas: la <strong>Guerra de la Independencia</strong> (1808-1814), apoyada militarmente por el Reino Unido. Durante el sitio de Cádiz, los liberales españoles redactan en 1812 la primera <strong>Constitución</strong> del país, texto fundador del liberalismo hispánico aunque derogado en cuanto regresa el rey Fernando VII en 1814."} },
+          { t:"p", c:{
+            fr:"Le siècle qui suit est marqué par une instabilité chronique : trois <strong>guerres carlistes</strong> opposent partisans d'un absolutisme traditionaliste et libéraux autour de la succession royale ; les colonies continentales d'Amérique du Sud obtiennent leur indépendance entre 1810 et 1825 ; pronunciamientos militaires, révolutions et brève <em>Première République</em> (1873-1874) se succèdent avant la <strong>Restauration</strong> monarchique de 1874, qui instaure une alternance de façade entre libéraux et conservateurs.",
+            es:"El siglo siguiente está marcado por una inestabilidad crónica: tres <strong>guerras carlistas</strong> enfrentan a partidarios de un absolutismo tradicionalista y a liberales en torno a la sucesión real; las colonias continentales de América del Sur obtienen su independencia entre 1810 y 1825; pronunciamientos militares, revoluciones y una breve <em>Primera República</em> (1873-1874) se suceden antes de la <strong>Restauración</strong> monárquica de 1874, que instaura una alternancia de fachada entre liberales y conservadores."} },
+          { t:"faits", items:[
+            { l:{fr:"1812",es:"1812"}, v:{fr:"Constitution de Cadix, dite « La Pepa »",es:"Constitución de Cádiz, llamada «La Pepa»"} },
+            { l:{fr:"1810-1825",es:"1810-1825"}, v:{fr:"Indépendance des colonies sud-américaines",es:"Independencia de las colonias sudamericanas"} },
+            { l:{fr:"1874",es:"1874"}, v:{fr:"Restauration de la monarchie avec Alphonse XII",es:"Restauración de la monarquía con Alfonso XII"} }
+          ]}
+        ]
+      },
+      {
+        titre:{fr:"1898 : le Désastre et la crise du régime",
+               es:"1898: el Desastre y la crisis del régimen"},
+        blocs:[
+          { t:"p", c:{
+            fr:"En 1898, la guerre hispano-américaine se conclut par une défaite écrasante : l'Espagne perd en quelques mois <strong>Cuba</strong>, <strong>Porto Rico</strong> et les <strong>Philippines</strong>, ses dernières possessions coloniales majeures. Ce « <strong>Désastre</strong> » provoque un traumatisme intellectuel profond, incarné par la <em>génération de 98</em> (Unamuno, Machado, Azorín), qui interroge la place et le retard supposé de l'Espagne dans le concert des nations européennes.",
+            es:"En 1898, la guerra hispano-estadounidense concluye con una derrota aplastante: España pierde en pocos meses <strong>Cuba</strong>, <strong>Puerto Rico</strong> y <strong>Filipinas</strong>, sus últimas posesiones coloniales importantes. Este «<strong>Desastre</strong>» provoca un profundo trauma intelectual, encarnado por la <em>generación del 98</em> (Unamuno, Machado, Azorín), que se interroga sobre el lugar y el supuesto retraso de España en el concierto de las naciones europeas."} },
+          { t:"p", c:{
+            fr:"Le régime de la Restauration, fondé sur une alternance négociée et une fraude électorale endémique (le <em>caciquisme</em>), s'avère incapable de répondre aux tensions sociales grandissantes — mouvement ouvrier, agitation en Catalogne, guerre coloniale au Maroc. En 1923, le général <strong>Primo de Rivera</strong> instaure une dictature avec l'assentiment du roi Alphonse XIII, préfigurant l'effondrement de la monarchie parlementaire.",
+            es:"El régimen de la Restauración, fundado en una alternancia negociada y un fraude electoral endémico (el <em>caciquismo</em>), se muestra incapaz de responder a las crecientes tensiones sociales — movimiento obrero, agitación en Cataluña, guerra colonial en Marruecos. En 1923, el general <strong>Primo de Rivera</strong> instaura una dictadura con el consentimiento del rey Alfonso XIII, anticipando el colapso de la monarquía parlamentaria."} }
+        ]
+      },
+      {
+        titre:{fr:"La Seconde République et la Guerre civile (1931-1939)",
+               es:"La Segunda República y la Guerra Civil (1931-1939)"},
+        blocs:[
+          { t:"p", c:{
+            fr:"Après la chute de Primo de Rivera et des élections municipales défavorables à la monarchie, le roi <strong>Alphonse XIII</strong> quitte l'Espagne le 14 avril 1931 : la <strong>Seconde République</strong> est proclamée dans l'enthousiasme populaire. Le nouveau régime engage des réformes ambitieuses — laïcisation, réforme agraire, statuts d'autonomie régionale, droit de vote des femmes en 1933 — dans un climat de polarisation politique croissante entre gauche et droite.",
+            es:"Tras la caída de Primo de Rivera y unas elecciones municipales desfavorables a la monarquía, el rey <strong>Alfonso XIII</strong> abandona España el 14 de abril de 1931: la <strong>Segunda República</strong> se proclama entre el entusiasmo popular. El nuevo régimen emprende reformas ambiciosas — laicización, reforma agraria, estatutos de autonomía regional, derecho de voto de las mujeres en 1933 — en un clima de polarización política creciente entre izquierda y derecha."} },
+          { t:"p", c:{
+            fr:"La victoire du <strong>Front populaire</strong> aux élections de février 1936 précipite la crise : le 17-18 juillet 1936, une partie de l'armée se soulève contre la République sous la direction, bientôt, du général <strong>Francisco Franco</strong>. Le pays bascule dans une <strong>guerre civile</strong> de trois ans (1936-1939), internationalisée par l'aide de l'Allemagne nazie et de l'Italie fasciste aux nationalistes, et par celle de l'URSS et des Brigades internationales aux républicains, et qui fait environ 500 000 morts.",
+            es:"La victoria del <strong>Frente Popular</strong> en las elecciones de febrero de 1936 precipita la crisis: el 17-18 de julio de 1936, una parte del ejército se subleva contra la República bajo la dirección, pronto, del general <strong>Francisco Franco</strong>. El país se hunde en una <strong>guerra civil</strong> de tres años (1936-1939), internacionalizada por la ayuda de la Alemania nazi y la Italia fascista a los nacionales, y por la de la URSS y las Brigadas Internacionales a los republicanos, que causa alrededor de 500 000 muertos."} }
+        ]
+      }
+    ]
+  }
+  ],
+
+  /* ─── 5. ACTEURS CLÉS ─────────────────────────────────────────────── */
+  acteurs: [
+    { nom:"Isabelle de Castille", c:"var(--a2)", role:{fr:"Reine de Castille (1474-1504)",es:"Reina de Castilla (1474-1504)"},
+      d:{fr:"Avec Ferdinand d'Aragon, elle unifie dynastiquement l'Espagne, achève la Reconquista en 1492 et finance le voyage de Christophe Colomb.",
+         es:"Junto a Fernando de Aragón, unifica dinásticamente España, culmina la Reconquista en 1492 y financia el viaje de Cristóbal Colón."} },
+    { nom:"Charles Quint", c:"var(--a1)", role:{fr:"Roi d'Espagne et empereur (1516-1556)",es:"Rey de España y emperador (1516-1556)"},
+      d:{fr:"Règne sur le plus vaste empire européen depuis Charlemagne, réunissant l'Espagne, les Pays-Bas, l'Autriche et les possessions américaines.",
+         es:"Reina sobre el imperio europeo más vasto desde Carlomagno, reuniendo España, los Países Bajos, Austria y las posesiones americanas."} },
+    { nom:"Philippe II", c:"var(--a3)", role:{fr:"Roi d'Espagne (1556-1598)",es:"Rey de España (1556-1598)"},
+      d:{fr:"Défenseur du catholicisme, il gouverne depuis l'Escurial un empire « où le soleil ne se couche jamais », marqué par le Siècle d'or espagnol.",
+         es:"Defensor del catolicismo, gobierna desde El Escorial un imperio «donde nunca se pone el sol», marcado por el Siglo de Oro español."} },
+    { nom:"Miguel de Cervantès", c:"var(--a4)", role:{fr:"Écrivain (1547-1616)",es:"Escritor (1547-1616)"},
+      d:{fr:"Auteur de Don Quichotte (1605), il incarne le rayonnement littéraire du Siècle d'or espagnol.",
+         es:"Autor de Don Quijote (1605), encarna el esplendor literario del Siglo de Oro español."} },
+    { nom:"Francisco Franco", c:"var(--a2)", role:{fr:"Général, chef de l'État (1939-1975)",es:"General, jefe del Estado (1939-1975)"},
+      d:{fr:"Vainqueur de la Guerre civile, il instaure une dictature de près de quarante ans qui façonne durablement l'Espagne du XXe siècle.",
+         es:"Vencedor de la Guerra Civil, instaura una dictadura de casi cuarenta años que marca profundamente la España del siglo XX."} },
+    { nom:"Juan Carlos Ier", c:"var(--a1)", role:{fr:"Roi d'Espagne (1975-2014)",es:"Rey de España (1975-2014)"},
+      d:{fr:"Désigné successeur par Franco, il pilote pourtant la Transition démocratique après 1975, jusqu'à son abdication en 2014.",
+         es:"Designado sucesor por Franco, pilota sin embargo la Transición democrática después de 1975, hasta su abdicación en 2014."} }
+  ],
+
+  /* ─── 7. LEXIQUE BILINGUE ─────────────────────────────────────────── */
+  lexique: [
+    { es:"Reconquista", fr:"Processus séculaire de reprise de la péninsule Ibérique sur les royaumes musulmans (722-1492)." },
+    { es:"Al-Ándalus", fr:"Nom donné aux territoires de la péninsule Ibérique sous domination musulmane." },
+    { es:"Reyes Católicos", fr:"Isabelle de Castille et Ferdinand d'Aragon, unificateurs de l'Espagne en 1492." },
+    { es:"Siglo de Oro", fr:"Apogée culturelle et littéraire espagnole, XVIe-XVIIe siècle (Cervantès, Vélasquez)." },
+    { es:"Armada Invencible", fr:"Flotte espagnole défaite par l'Angleterre en 1588." },
+    { es:"Guerra de Sucesión española", fr:"Conflit européen (1701-1714) qui installe les Bourbons sur le trône d'Espagne." },
+    { es:"Fueros", fr:"Privilèges et institutions propres à certains territoires (Catalogne, Pays basque…)." },
+    { es:"Desastre del 98", fr:"Perte de Cuba, Porto Rico et des Philippines en 1898 face aux États-Unis." },
+    { es:"Caciquismo", fr:"Système de fraude et de clientélisme électoral sous la Restauration (fin XIXe-début XXe)." },
+    { es:"Segunda República", fr:"Régime républicain espagnol de 1931 à 1939." },
+    { es:"Guerra Civil española", fr:"Conflit armé de 1936 à 1939 entre républicains et nationalistes." },
+    { es:"Franquismo", fr:"Régime dictatorial dirigé par Francisco Franco de 1939 à 1975." },
+    { es:"Transición", fr:"Passage pacifique de la dictature à la démocratie après la mort de Franco (1975-1978)." },
+    { es:"Comunidades autónomas", fr:"Régions dotées d'un gouvernement et de compétences propres depuis la Constitution de 1978." }
+  ],
+
+  /* ─── 9. À RETENIR ───────────────────────────────────────────────── */
+  retenir: {
+    fr:[
+      "L'Espagne est le fruit d'une <strong>unification tardive</strong> (1492), après huit siècles de coexistence et de conflit entre royaumes chrétiens et musulmans.",
+      "Le mariage des <strong>Rois Catholiques</strong> (1469) unit les couronnes sans fusionner les royaumes, une union de royaumes plus qu'un État unitaire.",
+      "Sous <strong>Charles Quint</strong> et <strong>Philippe II</strong>, l'Espagne bâtit le premier empire mondial de l'Histoire, contemporain du <strong>Siècle d'or</strong> culturel.",
+      "La défaite de l'<strong>Armada</strong> (1588) puis la <strong>guerre de Succession</strong> (1701-1714) marquent le déclin des Habsbourg et l'arrivée des Bourbons.",
+      "Le <strong>Désastre de 1898</strong> (perte de Cuba, Porto Rico, Philippines) provoque une crise identitaire profonde et durable.",
+      "La <strong>Seconde République</strong> (1931) puis la <strong>Guerre civile</strong> (1936-1939) ouvrent la voie à près de quarante ans de dictature franquiste.",
+      "La <strong>Constitution de 1978</strong> fonde l'Espagne démocratique actuelle et l'État des autonomies régionales."
+    ],
+    es:[
+      "España es el fruto de una <strong>unificación tardía</strong> (1492), tras ocho siglos de coexistencia y conflicto entre reinos cristianos y musulmanes.",
+      "El matrimonio de los <strong>Reyes Católicos</strong> (1469) une las coronas sin fusionar los reinos, una unión de reinos más que un Estado unitario.",
+      "Bajo <strong>Carlos V</strong> y <strong>Felipe II</strong>, España construye el primer imperio mundial de la Historia, contemporáneo del <strong>Siglo de Oro</strong> cultural.",
+      "La derrota de la <strong>Armada</strong> (1588) y luego la <strong>guerra de Sucesión</strong> (1701-1714) marcan el declive de los Habsburgo y la llegada de los Borbones.",
+      "El <strong>Desastre del 98</strong> (pérdida de Cuba, Puerto Rico, Filipinas) provoca una crisis identitaria profunda y duradera.",
+      "La <strong>Segunda República</strong> (1931) y luego la <strong>Guerra Civil</strong> (1936-1939) abren el camino a casi cuarenta años de dictadura franquista.",
+      "La <strong>Constitución de 1978</strong> funda la España democrática actual y el Estado de las autonomías regionales."
+    ]
+  }
+};
+</script>
+<!-- ══════════════════════════════════════════════════════════════════
+     ⬆⬆⬆  FIN DES DONNÉES — NE RIEN MODIFIER EN DESSOUS  ⬆⬆⬆
+     ══════════════════════════════════════════════════════════════════ -->
+
+
+<script>
+/* ─── Utilitaires ─── */
+const $ = (s,r=document)=>r.querySelector(s);
+let LANG = 'fr';
+/* T() : renvoie la version dans la langue courante, ou la valeur telle quelle */
+const T = v => (v && typeof v==='object' && !Array.isArray(v) && ('fr' in v||'es' in v)) ? (v[LANG] ?? v.fr) : v;
+
+/* ─── Libellés d'interface ─── */
+const UI = {
+  fr:{ chrono:"Chronologie",
+       essentiel:"L'essentiel", reperes:"Repères", quiEstQui:"Qui est qui", acteurs:"Acteurs clés",
+       controverse:"Controverse", vocab:"Vocabulaire", lexique:"Lexique bilingue",
+       filtrer:"Filtrer le lexique…", terme:"Terme", trad:"Traduction / usage",
+       entrainement:"Entraînement", sujets:"Sujets possibles", memoriser:"Mémoriser",
+       retenir:"À retenir", synthese:"Synthèse", chapitre:"Chapitre" },
+  es:{ chrono:"Cronología",
+       essentiel:"Lo esencial", reperes:"Fechas clave", quiEstQui:"Quién es quién", acteurs:"Figuras clave",
+       controverse:"Debate", vocab:"Vocabulario", lexique:"Glosario bilingüe",
+       filtrer:"Filtrar el glosario…", terme:"Término", trad:"Traducción / uso",
+       entrainement:"Entrenamiento", sujets:"Posibles temas", memoriser:"Repasar",
+       retenir:"Para recordar", synthese:"Síntesis", chapitre:"Capítulo" }
+};
+const t = k => UI[LANG][k];
+
+/* ─── Rendu des blocs de contenu ─── */
+function bloc(b){
+  switch(b.t){
+    case 'p':      return `<p class="prose">${T(b.c)}</p>`;
+    case 'liste':  return `<ul class="liste">${T(b.items).map(i=>`<li>${i}</li>`).join('')}</ul>`;
+    case 'faits':  return `<div class="faits">${T(b.items).map(i=>
+                     `<div class="fait"><div class="fait-l">${T(i.l)}</div><div class="fait-v">${T(i.v)}</div></div>`).join('')}</div>`;
+    case 'stats':  return `<div class="stats">${b.items.map(i=>
+                     `<div class="stat" style="--c:${i.c||'var(--a1)'}"><span class="stat-n">${T(i.n)}</span><span class="stat-d">${T(i.d)}</span></div>`).join('')}</div>`;
+    case 'citation':return `<blockquote class="citation"><p>« ${T(b.c)} »</p><cite>${T(b.src)}</cite></blockquote>`;
+    case 'encadre':return `<div class="encadre" style="--c:${b.c||'var(--a2)'}"><div class="encadre-ic">${b.icon||'💡'}</div>
+                     <div><div class="encadre-t">${T(b.titre)}</div><div class="encadre-c">${T(b.c2)}</div></div></div>`;
+    case 'def':    return `<div class="def"><div class="def-mot">${T(b.mot)}</div><div class="def-c">${T(b.c)}</div></div>`;
+    case 'tableau':return `<div class="tbl-wrap"><table><thead><tr>${T(b.head).map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+                     <tbody>${T(b.rows).map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    case 'tl':     return `<div class="tl">${T(b.items).map(i=>
+                     `<div class="tl-item"><div class="tl-d">${T(i.d)}</div><div class="tl-c">${T(i.c)}</div></div>`).join('')}</div>`;
+    default:       return '';
+  }
+}
+
+/* ─── En-tête ─── */
+function rendreHero(){
+  const m = COURS.meta;
+  document.documentElement.dataset.theme = m.theme;
+  document.documentElement.lang = LANG;
+  document.title = T(m.titre) + ' — Civilisation';
+  $('#bc-titre').textContent = m.titre.fr ?? m.titre;   // la nav reste en français
+  $('#ft').textContent = `${t('chapitre')} ${m.chapitre}${LANG==='fr'?' : ':': '}${T(m.titre)}`;
+  $('#hero').innerHTML = `
+    <span class="hero-flag">${m.drapeau}</span>
+    <div class="hero-label">${T(m.label)}</div>
+    <h1>${T(m.titre)}</h1>
+    <p class="hero-sub">${T(m.sousTitre)}</p>`;
+}
+
+/* ─── Corps du cours ─── */
+function rendreCours(){
+  const c = COURS, out = [];
+
+  out.push(`<section class="bloc rev" id="s-essentiel">
+    <div class="essentiel"><div class="essentiel-label">${t('essentiel')}</div><p>${T(c.essentiel)}</p></div>
+    <div class="stats">${c.chiffres.map((x,i)=>
+      `<div class="stat" style="--c:var(--a${(i%4)+1})"><span class="stat-n">${T(x.n)}</span><span class="stat-d">${T(x.d)}</span></div>`).join('')}</div>
+  </section>`);
+
+  if(c.chronologie?.length){
+    out.push(`<section class="bloc rev chrono-mobile" id="s-chrono">
+      <div class="bloc-head"><span class="bloc-kicker">${t('reperes')}</span><h2 class="bloc-title">${t('chrono')}</h2></div>
+      ${bloc({t:'tl',items:c.chronologie})}</section>`);
+  }
+
+  c.parties.forEach((p,pi)=>{
+    let html = `<section class="partie rev" id="p-${pi}" style="--p:${p.couleur}">
+      <div class="partie-head"><div class="partie-num">${p.num}</div>
+      <div><div class="partie-kicker">${T(p.kicker)}</div><h2 class="partie-title">${T(p.titre)}</h2></div></div>`;
+    p.sections.forEach((s,si)=>{
+      html += `<div class="section" id="p-${pi}-${si}"><h3 class="section-title"><span class="section-num">${si+1}.</span> ${T(s.titre)}</h3>
+        ${s.blocs.map(bloc).join('')}</div>`;
+    });
+    out.push(html+`</section>`);
+  });
+
+  if(c.acteurs?.length){
+    out.push(`<section class="bloc rev" id="s-acteurs">
+      <div class="bloc-head"><span class="bloc-kicker">${t('quiEstQui')}</span><h2 class="bloc-title">${t('acteurs')}</h2></div>
+      <div class="acteurs">${c.acteurs.map(a=>
+        `<div class="acteur" style="--c:${a.c}"><div class="acteur-nom">${a.nom}</div>
+         <div class="acteur-role">${T(a.role)}</div><div class="acteur-c">${T(a.d)}</div></div>`).join('')}</div></section>`);
+  }
+
+  if(c.debat){
+    out.push(`<section class="bloc rev" id="s-debat">
+      <div class="bloc-head"><span class="bloc-kicker" style="--k:var(--a4)">${t('controverse')}</span>
+      <h2 class="bloc-title">${T(c.debat.question)}</h2></div>
+      <div class="debat">
+        <div class="debat-col oui"><div class="debat-t">${T(c.debat.oui.titre)}</div>
+          <ul>${T(c.debat.oui.items).map(i=>`<li>${i}</li>`).join('')}</ul></div>
+        <div class="debat-col non"><div class="debat-t">${T(c.debat.non.titre)}</div>
+          <ul>${T(c.debat.non.items).map(i=>`<li>${i}</li>`).join('')}</ul></div>
+      </div>
+      ${c.debat.synthese?`<div class="encadre" style="--c:var(--a1);margin-top:14px">
+        <div class="encadre-ic">⚖️</div><div><div class="encadre-t">${t('synthese')}</div>
+        <div class="encadre-c">${T(c.debat.synthese)}</div></div></div>`:''}
+    </section>`);
+  }
+
+  if(c.lexique?.length){
+    out.push(`<section class="bloc rev" id="s-lexique">
+      <div class="bloc-head"><span class="bloc-kicker" style="--k:var(--a2)">${t('vocab')}</span>
+      <h2 class="bloc-title">${t('lexique')}</h2></div>
+      <input class="lex-search" id="lex-search" placeholder="${t('filtrer')}" aria-label="${t('filtrer')}">
+      <div class="tbl-wrap"><table class="lex"><thead><tr><th>${t('terme')}</th><th>${t('trad')}</th></tr></thead>
+      <tbody id="lex-body">${c.lexique.map(l=>`<tr><td>${l.es}</td><td>${l.fr}</td></tr>`).join('')}</tbody></table></div>
+    </section>`);
+  }
+
+  if(c.sujets?.length){
+    out.push(`<section class="bloc rev" id="s-sujets">
+      <div class="bloc-head"><span class="bloc-kicker" style="--k:var(--a4)">${t('entrainement')}</span>
+      <h2 class="bloc-title">${t('sujets')}</h2></div>
+      ${c.sujets.map((s,i)=>`<div class="sujet"><div class="sujet-n">${String(i+1).padStart(2,'0')}</div>
+        <div><div class="sujet-q">${T(s.q)}</div><div class="sujet-h">${T(s.h)}</div></div></div>`).join('')}</section>`);
+  }
+
+  if(c.retenir?.length){
+    out.push(`<section class="bloc rev" id="s-retenir">
+      <div class="bloc-head"><span class="bloc-kicker">${t('memoriser')}</span><h2 class="bloc-title">${t('retenir')}</h2></div>
+      <div class="retenir"><ul>${T(c.retenir).map(r=>`<li>${r}</li>`).join('')}</ul></div></section>`);
+  }
+
+  $('#cours').innerHTML = out.join('');
+}
+
+/* ─── Colonne chronologie ─── */
+function rendreRail(){
+  if(!COURS.chronologie?.length){ $('#rail')?.remove(); return; }
+  $('#rail').innerHTML = `<div class="rail-title">${t('chrono')}</div>${bloc({t:'tl',items:COURS.chronologie})}`;
+}
+
+/* ─── Recherche dans le lexique ─── */
+function brancherLexique(){
+  const ls = $('#lex-search'); if(!ls) return;
+  ls.addEventListener('input', ()=>{
+    const q = ls.value.toLowerCase().trim();
+    $('#lex-body').querySelectorAll('tr').forEach(tr=>{
+      tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+  });
+}
+
+/* ─── Changement de langue ─── */
+function setLang(lang){
+  LANG = lang;
+  $('#ap-btn-fr').classList.toggle('active', lang==='fr');
+  $('#ap-btn-es').classList.toggle('active', lang==='es');
+  rendreHero(); rendreCours(); rendreRail();
+  document.querySelectorAll('.rev').forEach(el=>el.classList.add('vu'));
+  brancherLexique();
+}
+
+/* ─── Démarrage ─── */
+function demarrer(){
+  rendreHero(); rendreCours(); rendreRail(); brancherLexique();
+
+  const maj = ()=>{
+    const h = document.body.scrollHeight - innerHeight;
+    $('#progress').style.width = (h>0 ? (scrollY/h)*100 : 0) + '%';
+  };
+  addEventListener('scroll', maj, {passive:true}); maj();
+
+  if(!('IntersectionObserver' in window)){
+    document.querySelectorAll('.rev').forEach(el=>el.classList.add('vu'));
+    return;
+  }
+  const io = new IntersectionObserver(es=>es.forEach(x=>{
+    if(x.isIntersecting){ x.target.classList.add('vu'); io.unobserve(x.target); }
+  }), {threshold:.06});
+  document.querySelectorAll('.rev').forEach(el=>io.observe(el));
+}
+
+demarrer();
+</script>
+</body>
+</html>

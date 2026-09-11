@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Colombie : séisme de magnitude 7,4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #c8282a;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #c8282a; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #f5d020; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #0b6e4f; top: 40%; left: 30%; opacity: 0.06; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #c8282a; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #c8282a; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#c8282a; border-color:#c8282a; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  /* Article styles */
+  .ap-band { background: linear-gradient(90deg, #c8282a, #f5d020, #0b6e4f, #f5d020, #c8282a); text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(20,8,8,0.95); padding:12px 60px; border-bottom: 1px solid rgba(200,40,42,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#f5d020; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(200,40,42,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(200,40,42,0.2);  color:#f08080; border:1px solid rgba(200,40,42,0.35); }
+  .ap-tag-navy   { background:rgba(13,27,42,0.6);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(11,110,79,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #f5d020; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(200,40,42,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(245,208,32,0.7); }
+
+  /* Rich article components */
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#f5d020; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(245,208,32,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#071422,#0d2540); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #f5d020; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(245,208,32,0.06),rgba(245,208,32,0.02)); border-left:3px solid #f5d020; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(245,208,32,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(245,208,32,0.7); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(20,8,8,0.9),rgba(10,4,4,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(200,40,42,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#f5d020; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(200,40,42,0.06); border:1px solid rgba(200,40,42,0.18); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(245,208,32,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#f5d020; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(245,208,32,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#f5d020; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(20,8,8,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-es-section { display:none; }
+
+  /* Barre de résultats */
+  .ap-result-bar { margin: 8px 0 4px; }
+  .ap-result-bar-label { display:flex; justify-content:space-between; font-family:'DM Mono',monospace; font-size:10px; color:rgba(232,228,216,0.6); margin-bottom:4px; }
+  .ap-result-bar-label strong { color:#e8e4d8; }
+  .ap-bar-track { height:8px; background:rgba(255,255,255,0.06); border-radius:4px; overflow:hidden; }
+  .ap-bar-fill { height:100%; border-radius:4px; }
+  .bar-red   { background: linear-gradient(90deg,#c8282a,#e05050); }
+  .bar-gold  { background: linear-gradient(90deg,#b8922a,#f5d020); }
+  .bar-green { background: linear-gradient(90deg,#0b6e4f,#2ea87a); }
+  .bar-blue  { background: linear-gradient(90deg,#1560ad,#3a88d8); }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-es.html">Espagnol</a>
+    <span class="sep">/</span>
+    <a href="../colombie.html">Colombie</a>
+    <span class="sep">/</span>
+    <span class="current">Séisme — 10 août 2026</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-es" class="ap-lang-btn" onclick="setLang('es')">🇨🇴 ES</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇨🇴 Colombie — Séisme de magnitude 7,4 · 10 août 2026</div>
+<div class="ap-back-bar">
+  <a href="../colombie.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+    <div class="ap-hero-img-wrap"><img class="ap-hero-img" src="../images/colombie-seisme-magnitude-7-4.jpg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+
+    <!-- ══ SECTION FR ══ -->
+    <div class="ap-fr-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-red">🇨🇴 Colombie</span>
+          <span class="ap-tag ap-tag-navy">Catastrophe naturelle</span>
+          <span class="ap-tag ap-tag-gold">Séisme</span>
+          <span class="ap-tag ap-tag-teal">Aide internationale</span>
+          <span class="ap-tag ap-tag-orange">Politique intérieure</span>
+        </div>
+        <div class="ap-date">Août 2026 — ECG Prépa · Colombie</div>
+        <h1 class="ap-title">Colombie : un séisme de magnitude 7,4 frappe le Chocó — plus de 300 morts et un pays sous le choc</h1>
+        <p class="ap-intro">Le 10 août 2026, un séisme de magnitude 7,4 a frappé l'ouest de la Colombie, trois jours seulement après l'investiture du président Abelardo de la Espriella. Le séisme le plus meurtrier que le pays ait connu depuis des décennies a fait plusieurs centaines de morts et des milliers de blessés, tout en ouvrant une controverse sur la gestion de l'aide internationale et des secours par le nouveau gouvernement.</p>
+      </div>
+
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red"><span class="ap-stat-num">M 7,4</span><span class="ap-stat-desc">Magnitude du séisme<br>Échelle de moment (USGS / SGC)</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">319+</span><span class="ap-stat-desc">Morts recensés au 20 août<br>Et environ 260 disparus</span></div>
+          <div class="ap-stat"><span class="ap-stat-num">10 Août</span><span class="ap-stat-desc">Date du séisme<br>07h34, heure locale</span></div>
+          <div class="ap-stat green"><span class="ap-stat-num">15</span><span class="ap-stat-desc">Départements en état d'urgence<br>Décrété par le gouvernement</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Un séisme majeur au large du Chocó</div>
+            <p>Le séisme s'est produit lundi 10 août 2026 à 07h34 heure locale, avec un épicentre localisé près de San José del Palmar, dans le département du Chocó, sur le littoral Pacifique colombien. Selon les services géologiques des États-Unis (USGS) et le Service géologique colombien (SGC), la secousse a atteint une magnitude de 7,4, à une profondeur d'environ 100 à 110 kilomètres. Aucune alerte au tsunami n'a été émise. Plusieurs médias ont fait état de secousses ressenties pendant près de quatre minutes, un fait jugé exceptionnel par les spécialistes de la sismologie.</p>
+            <p>Malgré cette profondeur importante, les vibrations ont été très largement ressenties à travers le pays : à <strong>Bogotá</strong>, à près de 500 kilomètres de l'épicentre, ainsi qu'à <strong>Cali</strong>, <strong>Pereira</strong>, <strong>Manizales</strong> et <strong>Quibdó</strong>. Le séisme a également été perçu jusqu'à Quito, capitale de l'Équateur voisin, ainsi qu'au Panama et au Venezuela.</p>
+
+            <div class="ap-sub">Un bilan humain qui s'est alourdi de jour en jour</div>
+            <p>Le bilan, très provisoire dans les premières heures, n'a cessé de s'aggraver à mesure que les secours atteignaient les zones les plus reculées du Chocó, une région pauvre et en partie accessible uniquement par bateau, par la jungle ou par avion. D'abord estimé à 111 morts le jour même, le bilan est passé à 132 morts le 11 août, puis à environ 240 morts le lendemain, avant de franchir la barre des 265 morts le 13 août. Au 20 août, le Centre national colombien de gestion des catastrophes (UNGRD) faisait état d'au moins 319 morts, environ 260 personnes toujours portées disparues et plus de 4 500 blessés.</p>
+            <p>La ville de <strong>Cali</strong>, troisième ville du pays, ainsi que les départements du <strong>Valle del Cauca</strong>, du <strong>Risaralda</strong> et du <strong>Chocó</strong> ont payé le plus lourd tribut. Plus de 300 bâtiments se sont effondrés, dont une partie de la cathédrale-basilique Notre-Dame-du-Rosaire, symbole de la ville de Manizales.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Épicentre</div><div class="ap-fact-val">San José del Palmar, Chocó</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Profondeur estimée</div><div class="ap-fact-val">~103-110 km</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Logements détruits</div><div class="ap-fact-val">Plus de 31 000</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Logements endommagés</div><div class="ap-fact-val">Plus de 163 000</div></div>
+            </div>
+
+            <div class="ap-sub">État d'urgence et coût de la reconstruction</div>
+            <p>Le président Abelardo de la Espriella, entré en fonction seulement trois jours plus tôt, a décrété l'état d'urgence, d'abord dans les zones les plus touchées, puis étendu à quinze départements afin d'accélérer le déblocage de fonds pour les secours et la reconstruction. Le gouvernement a également annoncé une aide au loyer pour les familles déplacées. Le coût des dégâts, encore provisoire, a été évalué par les autorités à environ 8 milliards d'euros à la mi-août, avant d'être révisé à la hausse autour de 11 milliards d'euros une semaine plus tard, selon le bureau national de planification colombien.</p>
+          </div>
+
+          <div>
+            <div class="ap-sub">Une aide internationale acceptée au compte-gouttes</div>
+            <p>Dans les heures qui ont suivi la catastrophe, des propositions d'aide sont arrivées du monde entier, du Chili au Qatar en passant par le Mexique, la Chine, l'Union européenne et les Nations unies. Mais le gouvernement colombien a choisi de ne solliciter formellement que le soutien d'équipes de recherche et de sauvetage envoyées par les <strong>États-Unis</strong>, l'<strong>Équateur</strong>, le <strong>Salvador</strong> et <strong>Israël</strong> — des pays dirigés par des gouvernements de droite ou d'extrême droite, proches politiquement du nouveau président. Ce choix, justifié par la nécessité de recourir à des équipes « reconnues par le système international », a suscité des critiques, notamment de la part de l'ONU et de plusieurs pays qui se sont dits prêts à aider sans recevoir de demande formelle.</p>
+
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">10 Août 2026</div><p class="ap-tl-text">Séisme de magnitude 7,4 à 07h34 ; premier bilan de 111 morts ; état d'urgence décrété.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">11 Août 2026</div><p class="ap-tl-text">Bilan porté à 132 morts et 570 blessés ; couvre-feux instaurés à Cali et Pereira.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">13 Août 2026</div><p class="ap-tl-text">Le bilan dépasse les 265 morts ; la recherche de survivants entre dans une phase décisive.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">17 Août 2026</div><p class="ap-tl-text">Bilan de 294 morts ; polémique autour du ministre du Logement, critiqué pour des vacances à la plage.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">20 Août 2026</div><p class="ap-tl-text">Bilan porté à 319 morts et 260 disparus ; état d'urgence étendu à quinze départements.</p></div>
+            </div>
+
+            <div class="ap-sub">Un gouvernement critiqué au cœur de la crise</div>
+            <p>La gestion de la catastrophe par l'exécutif a rapidement suscité la controverse. Le ministre du Logement, Jaime Andrés Beltrán, a été très critiqué après avoir été aperçu en vacances avec sa famille sur une plage de Santa Marta, alors que des milliers de sinistrés dormaient sous des tentes. L'opposition de gauche a annoncé le dépôt d'une motion de censure à son encontre. Le président lui-même a été critiqué après avoir distribué, lors d'une visite à Buenaventura, des ballons de football floqués du slogan de sa campagne présidentielle à des enfants sinistrés, un geste perçu par une partie de l'opinion, y compris à droite, comme déplacé.</p>
+
+            <div class="ap-quote">
+              <p>« Le Chocó ne sera plus jamais la terre de l'oubli. »</p>
+              <cite>— Abelardo de la Espriella, lors d'une visite dans le Chocó, août 2026</cite>
+            </div>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">🌎</div>
+              <div class="ap-info-text"><strong>Contexte sismique régional :</strong> la Colombie se situe sur la ceinture de feu du Pacifique, à la jonction des plaques Nazca, sud-américaine et caraïbe, une zone d'intense activité sismique. Ce séisme est survenu moins de deux mois après un tremblement de terre dévastateur au Venezuela voisin fin juin 2026, qui avait fait plusieurs milliers de morts — une proximité chronologique qui a nourri des interrogations, sans lien de cause à effet démontré à ce stade entre les deux événements.</div>
+            </div>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Un pouvoir naissant à l'épreuve de la catastrophe</div>
+              <p>Survenu trois jours seulement après une investiture déjà hors norme à Cali, ce séisme place le nouveau pouvoir colombien face à sa première épreuve majeure. Entre l'ampleur du bilan humain, le choix contesté de limiter l'aide internationale à des partenaires idéologiquement proches et les impairs de communication de plusieurs membres du gouvernement, la réponse à la catastrophe est devenue, en quelques jours, un premier test de crédibilité pour l'exécutif d'Abelardo de la Espriella — tout en ravivant, dans le Chocó et l'Eje Cafetero, la question plus ancienne de l'abandon des régions les plus pauvres du pays face aux risques naturels.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-fr-section -->
+
+    <!-- ══ SECTION ES ══ -->
+    <div class="ap-es-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-red">🇨🇴 Colombia</span>
+          <span class="ap-tag ap-tag-navy">Catástrofe natural</span>
+          <span class="ap-tag ap-tag-gold">Terremoto</span>
+          <span class="ap-tag ap-tag-teal">Ayuda internacional</span>
+          <span class="ap-tag ap-tag-orange">Política interna</span>
+        </div>
+        <div class="ap-date">Agosto 2026 — ECG Prépa · Colombia</div>
+        <h1 class="ap-title">Colombia: un terremoto de magnitud 7,4 golpea el Chocó — más de 300 muertos y un país en shock</h1>
+        <p class="ap-intro">El 10 de agosto de 2026, un terremoto de magnitud 7,4 sacudió el occidente de Colombia, apenas tres días después de la posesión del presidente Abelardo de la Espriella. El sismo más mortífero que ha vivido el país en décadas dejó varios cientos de muertos y miles de heridos, al tiempo que abrió una controversia sobre la gestión de la ayuda internacional y del socorro por parte del nuevo gobierno.</p>
+      </div>
+
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red"><span class="ap-stat-num">M 7,4</span><span class="ap-stat-desc">Magnitud del sismo<br>Escala de momento (USGS / SGC)</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">319+</span><span class="ap-stat-desc">Muertos registrados al 20 de agosto<br>Y unos 260 desaparecidos</span></div>
+          <div class="ap-stat"><span class="ap-stat-num">10 Ago</span><span class="ap-stat-desc">Fecha del sismo<br>7:34 a.m., hora local</span></div>
+          <div class="ap-stat green"><span class="ap-stat-num">15</span><span class="ap-stat-desc">Departamentos en emergencia<br>Decretada por el gobierno</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Un sismo mayor frente al Chocó</div>
+            <p>El terremoto se produjo el lunes 10 de agosto de 2026 a las 7:34 a.m., hora local, con epicentro cerca de San José del Palmar, en el departamento del Chocó, sobre el litoral Pacífico colombiano. Según el Servicio Geológico de Estados Unidos (USGS) y el Servicio Geológico Colombiano (SGC), el sismo alcanzó una magnitud de 7,4, a una profundidad de entre 100 y 110 kilómetros. No se emitió alerta de tsunami. Varios medios reportaron que las sacudidas se sintieron durante casi cuatro minutos, un hecho considerado excepcional por los sismólogos.</p>
+            <p>Pese a esa profundidad considerable, las vibraciones se sintieron ampliamente en todo el país: en <strong>Bogotá</strong>, a casi 500 kilómetros del epicentro, así como en <strong>Cali</strong>, <strong>Pereira</strong>, <strong>Manizales</strong> y <strong>Quibdó</strong>. El sismo también se percibió hasta Quito, capital del vecino Ecuador, así como en Panamá y Venezuela.</p>
+
+            <div class="ap-sub">Un balance humano que se agravó día tras día</div>
+            <p>El balance, muy provisional en las primeras horas, no dejó de agravarse a medida que los socorristas alcanzaban las zonas más apartadas del Chocó, una región pobre y en parte accesible solo por vía fluvial, selva o avión. Estimado inicialmente en 111 muertos el mismo día, el balance subió a 132 muertos el 11 de agosto, luego a unos 240 muertos al día siguiente, hasta superar los 265 muertos el 13 de agosto. Al 20 de agosto, el Centro nacional de gestión del riesgo de desastres (UNGRD) reportaba al menos 319 muertos, unas 260 personas todavía desaparecidas y más de 4.500 heridos.</p>
+            <p>La ciudad de <strong>Cali</strong>, tercera del país, así como los departamentos del <strong>Valle del Cauca</strong>, <strong>Risaralda</strong> y <strong>Chocó</strong>, pagaron el precio más alto. Más de 300 edificaciones se derrumbaron, entre ellas parte de la catedral basílica Nuestra Señora del Rosario, símbolo de la ciudad de Manizales.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Epicentro</div><div class="ap-fact-val">San José del Palmar, Chocó</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Profundidad estimada</div><div class="ap-fact-val">~103-110 km</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Viviendas destruidas</div><div class="ap-fact-val">Más de 31.000</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Viviendas dañadas</div><div class="ap-fact-val">Más de 163.000</div></div>
+            </div>
+
+            <div class="ap-sub">Emergencia y costo de la reconstrucción</div>
+            <p>El presidente Abelardo de la Espriella, en el cargo apenas desde hacía tres días, decretó la emergencia, primero en las zonas más afectadas y luego extendida a quince departamentos, para agilizar los fondos destinados al socorro y la reconstrucción. El gobierno también anunció una ayuda para el arriendo destinada a las familias desplazadas. El costo de los daños, todavía provisional, fue estimado por las autoridades en unos 8.000 millones de euros a mediados de agosto, cifra revisada al alza hasta cerca de 11.000 millones de euros una semana después, según la oficina nacional de planeación colombiana.</p>
+          </div>
+
+          <div>
+            <div class="ap-sub">Una ayuda internacional aceptada con cuentagotas</div>
+            <p>En las horas siguientes a la catástrofe llegaron ofrecimientos de ayuda desde todo el mundo, desde Chile hasta Catar, pasando por México, China, la Unión Europea y las Naciones Unidas. Sin embargo, el gobierno colombiano optó por solicitar formalmente únicamente el apoyo de equipos de búsqueda y rescate enviados por <strong>Estados Unidos</strong>, <strong>Ecuador</strong>, <strong>El Salvador</strong> e <strong>Israel</strong> — países gobernados por administraciones de derecha o extrema derecha, políticamente afines al nuevo presidente. Esta decisión, justificada por la necesidad de recurrir a equipos «reconocidos por el sistema internacional», generó críticas, en particular de la ONU y de varios países que se declararon dispuestos a ayudar sin haber recibido una solicitud formal.</p>
+
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">10 Ago. 2026</div><p class="ap-tl-text">Terremoto de magnitud 7,4 a las 7:34 a.m.; primer balance de 111 muertos; se decreta la emergencia.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">11 Ago. 2026</div><p class="ap-tl-text">Balance de 132 muertos y 570 heridos; toques de queda en Cali y Pereira.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">13 Ago. 2026</div><p class="ap-tl-text">El balance supera los 265 muertos; la búsqueda de sobrevivientes entra en una fase decisiva.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">17 Ago. 2026</div><p class="ap-tl-text">Balance de 294 muertos; polémica por el ministro de Vivienda, criticado por vacacionar en la playa.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">20 Ago. 2026</div><p class="ap-tl-text">Balance de 319 muertos y 260 desaparecidos; la emergencia se extiende a quince departamentos.</p></div>
+            </div>
+
+            <div class="ap-sub">Un gobierno cuestionado en plena crisis</div>
+            <p>La gestión de la catástrofe por parte del Ejecutivo generó rápidamente controversia. El ministro de Vivienda, Jaime Andrés Beltrán, fue muy criticado tras ser visto de vacaciones con su familia en una playa de Santa Marta, mientras miles de damnificados dormían en carpas. La oposición de izquierda anunció una moción de censura en su contra. El propio presidente fue criticado después de repartir, durante una visita a Buenaventura, balones de fútbol con el eslogan de su campaña presidencial entre niños afectados por el sismo, un gesto percibido por buena parte de la opinión pública, incluso de derecha, como fuera de lugar.</p>
+
+            <div class="ap-quote">
+              <p>« El Chocó nunca más será la tierra del olvido. »</p>
+              <cite>— Abelardo de la Espriella, durante una visita al Chocó, agosto de 2026</cite>
+            </div>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">🌎</div>
+              <div class="ap-info-text"><strong>Contexto sísmico regional:</strong> Colombia se ubica en el Cinturón de Fuego del Pacífico, en el punto de encuentro de las placas de Nazca, Suramericana y del Caribe, una zona de intensa actividad sísmica. Este terremoto ocurrió menos de dos meses después de un sismo devastador en la vecina Venezuela a finales de junio de 2026, que dejó varios miles de muertos — una cercanía temporal que alimentó interrogantes, sin que hasta el momento se haya demostrado una relación de causa entre ambos eventos.</div>
+            </div>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Un poder naciente puesto a prueba por la catástrofe</div>
+              <p>Ocurrido apenas tres días después de una posesión ya de por sí fuera de lo común en Cali, este terremoto somete al nuevo gobierno colombiano a su primera gran prueba. Entre la magnitud del balance humano, la controvertida decisión de limitar la ayuda internacional a socios ideológicamente afines y los tropiezos de comunicación de varios funcionarios, la respuesta a la catástrofe se convirtió, en pocos días, en una primera prueba de credibilidad para el gobierno de Abelardo de la Espriella — reavivando además, en el Chocó y el Eje Cafetero, el debate más antiguo sobre el abandono de las regiones más pobres del país frente a los riesgos naturales.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-es-section -->
+
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — Colombie — Août 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-es').classList.toggle('active', lang === 'es');
+  const isEs = lang === 'es';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEs ? 'none' : 'block');
+  document.querySelectorAll('.ap-es-section').forEach(el => el.style.display = isEs ? 'block' : 'none');
+}
+setLang('fr');
+</script>
+</body>
+</html>

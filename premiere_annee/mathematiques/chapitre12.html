@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Maths Chapitre 12 : Applications linéaires</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false}]});"></script>
+<style>
+  :root {
+    --cream: #F3F9FA;
+    --dark: #10201F;
+    --teal: #0E8FA8;
+    --teal-dark: #0B2E36;
+    --teal-mid: #3FB8CE;
+    --teal-light: #DCF0F3;
+    --teal-border: #A9DAE3;
+    --mint: #B7ECEF;
+    --muted: #3E6E75;
+    --accent: #0E8FA8;
+    --accent-soft: #0E8FA822;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--dark); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid rgba(91,91,87,0.25);
+    background: var(--teal-dark); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--mint); cursor: pointer; letter-spacing: 0.02em; }
+  .nav-logo a { color: inherit; text-decoration: none; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(245,245,244,0.5); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: inherit; text-decoration: none; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb a:hover span, .breadcrumb span:hover { color: var(--mint); }
+  .breadcrumb .sep { color: rgba(245,245,244,0.25); }
+  .breadcrumb .current { color: #F5F5F4; cursor: default; }
+
+  /* ─── HERO ─── */
+  .ch-hero {
+    background: var(--teal-dark);
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ch-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%235B5B57' fill-opacity='0.18'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--mint); margin-bottom: 1.5rem; opacity: 0.85; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 4rem); color: var(--cream); font-weight: 900; max-width: 900px; margin: 0 auto 1.5rem; line-height: 1.1; position: relative; z-index: 1; }
+  .ch-hero p { color: rgba(245,245,244,0.45); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  /* ─── TOC ─── */
+  .toc-bar { background: #EAEAE7; padding: 2rem; border-bottom: 1px solid var(--teal-border); }
+  .toc-inner { max-width: 960px; margin: 0 auto; }
+  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
+  .toc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.4rem; list-style: none; }
+  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: #262624; font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
+  .toc-list a:hover { border-color: var(--teal-border); background: white; color: #000; }
+  .toc-num { font-family: "DM Mono", monospace; font-size: 0.65rem; color: var(--teal); flex-shrink: 0; margin-top: 0.15rem; }
+
+  /* ─── CONTENT ─── */
+  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 3rem; }
+
+  /* PART */
+  .math-part { margin-bottom: 5rem; }
+  .math-part:last-of-type { margin-bottom: 0; }
+  .math-part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--teal); }
+  .math-part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: var(--teal-border); line-height: 1; flex-shrink: 0; }
+  .math-part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--dark); line-height: 1.25; }
+
+  /* SECTION */
+  .math-section { margin-bottom: 3.5rem; }
+  .math-section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--teal-dark); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--teal); scroll-margin-top: 2rem; }
+  .math-subsection-title { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--teal); margin: 2rem 0 0.75rem; }
+
+  /* TEXT */
+  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: #1E1E1C; line-height: 1.85; font-weight: 300; }
+  .content strong { color: var(--dark); font-weight: 600; }
+
+  /* DÉFINITION CARD */
+  .def-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(91,91,87,0.10), 0 0 0 1px rgba(91,91,87,0.12);
+    display: flex;
+    margin: 1.4rem 0;
+  }
+  .def-accent-bar {
+    width: 5px;
+    background: linear-gradient(180deg, #92928C 0%, #2A2A28 100%);
+    flex-shrink: 0;
+    border-radius: 10px 0 0 10px;
+  }
+  .def-body { padding: 1.2rem 1.5rem; flex: 1; }
+  .def-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.65rem; }
+  .def-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--teal); font-weight: 500; }
+  .def-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--teal-dark); }
+  .def-body p { margin-bottom: 0.5rem; font-size: 0.93rem; line-height: 1.75; }
+  .def-body p:last-child { margin-bottom: 0; }
+
+  /* PROPRIÉTÉ CARD */
+  .prop-card {
+    background: var(--teal-light);
+    border-radius: 8px;
+    border: 1px solid var(--teal-border);
+    border-left: 4px solid var(--teal);
+    padding: 1.2rem 1.5rem;
+    margin: 1.4rem 0;
+  }
+  .prop-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--teal-dark); font-weight: 700; margin-bottom: 0.6rem; }
+  .prop-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--teal-dark); margin-bottom: 0.7rem; }
+  .prop-card p { margin-bottom: 0.5rem; font-size: 0.93rem; color: var(--teal-dark); line-height: 1.75; }
+  .prop-card p:last-child { margin-bottom: 0; }
+  .prop-card ol { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .prop-card ol li { font-size: 0.93rem; color: var(--teal-dark); line-height: 1.8; margin-bottom: 0.35rem; }
+
+  /* THÉORÈME CARD */
+  .thm-card {
+    background: var(--teal-dark);
+    color: var(--cream);
+    border-radius: 8px;
+    padding: 1.5rem 1.75rem;
+    margin: 1.4rem 0;
+  }
+  .thm-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--mint); margin-bottom: 0.5rem; }
+  .thm-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--cream); margin-bottom: 0.75rem; }
+  .thm-card p { color: rgba(245,245,244,0.88); font-size: 0.93rem; margin-bottom: 0.5rem; line-height: 1.75; }
+  .thm-card p:last-child { margin-bottom: 0; }
+
+  /* MÉTHODE CARD */
+  .meth-card {
+    background: white;
+    border: 2px solid var(--teal);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.4rem 0;
+  }
+  .meth-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--teal); font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+  .meth-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--teal-dark); margin-bottom: 0.7rem; }
+  .meth-card p { font-size: 0.93rem; line-height: 1.75; margin-bottom: 0.5rem; }
+  .meth-card p:last-child { margin-bottom: 0; }
+  .meth-card ul, .meth-card ol { padding-left: 1.4rem; margin: 0.3rem 0 0.5rem; }
+  .meth-card li { font-size: 0.93rem; line-height: 1.8; margin-bottom: 0.3rem; }
+
+  /* REMARQUE */
+  .remark { background: white; border-left: 3px solid var(--teal-border); padding: 1rem 1.4rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; font-size: 0.9rem; color: #262624; line-height: 1.7; font-style: italic; }
+  .remark::before { content: 'Remarque — '; font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--teal); display: block; margin-bottom: 0.3rem; }
+
+  /* FORMULE DISPLAY */
+  .formula-block {
+    background: white;
+    border: 1px solid var(--teal-border);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.2rem 0;
+    text-align: center;
+    overflow-x: auto;
+  }
+  .formula-block .katex-display { margin: 0; }
+  .formula-block .katex { font-size: 1.05em; }
+
+  /* TABLE */
+  .math-table-wrap { overflow-x: auto; margin: 1.5rem 0; border-radius: 8px; border: 1px solid var(--teal-border); box-shadow: 0 2px 8px rgba(91,91,87,0.08); }
+  .math-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .math-table th { background: var(--teal-dark); color: var(--cream); font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.75rem 1rem; text-align: center; font-weight: 500; border: 1px solid rgba(255,255,255,0.1); }
+  .math-table td { padding: 0.65rem 1rem; text-align: center; border: 1px solid var(--teal-light); color: #1E1E1C; vertical-align: middle; background: white; line-height: 1.6; }
+  .math-table tr:nth-child(even) td { background: #F5F5F4; }
+  .math-table tr:hover td { background: var(--teal-light); }
+  .math-table td.left { text-align: left; }
+  .math-table .katex { font-size: 0.95em; }
+
+  /* KEY FACT */
+  .math-key { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 0.6rem; padding: 0.85rem 1.1rem; background: white; border: 1px solid var(--teal-light); border-radius: 6px; }
+  .math-key-bullet { width: 6px; height: 6px; background: var(--teal); border-radius: 50%; flex-shrink: 0; margin-top: 0.55rem; }
+  .math-key > div { font-size: 0.91rem; color: #1E1E1C; line-height: 1.75; font-weight: 300; }
+
+  /* INLINE MATH */
+  .katex { font-size: 1em; }
+  .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.2rem 0; }
+
+  /* DEUX COLONNES */
+  .two-col-formulas { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
+  .two-col-formulas .formula-block { margin: 0; }
+
+  /* TROIS COLONNES */
+  .three-col-formulas { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
+  .three-col-formulas .formula-block { margin: 0; }
+
+  /* HIGHLIGHT BOX */
+  .math-highlight { background: var(--teal-light); border-left: 4px solid var(--teal); padding: 1.25rem 1.75rem; margin: 1.5rem 0; color: var(--teal-dark); font-size: 0.93rem; line-height: 1.75; border-radius: 0 6px 6px 0; }
+
+  /* FOOTER */
+  .site-footer {
+    background: var(--teal-dark);
+    border-top: 1px solid rgba(91,91,87,0.35);
+    padding: 2.5rem 2rem;
+    text-align: center;
+  }
+  .site-footer .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--mint);
+    letter-spacing: 0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+  /* BACK TO TOP */
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--teal); color: var(--cream); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 4px 14px rgba(91,91,87,0.45); opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 200; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+  .back-to-top:hover { background: var(--teal-mid); }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--teal-border); border-radius: 3px; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .two-col-formulas { grid-template-columns: 1fr; }
+    .three-col-formulas { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    @page { size: A4; margin: 15mm 14mm 15mm 14mm; }
+    nav, .back-to-top, .toc-bar, .site-footer { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    html, body { background: white !important; color: #000 !important; font-size: 10pt; width: 100% !important; }
+    .ch-hero { background: #2B2B29 !important; padding: 0.9rem 1rem 0.7rem !important; }
+    .ch-hero::before { display: none !important; }
+    .ch-hero h1 { font-size: 16pt !important; color: #fff !important; margin-bottom: 0.3rem !important; }
+    .ch-hero .chap-label { font-size: 7pt !important; color: #D8D8D3 !important; margin-bottom: 0.4rem !important; }
+    .ch-hero p { font-size: 7pt !important; color: #D8D8D3 !important; margin: 0 !important; }
+    .content { max-width: 100% !important; padding: 0.6rem 0 !important; margin: 0 !important; }
+    .content p { font-size: 9pt !important; line-height: 1.5 !important; margin-bottom: 0.45rem !important; color: #000 !important; }
+    .math-part { margin-bottom: 0.8rem; page-break-inside: auto; }
+    .math-part-header { page-break-after: avoid; padding-bottom: 0.6rem !important; margin-bottom: 1rem !important; border-bottom: 2pt solid #5B5B57 !important; }
+    .math-part-num { font-size: 2rem !important; color: #B7B7B1 !important; }
+    .math-part-title { font-size: 13pt !important; }
+    .math-section { page-break-inside: auto; margin-bottom: 0.8rem; }
+    .math-section-title { page-break-after: avoid; font-size: 11pt !important; padding-left: 0.7rem !important; border-left: 2.5pt solid #5B5B57 !important; margin-bottom: 0.55rem !important; color: #2B2B29 !important; }
+    .math-subsection-title { page-break-after: avoid; font-size: 7pt !important; margin: 0.65rem 0 0.35rem !important; color: #5B5B57 !important; }
+    .def-card { page-break-inside: avoid; box-shadow: none !important; border: 1pt solid #B7B7B1 !important; display: flex !important; border-radius: 0 !important; margin: 0.55rem 0 !important; }
+    .def-accent-bar { background: #5B5B57 !important; width: 4px !important; border-radius: 0 !important; }
+    .def-body { padding: 0.7rem 1rem !important; }
+    .def-body p { font-size: 8.5pt !important; line-height: 1.5 !important; color: #000 !important; }
+    .prop-card { page-break-inside: avoid; background: #E6E6E3 !important; border: 1pt solid #B7B7B1 !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .prop-card p, .prop-card li { font-size: 8.5pt !important; line-height: 1.5 !important; }
+    .thm-card { page-break-inside: avoid; background: #2B2B29 !important; padding: 0.7rem 1rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .thm-label { font-size: 6pt !important; color: #D8D8D3 !important; }
+    .thm-title { font-size: 9.5pt !important; color: #fff !important; }
+    .thm-card p { font-size: 8.5pt !important; color: rgba(245,245,244,0.9) !important; line-height: 1.5 !important; }
+    .meth-card { page-break-inside: avoid; border: 1.5pt solid #5B5B57 !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .meth-card p { font-size: 8.5pt !important; line-height: 1.5 !important; }
+    .remark { page-break-inside: avoid; border-left: 2pt solid #B7B7B1 !important; padding: 0.5rem 0.9rem !important; margin: 0.45rem 0 !important; font-size: 8pt !important; border-radius: 0 !important; }
+    .formula-block { page-break-inside: avoid; border: 1pt solid #B7B7B1 !important; padding: 0.5rem 0.8rem !important; margin: 0.45rem 0 !important; border-radius: 0 !important; }
+    .math-key { page-break-inside: avoid; padding: 0.4rem 0.8rem !important; margin-bottom: 0.3rem !important; border: 1pt solid #E6E6E3 !important; border-radius: 0 !important; }
+    .math-key > div { font-size: 8.5pt !important; line-height: 1.45 !important; color: #000 !important; }
+    .math-highlight { page-break-inside: avoid; background: #E6E6E3 !important; border-left: 2.5pt solid #5B5B57 !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; font-size: 8.5pt !important; color: #2B2B29 !important; border-radius: 0 !important; }
+    .math-table-wrap { page-break-inside: avoid; margin: 0.55rem 0 !important; border: 1pt solid #B7B7B1 !important; border-radius: 0 !important; box-shadow: none !important; }
+    .math-table th { background: #2B2B29 !important; color: #D8D8D3 !important; font-size: 6.5pt !important; padding: 0.4rem 0.6rem !important; }
+    .math-table td { font-size: 8pt !important; padding: 0.4rem 0.6rem !important; border: 0.5pt solid #E6E6E3 !important; }
+    .two-col-formulas, .three-col-formulas { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 0.5rem !important; margin: 0.45rem 0 !important; }
+    .katex { font-size: 0.82em !important; }
+    .katex-display { margin: 0.15rem 0 !important; overflow: visible !important; }
+    .katex-html { white-space: normal !important; }
+    .katex .base { display: inline !important; white-space: nowrap !important; }
+    .def-body p, .prop-card p, .thm-card p, .remark, .math-key > div, .content p { overflow: visible !important; word-break: break-word !important; }
+    .formula-block { overflow: visible !important; height: auto !important; min-height: 0 !important; text-align: center !important; }
+    .formula-block .katex-display { overflow-x: visible !important; overflow-y: visible !important; text-align: center !important; }
+    .math-table td, .math-table th { overflow: visible !important; word-break: break-word !important; }
+    .katex *, .katex-html * { position: static !important; top: auto !important; bottom: auto !important; left: auto !important; right: auto !important; }
+    .math-table .katex { font-size: 0.75em !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left"><div class="nav-logo"><a href="../../index.html">ECG Prépa</a></div></div>
+  <div class="breadcrumb">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">/</span>
+    <a href="index.html"><span>Mathématiques</span></a>
+    <span class="sep">/</span>
+    <span class="current">Chapitre 12</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="chap-label">&#x2015;&nbsp; Chapitre 12 · Mathématiques approfondies &nbsp;&#x2015;</div>
+  <h1>Applications linéaires</h1>
+  <p>Noyau · Image · Matrices d'applications linéaires · Rang · Isomorphismes</p>
+</div>
+
+<!-- TOC -->
+<div class="toc-bar">
+  <div class="toc-inner">
+    <div class="toc-title">Table des matières</div>
+    <ul class="toc-list">
+      <li><a href="#part1"><span class="toc-num">I</span> Application linéaire, endomorphisme, isomorphisme</a></li>
+      <li><a href="#part2"><span class="toc-num">II</span> Noyau d'une application linéaire</a></li>
+      <li><a href="#part3"><span class="toc-num">III</span> Image d'une application linéaire</a></li>
+      <li><a href="#part4"><span class="toc-num">IV</span> Lien entre matrices et applications linéaires</a></li>
+      <li><a href="#part5"><span class="toc-num">V</span> Utilisation des matrices en algèbre linéaire</a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════════
+     PARTIE I — APPLICATION LINÉAIRE, ENDOMORPHISME, ISOMORPHISME
+════════════════════════════════════════ -->
+<div class="math-part" id="part1">
+  <div class="math-part-header">
+    <div class="math-part-num">I</div>
+    <div class="math-part-title">Application linéaire, endomorphisme, isomorphisme</div>
+  </div>
+
+  <div class="def-card">
+    <div class="def-accent-bar"></div>
+    <div class="def-body">
+      <div class="def-header"><span class="def-label">Définition 1</span><span class="def-name">Application linéaire</span></div>
+      <p>Soient \(E\) et \(F\) deux espaces vectoriels. On appelle <strong>application linéaire</strong> de \(E\) dans \(F\) toute application \(f : E \to F\) telle que :</p>
+      <div class="formula-block">\[\begin{cases} \forall\, \vec u \in E,\ \forall\, \vec v \in E \\ \forall\, (\alpha,\beta) \in \mathbb{R}^2 \end{cases} \quad f(\alpha \vec u + \beta \vec v) = \alpha f(\vec u) + \beta f(\vec v)\]</div>
+      <p>L'ensemble des applications linéaires de \(E\) dans \(F\) se note \(\mathcal{L}(E,F)\).</p>
+    </div>
+  </div>
+
+  <div class="prop-card">
+    <div class="prop-label">Proposition 1</div>
+    <div class="prop-title">Propriétés</div>
+    <p>Soit \(f\) une application linéaire de \(E\) dans \(F\). On a :</p>
+    <ol>
+      <li>\(f(\vec 0_E) = \vec 0_F\)</li>
+      <li>\(\forall\,(\vec e_1,\vec e_2,\dots,\vec e_p)\in E^p,\ \forall\,(\lambda_1,\lambda_2,\dots,\lambda_p)\in\mathbb{R}^p\), \[f\Big(\sum_{i=1}^{p}\lambda_i \vec e_i\Big) = \sum_{i=1}^{p}\lambda_i f(\vec e_i)\]</li>
+    </ol>
+  </div>
+
+  <div class="def-card">
+    <div class="def-accent-bar"></div>
+    <div class="def-body">
+      <div class="def-header"><span class="def-label">Définition 2</span><span class="def-name">Endomorphisme</span></div>
+      <p>On appelle <strong>endomorphisme</strong> de \(E\) toute application linéaire de \(E\) dans \(E\). L'ensemble des endomorphismes de \(E\) se note \(\mathcal{L}(E)\).</p>
+      <p>Pour prouver que \(f\) est un endomorphisme, il faut vérifier deux choses : <strong>\(f\) est linéaire</strong> <strong>et</strong> <strong>\(f\) est à valeurs dans \(E\)</strong> (càd \(\forall\, \vec u \in E,\ f(\vec u) \in E\)).</p>
+    </div>
+  </div>
+
+  <div class="def-card">
+    <div class="def-accent-bar"></div>
+    <div class="def-body">
+      <div class="def-header"><span class="def-label">Définition 3</span><span class="def-name">Isomorphisme</span></div>
+      <p>On appelle <strong>isomorphisme</strong> de \(E\) dans \(F\) toute application linéaire <strong>bijective</strong> de \(E\) dans \(F\).</p>
+    </div>
+  </div>
+
+  <div class="prop-card">
+    <div class="prop-label">Proposition 2</div>
+    <div class="prop-title">Somme, composée d'applications linéaires</div>
+    <ol>
+      <li>Soit \(f\in\mathcal{L}(E,F)\), \(g\in\mathcal{L}(E,F)\) et \((\lambda,\mu)\in\mathbb{R}^2\). L'application \(\lambda f + \mu g\) est linéaire. L'ensemble \(\mathcal{L}(E,F)\) est donc un espace vectoriel.</li>
+      <li>Soit \(f\in\mathcal{L}(E,F)\) et \(g\in\mathcal{L}(F,G)\) alors \(g\circ f \in \mathcal{L}(E,G)\) (la composée d'applications linéaires est une application linéaire).</li>
+      <li>Soit \(f\in\mathcal{L}(E)\), on pose \(f^0 = Id_E\) et \(\forall\, n\in\mathbb{N}^*,\ f^n = f\circ f\circ\dots\circ f\) (\(f\) composée \(n\) fois). Alors, pour tout \(n\in\mathbb{N}\), \(f^n\) est une application linéaire, c'est-à-dire \(\forall\, n\in\mathbb{N},\ f^n \in \mathcal{L}(E)\).</li>
+    </ol>
+  </div>
+
+  <div class="prop-card">
+    <div class="prop-label">Proposition 3</div>
+    <div class="prop-title">Réciproque d'une application linéaire</div>
+    <ol>
+      <li>Si \(f\) est une application linéaire de \(E\) dans \(F\) et si \(f\) est une bijection de \(E\) dans \(F\), alors \(f^{-1}\) est une application linéaire de \(F\) dans \(E\).</li>
+      <li>Ainsi, si \(f\) est un isomorphisme de \(E\) dans \(F\) alors \(f^{-1}\) est un isomorphisme de \(F\) dans \(E\).</li>
+    </ol>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE II — NOYAU D'UNE APPLICATION LINÉAIRE
+════════════════════════════════════════ -->
+<div class="math-part" id="part2">
+  <div class="math-part-header">
+    <div class="math-part-num">II</div>
+    <div class="math-part-title">Noyau d'une application linéaire</div>
+  </div>
+
+  <p><em>Dans tout ce paragraphe, \(f\) est une application linéaire de \(E\) dans \(F\).</em></p>
+
+  <div class="def-card">
+    <div class="def-accent-bar"></div>
+    <div class="def-body">
+      <div class="def-header"><span class="def-label">Définition 1</span><span class="def-name">Noyau</span></div>
+      <p>On appelle <strong>noyau</strong> de \(f\) l'ensemble noté \(\ker f\) défini par :</p>
+      <div class="formula-block">\[\ker f = \{\, \vec u \in E \text{ tel que } f(\vec u) = \vec 0_F \,\}\]</div>
+      <p>On a donc : \(\vec u \in \ker f \iff \vec u \in E\) avec \(f(\vec u) = \vec 0_F\).</p>
+    </div>
+  </div>
+
+  <div class="prop-card">
+    <div class="prop-label">Proposition 1</div>
+    <ol>
+      <li>On a toujours \(\vec 0_E \in \ker f\) (car \(f\) est une application linéaire donc \(f(\vec 0_E) = \vec 0_F\)).</li>
+      <li>\(\ker f\) est un sous-espace vectoriel de \(E\).</li>
+    </ol>
+  </div>
+
+  <div class="meth-card">
+    <div class="meth-label">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      Méthode
+    </div>
+    <div class="meth-title">Déterminer \(\ker f\)</div>
+    <p>Pour déterminer \(\ker f\) ou pour en trouver une base, on procède de la manière suivante :</p>
+    <ol>
+      <li>Commencer par prendre un vecteur \(\vec u\) quelconque dans \(\ker f\) ; il possède deux propriétés :
+        <ul>
+          <li>\(\vec u \in E\) donc \(\vec u\) se décompose sur une base de \(E\) ;</li>
+          <li>\(f(\vec u) = \vec 0_F\) (ce qui crée des conditions sur les coordonnées de \(\vec u\)).</li>
+        </ul>
+      </li>
+      <li>Si on arrive à \(\vec u = \vec 0_E\), c'est terminé (on a alors \(\ker f = \{\vec 0_E\}\)). Sinon, on obtient l'allure générale d'un vecteur de \(\ker f\). On en déduit alors une famille génératrice de \(\ker f\). On regarde ensuite si la famille obtenue est libre pour en déduire une base de \(\ker f\).</li>
+    </ol>
+  </div>
+
+  <div class="prop-card">
+    <div class="prop-label">Proposition 2</div>
+    <div class="formula-block">\[f \text{ est injective} \iff \ker f = \{\vec 0_E\}\]</div>
+  </div>
+
+  <div class="remark">
+    \(\ker f\) est un ssev de \(E\) donc on a toujours \(\{\vec 0_E\} \subset \ker f\). Pour prouver que \(f\) est injective, il suffit donc de montrer l'autre inclusion. On écrira toujours « soit \(\vec u \in \ker f\) alors \(\vec u \in E\) avec \(f(\vec u) = \vec 0_F\) donc … » (on travaille ensuite selon le contexte pour arriver à démontrer que \(\vec u = \vec 0_E\)).
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE III — IMAGE D'UNE APPLICATION LINÉAIRE
+════════════════════════════════════════ -->
+<div class="math-part" id="part3">
+  <div class="math-part-header">
+    <div class="math-part-num">III</div>
+    <div class="math-part-title">Image d'une application linéaire</div>
+  </div>
+
+  <p><em>Dans tout ce paragraphe, \(f\) est une application linéaire de \(E\) dans \(F\).</em></p>
+
+  <div class="def-card">
+    <div class="def-accent-bar"></div>
+    <div class="def-body">
+      <div class="def-header"><span class="def-label">Définition 1</span><span class="def-name">Image</span></div>
+      <p>On appelle <strong>image</strong> de \(f\) l'ensemble, noté \(\mathrm{Im}\,f\), constitué des images des éléments de \(E\) par \(f\). Ainsi :</p>
+      <div class="formula-block">\[\mathrm{Im}\,f = f(E) = \{\, f(\vec u) \text{ avec } \vec u \in E \,\}, \qquad \vec v \in \mathrm{Im}\,f \iff \exists\, \vec u \in E,\ f(\vec u) = \vec v\]</div>
+      <p>\(\mathrm{Im}\,f\) est un sous-espace vectoriel de \(F\).</p>
+    </div>
+  </div>
+
+  <div class="prop-card">
+    <div class="prop-label">Proposition 1</div>
+    <div class="prop-title">Famille génératrice de \(\mathrm{Im}\,f\)</div>
+    <p>Si \((\vec e_1,\vec e_2,\dots,\vec e_n)\) est une base de \(E\) alors la famille \(\{f(\vec e_1),f(\vec e_2),\dots,f(\vec e_n)\}\) est une famille génératrice de \(\mathrm{Im}\,f\).</p>
+    <div class="formula-block">\[\mathrm{Im}(f) = \mathrm{Vect}\big(\{f(\vec e_1),f(\vec e_2),\dots,f(\vec e_n)\}\big)\]</div>
+  </div>
+
+  <div class="remark">
+    On obtient une famille génératrice de \(\mathrm{Im}\,f\) en prenant l'image d'une base de \(E\). Cette famille n'est pas forcément une base de \(\mathrm{Im}\,f\) (car elle n'est pas forcément libre). Mais on ira chercher parmi les vecteurs de cette famille ceux qui forment une base de \(\mathrm{Im}\,f\).
+  </div>
+
+  <div class="prop-card">
+    <div class="prop-label">Proposition 2</div>
+    <div class="formula-block">\[f \text{ est surjective} \iff \mathrm{Im}\,f = F\]</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE IV — LIEN ENTRE MATRICES ET APPLICATIONS LINÉAIRES
+════════════════════════════════════════ -->
+<div class="math-part" id="part4">
+  <div class="math-part-header">
+    <div class="math-part-num">IV</div>
+    <div class="math-part-title">Lien entre matrices et applications linéaires</div>
+  </div>
+
+  <div class="def-card">
+    <div class="def-accent-bar"></div>
+    <div class="def-body">
+      <div class="def-header"><span class="def-label">Définition 1</span><span class="def-name">Matrice d'une application linéaire</span></div>
+      <p>Soit \(E\) et \(F\) deux \(\mathbb{R}\)-ev avec \(\dim(E) = p\), \(\dim(F) = n\) et \(f \in \mathcal{L}(E,F)\). Soit \(\mathcal{B}_E = (\vec b_1,\vec b_2,\dots,\vec b_p)\) une base de \(E\) et \(\mathcal{C}_F = (\vec c_1,\vec c_2,\dots,\vec c_n)\) une base de \(F\). On appelle <strong>matrice</strong> de \(f\) de la base \(\mathcal{B}_E\) dans la base \(\mathcal{C}_F\), notée \(\mathrm{Mat}_{\mathcal{C}_F,\mathcal{B}_E}(f)\), la matrice définie par :</p>
+      <div class="formula-block">\[\mathrm{Mat}_{\mathcal{C}_F,\mathcal{B}_E}(f) = \begin{pmatrix} a_{11} & a_{12} & \cdots & a_{1p} \\ a_{21} & a_{22} & \cdots & a_{2p} \\ \vdots & \vdots & & \vdots \\ a_{n1} & a_{n2} & \cdots & a_{np} \end{pmatrix} \quad \text{où } \forall\, j\in\llbracket 1,n\rrbracket,\ f(\vec b_j) = a_{1j}\vec c_1 + a_{2j}\vec c_2 + \dots + a_{nj}\vec c_n\]</div>
+      <p>(la colonne \(K_j\) de \(\mathrm{Mat}_{\mathcal{C}_F,\mathcal{B}_E}(f)\) est constituée des coordonnées du vecteur \(f(\vec b_j)\) dans la base \(\mathcal{C}\) de \(F\))</p>
+    </div>
+  </div>
+
+  <div class="remark">
+    Si \(E = F\) et si on a la même base \(\mathcal{B}\) au départ et à l'arrivée, on note \(\mathrm{Mat}_{\mathcal{B}}(f)\) au lieu de \(\mathrm{Mat}_{\mathcal{B},\mathcal{B}}(f)\).
+  </div>
+
+  <div class="prop-card">
+    <div class="prop-label">Proposition 1</div>
+    <div class="prop-title">Coordonnées de l'image d'un vecteur par une application linéaire</div>
+    <p>Soit \(\mathcal{B}_E = (\vec b_1,\vec b_2,\dots,\vec b_p)\) une base de \(E\) et \(\mathcal{B}_F = (\vec c_1,\vec c_2,\dots,\vec c_n)\) une base de \(F\). Soit \(f \in \mathcal{L}(E,F)\) et soit \(\mathrm{Mat}_{\mathcal{B}_F,\mathcal{B}_E}(f)\) sa matrice. Pour tout \(\vec u \in E\), on note \(X_{\mathcal{B}_E}\) la matrice des coordonnées de \(\vec u\) dans la base \(\mathcal{B}\) de \(E\). Alors la matrice \(Y_{\mathcal{B}_F}\) des coordonnées de \(\vec v = f(\vec u)\) dans la base \(\mathcal{B}_F\) de \(F\) s'obtient par le calcul :</p>
+    <div class="formula-block">\[\mathrm{Coord}_{\mathcal{B}_F}[f(\vec u)] = \mathrm{Mat}_{\mathcal{B}_F,\mathcal{B}_E}(f) \times \mathrm{Coord}_{\mathcal{B}_E}(\vec u)\]</div>
+  </div>
+
+  <div class="meth-card">
+    <div class="meth-label">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      Méthode
+    </div>
+    <div class="meth-title">Définir une application linéaire</div>
+    <p>Pour définir une application linéaire \(f : E \to F\), on peut :</p>
+    <ol>
+      <li><strong>Option 1 :</strong> Donner l'expression de \(f(\vec u)\) pour tout vecteur \(\vec u\) de l'espace de départ \(E\).</li>
+      <li><strong>Option 2 :</strong> Donner les images de chacun des vecteurs d'une base de l'espace de départ.</li>
+      <li><strong>Option 3 :</strong> Donner sa matrice. Dans ce cas, on utilise la proposition précédente.</li>
+    </ol>
+  </div>
+
+  <div class="remark">
+    Deux points de vue : point de vue vectoriel / point de vue matriciel. On peut passer de l'un à l'autre :<br>
+    <em>vecteurs → matrices</em> : écrire les coordonnées des vecteurs dans les bases adéquates.<br>
+    <em>matrices → vecteurs</em> : reconstituer le vecteur à partir de ses coordonnées.<br>
+    On passe d'une égalité à l'autre : \(\vec v = f(\vec u) \iff Y = M \times X\).
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE V — UTILISATION DES MATRICES EN ALGÈBRE LINÉAIRE
+════════════════════════════════════════ -->
+<div class="math-part" id="part5">
+  <div class="math-part-header">
+    <div class="math-part-num">V</div>
+    <div class="math-part-title">Utilisation des matrices en algèbre linéaire</div>
+  </div>
+
+  <!-- SECTION 1 : Matrice et recherche de noyau -->
+  <div class="math-section" id="s5-1">
+    <div class="math-section-title">1 — Matrice et recherche de noyau</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <p>Soit \(f \in \mathcal{L}(E,F)\) et soit \(\mathrm{Mat}_{\mathcal{C},\mathcal{B}}(f)\) sa matrice associée (avec \(\mathcal{B}\) base de \(E\) et \(\mathcal{C}\) base de \(F\)). Soit \(\vec u \in E\). On a l'équivalence :</p>
+      <div class="formula-block">\[\vec u \in \ker f \iff \mathrm{Mat}_{\mathcal{C},\mathcal{B}}(f) \times \mathrm{Coord}_{\mathcal{B}}(\vec u) = O \quad (= \mathrm{Coord}_{\mathcal{C}}[\vec 0])\]</div>
+    </div>
+
+    <div class="remark">
+      Déterminer le noyau d'une application linéaire revient donc à résoudre le système linéaire associé à sa matrice. (!) résoudre le système fournit des coordonnées ; il faut ensuite reconstituer les vecteurs du noyau.
+    </div>
+  </div>
+
+  <!-- SECTION 2 : Rang d'une matrice, rang d'une application linéaire -->
+  <div class="math-section" id="s5-2">
+    <div class="math-section-title">2 — Rang d'une matrice, rang d'une application linéaire</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span><span class="def-name">Rang d'une famille</span></div>
+        <p>Soit \(E\) un \(\mathbb{R}\)-ev avec \(\dim(E) = n\) et \(\vec u_1,\vec u_2,\dots,\vec u_p\) des vecteurs. On appelle <strong>rang</strong> de la famille \(\{\vec u_1,\vec u_2,\dots,\vec u_p\}\) le nombre :</p>
+        <div class="formula-block">\[rg\{\vec u_1,\vec u_2,\dots,\vec u_p\} = \dim(\mathrm{Vect}\{\vec u_1,\vec u_2,\dots,\vec u_p\})\]</div>
+      </div>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 2</span><span class="def-name">Rang d'une matrice</span></div>
+        <p>Soit \(A \in M_{n,p}(\mathbb{R})\). On note \(K_1,K_2,\dots,K_p\) ses vecteurs colonnes. On appelle <strong>rang</strong> de \(A\) le nombre \(rg(A) = \dim\,\mathrm{Vect}[K_1,K_2,\dots,K_p]\).</p>
+      </div>
+    </div>
+
+    <div class="remark">
+      Pour \(A \in M_{n,p}(\mathbb{R})\), \(rg(A)\) = nombre maximum de colonnes qui forment une famille libre. On a donc \(rg(A) \le n\) et \(rg(A) \le p\).
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 2</div>
+      <p>Le rang d'une matrice est égal à celui de sa transposée. Ainsi, pour \(A \in M_{n,p}(\mathbb{R})\), on a : \(rg(A) = rg({}^{t}A)\).</p>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 3</div>
+      <p>Soit \(f \in \mathcal{L}(E,F)\) et soit \(A = \mathrm{Mat}_{\mathcal{C}_F,\mathcal{B}_E}(f)\) (où \(\mathcal{B}_E = (\vec e_1,\dots,\vec e_n)\) base de \(E\) et \(\mathcal{C}_F\) base de \(F\)).</p>
+      <ol>
+        <li>On appelle <strong>rang</strong> de \(f\) le nombre défini par \(rg(f) = \dim(\mathrm{Im}\,f)\).</li>
+        <li>On a \(rg(f) = rg(A)\). Ainsi, le rang d'une application linéaire est égal à celui d'une matrice qui la représente.</li>
+      </ol>
+      <p><em>Démonstration :</em> Par définition du rang d'une application linéaire, on a \(rg(f) = \dim[\mathrm{Im}\,f] = \dim\,\mathrm{Vect}[f(\vec e_1),f(\vec e_2),\dots,f(\vec e_p)]\). Alors, par construction de la matrice \(A\), on a : \(rg(f) = rg(\{f(\vec e_1),\dots,f(\vec e_n)\}) = \dim\,\mathrm{Vect}[K_1,\dots,K_p] = rg(A)\).</p>
+    </div>
+
+    <div class="remark">
+      Si \(f \in \mathcal{L}(E,F)\) avec \(\dim(E) = n\) alors \(rg(f) \le n = \dim(E)\) et \(rg(f) \le \dim(F)\). En effet, \(\{f(\vec e_1),\dots,f(\vec e_n)\}\) est une famille génératrice de \(\mathrm{Im}\,f\) (avec \((\vec e_1,\dots,\vec e_n)\) base de \(E\)) donc \(rg(f) = rg\{f(\vec e_1),\dots,f(\vec e_n)\} \le n\) ; de plus \(rg(f) = \dim(\mathrm{Im}\,f) \le \dim(F)\) car \(\mathrm{Im}\,f \subset F\).
+    </div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 4</div>
+      <div class="thm-title">Théorème du rang</div>
+      <p>Soit \(E\) un ev de dimension finie et soit \(F\) un ev quelconque. Soit \(f\) une application linéaire de \(E\) dans \(F\). On a :</p>
+      <p style="text-align:center; font-size:1.05rem; margin-top:0.4rem;">\[\dim(E) = \dim(\ker f) + \dim(\mathrm{Im}\,f)\]</p>
+    </div>
+
+    <div class="remark">
+      Ce théorème permet de relier la dimension de \(\ker f\) et celle de \(\mathrm{Im}\,f\).
+    </div>
+  </div>
+
+  <!-- SECTION 3 : Isomorphismes en dimension finie -->
+  <div class="math-section" id="s5-3">
+    <div class="math-section-title">3 — Isomorphismes en dimension finie</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 5</div>
+      <p>Soient \(E\) et \(F\) deux \(\mathbb{R}\)-ev de dimension finie et soit \(f \in \mathcal{L}(E,F)\).</p>
+      <ol>
+        <li>Si \(f\) est injective <strong>et</strong> si \(\dim(E) = \dim(F)\) alors \(f\) est bijective.</li>
+        <li>Si \(f\) est surjective <strong>et</strong> si \(\dim(E) = \dim(F)\) alors \(f\) est bijective.</li>
+      </ol>
+      <p><em>Démonstration à savoir faire :</em> à l'aide du théorème du rang, démontrer la proposition précédente.</p>
+    </div>
+
+    <div class="remark">
+      La proposition précédente s'applique en particulier pour les endomorphismes, càd lorsque \(E = F\). Ainsi, si \(f \in \mathcal{L}(E)\) et si \(f\) est injective <strong>ou</strong> surjective alors \(f\) est bijective.
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 6</div>
+      <p>Soit \(E\) et \(F\) deux \(\mathbb{R}\)-ev de dimension finie et soit \(f \in \mathcal{L}(E,F)\). \(f\) est un isomorphisme de \(E\) dans \(F\) ssi \(f\) transforme une base de \(E\) en une base de \(F\).</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- fin .content -->
+
+<footer class="site-footer">
+  <div class="footer-logo">Chapitre 12 : Applications linéaires</div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut de page">↑</button>
+
+<script>
+  document.querySelectorAll('.toc-list a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
+
+</body>
+</html>

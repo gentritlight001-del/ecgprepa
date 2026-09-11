@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Cuba : USS Nimitz dans les Caraïbes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #003087;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #003087; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #c8121a; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #003087; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #003087; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #003087; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#003087; border-color:#003087; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  /* Article styles */
+  .ap-band { background: linear-gradient(90deg, #003087, #c8121a, #003087); text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(0,12,30,0.95); padding:12px 60px; border-bottom: 1px solid rgba(0,48,135,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#c8121a; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(0,48,135,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; background: linear-gradient(135deg, #0a0a14 0%, #0d1a2e 50%, #1a0505 100%); display:flex; align-items:center; justify-content:center; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-placeholder { font-size: 5rem; opacity: 0.3; z-index:1; }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(181,19,31,0.2);  color:#f08080; border:1px solid rgba(181,19,31,0.35); }
+  .ap-tag-navy   { background:rgba(0,48,135,0.4);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(0,48,135,0.2);   color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #c8121a; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(0,48,135,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(200,18,26,0.8); }
+
+  /* Rich article components */
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#c8121a; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(200,18,26,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#071422,#0d2540); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #c8121a; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(200,18,26,0.06),rgba(200,18,26,0.02)); border-left:3px solid #c8121a; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(200,18,26,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(200,18,26,0.85); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(0,12,30,0.9),rgba(7,0,14,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(0,48,135,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#c8121a; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(0,48,135,0.06); border:1px solid rgba(0,48,135,0.18); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(200,18,26,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#c8121a; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(200,18,26,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#c8121a; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(0,12,30,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-es-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-es.html">Espagnol</a>
+    <span class="sep">/</span>
+    <a href="../cuba.html">Cuba</a>
+    <span class="sep">/</span>
+    <span class="current">USS Nimitz dans les Caraïbes</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-es" class="ap-lang-btn" onclick="setLang('es')">🇨🇺 ES</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇺🇸 USS NIMITZ — CARAÏBES — PRESSION SUR CUBA — MAI 2026 🇨🇺</div>
+<div class="ap-back-bar">
+  <a href="../cuba.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+    <div class="ap-hero-img-wrap"><img class="ap-hero-img" src="../images/cuba-nimitz-caraibes.jpg" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\'ap-hero-placeholder\'>⚓</div>'"></div>
+
+    <!-- ══ SECTION FR ══ -->
+    <div class="ap-fr-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-blue">🇨🇺 Cuba</span>
+          <span class="ap-tag ap-tag-red">Défense</span>
+          <span class="ap-tag ap-tag-navy">Géopolitique</span>
+          <span class="ap-tag ap-tag-gold">Relations USA–Cuba</span>
+          <span class="ap-tag ap-tag-orange">Droit international</span>
+        </div>
+        <div class="ap-date">Mai 2026 — ECG Prépa · Cuba</div>
+        <h1 class="ap-title">Flotte de guerre au seuil de La Havane : l'USS Nimitz dans les Caraïbes</h1>
+        <p class="ap-intro">Le 20 mai 2026, le SOUTHCOM américain annonce l'entrée du groupe aéronaval de l'USS Nimitz dans la mer des Caraïbes. Simultanément, le Département de Justice met en examen Raúl Castro pour le meurtre de quatre civils en 1996. Une démonstration de force militaire, un acte judiciaire historique et une crise énergétique cubaine sans précédent : trois lignes de haute tension qui convergent vers un même point de rupture.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red"><span class="ap-stat-num">51</span><span class="ap-stat-desc">Ans de service<br>du CVN-68 Nimitz<br><small style="font-size:9px;opacity:.7">(mis en service en 1975)</small></span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">4</span><span class="ap-stat-desc">Civils tués le<br>24 février 1996<br>par les MiG cubains</span></div>
+          <div class="ap-stat red"><span class="ap-stat-num">90</span><span class="ap-stat-desc">Milles marins séparent<br>Key West de La Havane<br>(détroit de Floride)</span></div>
+          <div class="ap-stat"><span class="ap-stat-num">2027</span><span class="ap-stat-desc">Nouvelle date de<br>désarmement du Nimitz<br>(prolongé en mars 2026)</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">L'USS Nimitz : du désarmement à la démonstration de force</div>
+            <p>Le 7 mars 2026, l'USS Nimitz (CVN-68), le porte-avions à propulsion nucléaire le plus ancien de la flotte américaine, quitte sa base de Bremerton dans l'État de Washington pour ce qui doit être son ultime traversée : rejoindre Norfolk, Virginie, avant son démantèlement prévu en 2026. Cinquante ans de carrière, dix déploiements de combat, du Golfe Persique au détroit de Taïwan.</p>
+            <p>Mais les plans changent. Le 23 mars, la Marine annonce une prolongation de service jusqu'en mars 2027 pour pallier les retards de livraison de l'USS John F. Kennedy (CVN-79), dernier porte-avions de classe Ford. Dans la foulée, le Nimitz est redirigé vers la zone de responsabilité du SOUTHCOM et participe aux exercices Southern Seas 2026 avec le Brésil et l'Argentine, avant d'entrer dans la mer des Caraïbes le 20 mai 2026.</p>
+            <p>Le groupe aéronaval qui l'accompagne comprend le Carrier Air Wing 17 (CVW-17) — neuf escadrons dotés de F/A-18 Super Hornets, EA-18G Growlers, E-2D Hawkeyes et MH-60 Seahawks —, le destroyer à missiles guidés USS Gridley (DDG-101) équipé du système Aegis, et le navire ravitailleur USNS Patuxent (T-AO-201), garantissant une autonomie prolongée des opérations.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Entrée dans les Caraïbes</div><div class="ap-fact-val">20 mai 2026 — annonce SOUTHCOM</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Escorte du groupe</div><div class="ap-fact-val">USS Gridley (DDG-101) + USNS Patuxent</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Aile embarquée</div><div class="ap-fact-val">CVW-17 — 9 escadrons, ~80 aéronefs</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Itinéraire</div><div class="ap-fact-val">Cap Horn → Magellan → Atlantique Sud → Caraïbes</div></div>
+            </div>
+
+            <div class="ap-sub">Le contexte : la pression américaine sur Cuba depuis 2025</div>
+            <p>Le déploiement du Nimitz s'inscrit dans une stratégie de pression multidimensionnelle conduite par l'administration Trump depuis fin 2024. Dès janvier 2025, Washington impose des sanctions sévères visant les approvisionnements pétroliers de l'île, menaçant de représailles tout État ou entreprise livrant du brut à Cuba. Le résultat est un blocus pétrolier de facto qui aggrave la crise énergétique cubaine — déjà la pire depuis les années 1990 — jusqu'à plonger sept des quinze provinces de l'île dans des coupures d'électricité généralisées.</p>
+            <p>Donald Trump évoque publiquement et à plusieurs reprises la possibilité d'une action militaire contre Cuba, sans en préciser la nature. Les forces américaines déjà présentes dans la région depuis le second semestre 2025 — dont le groupe d'assaut amphibie Iwo Jima, le croiseur USS Lake Erie et le navire de combat littoral USS Billings — sont renforcées par l'arrivée du Nimitz. Le New York Times, citant une source américaine, rapporte que le porte-avions devrait rester plusieurs jours dans la zone, dans une logique de démonstration de force.</p>
+
+            <div class="ap-quote">
+              <p>« Welcome to the Caribbean, Nimitz Carrier Strike Group! The aircraft carrier USS Nimitz (CVN-68), the embarked Carrier Air Wing 17 (CVW-17), USS Gridley (DDG-101) and USNS Patuxent (T-AO-201) are the epitome of readiness and presence, unmatched reach and lethality, and strategic advantage. »</p>
+              <cite>— SOUTHCOM, publication sur X, 20 mai 2026</cite>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">L'affaire Hermanos al Rescate : l'acte judiciaire qui double la démonstration militaire</div>
+            <p>Le 20 mai 2026, au moment précis où le SOUTHCOM annonce l'entrée du Nimitz dans les Caraïbes, le Département de Justice américain dévoile un acte d'accusation historique : Raúl Castro, 94 ans, ancien président cubain et frère de Fidel, est inculpé pour meurtre, complot et destruction d'aéronefs civils. Les faits remontent au 24 février 1996.</p>
+            <p>Ce jour-là, deux Cessna 337 Skymaster non armés de l'organisation cubano-américaine Hermanos al Rescate (Frères au secours) sont interceptés et abattus par un MiG-29UB de la Force aérienne cubaine au-dessus des eaux internationales du détroit de Floride, à plusieurs milles de l'espace aérien cubain — selon les conclusions de l'Organisation de l'aviation civile internationale (OACI). Les quatre membres d'équipage périssent : Carlos Costa, Armando Alejandre Jr., Mario de la Peña et Pablo Morales. Un troisième appareil, piloté par le fondateur du groupe José Basulto, parvient à s'échapper.</p>
+            <p>Fondée en mai 1991 par des pilotes exilés cubains à Miami, Hermanos al Rescate avait initialement pour mission de repérer et signaler les balseros — réfugiés cubains tentant la traversée du détroit en embarcation de fortune. L'organisation avait élargi ses activités à des vols de protestation au-dessus de Cuba, incluant des largages de tracts anti-castristes sur La Havane. Les familles des victimes avaient obtenu en justice civile près de 187 millions de dollars de dommages et intérêts contre le gouvernement cubain, jamais recouvrés.</p>
+
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">Mai 1991</div><p class="ap-tl-text">Fondation d'Hermanos al Rescate par José Basulto à Miami. Mission initiale : secours aux balseros dans le détroit de Floride.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">24 fév. 1996</div><p class="ap-tl-text">Deux Cessna abattus par un MiG-29UB cubain au-dessus des eaux internationales. Quatre morts : Costa, Alejandre, de la Peña, Morales.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">1996–2000s</div><p class="ap-tl-text">Premiers inculpés en justice fédérale américaine (pilotes cubains, chef de l'armée de l'air). Aucun ne sera jamais jugé, restant à Cuba.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">7 mars 2026</div><p class="ap-tl-text">L'USS Nimitz quitte Bremerton pour ce qui devait être son dernier voyage avant démantèlement à Norfolk.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">23 mars 2026</div><p class="ap-tl-text">La Marine prolonge le service du Nimitz jusqu'en mars 2027. Le porte-avions est redirigé vers le SOUTHCOM et les exercices Southern Seas 2026.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">20 mai 2026</div><p class="ap-tl-text">Double frappe simultanée : entrée du Nimitz dans les Caraïbes + inculpation fédérale de Raúl Castro pour le meurtre de 1996.</p></div>
+            </div>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">⚓</div>
+              <div class="ap-info-text"><strong>Contrainte technique :</strong> L'USS Nimitz, avec ses 333 mètres de longueur et son déplacement de 104 000 tonnes, est trop grand pour emprunter le canal de Panama. Pour rejoindre la mer des Caraïbes depuis l'océan Pacifique, le groupe aéronaval a dû contourner l'Amérique du Sud en passant par le cap Horn et le détroit de Magellan — un détour de plusieurs milliers de milles marins, qui témoigne de la volonté politique de déployer ce bâtiment spécifiquement dans la région.</div>
+            </div>
+
+            <div class="ap-sub">Signalement coordonné ou coïncidence ? Les lectures du déploiement</div>
+            <p>Analystes militaires et observateurs diplomatiques s'accordent à voir dans la simultanéité de l'annonce du SOUTHCOM et de l'inculpation de Raúl Castro un signal politique-militaire délibérément coordonné. Certains, cités par Newsweek, évoquent le précédent vénézuélien : en janvier 2026, une séquence comparable — accusations judiciaires, pression militaire, blocus économique — avait précédé une escalade directe des États-Unis contre Caracas.</p>
+            <p>Pour autant, plusieurs éléments tempèrent l'hypothèse d'une intervention imminente. D'abord, la visite du directeur de la CIA John Ratcliffe à La Havane le 14 mai 2026 — six jours avant l'arrivée du Nimitz — avait ouvert un canal de dialogue direct inédit. Ensuite, le SOUTHCOM souligne que la présence du Nimitz s'inscrit dans le cadre des exercices Southern Seas 2026, débutés plusieurs semaines avant la crise. Enfin, Washington n'a formulé aucune exigence militaire précise à l'égard de La Havane.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Pression maximale, dénouement incertain</div>
+              <p>L'USS Nimitz au large des côtes cubaines constitue la manifestation la plus spectaculaire d'une pression américaine qui combine sanctions économiques, blocus pétrolier de facto, actes judiciaires visant les dirigeants historiques du régime et dialogue de crise par les voies les moins attendues — comme la visite du directeur de la CIA. Cuba se trouve dans une position de vulnérabilité inédite depuis la chute de l'URSS : sans pétrole, sans électricité pour une partie de sa population, et sous une pression militaire visible depuis ses côtes. La présence du porte-avions ne clôt pas la séquence diplomatique ouverte par Ratcliffe — elle la conditionne. Washington joue simultanément la carotte de l'aide humanitaire et le bâton de la force navale, dans un équilibre instable dont l'issue dépendra autant de la résistance du régime de Miguel Díaz-Canel que de la cohérence d'une administration Trump dont les signaux restent, par nature, contradictoires.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-fr-section -->
+
+    <!-- ══ SECTION ES ══ -->
+    <div class="ap-es-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-blue">🇨🇺 Cuba</span>
+          <span class="ap-tag ap-tag-red">Defensa</span>
+          <span class="ap-tag ap-tag-navy">Geopolítica</span>
+          <span class="ap-tag ap-tag-gold">Relaciones EE.UU.–Cuba</span>
+          <span class="ap-tag ap-tag-orange">Derecho internacional</span>
+        </div>
+        <div class="ap-date">Mayo 2026 — ECG Prépa · Cuba</div>
+        <h1 class="ap-title">Armada de guerra a las puertas de La Habana : el USS Nimitz en el Caribe</h1>
+        <p class="ap-intro">El 20 de mayo de 2026, el SOUTHCOM estadounidense anuncia la entrada del grupo de ataque del USS Nimitz en el mar Caribe. Simultáneamente, el Departamento de Justicia procesa a Raúl Castro por el asesinato de cuatro civiles en 1996. Una demostración de fuerza militar, un acto judicial histórico y una crisis energética cubana sin precedentes : tres líneas de alta tensión que convergen hacia un mismo punto de ruptura.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red"><span class="ap-stat-num">51</span><span class="ap-stat-desc">Años de servicio<br>del CVN-68 Nimitz<br><small style="font-size:9px;opacity:.7">(puesto en servicio en 1975)</small></span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">4</span><span class="ap-stat-desc">Civiles muertos el<br>24 de febrero de 1996<br>por los MiG cubanos</span></div>
+          <div class="ap-stat red"><span class="ap-stat-num">90</span><span class="ap-stat-desc">Millas náuticas entre<br>Key West y La Habana<br>(estrecho de Florida)</span></div>
+          <div class="ap-stat"><span class="ap-stat-num">2027</span><span class="ap-stat-desc">Nueva fecha de<br>retirada del Nimitz<br>(extendido en marzo 2026)</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">El USS Nimitz : del desguace a la demostración de fuerza</div>
+            <p>El 7 de marzo de 2026, el USS Nimitz (CVN-68), el portaaviones de propulsión nuclear más antiguo de la flota estadounidense, abandona su base de Bremerton, en el estado de Washington, para lo que debía ser su último viaje: dirigirse a Norfolk, Virginia, antes de su desguace previsto en 2026. Cincuenta años de servicio, diez despliegues de combate, del Golfo Pérsico al estrecho de Taiwán.</p>
+            <p>Pero los planes cambian. El 23 de marzo, la Marina anuncia una prórroga de servicio hasta marzo de 2027 para compensar los retrasos en la entrega del USS John F. Kennedy (CVN-79), último portaaviones de clase Ford. A continuación, el Nimitz es redirigido hacia la zona de responsabilidad del SOUTHCOM y participa en los ejercicios Southern Seas 2026 con Brasil y Argentina, antes de entrar en el mar Caribe el 20 de mayo de 2026.</p>
+            <p>El grupo de ataque que le acompaña comprende el Carrier Air Wing 17 (CVW-17) — nueve escuadrones con F/A-18 Super Hornets, EA-18G Growlers, E-2D Hawkeyes y MH-60 Seahawks —, el destructor de misiles guiados USS Gridley (DDG-101) equipado con el sistema Aegis, y el buque de reabastecimiento USNS Patuxent (T-AO-201), garantizando una autonomía operativa prolongada.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Entrada en el Caribe</div><div class="ap-fact-val">20 de mayo de 2026 — anuncio SOUTHCOM</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Escolta del grupo</div><div class="ap-fact-val">USS Gridley (DDG-101) + USNS Patuxent</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Ala embarcada</div><div class="ap-fact-val">CVW-17 — 9 escuadrones, ~80 aeronaves</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Itinerario</div><div class="ap-fact-val">Cabo de Hornos → Magallanes → Atlántico Sur → Caribe</div></div>
+            </div>
+
+            <div class="ap-sub">El contexto : la presión estadounidense sobre Cuba desde 2025</div>
+            <p>El despliegue del Nimitz se inscribe en una estrategia de presión multidimensional llevada a cabo por la administración Trump desde finales de 2024. Desde enero de 2025, Washington impone sanciones severas dirigidas a los suministros de petróleo de la isla, amenazando con represalias a cualquier Estado o empresa que entregue crudo a Cuba. El resultado es un bloqueo petrolero de facto que agrava la crisis energética cubana — ya la peor desde los años noventa — hasta sumir a siete de las quince provincias de la isla en cortes de electricidad generalizados.</p>
+            <p>Donald Trump evoca públicamente y en repetidas ocasiones la posibilidad de una acción militar contra Cuba, sin precisar su naturaleza. Las fuerzas estadounidenses ya presentes en la región desde el segundo semestre de 2025 — entre ellas el grupo de asalto anfibio Iwo Jima, el crucero USS Lake Erie y el buque de combate litoral USS Billings — se ven reforzadas con la llegada del Nimitz. El New York Times, citando una fuente estadounidense, informa de que el portaaviones permanecerá varios días en la zona, en una lógica de demostración de fuerza.</p>
+
+            <div class="ap-quote">
+              <p>« ¡Bienvenido al Caribe, Grupo de Ataque del USS Nimitz! El portaaviones USS Nimitz (CVN-68), el Carrier Air Wing 17 (CVW-17), el USS Gridley (DDG-101) y el USNS Patuxent (T-AO-201) son la representación perfecta de la disponibilidad y la presencia, el alcance y la letalidad sin rival, y la ventaja estratégica. »</p>
+              <cite>— SOUTHCOM, publicación en X, 20 de mayo de 2026</cite>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">El caso Hermanos al Rescate : el acto judicial que dobla la demostración militar</div>
+            <p>El 20 de mayo de 2026, en el mismo momento en que el SOUTHCOM anuncia la entrada del Nimitz en el Caribe, el Departamento de Justicia estadounidense desvela una acusación histórica : Raúl Castro, de 94 años, expresidente cubano y hermano de Fidel, es imputado por asesinato, conspiración y destrucción de aeronaves civiles. Los hechos se remontan al 24 de febrero de 1996.</p>
+            <p>Ese día, dos Cessna 337 Skymaster desarmados de la organización cubano-americana Hermanos al Rescate son interceptados y derribados por un MiG-29UB de la Fuerza Aérea cubana sobre aguas internacionales del estrecho de Florida, a varias millas del espacio aéreo cubano — según las conclusiones de la Organización de Aviación Civil Internacional (OACI). Los cuatro tripulantes mueren : Carlos Costa, Armando Alejandre Jr., Mario de la Peña y Pablo Morales. Un tercer aparato, pilotado por el fundador del grupo, José Basulto, logra escapar.</p>
+            <p>Fundada en mayo de 1991 por pilotos exiliados cubanos en Miami, Hermanos al Rescate tenía como misión inicial localizar y alertar sobre los balseros — refugiados cubanos que intentaban cruzar el estrecho en embarcaciones precarias. La organización había ampliado sus actividades a vuelos de protesta sobre Cuba, con lanzamientos de octavillas anticastristas sobre La Habana. Las familias de las víctimas obtuvieron en justicia civil cerca de 187 millones de dólares en daños y perjuicios contra el gobierno cubano, nunca recuperados.</p>
+
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">Mayo 1991</div><p class="ap-tl-text">Fundación de Hermanos al Rescate por José Basulto en Miami. Misión inicial : socorro a los balseros en el estrecho de Florida.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">24 feb. 1996</div><p class="ap-tl-text">Dos Cessna derribados por un MiG-29UB cubano sobre aguas internacionales. Cuatro muertos : Costa, Alejandre, de la Peña, Morales.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">1996–2000s</div><p class="ap-tl-text">Primeros imputados en justicia federal estadounidense (pilotos cubanos, jefe de la fuerza aérea). Ninguno será nunca juzgado, permaneciendo en Cuba.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">7 marzo 2026</div><p class="ap-tl-text">El USS Nimitz sale de Bremerton para lo que debía ser su último viaje antes del desguace en Norfolk.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">23 marzo 2026</div><p class="ap-tl-text">La Marina prorroga el servicio del Nimitz hasta marzo de 2027. El portaaviones es redirigido al SOUTHCOM y a los ejercicios Southern Seas 2026.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">20 mayo 2026</div><p class="ap-tl-text">Doble golpe simultáneo : entrada del Nimitz en el Caribe + imputación federal de Raúl Castro por el asesinato de 1996.</p></div>
+            </div>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">⚓</div>
+              <div class="ap-info-text"><strong>Limitación técnica :</strong> El USS Nimitz, con sus 333 metros de eslora y un desplazamiento de 104 000 toneladas, es demasiado grande para transitar por el canal de Panamá. Para alcanzar el mar Caribe desde el Pacífico, el grupo de ataque debió rodear América del Sur pasando por el cabo de Hornos y el estrecho de Magallanes — un rodeo de varios miles de millas náuticas, que pone de relieve la voluntad política de desplegar este buque específicamente en la región.</div>
+            </div>
+
+            <div class="ap-sub">¿Señalización coordinada o coincidencia? Las lecturas del despliegue</div>
+            <p>Analistas militares y observadores diplomáticos coinciden en ver en la simultaneidad del anuncio del SOUTHCOM y la imputación de Raúl Castro una señal político-militar deliberadamente coordinada. Algunos, citados por Newsweek, evocan el precedente venezolano : en enero de 2026, una secuencia comparable — acusaciones judiciales, presión militar, bloqueo económico — había precedido una escalada directa de Estados Unidos contra Caracas.</p>
+            <p>Sin embargo, varios elementos atemperan la hipótesis de una intervención inminente. En primer lugar, la visita del director de la CIA John Ratcliffe a La Habana el 14 de mayo de 2026 — seis días antes de la llegada del Nimitz — había abierto un canal de diálogo directo sin precedentes. Además, el SOUTHCOM subraya que la presencia del Nimitz se enmarca en los ejercicios Southern Seas 2026, iniciados varias semanas antes de la crisis. Por último, Washington no ha formulado ninguna exigencia militar concreta hacia La Habana.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Presión máxima, desenlace incierto</div>
+              <p>El USS Nimitz frente a las costas cubanas es la manifestación más espectacular de una presión estadounidense que combina sanciones económicas, bloqueo petrolero de facto, actos judiciales dirigidos a los dirigentes históricos del régimen y diálogo de crisis por las vías más inesperadas — como la visita del director de la CIA. Cuba se encuentra en una posición de vulnerabilidad inédita desde la caída de la URSS : sin petróleo, sin electricidad para parte de su población, y bajo una presión militar visible desde sus costas. La presencia del portaaviones no clausura la secuencia diplomática abierta por Ratcliffe — la condiciona. Washington juega simultáneamente la zanahoria de la ayuda humanitaria y el palo de la fuerza naval, en un equilibrio inestable cuyo desenlace dependerá tanto de la resistencia del régimen de Miguel Díaz-Canel como de la coherencia de una administración Trump cuyos mensajes siguen siendo, por naturaleza, contradictorios.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-es-section -->
+
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — Cuba — Mai 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-es').classList.toggle('active', lang === 'es');
+  const isEs = lang === 'es';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEs ? 'none' : 'block');
+  document.querySelectorAll('.ap-es-section').forEach(el => el.style.display = isEs ? 'block' : 'none');
+  const band = document.getElementById('ap-band');
+  if (isEs) {
+    band.textContent = '🇺🇸 USS NIMITZ — CARIBE — PRESIÓN SOBRE CUBA — MAYO 2026 🇨🇺';
+  } else {
+    band.textContent = '🇺🇸 USS NIMITZ — CARAÏBES — PRESSION SUR CUBA — MAI 2026 🇨🇺';
+  }
+}
+setLang('fr');
+</script>
+</body>
+</html>

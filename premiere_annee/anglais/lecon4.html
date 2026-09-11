@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leçon 4 — Le Futur | Anglais ECG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #090c14;
+    --surface: #0f1420;
+    --surface2: #141b2a;
+    --border: #1e2840;
+    --accent: #a855f7;
+    --accent2: #c084fc;
+    --accent3: #e9d5ff;
+    --accent4: #7c3aed;
+    --accent5: #ddd6fe;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #3a4255;
+    /* column colors */
+    --col-aff: #a855f7;
+    --col-neg: #c084fc;
+    --col-int: #e9d5ff;
+    --col-will: #7c3aed;
+    --col-going: #ddd6fe;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  /* ─── BACKGROUND ─── */
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(180px); pointer-events: none; z-index: 0; }
+  .orb1 { width: 800px; height: 800px; background: rgba(168,85,247,0.07); top: -300px; right: -200px; }
+  .orb2 { width: 600px; height: 600px; background: rgba(192,132,252,0.05); bottom: -200px; left: -200px; }
+  .orb3 { width: 500px; height: 500px; background: rgba(124,58,237,0.04); top: 50%; left: 50%; transform: translate(-50%,-50%); }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(9,12,20,0.92); backdrop-filter: blur(20px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: var(--accent); cursor: pointer; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: var(--text-dim); flex-wrap: wrap; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb span:hover { color: var(--accent); }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); cursor: default; }
+
+  /* ─── CHAPTER HERO ─── */
+  .chapter-hero {
+    position: relative; overflow: hidden;
+    padding: 80px 64px 64px;
+    background: linear-gradient(135deg, #0d0518 0%, #130a24 50%, #0a0414 100%);
+    border-bottom: 1px solid rgba(168,85,247,0.12);
+    z-index: 1;
+    text-align: center; display: flex; flex-direction: column; align-items: center;
+  }
+  .chapter-hero::after {
+    content: '04';
+    position: absolute; right: -10px; bottom: -40px;
+    font-family: 'Playfair Display', serif; font-size: 22rem; font-weight: 900;
+    color: rgba(168,85,247,0.04); line-height: 1; pointer-events: none;
+    letter-spacing: -0.05em;
+  }
+  .ch-eyebrow {
+    font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px; justify-content: center;
+  }
+  .ch-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--accent); }
+  .ch-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 6vw, 5.5rem); font-weight: 900;
+    line-height: 1.0; margin-bottom: 20px; color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .ch-title span { color: var(--accent); }
+  .ch-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .ch-tag {
+    padding: 5px 14px; border-radius: 20px; font-family: 'DM Mono', monospace;
+    font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em;
+    border: 1px solid;
+  }
+  .ch-tag.aff    { color: var(--col-aff);   border-color: rgba(168,85,247,0.3);  background: rgba(168,85,247,0.08); }
+  .ch-tag.neg    { color: var(--col-neg);   border-color: rgba(192,132,252,0.3); background: rgba(192,132,252,0.08); }
+  .ch-tag.int    { color: var(--col-int);   border-color: rgba(233,213,255,0.3); background: rgba(233,213,255,0.08); }
+  .ch-tag.will   { color: var(--col-will);  border-color: rgba(124,58,237,0.3);  background: rgba(124,58,237,0.08); }
+  .ch-tag.going  { color: var(--col-going); border-color: rgba(221,214,254,0.3); background: rgba(221,214,254,0.08); }
+
+  /* ─── LAYOUT ─── */
+  .page-body { display: block; min-height: calc(100vh - 300px); position: relative; z-index: 1; }
+  .main-content { width: 100%; padding: 48px 80px 100px; max-width: 1100px; margin: 0 auto; box-sizing: border-box; }
+
+  /* ─── SECTION ─── */
+  .section { margin-bottom: 72px; scroll-margin-top: 80px; }
+  .section-header {
+    display: flex; align-items: flex-start; gap: 20px; margin-bottom: 32px;
+    padding-bottom: 20px; border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 900;
+    color: var(--text-faint); line-height: 1; flex-shrink: 0; min-width: 48px;
+  }
+  .section-info {}
+  .section-tag { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--text); line-height: 1.2; }
+
+  /* ─── PROSE ─── */
+  .prose { font-size: 0.95rem; color: var(--text-dim); line-height: 1.85; font-weight: 300; }
+  .prose p { margin-bottom: 14px; }
+  .prose strong { color: var(--text); font-weight: 500; }
+  .prose em { color: var(--accent); font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.9rem; }
+
+  /* ─── DEFINITION BOX ─── */
+  .def-box {
+    background: linear-gradient(135deg, rgba(168,85,247,0.06) 0%, rgba(168,85,247,0.02) 100%);
+    border: 1px solid rgba(168,85,247,0.2); border-left: 3px solid var(--accent);
+    border-radius: 0 12px 12px 0; padding: 24px 28px; margin: 24px 0;
+  }
+  .def-box .def-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .def-box p { font-size: 0.92rem; color: var(--text-dim); line-height: 1.7; font-style: italic; }
+  .def-box strong { color: var(--text); }
+
+  /* ─── HIGHLIGHT BOX ─── */
+  .hl-box {
+    border-radius: 12px; padding: 20px 24px; margin: 20px 0;
+    border: 1px solid; display: flex; gap: 16px; align-items: flex-start;
+  }
+  .hl-box.warning { background: rgba(233,213,255,0.05); border-color: rgba(233,213,255,0.2); }
+  .hl-box.tip     { background: rgba(192,132,252,0.05); border-color: rgba(192,132,252,0.2); }
+  .hl-box.info    { background: rgba(168,85,247,0.05);  border-color: rgba(168,85,247,0.2); }
+  .hl-box.danger  { background: rgba(124,58,237,0.05);  border-color: rgba(124,58,237,0.2); }
+  .hl-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 1px; }
+  .hl-body { font-size: 0.88rem; color: var(--text-dim); line-height: 1.7; }
+  .hl-body strong { color: var(--text); font-weight: 500; }
+
+  /* ─── CONJUGATION TABLE ─── */
+  .conj-table {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; overflow: hidden; margin: 24px 0;
+  }
+  .conj-table-head {
+    display: grid; grid-template-columns: 1fr 1.4fr 1.8fr;
+    padding: 12px 20px; background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  .conj-table-head .th {
+    font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em;
+    text-transform: uppercase; font-weight: 500;
+  }
+  .th.pron  { color: var(--col-aff); }
+  .th.form  { color: var(--col-neg); }
+  .th.ex    { color: var(--text-faint); }
+
+  .conj-row {
+    display: grid; grid-template-columns: 1fr 1.4fr 1.8fr;
+    padding: 11px 20px; border-bottom: 1px solid rgba(30,40,64,0.6);
+    align-items: center; transition: background 0.15s;
+  }
+  .conj-row:last-child { border-bottom: none; }
+  .conj-row:hover { background: rgba(168,85,247,0.04); }
+  .conj-row .pron-cell  { font-family: 'DM Mono', monospace; font-size: 0.82rem; color: var(--col-aff); }
+  .conj-row .form-cell  { font-family: 'DM Mono', monospace; font-size: 0.88rem; font-weight: 500; color: var(--col-neg); }
+  .conj-row .ex-cell    { font-size: 0.82rem; color: var(--text-dim); font-weight: 300; font-style: italic; }
+
+  /* ─── FORMULA GRID ─── */
+  .formula-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 24px 0; }
+  .formula-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px 22px;
+  }
+  .formula-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 14px; }
+  .formula-label.aff  { color: var(--col-aff); }
+  .formula-label.neg  { color: var(--col-neg); }
+  .formula-label.int  { color: var(--col-int); }
+  .formula-label.going { color: var(--col-going); }
+
+  .formula-expr {
+    font-family: 'DM Mono', monospace; font-size: 0.9rem; font-weight: 500;
+    display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-bottom: 16px;
+    line-height: 1.6;
+  }
+  .f-subj  { color: var(--col-aff);   background: rgba(168,85,247,0.1);  padding: 2px 8px; border-radius: 4px; }
+  .f-verb  { color: var(--col-neg);   background: rgba(192,132,252,0.1); padding: 2px 8px; border-radius: 4px; }
+  .f-obj   { color: var(--col-int);   background: rgba(233,213,255,0.1); padding: 2px 8px; border-radius: 4px; }
+  .f-aux   { color: var(--col-going); background: rgba(221,214,254,0.1); padding: 2px 8px; border-radius: 4px; }
+  .f-will  { color: var(--col-will);  background: rgba(124,58,237,0.12); padding: 2px 8px; border-radius: 4px; }
+  .f-sep   { color: var(--text-faint); font-size: 0.7rem; }
+
+  .formula-example { font-size: 0.82rem; color: var(--text-dim); line-height: 1.7; }
+  .formula-example span { font-family: 'DM Mono', monospace; }
+  .formula-example .e-aff  { color: var(--col-aff); }
+  .formula-example .e-neg  { color: var(--col-neg); }
+  .formula-example .e-int  { color: var(--col-int); }
+  .formula-example .e-going { color: var(--col-going); }
+
+  /* ─── USAGE CARDS ─── */
+  .usage-grid { display: grid; grid-template-columns: 1fr; gap: 14px; margin: 24px 0; }
+  .usage-card {
+    display: grid; grid-template-columns: auto 1fr 1.6fr; align-items: center; gap: 24px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px 24px; transition: border-color 0.2s;
+  }
+  .usage-card:hover { border-color: rgba(168,85,247,0.3); background: var(--surface2); }
+  .usage-icon { font-size: 1.6rem; }
+  .usage-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .usage-desc { font-size: 0.82rem; color: var(--text-dim); line-height: 1.65; font-weight: 300; }
+  .usage-example {
+    font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--accent);
+    background: rgba(168,85,247,0.06); border-left: 2px solid var(--accent);
+    padding: 8px 12px; border-radius: 0 6px 6px 0;
+  }
+  .usage-example .trans { display: block; color: var(--text-faint); font-size: 0.72rem; margin-top: 4px; font-style: italic; }
+
+  /* ─── COMPARISON TABLE ─── */
+  .cmp-table {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; overflow: hidden; margin: 24px 0;
+  }
+  .cmp-head {
+    display: grid; grid-template-columns: 1.5fr 1fr 1fr;
+    padding: 12px 20px; background: var(--surface2); border-bottom: 1px solid var(--border);
+  }
+  .cmp-head .th { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; }
+  .th.tw   { color: var(--col-aff); }
+  .th.tg   { color: var(--col-going); }
+  .th.ctx  { color: var(--text-faint); }
+  .cmp-row {
+    display: grid; grid-template-columns: 1.5fr 1fr 1fr;
+    padding: 11px 20px; border-bottom: 1px solid rgba(30,40,64,0.6); align-items: start;
+  }
+  .cmp-row:last-child { border-bottom: none; }
+  .cmp-row:hover { background: rgba(168,85,247,0.03); }
+  .cmp-label { font-size: 0.82rem; color: var(--text-dim); font-weight: 300; line-height: 1.5; }
+  .cmp-will  { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--col-aff); }
+  .cmp-going { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--col-going); }
+
+  /* ─── ADVERBS / TIME MARKERS ─── */
+  .adv-grid { display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 0; }
+  .adv-pill {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 10px 16px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; transition: all 0.2s; cursor: default;
+  }
+  .adv-pill:hover { border-color: rgba(168,85,247,0.3); background: var(--surface2); }
+  .adv-en  { font-family: 'DM Mono', monospace; font-size: 0.82rem; color: var(--col-aff); font-weight: 500; }
+  .adv-fr  { font-size: 0.72rem; color: var(--text-dim); margin-top: 2px; }
+
+  /* ─── EXERCISE BLOCK ─── */
+  .exercise-block {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 14px; padding: 28px 32px; margin: 28px 0;
+  }
+  .ex-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .ex-badge {
+    font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em;
+    text-transform: uppercase; padding: 4px 10px; border-radius: 6px;
+    background: rgba(168,85,247,0.1); color: var(--accent); border: 1px solid rgba(168,85,247,0.25);
+  }
+  .ex-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--text); }
+  .ex-items { display: flex; flex-direction: column; gap: 12px; }
+  .ex-item { display: flex; gap: 14px; align-items: flex-start; font-size: 0.88rem; }
+  .ex-num { font-family: 'DM Mono', monospace; color: var(--text-faint); font-size: 0.75rem; min-width: 20px; margin-top: 2px; }
+  .ex-q { color: var(--text-dim); line-height: 1.6; }
+  .ex-q strong { color: var(--text); }
+  .ex-answer { display: none; margin-top: 4px; font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--accent); }
+  .ex-item.revealed .ex-answer { display: block; }
+  .show-answers-btn {
+    margin-top: 20px; padding: 9px 20px;
+    background: rgba(168,85,247,0.08); border: 1px solid rgba(168,85,247,0.25);
+    border-radius: 8px; color: var(--accent); font-family: 'DM Mono', monospace;
+    font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .show-answers-btn:hover { background: rgba(168,85,247,0.15); }
+
+  /* ─── SCROLL ─── */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-up { animation: fadeUp 0.5s ease forwards; opacity: 0; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .usage-card { grid-template-columns: 1fr; gap: 12px; padding: 18px 20px; }
+    .main-content { padding: 32px 24px 80px; }
+    .chapter-hero { padding: 48px 24px 48px; }
+    nav { padding: 14px 20px; }
+    .formula-grid { grid-template-columns: 1fr; }
+    .usage-card { grid-template-columns: auto 1fr; }
+    .usage-example { display: none; }
+    .conj-table-head, .conj-row { grid-template-columns: 0.8fr 1fr; }
+    .th.ex, .ex-cell { display: none; }
+    .cmp-head, .cmp-row { grid-template-columns: 1.2fr 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-logo" onclick="window.location.href='../../index.html'">ECG Prépa</div>
+  <div class="breadcrumb">
+    <span onclick="window.location.href='../../index.html'">Accueil</span>
+    <span class="sep">/</span>
+    <span onclick="window.location.href='../index.html'">1ère Année</span>
+    <span class="sep">/</span>
+    <span onclick="window.location.href='index.html'">Anglais</span>
+    <span class="sep">/</span>
+    <span class="current">Leçon 4 · Le Futur</span>
+  </div>
+</nav>
+
+<div class="chapter-hero">
+  <div class="ch-eyebrow">Leçon 04 — Grammaire fondamentale</div>
+  <div class="ch-title">Le <span>Futur</span></div>
+  <div class="ch-tags" style="margin-top: 20px;">
+    <span class="ch-tag aff">Affirmatif</span>
+    <span class="ch-tag neg">Négatif</span>
+    <span class="ch-tag int">Interrogatif</span>
+    <span class="ch-tag will">Will</span>
+    <span class="ch-tag going">Be going to</span>
+  </div>
+</div>
+
+<div class="page-body">
+  <main class="main-content">
+
+    <!-- ─── SECTION 1 — WILL ─── -->
+    <section class="section fade-up" id="will">
+      <div class="section-header">
+        <div class="section-num">1</div>
+        <div class="section-info">
+          <div class="section-tag">Modal auxiliaire</div>
+          <div class="section-title">Will — le futur modal</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p><strong>Will</strong> est le modal auxiliaire du futur. Il est invariable pour toutes les personnes et suivi de la <strong>base verbale</strong> (infinitif sans <em>to</em>). C'est la forme de futur la plus polyvalente en anglais.</p>
+        <p>Sa forme contractée (<em>'ll</em>) est très courante à l'oral et dans les échanges informels écrits.</p>
+      </div>
+
+      <div class="def-box">
+        <div class="def-label">Définition</div>
+        <p><strong>Will</strong> exprime une décision prise au moment de parler, une prédiction basée sur une opinion personnelle, ou une promesse / offre spontanée. Il s'oppose à <strong>be going to</strong> qui implique une intention préalable ou une preuve visible.</p>
+      </div>
+
+      <h3 style="font-family:'Playfair Display',serif; font-size:1.1rem; color:var(--text); margin: 28px 0 16px; font-weight:700;">Conjugaison de « to work » avec <em>will</em></h3>
+
+      <div class="conj-table">
+        <div class="conj-table-head">
+          <span class="th pron">Pronom</span>
+          <span class="th form">Forme verbale</span>
+          <span class="th ex">Exemple</span>
+        </div>
+        <div class="conj-row"><span class="pron-cell">I</span><span class="form-cell">will work / I'll work</span><span class="ex-cell">I'll work on this report tonight.</span></div>
+        <div class="conj-row"><span class="pron-cell">You</span><span class="form-cell">will work / you'll work</span><span class="ex-cell">You'll work with the new team.</span></div>
+        <div class="conj-row"><span class="pron-cell">He / She / It</span><span class="form-cell">will work / he'll work</span><span class="ex-cell">She'll work remotely next week.</span></div>
+        <div class="conj-row"><span class="pron-cell">We</span><span class="form-cell">will work / we'll work</span><span class="ex-cell">We'll work on the proposal together.</span></div>
+        <div class="conj-row"><span class="pron-cell">You</span><span class="form-cell">will work / you'll work</span><span class="ex-cell">You'll work on the client presentation.</span></div>
+        <div class="conj-row"><span class="pron-cell">They</span><span class="form-cell">will work / they'll work</span><span class="ex-cell">They'll work overtime this quarter.</span></div>
+      </div>
+
+      <div class="formula-grid">
+        <div class="formula-card">
+          <div class="formula-label aff">✦ Affirmatif</div>
+          <div class="formula-expr">
+            <span class="f-subj">Sujet</span>
+            <span class="f-sep">+</span>
+            <span class="f-will">will</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">Base verbale</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-aff">She will launch the product next month.</span><br>
+            <span class="e-aff">They'll expand into new markets.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label neg">✦ Négatif</div>
+          <div class="formula-expr">
+            <span class="f-subj">Sujet</span>
+            <span class="f-sep">+</span>
+            <span class="f-will">will not</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">Base verbale</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-neg">She will not (won't) resign.</span><br>
+            <span class="e-neg">They won't meet the deadline.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label int">✦ Interrogatif</div>
+          <div class="formula-expr">
+            <span class="f-will">Will</span>
+            <span class="f-sep">+</span>
+            <span class="f-subj">Sujet</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">Base verbale</span>
+            <span class="f-sep">?</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-int">Will she sign the contract?</span><br>
+            <span class="e-int">Will they attend the meeting?</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hl-box danger">
+        <div class="hl-icon">🚫</div>
+        <div class="hl-body">
+          <strong>Erreur classique :</strong> après <em>will</em>, le verbe est toujours à la base verbale. On n'écrit jamais <em>She will goes…</em> ou <em>He will worked…</em>. Will est déjà le marqueur du futur — le verbe ne se conjugue pas.
+        </div>
+      </div>
+
+      <div class="hl-box tip">
+        <div class="hl-icon">💡</div>
+        <div class="hl-body">
+          <strong>Contraction :</strong> à l'oral et en anglais courant, <em>will</em> se contracte en <em>'ll</em> après le pronom : <em>I'll, you'll, he'll, she'll, we'll, they'll</em>. La forme négative contractée est <em>won't</em> (= will not).
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── SECTION 2 — BE GOING TO ─── -->
+    <section class="section fade-up" id="going-to">
+      <div class="section-header">
+        <div class="section-num">2</div>
+        <div class="section-info">
+          <div class="section-tag">Périphrases</div>
+          <div class="section-title">Be going to — intention et preuve</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p><strong>Be going to</strong> se construit avec le verbe <em>to be</em> (conjugué) + <em>going to</em> + base verbale. C'est une périphrase verbale qui exprime soit une <strong>intention préalable</strong>, soit une <strong>certitude basée sur une preuve visible</strong>.</p>
+        <p>Contrairement à <em>will</em>, <em>be going to</em> implique que la décision est déjà prise avant le moment de parler, ou que la situation présente laisse clairement présager ce qui va se passer.</p>
+      </div>
+
+      <h3 style="font-family:'Playfair Display',serif; font-size:1.1rem; color:var(--text); margin: 28px 0 16px; font-weight:700;">Conjugaison de « to work » avec <em>be going to</em></h3>
+
+      <div class="conj-table">
+        <div class="conj-table-head">
+          <span class="th pron">Pronom</span>
+          <span class="th form">Forme verbale</span>
+          <span class="th ex">Exemple</span>
+        </div>
+        <div class="conj-row"><span class="pron-cell">I</span><span class="form-cell">am going to work</span><span class="ex-cell">I'm going to work abroad next year.</span></div>
+        <div class="conj-row"><span class="pron-cell">You</span><span class="form-cell">are going to work</span><span class="ex-cell">You're going to work on the new strategy.</span></div>
+        <div class="conj-row"><span class="pron-cell">He / She / It</span><span class="form-cell">is going to work</span><span class="ex-cell">She's going to work with the Berlin team.</span></div>
+        <div class="conj-row"><span class="pron-cell">We</span><span class="form-cell">are going to work</span><span class="ex-cell">We're going to work on the merger deal.</span></div>
+        <div class="conj-row"><span class="pron-cell">You</span><span class="form-cell">are going to work</span><span class="ex-cell">You're going to work with new clients.</span></div>
+        <div class="conj-row"><span class="pron-cell">They</span><span class="form-cell">are going to work</span><span class="ex-cell">They're going to work remotely.</span></div>
+      </div>
+
+      <div class="formula-grid">
+        <div class="formula-card">
+          <div class="formula-label aff">✦ Affirmatif</div>
+          <div class="formula-expr">
+            <span class="f-subj">Sujet</span>
+            <span class="f-sep">+</span>
+            <span class="f-will">be</span>
+            <span class="f-sep">+</span>
+            <span class="f-aux">going to</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">Base verbale</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-aff">He is going to resign next quarter.</span><br>
+            <span class="e-going">They're going to restructure the firm.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label neg">✦ Négatif</div>
+          <div class="formula-expr">
+            <span class="f-subj">Sujet</span>
+            <span class="f-sep">+</span>
+            <span class="f-will">be</span>
+            <span class="f-sep">+</span>
+            <span class="f-aux">not going to</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">Base</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-neg">He is not going to resign.</span><br>
+            <span class="e-neg">They aren't going to hire anyone.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label int">✦ Interrogatif</div>
+          <div class="formula-expr">
+            <span class="f-will">Be</span>
+            <span class="f-sep">+</span>
+            <span class="f-subj">Sujet</span>
+            <span class="f-sep">+</span>
+            <span class="f-aux">going to</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">Base</span>
+            <span class="f-sep">?</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-int">Is he going to sign the deal?</span><br>
+            <span class="e-int">Are they going to expand?</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── SECTION 3 — PRÉSENT PROGRESSIF FUTUR ─── -->
+    <section class="section fade-up" id="present-prog">
+      <div class="section-header">
+        <div class="section-num">3</div>
+        <div class="section-info">
+          <div class="section-tag">Nuance avancée</div>
+          <div class="section-title">Le présent progressif à valeur future</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>En anglais, le <strong>présent progressif</strong> (<em>be + V-ing</em>) peut exprimer un futur lorsqu'il désigne un <strong>arrangement déjà fixé</strong>, une chose planifiée et concrètement organisée (rendez-vous, réservation, programme précis). Il est alors proche de <em>be going to</em> mais insiste davantage sur l'aspect planifié et immuable.</p>
+      </div>
+
+      <div class="def-box">
+        <div class="def-label">Usage</div>
+        <p>Employé avec un contexte temporel futur et un arrangement concret : <strong>I'm meeting the CEO tomorrow.</strong> (rendez-vous déjà pris) — cette forme est très courante dans le langage professionnel et des affaires.</p>
+      </div>
+
+      <div class="formula-grid">
+        <div class="formula-card">
+          <div class="formula-label going">✦ Présent progressif (futur)</div>
+          <div class="formula-expr">
+            <span class="f-subj">Sujet</span>
+            <span class="f-sep">+</span>
+            <span class="f-will">be</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">V-ing</span>
+            <span class="f-sep">+</span>
+            <span class="f-aux">marqueur futur</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-going">She is presenting the results on Friday.</span><br>
+            <span class="e-going">We're flying to London next week.</span><br>
+            <span class="e-going">The board is meeting at 9 AM tomorrow.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hl-box info">
+        <div class="hl-icon">ℹ️</div>
+        <div class="hl-body">
+          <strong>Important :</strong> sans indicateur temporel futur, la forme <em>be + V-ing</em> exprime une action en cours au moment présent. C'est le contexte (demain, vendredi, la semaine prochaine…) qui donne sa valeur future à la construction.
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── SECTION 4 — WILL VS GOING TO ─── -->
+    <section class="section fade-up" id="comparaison">
+      <div class="section-header">
+        <div class="section-num">4</div>
+        <div class="section-info">
+          <div class="section-tag">Distinction clé</div>
+          <div class="section-title">Will vs Be going to — comment choisir ?</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>La confusion entre <em>will</em> et <em>be going to</em> est l'une des erreurs les plus fréquentes chez les francophones, car les deux se traduisent le plus souvent par le futur simple en français. La distinction repose sur <strong>le moment où la décision est prise</strong> et sur la <strong>nature de la certitude</strong>.</p>
+      </div>
+
+      <div class="cmp-table">
+        <div class="cmp-head">
+          <span class="th ctx">Contexte / Situation</span>
+          <span class="th tw">Will</span>
+          <span class="th tg">Be going to</span>
+        </div>
+        <div class="cmp-row">
+          <span class="cmp-label">Décision prise au moment de parler (spontanée)</span>
+          <span class="cmp-will">I'll answer it. (le téléphone sonne)</span>
+          <span class="cmp-going">✗</span>
+        </div>
+        <div class="cmp-row">
+          <span class="cmp-label">Intention préalable / plan déjà décidé</span>
+          <span class="cmp-will">✗</span>
+          <span class="cmp-going">We're going to hire 50 engineers. (déjà planifié)</span>
+        </div>
+        <div class="cmp-row">
+          <span class="cmp-label">Prédiction basée sur une opinion / croyance</span>
+          <span class="cmp-will">I think she will be a great CEO.</span>
+          <span class="cmp-going">✗ (opinion sans preuve visible)</span>
+        </div>
+        <div class="cmp-row">
+          <span class="cmp-label">Prédiction basée sur une preuve visible</span>
+          <span class="cmp-will">✗</span>
+          <span class="cmp-going">Sales are going to drop. (les chiffres sont là)</span>
+        </div>
+        <div class="cmp-row">
+          <span class="cmp-label">Promesse, offre spontanée</span>
+          <span class="cmp-will">I'll send you the report immediately.</span>
+          <span class="cmp-going">✗</span>
+        </div>
+        <div class="cmp-row">
+          <span class="cmp-label">Refus poli ou ferme</span>
+          <span class="cmp-will">She won't sign the agreement.</span>
+          <span class="cmp-going">✗</span>
+        </div>
+      </div>
+
+      <div class="hl-box warning">
+        <div class="hl-icon">⚠️</div>
+        <div class="hl-body">
+          <strong>Règle d'or :</strong> si vous décidez au moment où vous parlez → <em>will</em>. Si la décision est déjà prise avant de parler, ou si une preuve présente annonce ce qui va se passer → <em>be going to</em>.
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── SECTION 5 — EMPLOIS DE WILL ─── -->
+    <section class="section fade-up" id="emplois">
+      <div class="section-header">
+        <div class="section-num">5</div>
+        <div class="section-info">
+          <div class="section-tag">Emplois</div>
+          <div class="section-title">Les usages de will et be going to</div>
+        </div>
+      </div>
+
+      <div class="usage-grid">
+        <div class="usage-card">
+          <div class="usage-icon">⚡</div>
+          <div>
+            <div class="usage-title">Décision spontanée</div>
+            <div class="usage-desc">Action décidée au moment même de l'énonciation, sans planification préalable. Correspond à une réaction immédiate.</div>
+          </div>
+          <div class="usage-example">
+            I'll take care of this client.<br>
+            <span class="trans">Je vais m'occuper de ce client. (décision à l'instant)</span>
+          </div>
+        </div>
+        <div class="usage-card">
+          <div class="usage-icon">🔮</div>
+          <div>
+            <div class="usage-title">Prédiction (will)</div>
+            <div class="usage-desc">Prediction basée sur une opinion personnelle, une intuition ou un raisonnement — sans preuve concrète visible.</div>
+          </div>
+          <div class="usage-example">
+            AI will transform the financial sector.<br>
+            <span class="trans">L'IA va transformer le secteur financier. (prédiction)</span>
+          </div>
+        </div>
+        <div class="usage-card">
+          <div class="usage-icon">🤝</div>
+          <div>
+            <div class="usage-title">Promesse / offre</div>
+            <div class="usage-desc">Engagement pris envers quelqu'un. Très fréquent dans la correspondance professionnelle et les négociations.</div>
+          </div>
+          <div class="usage-example">
+            We'll send the invoice by Friday.<br>
+            <span class="trans">Nous enverrons la facture vendredi. (promesse)</span>
+          </div>
+        </div>
+        <div class="usage-card">
+          <div class="usage-icon">📋</div>
+          <div>
+            <div class="usage-title">Intention planifiée (be going to)</div>
+            <div class="usage-desc">Plan ou décision prise avant le moment de parler. La personne sait déjà ce qu'elle va faire.</div>
+          </div>
+          <div class="usage-example">
+            She's going to present the budget next Monday.<br>
+            <span class="trans">Elle va présenter le budget lundi. (déjà prévu)</span>
+          </div>
+        </div>
+        <div class="usage-card">
+          <div class="usage-icon">🌡️</div>
+          <div>
+            <div class="usage-title">Certitude imminente (be going to)</div>
+            <div class="usage-desc">Preuve visible ou situation présente qui annonce clairement ce qui va se produire — prédiction "évidente".</div>
+          </div>
+          <div class="usage-example">
+            Look at the data — we're going to miss the target.<br>
+            <span class="trans">Regardez les données — on va rater l'objectif. (preuve)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── SECTION 6 — MARQUEURS TEMPORELS ─── -->
+    <section class="section fade-up" id="marqueurs">
+      <div class="section-header">
+        <div class="section-num">6</div>
+        <div class="section-info">
+          <div class="section-tag">Repères</div>
+          <div class="section-title">Marqueurs temporels du futur</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>Ces expressions temporelles signalent qu'un futur est à l'œuvre. Leur présence oriente souvent le choix entre <em>will</em> et <em>be going to</em>.</p>
+      </div>
+
+      <div class="adv-grid">
+        <div class="adv-pill"><span class="adv-en">tomorrow</span><span class="adv-fr">demain</span></div>
+        <div class="adv-pill"><span class="adv-en">next week</span><span class="adv-fr">la semaine prochaine</span></div>
+        <div class="adv-pill"><span class="adv-en">next month</span><span class="adv-fr">le mois prochain</span></div>
+        <div class="adv-pill"><span class="adv-en">next year</span><span class="adv-fr">l'année prochaine</span></div>
+        <div class="adv-pill"><span class="adv-en">soon</span><span class="adv-fr">bientôt</span></div>
+        <div class="adv-pill"><span class="adv-en">in the future</span><span class="adv-fr">à l'avenir</span></div>
+        <div class="adv-pill"><span class="adv-en">in + durée</span><span class="adv-fr">dans (ex: in two weeks)</span></div>
+        <div class="adv-pill"><span class="adv-en">by + date</span><span class="adv-fr">d'ici (ex: by Friday)</span></div>
+        <div class="adv-pill"><span class="adv-en">this evening</span><span class="adv-fr">ce soir</span></div>
+        <div class="adv-pill"><span class="adv-en">tonight</span><span class="adv-fr">ce soir</span></div>
+        <div class="adv-pill"><span class="adv-en">in Q3</span><span class="adv-fr">au troisième trimestre</span></div>
+        <div class="adv-pill"><span class="adv-en">shortly</span><span class="adv-fr">sous peu</span></div>
+        <div class="adv-pill"><span class="adv-en">at some point</span><span class="adv-fr">à un moment donné</span></div>
+        <div class="adv-pill"><span class="adv-en">eventually</span><span class="adv-fr">finalement / un jour</span></div>
+      </div>
+
+      <div class="hl-box tip">
+        <div class="hl-icon">💡</div>
+        <div class="hl-body">
+          <strong>In vs By :</strong> <em>in two weeks</em> signifie "dans deux semaines" (à ce moment-là précis). <em>By Friday</em> signifie "d'ici vendredi" (avant ou au plus tard ce moment). Cette nuance est importante dans les contextes de négociation et de reporting.
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── SECTION 7 — EXERCICES ─── -->
+    <section class="section fade-up" id="pratique">
+      <div class="section-header">
+        <div class="section-num">7</div>
+        <div class="section-info">
+          <div class="section-tag">Pratique</div>
+          <div class="section-title">Exercices</div>
+        </div>
+      </div>
+
+      <div class="exercise-block">
+        <div class="ex-header">
+          <span class="ex-badge">Exercice 1</span>
+          <span class="ex-title">Complétez avec will ou be going to</span>
+        </div>
+        <div class="ex-items">
+          <div class="ex-item">
+            <span class="ex-num">01.</span>
+            <div class="ex-q">
+              — Oh, there's no milk left. — Don't worry, I <strong>(go)</strong> to the supermarket. (décision spontanée)
+              <div class="ex-answer">→ I'll go to the supermarket.</div>
+            </div>
+          </div>
+          <div class="ex-item">
+            <span class="ex-num">02.</span>
+            <div class="ex-q">
+              We <strong>(launch)</strong> the new product in March — it's all planned. (intention préalable)
+              <div class="ex-answer">→ We are going to launch the new product in March.</div>
+            </div>
+          </div>
+          <div class="ex-item">
+            <span class="ex-num">03.</span>
+            <div class="ex-q">
+              Look at those clouds — it <strong>(rain)</strong> soon. (preuve visible)
+              <div class="ex-answer">→ It is going to rain soon.</div>
+            </div>
+          </div>
+          <div class="ex-item">
+            <span class="ex-num">04.</span>
+            <div class="ex-q">
+              I think the merger <strong>(create)</strong> significant synergies. (opinion personnelle)
+              <div class="ex-answer">→ I think the merger will create significant synergies.</div>
+            </div>
+          </div>
+          <div class="ex-item">
+            <span class="ex-num">05.</span>
+            <div class="ex-q">
+              <strong>(the board / approve)</strong> the new strategy next week? (décision en attente, neutre)
+              <div class="ex-answer">→ Will the board approve the new strategy next week?</div>
+            </div>
+          </div>
+          <div class="ex-item">
+            <span class="ex-num">06.</span>
+            <div class="ex-q">
+              She <strong>(not / accept)</strong> the offer — she has already turned it down privately.
+              <div class="ex-answer">→ She is not going to accept the offer.</div>
+            </div>
+          </div>
+        </div>
+        <button class="show-answers-btn" onclick="toggleAnswers(this)">Afficher les réponses</button>
+      </div>
+
+      <div class="exercise-block">
+        <div class="ex-header">
+          <span class="ex-badge">Exercice 2</span>
+          <span class="ex-title">Will, be going to ou présent progressif ? Choisissez le bon temps</span>
+        </div>
+        <div class="ex-items">
+          <div class="ex-item">
+            <span class="ex-num">01.</span>
+            <div class="ex-q">
+              I <strong>(meet)</strong> the CFO at 10 AM tomorrow — it's already in my calendar. (arrangement fixé)
+              <div class="ex-answer">→ I am meeting the CFO at 10 AM tomorrow.</div>
+            </div>
+          </div>
+          <div class="ex-item">
+            <span class="ex-num">02.</span>
+            <div class="ex-q">
+              Experts predict that remote work <strong>(become)</strong> the norm. (prédiction générale)
+              <div class="ex-answer">→ Experts predict that remote work will become the norm.</div>
+            </div>
+          </div>
+          <div class="ex-item">
+            <span class="ex-num">03.</span>
+            <div class="ex-q">
+              I <strong>(call)</strong> you back as soon as I have the figures. (promesse spontanée)
+              <div class="ex-answer">→ I will call you back as soon as I have the figures.</div>
+            </div>
+          </div>
+          <div class="ex-item">
+            <span class="ex-num">04.</span>
+            <div class="ex-q">
+              They <strong>(relocate)</strong> their headquarters to Singapore — they signed the lease. (plan concret)
+              <div class="ex-answer">→ They are going to relocate their headquarters to Singapore.</div>
+            </div>
+          </div>
+          <div class="ex-item">
+            <span class="ex-num">05.</span>
+            <div class="ex-q">
+              <strong>(you / present)</strong> at the conference next Thursday? (arrangement planifié)
+              <div class="ex-answer">→ Are you presenting at the conference next Thursday?</div>
+            </div>
+          </div>
+        </div>
+        <button class="show-answers-btn" onclick="toggleAnswers(this)">Afficher les réponses</button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  function toggleAnswers(btn) {
+    const block = btn.closest('.exercise-block');
+    const items = block.querySelectorAll('.ex-item');
+    const allRevealed = [...items].every(i => i.classList.contains('revealed'));
+    items.forEach(i => i.classList.toggle('revealed', !allRevealed));
+    btn.textContent = allRevealed ? 'Afficher les réponses' : 'Masquer les réponses';
+  }
+
+  // Fade-up on scroll
+  const fadeEls = document.querySelectorAll('.fade-up');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.style.animationDelay = '0s'; e.target.classList.add('visible'); } });
+  }, { threshold: 0.05 });
+  fadeEls.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

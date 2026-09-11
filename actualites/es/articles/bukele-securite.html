@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Bukele : la politique de sécurité</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #003087;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #003087; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #0f9d58; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #003087; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #003087; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #003087; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#003087; border-color:#003087; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  /* Article styles */
+  .ap-band { background: linear-gradient(90deg, #003087, #0f9d58, #003087); text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(0,10,28,0.95); padding:12px 60px; border-bottom: 1px solid rgba(0,48,135,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#0f9d58; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(0,48,135,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(181,19,31,0.2);  color:#f08080; border:1px solid rgba(181,19,31,0.35); }
+  .ap-tag-navy   { background:rgba(0,48,135,0.3);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(0,48,135,0.2);   color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(15,157,88,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #0f9d58; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(0,48,135,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(15,157,88,0.8); }
+
+  /* Rich article components */
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#0f9d58; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(15,157,88,0.25); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#071422,#0d2540); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#003a12,#00691c); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #0f9d58; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(15,157,88,0.06),rgba(15,157,88,0.02)); border-left:3px solid #0f9d58; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(15,157,88,0.15); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(15,157,88,0.8); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(0,10,28,0.9),rgba(0,5,18,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(0,48,135,0.3); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#0f9d58; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(0,48,135,0.06); border:1px solid rgba(0,48,135,0.18); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(15,157,88,0.35); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#0f9d58; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(15,157,88,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#0f9d58; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(0,10,28,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-es-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-es.html">Espagnol</a>
+    <span class="sep">/</span>
+    <a href="elsalvador.html">El Salvador</a>
+    <span class="sep">/</span>
+    <span class="current">Politique de sécurité de Bukele</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-es" class="ap-lang-btn" onclick="setLang('es')">🇸🇻 ES</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇸🇻 Bukele et le régime d'exception</div>
+<div class="ap-back-bar">
+  <a href="elsalvador.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+    <div class="ap-hero-img-wrap"><img class="ap-hero-img" src="../images/bukele-securite.jpg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+    <!-- ══ SECTION FR ══ -->
+    <div class="ap-fr-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-blue">🇸🇻 El Salvador</span>
+          <span class="ap-tag ap-tag-red">Sécurité</span>
+          <span class="ap-tag ap-tag-navy">Autoritarisme</span>
+          <span class="ap-tag ap-tag-teal">Droits humains</span>
+          <span class="ap-tag ap-tag-orange">Géopolitique</span>
+        </div>
+        <div class="ap-date">Avril 2026 — ECG Prépa · El Salvador</div>
+        <h1 class="ap-title">Bukele et la guerre aux gangs : sécurité totale, libertés suspendues</h1>
+        <p class="ap-intro">Lancé en mars 2022, le « régime d'exception » de Nayib Bukele a transformé El Salvador en quelques années : le pays autrefois le plus meurtrier du monde affiche désormais l'un des taux d'homicide les plus bas d'Amérique latine. Mais ce miracle sécuritaire repose sur une suspension des libertés fondamentales et une criminalisation de masse qui divisent profondément la communauté internationale.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red"><span class="ap-stat-num">103</span><span class="ap-stat-desc">Homicides pour 100 000 hab.<br>en 2015 (pic historique)</span></div>
+          <div class="ap-stat green"><span class="ap-stat-num">2,4</span><span class="ap-stat-desc">Homicides pour 100 000 hab.<br>en 2023 (après régime)</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">85 000+</span><span class="ap-stat-desc">Personnes arrêtées<br>depuis mars 2022</span></div>
+          <div class="ap-stat"><span class="ap-stat-num">90 %</span><span class="ap-stat-desc">Taux d'approbation<br>de Bukele (2023)</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Le contexte : un pays sous emprise des gangs</div>
+            <p>Lorsque Nayib Bukele prend le pouvoir en juin 2019, El Salvador est l'un des pays les plus dangereux au monde. Les <strong>maras</strong> — MS-13 et Barrio 18 principalement — contrôlent des pans entiers du territoire, imposant extorsions, recrutements forcés et lois parallèles à des millions de Salvadoriens. Le taux d'homicide atteint 103 pour 100 000 habitants en 2015, un record mondial pour un pays non en guerre déclarée.</p>
+            <p>Les gouvernements successifs, de gauche comme de droite, ont échoué à démanteler ces structures criminelles, tantôt par la répression aveugle, tantôt par des négociations secrètes — comme la tristement célèbre <em>tregua</em> de 2012, qui avait temporairement réduit les homicides au prix de concessions opaques aux gangs.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Président depuis</div><div class="ap-fact-val">Juin 2019</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Parti</div><div class="ap-fact-val">Nuevas Ideas</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Réélu</div><div class="ap-fact-val">Fév. 2024 — 83 %</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Régime d'exception</div><div class="ap-fact-val">Depuis mars 2022</div></div>
+            </div>
+
+            <div class="ap-sub">Le régime d'exception : une guerre totale aux maras</div>
+            <p>Le 27 mars 2022, après un week-end meurtrier (87 homicides en 72 heures revendiqués par les gangs), l'Assemblée nationale salvadorienne — dominée par le parti de Bukele — vote un <strong>état d'exception</strong> suspendant plusieurs garanties constitutionnelles : droit à un avocat commis d'office, durée maximale de la garde à vue portée à 15 jours, secret des communications levé. Ce régime, initialement prévu pour 30 jours, a été reconduit sans interruption jusqu'en 2026.</p>
+            <p>L'armée et la police déploient conjointement des opérations de masse dans les quartiers réputés contrôlés par les maras. Des dizaines de milliers de personnes sont arrêtées chaque mois sur la base de présomptions — tatouages, fréquentations, signalements anonymes — sans qu'un tribunal ait préalablement examiné les charges.</p>
+
+            <div class="ap-sub">Chronologie : l'escalade sécuritaire</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">Mars 2022</div><p class="ap-tl-text">Week-end meurtrier (87 morts). Vote du régime d'exception. Premières vagues d'arrestations massives. L'armée investit les quartiers gangréné.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Juin 2022</div><p class="ap-tl-text">Inauguration du CECOT — Centre de Confinement du Terrorisme — immense complexe pénitentiaire de 40 000 places conçu pour accueillir les membres de gangs.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Jan. 2023</div><p class="ap-tl-text">Le nombre d'incarcérés dépasse 85 000. El Salvador devient le pays au taux d'incarcération le plus élevé du monde (plus de 1 % de la population adulte).</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Fév. 2024</div><p class="ap-tl-text">Bukele est réélu avec 83 % des voix dès le premier tour. Malgré les controverses constitutionnelles sur un deuxième mandat consécutif, la Cour Suprême valide sa candidature.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2024–2025</div><p class="ap-tl-text">Exportation du modèle : l'Équateur et le Honduras s'inspirent des méthodes salvadoriennes. Trump évoque El Salvador comme exemple à suivre. Négociations pour des extraditions entre gouvernements.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Avr. 2026</div><p class="ap-tl-text">Le taux d'homicide reste historiquement bas (~2–3/100 000). Le régime d'exception est toujours en vigueur. Plus de 7 000 personnes libérées pour insuffisance de preuves, mais plus de 78 000 restent détenues.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">Les résultats sécuritaires : une transformation spectaculaire</div>
+            <p>L'impact sur la violence est indéniable. El Salvador est passé en moins de trois ans du pays le plus meurtrier du monde à l'un des plus sûrs d'Amérique latine. Le taux d'homicide est tombé de <strong>52 pour 100 000 en 2021 à environ 2–3 en 2023–2024</strong>, soit une chute sans équivalent dans l'histoire de la criminologie contemporaine.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Indicateur</th><th>2021 (avant)</th><th>2024 (après)</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Homicides / 100 000 hab.</td><td>52</td><td class="ap-cell-bold">~2,4</td></tr>
+                <tr><td class="ap-cell-bold">Extorsions signalées</td><td>Massives</td><td class="ap-cell-bold">Quasi-nulles</td></tr>
+                <tr><td class="ap-cell-bold">Personnes incarcérées</td><td>~39 000</td><td class="ap-cell-bold">~85 000+</td></tr>
+                <tr><td class="ap-cell-bold">Taux d'approbation Bukele</td><td>~70 %</td><td class="ap-cell-bold">~85–90 %</td></tr>
+                <tr><td class="ap-cell-bold">Tourisme international</td><td>Faible</td><td class="ap-cell-bold">+60 % (2023)</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">⚠️</div>
+              <div class="ap-info-text"><strong>L'envers du bilan :</strong> les organisations de droits humains (Human Rights Watch, Amnesty International) documentent des milliers de cas d'arrestations arbitraires, de torture en détention, de morts en prison et d'innocents incarcérés sans jugement. Des familles entières ont été brisées par des arrestations fondées sur de simples tatouages ou des dénonciations calomnieuses.</div>
+            </div>
+
+            <div class="ap-sub">La prison CECOT : symbole et instrument</div>
+            <p>Le <strong>Centre de Confinement du Terrorisme (CECOT)</strong>, inauguré en 2022, est devenu l'emblème mondial de la politique de Bukele. Cette méga-prison de 40 000 places — la plus grande d'Amérique — accueille les détenus dans des conditions de sécurité maximale : cellules de masse, privation quasi-totale de lumière naturelle, interdiction des visites familiales. Des images diffusées par le gouvernement salvadorien montrant des centaines de détenus rasés et en uniforme blanc ont fait le tour du monde, à la fois pour leur impact dissuasif revendiqué et leur charge symbolique fortement critiquée.</p>
+
+            <div class="ap-sub">Les dérives démocratiques : au-delà de la sécurité</div>
+            <p>La politique sécuritaire s'inscrit dans un mouvement plus large de concentration du pouvoir. En 2021, la nouvelle Assemblée nationale dominée par Nuevas Ideas a <strong>destitué les juges de la Cour Suprême et le procureur général</strong> en une nuit, remplaçant des magistrats indépendants par des proches du président. La même année, une nouvelle loi électorale a réduit la représentation des petits partis et modifié la composition du Congrès à l'avantage du camp présidentiel.</p>
+            <p>En 2024, Bukele a obtenu sa réélection malgré l'interdiction constitutionnelle des mandats consécutifs — une décision validée par la Cour Suprême qu'il avait lui-même recomposée. Le parlement a également adopté une loi permettant de juger des mineurs comme des adultes dans les affaires de gangs, abaissant l'âge de la responsabilité pénale à 12 ans.</p>
+
+            <div class="ap-quote">
+              <p>« Nous avons choisi la vie de nos citoyens plutôt que les recommandations des organisations de droits humains. »</p>
+              <cite>— Nayib Bukele, conférence de presse, 2023</cite>
+            </div>
+            <div class="ap-quote">
+              <p>« Mon fils avait un tatouage de football. Il est en prison depuis dix-huit mois. Personne ne nous dit rien. »</p>
+              <cite>— Mère de détenu, San Salvador, janvier 2024</cite>
+            </div>
+
+            <div class="ap-sub">Résonances internationales : un modèle controversé</div>
+            <p>Le « modèle Bukele » est devenu un objet de fascination et de débat bien au-delà des frontières salvadoriennes. L'<strong>Équateur</strong> de Daniel Noboa a déclaré l'état d'urgence en janvier 2024 et revendique explicitement l'inspiration salvadorienne face aux cartels. Le <strong>Honduras</strong> a suivi une logique similaire. Aux États-Unis, Donald Trump a affiché son admiration pour Bukele et les deux présidents ont conclu en 2025 un accord controversé permettant l'envoi de déportés américains vers le CECOT.</p>
+            <p>L'Union européenne et plusieurs agences onusiennes ont en revanche condamné les violations systématiques du droit à un procès équitable, qualifiant le régime d'exception de <em>droit d'exception permanent</em> incompatible avec un État de droit.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Un bilan en suspens</div>
+              <p>El Salvador incarne une tension fondamentale de notre époque : peut-on acheter la sécurité au prix des libertés ? La réduction spectaculaire de la violence est réelle et profondément ressentie par une population qui vivait sous la terreur des gangs. Mais la pérennité de ce résultat est incertaine — les maras ont été brisées, mais leurs structures économiques et leurs réseaux internationaux restent partiellement intacts. Plus profondément, l'érosion de l'État de droit, la justice expéditive et la concentration des pouvoirs dessinent un précédent qui interroge les démocraties latino-américaines : la sécurité physique peut-elle prospérer durablement sur les ruines de la sécurité juridique ?</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-fr-section -->
+
+    <!-- ══ SECTION ES ══ -->
+    <div class="ap-es-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-blue">🇸🇻 El Salvador</span>
+          <span class="ap-tag ap-tag-red">Seguridad</span>
+          <span class="ap-tag ap-tag-navy">Autoritarismo</span>
+          <span class="ap-tag ap-tag-teal">Derechos humanos</span>
+          <span class="ap-tag ap-tag-orange">Geopolítica</span>
+        </div>
+        <div class="ap-date">Abril 2026 — ECG Prépa · El Salvador</div>
+        <h1 class="ap-title">Bukele y la guerra a las pandillas: seguridad total, libertades suspendidas</h1>
+        <p class="ap-intro">Lanzado en marzo de 2022, el «régimen de excepción» de Nayib Bukele ha transformado El Salvador en pocos años: el país antaño más violento del mundo exhibe ahora una de las tasas de homicidio más bajas de América Latina. Pero este milagro de seguridad descansa sobre una suspensión de las libertades fundamentales y una criminalización masiva que divide profundamente a la comunidad internacional.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red"><span class="ap-stat-num">103</span><span class="ap-stat-desc">Homicidios por 100 000 hab.<br>en 2015 (récord histórico)</span></div>
+          <div class="ap-stat green"><span class="ap-stat-num">2,4</span><span class="ap-stat-desc">Homicidios por 100 000 hab.<br>en 2023 (tras el régimen)</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">85 000+</span><span class="ap-stat-desc">Personas detenidas<br>desde marzo de 2022</span></div>
+          <div class="ap-stat"><span class="ap-stat-num">90 %</span><span class="ap-stat-desc">Tasa de aprobación<br>de Bukele (2023)</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">El contexto: un país bajo el dominio de las pandillas</div>
+            <p>Cuando Nayib Bukele asume el poder en junio de 2019, El Salvador es uno de los países más peligrosos del mundo. Las <strong>maras</strong> — MS-13 y Barrio 18 principalmente — controlan amplias zonas del territorio, imponiendo extorsiones, reclutamientos forzados y leyes paralelas a millones de salvadoreños. La tasa de homicidios alcanza los 103 por 100 000 habitantes en 2015, un récord mundial para un país que no está en guerra declarada.</p>
+            <p>Los gobiernos sucesivos, tanto de izquierda como de derecha, fracasaron en desmantelar estas estructuras criminales, ya fuera mediante la represión ciega o mediante negociaciones secretas — como la tristemente célebre <em>tregua</em> de 2012, que redujo temporalmente los homicidios al precio de concesiones opacas a las pandillas.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Presidente desde</div><div class="ap-fact-val">Junio de 2019</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Partido</div><div class="ap-fact-val">Nuevas Ideas</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Reelegido</div><div class="ap-fact-val">Feb. 2024 — 83 %</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Régimen de excepción</div><div class="ap-fact-val">Desde marzo de 2022</div></div>
+            </div>
+
+            <div class="ap-sub">El régimen de excepción: una guerra total a las maras</div>
+            <p>El 27 de marzo de 2022, tras un fin de semana sangriento (87 homicidios en 72 horas reivindicados por las pandillas), la Asamblea Nacional salvadoreña — dominada por el partido de Bukele — aprueba un <strong>estado de excepción</strong> que suspende varias garantías constitucionales: derecho a un abogado de oficio, plazo máximo de detención extendido a 15 días, secreto de las comunicaciones levantado. Este régimen, inicialmente previsto para 30 días, ha sido prorrogado ininterrumpidamente hasta 2026.</p>
+            <p>El ejército y la policía despliegan conjuntamente operaciones masivas en los barrios considerados controlados por las maras. Decenas de miles de personas son detenidas mensualmente en base a presunciones — tatuajes, relaciones sociales, denuncias anónimas — sin que un tribunal haya examinado previamente los cargos.</p>
+
+            <div class="ap-sub">Cronología: la escalada de seguridad</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">Mar. 2022</div><p class="ap-tl-text">Fin de semana sangriento (87 muertos). Aprobación del régimen de excepción. Primeras oleadas de arrestos masivos. El ejército ocupa los barrios controlados por pandillas.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Jun. 2022</div><p class="ap-tl-text">Inauguración del CECOT — Centro de Confinamiento del Terrorismo — enorme complejo penitenciario de 40 000 plazas diseñado para albergar a miembros de pandillas.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Ene. 2023</div><p class="ap-tl-text">El número de reclusos supera los 85 000. El Salvador se convierte en el país con la mayor tasa de encarcelamiento del mundo (más del 1 % de la población adulta).</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Feb. 2024</div><p class="ap-tl-text">Bukele es reelegido con el 83 % de los votos en primera vuelta. Pese a la controversia constitucional sobre un segundo mandato consecutivo, la Corte Suprema valida su candidatura.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2024–2025</div><p class="ap-tl-text">Exportación del modelo: Ecuador y Honduras se inspiran en los métodos salvadoreños. Trump menciona a El Salvador como ejemplo a seguir. Negociaciones de extradición entre gobiernos.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Abr. 2026</div><p class="ap-tl-text">La tasa de homicidios sigue siendo históricamente baja (~2–3/100 000). El régimen de excepción sigue vigente. Más de 7 000 personas liberadas por falta de pruebas, pero más de 78 000 permanecen detenidas.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">Los resultados de seguridad: una transformación espectacular</div>
+            <p>El impacto sobre la violencia es innegable. El Salvador pasó en menos de tres años de ser el país más violento del mundo a uno de los más seguros de América Latina. La tasa de homicidios cayó de <strong>52 por 100 000 en 2021 a aproximadamente 2–3 en 2023–2024</strong>, una caída sin equivalente en la historia de la criminología contemporánea.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Indicador</th><th>2021 (antes)</th><th>2024 (después)</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Homicidios / 100 000 hab.</td><td>52</td><td class="ap-cell-bold">~2,4</td></tr>
+                <tr><td class="ap-cell-bold">Extorsiones registradas</td><td>Masivas</td><td class="ap-cell-bold">Casi nulas</td></tr>
+                <tr><td class="ap-cell-bold">Personas encarceladas</td><td>~39 000</td><td class="ap-cell-bold">~85 000+</td></tr>
+                <tr><td class="ap-cell-bold">Aprobación Bukele</td><td>~70 %</td><td class="ap-cell-bold">~85–90 %</td></tr>
+                <tr><td class="ap-cell-bold">Turismo internacional</td><td>Escaso</td><td class="ap-cell-bold">+60 % (2023)</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">⚠️</div>
+              <div class="ap-info-text"><strong>El reverso del balance:</strong> las organizaciones de derechos humanos (Human Rights Watch, Amnesty International) documentan miles de casos de detenciones arbitrarias, torturas en prisión, muertes bajo custodia e inocentes encarcelados sin juicio. Familias enteras han sido destruidas por detenciones basadas en simples tatuajes o denuncias calumniosas.</div>
+            </div>
+
+            <div class="ap-sub">La prisión CECOT: símbolo e instrumento</div>
+            <p>El <strong>Centro de Confinamiento del Terrorismo (CECOT)</strong>, inaugurado en 2022, se ha convertido en el emblema mundial de la política de Bukele. Esta megacárcel de 40 000 plazas — la más grande de América — alberga a los reclusos en condiciones de máxima seguridad: celdas colectivas, privación casi total de luz natural, prohibición de visitas familiares. Las imágenes difundidas por el gobierno salvadoreño mostrando a cientos de detenidos rapados y con uniforme blanco han dado la vuelta al mundo, tanto por su impacto disuasorio declarado como por su carga simbólica ampliamente criticada.</p>
+
+            <div class="ap-sub">Las derivas democráticas: más allá de la seguridad</div>
+            <p>La política de seguridad se inscribe en un movimiento más amplio de concentración del poder. En 2021, la nueva Asamblea Nacional dominada por Nuevas Ideas <strong>destituyó a los magistrados de la Corte Suprema y al fiscal general</strong> en una noche, sustituyendo a jueces independientes por personas cercanas al presidente. Ese mismo año, una nueva ley electoral redujo la representación de los pequeños partidos y modificó la composición del Congreso en favor del campo presidencial.</p>
+            <p>En 2024, Bukele obtuvo su reelección pese a la prohibición constitucional de mandatos consecutivos — una decisión avalada por la Corte Suprema que él mismo había recompuesto. El parlamento también aprobó una ley que permite juzgar a menores como adultos en casos de pandillas, reduciendo la edad de responsabilidad penal a 12 años.</p>
+
+            <div class="ap-quote">
+              <p>« Elegimos la vida de nuestros ciudadanos sobre las recomendaciones de las organizaciones de derechos humanos. »</p>
+              <cite>— Nayib Bukele, conferencia de prensa, 2023</cite>
+            </div>
+            <div class="ap-quote">
+              <p>« Mi hijo tenía un tatuaje de fútbol. Lleva dieciocho meses preso. Nadie nos dice nada. »</p>
+              <cite>— Madre de detenido, San Salvador, enero de 2024</cite>
+            </div>
+
+            <div class="ap-sub">Resonancias internacionales: un modelo controvertido</div>
+            <p>El «modelo Bukele» se ha convertido en objeto de fascinación y debate mucho más allá de las fronteras salvadoreñas. El <strong>Ecuador</strong> de Daniel Noboa declaró el estado de emergencia en enero de 2024 y reivindica explícitamente la inspiración salvadoreña frente a los cárteles. <strong>Honduras</strong> siguió una lógica similar. En Estados Unidos, Donald Trump expresó su admiración por Bukele y ambos presidentes firmaron en 2025 un polémico acuerdo que permite el envío de deportados estadounidenses al CECOT.</p>
+            <p>La Unión Europea y varias agencias de la ONU condenaron en cambio las violaciones sistemáticas del derecho a un juicio justo, calificando el régimen de excepción de <em>derecho de excepción permanente</em> incompatible con un Estado de derecho.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Un balance en suspenso</div>
+              <p>El Salvador encarna una tensión fundamental de nuestra época: ¿se puede comprar seguridad al precio de las libertades? La espectacular reducción de la violencia es real y profundamente sentida por una población que vivía bajo el terror de las pandillas. Pero la durabilidad de este resultado es incierta — las maras han sido desarticuladas, pero sus estructuras económicas y sus redes internacionales permanecen parcialmente intactas. Más profundamente, la erosión del Estado de derecho, la justicia sumaria y la concentración de poderes dibujan un precedente que interpela a las democracias latinoamericanas: ¿puede la seguridad física prosperar durablemente sobre las ruinas de la seguridad jurídica?</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-es-section -->
+
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — El Salvador — Avril 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-es').classList.toggle('active', lang === 'es');
+  const isEs = lang === 'es';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEs ? 'none' : 'block');
+  document.querySelectorAll('.ap-es-section').forEach(el => el.style.display = isEs ? 'block' : 'none');
+}
+setLang('fr');
+</script>
+</body>
+</html>

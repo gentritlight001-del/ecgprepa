@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Administration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="auth.js"></script>
+<script src="mails.js"></script>
+<script src="newsletter.js"></script>
+<style>
+  :root{
+    --bg:#0d0d0f; --surface:#16161a; --surface2:#1e1e24; --border:#2a2a35;
+    --accent:#c8a96e; --blue:#7c9ec9; --green:#9ecba0; --pink:#c97c9e;
+    --text:#e8e6e0; --dim:#8a8880; --faint:#4a4845; --danger:#e08a8a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',system-ui,sans-serif;min-height:100vh;overflow-x:hidden}
+  .orb{position:fixed;border-radius:50%;filter:blur(150px);pointer-events:none;opacity:.07;z-index:0}
+  .orb1{width:640px;height:640px;background:var(--accent);top:-300px;right:-220px}
+  .orb2{width:520px;height:520px;background:var(--blue);bottom:-240px;left:-220px}
+  .wrap{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:40px 24px 80px}
+
+  header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:34px}
+  .eyebrow{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+  h1{font-family:'Playfair Display',serif;font-size:2.9rem;font-weight:900;line-height:1}
+  .sub{color:var(--dim);font-size:.88rem;font-weight:300;margin-top:8px}
+  .head-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+  button{font-family:inherit;cursor:pointer;transition:all .18s}
+  .btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:.8rem;padding:9px 16px;border-radius:9px}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.ghost{background:none}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .live{font-family:'DM Mono',monospace;font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:34px}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 22px;position:relative;overflow:hidden}
+  .stat::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--c,var(--accent))}
+  .stat b{display:block;font-family:'Playfair Display',serif;font-size:2.3rem;font-weight:700;line-height:1;color:var(--c,var(--accent))}
+  .stat span{display:block;font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-top:9px}
+
+  .tabs{display:flex;gap:30px;border-bottom:1px solid var(--border);margin-bottom:26px;flex-wrap:wrap}
+  .tab{background:none;border:0;padding:0 0 14px;font-family:'DM Mono',monospace;font-size:.72rem;
+       letter-spacing:.16em;text-transform:uppercase;color:var(--faint);border-bottom:2px solid transparent;margin-bottom:-1px}
+  .tab:hover{color:var(--dim)}
+  .tab.on{color:var(--accent);border-bottom-color:var(--accent)}
+  .tab em{font-style:normal;background:rgba(200,169,110,.15);color:var(--accent);padding:1px 7px;border-radius:20px;margin-left:7px;font-size:.62rem}
+  .panel{display:none}
+  .panel.on{display:block}
+
+  .toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+  input[type=text],select{background:var(--surface);border:1px solid var(--border);border-radius:9px;color:var(--text);
+    font-family:inherit;font-size:.84rem;padding:10px 14px;outline:none;transition:border-color .18s}
+  input:focus,select:focus{border-color:var(--accent)}
+  input::placeholder{color:var(--faint)}
+  .search{flex:1;min-width:200px}
+
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+  .scroll{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:.85rem}
+  th{font-family:'DM Mono',monospace;font-size:.63rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);
+     text-align:left;padding:14px 16px;border-bottom:1px solid var(--border);white-space:nowrap;font-weight:400}
+  td{padding:14px 16px;border-bottom:1px solid rgba(42,42,53,.55);vertical-align:middle}
+  tr:last-child td{border-bottom:0}
+  tbody tr:hover{background:rgba(30,30,36,.6)}
+
+  .who{display:flex;align-items:center;gap:12px;min-width:190px}
+  .av{width:36px;height:36px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+      font-size:.74rem;font-weight:600;background:rgba(200,169,110,.12);color:var(--accent);border:1px solid rgba(200,169,110,.28)}
+  .who .n{font-weight:500}
+  .who .e{color:var(--dim);font-size:.74rem;word-break:break-all;margin-top:2px}
+
+  .tag{display:inline-block;font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.1em;
+       text-transform:uppercase;padding:3px 9px;border-radius:20px;white-space:nowrap}
+  .t-actif{background:rgba(158,203,160,.14);color:var(--green)}
+  .t-attente{background:rgba(200,169,110,.14);color:var(--accent)}
+  .t-bloque{background:rgba(224,138,138,.14);color:var(--danger)}
+  .t-admin{background:rgba(124,158,201,.14);color:var(--blue)}
+  .t-membre{background:rgba(138,136,128,.12);color:var(--dim)}
+
+  .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;vertical-align:1px}
+  .on-line{background:var(--green);box-shadow:0 0 0 3px rgba(158,203,160,.16)}
+  .off-line{background:var(--faint)}
+
+  .mono{font-family:'DM Mono',monospace;font-size:.74rem;color:var(--dim);white-space:nowrap}
+  .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+  .mini{background:none;border:1px solid var(--border);color:var(--dim);font-size:.7rem;padding:5px 10px;border-radius:7px;white-space:nowrap}
+  .mini:hover{border-color:var(--accent);color:var(--accent)}
+  .mini.ok:hover{border-color:var(--green);color:var(--green)}
+  .mini.bad:hover{border-color:var(--danger);color:var(--danger)}
+  .me{font-family:'DM Mono',monospace;font-size:.6rem;color:var(--faint);letter-spacing:.1em}
+  .empty{padding:56px 24px;text-align:center;color:var(--faint);font-size:.86rem}
+
+  .log{max-height:620px;overflow-y:auto}
+  .ev{display:grid;grid-template-columns:150px 150px 1fr;gap:16px;padding:12px 18px;border-bottom:1px solid rgba(42,42,53,.5);font-size:.82rem;align-items:baseline}
+  .ev:last-child{border-bottom:0}
+  .ev .t{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--faint);white-space:nowrap}
+  .ev .d{color:var(--dim);font-size:.78rem}
+  .ev b{font-weight:500}
+  @media(max-width:700px){.ev{grid-template-columns:1fr;gap:4px}}
+
+  .setting{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:20px 22px;border-bottom:1px solid rgba(42,42,53,.55);flex-wrap:wrap}
+  .setting:last-child{border-bottom:0}
+  .setting h3{font-size:.92rem;font-weight:500;margin-bottom:5px}
+  .setting p{color:var(--dim);font-size:.79rem;font-weight:300;line-height:1.6;max-width:620px}
+  .sw{width:48px;height:27px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);position:relative;flex:0 0 auto;padding:0}
+  .sw::after{content:"";position:absolute;top:2px;left:2px;width:21px;height:21px;border-radius:50%;background:var(--faint);transition:all .2s}
+  .sw.on{background:rgba(158,203,160,.18);border-color:var(--green)}
+  .sw.on::after{left:23px;background:var(--green)}
+
+  .notice{background:rgba(158,203,160,.06);border:1px solid rgba(158,203,160,.22);border-radius:12px;
+          padding:18px 20px;margin-bottom:22px;font-size:.82rem;line-height:1.7;color:var(--dim);font-weight:300}
+  .notice b{color:var(--green);font-weight:500;display:block;margin-bottom:6px;font-size:.86rem}
+
+  .deny,.load{min-height:70vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:40px}
+  .deny h2{font-family:'Playfair Display',serif;font-size:2.4rem;margin-bottom:14px}
+  .deny p{color:var(--dim);font-size:.9rem;margin-bottom:26px;max-width:460px;line-height:1.7}
+  .load p{color:var(--faint);font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase}
+
+  #toast{position:fixed;bottom:26px;left:50%;transform:translate(-50%,80px);background:var(--surface);
+         border:1px solid var(--border);border-radius:11px;padding:13px 22px;font-size:.84rem;z-index:9999;
+         opacity:0;transition:all .26s;box-shadow:0 18px 50px rgba(0,0,0,.5);max-width:90vw}
+  #toast.show{opacity:1;transform:translate(-50%,0)}
+  #toast.err{border-color:rgba(224,138,138,.5);color:var(--danger)}
+  #toast.ok{border-color:rgba(158,203,160,.5);color:var(--green)}
+
+  @media(max-width:640px){.wrap{padding:28px 16px 60px}h1{font-size:2.2rem}th,td{padding:12px}.acts{justify-content:flex-start}}
+</style>
+</head>
+<body>
+<div class="orb orb1"></div><div class="orb orb2"></div>
+
+<div id="loading" class="load"><p>Chargement…</p></div>
+
+<div id="denied" class="deny" style="display:none">
+  <div>
+    <div class="eyebrow">Accès restreint</div>
+    <h2>Espace administrateur</h2>
+    <p>Ce compte n'a pas les droits d'administration. Le premier compte inscrit sur le site les reçoit automatiquement ; les autres doivent être promus depuis cet espace.</p>
+    <button class="btn" onclick="location.href='index.html'">Retour à l'accueil</button>
+  </div>
+</div>
+
+<div class="wrap" id="app" style="display:none">
+
+  <header>
+    <div>
+      <div class="eyebrow">ECG Prépa · Administration</div>
+      <h1>Comptes &amp; accès</h1>
+      <p class="sub" id="hello"></p>
+    </div>
+    <div class="head-actions">
+      <span class="live" id="maj"></span>
+      <button class="btn ghost" id="btn-refresh">Actualiser</button>
+      <button class="btn" onclick="location.href='index.html'">Retour au site</button>
+    </div>
+  </header>
+
+  <div class="stats">
+    <div class="stat" style="--c:var(--accent)"><b id="s-total">—</b><span>Comptes</span></div>
+    <div class="stat" style="--c:var(--green)"><b id="s-online">—</b><span>En ligne</span></div>
+    <div class="stat" style="--c:var(--blue)"><b id="s-sessions">—</b><span>Sessions ouvertes</span></div>
+    <div class="stat" style="--c:var(--pink)"><b id="s-wait">—</b><span>En attente</span></div>
+    <div class="stat" style="--c:var(--danger)"><b id="s-block">—</b><span>Bloqués</span></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" data-p="comptes">Comptes<em id="c-comptes">0</em></button>
+    <button class="tab" data-p="sessions">Sessions<em id="c-sessions">0</em></button>
+    <button class="tab" data-p="journal">Journal<em id="c-journal">0</em></button>
+    <button class="tab" data-p="newsletter">Newsletter<em id="c-newsletter">0</em></button>
+    <button class="tab" data-p="reglages">Réglages</button>
+  </div>
+
+  <section class="panel on" id="p-comptes">
+    <div class="toolbar">
+      <input type="text" class="search" id="q" placeholder="Rechercher un nom ou une adresse…">
+      <select id="filtre">
+        <option value="">Tous les statuts</option>
+        <option value="actif">Actifs</option>
+        <option value="attente">En attente</option>
+        <option value="bloque">Bloqués</option>
+        <option value="admin">Administrateurs</option>
+        <option value="online">En ligne</option>
+      </select>
+      <button class="btn ghost" id="btn-mail-groupe">Écrire aux comptes affichés</button>
+    </div>
+    <div class="card scroll">
+      <table>
+        <thead><tr>
+          <th>Utilisateur</th><th>Statut</th><th>Rôle</th>
+          <th>Inscription</th><th>Dernière connexion</th><th>Conn.</th><th style="text-align:right">Actions</th>
+        </tr></thead>
+        <tbody id="tb-comptes"></tbody>
+      </table>
+      <div class="empty" id="e-comptes" style="display:none">Aucun compte ne correspond.</div>
+    </div>
+  </section>
+
+  <section class="panel" id="p-sessions">
+    <div class="toolbar">
+      <span class="mono">Une session = un appareil connecté. La fermer renvoie l'appareil vers la page de connexion en moins d'une minute.</span>
+      <span style="flex:1"></span>
+      <button class="btn ghost" id="btn-kill-all">Fermer toutes les autres sessions</button>
+    </div>
+    <div class="card scroll">
+      <table>
+        <thead><tr>
+          <th>Utilisateur</th><th>État</th><th>Ouverte le</th><th>Dernière activité</th><th>Appareil</th><th style="text-align:right">Action</th>
+        </tr></thead>
+        <tbody id="tb-sessions"></tbody>
+      </table>
+      <div class="empty" id="e-sessions" style="display:none">Aucune session ouverte.</div>
+    </div>
+  </section>
+
+  <section class="panel" id="p-journal">
+    <div class="toolbar">
+      <select id="f-journal">
+        <option value="">Tous les événements</option>
+        <option value="connexion">Connexions</option>
+        <option value="refus">Tentatives refusées</option>
+        <option value="inscription">Inscriptions</option>
+        <option value="deconnexion">Déconnexions</option>
+        <option value="blocage">Blocages</option>
+        <option value="validation">Validations</option>
+        <option value="suppression">Suppressions</option>
+        <option value="revocation">Sessions fermées</option>
+      </select>
+      <span style="flex:1"></span>
+      <button class="btn ghost" id="btn-clear-log">Vider le journal</button>
+    </div>
+    <div class="card log" id="log"></div>
+  </section>
+
+  <!-- Contenu construit par newsletter.js -->
+  <section class="panel" id="p-newsletter"></section>
+
+  <section class="panel" id="p-reglages">
+    <div class="notice">
+      <b>Base de données partagée</b>
+      Les comptes sont enregistrés dans ta base Supabase : tu vois ici toutes les inscriptions,
+      quel que soit l'appareil utilisé, et les blocages ou fermetures de session s'appliquent à distance.
+      L'accès à ces données est verrouillé côté serveur : un membre ordinaire qui ouvrirait cette page
+      n'obtiendrait rien.
+    </div>
+
+    <div class="card" style="margin-bottom:18px">
+      <div class="setting">
+        <div>
+          <h3>Valider chaque nouveau compte</h3>
+          <p>Les nouvelles inscriptions restent « en attente » et n'ont accès à rien tant que tu ne les as pas approuvées depuis l'onglet Comptes.</p>
+        </div>
+        <button class="sw" id="sw-approbation" aria-label="Validation manuelle"></button>
+      </div>
+      <div class="setting">
+        <div>
+          <h3>Inscriptions ouvertes</h3>
+          <p>Quand c'est désactivé, la création de compte est refusée par la base elle-même, pas seulement par la page de connexion.</p>
+        </div>
+        <button class="sw" id="sw-inscriptions" aria-label="Inscriptions ouvertes"></button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="setting">
+        <div>
+          <h3>Exporter</h3>
+          <p>Télécharge un fichier JSON contenant les comptes, les sessions, le journal et les réglages. Les mots de passe ne sont jamais exportés : ils restent chiffrés dans Supabase.</p>
+        </div>
+        <button class="btn" id="btn-export">Télécharger</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+(function(){
+  'use strict';
+  var A = window.ECGAuth;
+  var $ = function(s){ return document.querySelector(s); };
+
+  /* ─── Attendre que auth.js ait validé la session ─── */
+  var essais = 0;
+  (function attendre(){
+    var p = A && A.current();
+    if (p) return demarrer(p);
+    if (++essais > 150) { $('#loading').innerHTML = '<p>Serveur injoignable</p>'; return; }
+    setTimeout(attendre, 100);
+  })();
+
+  function demarrer(moi){
+    $('#loading').style.display = 'none';
+    if (moi.role !== 'admin') { $('#denied').style.display = 'flex'; return; }
+    $('#app').style.display = 'block';
+    $('#hello').textContent = 'Connecté en tant que ' +
+      ((moi.prenom || '') + ' ' + (moi.nom || '')).trim() + ' — ' + moi.email;
+    lancer(moi);
+  }
+
+  function lancer(moi){
+  var Ad = A.admin;
+
+  /* ─── Utilitaires ─── */
+  function toast(txt, kind){
+    var t = $('#toast');
+    t.textContent = txt; t.className = 'show ' + (kind || '');
+    clearTimeout(t._h); t._h = setTimeout(function(){ t.className = ''; }, 3600);
+  }
+  function esc(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+  function ini(u){ return ((u.prenom || u.nom || u.email || '?').charAt(0) + (u.nom || '').charAt(0)).toUpperCase(); }
+  function dateCourte(v){
+    if (!v) return '—';
+    var d = new Date(v); if (isNaN(d)) return '—';
+    return d.toLocaleDateString('fr-FR', {day:'2-digit', month:'short', year:'2-digit'});
+  }
+  function ilYA(v){
+    if (!v) return '—';
+    var d = Date.now() - new Date(v).getTime();
+    if (d < 60000) return 'à l\'instant';
+    if (d < 3600000) return 'il y a ' + Math.floor(d/60000) + ' min';
+    if (d < 86400000) return 'il y a ' + Math.floor(d/3600000) + ' h';
+    if (d < 2592000000) return 'il y a ' + Math.floor(d/86400000) + ' j';
+    return new Date(v).toLocaleDateString('fr-FR');
+  }
+  function heure(v){
+    return new Date(v).toLocaleString('fr-FR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+  }
+  function appareil(ua){
+    ua = ua || '';
+    var os = /iPhone|iPad/.test(ua) ? 'iOS' : /Android/.test(ua) ? 'Android'
+           : /Mac OS X/.test(ua) ? 'macOS' : /Windows/.test(ua) ? 'Windows'
+           : /Linux/.test(ua) ? 'Linux' : 'Inconnu';
+    var nav = /Edg\//.test(ua) ? 'Edge' : /OPR\//.test(ua) ? 'Opera'
+            : /Chrome\//.test(ua) ? 'Chrome' : /Firefox\//.test(ua) ? 'Firefox'
+            : /Safari/.test(ua) ? 'Safari' : '—';
+    return os + ' · ' + nav;
+  }
+  function enLigne(vu){ return vu && (Date.now() - new Date(vu).getTime()) < A.enLigneMs; }
+
+  var D = { users:[], sessions:[], journal:[], config:{}, affiches:[] };
+  var occupe = false;
+
+  function charger(){
+    if (occupe) return Promise.resolve();
+    occupe = true;
+    return Promise.all([Ad.utilisateurs(), Ad.sessions(), Ad.journal(300), Ad.config()])
+      .then(function(r){
+        D.users = r[0] || []; D.sessions = r[1] || [];
+        D.journal = r[2] || []; D.config = r[3] || {};
+        rendre();
+        $('#maj').textContent = 'à jour · ' + new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      })
+      .catch(function(e){ toast(String(e.message || e), 'err'); })
+      .then(function(){ occupe = false; });
+  }
+
+  function sessionsDe(id){ return D.sessions.filter(function(s){ return s.utilisateur === id; }); }
+  function userEnLigne(id){ return sessionsDe(id).some(function(s){ return enLigne(s.vu); }); }
+
+  /* ─── Rendu ─── */
+  function rendre(){
+    $('#s-total').textContent    = D.users.length;
+    $('#s-online').textContent   = D.users.filter(function(u){ return userEnLigne(u.id); }).length;
+    $('#s-sessions').textContent = D.sessions.length;
+    $('#s-wait').textContent     = D.users.filter(function(u){ return u.statut === 'attente'; }).length;
+    $('#s-block').textContent    = D.users.filter(function(u){ return u.statut === 'bloque'; }).length;
+    $('#c-comptes').textContent  = D.users.length;
+    $('#c-sessions').textContent = D.sessions.length;
+    $('#c-journal').textContent  = D.journal.length;
+    rendreComptes(); rendreSessions(); rendreJournal(); rendreReglages();
+  }
+
+  function rendreComptes(){
+    var q = $('#q').value.trim().toLowerCase();
+    var f = $('#filtre').value;
+
+    var liste = D.users.filter(function(u){
+      if (q && (u.prenom + ' ' + u.nom + ' ' + u.email).toLowerCase().indexOf(q) === -1) return false;
+      if (f === 'admin')  return u.role === 'admin';
+      if (f === 'online') return userEnLigne(u.id);
+      if (f) return u.statut === f;
+      return true;
+    }).sort(function(a,b){
+      var oa = userEnLigne(a.id) ? 0 : 1, ob = userEnLigne(b.id) ? 0 : 1;
+      if (oa !== ob) return oa - ob;
+      var wa = a.statut === 'attente' ? 0 : 1, wb = b.statut === 'attente' ? 0 : 1;
+      if (wa !== wb) return wa - wb;
+      return String(b.derniere_connexion || '').localeCompare(String(a.derniere_connexion || ''));
+    });
+
+    D.affiches = liste;
+
+    $('#tb-comptes').innerHTML = liste.map(function(u){
+      var online = userEnLigne(u.id), nbS = sessionsDe(u.id).length, estMoi = u.id === moi.id;
+      var a = [];
+      if (u.statut === 'attente') a.push(bt('ok','valider',u.id,'Autoriser'));
+      if (u.statut === 'bloque')  a.push(bt('ok','valider',u.id,'Débloquer'));
+      if (u.statut === 'actif' && !estMoi) a.push(bt('','bloquer',u.id,'Bloquer'));
+      if (nbS) a.push(bt('','deconnecter',u.id,'Déconnecter'));
+      if (!estMoi) {
+        a.push(bt('','role',u.id, u.role === 'admin' ? 'Retirer admin' : 'Passer admin'));
+        a.push(bt('bad','supprimer',u.id,'Supprimer'));
+      }
+      a.push(bt('','ecrire',u.id,'Écrire'));
+      a.push(bt('','mdp',u.id,'Lien mot de passe'));
+
+      return '<tr>' +
+        '<td><div class="who"><div class="av">'+esc(ini(u))+'</div><div>' +
+          '<div class="n">'+esc(((u.prenom||'')+' '+(u.nom||'')).trim() || '—') +
+          (estMoi ? ' <span class="me">· toi</span>' : '') + '</div>' +
+          '<div class="e">'+esc(u.email)+'</div></div></div></td>' +
+        '<td><span class="dot '+(online?'on-line':'off-line')+'"></span>' +
+            '<span class="tag t-'+esc(u.statut)+'">'+(u.statut==='actif'?'Actif':u.statut==='attente'?'En attente':'Bloqué')+'</span></td>' +
+        '<td><span class="tag t-'+(u.role==='admin'?'admin':'membre')+'">'+(u.role==='admin'?'Admin':'Membre')+'</span></td>' +
+        '<td class="mono">'+dateCourte(u.cree_le)+'</td>' +
+        '<td class="mono">'+(online ? '<span style="color:var(--green)">en ligne</span>' : dateCourte(u.derniere_connexion))+'</td>' +
+        '<td class="mono">'+(u.nb_connexions||0)+'</td>' +
+        '<td><div class="acts">'+a.join('')+'</div></td></tr>';
+    }).join('');
+
+    $('#e-comptes').style.display = liste.length ? 'none' : 'block';
+  }
+  function bt(cls, action, id, txt){
+    return '<button class="mini '+cls+'" data-a="'+action+'" data-i="'+id+'">'+txt+'</button>';
+  }
+
+  function rendreSessions(){
+    var liste = D.sessions.slice().sort(function(a,b){ return new Date(b.vu) - new Date(a.vu); });
+    $('#tb-sessions').innerHTML = liste.map(function(s){
+      var ok = enLigne(s.vu), mien = s.utilisateur === moi.id;
+      return '<tr>' +
+        '<td><div class="n">'+esc(s.nom || '—')+(mien ? ' <span class="me">· toi</span>' : '')+'</div>' +
+            '<div class="e" style="color:var(--dim);font-size:.74rem">'+esc(s.email)+'</div></td>' +
+        '<td><span class="dot '+(ok?'on-line':'off-line')+'"></span><span class="mono">'+(ok?'En ligne':'Inactive')+'</span></td>' +
+        '<td class="mono">'+heure(s.debut)+'</td>' +
+        '<td class="mono">'+ilYA(s.vu)+'</td>' +
+        '<td class="mono">'+esc(appareil(s.agent))+'</td>' +
+        '<td><div class="acts"><button class="mini bad" data-a="fermer" data-s="'+esc(s.id)+'" data-e="'+esc(s.email)+'">Fermer la session</button></div></td></tr>';
+    }).join('');
+    $('#e-sessions').style.display = liste.length ? 'none' : 'block';
+  }
+
+  var COULEURS = {
+    connexion:'var(--green)', inscription:'var(--blue)', refus:'var(--danger)',
+    blocage:'var(--danger)', suppression:'var(--danger)', revocation:'var(--accent)',
+    deconnexion:'var(--dim)', validation:'var(--green)', role:'var(--blue)'
+  };
+  var LIBELLE = {
+    connexion:'Connexion', inscription:'Inscription', refus:'Tentative refusée',
+    deconnexion:'Déconnexion', blocage:'Compte bloqué', validation:'Compte autorisé',
+    suppression:'Compte supprimé', revocation:'Session fermée', role:'Changement de rôle',
+    reglage:'Réglage modifié', 'mot-de-passe':'Réinitialisation demandée'
+  };
+
+  function rendreJournal(){
+    var f = $('#f-journal').value;
+    var liste = f ? D.journal.filter(function(e){ return e.type === f; }) : D.journal;
+    var el = $('#log');
+    if (!liste.length) { el.innerHTML = '<div class="empty">Aucun événement enregistré.</div>'; return; }
+    el.innerHTML = liste.map(function(e){
+      return '<div class="ev"><span class="t">'+heure(e.t)+'</span>' +
+        '<b style="color:'+(COULEURS[e.type]||'var(--text)')+'">'+esc(LIBELLE[e.type] || e.type)+'</b>' +
+        '<span>'+esc(e.email || '—')+(e.detail ? ' <span class="d">· '+esc(e.detail)+'</span>' : '')+'</span></div>';
+    }).join('');
+  }
+
+  function rendreReglages(){
+    $('#sw-approbation').classList.toggle('on', !!D.config.approbation);
+    $('#sw-inscriptions').classList.toggle('on', !!D.config.inscriptions);
+  }
+
+  /* ─── Actions ─── */
+  function agir(promesse, message){
+    return promesse
+      .then(function(){ return charger(); })
+      .then(function(){ toast(message, 'ok'); })
+      .catch(function(e){ toast(String(e.message || e), 'err'); });
+  }
+
+  $('#tb-comptes').addEventListener('click', function(ev){
+    var b = ev.target.closest('button[data-a]'); if (!b) return;
+    var u = D.users.filter(function(x){ return x.id === b.dataset.i; })[0]; if (!u) return;
+    var nom = ((u.prenom||'')+' '+(u.nom||'')).trim() || u.email;
+    var a = b.dataset.a;
+
+    if (a === 'ecrire') {
+      if (!window.ECGMails) return toast('Le module de courriel n\'est pas chargé.', 'err');
+      return ECGMails.ouvrir(u);
+    }
+
+    if (a === 'valider')
+      return agir(Ad.definirStatut(u.id, 'actif', u.email), nom + ' a maintenant accès au site.');
+
+    if (a === 'bloquer') {
+      if (!confirm('Bloquer ' + nom + ' ?\n\nSes sessions seront fermées et il ne pourra plus se connecter.')) return;
+      return agir(Ad.definirStatut(u.id, 'bloque', u.email), nom + ' a été bloqué et déconnecté.');
+    }
+    if (a === 'deconnecter')
+      return agir(Ad.deconnecterUtilisateur(u.id, u.email), 'Sessions de ' + nom + ' fermées.');
+
+    if (a === 'role') {
+      var r = u.role === 'admin' ? 'membre' : 'admin';
+      if (!confirm(r === 'admin' ? 'Donner les droits d\'administration à ' + nom + ' ?'
+                                 : 'Retirer les droits d\'administration à ' + nom + ' ?')) return;
+      return agir(Ad.definirRole(u.id, r, u.email), 'Rôle mis à jour.');
+    }
+    if (a === 'supprimer') {
+      if (!confirm('Supprimer définitivement le compte de ' + nom + ' ?\n\nCette action est irréversible.')) return;
+      return agir(Ad.supprimer(u.id), 'Compte supprimé.');
+    }
+    if (a === 'mdp') {
+      if (!confirm('Envoyer à ' + u.email + ' un lien de réinitialisation de mot de passe ?')) return;
+      return agir(Ad.envoyerReinitialisation(u.email), 'Lien envoyé à ' + u.email + '.');
+    }
+  });
+
+  $('#tb-sessions').addEventListener('click', function(ev){
+    var b = ev.target.closest('button[data-a="fermer"]'); if (!b) return;
+    agir(Ad.revoquerSession(b.dataset.s, b.dataset.e), 'Session fermée.');
+  });
+
+  $('#btn-kill-all').addEventListener('click', function(){
+    if (!confirm('Fermer toutes les sessions sauf la tienne ?')) return;
+    var autres = D.sessions.filter(function(s){ return s.utilisateur !== moi.id; });
+    if (!autres.length) return toast('Aucune autre session ouverte.');
+    agir(Promise.all(autres.map(function(s){ return Ad.revoquerSession(s.id, s.email); })),
+         autres.length + ' session(s) fermée(s).');
+  });
+
+  $('#btn-clear-log').addEventListener('click', function(){
+    if (!confirm('Vider tout l\'historique des événements ?')) return;
+    agir(Ad.viderJournal(), 'Journal vidé.');
+  });
+
+  $('#sw-approbation').addEventListener('click', function(){
+    var v = !D.config.approbation;
+    agir(Ad.definirConfig({ approbation: v }),
+         v ? 'Les nouveaux comptes devront être validés.' : 'Les nouveaux comptes sont acceptés automatiquement.');
+  });
+  $('#sw-inscriptions').addEventListener('click', function(){
+    var v = !D.config.inscriptions;
+    agir(Ad.definirConfig({ inscriptions: v }), v ? 'Inscriptions ouvertes.' : 'Inscriptions fermées.');
+  });
+
+  $('#btn-export').addEventListener('click', function(){
+    Ad.exporter().then(function(json){
+      var b = new Blob([json], { type:'application/json' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(b);
+      a.download = 'ecg-comptes-' + new Date().toISOString().slice(0,10) + '.json';
+      a.click();
+      setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+      toast('Sauvegarde téléchargée.', 'ok');
+    }).catch(function(e){ toast(String(e.message || e), 'err'); });
+  });
+
+  $('#btn-mail-groupe').addEventListener('click', function(){
+    if (!window.ECGMails) return toast('Le module de courriel n\'est pas chargé.', 'err');
+    var liste = (D.affiches || []).filter(function(u){ return u.email; });
+    if (!liste.length) return toast('Aucun compte affiché.');
+    ECGMails.ouvrir(liste);
+  });
+
+  $('#q').addEventListener('input', rendreComptes);
+  $('#filtre').addEventListener('change', rendreComptes);
+  $('#f-journal').addEventListener('change', rendreJournal);
+  $('#btn-refresh').addEventListener('click', function(){ charger().then(function(){ toast('Données actualisées.', 'ok'); }); });
+
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.addEventListener('click', function(){
+      document.querySelectorAll('.tab').forEach(function(x){ x.classList.remove('on'); });
+      document.querySelectorAll('.panel').forEach(function(x){ x.classList.remove('on'); });
+      t.classList.add('on');
+      $('#p-' + t.dataset.p).classList.add('on');
+    });
+  });
+
+  charger();
+  setInterval(function(){ if (!document.hidden) charger(); }, 15000);
+  }
+})();
+</script>
+</body>
+</html>

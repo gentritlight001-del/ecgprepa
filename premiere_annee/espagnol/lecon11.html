@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leçon 11 — L'Impératif | Espagnol ECG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #070c07;
+    --surface: #0e150e;
+    --surface2: #131f12;
+    --border: #1e2f1a;
+    --accent: #a3e635;
+    --accent2: #65a30d;
+    --accent3: #fbbf24;
+    --accent4: #fb7185;
+    --accent5: #4ade80;
+    --text: #e9f3e2;
+    --text-dim: #93aa88;
+    --text-faint: #223420;
+    --col-subj: #a3e635;
+    --col-verb: #65a30d;
+    --col-obj: #fbbf24;
+    --col-neg: #fb7185;
+    --col-q: #4ade80;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  /* ─── BACKGROUND ─── */
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(180px); pointer-events: none; z-index: 0; }
+  .orb1 { width: 800px; height: 800px; background: rgba(163,230,53,0.07); top: -300px; right: -200px; }
+  .orb2 { width: 600px; height: 600px; background: rgba(101,163,13,0.06); bottom: -200px; left: -200px; }
+  .orb3 { width: 500px; height: 500px; background: rgba(251,191,36,0.03); top: 50%; left: 50%; transform: translate(-50%,-50%); }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(7,12,7,0.92); backdrop-filter: blur(20px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: var(--accent); cursor: pointer; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: var(--text-dim); flex-wrap: wrap; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb span:hover { color: var(--accent); }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); cursor: default; }
+
+  /* ─── CHAPTER HERO ─── */
+  .chapter-hero {
+    position: relative; overflow: hidden;
+    padding: 80px 64px 64px;
+    background: linear-gradient(135deg, #050904 0%, #0a1408 50%, #030602 100%);
+    border-bottom: 1px solid rgba(163,230,53,0.12);
+    z-index: 1;
+    text-align: center; display: flex; flex-direction: column; align-items: center;
+  }
+  .chapter-hero::after {
+    content: '11';
+    position: absolute; right: -10px; bottom: -40px;
+    font-family: 'Playfair Display', serif; font-size: 22rem; font-weight: 900;
+    color: rgba(163,230,53,0.03); line-height: 1; pointer-events: none;
+    letter-spacing: -0.05em;
+  }
+  .ch-eyebrow {
+    font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px; justify-content: center;
+  }
+  .ch-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--accent); }
+  .ch-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 6vw, 5.5rem); font-weight: 900;
+    line-height: 1.0; margin-bottom: 20px; color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .ch-title span { color: var(--accent); }
+  .ch-subtitle { font-size: 1rem; color: var(--text-dim); font-weight: 300; max-width: 600px; line-height: 1.7; margin-bottom: 40px; }
+
+  .ch-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .ch-tag {
+    padding: 5px 14px; border-radius: 20px; font-family: 'DM Mono', monospace;
+    font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em;
+    border: 1px solid;
+  }
+  .ch-tag.green { color: var(--col-subj); border-color: rgba(163,230,53,0.35); background: rgba(163,230,53,0.08); }
+  .ch-tag.blue  { color: var(--col-verb); border-color: rgba(101,163,13,0.35); background: rgba(101,163,13,0.1); }
+  .ch-tag.gold  { color: var(--col-obj);  border-color: rgba(251,191,36,0.3); background: rgba(251,191,36,0.08); }
+  .ch-tag.pink  { color: var(--col-neg);  border-color: rgba(251,113,133,0.3); background: rgba(251,113,133,0.08); }
+  .ch-tag.purple{ color: var(--col-q);    border-color: rgba(74,222,128,0.3); background: rgba(74,222,128,0.08); }
+
+  /* ─── LAYOUT ─── */
+  .page-body { display: block; min-height: calc(100vh - 300px); position: relative; z-index: 1; }
+
+  /* ─── MAIN CONTENT ─── */
+  .main-content { width: 100%; padding: 48px 80px 100px; max-width: 1100px; margin: 0 auto; box-sizing: border-box; }
+
+  /* ─── SECTION ─── */
+  .section { margin-bottom: 72px; scroll-margin-top: 80px; }
+  .section-header {
+    display: flex; align-items: flex-start; gap: 20px; margin-bottom: 32px;
+    padding-bottom: 20px; border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 900;
+    color: var(--text-faint); line-height: 1; flex-shrink: 0; min-width: 48px;
+  }
+  .section-info {}
+  .section-tag { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--text); line-height: 1.2; }
+
+  /* ─── PROSE ─── */
+  .prose { font-size: 0.95rem; color: var(--text-dim); line-height: 1.85; font-weight: 300; }
+  .prose p { margin-bottom: 14px; }
+  .prose strong { color: var(--text); font-weight: 500; }
+  .prose em { color: var(--accent); font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.9rem; }
+
+  /* ─── DEFINITION BOX ─── */
+  .def-box {
+    background: linear-gradient(135deg, rgba(163,230,53,0.07) 0%, rgba(163,230,53,0.02) 100%);
+    border: 1px solid rgba(163,230,53,0.22); border-left: 3px solid var(--accent);
+    border-radius: 0 12px 12px 0; padding: 24px 28px; margin: 24px 0;
+  }
+  .def-box .def-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .def-box p { font-size: 0.92rem; color: var(--text-dim); line-height: 1.7; font-style: italic; }
+  .def-box strong { color: var(--text); }
+
+  /* ─── HIGHLIGHT BOX ─── */
+  .hl-box {
+    border-radius: 12px; padding: 20px 24px; margin: 20px 0;
+    border: 1px solid; display: flex; gap: 16px; align-items: flex-start;
+  }
+  .hl-box.warning { background: rgba(251,191,36,0.05); border-color: rgba(251,191,36,0.2); }
+  .hl-box.tip     { background: rgba(163,230,53,0.06);  border-color: rgba(163,230,53,0.22); }
+  .hl-box.info    { background: rgba(74,222,128,0.05); border-color: rgba(74,222,128,0.2); }
+  .hl-box.danger  { background: rgba(251,113,133,0.05); border-color: rgba(251,113,133,0.2); }
+  .hl-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 1px; }
+  .hl-body { font-size: 0.88rem; color: var(--text-dim); line-height: 1.7; }
+  .hl-body strong { color: var(--text); font-weight: 500; }
+
+  /* ─── CONJUGATION TABLE ─── */
+  .conj-table {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; overflow: hidden; margin: 24px 0;
+  }
+  .conj-table-head {
+    display: grid; grid-template-columns: 1fr 1.4fr 1.8fr;
+    padding: 12px 20px; background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  .conj-table-head .th {
+    font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em;
+    text-transform: uppercase; font-weight: 500;
+  }
+  .th.pron  { color: var(--col-subj); }
+  .th.form  { color: var(--col-verb); }
+  .th.ex    { color: var(--text-faint); }
+
+  .conj-row {
+    display: grid; grid-template-columns: 1fr 1.4fr 1.8fr;
+    padding: 11px 20px; border-bottom: 1px solid rgba(30,47,26,0.6);
+    align-items: center; transition: background 0.15s;
+  }
+  .conj-row:last-child { border-bottom: none; }
+  .conj-row:hover { background: rgba(163,230,53,0.05); }
+  .conj-row .pron-cell { font-family: 'DM Mono', monospace; font-size: 0.82rem; color: var(--col-subj); }
+  .conj-row .form-cell { font-family: 'DM Mono', monospace; font-size: 0.88rem; font-weight: 500; color: var(--col-verb); }
+  .conj-row .form-cell .s-suffix { color: var(--accent3); }
+  .conj-row .ex-cell   { font-size: 0.82rem; color: var(--text-dim); font-weight: 300; font-style: italic; }
+
+  /* ─── FORMULA BOX ─── */
+  .formula-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 24px 0; }
+  .formula-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px 22px;
+  }
+  .formula-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 14px; }
+  .formula-label.aff { color: var(--col-subj); }
+  .formula-label.neg { color: var(--col-neg); }
+  .formula-label.int { color: var(--col-q); }
+
+  .formula-expr {
+    font-family: 'DM Mono', monospace; font-size: 0.9rem; font-weight: 500;
+    display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-bottom: 16px;
+    line-height: 1.6;
+  }
+  .f-subj   { color: var(--col-subj); background: rgba(163,230,53,0.12); padding: 2px 8px; border-radius: 4px; }
+  .f-verb   { color: var(--col-verb); background: rgba(101,163,13,0.14); padding: 2px 8px; border-radius: 4px; }
+  .f-obj    { color: var(--col-obj);  background: rgba(251,191,36,0.1); padding: 2px 8px; border-radius: 4px; }
+  .f-aux    { color: var(--col-neg);  background: rgba(251,113,133,0.1); padding: 2px 8px; border-radius: 4px; }
+  .f-q      { color: var(--col-q);    background: rgba(74,222,128,0.1); padding: 2px 8px; border-radius: 4px; }
+  .f-sep    { color: var(--text-faint); font-size: 0.7rem; }
+
+  .formula-example { font-size: 0.82rem; color: var(--text-dim); line-height: 1.7; }
+  .formula-example span { font-family: 'DM Mono', monospace; }
+  .formula-example .e-pos { color: var(--col-subj); }
+  .formula-example .e-neg { color: var(--col-neg); }
+  .formula-example .e-q   { color: var(--col-q); }
+
+  /* ─── USAGE CARDS ─── */
+  .usage-grid { display: grid; grid-template-columns: 1fr; gap: 14px; margin: 24px 0; }
+  .usage-card {
+    display: grid; grid-template-columns: auto 1fr 1.6fr; align-items: center; gap: 24px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px 24px; transition: border-color 0.2s;
+  }
+  .usage-card:hover { border-color: rgba(163,230,53,0.35); background: var(--surface2); }
+  .usage-icon { font-size: 1.6rem; margin-bottom: 0; }
+  .usage-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .usage-desc { font-size: 0.82rem; color: var(--text-dim); line-height: 1.65; font-weight: 300; margin-bottom: 0; }
+  .usage-example { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--accent); background: rgba(163,230,53,0.07); border-left: 2px solid var(--accent); padding: 8px 12px; border-radius: 0 6px 6px 0; }
+  .usage-example .trans { display: block; color: var(--text-faint); font-size: 0.72rem; margin-top: 4px; font-style: italic; }
+
+  /* ─── SPELLING RULES ─── */
+  .spelling-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin: 20px 0; }
+  .spelling-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px 22px;
+  }
+  .spelling-rule { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--accent3); margin-bottom: 10px; font-weight: 500; }
+  .spelling-cases { display: flex; flex-direction: column; gap: 6px; }
+  .sc-row { display: flex; gap: 10px; align-items: center; font-size: 0.8rem; }
+  .sc-base { color: var(--col-verb); font-family: 'DM Mono', monospace; min-width: 90px; }
+  .sc-arrow { color: var(--text-faint); }
+  .sc-result { color: var(--accent3); font-family: 'DM Mono', monospace; }
+  .sc-note { color: var(--text-faint); font-size: 0.72rem; margin-left: auto; }
+
+  /* ─── ADVERBS / PRONOUNS LIST ─── */
+  .adv-grid { display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 0; }
+  .adv-pill {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 10px 16px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; transition: all 0.2s; cursor: default;
+  }
+  .adv-pill:hover { border-color: rgba(163,230,53,0.35); background: var(--surface2); }
+  .adv-en { font-family: 'DM Mono', monospace; font-size: 0.82rem; color: var(--col-subj); font-weight: 500; }
+  .adv-fr { font-size: 0.72rem; color: var(--text-dim); margin-top: 2px; }
+  .adv-freq {
+    display: flex; height: 3px; gap: 2px; margin-top: 8px;
+  }
+  .adv-freq span { height: 3px; border-radius: 2px; background: var(--border); width: 14px; }
+  .adv-freq span.on { background: var(--accent); }
+
+  /* ─── COMPARISON TABLE ─── */
+  .cmp-table {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; overflow: hidden; margin: 24px 0;
+  }
+  .cmp-head {
+    display: grid; grid-template-columns: 1.5fr 1fr 1fr;
+    padding: 12px 20px; background: var(--surface2); border-bottom: 1px solid var(--border);
+  }
+  .cmp-head .th { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; }
+  .th.ps { color: var(--accent); }
+  .th.pc { color: var(--accent4); }
+  .cmp-row {
+    display: grid; grid-template-columns: 1.5fr 1fr 1fr;
+    padding: 11px 20px; border-bottom: 1px solid rgba(30,47,26,0.6); align-items: start;
+  }
+  .cmp-row:last-child { border-bottom: none; }
+  .cmp-row:hover { background: rgba(163,230,53,0.04); }
+  .cmp-label { font-size: 0.82rem; color: var(--text-dim); font-weight: 300; line-height: 1.5; }
+  .cmp-ps { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--accent); }
+  .cmp-pc { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--accent4); }
+
+  /* ─── EXERCISE BLOCK ─── */
+  .exercise-block {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 14px; padding: 28px 32px; margin: 28px 0;
+  }
+  .ex-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .ex-badge {
+    font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em;
+    text-transform: uppercase; padding: 4px 10px; border-radius: 6px;
+    background: rgba(163,230,53,0.12); color: var(--accent); border: 1px solid rgba(163,230,53,0.28);
+  }
+  .ex-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--text); }
+  .ex-items { display: flex; flex-direction: column; gap: 12px; }
+  .ex-item { display: flex; gap: 14px; align-items: flex-start; font-size: 0.88rem; }
+  .ex-num { font-family: 'DM Mono', monospace; color: var(--text-faint); font-size: 0.75rem; min-width: 20px; margin-top: 2px; }
+  .ex-q { color: var(--text-dim); line-height: 1.6; }
+  .ex-q strong { color: var(--text); }
+  .ex-answer { display: none; margin-top: 4px; font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--accent); }
+  .ex-item.revealed .ex-answer { display: block; }
+  .show-answers-btn {
+    margin-top: 20px; padding: 9px 20px;
+    background: rgba(163,230,53,0.09); border: 1px solid rgba(163,230,53,0.28);
+    border-radius: 8px; color: var(--accent); font-family: 'DM Mono', monospace;
+    font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .show-answers-btn:hover { background: rgba(163,230,53,0.17); }
+
+  /* ─── SCROLL ─── */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-up { animation: fadeUp 0.5s ease forwards; opacity: 0; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .usage-card { grid-template-columns: 1fr; gap: 12px; padding: 18px 20px; }
+    .main-content { padding: 32px 24px 80px; }
+    .chapter-hero { padding: 48px 24px 48px; }
+    nav { padding: 14px 20px; }
+    .formula-grid { grid-template-columns: 1fr; }
+    .spelling-grid { grid-template-columns: 1fr; }
+    .usage-grid { grid-template-columns: 1fr; }
+    .conj-table-head, .conj-row { grid-template-columns: 0.8fr 1fr; }
+    .th.ex, .ex-cell { display: none; }
+    .cmp-head, .cmp-row { grid-template-columns: 1.2fr 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-logo" onclick="window.location.href='../../index.html'">ECG Prépa</div>
+  <div class="breadcrumb">
+    <span onclick="window.location.href='../../index.html'">Accueil</span>
+    <span class="sep">/</span>
+    <span onclick="window.location.href='../index.html'">1ère Année</span>
+    <span class="sep">/</span>
+    <span onclick="window.location.href='index.html'">Espagnol</span>
+    <span class="sep">/</span>
+    <span class="current">Leçon 11 · L'Impératif</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="chapter-hero">
+  <div class="ch-eyebrow">Leçon 11 — Grammaire fondamentale</div>
+  <div class="ch-title">L'<span>Impératif</span></div>
+  <div class="ch-tags" style="margin-top: 20px;">
+    <span class="ch-tag green">Affirmatif</span>
+    <span class="ch-tag pink">Négatif</span>
+    <span class="ch-tag purple">Pronoms enclitiques</span>
+    <span class="ch-tag gold">Emplois</span>
+    <span class="ch-tag blue">Irréguliers</span>
+  </div>
+</div>
+
+<div class="page-body">
+  <main class="main-content">
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 1 : DÉFINITION ET FORMATION            -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="formation">
+      <div class="section-header">
+        <div class="section-num">1</div>
+        <div class="section-info">
+          <div class="section-tag">Fondamentaux</div>
+          <div class="section-title">Définition et formation</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>L'<strong>impératif</strong> (imperativo) est le mode verbal utilisé pour donner un ordre, un conseil ou une instruction. Contrairement au français, l'espagnol distingue à l'impératif affirmatif <strong>cinq personnes</strong> (pas de 1ère personne du singulier) et emprunte des formes à <strong>deux modes différents</strong> selon la personne concernée.</p>
+        <p>Pour <strong>tú</strong> et <strong>vosotros</strong>, l'impératif affirmatif possède ses propres terminaisons. Pour <strong>usted, ustedes</strong> et <strong>nosotros</strong>, il emprunte directement les formes du <strong>présent du subjonctif</strong>.</p>
+      </div>
+
+      <div class="def-box">
+        <div class="def-label">Règle de formation (affirmatif)</div>
+        <p><strong>Tú</strong> : 3ème personne du singulier du présent de l'indicatif (habla, come, vive)<br>
+        <strong>Vosotros</strong> : infinitif − <strong>r</strong> + <strong>d</strong> (hablad, comed, vivid)<br>
+        <strong>Usted / Ustedes / Nosotros</strong> : formes du <strong>présent du subjonctif</strong> (hable, hablen, hablemos)</p>
+      </div>
+
+      <!-- Conjugation table : hablar (-AR) -->
+      <div style="margin-bottom:8px; font-family:'DM Mono',monospace; font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--text-faint);">Modèle des verbes en -AR — « hablar » (impératif affirmatif)</div>
+      <div class="conj-table">
+        <div class="conj-table-head">
+          <div class="th pron">Pronom</div>
+          <div class="th form">Forme verbale</div>
+          <div class="th ex">Exemple</div>
+        </div>
+        <div class="conj-row"><span class="pron-cell">Tú</span><span class="form-cell">habl<span class="s-suffix">a</span></span><span class="ex-cell">¡Habla más despacio!</span></div>
+        <div class="conj-row"><span class="pron-cell">Usted</span><span class="form-cell">habl<span class="s-suffix">e</span></span><span class="ex-cell">Hable con el gerente.</span></div>
+        <div class="conj-row"><span class="pron-cell">Nosotros/as</span><span class="form-cell">habl<span class="s-suffix">emos</span></span><span class="ex-cell">¡Hablemos claro!</span></div>
+        <div class="conj-row"><span class="pron-cell">Vosotros/as</span><span class="form-cell">habl<span class="s-suffix">ad</span></span><span class="ex-cell">Hablad con respeto.</span></div>
+        <div class="conj-row"><span class="pron-cell">Ustedes</span><span class="form-cell">habl<span class="s-suffix">en</span></span><span class="ex-cell">Hablen más bajo, por favor.</span></div>
+      </div>
+
+      <!-- Conjugation table : vender (-ER) -->
+      <div style="margin-top:24px; margin-bottom:8px; font-family:'DM Mono',monospace; font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--text-faint);">Modèle des verbes en -ER — « vender »</div>
+      <div class="conj-table">
+        <div class="conj-table-head">
+          <div class="th pron">Pronom</div>
+          <div class="th form">Forme verbale</div>
+          <div class="th ex">Exemple</div>
+        </div>
+        <div class="conj-row"><span class="pron-cell">Tú</span><span class="form-cell" style="color:var(--accent4);">vend<span class="s-suffix">e</span></span><span class="ex-cell">Vende el coche pronto.</span></div>
+        <div class="conj-row"><span class="pron-cell">Usted</span><span class="form-cell" style="color:var(--accent4);">vend<span class="s-suffix">a</span></span><span class="ex-cell">Venda las acciones ahora.</span></div>
+        <div class="conj-row"><span class="pron-cell">Nosotros/as</span><span class="form-cell" style="color:var(--accent4);">vend<span class="s-suffix">amos</span></span><span class="ex-cell">Vendamos el excedente.</span></div>
+        <div class="conj-row"><span class="pron-cell">Vosotros/as</span><span class="form-cell" style="color:var(--accent4);">vend<span class="s-suffix">ed</span></span><span class="ex-cell">Vended en el mercado local.</span></div>
+        <div class="conj-row"><span class="pron-cell">Ustedes</span><span class="form-cell" style="color:var(--accent4);">vend<span class="s-suffix">an</span></span><span class="ex-cell">Vendan antes del cierre.</span></div>
+      </div>
+
+      <!-- Conjugation table : vivir (-IR) -->
+      <div style="margin-top:24px; margin-bottom:8px; font-family:'DM Mono',monospace; font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--text-faint);">Modèle des verbes en -IR — « vivir »</div>
+      <div class="conj-table">
+        <div class="conj-table-head">
+          <div class="th pron">Pronom</div>
+          <div class="th form">Forme verbale</div>
+          <div class="th ex">Exemple</div>
+        </div>
+        <div class="conj-row"><span class="pron-cell">Tú</span><span class="form-cell">viv<span class="s-suffix">e</span></span><span class="ex-cell">Vive el momento.</span></div>
+        <div class="conj-row"><span class="pron-cell">Usted</span><span class="form-cell">viv<span class="s-suffix">a</span></span><span class="ex-cell">Viva tranquilo.</span></div>
+        <div class="conj-row"><span class="pron-cell">Nosotros/as</span><span class="form-cell">viv<span class="s-suffix">amos</span></span><span class="ex-cell">Vivamos sin miedo.</span></div>
+        <div class="conj-row"><span class="pron-cell">Vosotros/as</span><span class="form-cell">viv<span class="s-suffix">id</span></span><span class="ex-cell">Vivid el presente.</span></div>
+        <div class="conj-row"><span class="pron-cell">Ustedes</span><span class="form-cell">viv<span class="s-suffix">an</span></span><span class="ex-cell">Vivan con prudencia.</span></div>
+      </div>
+
+      <div class="hl-box info" style="margin-top:24px;">
+        <div class="hl-icon">ℹ️</div>
+        <div class="hl-body">
+          <strong>Pas de forme « yo » :</strong> l'impératif n'existe qu'à la 2ème et à la 3ème personne, ainsi qu'à la 1ère du pluriel (nosotros). Il n'y a jamais de forme « yo » à l'impératif, ce qui est logique : on ne se donne pas d'ordre à soi-même.
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 2 : FORMES AFF / NÉG / POLITESSE       -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="structures">
+      <div class="section-header">
+        <div class="section-num">2</div>
+        <div class="section-info">
+          <div class="section-tag">Structures</div>
+          <div class="section-title">Formes affirmative, négative et de politesse</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>La différence majeure entre l'impératif affirmatif et négatif ne se limite pas à l'ajout de <strong>no</strong> : à la forme négative, <strong>toutes les personnes</strong>, y compris <strong>tú</strong> et <strong>vosotros</strong>, empruntent obligatoirement les formes du <strong>présent du subjonctif</strong>. Les pronoms compléments changent également de position selon la forme.</p>
+      </div>
+
+      <div class="formula-grid">
+        <!-- Affirmatif -->
+        <div class="formula-card">
+          <div class="formula-label aff">✦ Affirmatif</div>
+          <div class="formula-expr">
+            <span class="f-verb">Verbe (impératif)</span>
+            <span class="f-sep">+</span>
+            <span class="f-obj">Pronom(s) enclitique(s)</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-pos">¡Escúchame bien!</span><br>
+            <span class="e-pos">Cierra la puerta, por favor.</span>
+          </div>
+        </div>
+
+        <!-- Négatif -->
+        <div class="formula-card">
+          <div class="formula-label neg">✦ Négatif</div>
+          <div class="formula-expr">
+            <span class="f-aux">no</span>
+            <span class="f-sep">+</span>
+            <span class="f-obj">Pronom(s)</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">Verbe (subjonctif)</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-neg">No me escuches así.</span><br>
+            <span class="e-neg">No cierres la puerta todavía.</span>
+          </div>
+        </div>
+
+        <!-- Politesse -->
+        <div class="formula-card">
+          <div class="formula-label int">✦ Politesse (usted)</div>
+          <div class="formula-expr">
+            <span class="f-verb">Verbe (subjonctif)</span>
+            <span class="f-sep">+</span>
+            <span class="f-subj">usted</span>
+            <span class="f-sep">+</span>
+            <span class="f-q">por favor</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-q">Siéntese, por favor.</span><br>
+            <span class="e-q">Pase usted primero.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hl-box warning">
+        <div class="hl-icon">⚠️</div>
+        <div class="hl-body">
+          <strong>Piège fréquent :</strong> <em>habla</em> (affirmatif, tú) devient <em>no hables</em> au négatif — la forme change complètement de base, ce n'est jamais un simple « no + forme affirmative ».
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 3 : RÈGLES ORTHOGRAPHIQUES              -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="orthographe">
+      <div class="section-header">
+        <div class="section-num">3</div>
+        <div class="section-info">
+          <div class="section-title">Changements orthographiques</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>Parce que les formes de politesse et toutes les formes négatives dérivent du subjonctif présent, certains verbes subissent un <strong>changement orthographique</strong> destiné à conserver le son du radical à l'écrit.</p>
+      </div>
+
+      <div class="spelling-grid">
+        <div class="spelling-card">
+          <div class="spelling-rule">Verbes en -car → c devient qu</div>
+          <div class="spelling-cases">
+            <div class="sc-row"><span class="sc-base">buscar</span><span class="sc-arrow">→</span><span class="sc-result">busque, no busques</span></div>
+            <div class="sc-row"><span class="sc-base">sacar</span><span class="sc-arrow">→</span><span class="sc-result">saque, no saques</span></div>
+            <div class="sc-row"><span class="sc-base">tocar</span><span class="sc-arrow">→</span><span class="sc-result">toque, no toques</span></div>
+          </div>
+        </div>
+
+        <div class="spelling-card">
+          <div class="spelling-rule">Verbes en -gar → g devient gu</div>
+          <div class="spelling-cases">
+            <div class="sc-row"><span class="sc-base">pagar</span><span class="sc-arrow">→</span><span class="sc-result">pague, no pagues</span></div>
+            <div class="sc-row"><span class="sc-base">llegar</span><span class="sc-arrow">→</span><span class="sc-result">llegue, no llegues</span></div>
+            <div class="sc-row"><span class="sc-base">jugar</span><span class="sc-arrow">→</span><span class="sc-result">juegue, no juegues</span></div>
+          </div>
+        </div>
+
+        <div class="spelling-card">
+          <div class="spelling-rule">Verbes en -zar → z devient c</div>
+          <div class="spelling-cases">
+            <div class="sc-row"><span class="sc-base">empezar</span><span class="sc-arrow">→</span><span class="sc-result">empiece, no empieces</span></div>
+            <div class="sc-row"><span class="sc-base">cruzar</span><span class="sc-arrow">→</span><span class="sc-result">cruce, no cruces</span></div>
+            <div class="sc-row"><span class="sc-base">almorzar</span><span class="sc-arrow">→</span><span class="sc-result">almuerce, no almuerces</span></div>
+          </div>
+        </div>
+
+        <div class="spelling-card">
+          <div class="spelling-rule">Verbes en -ger/-gir → g devient j</div>
+          <div class="spelling-cases">
+            <div class="sc-row"><span class="sc-base">elegir</span><span class="sc-arrow">→</span><span class="sc-result">elija, no elijas</span></div>
+            <div class="sc-row"><span class="sc-base">coger</span><span class="sc-arrow">→</span><span class="sc-result">coja, no cojas</span></div>
+            <div class="sc-row"><span class="sc-base">dirigir</span><span class="sc-arrow">→</span><span class="sc-result">dirija, no dirijas</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hl-box tip">
+        <div class="hl-icon">💡</div>
+        <div class="hl-body">
+          <strong>Astuce :</strong> ce sont exactement les mêmes changements orthographiques que ceux du présent du subjonctif, car les formes de politesse et du négatif en sont directement issues. Réviser le subjonctif présent, c'est déjà maîtriser une bonne partie de l'impératif.
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 4 : EMPLOIS                           -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="emplois">
+      <div class="section-header">
+        <div class="section-num">4</div>
+        <div class="section-info">
+          <div class="section-tag">Emplois</div>
+          <div class="section-title">Quand utiliser l'impératif ?</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>L'impératif ne se limite pas à l'ordre brut : en contexte professionnel ou académique (courriers, publicités, notices, présentations), il sert surtout à <strong>guider, conseiller ou inviter</strong>.</p>
+      </div>
+
+      <div class="usage-grid">
+        <div class="usage-card">
+          <div class="usage-icon">📢</div>
+          <div class="usage-text"><div class="usage-title">Ordre direct</div><div class="usage-desc">L'usage le plus classique : une injonction claire, souvent à l'oral.</div></div>
+          <div class="usage-example">¡Cierra la puerta!<span class="trans">Ferme la porte !</span></div>
+        </div>
+
+        <div class="usage-card">
+          <div class="usage-icon">🩺</div>
+          <div class="usage-text"><div class="usage-title">Conseil ou recommandation</div><div class="usage-desc">Pour orienter une décision ou un comportement, souvent avec des verbes comme beber, comer, tener cuidado.</div></div>
+          <div class="usage-example">Bebe más agua durante el día.<span class="trans">Bois plus d'eau pendant la journée.</span></div>
+        </div>
+
+        <div class="usage-card">
+          <div class="usage-icon">📋</div>
+          <div class="usage-text"><div class="usage-title">Instructions et modes d'emploi</div><div class="usage-desc">Recettes de cuisine, notices techniques, consignes d'examen : la forme usted/ustedes ou vosotros domine.</div></div>
+          <div class="usage-example">Añada la sal y remueva bien.<span class="trans">Ajoutez le sel et remuez bien.</span></div>
+        </div>
+
+        <div class="usage-card">
+          <div class="usage-icon">🤲</div>
+          <div class="usage-text"><div class="usage-title">Permission</div><div class="usage-desc">Autoriser quelqu'un à faire quelque chose, souvent en réponse à une demande.</div></div>
+          <div class="usage-example">Pasa, pasa, no te preocupes.<span class="trans">Entre, entre, ne t'inquiète pas.</span></div>
+        </div>
+
+        <div class="usage-card">
+          <div class="usage-icon">🙏</div>
+          <div class="usage-text"><div class="usage-title">Invitation polie (usted)</div><div class="usage-desc">Dans un cadre formel ou commercial, l'impératif avec usted reste très courtois.</div></div>
+          <div class="usage-example">Siéntese, por favor.<span class="trans">Asseyez-vous, je vous prie.</span></div>
+        </div>
+
+        <div class="usage-card">
+          <div class="usage-icon">💼</div>
+          <div class="usage-text"><div class="usage-title">Consignes professionnelles / publicité</div><div class="usage-desc">Très fréquent dans les documents ECG : slogans, appels à l'action, instructions de gestion.</div></div>
+          <div class="usage-example">Consulten nuestra página web para más información.<span class="trans">Consultez notre site web pour plus d'informations.</span></div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 5 : POSITION DES PRONOMS ENCLITIQUES   -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="pronoms">
+      <div class="section-header">
+        <div class="section-num">5</div>
+        <div class="section-info">
+          <div class="section-tag">Point clé</div>
+          <div class="section-title">Position des pronoms compléments</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>C'est l'une des particularités les plus caractéristiques de l'impératif espagnol : la position des pronoms compléments <strong>change selon la forme</strong>. À l'affirmatif, ils se soudent <strong>après</strong> le verbe (forme enclitique) ; au négatif, ils se placent <strong>avant</strong>, comme dans les autres temps.</p>
+      </div>
+
+      <div class="def-box">
+        <div class="def-label">Règle de position et d'accentuation</div>
+        <p><strong>Affirmatif</strong> : Verbe + pronom(s) soudés en un seul mot. Un accent écrit est ajouté si l'ajout du ou des pronoms déplace la syllabe naturellement accentuée.<br>
+        <strong>Négatif</strong> : no + pronom(s) + verbe, tous séparés, jamais d'accent ajouté.<br>
+        <strong>Ordre des pronoms doubles</strong> : complément d'objet indirect avant complément d'objet direct (me lo, te lo, se lo…).</p>
+      </div>
+
+      <div class="adv-grid">
+        <div class="adv-pill">
+          <span class="adv-en">di + me → dime</span>
+          <span class="adv-fr">dis-moi</span>
+        </div>
+        <div class="adv-pill">
+          <span class="adv-en">compra + lo → cómpralo</span>
+          <span class="adv-fr">achète-le</span>
+        </div>
+        <div class="adv-pill">
+          <span class="adv-en">levanta + te → levántate</span>
+          <span class="adv-fr">lève-toi</span>
+        </div>
+        <div class="adv-pill">
+          <span class="adv-en">di + me + lo → dímelo</span>
+          <span class="adv-fr">dis-le-moi</span>
+        </div>
+        <div class="adv-pill">
+          <span class="adv-en">diga + le + lo → dígaselo</span>
+          <span class="adv-fr">dites-le-lui</span>
+        </div>
+        <div class="adv-pill">
+          <span class="adv-en">sentad + os → sentaos</span>
+          <span class="adv-fr">asseyez-vous</span>
+        </div>
+      </div>
+
+      <div class="hl-box danger">
+        <div class="hl-icon">🚫</div>
+        <div class="hl-body">
+          <strong>« le / les » devient « se » :</strong> devant un pronom d'objet direct commençant par <em>l</em> (lo, la, los, las), le pronom d'objet indirect <em>le/les</em> se transforme obligatoirement en <em>se</em> : <em>dígale + lo → dígaselo</em>, jamais « dígalelo ».
+        </div>
+      </div>
+
+      <div class="hl-box tip">
+        <div class="hl-icon">💡</div>
+        <div class="hl-body">
+          <strong>Cas particulier de vosotros :</strong> devant le pronom réfléchi <em>os</em>, le <em>-d</em> final de l'impératif vosotros disparaît : <em>sentad + os → sentaos</em> (et non « sentados »). Seule exception : <em>idos</em> (irse).
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 6 : VERBES IRRÉGULIERS (TÚ)            -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="irregulares">
+      <div class="section-header">
+        <div class="section-num">6</div>
+        <div class="section-info">
+          <div class="section-tag">Approfondissement</div>
+          <div class="section-title">Les huit impératifs irréguliers (tú)</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>Huit verbes très fréquents possèdent une forme <strong>irrégulière et monosyllabique</strong> à l'impératif affirmatif de <em>tú</em>. Aux autres personnes (usted, ustedes, nosotros), ils redeviennent réguliers puisqu'ils suivent le subjonctif, construit sur le radical irrégulier du présent (yo).</p>
+      </div>
+
+      <div class="def-box">
+        <div class="def-label">Formes clés à mémoriser (tú)</div>
+        <p>
+          <strong>decir</strong> → di · <strong>hacer</strong> → haz · <strong>ir</strong> → ve · <strong>poner</strong> → pon<br>
+          <strong>salir</strong> → sal · <strong>ser</strong> → sé · <strong>tener</strong> → ten · <strong>venir</strong> → ven
+        </p>
+      </div>
+
+      <div style="margin-bottom:8px; font-family:'DM Mono',monospace; font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--text-faint);">Impératifs irréguliers — tableau récapitulatif</div>
+      <div class="conj-table">
+        <div class="conj-table-head">
+          <div class="th pron">Infinitif</div>
+          <div class="th form">Tú (irrégulier)</div>
+          <div class="th ex">Exemple</div>
+        </div>
+        <div class="conj-row"><span class="pron-cell">decir</span><span class="form-cell" style="color:var(--accent2);">di</span><span class="ex-cell">Dime la verdad.</span></div>
+        <div class="conj-row"><span class="pron-cell">hacer</span><span class="form-cell" style="color:var(--accent2);">haz</span><span class="ex-cell">Haz los deberes ya.</span></div>
+        <div class="conj-row"><span class="pron-cell">ir</span><span class="form-cell" style="color:var(--accent2);">ve</span><span class="ex-cell">Ve a la reunión sin mí.</span></div>
+        <div class="conj-row"><span class="pron-cell">poner</span><span class="form-cell" style="color:var(--accent2);">pon</span><span class="ex-cell">Pon la mesa, por favor.</span></div>
+        <div class="conj-row"><span class="pron-cell">salir</span><span class="form-cell" style="color:var(--accent2);">sal</span><span class="ex-cell">Sal de aquí ahora mismo.</span></div>
+        <div class="conj-row"><span class="pron-cell">ser</span><span class="form-cell" style="color:var(--accent2);">sé</span><span class="ex-cell">Sé puntual mañana.</span></div>
+        <div class="conj-row"><span class="pron-cell">tener</span><span class="form-cell" style="color:var(--accent2);">ten</span><span class="ex-cell">Ten paciencia, por favor.</span></div>
+        <div class="conj-row"><span class="pron-cell">venir</span><span class="form-cell" style="color:var(--accent2);">ven</span><span class="ex-cell">Ven conmigo al despacho.</span></div>
+      </div>
+
+      <div class="hl-box tip" style="margin-top:24px;">
+        <div class="hl-icon">💡</div>
+        <div class="hl-body">
+          <strong>Aux autres personnes, tout redevient prévisible :</strong> puisque usted/ustedes/nosotros suivent le subjonctif présent, il suffit de connaître le radical irrégulier de la 1ère personne du présent (hago, pongo, salgo, tengo, vengo, digo) pour retrouver <em>haga, ponga, salga, tenga, venga, diga</em> — et <em>vaya</em> (ir), <em>sea</em> (ser), qui restent purement irréguliers.
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 7 : AFFIRMATIF vs NÉGATIF               -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="comparaison">
+      <div class="section-header">
+        <div class="section-num">7</div>
+        <div class="section-info">
+          <div class="section-tag">Comparaison</div>
+          <div class="section-title">Impératif affirmatif vs négatif</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>Résumer les différences entre les deux formes permet d'éviter l'erreur la plus fréquente des francophones : appliquer au négatif la structure de l'affirmatif.</p>
+      </div>
+
+      <div class="cmp-table">
+        <div class="cmp-head">
+          <div class="th" style="color:var(--text-faint);">Critère</div>
+          <div class="th ps">Affirmatif</div>
+          <div class="th pc">Négatif</div>
+        </div>
+        <div class="cmp-row">
+          <div class="cmp-label">Base grammaticale</div>
+          <div class="cmp-ps">indicatif (tú/vosotros) + subjonctif (usted/ustedes/nosotros)</div>
+          <div class="cmp-pc">subjonctif présent pour toutes les personnes</div>
+        </div>
+        <div class="cmp-row">
+          <div class="cmp-label">Position des pronoms</div>
+          <div class="cmp-ps">enclitiques, soudés après le verbe</div>
+          <div class="cmp-pc">séparés, placés avant le verbe</div>
+        </div>
+        <div class="cmp-row">
+          <div class="cmp-label">Exemple (hablar, tú)</div>
+          <div class="cmp-ps">Háblale con calma.</div>
+          <div class="cmp-pc">No le hables así.</div>
+        </div>
+        <div class="cmp-row">
+          <div class="cmp-label">Exemple (comer, usted)</div>
+          <div class="cmp-ps">Cómalo despacio.</div>
+          <div class="cmp-pc">No lo coma tan rápido.</div>
+        </div>
+        <div class="cmp-row">
+          <div class="cmp-label">Accent écrit</div>
+          <div class="cmp-ps">souvent nécessaire (cómpralo, dímelo)</div>
+          <div class="cmp-pc">jamais ajouté par la négation</div>
+        </div>
+        <div class="cmp-row">
+          <div class="cmp-label">Forme « ir », nosotros</div>
+          <div class="cmp-ps" style="color:var(--col-neg);">vamos (irrégulier, hors subjonctif)</div>
+          <div class="cmp-pc">no vayamos (régulier, subjonctif)</div>
+        </div>
+      </div>
+
+      <div class="hl-box tip">
+        <div class="hl-icon">💡</div>
+        <div class="hl-body">
+          <strong>Réflexe à automatiser :</strong> dès que vous voyez <em>no</em> devant un ordre, basculez immédiatement vers le subjonctif présent et replacez les pronoms devant le verbe. C'est la source d'erreur numéro un des candidats à l'écrit du concours.
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 8 : EXERCICES                         -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="exercices">
+      <div class="section-header">
+        <div class="section-num">8</div>
+        <div class="section-info">
+          <div class="section-tag">Entraînement</div>
+          <div class="section-title">Exercices de consolidation</div>
+        </div>
+      </div>
+
+      <!-- Exercice 1 : Conjugaison -->
+      <div class="exercise-block">
+        <div class="ex-header">
+          <span class="ex-badge">Exercice 1</span>
+          <span class="ex-title">Conjuguez à l'impératif affirmatif (tú)</span>
+        </div>
+        <div class="ex-items" id="ex1">
+          <div class="ex-item">
+            <span class="ex-num">1.</span>
+            <div>
+              <div class="ex-q">(Cerrar) <strong>la ventana, por favor.</strong></div>
+              <div class="ex-answer">Cierra</div>
+            </div>
+          </div>
+          <div class="ex-item">
+            <span class="ex-num">2.</span>
+            <div>
+              <div class="ex-q">(Hacer) <strong>tus deberes antes de salir.</strong></div>
+              <div class="ex-answer">Haz</div>
+            </div>
+          </div>
+          <div class="ex-item">
+            <span class="ex-num">3.</span>
+            <div>
+              <div class="ex-q">(Tener) <strong>cuidado con el tráfico.</strong></div>
+              <div class="ex-answer">Ten</div>
+            </div>
+          </div>
+          <div class="ex-item">
+            <span class="ex-num">4.</span>
+            <div>
+              <div class="ex-q">(Ir) <strong>tú primero, yo voy después.</strong></div>
+              <div class="ex-answer">Ve</div>
+            </div>
+          </div>
+          <div class="ex-item">
+            <span class="ex-num">5.</span>
+            <div>
+              <div class="ex-q">(Decir) <strong>me la verdad, por favor.</strong></div>
+              <div class="ex-answer">Dime</div>
+            </div>
+          </div>
+          <div class="ex-item">
+            <span class="ex-num">6.</span>
+            <div>
+              <div class="ex-q">(Buscar) <strong>una solución rápida.</strong></div>
+              <div class="ex-answer">Busca</div>
+            </div>
+          </div>
+        </div>
+        <button class="show-answers-btn" onclick="revealAnswers('ex1', this)">Afficher les réponses</button>
+      </div>
+
+      <!-- Exercice 2 : Négatif -->
+      <div class="exercise-block">
+        <div class="ex-header">
+          <span class="ex-badge">Exercice 2</span>
+          <span class="ex-title">Transformez à la forme négative</span>
+        </div>
+        <div class="ex-items" id="ex2">
+          <div class="ex-item">
+            <span class="ex-num">1.</span>
+            <div>
+              <div class="ex-q">Cierra la puerta. → négatif</div>
+              <div class="ex-answer">No cierres la puerta.</div>
+            </div>
+          </div>
+          <div class="ex-item">
+            <span class="ex-num">2.</span>
+            <div>
+              <div class="ex-q">Dímelo ahora. → négatif</div>
+              <div class="ex-answer">No me lo digas ahora.</div>
+            </div>
+          </div>
+          <div class="ex-item">
+            <span class="ex-num">3.</span>
+            <div>
+              <div class="ex-q">Vayamos a la playa. → négatif</div>
+              <div class="ex-answer">No vayamos a la playa.</div>
+            </div>
+          </div>
+          <div class="ex-item">
+            <span class="ex-num">4.</span>
+            <div>
+              <div class="ex-q">Cómprelo usted. → négatif</div>
+              <div class="ex-answer">No lo compre usted.</div>
+            </div>
+          </div>
+        </div>
+        <button class="show-answers-btn" onclick="revealAnswers('ex2', this)">Afficher les réponses</button>
+      </div>
+
+      <!-- Exercice 3 : Pronoms enclitiques -->
+      <div class="exercise-block">
+        <div class="ex-header">
+          <span class="ex-badge">Exercice 3</span>
+          <span class="ex-title">Ajoutez les pronoms compléments et placez l'accent si nécessaire</span>
+        </div>
+        <div class="ex-items" id="ex3">
+          <div class="ex-item">
+            <span class="ex-num">1.</span>
+            <div>
+              <div class="ex-q">Compra + lo (tú, affirmatif)</div>
+              <div class="ex-answer">Cómpralo → accent nécessaire (3 syllabes avant l'accent naturel)</div>
+            </div>
+          </div>
+          <div class="ex-item">
+            <span class="ex-num">2.</span>
+            <div>
+              <div class="ex-q">Diga + le + lo (usted, affirmatif)</div>
+              <div class="ex-answer">Dígaselo → le devient se devant lo, accent ajouté</div>
+            </div>
+          </div>
+          <div class="ex-item">
+            <span class="ex-num">3.</span>
+            <div>
+              <div class="ex-q">Levanta + te (tú, affirmatif)</div>
+              <div class="ex-answer">Levántate → accent nécessaire</div>
+            </div>
+          </div>
+          <div class="ex-item">
+            <span class="ex-num">4.</span>
+            <div>
+              <div class="ex-q">Sentad + os (vosotros, affirmatif)</div>
+              <div class="ex-answer">Sentaos → le -d disparaît devant os</div>
+            </div>
+          </div>
+        </div>
+        <button class="show-answers-btn" onclick="revealAnswers('ex3', this)">Afficher les réponses</button>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+<script>
+  function revealAnswers(blockId, btn) {
+    const block = document.getElementById(blockId);
+    const items = block.querySelectorAll('.ex-item');
+    const isRevealed = btn.dataset.revealed === 'true';
+
+    if (isRevealed) {
+      items.forEach(item => item.classList.remove('revealed'));
+      btn.textContent = 'Afficher les réponses';
+      btn.dataset.revealed = 'false';
+    } else {
+      items.forEach(item => item.classList.add('revealed'));
+      btn.textContent = 'Masquer les réponses';
+      btn.dataset.revealed = 'true';
+    }
+  }
+</script>
+
+</body>
+</html>

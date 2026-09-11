@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Maths Chapitre 18 : Théorèmes d'analyse réelle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false}]});"></script>
+<style>
+  :root {
+    --cream: #FAF3EA;
+    --dark: #241209;
+    --terra: #B5551F;
+    --terra-dark: #3B160A;
+    --terra-mid: #C97A42;
+    --terra-light: #F1DDC5;
+    --terra-border: #D9A877;
+    --glow: #E8C39A;
+    --muted: #8A6349;
+    --accent: #B5551F;
+    --accent-soft: #B5551F22;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--dark); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid rgba(181,85,31,0.25);
+    background: var(--terra-dark); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--glow); cursor: pointer; letter-spacing: 0.02em; }
+  .nav-logo a { color: inherit; text-decoration: none; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(250,243,234,0.5); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: inherit; text-decoration: none; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb a:hover span, .breadcrumb span:hover { color: var(--glow); }
+  .breadcrumb .sep { color: rgba(250,243,234,0.25); }
+  .breadcrumb .current { color: #FAF3EA; cursor: default; }
+
+  /* ─── HERO ─── */
+  .ch-hero {
+    background: radial-gradient(120% 140% at 15% 0%, #5A2410 0%, var(--terra-dark) 55%, #2C0F06 100%);
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ch-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C97A42' fill-opacity='0.18'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--glow); margin-bottom: 1.5rem; opacity: 0.9; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 4rem); color: var(--cream); font-weight: 900; max-width: 900px; margin: 0 auto 1.5rem; line-height: 1.1; position: relative; z-index: 1; }
+  .ch-hero p { color: rgba(250,243,234,0.5); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  /* ─── TOC ─── */
+  .toc-bar { background: #F2E4D3; padding: 2rem; border-bottom: 1px solid var(--terra-border); }
+  .toc-inner { max-width: 960px; margin: 0 auto; }
+  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
+  .toc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.4rem; list-style: none; }
+  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: #2E1810; font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
+  .toc-list a:hover { border-color: var(--terra-border); background: white; color: #000; }
+  .toc-num { font-family: "DM Mono", monospace; font-size: 0.65rem; color: var(--terra); flex-shrink: 0; margin-top: 0.15rem; }
+
+  /* ─── CONTENT ─── */
+  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 3rem; }
+
+  /* PART */
+  .math-part { margin-bottom: 5rem; }
+  .math-part:last-of-type { margin-bottom: 0; }
+  .math-part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--terra); }
+  .math-part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: var(--terra-border); line-height: 1; flex-shrink: 0; }
+  .math-part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--dark); line-height: 1.25; }
+
+  /* SECTION */
+  .math-section { margin-bottom: 3.5rem; }
+  .math-section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--terra-dark); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--terra); scroll-margin-top: 2rem; }
+  .math-subsection-title { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--terra); margin: 2rem 0 0.75rem; }
+
+  /* TEXT */
+  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: #2A1710; line-height: 1.85; font-weight: 300; }
+  .content strong { color: var(--dark); font-weight: 600; }
+
+  /* DÉFINITION CARD */
+  .def-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(181,85,31,0.10), 0 0 0 1px rgba(181,85,31,0.14);
+    display: flex;
+    margin: 1.4rem 0;
+  }
+  .def-accent-bar {
+    width: 5px;
+    background: linear-gradient(180deg, #D98A4C 0%, #3B160A 100%);
+    flex-shrink: 0;
+    border-radius: 10px 0 0 10px;
+  }
+  .def-body { padding: 1.2rem 1.5rem; flex: 1; }
+  .def-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.65rem; }
+  .def-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--terra); font-weight: 500; }
+  .def-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--terra-dark); }
+  .def-body p { margin-bottom: 0.5rem; font-size: 0.93rem; line-height: 1.75; }
+  .def-body p:last-child { margin-bottom: 0; }
+
+  /* PROPRIÉTÉ CARD */
+  .prop-card {
+    background: var(--terra-light);
+    border-radius: 8px;
+    border: 1px solid var(--terra-border);
+    border-left: 4px solid var(--terra);
+    padding: 1.2rem 1.5rem;
+    margin: 1.4rem 0;
+  }
+  .prop-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--terra-dark); font-weight: 700; margin-bottom: 0.6rem; }
+  .prop-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--terra-dark); margin-bottom: 0.7rem; }
+  .prop-card p { margin-bottom: 0.5rem; font-size: 0.93rem; color: var(--terra-dark); line-height: 1.75; }
+  .prop-card p:last-child { margin-bottom: 0; }
+  .prop-card ol { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .prop-card ol li { font-size: 0.93rem; color: var(--terra-dark); line-height: 1.8; margin-bottom: 0.35rem; }
+  .prop-card ul { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .prop-card ul li { font-size: 0.93rem; color: var(--terra-dark); line-height: 1.8; margin-bottom: 0.35rem; }
+
+  /* THÉORÈME CARD */
+  .thm-card {
+    background: var(--terra-dark);
+    color: var(--cream);
+    border-radius: 8px;
+    padding: 1.5rem 1.75rem;
+    margin: 1.4rem 0;
+  }
+  .thm-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--glow); margin-bottom: 0.5rem; }
+  .thm-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--cream); margin-bottom: 0.75rem; }
+  .thm-card p { color: rgba(250,243,234,0.88); font-size: 0.93rem; margin-bottom: 0.5rem; line-height: 1.75; }
+  .thm-card p:last-child { margin-bottom: 0; }
+  .thm-card ul, .thm-card ol { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .thm-card li { font-size: 0.93rem; color: rgba(250,243,234,0.88); line-height: 1.8; margin-bottom: 0.35rem; }
+
+  /* MÉTHODE CARD */
+  .meth-card {
+    background: white;
+    border: 2px solid var(--terra);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.4rem 0;
+  }
+  .meth-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--terra); font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+  .meth-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--terra-dark); margin-bottom: 0.7rem; }
+  .meth-card p { font-size: 0.93rem; line-height: 1.75; margin-bottom: 0.5rem; }
+  .meth-card p:last-child { margin-bottom: 0; }
+  .meth-card ul, .meth-card ol { padding-left: 1.4rem; margin: 0.3rem 0 0.5rem; }
+  .meth-card li { font-size: 0.93rem; line-height: 1.8; margin-bottom: 0.3rem; }
+
+  /* REMARQUE */
+  .remark { background: white; border-left: 3px solid var(--terra-border); padding: 1rem 1.4rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; font-size: 0.9rem; color: #2E1810; line-height: 1.7; font-style: italic; }
+  .remark::before { content: 'Remarque — '; font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--terra); display: block; margin-bottom: 0.3rem; }
+
+  /* FORMULE DISPLAY */
+  .formula-block {
+    background: white;
+    border: 1px solid var(--terra-border);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.2rem 0;
+    text-align: center;
+    overflow-x: auto;
+    color: var(--dark);
+  }
+  .formula-block .katex-display { margin: 0; }
+  .formula-block .katex { font-size: 1.05em; color: var(--dark); }
+
+  /* Cartes à fond blanc : toujours forcer le texte en noir/sombre,
+     même imbriquées dans un thm-card à fond sombre */
+  .def-card, .meth-card, .formula-block {
+    color: var(--dark);
+  }
+  .def-card *, .meth-card *, .formula-block * { color: inherit; }
+  .def-card .def-label, .meth-card .meth-label { color: var(--terra); }
+  .def-card .def-name, .meth-card .meth-title { color: var(--terra-dark); }
+
+  /* TABLE */
+  .math-table-wrap { overflow-x: auto; margin: 1.5rem 0; border-radius: 8px; border: 1px solid var(--terra-border); box-shadow: 0 2px 8px rgba(181,85,31,0.08); }
+  .math-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .math-table th { background: var(--terra-dark); color: var(--cream); font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.75rem 1rem; text-align: center; font-weight: 500; border: 1px solid rgba(255,255,255,0.1); }
+  .math-table td { padding: 0.65rem 1rem; text-align: center; border: 1px solid var(--terra-light); color: #2A1710; vertical-align: middle; background: white; line-height: 1.6; }
+  .math-table tr:nth-child(even) td { background: #FAF3EA; }
+  .math-table tr:hover td { background: var(--terra-light); }
+  .math-table td.left { text-align: left; }
+  .math-table .katex { font-size: 0.95em; }
+
+  /* KEY FACT */
+  .math-key { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 0.6rem; padding: 0.85rem 1.1rem; background: white; border: 1px solid var(--terra-light); border-radius: 6px; }
+  .math-key-bullet { width: 6px; height: 6px; background: var(--terra); border-radius: 50%; flex-shrink: 0; margin-top: 0.55rem; }
+  .math-key > div { font-size: 0.91rem; color: #2A1710; line-height: 1.75; font-weight: 300; }
+
+  /* INLINE MATH */
+  .katex { font-size: 1em; }
+  .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.2rem 0; }
+
+  /* DEUX COLONNES */
+  .two-col-formulas { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
+  .two-col-formulas .formula-block { margin: 0; }
+
+  /* TROIS COLONNES */
+  .three-col-formulas { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
+  .three-col-formulas .formula-block { margin: 0; }
+
+  /* HIGHLIGHT BOX */
+  .math-highlight { background: var(--terra-light); border-left: 4px solid var(--terra); padding: 1.25rem 1.75rem; margin: 1.5rem 0; color: var(--terra-dark); font-size: 0.93rem; line-height: 1.75; border-radius: 0 6px 6px 0; }
+
+  /* FOOTER */
+  .site-footer {
+    background: var(--terra-dark);
+    border-top: 1px solid rgba(181,85,31,0.35);
+    padding: 2.5rem 2rem;
+    text-align: center;
+  }
+  .site-footer .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--glow);
+    letter-spacing: 0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+  /* BACK TO TOP */
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--terra); color: var(--cream); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 4px 14px rgba(181,85,31,0.45); opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 200; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+  .back-to-top:hover { background: var(--terra-mid); }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--terra-border); border-radius: 3px; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .two-col-formulas { grid-template-columns: 1fr; }
+    .three-col-formulas { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    @page { size: A4; margin: 15mm 14mm 15mm 14mm; }
+    nav, .back-to-top, .toc-bar, .site-footer { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    html, body { background: white !important; color: #000 !important; font-size: 10pt; width: 100% !important; }
+    .ch-hero { background: #3B160A !important; padding: 0.9rem 1rem 0.7rem !important; }
+    .ch-hero::before { display: none !important; }
+    .ch-hero h1 { font-size: 16pt !important; color: #fff !important; margin-bottom: 0.3rem !important; }
+    .ch-hero .chap-label { font-size: 7pt !important; color: #E8C39A !important; margin-bottom: 0.4rem !important; }
+    .ch-hero p { font-size: 7pt !important; color: #E8C39A !important; margin: 0 !important; }
+    .content { max-width: 100% !important; padding: 0.6rem 0 !important; margin: 0 !important; }
+    .content p { font-size: 9pt !important; line-height: 1.5 !important; margin-bottom: 0.45rem !important; color: #000 !important; }
+    .math-part { margin-bottom: 0.8rem; page-break-inside: auto; }
+    .math-part-header { page-break-after: avoid; padding-bottom: 0.6rem !important; margin-bottom: 1rem !important; border-bottom: 2pt solid #B5551F !important; }
+    .math-part-num { font-size: 2rem !important; color: #D9A877 !important; }
+    .math-part-title { font-size: 13pt !important; }
+    .math-section { page-break-inside: auto; margin-bottom: 0.8rem; }
+    .math-section-title { page-break-after: avoid; font-size: 11pt !important; padding-left: 0.7rem !important; border-left: 2.5pt solid #B5551F !important; margin-bottom: 0.55rem !important; color: #3B160A !important; }
+    .math-subsection-title { page-break-after: avoid; font-size: 7pt !important; margin: 0.65rem 0 0.35rem !important; color: #B5551F !important; }
+    .def-card { page-break-inside: avoid; box-shadow: none !important; border: 1pt solid #D9A877 !important; display: flex !important; border-radius: 0 !important; margin: 0.55rem 0 !important; }
+    .def-accent-bar { background: #B5551F !important; width: 4px !important; border-radius: 0 !important; }
+    .def-body { padding: 0.7rem 1rem !important; }
+    .def-body p { font-size: 8.5pt !important; line-height: 1.5 !important; color: #000 !important; }
+    .prop-card { page-break-inside: avoid; background: #F1DDC5 !important; border: 1pt solid #D9A877 !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .prop-card p, .prop-card li { font-size: 8.5pt !important; line-height: 1.5 !important; }
+    .thm-card { page-break-inside: avoid; background: #3B160A !important; padding: 0.7rem 1rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .thm-label { font-size: 6pt !important; color: #E8C39A !important; }
+    .thm-title { font-size: 9.5pt !important; color: #fff !important; }
+    .thm-card p, .thm-card li { font-size: 8.5pt !important; line-height: 1.5 !important; color: #F5EBDD !important; }
+    .meth-card { page-break-inside: avoid; border: 1.5pt solid #B5551F !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .meth-title { font-size: 9.5pt !important; }
+    .meth-card p, .meth-card li { font-size: 8.5pt !important; line-height: 1.5 !important; }
+    .remark { border-left: 2pt solid #D9A877 !important; padding: 0.5rem 0.8rem !important; margin: 0.5rem 0 !important; font-size: 8pt !important; border-radius: 0 !important; }
+    .formula-block { border: 1pt solid #D9A877 !important; padding: 0.55rem 0.8rem !important; margin: 0.5rem 0 !important; border-radius: 0 !important; }
+    .math-table-wrap { border: 1pt solid #D9A877 !important; border-radius: 0 !important; box-shadow: none !important; margin: 0.5rem 0 !important; }
+    .math-table th { background: #3B160A !important; color: #E8C39A !important; font-size: 6.5pt !important; padding: 0.4rem 0.6rem !important; }
+    .math-table td { font-size: 8pt !important; padding: 0.4rem 0.6rem !important; border: 0.5pt solid #F1DDC5 !important; }
+    .two-col-formulas, .three-col-formulas { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 0.5rem !important; margin: 0.45rem 0 !important; }
+    .katex { font-size: 0.82em !important; }
+    .katex-display { margin: 0.15rem 0 !important; overflow: visible !important; }
+    .katex-html { white-space: normal !important; }
+    .katex .base { display: inline !important; white-space: nowrap !important; }
+    .def-body p, .prop-card p, .thm-card p, .remark, .math-key > div, .content p { overflow: visible !important; word-break: break-word !important; }
+    .formula-block { overflow: visible !important; height: auto !important; min-height: 0 !important; text-align: center !important; }
+    .formula-block .katex-display { overflow-x: visible !important; overflow-y: visible !important; text-align: center !important; }
+    .math-table td, .math-table th { overflow: visible !important; word-break: break-word !important; }
+    .katex *, .katex-html * { position: static !important; top: auto !important; bottom: auto !important; left: auto !important; right: auto !important; }
+    .math-table .katex { font-size: 0.75em !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left"><div class="nav-logo"><a href="../../index.html">ECG Prépa</a></div></div>
+  <div class="breadcrumb">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">/</span>
+    <a href="index.html"><span>Mathématiques</span></a>
+    <span class="sep">/</span>
+    <span class="current">Chapitre 18</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="chap-label">&#x2015;&nbsp; Chapitre 18 · Mathématiques approfondies &nbsp;&#x2015;</div>
+  <h1>Théorèmes d'analyse réelle</h1>
+  <p>Bijection · Régularité · Rolle & accroissements finis · Taylor · Sommes de Riemann</p>
+</div>
+
+<!-- TOC -->
+<div class="toc-bar">
+  <div class="toc-inner">
+    <div class="toc-title">Table des matières</div>
+    <ul class="toc-list">
+      <li><a href="#part1"><span class="toc-num">I</span> Complément sur les limites</a></li>
+      <li><a href="#part2"><span class="toc-num">II</span> Le théorème de la bijection</a></li>
+      <li><a href="#part3"><span class="toc-num">III</span> Théorèmes utilisant la régularité</a></li>
+      <li><a href="#part4"><span class="toc-num">IV</span> Dérivées successives et formules de Taylor</a></li>
+      <li><a href="#part5"><span class="toc-num">V</span> Complément d'intégration : sommes de Riemann</a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════════
+     PARTIE I — COMPLÉMENT SUR LES LIMITES
+════════════════════════════════════════ -->
+<div class="math-part" id="part1">
+  <div class="math-part-header">
+    <div class="math-part-num">I</div>
+    <div class="math-part-title">Complément sur les limites</div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="math-section" id="s1-1">
+    <div class="math-section-title">1 — Définition mathématique d'une limite</div>
+
+    <p>Dans ce paragraphe, \(f\) est une fonction définie sur un \(I\) de \(\mathbb{R}\) contenant \(a\) réel ou infini. On définit ici de manière théorique le fait que \(f(x)\) tend vers \(L\) (\(L\) réel ou infini) quand \(x\) tend vers \(a\) (\(a\) réel ou infini).</p>
+
+    <p>On appelle voisinage ouvert de \(a\) tout intervalle ouvert contenant \(a\) et contenu dans \(I\) :</p>
+    <div class="math-key"><div class="math-key-bullet"></div><div>si \(a\) est réel, c'est un intervalle du type \(]a-r, a+r[\) avec \(r > 0\)</div></div>
+    <div class="math-key"><div class="math-key-bullet"></div><div>si \(a = +\infty\), c'est un intervalle du type \(]A, +\infty[\) avec \(A > 0\)</div></div>
+    <div class="math-key"><div class="math-key-bullet"></div><div>si \(a = -\infty\), c'est un intervalle du type \(]-\infty, B[\) avec \(B < 0\)</div></div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span><span class="def-name">Limite égale à 0</span></div>
+        <p>On dit que \(\displaystyle\lim_{x\to a} f(x) = 0\) ssi \(\forall \varepsilon > 0,\ \exists V\) voisinage ouvert de \(a\) tel que \(\forall x \in V,\ |f(x)| < \varepsilon\)</p>
+      </div>
+    </div>
+
+    <div class="remark">\(\displaystyle\lim_{x\to a} f(x) = 0 \iff \lim_{x\to a} |f(x)| = 0\)</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 2</span><span class="def-name">Limite égale à \(+\infty\) ou \(-\infty\)</span></div>
+        <p>On dit que \(\displaystyle\lim_{x\to a} f(x) = +\infty\) ssi \(\forall A > 0,\ \exists V\) voisinage ouvert de \(a\) tel que \(\forall x \in V,\ f(x) > A\)</p>
+        <p>On dit que \(\displaystyle\lim_{x\to a} f(x) = -\infty\) ssi \(\forall B < 0,\ \exists V\) voisinage ouvert de \(a\) tel que \(\forall x \in V,\ f(x) < B\)</p>
+      </div>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 3</span><span class="def-name">Limite réelle</span></div>
+        <p>On a l'équivalence :</p>
+        <div class="formula-block">\[\lim_{x\to a} f(x) = L \in \mathbb{R} \iff \lim_{x\to a} \big[f(x) - L\big] = 0\]</div>
+      </div>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 4</span><span class="def-name">Limite d'une suite</span></div>
+        <p>On dit que \(\displaystyle\lim_{n\to+\infty} u_n = 0\) ssi \(\forall \varepsilon > 0,\ \exists N\) tel que \(\forall n \geq N,\ |u_n| < \varepsilon\)</p>
+        <p>On dit que \(\displaystyle\lim_{n\to+\infty} u_n = +\infty\) ssi \(\forall A > 0,\ \exists N\) tel que \(\forall n \geq N,\ u_n > A\)</p>
+        <p>On dit que \(\displaystyle\lim_{n\to+\infty} u_n = -\infty\) ssi \(\forall B < 0,\ \exists N\) tel que \(\forall n \geq N,\ u_n < B\)</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="math-section" id="s1-2">
+    <div class="math-section-title">2 — Notion de borne sup et de borne inf</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <div class="prop-title">Borne supérieure et borne inférieure</div>
+      <p>Soit \(A\) une partie non vide de \(\mathbb{R}\).</p>
+      <ul>
+        <li>On suppose que \(A\) est majorée c'est-à-dire on suppose que \(\exists M \in \mathbb{R}\) tel que \(\forall x \in A,\ x \leq M\). Dans ce cas, la partie \(A\) admet un plus petit majorant, qu'on appelle la <strong>borne supérieure</strong> de \(A\) et qu'on note \(\sup(A)\)</li>
+        <li>On suppose que \(A\) est minorée c'est-à-dire on suppose que \(\exists m \in \mathbb{R}\) tel que \(\forall x \in A,\ x \geq m\). Dans ce cas, la partie \(A\) admet un plus grand minorant, qu'on appelle la <strong>borne inférieure</strong> de \(A\) et qu'on note \(\inf(A)\)</li>
+      </ul>
+    </div>
+
+    <p>Une partie qui admet un majorant \(M\) admet une infinité de majorants (par exemple, tous les \(M+a\), \(a > 0\)). La borne supérieure est le plus petit de tous les majorants. On a donc l'équivalence :</p>
+    <div class="formula-block">\[\alpha = \sup(A) \iff \begin{cases} \forall x \in A,\ x \leq \alpha \\ \forall \varepsilon > 0\ \exists x \in A\ \text{tq}\ \alpha - \varepsilon < x \end{cases}\]</div>
+
+    <p>De même, une partie qui admet un minorant \(m\) admet une infinité de minorants (par exemple, tous les \(m-a\), \(a>0\)). La borne inférieure est le plus grand de tous les minorants. On a l'équivalence :</p>
+    <div class="formula-block">\[\beta = \inf(A) \iff \begin{cases} \forall x \in A,\ x \geq \beta \\ \forall \varepsilon > 0\ \exists x \in A\ \text{tq}\ x < \beta + \varepsilon \end{cases}\]</div>
+
+    <div class="remark">Il ne faut pas confondre plus petit élément et borne inférieure ou plus grand élément et borne supérieure (la borne inférieure peut ne pas être un élément de l'ensemble). Par exemple, \(]1,2]\) n'a pas de plus petit élément mais il a une borne inférieure. De même, \([0,2[\) n'a pas de plus grand élément mais une borne supérieure.</div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="math-section" id="s1-3">
+    <div class="math-section-title">3 — Théorème de la limite monotone</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 2</div>
+      <div class="prop-title">Limite monotone pour les suites</div>
+      <ul>
+        <li>Si \((u_n)_n\) est une suite croissante et si \((u_n)_n\) est majorée alors elle converge et, en posant \(\displaystyle\lim_{n\to+\infty} u_n = L\), on a \(\forall n \in \mathbb{N}\), \(u_n \leq L\). Si \((u_n)_n\) n'est pas majorée, \(\displaystyle\lim_{n\to+\infty} u_n = +\infty\)</li>
+        <li>Si \((u_n)_n\) est une suite décroissante et si \((u_n)_n\) est minorée alors elle converge et, en posant \(\displaystyle\lim_{n\to+\infty} u_n = L\), on a \(\forall n \in \mathbb{N}\), \(u_n \geq L\). Si \((u_n)_n\) n'est pas minorée, \(\displaystyle\lim_{n\to+\infty} u_n = -\infty\)</li>
+      </ul>
+    </div>
+
+    <div class="remark">En cas de convergence pour une suite croissante, la limite est le plus petit des majorants.</div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 3</div>
+      <div class="thm-title">Limite monotone pour les fonctions</div>
+      <p><strong>i)</strong> On suppose que \(f\) est définie et croissante sur \(]a,b[\). On a alors :</p>
+      <ul>
+        <li>en tout point \(x_0 \in ]a,b[\), \(f\) admet une limite à gauche et une limite à droite et on a : \(\displaystyle\lim_{t\to x_0^-} f(t) \leq f(x_0) \leq \lim_{t\to x_0^+} f(t)\)</li>
+        <li>si \(f\) est majorée sur \(I\) alors \(\displaystyle\lim_{t\to b^-} f(t)\) existe et est finie et \(\forall x \in I,\ f(x) \leq \lim_{t\to b^-} f(t)\). Sinon, \(f\) n'est pas majorée sur \(I\) et on a \(\displaystyle\lim_{t\to b^-} f(t) = +\infty\)</li>
+        <li>si \(f\) est minorée sur \(I\) alors \(\displaystyle\lim_{t\to a^+} f(t)\) existe et est finie et \(\forall x \in I,\ f(x) \geq \lim_{t\to a^+} f(t)\). Sinon, \(f\) n'est pas minorée sur \(I\) et on a \(\displaystyle\lim_{t\to a^+} f(t) = -\infty\)</li>
+      </ul>
+      <p><strong>ii)</strong> On suppose que \(f\) est définie et décroissante sur \(]a,b[\). Les résultats analogues sont vrais (avec les inégalités inversées).</p>
+    </div>
+
+    <div class="remark">Les conditions à vérifier sont analogues à celles vues pour la limite d'une suite monotone. Pour retenir le résultat, dessiner une courbe correspondant à la situation.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE II — LE THÉORÈME DE LA BIJECTION
+════════════════════════════════════════ -->
+<div class="math-part" id="part2">
+  <div class="math-part-header">
+    <div class="math-part-num">II</div>
+    <div class="math-part-title">Le théorème de la bijection</div>
+  </div>
+
+  <div class="math-section" id="s2-1">
+    <p>Une application \(f : E \to F\) est bijective ssi pour tout \(y\) de \(F\) l'équation \(f(x) = y\) admet une unique solution dans \(E\). Lorsque \(f\) est une fonction définie et continue sur un intervalle \(I\) de \(\mathbb{R}\), on a le théorème suivant :</p>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 1</div>
+      <div class="thm-title">Théorème de la bijection</div>
+      <p>Si \(f\) est continue et strictement monotone sur \(I\) alors \(f\) réalise une bijection de \(I\) sur \(J = f(I) = \{f(t)\ \text{avec}\ t \in I\}\)</p>
+      <p>Ainsi, \(\forall y \in J,\ \exists! x \in I\) tq \(y = f(x)\)</p>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 2</div>
+      <div class="prop-title">Bijection réciproque</div>
+      <p>Si \(f\) est continue et strictement monotone sur \(I\) alors \(f\) réalise une bijection de \(I\) sur \(J = f(I)\). Ainsi, \(\forall y \in J,\ \exists! x \in I\) tel que \(y = f(x)\). Cet unique élément se note \(f^{-1}(y)\)</p>
+      <ul>
+        <li>La fonction \(y \mapsto f^{-1}(y)\) s'appelle fonction réciproque de \(f\) et se note \(f^{-1}\)</li>
+        <li>La fonction \(f^{-1}\) est continue et strictement monotone sur \(J\) et \(f^{-1}\) a le même sens de variation que \(f\)</li>
+        <li>\(C_{f^{-1}}\) se déduit de \(C_f\) par symétrie (orthogonale) par rapport à la droite \(\Delta : y = x\)</li>
+        <li><strong>Dérivabilité de \(f^{-1}\)</strong> : Si \(f\) dérivable sur \(I\) avec \(\forall x \in I,\ f'(x) \neq 0\) alors \(f^{-1}\) est dérivable sur \(J\) et on a :</li>
+      </ul>
+      <div class="formula-block">\[\forall y \in J,\quad (f^{-1})'(y) = \frac{1}{f'[f^{-1}(y)]}\]</div>
+      <p style="text-align:center;">c'est-à-dire \(\ (f^{-1})' = \dfrac{1}{f' \circ f^{-1}}\)</p>
+    </div>
+
+    <div class="remark">Si \(f\) bijection de \(I\) sur \(J\) alors \(\forall x \in I,\ f^{-1}[f(x)] = x\) et \(\forall y \in J,\ f[f^{-1}(y)] = y\). On peut retrouver la formule de la dérivée de \(f^{-1}\) en dérivant l'égalité \(\forall y \in J,\ f \circ f^{-1}(y) = y\)</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE III — THÉORÈMES UTILISANT LA RÉGULARITÉ
+════════════════════════════════════════ -->
+<div class="math-part" id="part3">
+  <div class="math-part-header">
+    <div class="math-part-num">III</div>
+    <div class="math-part-title">Théorèmes utilisant la régularité</div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="math-section" id="s3-1">
+    <div class="math-section-title">1 — Fonction continue sur un segment</div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 1</div>
+      <p>Si \(f\) est continue sur un intervalle fermé \([a,b]\) (avec \(a,b\) réels tels que \(a \leq b\)) alors \(f\) est bornée sur \([a,b]\) et atteint ses bornes.</p>
+      <p>Ainsi, il existe \((\alpha,\beta) \in [a,b]^2\) tels que \(\forall t \in [a,b],\ f(\alpha) \leq f(t) \leq f(\beta)\) avec \(f(\alpha) = \inf\{f(t),\ \text{pour}\ t \in [a,b]\}\) et \(f(\beta) = \sup\{f(t),\ \text{pour}\ t \in [a,b]\}\)</p>
+      <p>En pratique, on utilise ce théorème sous l'une des deux formes suivantes :</p>
+      <ul>
+        <li>Si \(f\) est continue sur \([a,b]\) alors \(\exists B \geq 0\) tel que \(\forall t \in [a,b],\ |f(t)| \leq B\)</li>
+        <li>ou bien : Si \(f\) est continue sur \([a,b]\) alors il existe \((m,M)\) tels que \(\forall t \in [a,b],\ m \leq f(t) \leq M\)</li>
+      </ul>
+    </div>
+
+    <div class="remark">Dans la plupart des applications, la première forme du théorème précédent suffit.</div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="math-section" id="s3-2">
+    <div class="math-section-title">2 — Notion d'extremum</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span><span class="def-name">Extremum local / Extremum global</span></div>
+        <p>Soit \(f\) définie sur un intervalle \(I\) de \(\mathbb{R}\) et soient \(a,b,c,d\) des réels de \(I\). On dit que \(f\) admet :</p>
+        <ul>
+          <li>un <strong>maximum global</strong> en \(a\) ssi \(\forall x \in I,\ f(x) \leq f(a)\)</li>
+          <li>un <strong>maximum local</strong> en \(b\) ssi il existe un voisinage \(V_b\) de \(b\) tel que \(\forall x \in V_b \cap I,\ f(x) \leq f(b)\)</li>
+          <li>un <strong>minimum global</strong> en \(c\) ssi \(\forall x \in I,\ f(c) \leq f(x)\)</li>
+          <li>un <strong>minimum local</strong> en \(d\) ssi il existe un voisinage \(V_d\) de \(d\) tel que \(\forall x \in V_d \cap I,\ f(d) \leq f(x)\)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 2</div>
+      <div class="prop-title">Condition nécessaire d'extremum local</div>
+      <p>Soit \(f\) définie sur \(]a,b[\). Soit \(x_0 \in ]a,b[\) avec \(f\) dérivable en \(x_0\).</p>
+      <p>Si \(x_0\) est un extremum local de \(f\), alors \(f'(x_0) = 0\)</p>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="math-section" id="s3-3">
+    <div class="math-section-title">3 — Théorème de Rolle et formule des accroissements finis</div>
+
+    <p>Dans tout ce paragraphe, \(f\) est une fonction définie sur \([a,b]\) avec \(a,b\) réels et \(a < b\).</p>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 3</div>
+      <div class="thm-title">Théorème de Rolle</div>
+      <p>Si \(f\) est telle que \(f\) est continue sur le fermé \([a,b]\), \(f\) est dérivable sur l'ouvert \(]a,b[\) et \(f(a) = f(b)\), alors il existe \(c \in ]a,b[\) tel que \(f'(c) = 0\)</p>
+    </div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 4</div>
+      <div class="thm-title">Égalité des accroissements finis</div>
+      <p>Si \(f\) est telle que \(f\) est continue sur le fermé \([a,b]\) et \(f\) est dérivable sur l'ouvert \(]a,b[\), alors il existe \(c \in ]a,b[\) tel que</p>
+      <div class="formula-block">\[f(b) - f(a) = f'(c)(b-a)\]</div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 5</div>
+      <div class="prop-title">Inégalité des accroissements finis</div>
+      <p>Soit \(f\) dérivable un intervalle \(I\) de \(\mathbb{R}\). On suppose que \(f'\) est bornée sur \(I\) càd \(\exists M \geq 0\) tq \(\forall t \in I,\ |f'(t)| \leq M\)</p>
+      <p>Alors \(\forall (x,y) \in I^2,\quad |f(x) - f(y)| \leq M|x-y|\)</p>
+    </div>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="math-section" id="s3-4">
+    <div class="math-section-title">4 — Applications de l'égalité des accroissements finis</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 6</div>
+      <div class="prop-title">Théorème de prolongement de la dérivée</div>
+      <p>Soit \(f\) une fonction de classe \(C^1\) sur \(I \setminus \{a\}\) (avec \(I\) intervalle et \(a \in I\))</p>
+      <p>Si \(f\) est continue en \(a\) et \(\displaystyle\lim_{x\to a} f'(x) = L \in \mathbb{R}\), alors \(f\) est de classe \(C^1\) sur \(I\) et \(f'(a) = L\)</p>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 7</div>
+      <div class="prop-title">Monotonie et dérivée</div>
+      <p>Soit \(f\) définie et dérivable sur un intervalle \(I\) de \(\mathbb{R}\)</p>
+      <ul>
+        <li>\(f\) est constante sur \(I\) \(\iff\) \(\forall x \in I,\ f'(x) = 0\)</li>
+        <li>\(f\) est croissante (resp. décroissante) sur \(I\) \(\iff\) \(\forall x \in I,\ f'(x) \geq 0\) (resp. \(f'(x) \leq 0\))</li>
+        <li>Si \(\forall x \in I,\ f'(x) \geq 0\) (resp. \(f'(x) \leq 0\)) et si \(f'\) ne s'annule qu'en au plus un nombre fini de points, alors \(f\) est strictement croissante sur \(I\) (resp. strictement décroissante sur \(I\))</li>
+      </ul>
+    </div>
+
+    <div class="remark">La notion d'intervalle est fondamentale.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE IV — DÉRIVÉES SUCCESSIVES ET FORMULES DE TAYLOR
+════════════════════════════════════════ -->
+<div class="math-part" id="part4">
+  <div class="math-part-header">
+    <div class="math-part-num">IV</div>
+    <div class="math-part-title">Dérivées successives et formules de Taylor</div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="math-section" id="s4-1">
+    <div class="math-section-title">1 — Fonctions de classe \(C^p\), fonctions de classe \(C^\infty\)</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span><span class="def-name">Fonction de classe \(C^p\), fonction \(C^\infty\)</span></div>
+        <p>Soit \(I\) un intervalle de \(\mathbb{R}\) et soit \(f\) définie sur \(I\).</p>
+        <ul>
+          <li>On dit que \(f\) est de classe \(C^p\) sur \(I\) ssi \(f\) est \(p\) fois dérivable et si la dérivée \(p\)-ième notée \(f^{(p)}\) est continue sur \(I\). L'ensemble des fonctions \(C^p\) sur \(I\) se note \(C^p(I)\)</li>
+          <li>On dit que \(f\) est de classe \(C^\infty\) sur \(I\) ssi \(f\) admet une dérivée à n'importe quel ordre \(p \in \mathbb{N}\). L'ensemble des fonctions \(C^\infty\) sur \(I\) se note \(C^\infty(I)\)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="remark">
+      \(f\) est de classe \(C^2\) sur \(I\) \(\iff\) \(f'\) dérivable sur \(I\) avec \((f')'\) continue sur \(I\) \(\iff\) \(f'\) de classe \(C^1\) sur \(I\).<br>
+      Si \(f\) est \(C^\infty\) sur \(I\), alors \(f\) est \(C^p\) sur \(I\) pour \(p \in \mathbb{N}\).<br>
+      Toutes les fonctions usuelles sont \(C^\infty\) sur l'ensemble sur lequel elles sont dérivables.
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <div class="prop-title">Régularité d'une somme, d'un produit, d'un quotient, d'une composée</div>
+      <p>Soient \(f\) et \(g\) définies et de classe \(C^p\) sur \(I\) intervalle de \(\mathbb{R}\) (resp. \(C^\infty\))</p>
+      <ul>
+        <li>\(f+g\), \(f \times g\) sont de classe \(C^p\) sur \(I\) (resp. \(C^\infty\))</li>
+        <li>\(\forall \lambda \in \mathbb{R},\ \lambda f\) est de classe \(C^p\) sur \(I\) (resp. \(C^\infty\))</li>
+        <li>Si \(\forall x \in I,\ g(x) \neq 0\) alors \(\dfrac{f}{g}\) est de classe \(C^p\) sur \(I\) (resp. \(C^\infty\))</li>
+        <li>La composée de fonctions \(C^p\) (resp. \(C^\infty\)) est une fonction \(C^p\) (resp. \(C^\infty\))</li>
+      </ul>
+    </div>
+
+    <div class="remark">La régularité est conservée par les opérations algébriques. Pour la composition, il faudra faire attention aux différents ensembles.</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 2</div>
+      <div class="prop-title">Calcul des dérivées successives d'une somme, d'un produit</div>
+      <p>Soit \(I\) intervalle de \(\mathbb{R}\), \(p \in \mathbb{N}^*\), \(f\) et \(g\) deux fonctions \(p\) fois dérivables sur \(I\)</p>
+      <ul>
+        <li>\((f+g)^{(p)} = f^{(p)} + g^{(p)}\) et \(\forall \lambda \in \mathbb{R},\ (\lambda f)^{(p)} = \lambda f^{(p)}\)</li>
+        <li>La dérivée \(p\)-ième de \(f \times g\) s'obtient par la formule de Leibniz :</li>
+      </ul>
+      <div class="formula-block">\[(f \times g)^{(p)} = \sum_{k=0}^{p} \binom{p}{k} f^{(k)} g^{(p-k)}\]</div>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="math-section" id="s4-2">
+    <div class="math-section-title">2 — Formule de Taylor avec reste intégral</div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 3</div>
+      <div class="thm-title">Formule de Taylor avec reste intégral (RI) à l'ordre \(n\)</div>
+      <p>Soit \(n \in \mathbb{N}^*\) et soit \(f\) une fonction de classe \(C^\infty\) sur un intervalle \(I\) de \(\mathbb{R}\) et soit \(a \in I\).</p>
+      <div class="formula-block">\[\forall n \in \mathbb{N}^*,\ \forall x \in I,\quad f(x) = \sum_{k=0}^{n} \frac{f^{(k)}(a)}{k!}(x-a)^k + \int_a^x \frac{(x-t)^n}{n!} f^{(n+1)}(t)\,dt\]</div>
+      <p>On dit qu'on applique la formule de Taylor avec reste intégral à \(f\) en \(a\) à l'ordre \(n\)</p>
+    </div>
+
+    <div class="remark">Pour \(n=0\), la formule devient \(f(x) = f(a) + \int_a^x f'(t)\,dt\). On la démontre ensuite par récurrence sur \(n\) en faisant une IPP sur le reste.</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Corollaire</div>
+      <div class="prop-title">Formule de Taylor RI à l'ordre \(n\) en 0</div>
+      <p>Soit \(f\) une fonction de classe \(C^\infty\) sur \(\mathbb{R}\) (ou sur un intervalle ouvert contenant 0). On a :</p>
+      <div class="formula-block">\[\forall n \in \mathbb{N},\ \forall x \in I,\quad f(x) = f(0) + f'(0)x + \frac{f^{(2)}(0)}{2!}x^2 + \cdots + \frac{f^{(n)}(0)}{n!}x^n + R_n(x)\]</div>
+      <p style="text-align:center;">avec \(\displaystyle R_n(x) = \int_0^x \frac{(x-t)^n}{n!} f^{(n+1)}(t)\,dt\)</p>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 4</div>
+      <div class="prop-title">Formule de Taylor pour les polynômes</div>
+      <p>Soit \(P \in \mathbb{R}_n[x]\) et soit \(a \in \mathbb{R}\). La décomposition de \(P\) sur la base \(\big(1, (x-a), (x-a)^2, \ldots, (x-a)^n\big)\) de \(\mathbb{R}_n[x]\) est donnée par :</p>
+      <div class="formula-block">\[P(x) = \sum_{k=0}^{n} \frac{P^{(k)}(a)}{k!}(x-a)^k\]</div>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="math-section" id="s4-3">
+    <div class="math-section-title">3 — Formule de Taylor-Young et formule de Taylor-Lagrange</div>
+
+    <p>Dans tout ce paragraphe, \(n \in \mathbb{N}^*\), \(f\) une fonction de classe \(C^{n+1}\) sur un intervalle \(I\) de \(\mathbb{R}\) et \(a \in I\). On note \(RI_n\) le reste intégral de la formule de Taylor. Ainsi \(\displaystyle RI_n = \int_a^x \frac{(x-t)^n}{n!} f^{(n+1)}(t)\,dt\)</p>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 5</div>
+      <div class="prop-title">Formule de Taylor-Young</div>
+      <p>On a : \(RI_n = o\big[(x-a)^n\big]\) càd \(\displaystyle\lim_{x\to a} \frac{RI_n}{(x-a)^n} = 0\)</p>
+      <p>Cette formule permet de créer des \(DL_n\). On a, notamment, pour \(x\) proche de 0 :</p>
+      <div class="formula-block">\[f(x) = f(0) + f'(0)x + \frac{f^{(2)}(0)}{2!}x^2 + \frac{f^{(3)}(0)}{3!}x^3 + \cdots + \frac{f^{(n)}(0)}{n!}x^n + o[x^n]\]</div>
+      <p style="text-align:center;">c'est le \(DL_n(0)\) de \(f\)</p>
+    </div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 6</div>
+      <div class="thm-title">Égalité de Taylor-Lagrange</div>
+      <p>Pour tout \(x \in I\), il existe \(c\) compris entre \(a\) et \(x\) tel que \(RI_n = \dfrac{f^{(n+1)}(c)}{(n+1)!}(x-a)^{n+1}\)</p>
+      <p>On a donc : \(\forall x \in I,\ \exists c \in I\) tel que</p>
+      <div class="formula-block">\[f(x) = \sum_{k=0}^{n} \frac{f^{(k)}(a)}{k!}(x-a)^k + \frac{f^{(n+1)}(c)}{(n+1)!}(x-a)^{n+1}\]</div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 7</div>
+      <div class="prop-title">Inégalité de Taylor-Lagrange</div>
+      <p>Soit \(I\) un intervalle de \(\mathbb{R}\) et soit \(f \in C^{n+1}(I)\)</p>
+      <ul>
+        <li>On suppose qu'il existe \((m,r) \in \mathbb{R}^2\) tq \(\forall t \in I,\ m \leq f^{(n+1)}(t) \leq r\), alors \(\forall (a,b) \in I^2\) avec \(a < b\) on a :</li>
+      </ul>
+      <div class="formula-block">\[m\,\frac{(b-a)^{n+1}}{(n+1)!} \leq f(b) - \sum_{k=0}^{n} \frac{f^{(k)}(a)}{k!}(b-a)^k \leq r\,\frac{(b-a)^{n+1}}{(n+1)!}\]</div>
+      <ul>
+        <li>On suppose qu'il existe \(M \geq 0\) tel que \(\forall t \in I,\ |f^{(n+1)}(t)| \leq M\), alors \(\forall (a,b) \in I^2\) on a :</li>
+      </ul>
+      <div class="formula-block">\[\left| f(b) - \sum_{k=0}^{n} \frac{f^{(k)}(a)}{k!}(b-a)^k \right| \leq M\,\frac{|b-a|^{n+1}}{(n+1)!}\]</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE V — COMPLÉMENT D'INTÉGRATION : SOMMES DE RIEMANN
+════════════════════════════════════════ -->
+<div class="math-part" id="part5">
+  <div class="math-part-header">
+    <div class="math-part-num">V</div>
+    <div class="math-part-title">Complément d'intégration : sommes de Riemann</div>
+  </div>
+
+  <div class="math-section" id="s5-1">
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span></div>
+        <p>Soit \(f\) continue sur \([0,1]\). On appelle somme de Riemann l'une des sommes suivantes :</p>
+        <div class="two-col-formulas">
+          <div class="formula-block">\[\forall n \in \mathbb{N}^*,\quad S_n = \frac{1}{n}\sum_{k=0}^{n-1} f\!\left(\frac{k}{n}\right)\]</div>
+          <div class="formula-block">\[\forall n \in \mathbb{N}^*,\quad T_n = \frac{1}{n}\sum_{k=1}^{n} f\!\left(\frac{k}{n}\right)\]</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 1</div>
+      <p>Si \(f\) continue sur le segment \([0,1]\) alors la suite des sommes de Riemann converge vers \(\displaystyle\int_0^1 f(t)\,dt\). Ainsi :</p>
+      <div class="formula-block">\[\lim_{n\to+\infty} \frac{1}{n}\sum_{k=0}^{n-1} f\!\left(\frac{k}{n}\right) = \int_0^1 f(t)\,dt\]</div>
+      <div class="formula-block">\[\lim_{n\to+\infty} \frac{1}{n}\sum_{k=1}^{n} f\!\left(\frac{k}{n}\right) = \int_0^1 f(t)\,dt\]</div>
+    </div>
+
+    <div class="remark">
+      On montrerait, à l'aide du changement de variable \(t = \dfrac{x-a}{b-a}\), que si \(f \in C^0([a,b])\) alors :
+      <div class="formula-block" style="margin-top:0.8rem;">\[\lim_{n\to+\infty} \left(\frac{b-a}{n}\right) \sum_{k=1}^{n} f\!\left(a + \frac{k(b-a)}{n}\right) = \int_a^b f(x)\,dx\]</div>
+      <div class="formula-block">\[\lim_{n\to+\infty} \left(\frac{b-a}{n}\right) \sum_{k=0}^{n-1} f\!\left(a + \frac{k(b-a)}{n}\right) = \int_a^b f(x)\,dx\]</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- fin .content -->
+
+<footer class="site-footer">
+  <div class="footer-logo">Chapitre 18 : Théorèmes d'analyse réelle</div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut de page">↑</button>
+
+<script>
+  document.querySelectorAll('.toc-list a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
+
+</body>
+</html>

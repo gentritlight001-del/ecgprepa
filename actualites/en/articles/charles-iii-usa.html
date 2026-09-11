@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Charles III aux États-Unis : visite d'État historique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #c0392b;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #c0392b; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #003087; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #c0392b; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #c0392b; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #c0392b; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#c0392b; border-color:#c0392b; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  /* Article styles */
+  .ap-band { background: linear-gradient(90deg, #003087, #c0392b, #003087); text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(0,15,40,0.95); padding:12px 60px; border-bottom: 1px solid rgba(192,57,43,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#e8c84a; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(192,57,43,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(181,19,31,0.2);  color:#f08080; border:1px solid rgba(181,19,31,0.35); }
+  .ap-tag-navy   { background:rgba(0,48,135,0.4);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #e8c84a; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(192,57,43,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(232,200,74,0.7); }
+
+  /* Rich components */
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#e8c84a; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(232,200,74,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#071422,#0d2540); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #e8c84a; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(192,57,43,0.06),rgba(192,57,43,0.02)); border-left:3px solid #e8c84a; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(232,200,74,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(232,200,74,0.7); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(0,15,40,0.9),rgba(0,8,24,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(192,57,43,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#e8c84a; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(192,57,43,0.06); border:1px solid rgba(192,57,43,0.15); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(232,200,74,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#e8c84a; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(232,200,74,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#e8c84a; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(0,15,40,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-en-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-en.html">Anglais</a>
+    <span class="sep">/</span>
+    <a href="../royaume-uni.html">Royaume-Uni</a>
+    <span class="sep">/</span>
+    <span class="current">Charles III aux États-Unis</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-en" class="ap-lang-btn" onclick="setLang('en')">🇬🇧 EN</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇬🇧 Visite d'État de Charles III aux États-Unis</div>
+<div class="ap-back-bar">
+  <a href="../royaume-uni.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+    <div class="ap-hero-img-wrap">
+      <img class="ap-hero-img" src="../images/charles-iii-usa.jpg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'">
+    </div>
+
+    <!-- ══ SECTION FR ══ -->
+    <div class="ap-fr-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-navy">🇬🇧 Royaume-Uni</span>
+          <span class="ap-tag ap-tag-red">🇺🇸 États-Unis</span>
+          <span class="ap-tag ap-tag-gold">Diplomatie</span>
+          <span class="ap-tag ap-tag-purple">Relation spéciale</span>
+          <span class="ap-tag ap-tag-blue">Géopolitique</span>
+        </div>
+        <div class="ap-date">27–30 Avril 2026 — ECG Prépa · Royaume-Uni</div>
+        <h1 class="ap-title" id="ap-title-fr">Charles III aux États-Unis : une visite d'État sous haute tension diplomatique</h1>
+        <p class="ap-intro" id="ap-intro-fr">Du 27 au 30 avril 2026, le roi Charles III et la reine Camilla effectuent la première visite d'État d'un souverain britannique aux États-Unis depuis dix-neuf ans. Accueillis par Donald Trump sur fond de tensions transatlantiques liées à la guerre en Iran et au soutien à l'Ukraine, les souverains accomplissent une mission délicate : raviver la «&nbsp;relation spéciale&nbsp;» sans compromettre la neutralité constitutionnelle de la Couronne. Un périple de quatre jours — Washington, New York, Virginie — qui s'inscrit dans le cadre des 250 ans de l'indépendance américaine et révèle toute la complexité de la diplomatie royale à l'ère Trump.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat"><span class="ap-stat-num">19 ans</span><span class="ap-stat-desc">Depuis la dernière visite<br>d'un monarque britannique</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">250</span><span class="ap-stat-desc">Anniversaire de la<br>Déclaration d'indépendance</span></div>
+          <div class="ap-stat red"><span class="ap-stat-num">2e</span><span class="ap-stat-desc">Souverain britannique<br>à parler devant le Congrès</span></div>
+          <div class="ap-stat green"><span class="ap-stat-num">4 villes</span><span class="ap-stat-desc">Washington, New York,<br>Arlington, Front Royal</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Contexte : une visite sous tensions</div>
+            <p>La visite d'État de Charles III aux États-Unis, du 27 au 30 avril 2026, est la première d'un monarque britannique depuis celle d'Élisabeth II en mai 2007, sous la présidence de George W. Bush. Elle se tient dans un contexte de tensions sérieuses entre Londres et Washington : le Premier ministre Keir Starmer a refusé d'autoriser les bases britanniques lors des premières frappes américano-israéliennes sur l'Iran en février 2026, provoquant la colère de Donald Trump. Plusieurs députés britanniques avaient même demandé l'annulation du voyage.</p>
+            <p>Buckingham Palace a maintenu le déplacement «&nbsp;comme prévu&nbsp;», estimant que la visite constituait une opportunité de dialoguer. L'éditeur royal de l'ITV, Chris Ship, l'a qualifiée de <strong>«&nbsp;déplacement diplomatique le plus risqué du règne de Charles III&nbsp;»</strong>. La visite coïncide également avec le 250e anniversaire de la Déclaration d'indépendance américaine — événement d'autant plus symbolique que Charles III est le descendant direct du roi George III contre lequel les colonies se soulevèrent en 1776.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Dates</div><div class="ap-fact-val">27–30 avril 2026</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Hôte</div><div class="ap-fact-val">Président Donald Trump</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Dernière visite royale</div><div class="ap-fact-val">Élisabeth II, mai 2007</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Contexte géopolitique</div><div class="ap-fact-val">Guerre en Iran, Ukraine</div></div>
+            </div>
+
+            <div class="ap-sub">Chronologie : quatre jours, quatre étapes</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item">
+                <div class="ap-tl-date">Lundi 27 avril</div>
+                <p class="ap-tl-text">Atterrissage à la base aérienne de Joint Base Andrews. Accueil à la Maison-Blanche par Donald et Melania Trump au portique sud. Thé privé dans le Salon Vert, visite du nouveau rucher de la Pelouse Sud — clin d'œil à la passion du roi pour l'apiculture. Réception en soirée à la résidence de l'ambassadeur britannique.</p>
+              </div>
+              <div class="ap-tl-item">
+                <div class="ap-tl-date">Mardi 28 avril</div>
+                <p class="ap-tl-text">Cérémonie d'État sur la Pelouse Sud. Entretien privé dans le Bureau Ovale. Discours historique devant une session conjointe du Congrès américain — Charles III est seulement le deuxième souverain britannique à s'y exprimer, après Élisabeth II en 1991. Dîner d'État à la Maison-Blanche en soirée.</p>
+              </div>
+              <div class="ap-tl-item">
+                <div class="ap-tl-date">Mercredi 29 avril</div>
+                <p class="ap-tl-text">Déplacement à New York : visite du Mémorial du 11-Septembre, événement commercial britanno-américain, réception littéraire de la reine Camilla à la New York Public Library en présence de Sarah Jessica Parker et Anna Wintour. Gala du King's Trust au Rockefeller Center en soirée, avec Lionel Richie et Charlotte Tilbury.</p>
+              </div>
+              <div class="ap-tl-item">
+                <div class="ap-tl-date">Jeudi 30 avril</div>
+                <p class="ap-tl-text">Arlington National Cemetery : dépôt de gerbe sur la tombe du Soldat inconnu, salve de 21 coups de canon. Visite du parc national de Shenandoah en Virginie. Potluck communautaire à Front Royal avec le gouverneur Abigail Spanberger pour célébrer les 250 ans des États-Unis. Puis départ seul de Charles pour les Bermudes.</p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">Le discours au Congrès : le moment clé de la visite</div>
+            <p>Le point d'orgue de la visite est sans conteste le discours prononcé par Charles III devant une session conjointe du Congrès américain le 28 avril. Ovationné debout, le roi a livré un message subtilement politique depuis la tribune de l'hémicycle, en présence du vice-président JD Vance et du Speaker Mike Johnson — mais en l'absence de Donald Trump.</p>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">👑</div>
+              <div class="ap-info-text"><strong>Un discours à double lecture :</strong> Charles III a d'abord exprimé sa solidarité avec le peuple américain après la fusillade au dîner des correspondants de la Maison-Blanche (25 avril). Il a insisté sur les valeurs démocratiques communes et l'équilibre des pouvoirs — un passage particulièrement applaudi par les démocrates, interprété comme une allusion indirecte à Trump. Il a appelé à une «&nbsp;détermination sans faille&nbsp;» pour la défense de l'Ukraine et a rappelé l'importance de l'OTAN.</div>
+            </div>
+
+            <p>Dans un registre plus léger mais tout aussi politique, lors du dîner d'État du soir, Charles III a piqué Trump avec humour en déclarant que, sans la colonisation britannique de l'Amérique du Nord, ses hôtes «&nbsp;parleraient français&nbsp;». Une réponse élégante aux propos tenus par Trump à Davos en janvier 2026, affirmant que sans les États-Unis, les Européens «&nbsp;parleraient allemand&nbsp;». Trump a réagi en postant «&nbsp;DEUX ROIS&nbsp;» sur Truth Social.</p>
+
+            <div class="ap-quote">
+              <p>« Le lien de parenté et d'identité qui unit les États-Unis et le Royaume-Uni est inestimable et éternel. Il est irremplaçable et indestructible. »</p>
+              <cite>— Charles III, devant le Congrès américain, 28 avril 2026</cite>
+            </div>
+
+            <div class="ap-quote">
+              <p>« Les défis auxquels nous sommes confrontés sont trop grands pour qu'une nation puisse les affronter seule. »</p>
+              <cite>— Charles III, session conjointe du Congrès, 28 avril 2026</cite>
+            </div>
+
+            <div class="ap-sub">Bilan : diplomatie royale, limites et symboles</div>
+            <p>La visite a été unanimement saluée comme un succès de communication. Trump a dit de son entretien au Bureau Ovale que c'était «&nbsp;une très bonne réunion&nbsp;» avec «&nbsp;une personne fantastique&nbsp;». Il a ajouté que son affection pour le roi l'aidait probablement à améliorer ses relations avec le Premier ministre Starmer. Le roi a offert à Trump la cloche du HMS Trump, un sous-marin britannique de 1944, soulignant l'histoire militaire commune.</p>
+            <p>Cependant, les limites de l'exercice sont claires : plus de la moitié des Britanniques estiment selon les sondages que cette visite ne suffira pas à réchauffer les relations entre les deux pays. Le dossier iranien, les désaccords sur l'Ukraine, la question de l'Epstein — évoquée lors d'auditions au Comité de surveillance de la Chambre des représentants concernant le frère du roi, le prince Andrew — et les critiques de l'ambassadeur Turner sur la «&nbsp;relation spéciale&nbsp;» révélées par le <em>Financial Times</em> démontrent que les tensions structurelles demeurent.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Étape</th><th>Événement principal</th><th>Enjeu</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Maison-Blanche (28/04)</td><td>Discours au Congrès</td><td>Réaffirmation des valeurs communes</td></tr>
+                <tr><td class="ap-cell-bold">Dîner d'État (28/04)</td><td>Réplique humoristique à Trump</td><td>Soft power et équilibre rhétorique</td></tr>
+                <tr><td class="ap-cell-bold">New York (29/04)</td><td>Mémorial du 11-Sept. / King's Trust</td><td>Solidarité & engagement philanthropique</td></tr>
+                <tr><td class="ap-cell-bold">Arlington (30/04)</td><td>Tombe du Soldat inconnu</td><td>Mémoire militaire partagée</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Un règne, une diplomatie</div>
+              <p>La visite d'État de Charles III aux États-Unis illustre la singularité de la diplomatie royale britannique : sans pouvoir exécutif, le monarque incarne néanmoins une continuité et une légitimité symbolique que les gouvernements élus ne peuvent reproduire. Dans un contexte de tensions inédites entre Londres et Washington depuis l'élection de Trump, le roi a su naviguer entre loyauté envers ses ministres, attachement aux valeurs démocratiques et sens de l'humour britannique — rappelant que la «&nbsp;relation spéciale&nbsp;» est autant affaire de culture et d'histoire que de politique. Ce voyage restera l'un des actes diplomatiques majeurs de son règne, à une époque où le Commonwealth et l'alliance atlantique sont en pleine redéfinition.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-fr-section -->
+
+    <!-- ══ SECTION EN ══ -->
+    <div class="ap-en-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-navy">🇬🇧 United Kingdom</span>
+          <span class="ap-tag ap-tag-red">🇺🇸 United States</span>
+          <span class="ap-tag ap-tag-gold">Diplomacy</span>
+          <span class="ap-tag ap-tag-purple">Special Relationship</span>
+          <span class="ap-tag ap-tag-blue">Geopolitics</span>
+        </div>
+        <div class="ap-date">27–30 April 2026 — ECG Prépa · United Kingdom</div>
+        <h1 class="ap-title" id="ap-title-en">Charles III in the United States: A State Visit Under Diplomatic Strain</h1>
+        <p class="ap-intro" id="ap-intro-en">From 27 to 30 April 2026, King Charles III and Queen Camilla undertook the first state visit by a British monarch to the United States in nineteen years. Welcomed by Donald Trump against a backdrop of transatlantic tensions over the Iran war and support for Ukraine, the royal couple faced a delicate mission: to revive the "Special Relationship" without compromising the Crown's constitutional neutrality. A four-day tour — Washington, New York, Virginia — framed by the 250th anniversary of American independence, that laid bare the full complexity of royal diplomacy in the Trump era.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat"><span class="ap-stat-num">19 yrs</span><span class="ap-stat-desc">Since the last state visit<br>by a British monarch</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">250</span><span class="ap-stat-desc">Anniversary of the<br>Declaration of Independence</span></div>
+          <div class="ap-stat red"><span class="ap-stat-num">2nd</span><span class="ap-stat-desc">British sovereign<br>to address Congress</span></div>
+          <div class="ap-stat green"><span class="ap-stat-num">4 stops</span><span class="ap-stat-desc">Washington, New York,<br>Arlington, Front Royal</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Context: a visit under strain</div>
+            <p>King Charles III's state visit to the United States from 27 to 30 April 2026 is the first by a British monarch since Queen Elizabeth II's trip in May 2007, hosted by President George W. Bush. It takes place against a backdrop of serious tensions between London and Washington: Prime Minister Keir Starmer refused to allow US forces access to British bases during the opening American-Israeli strikes on Iran in February 2026, provoking Donald Trump's fury. Several British MPs had called for the trip to be cancelled.</p>
+            <p>Buckingham Palace maintained the visit would proceed "as planned", arguing it offered an opportunity for dialogue. ITV's royal editor Chris Ship described it as <strong>"the most diplomatically risky trip of Charles III's reign so far"</strong>. The visit also coincides with the 250th anniversary of the Declaration of Independence — all the more symbolic given that Charles III is the direct descendant of King George III, against whose rule the American colonies rebelled in 1776.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Dates</div><div class="ap-fact-val">27–30 April 2026</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Host</div><div class="ap-fact-val">President Donald Trump</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Last royal visit</div><div class="ap-fact-val">Elizabeth II, May 2007</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Geopolitical context</div><div class="ap-fact-val">Iran war, Ukraine</div></div>
+            </div>
+
+            <div class="ap-sub">Timeline: four days, four stops</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item">
+                <div class="ap-tl-date">Monday 27 April</div>
+                <p class="ap-tl-text">Landing at Joint Base Andrews. Welcome at the White House by Donald and Melania Trump at the South Portico. Private tea in the Green Room, tour of the newly expanded beehive on the South Lawn — a nod to the King's passion for beekeeping. Evening reception at the British Ambassador's residence.</p>
+              </div>
+              <div class="ap-tl-item">
+                <div class="ap-tl-date">Tuesday 28 April</div>
+                <p class="ap-tl-text">State arrival ceremony on the South Lawn. Private meeting in the Oval Office. Historic address to a joint session of Congress — Charles III is only the second British sovereign ever to do so, after Elizabeth II in 1991. White House state dinner in the evening.</p>
+              </div>
+              <div class="ap-tl-item">
+                <div class="ap-tl-date">Wednesday 29 April</div>
+                <p class="ap-tl-text">New York: visit to the 9/11 Memorial, UK-US trade event, literary reception hosted by Queen Camilla at the New York Public Library attended by Sarah Jessica Parker and Anna Wintour. Evening King's Trust Global Gala at Rockefeller Center with Lionel Richie and Charlotte Tilbury.</p>
+              </div>
+              <div class="ap-tl-item">
+                <div class="ap-tl-date">Thursday 30 April</div>
+                <p class="ap-tl-text">Arlington National Cemetery: wreath-laying at the Tomb of the Unknown Soldier, 21-gun salute. Visit to Shenandoah National Park, Virginia. Community potluck in Front Royal with Governor Abigail Spanberger to mark America's 250th anniversary. Charles then travels alone to Bermuda for a royal visit.</p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">The Congress address: the centrepiece of the visit</div>
+            <p>The undisputed centrepiece of the visit was Charles III's address to a joint session of Congress on 28 April. Greeted with a standing ovation, the King delivered a subtly political speech from the chamber's podium, in the presence of Vice President JD Vance and Speaker Mike Johnson — but in the absence of Donald Trump.</p>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">👑</div>
+              <div class="ap-info-text"><strong>A speech with two readings:</strong> Charles III opened by expressing solidarity with the American people following the shooting at the White House Correspondents' Dinner (25 April). He emphasised shared democratic values and the balance of powers — a passage that drew particular applause from Democrats, widely interpreted as an indirect allusion to Trump. He called for "unflinching determination" in defence of Ukraine and underscored the importance of NATO.</div>
+            </div>
+
+            <p>In a lighter but equally pointed register, at the state dinner that evening, Charles III landed a barb at Trump's expense by remarking that, without British colonisation of North America, his hosts would "be speaking French". An elegant riposte to Trump's comment at Davos in January 2026, that without American support in the Second World War, Europeans would "be speaking German". Trump responded by posting "TWO KINGS" on Truth Social.</p>
+
+            <div class="ap-quote">
+              <p>"The bond of kinship and identity that unites the United States and the United Kingdom is priceless and eternal. It is irreplaceable and indestructible."</p>
+              <cite>— Charles III, address to the US Congress, 28 April 2026</cite>
+            </div>
+
+            <div class="ap-quote">
+              <p>"The challenges we face are too great for any one nation to confront alone."</p>
+              <cite>— Charles III, joint session of Congress, 28 April 2026</cite>
+            </div>
+
+            <div class="ap-sub">Assessment: royal diplomacy, limits and symbols</div>
+            <p>The visit was universally praised as a communications success. Trump described their Oval Office meeting as "a very good meeting" with "a fantastic person", and suggested that his warm feelings for the King probably helped his relationship with Prime Minister Starmer. As a gift, the King presented Trump with the bell of HMS Trump, a British submarine commissioned in 1944, symbolising the two nations' shared military history.</p>
+            <p>Yet the limits of the exercise are plain: polls suggest more than half of Britons believe the visit will not be enough to warm relations between the two countries. The Iran file, disagreements over Ukraine, the Epstein affair — raised in hearings by the House Oversight Committee concerning the King's brother Prince Andrew — and Ambassador Turner's critical remarks about the "Special Relationship", leaked to the <em>Financial Times</em>, all demonstrate that structural tensions remain very much alive.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Stop</th><th>Key event</th><th>Stakes</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">White House (28/04)</td><td>Address to Congress</td><td>Reaffirming shared values</td></tr>
+                <tr><td class="ap-cell-bold">State dinner (28/04)</td><td>Witty riposte to Trump</td><td>Soft power &amp; rhetorical balance</td></tr>
+                <tr><td class="ap-cell-bold">New York (29/04)</td><td>9/11 Memorial / King's Trust</td><td>Solidarity &amp; philanthropy</td></tr>
+                <tr><td class="ap-cell-bold">Arlington (30/04)</td><td>Tomb of the Unknown Soldier</td><td>Shared military memory</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">A Reign, a Diplomacy</div>
+              <p>Charles III's state visit to the United States illustrates the singular nature of British royal diplomacy: without executive power, the monarch nonetheless embodies a continuity and symbolic legitimacy that elected governments cannot replicate. In a context of unprecedented tensions between London and Washington since Trump's election, the King navigated with skill between loyalty to his ministers, commitment to democratic values and quintessentially British wit — reminding all that the "Special Relationship" is as much a matter of culture and history as of politics. This journey will stand as one of the defining diplomatic acts of his reign, at a time when both the Commonwealth and the Atlantic alliance are undergoing profound redefinition.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-en-section -->
+
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — Royaume-Uni — Avril 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-en').classList.toggle('active', lang === 'en');
+  const isEn = lang === 'en';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEn ? 'none' : 'block');
+  document.querySelectorAll('.ap-en-section').forEach(el => el.style.display = isEn ? 'block' : 'none');
+
+  const band = document.getElementById('ap-band');
+  if (band) band.textContent = isEn
+    ? '🇬🇧 King Charles III State Visit to the United States'
+    : '🇬🇧 Visite d\'État de Charles III aux États-Unis';
+}
+setLang('fr');
+</script>
+</body>
+</html>

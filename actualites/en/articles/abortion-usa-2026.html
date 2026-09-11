@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — L'avortement aux États-Unis — Roe, Dobbs et après</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #b22234;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #b22234; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #3c3b6e; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #b22234; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #b22234; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #b22234; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#b22234; border-color:#b22234; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  .ap-band { background: linear-gradient(90deg, #3c3b6e, #b22234, #3c3b6e); text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(10,10,28,0.95); padding:12px 60px; border-bottom: 1px solid rgba(178,34,52,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#e8c84a; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(178,34,52,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-hero-placeholder { width:100%; aspect-ratio:16/7; background: linear-gradient(135deg, #1a0a0e, #2c1018, #1a0a0e); display:flex; align-items:center; justify-content:center; font-size:5rem; opacity:0.5; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(178,34,52,0.2);  color:#f08080; border:1px solid rgba(178,34,52,0.35); }
+  .ap-tag-navy   { background:rgba(60,59,110,0.4);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #e8c84a; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(178,34,52,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(232,200,74,0.7); }
+
+  /* Rich components */
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#e8c84a; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(232,200,74,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#071422,#0d2540); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat.navy   { background:linear-gradient(135deg,#0e0e3a,#2a2870); }
+  .ap-stat.purple { background:linear-gradient(135deg,#2a0e3a,#4a2870); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #e8c84a; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(178,34,52,0.06),rgba(178,34,52,0.02)); border-left:3px solid #e8c84a; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(232,200,74,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(232,200,74,0.7); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(10,10,28,0.9),rgba(5,5,18,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(178,34,52,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#e8c84a; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(178,34,52,0.06); border:1px solid rgba(178,34,52,0.15); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(232,200,74,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#e8c84a; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(232,200,74,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#e8c84a; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(10,10,28,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-en-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-en.html">Anglais</a>
+    <span class="sep">/</span>
+    <a href="../etats-unis.html">États-Unis</a>
+    <span class="sep">/</span>
+    <span class="current">La question de l'avortement aux États-Unis</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-en" class="ap-lang-btn" onclick="setLang('en')">🇺🇸 EN</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇺🇸 La question de l'avortement aux États-Unis</div>
+<div class="ap-back-bar">
+  <a href="../etats-unis.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+
+    <!-- IMAGE HERO -->
+    <div class="ap-hero-img-wrap">
+      <img class="ap-hero-img" src="../images/abortion-usa-2026.jpg" alt="La question de l'avortement aux États-Unis" onerror="this.parentElement.innerHTML='<div class=\'ap-hero-placeholder\'>⚖️</div>'">
+    </div>
+
+    <!-- ══ SECTION FR ══ -->
+    <div class="ap-fr-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-navy">🇺🇸 États-Unis</span>
+          <span class="ap-tag ap-tag-red">Social</span>
+          <span class="ap-tag ap-tag-gold">Droits civiques</span>
+          <span class="ap-tag ap-tag-purple">Justice</span>
+        </div>
+        <div class="ap-date">Avril 2026 — ECG Prépa · États-Unis</div>
+        <h1 class="ap-title">La question de l'avortement aux États-Unis : de Roe v. Wade à l'ère post-Dobbs</h1>
+        <p class="ap-intro">En juin 2022, la Cour suprême des États-Unis a renversé l'arrêt Roe v. Wade en rendant sa décision dans l'affaire Dobbs v. Jackson Women's Health Organization, mettant fin à un droit fédéral constitutionnel à l'avortement protégé pendant près de cinquante ans. Depuis lors, les États-Unis sont devenus un patchwork de législations radicalement opposées, où le droit à l'avortement dépend désormais du seul lieu de résidence de la femme enceinte. La question reste l'une des plus clivantes de la politique américaine contemporaine.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red"><span class="ap-stat-num">12</span><span class="ap-stat-desc">États avec<br>interdiction totale</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">7/10</span><span class="ap-stat-desc">États ont voté pour<br>protéger l'avortement<br>en nov. 2024</span></div>
+          <div class="ap-stat green"><span class="ap-stat-num">+1M</span><span class="ap-stat-desc">Avortements pratiqués<br>par an (2023 et 2024)</span></div>
+          <div class="ap-stat navy"><span class="ap-stat-num">49 ans</span><span class="ap-stat-desc">Durée de protection<br>sous Roe v. Wade<br>(1973–2022)</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Un droit construit sur un demi-siècle de jurisprudence</div>
+            <p>Avant 1973, l'avortement était illégal dans la quasi-totalité des États américains, sauf pour préserver la vie de la femme enceinte. C'est l'arrêt <em>Roe v. Wade</em> du 22 janvier 1973, rendu à sept voix contre deux, qui a constitutionnalisé pour la première fois le droit à l'avortement. La Cour suprême a établi que le droit à la vie privée garanti par le quatorzième amendement de la Constitution englobait la décision d'une femme d'interrompre ou non sa grossesse. Elle a accompagné ce droit d'un cadre trimestriel : liberté totale au premier trimestre, régulation possible au deuxième, interdiction permise au troisième — une fois le fœtus viable.</p>
+            <p>En 1992, l'arrêt <em>Planned Parenthood v. Casey</em> a confirmé le principe central de <em>Roe</em> tout en supprimant son cadre trimestriel. La Cour a substitué au trimestre le critère de la viabilité fœtale, et introduit le standard dit de la « contrainte excessive » (<em>undue burden</em>) : un État pouvait réglementer l'avortement, mais non imposer un obstacle substantiel à la femme souhaitant y avoir recours avant la viabilité. Ce cadre a permis aux États de multiplier les restrictions sans pour autant interdire formellement le recours à l'avortement.</p>
+            <p>Entre 1973 et 2021, les États ont adopté plus de 1 300 lois restrictives concernant l'avortement. En 2021 seul, plus de 600 projets de loi ont été déposés dans les assemblées législatives des États, dont 108 ont été adoptés. C'est dans ce contexte qu'a été soumis à la Cour le cas du Mississippi.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Roe v. Wade</div><div class="ap-fact-val">22 janvier 1973</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Planned Parenthood v. Casey</div><div class="ap-fact-val">29 juin 1992</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Dobbs v. Jackson WH</div><div class="ap-fact-val">24 juin 2022</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Loi en cause (Mississippi)</div><div class="ap-fact-val">Interdiction dès 15 semaines</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Vote dans Dobbs</div><div class="ap-fact-val">6 voix contre 3</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Rédacteur de l'opinion</div><div class="ap-fact-val">Juge Samuel Alito</div></div>
+            </div>
+
+            <div class="ap-sub">Dobbs : le renversement de Roe</div>
+            <p>En mai 2021, la Cour suprême a accepté d'examiner une loi du Mississippi de 2018 interdisant la grande majorité des avortements au-delà de la quinzième semaine de grossesse — bien avant la viabilité fœtale, généralement fixée à vingt-trois ou vingt-quatre semaines. Cette saisine était le fruit d'une stratégie délibérée des législateurs anti-avortement du Mississippi, qui avaient adopté la loi en espérant provoquer un recours judiciaire conduisant à la remise en cause de <em>Roe</em>.</p>
+            <p>En mai 2022, un projet de décision majoritaire rédigé par le juge Samuel Alito a été divulgué à la presse — un événement sans précédent dans l'histoire de la Cour. Le 24 juin 2022, la décision officielle a été rendue à six voix contre trois : la Cour a non seulement validé la loi du Mississippi, mais a renversé à la fois <em>Roe v. Wade</em> et <em>Planned Parenthood v. Casey</em>. Le juge Alito a estimé que la Constitution américaine ne conférait aucun droit à l'avortement, et que ce sujet devait être renvoyé aux législatures des États.</p>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">⚖️</div>
+              <div class="ap-info-text"><strong>L'argument central de Dobbs :</strong> La majorité a jugé que le droit à l'avortement n'était ni expressément mentionné dans la Constitution, ni « profondément enraciné dans l'histoire ou la tradition » de la nation américaine. Cette interprétation originaliste a été vigoureusement contestée par la minorité dissidente, qui a dénoncé le renversement d'un précédent de cinquante ans et averti que d'autres droits fondamentaux — contraception, mariage pour tous — pourraient suivre le même chemin.</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">La carte des États : une mosaïque de législations opposées</div>
+            <p>À la suite de la décision <em>Dobbs</em>, les États-Unis se sont rapidement fragmentés en deux blocs opposés. En octobre 2025, selon les données du Milbank Memorial Fund, douze États imposent une interdiction quasi-totale de l'avortement, et six États supplémentaires le limitent à une période de six à douze semaines de grossesse — soit, au total, dix-huit États où l'accès est très fortement restreint, représentant environ un tiers de la population américaine. À l'opposé, neuf États et le District de Columbia autorisent l'avortement sans limite gestationnelle.</p>
+            <p>Les États du Sud constituent une véritable « désert de l'avortement » : au Texas, en Louisiane, au Mississippi, en Alabama, en Arkansas, dans l'Oklahoma et au Tennessee, l'interruption volontaire de grossesse est interdite dès la conception ou peu après. La Floride, qui avait longtemps fait figure d'exception dans la région, a basculé : après la décision de la Cour suprême d'État en avril 2024, une interdiction à six semaines y est entrée en vigueur.</p>
+
+            <div class="ap-sub">Chronologie des grands tournants</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">22 janvier 1973</div><p class="ap-tl-text"><em>Roe v. Wade</em> : la Cour suprême constitutionnalise le droit à l'avortement à sept voix contre deux, rendant inconstitutionnelles les lois qui l'interdisent au premier trimestre.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">29 juin 1992</div><p class="ap-tl-text"><em>Planned Parenthood v. Casey</em> : <em>Roe</em> est maintenu dans son principe, mais le cadre trimestriel est remplacé par le critère de viabilité fœtale et le standard de la « contrainte excessive ».</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Septembre 2021</div><p class="ap-tl-text">Le Texas adopte la loi SB 8, interdisant l'avortement dès la détection d'une activité cardiaque fœtale (environ six semaines). Elle entre en vigueur grâce à un mécanisme d'application civile par des tiers, contournant les recours judiciaires habituels.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2 mai 2022</div><p class="ap-tl-text">Fuite d'un projet de décision de la Cour dans l'affaire <em>Dobbs</em> — événement sans précédent —, révélant que la majorité était prête à renverser <em>Roe</em>.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">24 juin 2022</div><p class="ap-tl-text"><em>Dobbs v. Jackson Women's Health Organization</em> : <em>Roe</em> et <em>Casey</em> sont renversés à six voix contre trois. L'avortement n'est plus un droit constitutionnel fédéral. Plusieurs États activent leurs « trigger laws » dans les jours qui suivent.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Novembre 2024</div><p class="ap-tl-text">Dans 10 États, des référendums sur l'avortement sont soumis aux électeurs. Le camp pro-droits remporte 7 États sur 10 (Arizona, Colorado, Maryland, Missouri, Montana, Nevada, New York). Le camp anti-avortement l'emporte au Nebraska, où une limite trimestrielle est inscrite dans la constitution de l'État.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2025–2026</div><p class="ap-tl-text">Les batailles judiciaires se poursuivent État par État. Le Missouri, le Wyoming et l'Arizona sont au cœur de contentieux autour de l'application des amendements constitutionnels adoptés par les électeurs. L'administration Trump supprime des directives fédérales protégeant l'accès aux avortements d'urgence.</p></div>
+            </div>
+
+            <div class="ap-sub">Conséquences sanitaires et sociales documentées</div>
+            <p>Les études publiées depuis 2022 mettent en évidence des effets sanitaires préoccupants dans les États restrictifs. Des recherches menées au Texas ont relevé, durant la première année du régime post-six semaines, une hausse de 56 % de la mortalité maternelle globale — et de 95 % chez les femmes blanches — ainsi qu'une augmentation de 50 % des cas de sepsis obstétrical. En 2023, le taux de mortalité maternelle dans les États avec interdiction totale était deux fois plus élevé que dans les États protecteurs.</p>
+            <p>Dans les États avec des législations restrictives, 40 % des gynécologues-obstétriciens ont signalé de nouvelles contraintes dans leur capacité à prendre en charge les fausses couches et autres urgences obstétricales ; 55 % ont indiqué que leur aptitude à suivre les standards médicaux en vigueur avait été compromise. On observe par ailleurs un exode de médecins et d'internes dans ces États, aggravant des inégalités d'accès aux soins déjà préexistantes. En 2024, environ 155 000 femmes résidant dans des États avec interdiction ont dû se rendre dans un État voisin pour avorter.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Un droit toujours disputé : la bataille des urnes et des tribunaux</div>
+              <p>Depuis <em>Dobbs</em>, la question de l'avortement n'a pas quitté le cœur de la vie démocratique américaine. Lors des élections intermédiaires de 2022, les mesures pro-avortement ont surperformé les candidats démocrates dans tous les États où elles figuraient sur les bulletins. En 2024, pour la première fois depuis le renversement de <em>Roe</em>, les électeurs du Missouri — un État avec une interdiction quasi-totale — ont voté en faveur d'un amendement constitutionnel étatique protégeant l'avortement jusqu'à la viabilité fœtale. Sur les dix-sept États qui ont organisé un référendum sur l'avortement depuis 2022, quatorze ont vu le camp des droits reproductifs l'emporter. Cette dynamique populaire tranche avec la fragmentation législative en cours : elle signale que le consensus américain sur le droit à l'avortement reste plus large que ne le laissent paraître les positions des législatures d'État et de la Cour suprême.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-fr-section -->
+
+    <!-- ══ SECTION EN ══ -->
+    <div class="ap-en-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-navy">🇺🇸 United States</span>
+          <span class="ap-tag ap-tag-red">Social Rights</span>
+          <span class="ap-tag ap-tag-gold">Civil Liberties</span>
+          <span class="ap-tag ap-tag-purple">Supreme Court</span>
+        </div>
+        <div class="ap-date">April 2026 — ECG Prépa · United States</div>
+        <h1 class="ap-title">Abortion in the United States: From Roe v. Wade to the Post-Dobbs Era</h1>
+        <p class="ap-intro">In June 2022, the U.S. Supreme Court overturned Roe v. Wade in its ruling in Dobbs v. Jackson Women's Health Organization, ending a federal constitutional right to abortion that had stood for nearly fifty years. Since then, the United States has become a patchwork of radically opposing laws, where access to abortion depends entirely on where a woman lives. The issue remains one of the most deeply divisive in contemporary American politics.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red"><span class="ap-stat-num">12</span><span class="ap-stat-desc">States with<br>near-total bans</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">7/10</span><span class="ap-stat-desc">States voted to protect<br>abortion rights<br>in Nov. 2024</span></div>
+          <div class="ap-stat green"><span class="ap-stat-num">+1M</span><span class="ap-stat-desc">Abortions performed<br>per year (2023 and 2024)</span></div>
+          <div class="ap-stat navy"><span class="ap-stat-num">49 yrs</span><span class="ap-stat-desc">Duration of protection<br>under Roe v. Wade<br>(1973–2022)</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">A Right Built on Half a Century of Case Law</div>
+            <p>Before 1973, abortion was illegal in almost every U.S. state except to save the life of the pregnant woman. It was the ruling in <em>Roe v. Wade</em> on January 22, 1973 — decided seven to two — that first established abortion as a constitutional right. The Supreme Court held that the right to privacy implied by the Fourteenth Amendment's Due Process Clause encompassed a woman's decision to continue or terminate her pregnancy. The Court paired this right with a trimester framework: full freedom in the first trimester, permissible regulation in the second, and allowed bans in the third, once the fetus was viable.</p>
+            <p>In 1992, <em>Planned Parenthood v. Casey</em> reaffirmed the core principle of <em>Roe</em> while discarding its trimester structure. The Court replaced it with the concept of fetal viability and introduced the "undue burden" standard: a state could regulate abortion, but could not impose a substantial obstacle on a woman seeking to terminate a pre-viability pregnancy. This framework allowed states to layer on restrictions without formally banning abortion outright.</p>
+            <p>Between 1973 and 2021, states enacted more than 1,300 abortion-restricting laws. In 2021 alone, over 600 bills were introduced in state legislatures, 108 of which passed. It was in this climate that the Mississippi case made its way to the Court.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Roe v. Wade</div><div class="ap-fact-val">January 22, 1973</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Planned Parenthood v. Casey</div><div class="ap-fact-val">June 29, 1992</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Dobbs v. Jackson WH</div><div class="ap-fact-val">June 24, 2022</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Law at stake (Mississippi)</div><div class="ap-fact-val">Ban after 15 weeks</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Dobbs vote</div><div class="ap-fact-val">6 to 3</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Author of the opinion</div><div class="ap-fact-val">Justice Samuel Alito</div></div>
+            </div>
+
+            <div class="ap-sub">Dobbs: The Overturning of Roe</div>
+            <p>In May 2021, the Supreme Court agreed to hear a challenge to a 2018 Mississippi law banning most abortions after fifteen weeks of pregnancy — well before fetal viability, generally set at twenty-three to twenty-four weeks. Mississippi lawmakers had deliberately passed the law in the hope that an inevitable legal challenge would allow the Court's newly conservative supermajority to reconsider or overturn <em>Roe</em>.</p>
+            <p>In May 2022, a draft majority opinion authored by Justice Samuel Alito was leaked to the press — an unprecedented breach of the Court's secrecy. On June 24, 2022, the official decision was handed down six to three: the Court not only upheld the Mississippi law but overturned both <em>Roe v. Wade</em> and <em>Planned Parenthood v. Casey</em>. Justice Alito held that the U.S. Constitution confers no right to abortion, and that the matter must be returned to state legislatures.</p>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">⚖️</div>
+              <div class="ap-info-text"><strong>The central argument in Dobbs:</strong> The majority held that the right to abortion was neither expressly mentioned in the Constitution nor "deeply rooted in the history or tradition" of the American nation. This originalist reading was strongly challenged by the dissent, which denounced the reversal of fifty years of precedent and warned that other established rights — contraception, same-sex marriage — could face the same fate.</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">A Patchwork Nation: Radically Diverging State Laws</div>
+            <p>Following the <em>Dobbs</em> decision, the United States quickly split into two opposing blocs. As of October 2025, according to data from the Milbank Memorial Fund, twelve states enforce a near-total ban on abortion, and a further six limit it to between six and twelve weeks of pregnancy — meaning eighteen states representing roughly one-third of the U.S. population have implemented highly restrictive abortion policy. At the other end of the spectrum, nine states and the District of Columbia permit abortion with no gestational limit.</p>
+            <p>The South has become a virtual "abortion desert": in Texas, Louisiana, Mississippi, Alabama, Arkansas, Oklahoma, and Tennessee, abortion is banned from conception or shortly after. Florida, long an exception in the region, shifted position: following an April 2024 decision by the state's Supreme Court, a six-week ban entered into force.</p>
+
+            <div class="ap-sub">Timeline of Key Turning Points</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">January 22, 1973</div><p class="ap-tl-text"><em>Roe v. Wade</em>: the Supreme Court constitutionalizes the right to abortion seven to two, striking down state laws banning abortion in the first trimester.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">June 29, 1992</div><p class="ap-tl-text"><em>Planned Parenthood v. Casey</em>: <em>Roe</em>'s core holding is upheld, but the trimester framework is replaced by the fetal viability standard and the "undue burden" test.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">September 2021</div><p class="ap-tl-text">Texas enacts SB 8, banning abortion after the detection of fetal cardiac activity (around six weeks). It takes effect using a private civil enforcement mechanism designed to circumvent normal judicial review.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">May 2, 2022</div><p class="ap-tl-text">A draft <em>Dobbs</em> opinion is leaked to the press — an unprecedented event — revealing that a majority was prepared to overturn <em>Roe</em>.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">June 24, 2022</div><p class="ap-tl-text"><em>Dobbs v. Jackson Women's Health Organization</em>: <em>Roe</em> and <em>Casey</em> are overturned six to three. Abortion is no longer a federal constitutional right. Several states activate their trigger laws within days.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">November 2024</div><p class="ap-tl-text">Abortion ballot measures are put to voters in 10 states. The pro-rights side wins in 7 (Arizona, Colorado, Maryland, Missouri, Montana, Nevada, New York). Nebraska voters approve a first-trimester limit to be enshrined in the state constitution.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2025–2026</div><p class="ap-tl-text">Legal battles continue state by state. Missouri, Wyoming, and Arizona are at the centre of disputes over enforcing constitutionally-enshrined voter amendments. The Trump administration removes federal guidance protecting access to emergency abortions.</p></div>
+            </div>
+
+            <div class="ap-sub">Documented Health and Social Consequences</div>
+            <p>Studies published since 2022 point to concerning health impacts in restrictive states. Research in Texas found, during the first year of the post-six-week ban, a 56% rise in overall maternal mortality — 95% among White women — and a 50% increase in obstetric sepsis cases. By 2023, maternal mortality rates in states with total bans were twice as high as in states where abortion remains protected.</p>
+            <p>In restrictive states, 40% of OB/GYN practitioners reported new constraints on their ability to care for miscarriages and other obstetric emergencies; 55% reported that their ability to follow established standards of medical practice had been compromised. An exodus of clinicians and medical residents from these states has further deepened existing disparities. In 2024, roughly 155,000 women living in ban states obtained abortions in neighboring states.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">A Right Still Disputed: The Battle at the Ballot Box and in the Courts</div>
+              <p>Since <em>Dobbs</em>, abortion has not left the heart of American democratic life. In the 2022 midterms, pro-abortion measures outperformed Democratic candidates in every state where they appeared on the ballot. In 2024, for the first time since the overturning of <em>Roe</em>, voters in Missouri — a state with a near-total ban — approved a state constitutional amendment protecting abortion up to fetal viability. Across all seventeen states that have held abortion-related referendums since 2022, the reproductive rights side has prevailed in fourteen. This popular dynamic stands in stark contrast to the ongoing legislative fragmentation: it signals that the American consensus on the right to abortion remains broader than the positions of state legislatures and the Supreme Court might suggest.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-en-section -->
+
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — États-Unis — Avril 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-en').classList.toggle('active', lang === 'en');
+  const isEn = lang === 'en';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEn ? 'none' : 'block');
+  document.querySelectorAll('.ap-en-section').forEach(el => el.style.display = isEn ? 'block' : 'none');
+
+  const band = document.getElementById('ap-band');
+  if (band) band.textContent = isEn
+    ? '🇺🇸 Abortion Rights in the United States'
+    : '🇺🇸 La question de l\'avortement aux États-Unis';
+}
+setLang('fr');
+</script>
+</body>
+</html>

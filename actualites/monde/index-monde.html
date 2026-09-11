@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Actualité Monde</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #7ca8c9;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #7ca8c9; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #4b8e6e; bottom: -250px; left: -250px; }
+
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--accent); cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb span:hover { color: var(--accent); }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); cursor: default; }
+
+  .hero {
+    text-align: center;
+    padding: 70px 48px 50px;
+    position: relative; z-index: 1;
+  }
+  .hero-eyebrow {
+    font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 18px; font-family: 'DM Mono', monospace;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.4rem, 5vw, 4.2rem);
+    font-weight: 900; line-height: 1.05; margin-bottom: 14px; color: var(--text);
+  }
+  .hero-sub {
+    font-size: 0.95rem; color: var(--text-dim); margin-bottom: 0;
+    font-weight: 300; letter-spacing: 0.05em;
+  }
+
+  .countries-wrapper {
+    position: relative; z-index: 1;
+    padding: 20px 48px 80px;
+    display: flex; flex-direction: column; align-items: center; gap: 18px;
+    max-width: 780px; margin: 0 auto;
+  }
+
+  .country-card {
+    width: 100%; border-radius: 16px; overflow: hidden; cursor: pointer;
+    position: relative; height: 110px;
+    border: 1px solid rgba(255,255,255,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    text-decoration: none; display: block;
+  }
+  .country-card:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+    border-color: rgba(255,255,255,0.22);
+  }
+  .country-card .flag-bg {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    filter: blur(3px) brightness(0.38) saturate(0.7);
+    transform: scale(1.05); transition: filter 0.3s ease;
+  }
+  .country-card:hover .flag-bg { filter: blur(2px) brightness(0.45) saturate(0.85); }
+  .country-card::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(110deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.15) 100%);
+  }
+  .card-content {
+    position: relative; z-index: 2; height: 100%;
+    display: flex; align-items: center; padding: 0 40px; gap: 24px;
+  }
+  .card-flag-emoji { font-size: 2.6rem; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.6)); flex-shrink: 0; }
+  .card-text { flex: 1; }
+  .card-label {
+    font-family: 'DM Mono', monospace; font-size: 0.62rem;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: rgba(255,255,255,0.45); margin-bottom: 5px;
+  }
+  .card-name {
+    font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 900;
+    color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,0.5); line-height: 1; margin-bottom: 5px;
+  }
+  .card-sub { font-size: 0.75rem; color: rgba(255,255,255,0.4); font-weight: 300; font-family: 'DM Sans', sans-serif; }
+  .card-arrow { font-size: 1.4rem; color: rgba(255,255,255,0.4); transition: transform 0.2s, color 0.2s; flex-shrink: 0; }
+  .country-card:hover .card-arrow { transform: translateX(6px); color: rgba(255,255,255,0.85); }
+
+  /* TOUS */
+  .card-tous .flag-bg { background: linear-gradient(135deg, #060c1a 0%, #0a1a2e 35%, #081a12 65%, #0d0a1f 100%); }
+  .card-tous .card-label { color: rgba(124,168,201,0.7); }
+  .card-tous .card-arrow { color: rgba(124,168,201,0.5); }
+  .card-tous:hover .card-arrow { color: var(--accent); }
+
+  /* Europe : bleu EU */
+  .card-europe .flag-bg {
+    background: linear-gradient(135deg, #003087 0%, #004aad 40%, #002060 60%, #003087 100%);
+  }
+
+  /* Asie : rouge profond */
+  .card-asie .flag-bg {
+    background: linear-gradient(135deg, #8b0000 0%, #c0392b 30%, #922b21 60%, #7b241c 100%);
+  }
+
+  /* Moyen Orient : vert/or/noir */
+  .card-moyenorient .flag-bg {
+    background: linear-gradient(135deg,
+      #006233 0%, #006233 33%,
+      #c8a96e 33%, #c8a96e 66%,
+      #1a1a1a 66%, #1a1a1a 100%
+    );
+  }
+
+  /* Amérique : rouge/blanc/bleu */
+  .card-amerique .flag-bg {
+    background: linear-gradient(160deg,
+      #8b0000 0%, #8b0000 33%,
+      #d0d0d0 33%, #d0d0d0 66%,
+      #003087 66%, #003087 100%
+    );
+  }
+
+  /* Afrique : panafricain vert/jaune/rouge */
+  .card-afrique .flag-bg {
+    background: linear-gradient(135deg,
+      #006847 0%, #006847 33%,
+      #c8a900 33%, #c8a900 66%,
+      #8b0000 66%, #8b0000 100%
+    );
+  }
+
+  /* Océanie : bleu azur */
+  .card-oceanie .flag-bg {
+    background: linear-gradient(135deg, #00205b 0%, #003087 50%, #00406e 75%, #00205b 100%);
+  }
+
+  /* Arctique : blanc glacé / bleu */
+  .card-arctique .flag-bg {
+    background: linear-gradient(135deg,
+      #c8e8f8 0%, #90c8e8 25%, #4aa0cc 50%, #1a6090 75%, #0a3050 100%
+    );
+  }
+
+  @media (max-width: 600px) {
+    nav { padding: 14px 20px; }
+    .hero { padding: 48px 20px 32px; }
+    .countries-wrapper { padding: 12px 16px 60px; }
+    .card-content { padding: 0 20px; gap: 16px; }
+    .card-flag-emoji { font-size: 2rem; }
+    .card-name { font-size: 1.3rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+
+<nav>
+  <div class="nav-logo" onclick="location.href='../../index.html'">ECG Prépa</div>
+  <div class="breadcrumb">
+    <span onclick="location.href='../actualites.html'">Actualités</span>
+    <span class="sep">›</span>
+    <span class="current">Monde</span>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Actualités · Monde</div>
+  <h1>Actualité Mondiale</h1>
+  <p class="hero-sub">Sélectionnez une région pour explorer ses actualités</p>
+</div>
+
+<div class="countries-wrapper">
+
+  <!-- TOUS -->
+  <a class="country-card card-tous" href="tous-monde.html">
+    <div class="flag-bg"></div>
+    <div class="card-content">
+      <div class="card-flag-emoji">🌐</div>
+      <div class="card-text">
+        <div class="card-label">Toutes régions</div>
+        <div class="card-name">Tous</div>
+        <div class="card-sub">Tous les articles du monde</div>
+      </div>
+      <div class="card-arrow">→</div>
+    </div>
+  </a>
+
+  <!-- EUROPE -->
+  <a class="country-card card-europe" href="europe.html">
+    <div class="flag-bg"></div>
+    <div class="card-content">
+      <div class="card-flag-emoji">🇪🇺</div>
+      <div class="card-text">
+        <div class="card-label">Europe</div>
+        <div class="card-name">Europe</div>
+        <div class="card-sub">Articles sur l'actualité européenne</div>
+      </div>
+      <div class="card-arrow">→</div>
+    </div>
+  </a>
+
+  <!-- ASIE -->
+  <a class="country-card card-asie" href="asie.html">
+    <div class="flag-bg"></div>
+    <div class="card-content">
+      <div class="card-flag-emoji">🏯</div>
+      <div class="card-text">
+        <div class="card-label">Asia</div>
+        <div class="card-name">Asie</div>
+        <div class="card-sub">Articles sur l'actualité asiatique</div>
+      </div>
+      <div class="card-arrow">→</div>
+    </div>
+  </a>
+
+  <!-- MOYEN ORIENT -->
+  <a class="country-card card-moyenorient" href="moyen-orient.html">
+    <div class="flag-bg"></div>
+    <div class="card-content">
+      <div class="card-flag-emoji">🕌</div>
+      <div class="card-text">
+        <div class="card-label">Middle East</div>
+        <div class="card-name">Moyen Orient</div>
+        <div class="card-sub">Articles sur l'actualité du Moyen-Orient</div>
+      </div>
+      <div class="card-arrow">→</div>
+    </div>
+  </a>
+
+  <!-- AMÉRIQUE -->
+  <a class="country-card card-amerique" href="amerique.html">
+    <div class="flag-bg"></div>
+    <div class="card-content">
+      <div class="card-flag-emoji">🗽</div>
+      <div class="card-text">
+        <div class="card-label">Americas</div>
+        <div class="card-name">Amérique</div>
+        <div class="card-sub">Articles sur l'actualité américaine</div>
+      </div>
+      <div class="card-arrow">→</div>
+    </div>
+  </a>
+
+  <!-- AFRIQUE -->
+  <a class="country-card card-afrique" href="afrique.html">
+    <div class="flag-bg"></div>
+    <div class="card-content">
+      <div class="card-flag-emoji">🥁</div>
+      <div class="card-text">
+        <div class="card-label">Africa</div>
+        <div class="card-name">Afrique</div>
+        <div class="card-sub">Articles sur l'actualité africaine</div>
+      </div>
+      <div class="card-arrow">→</div>
+    </div>
+  </a>
+
+  <!-- OCÉANIE -->
+  <a class="country-card card-oceanie" href="oceanie.html">
+    <div class="flag-bg"></div>
+    <div class="card-content">
+      <div class="card-flag-emoji">🦘</div>
+      <div class="card-text">
+        <div class="card-label">Oceania</div>
+        <div class="card-name">Océanie</div>
+        <div class="card-sub">Articles sur l'actualité océanienne</div>
+      </div>
+      <div class="card-arrow">→</div>
+    </div>
+  </a>
+
+  <!-- ARCTIQUE -->
+  <a class="country-card card-arctique" href="arctique.html">
+    <div class="flag-bg"></div>
+    <div class="card-content">
+      <div class="card-flag-emoji">🧊</div>
+      <div class="card-text">
+        <div class="card-label">Arctic</div>
+        <div class="card-name">Arctique</div>
+        <div class="card-sub">Articles sur l'actualité arctique</div>
+      </div>
+      <div class="card-arrow">→</div>
+    </div>
+  </a>
+
+</div>
+</body>
+</html>

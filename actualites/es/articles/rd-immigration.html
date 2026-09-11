@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Abinader face à Haïti : la question migratoire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #003087;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #003087; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #c8102e; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #003087; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #003087; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #003087; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#003087; border-color:#003087; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  /* Article styles */
+  .ap-band { background: linear-gradient(90deg, #003087, #c8102e, #003087); text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(13,27,42,0.95); padding:12px 60px; border-bottom: 1px solid rgba(0,48,135,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#c8102e; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(0,48,135,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(181,19,31,0.2);  color:#f08080; border:1px solid rgba(181,19,31,0.35); }
+  .ap-tag-navy   { background:rgba(13,27,42,0.6);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #c8102e; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(0,48,135,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(200,16,46,0.8); }
+
+  /* Rich article components */
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#c8102e; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(200,16,46,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#071422,#0d2540); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #c8102e; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(0,48,135,0.08),rgba(0,48,135,0.03)); border-left:3px solid #c8102e; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(0,48,135,0.18); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(200,16,46,0.8); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(13,27,42,0.9),rgba(7,16,28,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(0,48,135,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#c8102e; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(0,48,135,0.06); border:1px solid rgba(0,48,135,0.18); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(200,16,46,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#c8102e; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(200,16,46,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#c8102e; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(13,27,42,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-es-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-es.html">Espagnol</a>
+    <span class="sep">/</span>
+    <a href="republique-dominicaine.html">Rép. dominicaine</a>
+    <span class="sep">/</span>
+    <span class="current">Immigration haïtienne</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-es" class="ap-lang-btn" onclick="setLang('es')">🇩🇴 ES</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇩🇴 La R. Dominicaine face à Haïti</div>
+<div class="ap-back-bar">
+  <a href="republique-dominicaine.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+    <div class="ap-hero-img-wrap"><img class="ap-hero-img" src="../images/rd-immigration.jpg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+    <!-- ══ SECTION FR ══ -->
+    <div class="ap-fr-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-blue">🇩🇴 Rép. dominicaine</span>
+          <span class="ap-tag ap-tag-gold">Politique</span>
+          <span class="ap-tag ap-tag-red">Immigration</span>
+          <span class="ap-tag ap-tag-navy">Géopolitique</span>
+          <span class="ap-tag ap-tag-orange">Droits humains</span>
+        </div>
+        <div class="ap-date">Avril 2026 — ECG Prépa · République dominicaine</div>
+        <h1 class="ap-title">Abinader face à Haïti : la question migratoire au cœur du modèle dominicain</h1>
+        <p class="ap-intro">Réélu triomphalement en 2024, Luis Abinader a érigé le contrôle migratoire en axe central de son second mandat. Expulsions massives, construction d'un mur frontalier, plan en quinze points : la République dominicaine durcit chaque mois sa politique envers les ressortissants haïtiens. Entre souveraineté revendiquée, tensions économiques internes et critiques internationales, analyse d'un dossier qui cristallise les contradictions d'un pays en plein essor.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red"><span class="ap-stat-num">379 553</span><span class="ap-stat-desc">Haïtiens expulsés<br>sur l'année 2025</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">+37 %</span><span class="ap-stat-desc">Hausse des expulsions<br>2024 → 2025</span></div>
+          <div class="ap-stat"><span class="ap-stat-num">11 000</span><span class="ap-stat-desc">Soldats déployés<br>à la frontière (2025)</span></div>
+          <div class="ap-stat green"><span class="ap-stat-num">54 km</span><span class="ap-stat-desc">Mur frontalier<br>déjà érigé</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Le contexte : deux îles, deux destins</div>
+            <p>La République dominicaine et Haïti partagent l'île d'Hispaniola depuis des siècles, séparées par une frontière terrestre de <strong>340 kilomètres</strong>. Ce voisinage géographique masque un fossé économique et sécuritaire abyssal. Pendant que la République dominicaine s'impose comme la première économie des Caraïbes et accueille près de douze millions de touristes par an, Haïti s'enfonce dans une spirale de violence de gangs, d'effondrement institutionnel et de pauvreté extrême.</p>
+            <p>Cette asymétrie alimente depuis des décennies un flux migratoire massif. Selon les chiffres officiels dominicains, près de <strong>500 000 ressortissants haïtiens</strong> vivraient en situation irrégulière sur le territoire, pour une population dominicaine de 10,5 millions d'habitants. Ils constituent une main-d'œuvre bon marché dans la construction, l'agriculture et le tourisme — secteurs que les Dominicains désertent volontiers pour des emplois mieux rémunérés.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Président</div><div class="ap-fact-val">Luis Abinader (PRM)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Réélu</div><div class="ap-fact-val">Mai 2024, 1er tour</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Frontière</div><div class="ap-fact-val">340 km (Hispaniola)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Migrants irréguliers</div><div class="ap-fact-val">~500 000 Haïtiens</div></div>
+            </div>
+
+            <div class="ap-sub">Le plan Abinader : durcissement méthodique</div>
+            <p>Depuis son arrivée au pouvoir en 2020, Luis Abinader a systématiquement durci la politique migratoire, chaque mandat franchissant un palier supplémentaire. Réélu dès le premier tour en mai 2024, il se sent légitimé pour aller plus loin. En octobre 2024, son gouvernement lance un <strong>programme de rapatriement de 10 000 Haïtiens par semaine</strong>. Les chiffres sont éloquents : 276 000 expulsions en 2024, 379 553 en 2025, soit une hausse de 37 %.</p>
+            <p>En avril 2025, face à la persistance des flux migratoires, Abinader prononce un discours à la nation et annonce un <strong>plan en quinze points</strong> : doublement des brigades frontalières (de trois à six zones opérationnelles), déploiement de 1 500 soldats supplémentaires portant l'effectif total à 11 000 hommes à la frontière, accélération de la construction du mur (13 kilomètres supplémentaires lancés en appel d'offres immédiat), et réforme législative pour criminaliser le recrutement de main-d'œuvre irrégulière.</p>
+
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">2020–2022</div><p class="ap-tl-text">Premiers mandats d'Abinader. Début des expulsions systématiques et annonce de la construction du mur frontalier. Fermeture partielle de la frontière terrestre.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Mai 2024</div><p class="ap-tl-text">Réélection d'Abinader dès le premier tour. La lutte contre l'immigration haïtienne figure en tête de son programme de second mandat.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Oct. 2024</div><p class="ap-tl-text">Lancement du programme d'expulsion de 10 000 Haïtiens par semaine. Opérations d'interception renforcées (6 535 opérations sur l'année 2025).</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Avr. 2025</div><p class="ap-tl-text">Discours à la nation : plan en 15 points. Déploiement de 11 000 soldats à la frontière. Expulsions étendues aux maternités et hôpitaux.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Jan. 2026</div><p class="ap-tl-text">379 553 Haïtiens expulsés au total sur 2025, selon la DGM. Abinader confirme ses objectifs lors du discours de l'état de la Nation.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">Les tensions économiques : le paradoxe de la main-d'œuvre</div>
+            <p>La politique de durcissement migratoire n'est pas sans effets pervers sur l'économie dominicaine elle-même. Après les expulsions massives du premier semestre 2025, plusieurs secteurs ont signalé des <strong>pénuries de main-d'œuvre</strong> préoccupantes. L'Association des constructeurs (Acoprovi) a fait état d'une réduction de la disponibilité de travailleurs de 40 à 80 % dans certaines zones, pour des tâches que les Dominicains refusent généralement d'occuper. Le secteur touristique a également été affecté, notamment dans la restauration.</p>
+            <p>Ce paradoxe illustre la dépendance structurelle de pans entiers de l'économie dominicaine envers la main-d'œuvre haïtienne bon marché. Certains employeurs se trouvent dans une situation délicate : employer des Haïtiens sans papiers les expose désormais à des poursuites pour trafic d'êtres humains selon la nouvelle législation, mais se passer de cette main-d'œuvre est économiquement insoutenable à court terme.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Indicateur</th><th>2024</th><th>2025</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Expulsions annuelles</td><td>276 215</td><td class="ap-cell-bold">379 553 (+37 %)</td></tr>
+                <tr><td class="ap-cell-bold">Opérations d'interception</td><td>~4 500</td><td class="ap-cell-bold">6 535</td></tr>
+                <tr><td class="ap-cell-bold">Soldats à la frontière</td><td>~9 000</td><td class="ap-cell-bold">11 000</td></tr>
+                <tr><td class="ap-cell-bold">Km de mur construit</td><td>~40 km</td><td class="ap-cell-bold">54 km</td></tr>
+                <tr><td class="ap-cell-bold">Croissance PIB dominicain</td><td>5,1 %</td><td class="ap-cell-bold">2,1 %</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">⚠️</div>
+              <div class="ap-info-text"><strong>La controverse des maternités :</strong> en avril 2025, le gouvernement dominicain a étendu les opérations d'interception aux hôpitaux et maternités. Le premier jour de la mesure, 48 femmes enceintes et 39 femmes venant d'accoucher ont été arrêtées. Amnesty International et plusieurs ONG ont dénoncé des violations graves des droits fondamentaux, notamment des expulsions sans procédure régulière, des séparations familiales et des conditions de détention indignes au centre de Haina.</div>
+            </div>
+
+            <div class="ap-sub">Les réactions internationales</div>
+            <p>La politique migratoire dominicaine suscite des réactions contrastées sur la scène internationale. Les organisations de défense des droits humains — Amnesty International, Human Rights Watch — dénoncent régulièrement des violations du droit international, notamment l'expulsion de personnes nées en République dominicaine ou y résidant depuis de nombreuses années mais dépourvues de documents en raison d'un système d'enregistrement complexe et discriminatoire.</p>
+            <p>Washington, allié proche d'Abinader, reste globalement silencieux sur la question. La communauté internationale peine à proposer une solution alternative crédible face à l'effondrement haïtien : la Mission multinationale de soutien à la sécurité (MSS), approuvée par l'ONU en octobre 2023 et déployée à partir de 2024, n'a pas réussi à endiguer la violence des gangs qui contrôlent désormais une large part du territoire haïtien.</p>
+
+            <div class="ap-quote">
+              <p>« Personne n'est au-dessus de la loi. Il n'y a pas de protégés. »</p>
+              <cite>— Luis Abinader, discours de l'état de la Nation, février 2026</cite>
+            </div>
+            <div class="ap-quote">
+              <p>« La République dominicaine ne peut ni ne doit porter seule le fardeau de la crise haïtienne. »</p>
+              <cite>— Luis Abinader, discours à la Nation, avril 2025</cite>
+            </div>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Une île, deux trajectoires</div>
+              <p>La question migratoire haïtiano-dominicaine est bien davantage qu'un enjeu de politique intérieure. Elle révèle la fracture profonde entre deux États partageant le même espace géographique mais évoluant dans des directions opposées. La République dominicaine consolide son modèle économique ouvert, touristique et connecté aux marchés internationaux — 11,7 millions de touristes en 2025, un accord avec Google pour le premier port numérique d'Amérique latine, une croissance attendue à 4,5 % en 2026. Haïti, de son côté, vit sous la coupe de gangs armés que la communauté internationale n'a pas su neutraliser. Dans ce contexte, la politique d'Abinader reflète une réalité que nul ne veut regarder en face : tant que la crise haïtienne demeure sans issue, la pression migratoire sur la frontière est structurelle. Le mur dominicain, aussi élevé soit-il, ne saurait à lui seul résoudre la tragédie d'un voisinage entre deux mondes.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-fr-section -->
+
+    <!-- ══ SECTION ES ══ -->
+    <div class="ap-es-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-blue">🇩🇴 Rep. Dominicana</span>
+          <span class="ap-tag ap-tag-gold">Política</span>
+          <span class="ap-tag ap-tag-red">Inmigración</span>
+          <span class="ap-tag ap-tag-navy">Geopolítica</span>
+          <span class="ap-tag ap-tag-orange">Derechos humanos</span>
+        </div>
+        <div class="ap-date">Abril 2026 — ECG Prépa · República Dominicana</div>
+        <h1 class="ap-title">Abinader frente a Haití: la cuestión migratoria en el centro del modelo dominicano</h1>
+        <p class="ap-intro">Reelegido triunfalmente en 2024, Luis Abinader ha convertido el control migratorio en el eje central de su segundo mandato. Expulsiones masivas, construcción de un muro fronterizo, plan de quince puntos: la República Dominicana endurece mes a mes su política hacia los nacionales haitianos. Entre soberanía reivindicada, tensiones económicas internas y críticas internacionales, análisis de un expediente que cristaliza las contradicciones de un país en pleno auge.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red"><span class="ap-stat-num">379 553</span><span class="ap-stat-desc">Haitianos expulsados<br>durante 2025</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">+37 %</span><span class="ap-stat-desc">Aumento de expulsiones<br>2024 → 2025</span></div>
+          <div class="ap-stat"><span class="ap-stat-num">11 000</span><span class="ap-stat-desc">Soldados desplegados<br>en la frontera (2025)</span></div>
+          <div class="ap-stat green"><span class="ap-stat-num">54 km</span><span class="ap-stat-desc">Muro fronterizo<br>ya construido</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">El contexto: dos islas, dos destinos</div>
+            <p>La República Dominicana y Haití comparten la isla de La Española desde hace siglos, separadas por una frontera terrestre de <strong>340 kilómetros</strong>. Esta vecindad geográfica oculta un abismo económico y de seguridad inmenso. Mientras la República Dominicana se impone como la primera economía del Caribe y recibe cerca de doce millones de turistas al año, Haití se hunde en una espiral de violencia de bandas, colapso institucional y pobreza extrema.</p>
+            <p>Esta asimetría alimenta desde hace décadas un masivo flujo migratorio. Según las cifras oficiales dominicanas, cerca de <strong>500 000 nacionales haitianos</strong> viven en situación irregular en el territorio, sobre una población dominicana de 10,5 millones de habitantes. Constituyen una mano de obra barata en la construcción, la agricultura y el turismo, sectores que los dominicanos suelen abandonar en favor de empleos mejor remunerados.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Presidente</div><div class="ap-fact-val">Luis Abinader (PRM)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Reelegido</div><div class="ap-fact-val">Mayo 2024, 1ª vuelta</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Frontera</div><div class="ap-fact-val">340 km (La Española)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Migrantes irregulares</div><div class="ap-fact-val">~500 000 haitianos</div></div>
+            </div>
+
+            <div class="ap-sub">El plan Abinader: endurecimiento metódico</div>
+            <p>Desde su llegada al poder en 2020, Luis Abinader ha endurecido sistemáticamente la política migratoria, superando un umbral más en cada mandato. Reelegido en primera vuelta en mayo de 2024, se siente legitimado para ir más lejos. En octubre de 2024, su gobierno lanza un <strong>programa de repatriación de 10 000 haitianos por semana</strong>. Las cifras son elocuentes: 276 000 expulsiones en 2024, 379 553 en 2025, un aumento del 37 %.</p>
+            <p>En abril de 2025, Abinader pronuncia un discurso a la nación y anuncia un <strong>plan de quince puntos</strong>: duplicación de las brigadas fronterizas, despliegue de 1 500 soldados adicionales llevando el total a 11 000 efectivos en la frontera, aceleración de la construcción del muro y reforma legislativa para criminalizar la contratación de mano de obra irregular.</p>
+
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">2020–2022</div><p class="ap-tl-text">Primeros mandatos de Abinader. Inicio de las expulsiones sistemáticas y anuncio de la construcción del muro fronterizo. Cierre parcial de la frontera terrestre.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Mayo 2024</div><p class="ap-tl-text">Reelección de Abinader en primera vuelta. La lucha contra la inmigración haitiana figura en primer plano de su programa de segundo mandato.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Oct. 2024</div><p class="ap-tl-text">Lanzamiento del programa de expulsión de 10 000 haitianos por semana. Operaciones de interceptación reforzadas (6 535 operaciones durante 2025).</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Abr. 2025</div><p class="ap-tl-text">Discurso a la nación: plan de 15 puntos. Despliegue de 11 000 soldados en la frontera. Extensión de las expulsiones a maternidades y hospitales.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Ene. 2026</div><p class="ap-tl-text">379 553 haitianos expulsados en 2025, según la DGM. Abinader confirma sus objetivos en el discurso del estado de la Nación.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">Las tensiones económicas: la paradoja de la mano de obra</div>
+            <p>La política de endurecimiento migratorio no está exenta de efectos perversos sobre la propia economía dominicana. Tras las expulsiones masivas del primer semestre de 2025, varios sectores señalaron <strong>escasez de mano de obra</strong> preocupante. La Asociación de Constructores (Acoprovi) informó de una reducción en la disponibilidad de trabajadores de entre el 40 % y el 80 % en algunas zonas. El sector turístico también se vio afectado, especialmente en la restauración.</p>
+            <p>Esta paradoja ilustra la dependencia estructural de amplios sectores de la economía dominicana de la mano de obra haitiana barata. Algunos empleadores se encuentran en una situación delicada: contratar haitianos sin papeles los expone a ser procesados por tráfico de personas según la nueva legislación, pero prescindir de esta mano de obra es económicamente insostenible a corto plazo.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Indicador</th><th>2024</th><th>2025</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Expulsiones anuales</td><td>276 215</td><td class="ap-cell-bold">379 553 (+37 %)</td></tr>
+                <tr><td class="ap-cell-bold">Operaciones de interceptación</td><td>~4 500</td><td class="ap-cell-bold">6 535</td></tr>
+                <tr><td class="ap-cell-bold">Soldados en la frontera</td><td>~9 000</td><td class="ap-cell-bold">11 000</td></tr>
+                <tr><td class="ap-cell-bold">Km de muro construido</td><td>~40 km</td><td class="ap-cell-bold">54 km</td></tr>
+                <tr><td class="ap-cell-bold">Crecimiento PIB dominicano</td><td>5,1 %</td><td class="ap-cell-bold">2,1 %</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">⚠️</div>
+              <div class="ap-info-text"><strong>La controversia de las maternidades:</strong> en abril de 2025, el gobierno dominicano extendió las operaciones de interceptación a los hospitales y maternidades. El primer día de la medida, 48 mujeres embarazadas y 39 que acababan de dar a luz fueron detenidas. Amnistía Internacional y varias ONG denunciaron graves violaciones de los derechos fundamentales, incluyendo expulsiones sin proceso regular, separaciones familiares y condiciones de detención indignas en el centro de Haina.</div>
+            </div>
+
+            <div class="ap-sub">Las reacciones internacionales</div>
+            <p>La política migratoria dominicana suscita reacciones dispares en la escena internacional. Las organizaciones de derechos humanos denuncian violaciones del derecho internacional, en particular la expulsión de personas nacidas en República Dominicana o residentes de larga data pero sin documentos por un sistema de registro complejo y discriminatorio. Washington, aliado cercano de Abinader, permanece en general silencioso sobre la cuestión.</p>
+            <p>La comunidad internacional no logra proponer una solución alternativa creíble ante el colapso haitiano: la Misión Multinacional de Apoyo a la Seguridad (MAS), aprobada por la ONU en octubre de 2023 y desplegada a partir de 2024, no ha conseguido frenar la violencia de las bandas que controlan ya una amplia parte del territorio haitiano.</p>
+
+            <div class="ap-quote">
+              <p>« Nadie está por encima de la ley. No hay protegidos. »</p>
+              <cite>— Luis Abinader, discurso del estado de la Nación, febrero 2026</cite>
+            </div>
+            <div class="ap-quote">
+              <p>« La República Dominicana no puede ni debe cargar sola con el peso de la crisis haitiana. »</p>
+              <cite>— Luis Abinader, discurso a la Nación, abril 2025</cite>
+            </div>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Una isla, dos trayectorias</div>
+              <p>La cuestión migratoria haitiano-dominicana es mucho más que un asunto de política interior. Revela la fractura profunda entre dos Estados que comparten el mismo espacio geográfico pero evolucionan en direcciones opuestas. La República Dominicana consolida su modelo económico abierto, turístico y conectado a los mercados internacionales. Haití, en cambio, vive bajo el dominio de bandas armadas que la comunidad internacional no ha sabido neutralizar. En este contexto, la política de Abinader refleja una realidad que nadie quiere afrontar: mientras la crisis haitiana no encuentre salida, la presión migratoria sobre la frontera es estructural. El muro dominicano, por alto que sea, no puede por sí solo resolver la tragedia de una vecindad entre dos mundos.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-es-section -->
+
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — République dominicaine — Avril 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-es').classList.toggle('active', lang === 'es');
+  const isEs = lang === 'es';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEs ? 'none' : 'block');
+  document.querySelectorAll('.ap-es-section').forEach(el => el.style.display = isEs ? 'block' : 'none');
+}
+setLang('fr');
+</script>
+</body>
+</html>

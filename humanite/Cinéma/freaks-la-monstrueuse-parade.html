@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cinéma — Freaks, la monstrueuse parade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #100d08;
+    --surface: #1a150d;
+    --surface2: #211a10;
+    --surface3: #292014;
+    --border: #3a2f1a;
+    --border-soft: #4d3f22;
+    --accent: #e8c547;
+    --accent-dim: #e8c54799;
+    --accent-soft: #e8c5471a;
+    --accent2: #7c9ec9;
+    --accent2-soft: #7c9ec91a;
+    --accent3: #c8a96e;
+    --accent3-soft: #c8a96e1a;
+    --accent4: #c97c9e;
+    --accent4-soft: #c97c9e1a;
+    --text: #f0ead8;
+    --text-dim: #b8ab8e;
+    --text-faint: #6b5f45;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--accent); cursor: pointer; letter-spacing: 0.02em; }
+  .nav-logo a { color: inherit; text-decoration: none; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .breadcrumb a { color: inherit; text-decoration: none; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb a:hover span, .breadcrumb span:hover { color: var(--accent); }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); cursor: default; }
+
+  /* ─── HERO ─── */
+  .ch-hero {
+    background: var(--surface2);
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+  .ch-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C8A96E' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem; opacity: 0.9; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 4rem); color: var(--text); font-weight: 900; max-width: 900px; margin: 0 auto 1.5rem; line-height: 1.1; position: relative; z-index: 1; }
+  .ch-hero p { color: var(--text-dim); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  /* ─── TOC ─── */
+  .toc-bar { background: var(--surface); padding: 2rem; border-bottom: 1px solid var(--border); }
+  .toc-inner { max-width: 960px; margin: 0 auto; }
+  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 1.2rem; }
+  .toc-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; list-style: none; }
+  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: var(--text); font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
+  .toc-list a:hover { border-color: var(--border-soft); background: var(--surface2); color: var(--accent); }
+  .toc-num { font-family: "DM Mono", monospace; font-size: 0.65rem; color: var(--accent); flex-shrink: 0; margin-top: 0.15rem; }
+
+  /* ─── CONTENT ─── */
+  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 8rem; }
+
+  /* PART */
+  .hgg-part { margin-bottom: 5rem; }
+  .hgg-part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--accent); }
+  .hgg-part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: var(--border-soft); line-height: 1; flex-shrink: 0; }
+  .hgg-part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--text); line-height: 1.25; }
+
+  /* SECTION */
+  .hgg-section { margin-bottom: 3.5rem; }
+  .hgg-section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--accent); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--accent); scroll-margin-top: 2rem; }
+  .hgg-subsection-title { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin: 2rem 0 0.75rem; }
+
+  /* TEXT */
+  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: var(--text); line-height: 1.75; font-weight: 300; }
+  .content strong { color: var(--text); font-weight: 600; }
+  .content em { color: var(--text-dim); }
+
+  /* KEY FACT */
+  .hgg-key-fact { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 0.6rem; padding: 0.85rem 1.1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; }
+  .hgg-key-bullet { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; flex-shrink: 0; margin-top: 0.5rem; }
+  .hgg-key-fact > div { font-size: 0.91rem; color: var(--text); line-height: 1.65; font-weight: 300; }
+
+  /* CONCEPT BOX */
+  .hgg-concept { background: var(--surface2); color: var(--text); padding: 1.75rem; margin: 2rem 0; position: relative; border-radius: 4px; border: 1px solid var(--border); }
+  .hgg-concept::before { content: '→'; position: absolute; top: 1.25rem; right: 1.25rem; color: var(--accent2); font-size: 1.3rem; }
+  .hgg-concept .concept-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent2); margin-bottom: 0.7rem; }
+  .hgg-concept p { color: var(--text-dim); font-size: 0.93rem; margin: 0; }
+  .hgg-concept strong { color: var(--accent2); }
+
+  /* HIGHLIGHT */
+  .hgg-highlight { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 1.25rem 1.75rem; margin: 1.5rem 0; font-style: italic; color: var(--text); font-size: 0.93rem; line-height: 1.7; border-radius: 0 6px 6px 0; }
+
+  /* AUTHOR CARD */
+  .hgg-author { background: var(--surface2); color: var(--text); padding: 1.75rem; margin: 1.2rem 0; position: relative; border-radius: 4px; border-left: 4px solid var(--accent4); border-top: 1px solid var(--border); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .hgg-author::before { content: '✎'; position: absolute; top: 1.25rem; right: 1.25rem; color: var(--accent4); font-size: 1.1rem; opacity: 0.8; }
+  .hgg-author .author-name { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent4); margin-bottom: 0.7rem; font-weight: 700; }
+  .hgg-author p { color: var(--text-dim); font-size: 0.93rem; margin: 0; line-height: 1.7; font-weight: 300; }
+  .hgg-author strong { color: var(--accent4); }
+
+  /* STATS GRID */
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: var(--border); margin: 1.5rem 0; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .hgg-stat-cell { background: var(--surface); padding: 1.3rem; text-align: center; }
+  .hgg-stat-num { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 900; color: var(--accent); display: block; }
+  .hgg-stat-label { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.2rem; font-family: 'DM Mono', monospace; }
+
+  /* BIG QUOTE */
+  .big-quote { background: var(--surface2); color: var(--text); padding: 1.6rem 2rem; margin: 1.5rem 0; border-radius: 8px; text-align: center; position: relative; border: 1px solid var(--border); }
+  .big-quote::before { content: '\201C'; font-family: 'Playfair Display', serif; font-size: 5rem; color: var(--accent); position: absolute; top: -1rem; left: 1.5rem; line-height: 1; opacity: 0.3; }
+  .big-quote blockquote { font-family: 'Playfair Display', serif; font-size: clamp(0.88rem, 1.6vw, 1rem); font-style: italic; line-height: 1.6; color: var(--text); position: relative; z-index: 1; margin-bottom: 0.6rem; }
+  .big-quote cite { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); }
+
+  /* COMPARE BOX */
+  .compare-box { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 1.5rem 0; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+  .compare-side { padding: 1.3rem 1.5rem; }
+  .compare-side h5 { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.7rem; }
+  .compare-side p { font-size: 0.85rem; line-height: 1.65; margin-bottom: 0.5rem; font-weight: 300; color: var(--text-dim); }
+  .compare-side p:last-child { margin-bottom: 0; }
+  .compare-a { background: var(--accent-soft); }
+  .compare-a h5 { color: var(--accent); }
+  .compare-b { background: var(--accent2-soft); }
+  .compare-b h5 { color: var(--accent2); }
+
+  /* TWO COL */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+  .col-card { border-radius: 8px; padding: 1.2rem 1.4rem; border: 1px solid; }
+  .col-card h5 { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.6rem; }
+  .col-card p { margin: 0; font-size: 0.85rem; line-height: 1.6; font-weight: 300; }
+  .col-teal { background: var(--accent-soft); border-color: var(--accent-dim); }
+  .col-teal h5 { color: var(--accent); }
+  .col-teal p { color: var(--text-dim); }
+  .col-cyan { background: var(--accent2-soft); border-color: #c8a96e55; }
+  .col-cyan h5 { color: var(--accent2); }
+  .col-cyan p { color: var(--text-dim); }
+  .col-dark { background: var(--accent4-soft); border-color: #c97c9e55; }
+  .col-dark h5 { color: var(--accent4); }
+  .col-dark p { color: var(--text-dim); }
+  .col-green { background: var(--accent3-soft); border-color: #9ecba055; }
+  .col-green h5 { color: var(--accent3); }
+  .col-green p { color: var(--text-dim); }
+
+  /* DEF CARD */
+  .def-card { background: var(--surface); border-radius: 10px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.25), 0 0 0 1px var(--border); display: flex; margin-bottom: 0.75rem; }
+  .def-accent-bar { width: 5px; background: linear-gradient(180deg, var(--accent) 0%, var(--accent4) 100%); flex-shrink: 0; }
+  .def-body { padding: 1.1rem 1.4rem; flex: 1; }
+  .def-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.65rem; }
+  .def-term { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--accent); }
+  .def-tag { margin-left: auto; font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); padding: 2px 8px; border-radius: 20px; }
+  .def-text { font-size: 0.91rem; color: var(--text-dim); line-height: 1.7; font-weight: 300; margin: 0 !important; }
+  .def-text strong { color: var(--text); font-weight: 600; }
+
+  /* CRISIS CARD (preuve card) */
+  .crisis-card { border-radius: 10px; padding: 1.4rem 1.6rem; margin: 1rem 0; border: 1px solid var(--border); border-left: 4px solid var(--accent); background: var(--surface); }
+  .crisis-date { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.4rem; font-weight: 700; }
+  .crisis-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
+  .crisis-card p { margin: 0 0 0.5rem; font-size: 0.88rem; color: var(--text-dim); line-height: 1.65; font-weight: 300; }
+  .crisis-card p:last-child { margin-bottom: 0; }
+
+  /* PROBLEMATIQUE BANNER */
+  .prob-banner { background: linear-gradient(135deg, var(--surface2) 0%, #14141a 100%); border-radius: 10px; padding: 2rem 2.5rem; margin: 2rem 0; text-align: center; border: 1px solid var(--border); }
+  .prob-banner .prob-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--accent2); margin-bottom: 0.9rem; }
+  .prob-banner p { font-family: 'Playfair Display', serif; font-size: clamp(1rem, 2.5vw, 1.3rem); font-style: italic; color: var(--text); line-height: 1.55; margin: 0; }
+
+  /* TRANSITION */
+  .transition-block { background: var(--accent-soft); border: 1px dashed var(--accent-dim); border-radius: 8px; padding: 1.25rem 1.6rem; margin: 2.5rem 0; }
+  .transition-block .t-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; }
+  .transition-block p { font-style: italic; font-size: 0.92rem; color: var(--text); line-height: 1.65; margin: 0; font-weight: 300; }
+
+  /* STEP BLOCK */
+  .step-block { display: flex; gap: 1rem; margin-bottom: 1.1rem; align-items: flex-start; }
+  .step-num { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 900; color: var(--border-soft); line-height: 1.2; flex-shrink: 0; width: 2rem; text-align: right; }
+  .step-content { flex: 1; font-size: 0.93rem; color: var(--text-dim); line-height: 1.7; font-weight: 300; padding-top: 0.1rem; }
+  .step-content strong { color: var(--text); font-weight: 600; }
+
+  /* MINI CALLOUT */
+  .mini-callout { border-radius: 6px; padding: 0.9rem 1.2rem; margin: 1.2rem 0; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; gap: 0.8rem; }
+  .mini-callout-icon { font-size: 1.1rem; flex-shrink: 0; color: var(--accent); }
+  .mini-callout-text { font-size: 0.9rem; color: var(--text-dim); line-height: 1.6; font-weight: 300; }
+  .mini-callout-text strong { color: var(--text); font-weight: 600; }
+
+  /* INLINE TAG */
+  .tag { display: inline-block; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; background: var(--accent-soft); color: var(--accent); padding: 2px 7px; border-radius: 4px; vertical-align: middle; margin-left: 4px; }
+
+  /* PREUVE STRIP */
+  .preuve-strip { border-top: 1px solid var(--border); margin: 2rem 0 0.5rem; padding-top: 1rem; display: flex; align-items: baseline; gap: 0.8rem; flex-wrap: wrap; }
+  .preuve-strip .ps-num { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--accent); letter-spacing: 0.25em; }
+  .preuve-strip .ps-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--text); }
+  .preuve-strip .ps-sub { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--text-faint); letter-spacing: 0.1em; }
+
+  /* RETENIR BOX */
+  .retenir-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.4rem 1.6rem; margin: 2rem 0; }
+  .retenir-box .rb-label { display: block; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem !important; }
+  .retenir-box .rb-items { display: block; }
+  .retenir-box .rb-item { display: block; font-size: 0.9rem; color: var(--text-dim); line-height: 1.65; font-weight: 300; padding: 0.45rem 0 0.45rem 1.4rem; border-bottom: 1px dashed var(--border); margin: 0 !important; position: relative; }
+  .retenir-box .rb-item:last-child { border-bottom: none; }
+  .retenir-box .rb-item::before { content: '—'; color: var(--accent); position: absolute; left: 0; top: 0.45rem; }
+  .retenir-box .rb-item strong { color: var(--text); }
+
+  .info-box { background: var(--accent-soft); border: 1px solid var(--accent-dim); border-radius: 8px; padding: 1.1rem 1.4rem; margin: 1.5rem 0; font-size: 0.9rem; color: var(--text-dim); line-height: 1.7; font-weight: 300; }
+  .info-box strong { color: var(--text); }
+
+  /* Neutraliser le margin global sur les <p> dans les boîtes spéciales */
+  .retenir-box p, .transition-block p, .hgg-concept p,
+  .hgg-author p, .crisis-card p, .col-card p { margin-bottom: 0 !important; }
+  .crisis-card p + p { margin-top: 0.5rem; }
+
+  /* FOOTER */
+  .site-footer { background: var(--surface2); border-top: 1px solid var(--border); padding: 2.5rem 2rem; text-align: center; }
+  .site-footer .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--accent); letter-spacing: 0.02em; margin-bottom: 0.4rem; }
+  .site-footer .footer-meta { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-faint); }
+
+  /* BACK TO TOP */
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--accent); color: #0d0d0f; border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 4px 14px rgba(0,0,0,0.5); opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 200; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+  .back-to-top:hover { background: var(--accent2); }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .toc-list { grid-template-columns: 1fr; }
+    .two-col, .three-col, .compare-box { grid-template-columns: 1fr; }
+    .ch-hero { padding: 3rem 1.5rem 2.5rem; }
+  }
+
+  /* ═══════════════════════════════════════════
+     STYLES D'IMPRESSION
+  ═══════════════════════════════════════════ */
+  @media print {
+    @page { size: A4; margin: 18mm 15mm 18mm 15mm; }
+    nav, .back-to-top, .toc-bar, .site-footer { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    html, body { background: white !important; color: #000 !important; font-size: 10pt; }
+    .ch-hero { background: #1a150d !important; padding: 0.9rem 1rem 0.7rem !important; min-height: unset !important; height: auto !important; }
+    .ch-hero::before { display: none !important; }
+    .ch-hero h1 { font-size: 16pt !important; color: #fff !important; margin-bottom: 0.3rem !important; }
+    .ch-hero .chap-label { font-size: 7pt !important; color: #e8c547 !important; margin-bottom: 0.4rem !important; }
+    .ch-hero p { font-size: 7pt !important; color: #e8c547 !important; margin: 0 !important; }
+    .content { max-width: 100% !important; padding: 0.8rem 0 !important; margin: 0 !important; }
+    .hgg-part { page-break-before: auto; break-before: auto; margin-bottom: 1rem; }
+    .hgg-part-header, .hgg-section-title, .hgg-subsection-title, .preuve-strip, .crisis-date { page-break-after: avoid; break-after: avoid; }
+    .hgg-section { page-break-inside: auto; break-inside: auto; margin-bottom: 1rem; }
+    .hgg-key-fact, .hgg-author, .hgg-concept, .hgg-highlight, .hgg-stat-cell, .def-card, .crisis-card, .mini-callout, .retenir-box, .transition-block, .step-block, .big-quote, .prob-banner, .col-card, .compare-side {
+      page-break-inside: avoid; break-inside: avoid;
+    }
+    .hgg-part-header { border-bottom: 2pt solid #e8c547 !important; padding-bottom: 0.5rem; margin-bottom: 1rem; }
+    .hgg-part-num { font-size: 2.5rem !important; color: #8a8880 !important; }
+    .hgg-part-title { font-size: 14pt !important; color: #000 !important; }
+    .hgg-section-title { font-size: 11pt !important; border-left: 3pt solid #e8c547 !important; padding-left: 0.6rem !important; margin-bottom: 0.6rem !important; color: #6b5525 !important; }
+    .hgg-subsection-title { font-size: 8pt !important; color: #6b5525 !important; margin: 0.8rem 0 0.4rem !important; }
+    .content p { font-size: 9.5pt !important; line-height: 1.55 !important; margin-bottom: 0.5rem !important; color: #000 !important; }
+    .hgg-key-fact { background: #faf6e8 !important; border: 1pt solid #e8c547 !important; padding: 0.5rem 0.7rem !important; margin-bottom: 0.35rem !important; }
+    .hgg-key-fact > div { font-size: 9pt !important; color: #000 !important; }
+    .hgg-concept { background: #1a150d !important; color: #F0F0EC !important; padding: 0.9rem 1rem !important; margin: 0.8rem 0 !important; border-radius: 4px; }
+    .hgg-concept p { color: #dcdcd6 !important; font-size: 9pt !important; }
+    .hgg-concept .concept-label { color: #c8a96e !important; font-size: 7pt !important; }
+    .hgg-concept strong { color: #c8a96e !important; }
+    .hgg-concept::before { display: none; }
+    .hgg-author { background: #1a150d !important; color: #F0F0EC !important; padding: 0.9rem 1rem !important; margin: 0.8rem 0 !important; }
+    .hgg-author p { color: #dcdcd6 !important; font-size: 9pt !important; }
+    .hgg-author .author-name { color: #c97c9e !important; font-size: 7pt !important; }
+    .hgg-author strong { color: #c97c9e !important; }
+    .hgg-author::before { display: none; }
+    .hgg-highlight { background: #faf6e2 !important; border-left: 3pt solid #e8c547 !important; padding: 0.7rem 1rem !important; margin: 0.8rem 0 !important; font-size: 9pt !important; color: #3a3010 !important; }
+    .hgg-stats { border: 1pt solid #e8c547 !important; margin: 0.8rem 0 !important; }
+    .hgg-stat-cell { background: white !important; padding: 0.8rem !important; }
+    .hgg-stat-num { font-size: 12pt !important; color: #6b5525 !important; }
+    .hgg-stat-label { font-size: 7.5pt !important; color: #55524a !important; }
+    .big-quote { background: #1a150d !important; color: #F0F0EC !important; padding: 1rem 1.4rem !important; margin: 0.8rem 0 !important; }
+    .big-quote blockquote { font-size: 10pt !important; color: #F0F0EC !important; }
+    .big-quote cite { color: #e8c547 !important; font-size: 7pt !important; }
+    .big-quote::before { font-size: 3rem !important; top: -0.3rem !important; }
+    .compare-box { margin: 0.7rem 0 !important; }
+    .compare-side { padding: 0.7rem 0.9rem !important; }
+    .compare-side p { font-size: 8.5pt !important; }
+    .compare-side h5 { font-size: 6.5pt !important; }
+    .two-col { grid-template-columns: 1fr 1fr !important; gap: 0.5rem !important; margin: 0.6rem 0 !important; }
+    .three-col { grid-template-columns: 1fr 1fr 1fr !important; gap: 0.5rem !important; margin: 0.6rem 0 !important; }
+    .col-card { padding: 0.7rem 0.9rem !important; }
+    .col-card p { font-size: 8.5pt !important; }
+    .col-card h5 { font-size: 6.5pt !important; }
+    .def-card { box-shadow: none !important; border: 1pt solid #e8c547 !important; margin-bottom: 0.5rem !important; }
+    .def-term { font-size: 10pt !important; }
+    .def-text { font-size: 9pt !important; color: #000 !important; }
+    .def-accent-bar { background: #e8c547 !important; }
+    .crisis-card { background: white !important; border: 1pt solid #e8c547 !important; border-left: 4pt solid #e8c547 !important; padding: 0.7rem 1rem !important; margin: 0.5rem 0 !important; }
+    .crisis-card p { font-size: 8.5pt !important; }
+    .crisis-title { font-size: 10pt !important; color: #000 !important; }
+    .crisis-date { font-size: 6.5pt !important; color: #6b5525 !important; }
+    .mini-callout { background: #faf6e8 !important; border: 1pt solid #e8c547 !important; padding: 0.5rem 0.8rem !important; margin: 0.6rem 0 !important; }
+    .mini-callout-text { font-size: 8.5pt !important; color: #000 !important; }
+    .mini-callout-icon { font-size: 0.9rem !important; }
+    .retenir-box { background: #faf6e8 !important; border: 1pt solid #e8c547 !important; padding: 0.8rem 1rem !important; margin: 0.8rem 0 !important; }
+    .retenir-box .rb-label { font-size: 7pt !important; color: #6b5525 !important; }
+    .retenir-box .rb-item { font-size: 9pt !important; color: #000 !important; }
+    .transition-block { background: rgba(232,197,71,0.08) !important; border: 1pt dashed #e8c547 !important; padding: 0.7rem 1rem !important; margin: 0.8rem 0 !important; }
+    .transition-block .t-label { font-size: 7pt !important; color: #6b5525 !important; }
+    .transition-block p { font-size: 9pt !important; color: #3a3010 !important; }
+    .step-block { margin-bottom: 0.5rem !important; }
+    .step-num { font-size: 1.1rem !important; color: #e8c547 !important; }
+    .step-content { font-size: 9pt !important; color: #000 !important; }
+    .preuve-strip { border-top: 1pt solid #e5ddc8 !important; margin: 1rem 0 0.4rem !important; padding-top: 0.6rem !important; }
+    .preuve-strip .ps-num { font-size: 7pt !important; color: #6b5525 !important; }
+    .preuve-strip .ps-title { font-size: 10pt !important; color: #000 !important; }
+    .preuve-strip .ps-sub { font-size: 7pt !important; }
+    .prob-banner { background: #1a150d !important; padding: 1rem 1.4rem !important; margin: 0.8rem 0 !important; }
+    .prob-banner .prob-label { font-size: 7pt !important; color: #e8c547 !important; }
+    .prob-banner p { font-size: 10pt !important; color: #F0F0EC !important; }
+    a { text-decoration: none !important; color: inherit !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">/</span>
+    <a href="../../humanite.html"><span>L'Humanité</span></a>
+    <span class="sep">/</span>
+    <a href="cinema.html"><span>Cinéma</span></a>
+    <span class="sep">/</span>
+    <span class="current">Freaks, la monstrueuse parade</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="chap-label">🎬 Cinéma · L'Humanité</div>
+  <h1>Freaks, la monstrueuse parade</h1>
+  <p>Tod Browning · 1932 · Film d'horreur / drame</p>
+</div>
+
+<!-- ─── TOC ─── -->
+<div class="toc-bar">
+  <div class="toc-inner">
+    <div class="toc-title">Plan de la fiche</div>
+    <ul class="toc-list">
+      <li><a href="#intro"><span class="toc-num">I —</span> Présentation de l'œuvre</a></li>
+      <li><a href="#p1"><span class="toc-num">II —</span> Résumé</a></li>
+      <li><a href="#p2"><span class="toc-num">III —</span> Une fable sur l'humanité et le monstrueux</a></li>
+      <li><a href="#p3"><span class="toc-num">IV —</span> Pistes pour la dissertation</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ─── CONTENT ─── -->
+<div class="content">
+
+<!-- ══════════════════════════════════════ -->
+<!--  PARTIE I — PRÉSENTATION              -->
+<!-- ══════════════════════════════════════ -->
+<div class="hgg-part" id="intro">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">I</div>
+    <div class="hgg-part-title">Présentation de l'œuvre</div>
+  </div>
+
+  <p><strong>Freaks, la monstrueuse parade</strong> est un film américain réalisé par <strong>Tod Browning</strong>, sorti en 1932, tourné au sein d'un cirque itinérant. Le film a la particularité de faire jouer, dans leurs propres rôles ou presque, de véritables artistes de foire présentant des différences corporelles (nains, personnes sans membres, jumelles siamoises, femme à barbe...), aux côtés d'acteurs « normaux » incarnant le trapéziste Hercule et l'écuyère Cléopâtre.</p>
+
+  <div class="hgg-stats">
+    <div class="hgg-stat-cell"><span class="hgg-stat-num">1932</span><div class="hgg-stat-label">Année de sortie</div></div>
+    <div class="hgg-stat-cell"><span class="hgg-stat-num">30</span><div class="hgg-stat-label">Années d'interdiction au Royaume-Uni</div></div>
+    <div class="hgg-stat-cell"><span class="hgg-stat-num">2</span><div class="hgg-stat-label">Camps opposés : la troupe et les « normaux »</div></div>
+  </div>
+
+  <p>Œuvre scandaleuse à sa sortie — retirée des salles, mutilée par les studios, interdite pendant des décennies dans certains pays —, le film a longtemps été perçu comme un simple film d'exploitation avant d'être réévalué comme une réflexion radicale sur les frontières entre <strong>normalité</strong> et <strong>monstruosité</strong>, entre appartenance à une communauté humaine et exclusion.</p>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  PARTIE II — RÉSUMÉ                   -->
+<!-- ══════════════════════════════════════ -->
+<div class="hgg-part" id="p1">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">II</div>
+    <div class="hgg-part-title">Résumé</div>
+  </div>
+
+  <div class="hgg-section" id="s1-1">
+    <div class="hgg-section-title">1 — La troupe et le complot</div>
+
+    <p>Dans un cirque itinérant, la vie quotidienne d'une troupe de « <strong>freaks</strong> » (phénomènes de foire) est montrée avec une solidarité et une tendresse inhabituelles pour le genre. Hans, un nain, s'éprend de <strong>Cléopâtre</strong>, une trapéziste séduisante mais méprisante, qui apprend qu'il doit hériter d'une fortune. Avec son amant Hercule, l'homme fort du cirque, elle décide de l'épouser pour l'empoisonner lentement et s'emparer de son argent.</p>
+
+    <div class="hgg-key-fact">
+      <div class="hgg-key-bullet"></div>
+      <div>Le film prend soin de montrer, avant tout basculement dramatique, la vie ordinaire et les solidarités internes de la troupe des « freaks » — loin de tout misérabilisme, ils y apparaissent comme une communauté organisée, avec ses codes et ses rites propres.</div>
+    </div>
+
+    <p>Lors du banquet de mariage, les artistes « différents » offrent à Cléopâtre le rituel d'acceptation le plus sacré de leur communauté, scandant qu'elle est désormais « <strong>l'une des leurs</strong> ». Ivre et dégoûtée, elle les insulte et les humilie publiquement, révélant son mépris devant toute la troupe.</p>
+  </div>
+
+  <div class="hgg-section" id="s1-2">
+    <div class="hgg-section-title">2 — La découverte du complot et la vengeance collective</div>
+
+    <p>La troupe découvre bientôt que Cléopâtre empoisonne progressivement Hans. Lors d'une nuit d'orage, alors qu'Hercule et Cléopâtre tentent de fuir avec le cirque, les « freaks » se rassemblent et se lancent, tous ensemble, rampant dans la boue à travers la nuit, à la poursuite des deux coupables.</p>
+
+    <div class="hgg-concept">
+      <div class="concept-label">Le retournement final</div>
+      <p>Le film ne montre pas explicitement le châtiment infligé aux deux « normaux », mais son résultat : dans l'épilogue, Cléopâtre est devenue elle-même une attraction de foire, mutilée et réduite à l'état de créature à plumes, exhibée comme un « phénomène » — elle a rejoint, de force, la communauté qu'elle méprisait.</p>
+    </div>
+
+    <div class="info-box">Ce retournement final inverse littéralement les positions initiales : celle qui refusait d'être « l'une d'eux » devient elle-même l'objet du regard qu'elle portait sur les autres, tandis que la communauté des « freaks » demeure, elle, unie et digne.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  PARTIE III — ANALYSE                 -->
+<!-- ══════════════════════════════════════ -->
+<div class="hgg-part" id="p2">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">III</div>
+    <div class="hgg-part-title">Une fable sur l'humanité et le monstrueux</div>
+  </div>
+
+  <div class="hgg-section" id="s2-1">
+    <div class="hgg-section-title">1 — Qui est vraiment le monstre ?</div>
+
+    <p>Le film opère un <strong>renversement</strong> systématique des attentes du spectateur : ceux que leur apparence désigne comme des « monstres » se révèlent être les personnages les plus loyaux, les plus attachants et les plus moraux du récit, tandis que Cléopâtre et Hercule, physiquement conformes à la norme, sont les véritables figures du mal — cupides, cruels, sans scrupules.</p>
+
+    <div class="two-col">
+      <div class="col-card col-teal">
+        <h5>🎪 Le corps « anormal »</h5>
+        <p>Une différence physique visible, spectaculaire, mais qui s'accompagne d'une profonde solidarité et d'un sens aigu de la justice collective.</p>
+      </div>
+      <div class="col-card col-cyan">
+        <h5>🃏 Le corps « normal »</h5>
+        <p>Une apparence conforme aux normes sociales, qui dissimule une monstruosité morale : la cupidité, le mépris, la volonté de tuer.</p>
+      </div>
+    </div>
+
+    <div class="hgg-highlight">
+      Le film suggère que la véritable frontière de l'humain ne passe pas par le corps, mais par la <strong>moralité</strong> et la capacité à respecter autrui — déplaçant ainsi radicalement le critère habituel de la « monstruosité ».
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-2">
+    <div class="hgg-section-title">2 — La solidarité comme définition de l'humanité</div>
+
+    <p>Chez les « freaks », l'appartenance à la communauté ne se fonde pas sur une norme corporelle, mais sur un <strong>pacte de solidarité</strong> : « l'un de nous, l'un de nous » — la formule rituelle du banquet — signifie littéralement que l'acceptation mutuelle, et non la ressemblance physique, fait l'humanité d'un groupe. Refuser ce pacte, comme le fait Cléopâtre, revient à s'exclure soi-même de la communauté humaine, quelle que soit la conformité de son apparence.</p>
+
+    <div class="hgg-author">
+      <div class="author-name">Le rituel d'acceptation</div>
+      <p>La scène du banquet fonctionne comme un test moral déguisé en cérémonie : ce que la troupe offre à Cléopâtre n'est ni de l'argent ni un statut, mais une appartenance. Sa réaction de dégoût révèle qu'elle place la hiérarchie des apparences au-dessus de toute solidarité — jugement que le film finit par retourner contre elle.</p>
+    </div>
+
+    <div class="mini-callout">
+      <span class="mini-callout-icon">🤝</span>
+      <span class="mini-callout-text">Cette idée peut être rapprochée des réflexions sur la <strong>communauté morale</strong> : ce qui fait qu'un groupe reconnaît un individu comme « humain » relève moins de critères biologiques que d'un consentement réciproque à l'inclusion.</span>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-3">
+    <div class="hgg-section-title">3 — Le regard du spectateur mis à l'épreuve</div>
+
+    <p>En choisissant de faire jouer de véritables artistes de foire, Browning place le spectateur dans une position inconfortable : le film l'invite d'abord à regarder les « freaks » avec la même curiosité malsaine que la foule du cirque, avant de retourner ce regard contre lui à mesure que leur humanité et leur dignité se révèlent.</p>
+
+    <div class="compare-box">
+      <div class="compare-side compare-a">
+        <h5>👁️ Le regard de la foire</h5>
+        <p>Un regard qui réduit les « freaks » à des <strong>attractions</strong>, des corps à exhiber pour le divertissement d'autrui.</p>
+      </div>
+      <div class="compare-side compare-b">
+        <h5>❤️ Le regard du récit</h5>
+        <p>Un regard qui révèle progressivement leur <strong>intériorité</strong>, leurs affects, leur sens de la justice — donc leur pleine humanité.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  PARTIE IV — PISTES DE DISSERTATION   -->
+<!-- ══════════════════════════════════════ -->
+<div class="hgg-part" id="p3">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">IV</div>
+    <div class="hgg-part-title">Pistes pour la dissertation</div>
+  </div>
+
+  <div class="hgg-section" id="s3-1">
+    <div class="hgg-section-title">Comment mobiliser cette œuvre dans une copie ?</div>
+
+    <div class="retenir-box">
+      <div class="rb-label">Idées à retenir</div>
+      <div class="rb-items">
+        <div class="rb-item">Le critère de l'<strong>humanité</strong> ne se réduit pas à la conformité du corps à une norme : il relève avant tout de la moralité et de la capacité à reconnaître autrui.</div>
+        <div class="rb-item">La <strong>solidarité</strong> et le pacte d'acceptation mutuelle peuvent fonder une communauté humaine là où le corps semble a priori l'exclure.</div>
+        <div class="rb-item">Le regard porté sur la différence corporelle peut lui-même être une forme de <strong>violence</strong>, réduisant l'autre à un simple spectacle.</div>
+        <div class="rb-item">Le film opère une <strong>inversion</strong> : la monstruosité véritable se loge du côté de ceux que rien, dans leur apparence, ne semblait désigner comme tels.</div>
+      </div>
+    </div>
+
+    <div class="hgg-subsection-title">→ Notions du thème « L'Humanité » éclairées par l'œuvre</div>
+    <div class="three-col">
+      <div class="col-card col-teal">
+        <h5>🪞 L'inversion du monstrueux</h5>
+        <p>Le film déplace le monstrueux du corps différent vers la cruauté morale des personnages « normaux ».</p>
+      </div>
+      <div class="col-card col-cyan">
+        <h5>🤝 La communauté d'exclus</h5>
+        <p>La troupe des « freaks » constitue une véritable société solidaire, fondée sur l'acceptation mutuelle plutôt que sur la ressemblance.</p>
+      </div>
+      <div class="col-card col-dark">
+        <h5>👁️ Le regard et le spectacle</h5>
+        <p>Exhiber la différence comme une attraction interroge la frontière entre curiosité et déshumanisation.</p>
+      </div>
+    </div>
+
+    <div class="hgg-concept">
+      <div class="concept-label">À rapprocher</div>
+      <p>Victor Hugo, <em>Notre-Dame de Paris</em> (1831) : Quasimodo, difforme et rejeté pour son apparence, se révèle d'une loyauté et d'une bonté sans égale, tandis que Frollo, homme d'Église respecté, dissimule sous une façade conforme une monstruosité morale bien réelle — le même déplacement du monstrueux du corps vers l'âme structure les deux œuvres, à un siècle de distance.</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<footer class="site-footer">
+  <div class="footer-logo">Freaks, la monstrueuse parade — Tod Browning</div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
+
+<script>
+  document.querySelectorAll('.toc-list a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>

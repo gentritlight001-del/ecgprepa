@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Allemagne : Isar Aerospace réussit le lancement orbital de sa fusée Spectrum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #d4a017;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #6b0000; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #d4a017; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #1a1a1a; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--accent); cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: var(--accent); }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#d4a017; border-color:#d4a017; color:#000; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  .ap-band { background: #8b0000; text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(10,10,12,0.95); padding:12px 60px; border-bottom: 1px solid rgba(212,160,23,0.12); position:relative; z-index:1; }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#d4a017; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(212,160,23,0.15); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(139,0,0,0.2);    color:#f08080; border:1px solid rgba(139,0,0,0.35); }
+  .ap-tag-dark   { background:rgba(26,26,26,0.8);   color:#aaaaaa; border:1px solid rgba(255,255,255,0.15); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #d4a017; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(212,160,23,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(212,160,23,0.7); }
+
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#d4a017; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(212,160,23,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#0d0e10,#1a1b1f); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.blue   { background:linear-gradient(135deg,#0a2a5a,#1a4a8a); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #d4a017; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(212,160,23,0.06),rgba(212,160,23,0.02)); border-left:3px solid #d4a017; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(212,160,23,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(212,160,23,0.7); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(10,10,12,0.9),rgba(5,5,8,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(212,160,23,0.2); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#d4a017; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(139,0,0,0.08); border:1px solid rgba(139,0,0,0.25); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(212,160,23,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#d4a017; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(212,160,23,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#d4a017; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(10,10,12,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-de-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-de.html">Allemand</a>
+    <span class="sep">/</span>
+    <a href="../allemagne.html">Allemagne</a>
+    <span class="sep">/</span>
+    <span class="current">Isar Aerospace réussit le lancement orbital de sa fusée Spectrum</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-de" class="ap-lang-btn" onclick="setLang('de')">🇩🇪 DE</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇩🇪 Allemagne · 🇳🇴 Norvège · Isar Aerospace · Spectrum</div>
+<div class="ap-back-bar">
+  <a href="../allemagne.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+    <div class="ap-hero-img-wrap"><img class="ap-hero-img" src="../images/isar-aerospace-spectrum-orbite.jpg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+
+    <!-- ══ SECTION FR ══ -->
+    <div class="ap-fr-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-dark">🇩🇪 Allemagne</span>
+          <span class="ap-tag ap-tag-blue">🇳🇴 Norvège</span>
+          <span class="ap-tag ap-tag-gold">Industrie spatiale</span>
+          <span class="ap-tag ap-tag-teal">Numérique</span>
+          <span class="ap-tag ap-tag-red">Défense</span>
+        </div>
+        <div class="ap-date">Septembre 2026 — ECG Prépa · Allemagne</div>
+        <h1 class="ap-title">Isar Aerospace réussit le lancement orbital de sa fusée Spectrum</h1>
+        <p class="ap-intro">Depuis la base d'Andøya, dans le nord de la Norvège, l'entreprise munichoise Isar Aerospace a réalisé le 5 septembre 2026 le premier vol orbital réussi d'une fusée privée européenne depuis le continent. Après un premier essai resté inachevé en mars 2025 et de multiples reports, la fusée Spectrum a placé cinq satellites en orbite basse, un jalon salué par l'Agence spatiale européenne comme une étape historique pour l'autonomie spatiale du continent.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red"><span class="ap-stat-num">5 sept. 2026</span><span class="ap-stat-desc">Décollage réussi<br>depuis Andøya (Norvège)</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">1 000 kg</span><span class="ap-stat-desc">Capacité maximale de<br>Spectrum en orbite basse</span></div>
+          <div class="ap-stat"><span class="ap-stat-num">5 satellites</span><span class="ap-stat-desc">CubeSats déployés lors<br>du vol « Onward and Upward »</span></div>
+          <div class="ap-stat blue"><span class="ap-stat-num">≈ 870 M€</span><span class="ap-stat-desc">Capitaux levés par<br>Isar Aerospace depuis 2018</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Un second essai, après l'échec partiel de 2025</div>
+            <p>Fondée à Munich en mars 2018 par Daniel Metzler, Josef Fleischmann et Markus Brandl, trois ingénieurs issus d'un projet étudiant de l'université technique de Munich, Isar Aerospace développe depuis huit ans sa fusée Spectrum, conçue pour placer des petits et moyens satellites en orbite basse. Le premier vol d'essai, le 30 mars 2025, s'était soldé par un échec technique : l'engin avait décollé proprement mais perdu le contrôle après une trentaine de secondes de vol, avant d'être détruit par son système de sauvegarde et de retomber dans la mer de façon maîtrisée.</p>
+            <p>Ce deuxième vol, baptisé « Onward and Upward », a ensuite été reporté à plusieurs reprises au cours de l'année 2026, en raison de soucis techniques, de conditions météorologiques défavorables et même de l'intrusion d'un navire non autorisé dans la zone de sécurité du tir. Le 5 septembre 2026, à 22h12, heure de Paris, Spectrum a finalement décollé du complexe de lancement dédié d'Isar Aerospace à Andøya, atteint la vitesse orbitale, puis largué ses cinq charges utiles après une manœuvre de circularisation de son orbite.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Date et heure du tir</div><div class="ap-fact-val">5 septembre 2026, 22h12 (heure de Paris)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Site de lancement</div><div class="ap-fact-val">Andøya Spaceport, Norvège</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Nom de la mission</div><div class="ap-fact-val">« Onward and Upward » (2e vol de Spectrum)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Charge utile</div><div class="ap-fact-val">5 CubeSats + 1 expérience (programme ESA Boost!)</div></div>
+            </div>
+
+            <div class="ap-sub">Une opération suivie de près par l'industrie et les États</div>
+            <p>Le succès de Spectrum intervient alors que l'Europe cherche depuis plusieurs années à sécuriser un accès autonome à l'espace, entre le calendrier serré d'Ariane 6 et la perte de l'accès aux lanceurs russes Soyouz. Avec un total d'environ 870 millions d'euros levés depuis sa création, dont un tour de table de 270 millions d'euros conclu en 2026 et un contrat d'environ 200 millions d'euros signé avec l'ESA en août, Isar Aerospace affirme que les commandes liées à la défense représenteraient désormais près de 60 % de son carnet, signe de l'intérêt croissant des États européens pour une filière de lancement indépendante des acteurs américains ou chinois.</p>
+
+            <div class="ap-sub">Chronologie du programme Spectrum</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">Mars 2018</div><p class="ap-tl-text">Création d'Isar Aerospace à Munich, sur la base d'un projet étudiant de la TU Munich porté par Daniel Metzler, Josef Fleischmann et Markus Brandl.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">30 mars 2025</div><p class="ap-tl-text">Premier vol d'essai de Spectrum : décollage réussi, mais perte de contrôle après environ 30 secondes et destruction contrôlée par le système de sauvegarde.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2025-2026</div><p class="ap-tl-text">Sélection d'Isar Aerospace dans le cadre de l'« European Launcher Challenge » de l'ESA, qui impose aux opérateurs retenus d'atteindre l'orbite avant 2027.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2026</div><p class="ap-tl-text">Multiples reports du second vol (incident technique, météo, intrusion d'un navire dans la zone de sécurité) et levée de fonds de 270 millions d'euros pour financer la montée en cadence industrielle.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Août 2026</div><p class="ap-tl-text">Signature d'un contrat avec l'ESA, estimé à environ 200 millions d'euros, pour de futurs services de lancement.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">5 sept. 2026</div><p class="ap-tl-text">Décollage réussi de Spectrum depuis Andøya et mise en orbite des cinq satellites de la mission « Onward and Upward ».</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">Une fusée conçue et fabriquée presque entièrement en interne</div>
+            <p>Spectrum est un lanceur à deux étages, haut de 28 mètres pour 2 mètres de diamètre, fonctionnant à l'oxygène liquide et au propane, avec neuf moteurs sur son premier étage et un sur le second. Il peut placer jusqu'à 1 000 kg en orbite basse ou 700 kg en orbite héliosynchrone. Isar Aerospace revendique la fabrication d'environ 80 % des composants du lanceur dans son usine d'Ottobrunn, près de Munich, un site de 40 000 m² conçu, selon les déclarations de son PDG après le vol, pour produire jusqu'à quarante fusées par an ; les exemplaires numéros 3 à 7 seraient déjà en cours de fabrication.</p>
+            <p>Cette réussite s'inscrit dans le cadre de l'« European Launcher Challenge », un programme par lequel l'ESA a sélectionné en 2025 plusieurs opérateurs privés européens tenus d'atteindre l'orbite avant 2027. Isar Aerospace devient ainsi la première entreprise à remplir cette condition, devançant des concurrents comme l'espagnole PLD Space, qui vise un premier vol orbital depuis Kourou fin 2026, ou l'allemande Rocket Factory Augsburg, dont le lanceur RFA ONE n'a pas encore rejoint l'orbite.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Acteur</th><th>Rôle dans le dossier</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Daniel Metzler</td><td>PDG et cofondateur d'Isar Aerospace, pilote la montée en cadence industrielle</td></tr>
+                <tr><td class="ap-cell-bold">ESA (Josef Aschbacher)</td><td>Soutient la mission via le programme Boost!, salue un jalon historique pour l'Europe</td></tr>
+                <tr><td class="ap-cell-bold">Andøya Space</td><td>Exploitant norvégien du site de lancement utilisé par Isar Aerospace</td></tr>
+                <tr><td class="ap-cell-bold">Clients institutionnels et privés</td><td>Airbus Defence and Space, DLR, Spaceflight Inc. ; commandes défense estimées à ~60 % du carnet</td></tr>
+                <tr><td class="ap-cell-bold">PLD Space / Rocket Factory Augsburg</td><td>Concurrents européens directs, pas encore parvenus en orbite</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-quote">
+              <p>« Depuis aujourd'hui, il existe une véritable alternative pour les clients commerciaux et institutionnels. »</p>
+              <cite>— Daniel Metzler, PDG et cofondateur d'Isar Aerospace, 5 septembre 2026</cite>
+            </div>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">🛰️</div>
+              <div class="ap-info-text"><strong>Une capacité désormais réelle, mais pas encore une routine :</strong> un vol orbital réussi ne suffit pas à établir une cadence de lancement fiable ni un modèle économique mature. Isar Aerospace devra désormais répéter la performance, accélérer sa production et honorer un carnet de commandes déjà engagé, avec plusieurs missions à venir pour des clients comme l'Agence spatiale norvégienne ou l'américain Redwire.</div>
+            </div>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">La prochaine étape : passer de l'exploit à la cadence</div>
+              <p>Isar Aerospace a démontré ce que l'Europe continentale n'avait jamais réussi seule : porter un lanceur privé jusqu'en orbite. Le vrai défi commence maintenant, avec les exemplaires 3 à 7 déjà en production et un objectif affiché de quarante fusées par an. Entre un carnet de commandes de plus en plus orienté vers la défense et des concurrents comme PLD Space ou Rocket Factory Augsburg qui visent eux aussi l'orbite d'ici la fin de la décennie, les prochains vols depuis Andøya diront si ce premier succès marque le début d'une filière de lancement européenne durable, ou s'il reste un exploit isolé.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-fr-section -->
+
+    <!-- ══ SECTION DE ══ -->
+    <div class="ap-de-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-dark">🇩🇪 Deutschland</span>
+          <span class="ap-tag ap-tag-blue">🇳🇴 Norwegen</span>
+          <span class="ap-tag ap-tag-gold">Raumfahrtindustrie</span>
+          <span class="ap-tag ap-tag-teal">Digitales</span>
+          <span class="ap-tag ap-tag-red">Verteidigung</span>
+        </div>
+        <div class="ap-date">September 2026 — ECG Prépa · Deutschland</div>
+        <h1 class="ap-title">Isar Aerospace gelingt der Orbitalstart seiner Rakete Spectrum</h1>
+        <p class="ap-intro">Vom Weltraumbahnhof Andøya im Norden Norwegens aus ist dem Münchner Unternehmen Isar Aerospace am 5. September 2026 der erste erfolgreiche Orbitalflug einer privaten europäischen Rakete vom europäischen Festland gelungen. Nach einem unvollständig verlaufenen ersten Testflug im März 2025 und mehreren Verschiebungen brachte die Rakete Spectrum fünf Satelliten in eine niedrige Erdumlaufbahn — ein Meilenstein, den die Europäische Weltraumorganisation ESA als historischen Schritt für die europäische Souveränität im All bezeichnete.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red"><span class="ap-stat-num">5. Sept. 2026</span><span class="ap-stat-desc">Erfolgreicher Start<br>von Andøya (Norwegen)</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">1.000 kg</span><span class="ap-stat-desc">Maximale Nutzlast<br>von Spectrum in der Erdumlaufbahn</span></div>
+          <div class="ap-stat"><span class="ap-stat-num">5 Satelliten</span><span class="ap-stat-desc">CubeSats im Rahmen<br>der Mission „Onward and Upward"</span></div>
+          <div class="ap-stat blue"><span class="ap-stat-num">≈ 870 Mio. €</span><span class="ap-stat-desc">Von Isar Aerospace seit<br>2018 eingesammeltes Kapital</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Ein zweiter Versuch nach dem Teilerfolg von 2025</div>
+            <p>Isar Aerospace wurde im März 2018 in München von Daniel Metzler, Josef Fleischmann und Markus Brandl gegründet, drei Ingenieuren, die aus einem Studentenprojekt der Technischen Universität München hervorgingen. Seit acht Jahren entwickelt das Unternehmen seine Rakete Spectrum, die kleine und mittelgroße Satelliten in die niedrige Erdumlaufbahn bringen soll. Der erste Testflug am 30. März 2025 endete technisch mit einem Fehlschlag: Die Rakete hob sauber ab, verlor jedoch nach rund 30 Sekunden die Kontrolle, wurde daraufhin von ihrem Sicherheitssystem kontrolliert gesprengt und fiel ins Meer.</p>
+            <p>Der zweite Flug mit dem Namen „Onward and Upward" wurde im Laufe des Jahres 2026 mehrfach verschoben — wegen technischer Probleme, ungünstiger Wetterbedingungen und sogar wegen eines unautorisierten Schiffs in der Sicherheitszone. Am 5. September 2026, um 22:12 Uhr mitteleuropäischer Zeit, hob Spectrum schließlich vom eigens errichteten Startkomplex von Isar Aerospace in Andøya ab, erreichte Orbitalgeschwindigkeit und setzte nach einem Zirkularisierungsmanöver seine fünf Nutzlasten in der Umlaufbahn aus.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Datum und Uhrzeit</div><div class="ap-fact-val">5. September 2026, 22:12 Uhr MESZ</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Startort</div><div class="ap-fact-val">Andøya Spaceport, Norwegen</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Missionsname</div><div class="ap-fact-val">„Onward and Upward" (2. Flug von Spectrum)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Nutzlast</div><div class="ap-fact-val">5 CubeSats + 1 Experiment (ESA-Programm Boost!)</div></div>
+            </div>
+
+            <div class="ap-sub">Ein von Industrie und Staaten genau beobachteter Vorgang</div>
+            <p>Der Erfolg von Spectrum kommt zu einem Zeitpunkt, an dem Europa seit Jahren einen souveränen Zugang zum All sichern will — zwischen dem engen Zeitplan der Ariane 6 und dem Wegfall des Zugangs zu russischen Sojus-Trägerraketen. Mit insgesamt rund 870 Millionen Euro eingesammeltem Kapital seit der Gründung, darunter eine 2026 abgeschlossene Finanzierungsrunde über 270 Millionen Euro und ein im August mit der ESA unterzeichneter Vertrag über rund 200 Millionen Euro, gibt Isar Aerospace an, dass Verteidigungsaufträge inzwischen fast 60 % seines Auftragsbuchs ausmachten — ein Zeichen für das wachsende Interesse europäischer Staaten an einer von amerikanischen oder chinesischen Akteuren unabhängigen Startkapazität.</p>
+
+            <div class="ap-sub">Chronologie des Spectrum-Programms</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">März 2018</div><p class="ap-tl-text">Gründung von Isar Aerospace in München auf Basis eines Studentenprojekts der TU München durch Daniel Metzler, Josef Fleischmann und Markus Brandl.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">30. März 2025</div><p class="ap-tl-text">Erster Testflug von Spectrum: erfolgreicher Start, jedoch Kontrollverlust nach rund 30 Sekunden und kontrollierte Zerstörung durch das Sicherheitssystem.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2025-2026</div><p class="ap-tl-text">Auswahl von Isar Aerospace im Rahmen der „European Launcher Challenge" der ESA, die den ausgewählten Anbietern einen Orbitalstart vor 2027 vorschreibt.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2026</div><p class="ap-tl-text">Mehrfache Verschiebung des zweiten Flugs (technischer Zwischenfall, Wetter, ein Schiff in der Sicherheitszone) sowie eine Finanzierungsrunde über 270 Millionen Euro zur Skalierung der industriellen Produktion.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">August 2026</div><p class="ap-tl-text">Unterzeichnung eines auf rund 200 Millionen Euro geschätzten Vertrags mit der ESA für künftige Startdienstleistungen.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">5. Sept. 2026</div><p class="ap-tl-text">Erfolgreicher Start von Spectrum von Andøya aus und Aussetzung der fünf Satelliten der Mission „Onward and Upward".</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">Eine fast vollständig im eigenen Haus entwickelte und gebaute Rakete</div>
+            <p>Spectrum ist eine zweistufige Trägerrakete, 28 Meter hoch und 2 Meter im Durchmesser, angetrieben mit flüssigem Sauerstoff und Propan, mit neun Triebwerken auf der ersten und einem auf der zweiten Stufe. Sie kann bis zu 1.000 kg in die niedrige Erdumlaufbahn oder 700 kg in eine sonnensynchrone Umlaufbahn befördern. Isar Aerospace gibt an, rund 80 % der Raketenkomponenten in seiner Fabrik in Ottobrunn bei München selbst zu fertigen — einem 40.000 m² großen Werk, das laut Aussagen des Firmenchefs nach dem Flug bis zu vierzig Raketen pro Jahr produzieren können soll; die Exemplare Nummer 3 bis 7 befänden sich bereits in der Fertigung.</p>
+            <p>Der Erfolg fällt in den Rahmen der „European Launcher Challenge", eines Programms, mit dem die ESA 2025 mehrere private europäische Anbieter auswählte, die vor 2027 die Umlaufbahn erreichen müssen. Isar Aerospace wird damit zum ersten Unternehmen, das diese Bedingung erfüllt — vor Konkurrenten wie dem spanischen Unternehmen PLD Space, das einen ersten Orbitalstart von Kourou aus für Ende 2026 anstrebt, oder der deutschen Rocket Factory Augsburg, deren Rakete RFA ONE die Umlaufbahn noch nicht erreicht hat.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Akteur</th><th>Rolle im Vorgang</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Daniel Metzler</td><td>CEO und Mitgründer von Isar Aerospace, steuert die industrielle Skalierung</td></tr>
+                <tr><td class="ap-cell-bold">ESA (Josef Aschbacher)</td><td>Unterstützt die Mission über das Programm Boost!, würdigt einen historischen Meilenstein für Europa</td></tr>
+                <tr><td class="ap-cell-bold">Andøya Space</td><td>Norwegischer Betreiber des von Isar Aerospace genutzten Startgeländes</td></tr>
+                <tr><td class="ap-cell-bold">Institutionelle und private Kunden</td><td>Airbus Defence and Space, DLR, Spaceflight Inc.; Verteidigungsaufträge machen schätzungsweise ~60 % des Auftragsbuchs aus</td></tr>
+                <tr><td class="ap-cell-bold">PLD Space / Rocket Factory Augsburg</td><td>Direkte europäische Wettbewerber, bislang ohne Orbitalstart</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-quote">
+              <p>„Ab heute gibt es eine echte Alternative für kommerzielle und institutionelle Kunden."</p>
+              <cite>— Daniel Metzler, CEO und Mitgründer von Isar Aerospace, 5. September 2026</cite>
+            </div>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">🛰️</div>
+              <div class="ap-info-text"><strong>Eine reale Fähigkeit, aber noch keine Routine:</strong> Ein erfolgreicher Orbitalflug allein begründet weder eine verlässliche Startkadenz noch ein ausgereiftes Geschäftsmodell. Isar Aerospace muss diese Leistung nun wiederholen, seine Produktion beschleunigen und ein bereits bestehendes Auftragsbuch bedienen, mit weiteren geplanten Missionen etwa für die norwegische Raumfahrtagentur oder das US-Unternehmen Redwire.</div>
+            </div>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Der nächste Schritt: von der Meisterleistung zur Kadenz</div>
+              <p>Isar Aerospace hat gezeigt, was dem europäischen Festland allein bislang nie gelungen war: eine private Rakete in die Umlaufbahn zu bringen. Die eigentliche Herausforderung beginnt jetzt, mit den bereits in Produktion befindlichen Exemplaren 3 bis 7 und dem erklärten Ziel von vierzig Raketen pro Jahr. Bei einem zunehmend auf Verteidigung ausgerichteten Auftragsbuch und Konkurrenten wie PLD Space oder Rocket Factory Augsburg, die ebenfalls bis Ende des Jahrzehnts die Umlaufbahn erreichen wollen, werden die nächsten Starts von Andøya zeigen, ob dieser erste Erfolg den Beginn einer dauerhaften europäischen Startkapazität markiert — oder ob er ein Einzelfall bleibt.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-de-section -->
+
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — Allemagne — Septembre 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-de').classList.toggle('active', lang === 'de');
+  const isDe = lang === 'de';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isDe ? 'none' : 'block');
+  document.querySelectorAll('.ap-de-section').forEach(el => el.style.display = isDe ? 'block' : 'none');
+}
+setLang('fr');
+</script>
+</body>
+</html>

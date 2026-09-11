@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Maths Chapitre 10 : Espaces vectoriels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false}]});"></script>
+<style>
+  :root {
+    --cream: #FFF7ED;
+    --dark: #431407;
+    --indigo: #EA580C;
+    --indigo-dark: #7C2D12;
+    --indigo-mid: #FDBA74;
+    --indigo-light: #FFEDD5;
+    --indigo-border: #FED7AA;
+    --violet: #FDBA74;
+    --muted: #9A3412;
+    --accent: #EA580C;
+    --accent-soft: #EA580C22;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--dark); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid rgba(234,88,12,0.25);
+    background: var(--indigo-dark); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--violet); cursor: pointer; letter-spacing: 0.02em; }
+  .nav-logo a { color: inherit; text-decoration: none; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(255,247,237,0.5); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: inherit; text-decoration: none; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb a:hover span, .breadcrumb span:hover { color: var(--violet); }
+  .breadcrumb .sep { color: rgba(255,247,237,0.25); }
+  .breadcrumb .current { color: #FFF7ED; cursor: default; }
+
+  /* ─── HERO ─── */
+  .ch-hero {
+    background: var(--indigo-dark);
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ch-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23FB923C' fill-opacity='0.18'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--violet); margin-bottom: 1.5rem; opacity: 0.85; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 4rem); color: var(--cream); font-weight: 900; max-width: 900px; margin: 0 auto 1.5rem; line-height: 1.1; position: relative; z-index: 1; }
+  .ch-hero p { color: rgba(255,247,237,0.55); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  /* ─── TOC ─── */
+  .toc-bar { background: #FFEDD5; padding: 2rem; border-bottom: 1px solid var(--indigo-border); }
+  .toc-inner { max-width: 960px; margin: 0 auto; }
+  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
+  .toc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.4rem; list-style: none; }
+  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: #431407; font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
+  .toc-list a:hover { border-color: var(--indigo-border); background: white; color: #000; }
+  .toc-num { font-family: "DM Mono", monospace; font-size: 0.65rem; color: var(--indigo); flex-shrink: 0; margin-top: 0.15rem; }
+
+  /* ─── CONTENT ─── */
+  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 8rem; }
+
+  /* PART */
+  .math-part { margin-bottom: 5rem; }
+  .math-part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--indigo); }
+  .math-part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: var(--indigo-border); line-height: 1; flex-shrink: 0; }
+  .math-part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--dark); line-height: 1.25; }
+
+  /* SECTION */
+  .math-section { margin-bottom: 3.5rem; }
+  .math-section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--indigo-dark); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--indigo); scroll-margin-top: 2rem; }
+  .math-subsection-title { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--indigo); margin: 2rem 0 0.75rem; }
+
+  /* TEXT */
+  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: #431407; line-height: 1.85; font-weight: 300; }
+  .content strong { color: var(--dark); font-weight: 600; }
+
+  /* DÉFINITION CARD */
+  .def-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(234,88,12,0.10), 0 0 0 1px rgba(234,88,12,0.12);
+    display: flex;
+    margin: 1.4rem 0;
+  }
+  .def-accent-bar {
+    width: 5px;
+    background: linear-gradient(180deg, #FDBA74 0%, #7C2D12 100%);
+    flex-shrink: 0;
+    border-radius: 10px 0 0 10px;
+  }
+  .def-body { padding: 1.2rem 1.5rem; flex: 1; }
+  .def-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.65rem; }
+  .def-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--indigo); font-weight: 500; }
+  .def-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--indigo-dark); }
+  .def-body p { margin-bottom: 0.5rem; font-size: 0.93rem; line-height: 1.75; }
+  .def-body p:last-child { margin-bottom: 0; }
+  .def-body ul, .def-body ol { padding-left: 1.4rem; margin-top: 0.3rem; margin-bottom: 0.5rem; }
+  .def-body ul li, .def-body ol li { font-size: 0.93rem; line-height: 1.75; margin-bottom: 0.35rem; color: #431407; }
+
+  /* PROPRIÉTÉ CARD */
+  .prop-card {
+    background: var(--indigo-light);
+    border-radius: 8px;
+    border: 1px solid var(--indigo-border);
+    border-left: 4px solid var(--indigo);
+    padding: 1.2rem 1.5rem;
+    margin: 1.4rem 0;
+  }
+  .prop-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--indigo-dark); font-weight: 700; margin-bottom: 0.6rem; }
+  .prop-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--indigo-dark); margin-bottom: 0.7rem; }
+  .prop-card p { margin-bottom: 0.5rem; font-size: 0.93rem; color: var(--indigo-dark); line-height: 1.75; }
+  .prop-card p:last-child { margin-bottom: 0; }
+  .prop-card ol, .prop-card ul { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .prop-card ol li, .prop-card ul li { font-size: 0.93rem; color: var(--indigo-dark); line-height: 1.8; margin-bottom: 0.35rem; }
+
+  /* THÉORÈME CARD */
+  .thm-card {
+    background: var(--indigo-dark);
+    color: var(--cream);
+    border-radius: 8px;
+    padding: 1.5rem 1.75rem;
+    margin: 1.4rem 0;
+  }
+  .thm-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--violet); margin-bottom: 0.5rem; }
+  .thm-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--cream); margin-bottom: 0.75rem; }
+  .thm-card p { color: rgba(255,247,237,0.88); font-size: 0.93rem; margin-bottom: 0.5rem; line-height: 1.75; }
+  .thm-card p:last-child { margin-bottom: 0; }
+  .thm-card ol, .thm-card ul { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .thm-card ol li, .thm-card ul li { color: rgba(255,247,237,0.88); font-size: 0.93rem; line-height: 1.8; margin-bottom: 0.35rem; }
+
+  /* REMARQUE */
+  .remark { background: white; border-left: 3px solid var(--indigo-border); padding: 1rem 1.4rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; font-size: 0.9rem; color: #431407; line-height: 1.7; font-style: italic; }
+  .remark::before { content: 'Remarque — '; font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--indigo); display: block; margin-bottom: 0.3rem; }
+
+  /* MÉTHODE (highlight box réutilisé, label dédié) */
+  .method-box { background: var(--indigo-light); border-left: 3px solid var(--indigo); padding: 1rem 1.4rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; font-size: 0.9rem; color: var(--indigo-dark); line-height: 1.7; }
+  .method-box::before { content: 'Méthode — '; font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--indigo-dark); display: block; margin-bottom: 0.4rem; font-weight: 700; }
+  .method-box ol, .method-box ul { padding-left: 1.4rem; margin-top: 0.3rem; }
+  .method-box ol li, .method-box ul li { margin-bottom: 0.3rem; }
+
+  /* ATTENTION */
+  .attention { background: #FFF7ED; border-left: 3px solid #F59E0B; padding: 1rem 1.4rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; font-size: 0.9rem; line-height: 1.7; }
+  .attention::before { content: 'Attention — '; font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: #B45309; display: block; margin-bottom: 0.3rem; }
+
+  /* FORMULE DISPLAY */
+  .formula-block {
+    background: white;
+    border: 1px solid var(--indigo-border);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.2rem 0;
+    text-align: center;
+    overflow-x: auto;
+  }
+  .formula-block .katex-display { margin: 0; }
+  .formula-block .katex { font-size: 1.05em; }
+
+  /* TABLE */
+  .math-table-wrap { overflow-x: auto; margin: 1.5rem 0; border-radius: 8px; border: 1px solid var(--indigo-border); box-shadow: 0 2px 8px rgba(234,88,12,0.08); }
+  .math-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .math-table th { background: var(--indigo-dark); color: var(--cream); font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.75rem 1rem; text-align: center; font-weight: 500; border: 1px solid rgba(255,255,255,0.1); }
+  .math-table td { padding: 0.65rem 1rem; text-align: left; border: 1px solid var(--indigo-light); color: #431407; vertical-align: middle; background: white; line-height: 1.6; }
+  .math-table tr:nth-child(even) td { background: #FFF7ED; }
+  .math-table tr:hover td { background: var(--indigo-light); }
+  .math-table td.left { text-align: left; }
+  .math-table .katex { font-size: 0.95em; }
+
+  /* KEY FACT */
+  .math-key { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 0.6rem; padding: 0.85rem 1.1rem; background: white; border: 1px solid var(--indigo-light); border-radius: 6px; }
+  .math-key-bullet { width: 6px; height: 6px; background: var(--indigo); border-radius: 50%; flex-shrink: 0; margin-top: 0.55rem; }
+  .math-key > div { font-size: 0.91rem; color: #431407; line-height: 1.75; font-weight: 300; }
+
+  /* INLINE MATH */
+  .katex { font-size: 1em; }
+  .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.2rem 0; }
+
+  /* DEUX COLONNES */
+  .two-col-formulas { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
+  .two-col-formulas .formula-block { margin: 0; }
+
+  /* TROIS COLONNES */
+  .three-col-formulas { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
+  .three-col-formulas .formula-block { margin: 0; }
+
+  /* HIGHLIGHT BOX */
+  .math-highlight { background: var(--indigo-light); border-left: 4px solid var(--indigo); padding: 1.25rem 1.75rem; margin: 1.5rem 0; color: var(--indigo-dark); font-size: 0.93rem; line-height: 1.75; border-radius: 0 6px 6px 0; }
+
+  /* FOOTER */
+  .site-footer { background: var(--indigo-dark); border-top: 1px solid rgba(234,88,12,0.35); padding: 2.5rem 2rem; text-align: center; }
+  .site-footer .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--violet); letter-spacing: 0.02em; margin-bottom: 0.5rem; }
+  .site-footer .footer-meta { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(255,247,237,0.35); }
+
+  /* BACK TO TOP */
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--indigo); color: var(--cream); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 4px 14px rgba(234,88,12,0.45); opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 200; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+  .back-to-top:hover { background: var(--indigo-mid); }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--indigo-border); border-radius: 3px; }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .two-col-formulas { grid-template-columns: 1fr; }
+    .three-col-formulas { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    @page { size: A4; margin: 15mm 14mm 15mm 14mm; }
+    nav, .back-to-top, .toc-bar, .site-footer { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    html, body { background: white !important; color: #000 !important; font-size: 10pt; width: 100% !important; }
+    .ch-hero { background: #7C2D12 !important; padding: 0.9rem 1rem 0.7rem !important; }
+    .ch-hero::before { display: none !important; }
+    .ch-hero h1 { font-size: 16pt !important; color: #fff !important; margin-bottom: 0.3rem !important; }
+    .ch-hero .chap-label { font-size: 7pt !important; color: #FED7AA !important; margin-bottom: 0.4rem !important; }
+    .ch-hero p { font-size: 7pt !important; color: #FED7AA !important; margin: 0 !important; }
+    .content { max-width: 100% !important; padding: 0.6rem 0 !important; margin: 0 !important; }
+    .content p { font-size: 9pt !important; line-height: 1.5 !important; margin-bottom: 0.45rem !important; color: #000 !important; }
+    .math-part { margin-bottom: 0.8rem; page-break-inside: auto; }
+    .math-part-header { page-break-after: avoid; padding-bottom: 0.6rem !important; margin-bottom: 1rem !important; border-bottom: 2pt solid #EA580C !important; }
+    .math-part-num { font-size: 2rem !important; color: #FED7AA !important; }
+    .math-part-title { font-size: 13pt !important; }
+    .math-section { page-break-inside: auto; margin-bottom: 0.8rem; }
+    .math-section-title { page-break-after: avoid; font-size: 11pt !important; padding-left: 0.7rem !important; border-left: 2.5pt solid #EA580C !important; margin-bottom: 0.55rem !important; color: #7C2D12 !important; }
+    .math-subsection-title { page-break-after: avoid; font-size: 7pt !important; margin: 0.65rem 0 0.35rem !important; color: #EA580C !important; }
+    .def-card { page-break-inside: avoid; box-shadow: none !important; border: 1pt solid #FED7AA !important; display: flex !important; border-radius: 0 !important; margin: 0.55rem 0 !important; }
+    .def-accent-bar { background: #EA580C !important; width: 4px !important; border-radius: 0 !important; }
+    .def-body { padding: 0.7rem 1rem !important; }
+    .def-body p { font-size: 8.5pt !important; line-height: 1.5 !important; color: #000 !important; }
+    .prop-card { page-break-inside: avoid; background: #FFEDD5 !important; border-left: 2.5pt solid #EA580C !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .prop-card p, .prop-card li { font-size: 8.5pt !important; line-height: 1.5 !important; color: #7C2D12 !important; }
+    .thm-card { page-break-inside: avoid; background: #7C2D12 !important; padding: 0.75rem 1rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .thm-label { font-size: 6pt !important; color: #FED7AA !important; }
+    .thm-title { font-size: 9.5pt !important; color: #fff !important; }
+    .thm-card p, .thm-card li { font-size: 8.5pt !important; color: rgba(255,247,237,0.9) !important; line-height: 1.5 !important; }
+    .remark { page-break-inside: avoid; border-left: 2pt solid #FED7AA !important; padding: 0.5rem 0.9rem !important; margin: 0.45rem 0 !important; font-size: 8pt !important; border-radius: 0 !important; }
+    .method-box { page-break-inside: avoid; border-left: 2pt solid #EA580C !important; padding: 0.5rem 0.9rem !important; margin: 0.45rem 0 !important; font-size: 8pt !important; border-radius: 0 !important; }
+    .formula-block { page-break-inside: avoid; border: 1pt solid #FED7AA !important; padding: 0.5rem 0.8rem !important; margin: 0.45rem 0 !important; border-radius: 0 !important; }
+    .math-key { page-break-inside: avoid; padding: 0.4rem 0.8rem !important; margin-bottom: 0.3rem !important; border: 1pt solid #FFEDD5 !important; border-radius: 0 !important; }
+    .math-key > div { font-size: 8.5pt !important; line-height: 1.45 !important; color: #000 !important; }
+    .math-highlight { page-break-inside: avoid; background: #FFEDD5 !important; border-left: 2.5pt solid #EA580C !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; font-size: 8.5pt !important; color: #7C2D12 !important; border-radius: 0 !important; }
+    .math-table-wrap { page-break-inside: avoid; margin: 0.55rem 0 !important; border: 1pt solid #FED7AA !important; border-radius: 0 !important; box-shadow: none !important; }
+    .math-table th { background: #7C2D12 !important; color: #FED7AA !important; font-size: 6.5pt !important; padding: 0.4rem 0.6rem !important; }
+    .math-table td { font-size: 8pt !important; padding: 0.4rem 0.6rem !important; border: 0.5pt solid #FFEDD5 !important; }
+    .two-col-formulas, .three-col-formulas { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 0.5rem !important; margin: 0.45rem 0 !important; }
+    .katex { font-size: 0.82em !important; }
+    .katex-display { margin: 0.15rem 0 !important; overflow: visible !important; }
+    .katex-html { white-space: normal !important; }
+    .katex .base { display: inline !important; white-space: nowrap !important; }
+    .def-body p, .prop-card p, .thm-card p, .remark, .math-key > div, .content p { overflow: visible !important; word-break: break-word !important; }
+    .formula-block { overflow: visible !important; height: auto !important; min-height: 0 !important; text-align: center !important; }
+    .formula-block .katex-display { overflow-x: visible !important; overflow-y: visible !important; text-align: center !important; }
+    .katex *, .katex-html * { position: static !important; top: auto !important; bottom: auto !important; left: auto !important; right: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left"><div class="nav-logo"><a href="../../index.html">ECG Prépa</a></div></div>
+  <div class="breadcrumb">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">/</span>
+    <a href="index.html"><span>Mathématiques</span></a>
+    <span class="sep">/</span>
+    <span class="current">Chapitre 10</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="chap-label">&#x2015;&nbsp; Chapitre 10 · Mathématiques approfondies &nbsp;&#x2015;</div>
+  <h1>Espaces vectoriels</h1>
+  <p>Sous-espaces vectoriels · Familles libres et génératrices · Bases · Dimension</p>
+</div>
+
+<!-- TOC -->
+<div class="toc-bar">
+  <div class="toc-inner">
+    <div class="toc-title">Table des matières</div>
+    <ul class="toc-list">
+      <li><a href="#part1"><span class="toc-num">I</span> Notion d'espace vectoriel et de sous-espace vectoriel</a></li>
+      <li><a href="#part2"><span class="toc-num">II</span> Famille libre, base</a></li>
+      <li><a href="#part3"><span class="toc-num">III</span> Complément sur la dimension</a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════════
+     PARTIE I — NOTION D'ESPACE VECTORIEL ET DE SOUS-ESPACE VECTORIEL
+════════════════════════════════════════ -->
+<div class="math-part" id="part1">
+  <div class="math-part-header">
+    <div class="math-part-num">I</div>
+    <div class="math-part-title">Notion d'espace vectoriel et de sous-espace vectoriel</div>
+  </div>
+
+  <div class="math-section" id="s1-1">
+    <div class="math-section-title">1 — Espaces vectoriels</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span></div>
+        <p>Soit $E$ un ensemble non vide. On dira que $E$ est un $\mathbb{R}$-espace vectoriel (ou $\mathbb{R}$-ev) lorsqu'il existe sur $E$ deux opérations :</p>
+        <ul>
+          <li>une opération interne, notée « $+$ » : $\forall (\vec{u}, \vec{v}) \in E^2, \ \vec{u} + \vec{v} \in E$</li>
+          <li>une opération externe, notée « $.$ » : $\forall \lambda \in \mathbb{R}, \ \forall \vec{u} \in E, \ \lambda.\vec{u} \in E$</li>
+        </ul>
+        <p>Ces deux opérations doivent en outre vérifier les propriétés suivantes :</p>
+        <ol>
+          <li>$\forall (\vec{u}, \vec{v}) \in E^2, \ \vec{u} + \vec{v} = \vec{v} + \vec{u}$ (on dit que « $+$ » est commutative)</li>
+          <li>$\forall (\vec{u}, \vec{v}, \vec{w}) \in E^3, \ (\vec{u} + \vec{v}) + \vec{w} = \vec{u} + (\vec{v} + \vec{w})$ (on dit que « $+$ » est associative)</li>
+          <li>il existe un élément de $E$, appelé <strong>vecteur nul</strong> et noté $\vec{0}$ ou $0_E$ qui vérifie : $\forall \vec{u} \in E, \ \vec{u} + \vec{0} = \vec{0} + \vec{u} = \vec{u}$</li>
+          <li>pour tout $\vec{u} \in E$ il existe un élément $\vec{u'} \in E$ tel que $\vec{u} + \vec{u'} = \vec{u'} + \vec{u} = \vec{0}$. $\vec{u'}$ s'appelle l'<strong>opposé</strong> de $\vec{u}$ et se note $-\vec{u}$. On a donc $\vec{u} + (-\vec{u}) = (-\vec{u}) + \vec{u} = \vec{0}$</li>
+          <li>$\forall (\alpha, \beta) \in \mathbb{R}^2, \ \forall \vec{u} \in E, \ (\alpha+\beta).\vec{u} = \alpha.\vec{u} + \beta.\vec{u}$</li>
+          <li>$\forall \alpha \in \mathbb{R}, \ \forall (\vec{u}, \vec{v}) \in E^2, \ \alpha.(\vec{u}+\vec{v}) = \alpha.\vec{u} + \alpha.\vec{v}$</li>
+          <li>$\forall (\alpha, \beta) \in \mathbb{R}^2, \ \forall \vec{u} \in E, \ (\alpha\beta).\vec{u} = \alpha.(\beta.\vec{u})$</li>
+          <li>$\forall \vec{u} \in E, \ 1.\vec{u} = \vec{u}$</li>
+        </ol>
+        <p>Les éléments de $E$ sont appelés des <strong>vecteurs</strong>, les éléments de $\mathbb{R}$ des <strong>scalaires</strong>.</p>
+      </div>
+    </div>
+
+    <div class="remark">
+      Les vecteurs définis en géométrie forment un espace vectoriel. On généralise ici cette structure à des espaces plus compliqués (on dira que les éléments de $E$ sont des vecteurs même si ce ne sont pas des vecteurs géométriques).
+      <br>On utilise au cours de l'année les $\mathbb{R}$-espaces vectoriels usuels suivants : $\mathbb{R}^n$, $\mathcal{M}_{n,p}(\mathbb{R})$, $\mathbb{R}[x]$ (polynômes), l'ensemble des suites réelles, et $\mathcal{C}^0(\mathbb{R})$ (fonctions continues sur $\mathbb{R}$).
+    </div>
+
+    <div class="remark">
+      Dans chacun de ces exemples, un vecteur est un élément de l'ensemble dans lequel on travaille. On écrit $\lambda.\vec{u}$ ; mais ne pas écrire $\vec{u}.\lambda$ (ce qui n'existe pas !) : le réel va toujours devant le vecteur !
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <ol>
+        <li>$\forall \lambda \in \mathbb{R}, \ \lambda.\vec{0} = \vec{0}$ et $\forall \vec{u} \in E, \ 0.\vec{u} = \vec{0}$</li>
+        <li>$\lambda.\vec{u} = \vec{0} \ \Leftrightarrow \ \lambda = 0$ ou $\vec{u} = \vec{0}$</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="math-section" id="s1-2">
+    <div class="math-section-title">2 — Notion de sous-espaces vectoriels, famille génératrice</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 2 · Combinaison linéaire de deux vecteurs</span></div>
+        <p>Soit $E$ un $\mathbb{R}$-espace vectoriel. Soit $\vec{u}, \vec{v}$ deux vecteurs de $E$ et soit $\alpha, \beta$ deux réels.</p>
+        <p>On dit que le vecteur $\vec{w} = \alpha.\vec{u} + \beta.\vec{v}$ est une <strong>combinaison linéaire</strong> des vecteurs $\vec{u}$ et $\vec{v}$.</p>
+      </div>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 3 · Sous-espace vectoriel</span></div>
+        <p>Soit $E$ un espace vectoriel. Soit $F$ un sous-ensemble de $E$.</p>
+        <p>On dit que $F$ est un <strong>sous-espace vectoriel</strong> de $E$ $\ \Leftrightarrow \ $</p>
+        \[
+        \begin{cases}
+        F \neq \emptyset \quad (\text{contient le vecteur nul}) \\
+        \forall \vec{u} \in F, \ \forall \vec{v} \in F, \ \forall (\lambda, \mu) \in \mathbb{R}^2 \ \text{on a} \ \lambda.\vec{u} + \mu.\vec{v} \in F
+        \end{cases}
+        \]
+        <p>Ainsi $F$ est un ssev de $E$ $\ \Leftrightarrow \ $ $F$ non vide et stable par combinaison linéaire.</p>
+      </div>
+    </div>
+
+    <div class="remark">
+      Si $F$ est un sous-espace vectoriel de $E$ alors $F$ contient forcément le vecteur nul $\vec{0}$ ou $0_E$. En effet, $F \neq \emptyset$ donc $F$ contient au moins un vecteur, noté $\vec{x}$. On a alors : $\vec{x} + (-1).\vec{x} = \vec{0} \in F$. Par conséquent, pour prouver que $F \neq \emptyset$, on montrera que $\vec{0} \in F$.
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 2</div>
+      <p>$\mathbb{R}_n[x]$ est un sous-espace vectoriel de $\mathbb{R}[x]$.</p>
+    </div>
+
+    <div class="remark">
+      Un sous-espace vectoriel est lui-même un espace vectoriel. Donc, pour prouver qu'un ensemble est un espace vectoriel sans utiliser la définition, on pourra montrer qu'il est ssev d'un $\mathbb{R}$-ev connu. Ainsi, $\mathbb{R}_n[x]$ est un $\mathbb{R}$-espace vectoriel.
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 4</span></div>
+        <p>Soit $E$ un espace vectoriel et soit $\vec{e}_1, \vec{e}_2, \dots, \vec{e}_p$ des vecteurs de $E$.</p>
+        <ul>
+          <li>On appelle <strong>combinaison linéaire</strong> de ces $p$ vecteurs, tout vecteur $\vec{u}$ du type : $\vec{u} = \lambda_1.\vec{e}_1 + \lambda_2.\vec{e}_2 + \cdots + \lambda_p.\vec{e}_p$ avec $(\lambda_1, \dots, \lambda_p) \in \mathbb{R}^p$</li>
+          <li>L'ensemble des combinaisons linéaires est un sous-espace vectoriel, noté $\text{Vect}(\vec{e}_1, \vec{e}_2, \dots, \vec{e}_p)$.</li>
+        </ul>
+        <p>Ainsi, $\vec{u} \in \text{Vect}(\vec{e}_1, \dots, \vec{e}_p) \ \Leftrightarrow \ \vec{u}$ est une CL de $\vec{e}_1, \dots, \vec{e}_p$ $\ \Leftrightarrow \ \exists (\lambda_1, \dots, \lambda_p) \in \mathbb{R}^p$ tq $\vec{u} = \lambda_1.\vec{e}_1 + \cdots + \lambda_p.\vec{e}_p$.</p>
+        <p>$\text{Vect}(\vec{e}_1, \dots, \vec{e}_p)$ est un sous-espace vectoriel de $E$ qui contient $\vec{e}_1, \vec{e}_2, \dots, \vec{e}_p$.</p>
+      </div>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 5 · Famille génératrice</span></div>
+        <p>Soit $(\vec{e}_1, \vec{e}_2, \dots, \vec{e}_p)$ une famille constituée de $p$ vecteurs d'un ssev $F$ de $E$.</p>
+        \[(\vec{e}_1, \dots, \vec{e}_p) \ \text{famille génératrice de} \ F \ \Leftrightarrow \ F = \text{Vect}(\vec{e}_1, \dots, \vec{e}_p)\]
+        <p>Ainsi, la famille $(\vec{e}_1, \dots, \vec{e}_p)$ est une famille génératrice de $F$ ssi tout vecteur $\vec{u}$ de $F$ se décompose sur cette famille. D'où l'équivalence :</p>
+        \[(\vec{e}_1, \dots, \vec{e}_p) \ \text{génératrice de} \ F \ \Leftrightarrow \ \forall \vec{u} \in F, \ \exists (\lambda_1, \dots, \lambda_p) \in \mathbb{R}^p \ \text{tq} \ \vec{u} = \lambda_1.\vec{e}_1 + \cdots + \lambda_p.\vec{e}_p\]
+      </div>
+    </div>
+
+    <div class="remark">
+      Un même espace peut admettre plusieurs familles génératrices.
+    </div>
+
+    <div class="method-box">
+      Pour déterminer une famille génératrice d'un ssev $F$ :
+      <ul>
+        <li>Écrire l'allure générale d'un vecteur de $E$ : a-t-on $\vec{u} = $ vecteurs de $\mathbb{R}^3$ ? de $\mathbb{R}^n$ ? matrice ? polynôme ? etc. Ceci fournit une écriture avec des coefficients quelconques (= des lettres).</li>
+        <li>Traduire le fait que $\vec{u} \in F$ pour créer des conditions sur ses coefficients (= exprimer certaines lettres à l'aide des autres).</li>
+        <li>Reporter dans l'écriture de $\vec{u}$ pour en déduire une égalité $\vec{u} = $ CL de vecteurs fixés (les lettres restantes deviennent les coefficients de la CL).</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE II — FAMILLE LIBRE, BASE
+════════════════════════════════════════ -->
+<div class="math-part" id="part2">
+  <div class="math-part-header">
+    <div class="math-part-num">II</div>
+    <div class="math-part-title">Famille libre, base</div>
+  </div>
+
+  <div class="math-section" id="s2-1">
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span></div>
+        <p>Soit $(\vec{e}_1, \vec{e}_2, \dots, \vec{e}_p)$ une famille constituée de $p$ vecteurs de $E$.</p>
+        <ul>
+          <li>On dit que la famille $(\vec{e}_1, \dots, \vec{e}_p)$ est <strong>liée</strong> ssi l'un des vecteurs est une combinaison linéaire des autres.</li>
+          <li>On dit qu'une famille $(\vec{e}_1, \dots, \vec{e}_p)$ est <strong>libre</strong> ssi elle n'est pas liée.</li>
+        </ul>
+        <p>Ainsi $(\vec{e}_1, \dots, \vec{e}_p)$ est libre ssi</p>
+        \[
+        \begin{cases}
+        \forall \lambda_1, \dots, \lambda_p \ \text{des réels tels que} \ \lambda_1.\vec{e}_1 + \lambda_2.\vec{e}_2 + \cdots + \lambda_p.\vec{e}_p = \vec{0} \\
+        \text{alors} \ \lambda_1 = \lambda_2 = \cdots = \lambda_p = 0
+        \end{cases}
+        \]
+      </div>
+    </div>
+
+    <div class="remark">
+      La famille $(\vec{e}_1, \dots, \vec{e}_p)$ est libre ssi la seule manière de créer le vecteur nul est de prendre tous les coefficients nuls.
+    </div>
+
+    <div class="method-box">
+      Regarder si une famille est libre ou liée, c'est chercher comment créer le vecteur nul.
+      On écrira : « cherchons $(\lambda_1, \dots, \lambda_p) \in \mathbb{R}^p$ tel que $\lambda_1.\vec{e}_1 + \cdots + \lambda_p.\vec{e}_p = \vec{0}$ ».
+      On exploite ensuite cette égalité pour déterminer les $(\lambda_i)_{1 \le i \le p}$ :
+      <ul>
+        <li>si on trouve les $(\lambda_i)_{1 \le i \le p}$ tous nuls, la famille est libre.</li>
+        <li>sinon, la famille est liée et on écrit comment créer $\vec{0}$ (sans paramètres, avec des valeurs !)</li>
+      </ul>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <p>Toute famille de polynômes ayant des degrés deux à deux distincts est une famille libre.</p>
+    </div>
+
+    <div class="remark">
+      Cette proposition fournit un critère très pratique pour prouver qu'une famille de polynômes est libre. Mais (!) une famille de polynômes peut aussi être libre sans vérifier ce critère.
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 2</div>
+      <ul>
+        <li>Toute famille contenant le vecteur nul est liée.</li>
+        <li>Une famille $\{\vec{u}\}$ constituée d'un seul vecteur est libre ssi $\vec{u} \neq \vec{0}$.</li>
+        <li>Toute famille contenue dans une famille libre est libre.</li>
+      </ul>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 2 · Base</span></div>
+        <p>Soit $E$ un espace vectoriel. On dit qu'une famille de vecteurs $(\vec{e}_1, \vec{e}_2, \dots, \vec{e}_n)$ est une <strong>base</strong> de $E$ ssi cette famille est libre et génératrice de $E$.</p>
+        <p>Ainsi, $(\vec{e}_1, \dots, \vec{e}_n)$ est une base de $E$ ssi $\text{Vect}(\vec{e}_1, \dots, \vec{e}_n) = E$ avec $(\vec{e}_1, \dots, \vec{e}_n)$ famille libre.</p>
+      </div>
+    </div>
+
+    <div class="remark">
+      Toutes les bases d'un même espace ont le même nombre de vecteurs : c'est la dimension de l'espace. Ceci fera l'objet d'un prochain paragraphe.
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 3</span></div>
+        <ul>
+          <li>Soit $E$ un espace vectoriel qui admet une base $(\vec{e}_1, \dots, \vec{e}_n)$ constituée de $n$ vecteurs. On dit que $E$ est un espace de <strong>dimension $n$</strong> et on pose $\dim(E) = n$.</li>
+          <li>Par convention, si $E = \{0_E\}$, on pose $\dim(E) = 0$.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 3</div>
+      <div class="thm-title">Bases canoniques des espaces usuels</div>
+      <p>Les familles suivantes sont des bases des espaces associés. On les appelle bases canoniques :</p>
+      <ul>
+        <li>$\vec{e}_1 = (1,0,\dots,0)$, $\vec{e}_2 = (0,1,0,\dots,0)$, …, $\vec{e}_n = (0,\dots,0,1)$ est la base canonique de $\mathbb{R}^n$. On a donc $\dim(\mathbb{R}^n) = n$.</li>
+        <li>$(1, x, x^2, \dots, x^n)$ est la base canonique de $\mathbb{R}_n[x]$. Ainsi $\dim(\mathbb{R}_n[x]) = n+1$.</li>
+        <li>$(E_{1,1}, E_{1,2}, E_{2,1}, E_{2,2})$ (matrices élémentaires) est une base de $\mathcal{M}_2(\mathbb{R})$. Ainsi $\dim(\mathcal{M}_2(\mathbb{R})) = 4$. De manière plus générale $\dim(\mathcal{M}_{n,p}(\mathbb{R})) = np$.</li>
+      </ul>
+    </div>
+
+    <div class="remark">
+      La proposition précédente fournit des bases de référence pour chacun de ces espaces, mais il en existe d'autres !
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 4</span></div>
+        <p>Soit $F$ un sous-espace vectoriel de $E$. On dit qu'une famille de vecteurs $(\vec{e}_1, \dots, \vec{e}_p)$ est une <strong>base</strong> du ssev $F$ ssi cette famille est libre et génératrice de $F$.</p>
+        <p>Ainsi, $(\vec{e}_1, \dots, \vec{e}_p)$ est une base de $F$ ssi $\text{Vect}(\vec{e}_1, \dots, \vec{e}_p) = F$ <strong>et</strong> $(\vec{e}_1, \dots, \vec{e}_p)$ est une famille libre.</p>
+        <p>Dans ce cas, on note $p = \dim(F)$.</p>
+      </div>
+    </div>
+
+    <div class="remark">
+      Pour trouver une base d'un ssev $F$, on cherche une famille génératrice de $F$. Si elle est libre, c'est une base. Le nombre de vecteurs permet alors de donner $\dim(F)$.
+    </div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 4</div>
+      <div class="thm-title">Coordonnées dans une base</div>
+      <p>Soit $(\vec{e}_1, \vec{e}_2, \dots, \vec{e}_n)$ une base de $E$. Tout vecteur de $E$ se décompose de manière unique sur cette famille, c'est-à-dire :</p>
+      \[\forall \vec{u} \in E, \ \exists ! (\lambda_1, \dots, \lambda_n) \in \mathbb{R}^n \ \text{tel que} \ \vec{u} = \lambda_1.\vec{e}_1 + \lambda_2.\vec{e}_2 + \cdots + \lambda_n.\vec{e}_n\]
+      <p>Les $(\lambda_i)_{1 \le i \le n}$ s'appellent les <strong>coordonnées</strong> de $\vec{u}$ dans la base $(\vec{e}_1, \dots, \vec{e}_n)$.</p>
+    </div>
+
+    <div class="remark">
+      L'existence de la décomposition vient du fait que la famille est génératrice ; l'unicité de la décomposition vient du fait que la famille est libre.
+      <br>Un même espace peut admettre plusieurs bases. La notion de coordonnées est liée à celle de base (on ne peut pas donner l'une sans préciser l'autre).
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE III — COMPLÉMENT SUR LA DIMENSION
+════════════════════════════════════════ -->
+<div class="math-part" id="part3">
+  <div class="math-part-header">
+    <div class="math-part-num">III</div>
+    <div class="math-part-title">Complément sur la dimension</div>
+  </div>
+
+  <div class="math-section" id="s3-1">
+    <div class="math-section-title">1 — Nombre de vecteurs d'une famille et dimension</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <p>Soit $E$ un espace vectoriel (dans cette proposition $n, p, r$ sont des entiers de $\mathbb{N}^*$).</p>
+      <ol>
+        <li>Soit $\mathcal{F}_1$ une famille libre constituée de $r$ vecteurs de $E$ et soit $\mathcal{F}_2$ une famille génératrice constituée de $p$ vecteurs de $E$. On a : $r \le p$.</li>
+        <li>Si $E$ admet une base constituée de $n$ vecteurs alors toutes les bases de $E$ sont constituées de $n$ vecteurs et on pose $n = \dim(E)$.</li>
+      </ol>
+    </div>
+
+    <div class="remark">
+      Si $E$ a une base avec $n$ vecteurs, alors on a : nombre de vecteurs d'une famille libre $\le n \le$ nombre de vecteurs d'une famille génératrice.
+    </div>
+  </div>
+
+  <div class="math-section" id="s3-2">
+    <div class="math-section-title">2 — Utilisation de la dimension</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 2</div>
+      <ul>
+        <li>Soit $E$ un espace vectoriel avec $\dim(E) = n$. Toute famille libre constituée de $n$ vecteurs de $E$ est une base de $E$.</li>
+        <li>Soit $F$ un ssev de $E$ avec $\dim(F) = r$. Toute famille libre constituée de $r$ vecteurs de $F$ est une base de $F$.</li>
+      </ul>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 3</div>
+      <ul>
+        <li>Soit $E$ un espace vectoriel avec $\dim(E) = n$. Toute famille génératrice constituée de $n$ vecteurs de $E$ est une base de $E$.</li>
+        <li>Soit $F$ un ssev de $E$ avec $\dim(F) = r$. Toute famille génératrice constituée de $r$ vecteurs de $F$ est une base de $F$.</li>
+      </ul>
+    </div>
+
+    <div class="remark">
+      Si on connaît la dimension, pour prouver qu'une famille est une base, il suffit de vérifier l'une des deux propriétés (libre ou génératrice) et de compter son nombre d'éléments. Posséder le bon nombre d'éléments ne suffit pas ! (il faut vérifier libre ou génératrice).
+    </div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 4</div>
+      <div class="thm-title">Utilisation de la dimension pour montrer l'égalité de deux sous-espaces</div>
+      <p>Soit $E$ un $\mathbb{R}$-ev de dimension finie et soit $F$ et $G$ deux ssev de $E$.</p>
+      \[
+      \begin{cases}
+      F \subset G \ \text{ou} \ G \subset F \\
+      \dim(F) = \dim(G)
+      \end{cases}
+      \ \Leftrightarrow \ F = G
+      \]
+    </div>
+
+    <div class="remark">
+      Pour prouver que $F = G$, il faudrait normalement prouver la double inclusion. Dans le cas de sous-espaces vectoriels de dimension finie, on montre une des deux inclusions puis on vérifie l'égalité des dimensions. (S'il n'y a pas égalité des dimensions, on revient à la double inclusion : $F \subset G$ et $G \subset F$.)
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 5</div>
+      <div class="prop-title">Base incomplète</div>
+      <p>Soit $E$ un $\mathbb{R}$-ev avec $\dim E = n$. Soit $(\vec{e}_1, \vec{e}_2, \dots, \vec{e}_p)$ une famille libre de $E$ (avec $p \le n-1$).</p>
+      <p>Alors il existe une famille constituée de $n-p$ vecteurs de $E$, $(\vec{u}_{p+1}, \vec{u}_{p+2}, \dots, \vec{u}_n)$, telle que $(\vec{e}_1, \dots, \vec{e}_p, \vec{u}_{p+1}, \dots, \vec{u}_n)$ soit une base de $E$.</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- fin .content -->
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-logo">Chapitre 10 : Espaces vectoriels</div>
+</footer>
+
+<button class="back-to-top" id="btt" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Retour en haut">↑</button>
+
+<script>
+  const btt = document.getElementById('btt');
+  window.addEventListener('scroll', () => {
+    btt.classList.toggle('visible', window.scrollY > 400);
+  });
+</script>
+
+</body>
+</html>

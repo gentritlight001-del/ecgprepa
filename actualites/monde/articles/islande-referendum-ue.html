@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Islande : référendum sur l'adhésion à l'UE le 29 août 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #003087;
+    --accent2: #c8a200;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #003087; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #c8a200; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #003087; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #7ca8c9; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #7ca8c9; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+
+  /* Article styles */
+  .ap-band { background: linear-gradient(90deg, #003087, #c8a200, #003087, #c8a200, #003087); text-align:center; padding:5px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.22em; }
+  .ap-back-bar { background: rgba(5,5,15,0.95); padding:12px 60px; border-bottom: 1px solid rgba(0,48,135,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#7ca8c9; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(0,48,135,0.25); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+
+  /* Hero */
+  .ap-hero-placeholder {
+    width:100%; aspect-ratio: 16/7; position:relative;
+    background: linear-gradient(135deg, #050a1a 0%, #0a1530 35%, #1a1205 60%, #0a1530 85%, #050a1a 100%);
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
+  }
+  .ap-hero-placeholder::before {
+    content: '🇮🇸';
+    font-size: 7rem;
+    filter: grayscale(0.1) drop-shadow(0 4px 32px rgba(0,0,0,0.8));
+    opacity: 0.55;
+  }
+  .ap-hero-placeholder::after {
+    content:''; position:absolute; inset:0;
+    background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.88) 100%);
+  }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(228,30,32,0.2);  color:#f08080; border:1px solid rgba(228,30,32,0.35); }
+  .ap-tag-navy   { background:rgba(26,26,140,0.4);   color:#9090e0; border:1px solid rgba(100,100,200,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.25);  color:#ffb74d; border:1px solid rgba(255,183,77,0.35); }
+  .ap-tag-eu     { background:rgba(0,48,135,0.3);   color:#8ab0d4; border:1px solid rgba(138,176,212,0.3); }
+
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #003087; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,5,15,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(0,48,135,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(100,160,212,0.7); }
+
+  /* Rich components */
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#7ca8c9; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(0,48,135,0.3); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#050a1a,#0a1530); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.blue   { background:linear-gradient(135deg,#0a0a3a,#003087); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#1a1200,#2a1f00); border-color:rgba(200,162,0,0.3); }
+  .ap-stat.teal   { background:linear-gradient(135deg,#001a14,#002a20); }
+  .ap-stat.dark   { background:linear-gradient(135deg,#1a1a1a,#2a2a2a); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #003087; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(0,48,135,0.08),rgba(0,48,135,0.02)); border-left:3px solid #7ca8c9; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(0,48,135,0.2); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(124,168,201,0.9); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(3,5,15,0.9),rgba(2,3,10,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(0,48,135,0.3); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#7ca8c9; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-ctx p + p { margin-top:10px; }
+  .ap-info { background:rgba(0,48,135,0.07); border:1px solid rgba(0,48,135,0.2); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(0,48,135,0.4); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#003087; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(0,48,135,0.5); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#7ca8c9; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-monde.html">Monde</a>
+    <span class="sep">/</span>
+    <a href="../europe.html">Europe</a>
+    <span class="sep">/</span>
+    <span class="current">Islande — Référendum UE 2026</span>
+  </div>
+</nav>
+
+<div class="ap-band">🇮🇸 ISLANDE — RÉFÉRENDUM UE · 29 AOÛT 2026 🇪🇺</div>
+<div class="ap-back-bar">
+  <a href="../europe.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+
+    <div class="ap-hero-img-wrap">
+      <img class="ap-hero-img" src="../images/islande-referendum-ue.jpg" alt="Islande, référendum UE 2026" onerror="this.parentElement.outerHTML='<div class=\'ap-hero-placeholder\'></div>'">
+    </div>
+
+    <div class="ap-header">
+      <div class="ap-tags">
+        <span class="ap-tag ap-tag-eu">🇮🇸 Islande</span>
+        <span class="ap-tag ap-tag-blue">🇪🇺 Élargissement UE</span>
+        <span class="ap-tag ap-tag-gold">🗳️ Démocratie directe</span>
+        <span class="ap-tag ap-tag-teal">🐟 Pêche</span>
+        <span class="ap-tag ap-tag-navy">Géopolitique</span>
+      </div>
+      <div class="ap-date">Mai 2026 — ECG Prépa · Europe</div>
+      <h1 class="ap-title">Islande : le grand pari du 29 août</h1>
+      <p class="ap-intro">Le 29 août 2026, les 400 000 Islandais seront appelés à répondre à une question simple mais lourde de conséquences : les négociations d'adhésion à l'Union européenne doivent-elles reprendre ? Onze ans après le retrait officiel de la candidature, un gouvernement de centre-gauche pari sur ce référendum pour trancher une question qui divise profondément le pays. Entre souveraineté jalousement gardée, pêche comme enjeu identitaire et contexte géopolitique radicalement reconfiguré, l'Islande se trouve à un tournant de son histoire.</p>
+    </div>
+
+    <div class="ap-body">
+
+      <div class="ap-stats">
+        <div class="ap-stat blue"><span class="ap-stat-num">29 août</span><span class="ap-stat-desc">Date du référendum<br>2026</span></div>
+        <div class="ap-stat gold"><span class="ap-stat-num">~57 %</span><span class="ap-stat-desc">En faveur de la reprise<br>des négociations (mars 2026)</span></div>
+        <div class="ap-stat teal"><span class="ap-stat-num">11 ans</span><span class="ap-stat-desc">Depuis l'interruption<br>officielle (2015)</span></div>
+        <div class="ap-stat dark"><span class="ap-stat-num">27/35</span><span class="ap-stat-desc">Chapitres ouverts lors<br>des précédentes négociations</span></div>
+      </div>
+
+      <div class="ap-cols">
+
+        <!-- COLONNE GAUCHE -->
+        <div>
+          <div class="ap-sub">Une candidature en suspens depuis 2013</div>
+          <p>L'histoire islandaise avec l'Union européenne commence dans la tourmente. En juillet 2009, durement frappée par l'effondrement de son système bancaire lors de la crise financière mondiale, l'Islande dépose officiellement sa candidature à l'adhésion. Les négociations s'ouvrent en juillet 2010 et progressent rapidement : 27 des 35 chapitres de l'acquis communautaire sont ouverts, dont 11 clôturés en seulement trois ans. Mais les élections législatives d'avril 2013 bouleversent la donne. La gauche pro-européenne est balayée ; le nouveau gouvernement, dominé par le Parti de l'Indépendance et le Parti du Progrès, tous deux eurosceptiques, gèle immédiatement le processus.</p>
+          <p>Le 12 mars 2015, le retrait de la candidature devient officiel. L'économie islandaise s'est entre-temps redressée avec une vigueur surprenante — sans l'aide de Bruxelles —, renforçant l'argument des souverainistes : l'Islande n'a pas besoin de l'UE pour prospérer. Pendant une décennie, la question européenne reste délibérément mise sous cloche.</p>
+
+          <div class="ap-sub">Le retour de la question européenne</div>
+          <p>Les élections législatives du 30 novembre 2024 marquent un tournant. L'Alliance sociale-démocrate, conduite par Kristrún Frostadóttir, s'impose comme le premier parti du pays. Le 21 décembre 2024, elle forme un gouvernement de coalition avec le Parti libéral réformiste (Viðreisn) et le Parti populaire — ce dernier étant opposé à l'adhésion. Face à ces divergences internes, la coalition s'accorde sur un compromis : laisser les citoyens trancher par référendum.</p>
+          <p>Le 25 février 2026, la Première ministre Frostadóttir annonce lors d'une conférence de presse conjointe avec le Premier ministre polonais Donald Tusk, à Varsovie, que le référendum aura lieu dans les mois à venir. Le 6 mars, la ministre des Affaires étrangères Þorgerður Katrín Gunnarsdóttir précise la date : le 29 août 2026. Le Parlement islandais — l'Althingi — valide la résolution par 34 voix pour, 8 contre et 14 abstentions.</p>
+
+          <div class="ap-quote">
+            <p>« Nous estimons que, précisément en ce moment, l'Islande est suffisamment forte, sur le plan économique mais aussi en tant que nation sûre d'elle-même, pour pouvoir prendre cette décision. »</p>
+            <cite>— Kristrún Frostadóttir, Première ministre islandaise, mars 2026</cite>
+          </div>
+
+          <div class="ap-facts">
+            <div class="ap-fact"><div class="ap-fact-label">Candidature déposée</div><div class="ap-fact-val">Juillet 2009</div></div>
+            <div class="ap-fact"><div class="ap-fact-label">Négociations gelées</div><div class="ap-fact-val">Avril 2013</div></div>
+            <div class="ap-fact"><div class="ap-fact-label">Retrait officiel</div><div class="ap-fact-val">Mars 2015</div></div>
+            <div class="ap-fact"><div class="ap-fact-label">Althingi : vote</div><div class="ap-fact-val">34 pour / 8 contre</div></div>
+            <div class="ap-fact"><div class="ap-fact-label">Population</div><div class="ap-fact-val">~400 000 hab.</div></div>
+            <div class="ap-fact"><div class="ap-fact-label">Membre EEE depuis</div><div class="ap-fact-val">1994</div></div>
+          </div>
+
+          <div class="ap-sub">Chronologie : de la crise à la consultation</div>
+          <div class="ap-tl">
+            <div class="ap-tl-item">
+              <div class="ap-tl-date">2008–2009</div>
+              <p class="ap-tl-text">Crise financière dévastatrice : effondrement du système bancaire, économie au bord de la faillite. L'Islande dépose sa candidature à l'UE en juillet 2009, portée par la social-démocratie.</p>
+            </div>
+            <div class="ap-tl-item">
+              <div class="ap-tl-date">2010–2013</div>
+              <p class="ap-tl-text">Négociations actives : 27 chapitres ouverts sur 35, 11 clôturés. La question de la pêche et de la souveraineté bloque l'avancée des chapitres les plus sensibles.</p>
+            </div>
+            <div class="ap-tl-item">
+              <div class="ap-tl-date">Avril 2013</div>
+              <p class="ap-tl-text">Défaite électorale de la gauche. Le nouveau gouvernement eurosceptique gèle aussitôt les négociations. Le redressement économique rapide de l'Islande réduit l'attrait de l'adhésion.</p>
+            </div>
+            <div class="ap-tl-item">
+              <div class="ap-tl-date">Mars 2015</div>
+              <p class="ap-tl-text">Retrait officiel de la candidature. La question européenne disparaît de l'agenda politique pendant une décennie.</p>
+            </div>
+            <div class="ap-tl-item">
+              <div class="ap-tl-date">Nov. 2024</div>
+              <p class="ap-tl-text">Victoire de l'Alliance sociale-démocrate aux élections législatives. Formation d'un gouvernement de coalition qui s'engage à organiser un référendum avant 2027.</p>
+            </div>
+            <div class="ap-tl-item">
+              <div class="ap-tl-date">Mars 2026</div>
+              <p class="ap-tl-text">Annonce officielle du référendum pour le 29 août 2026. L'Althingi valide la résolution à une large majorité. La Commission européenne salue la démarche.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- COLONNE DROITE -->
+        <div>
+          <div class="ap-sub">La pêche : nerf de la guerre</div>
+          <p>Si l'adhésion à l'UE est relativement simple à envisager dans de nombreux domaines — l'Islande est déjà membre de l'Espace économique européen depuis 1994 et de Schengen depuis 2001, alignée sur une grande partie de l'acquis communautaire —, la question de la pêche constitue un obstacle d'une tout autre nature. L'Islande exerce un contrôle exclusif sur sa zone économique exclusive de 200 milles nautiques, l'une des plus riches de l'Atlantique Nord. Ce droit souverain est indissociable de l'identité nationale, héritier de la mémoire des « Guerres de la Morue » opposant l'Islande au Royaume-Uni au cours du XX<sup>e</sup> siècle.</p>
+          <p>La Politique commune de la pêche (PCP) de l'UE implique un partage des décisions sur les ressources halieutiques entre États membres. Pour les communautés de pêcheurs islandais — en particulier dans les régions rurales —, c'est une ligne rouge. Même les partisans d'une adhésion reconnaissent que la pêche sera le chapitre le plus difficile à négocier. Les opposants au référendum arguent que l'obtention d'une dérogation durable est « irréaliste », et que le « oui » du 29 août conduirait inévitablement à céder une part de la souveraineté sur cette ressource vitale.</p>
+
+          <div class="ap-info">
+            <div class="ap-info-icon">🐟</div>
+            <div class="ap-info-text"><strong>L'enjeu de la pêche :</strong> la pêche représente environ 35–40 % des exportations islandaises et constitue un pilier de l'économie et de l'identité nationale. La zone économique exclusive de 200 milles nautiques est au cœur du débat : intégrer la PCP de l'UE impliquerait de partager une partie de la gouvernance de ces eaux avec les autres États membres, ce qu'une large fraction de la population juge inacceptable. Les négociations de 2010–2013 n'étaient pas parvenues à dépasser ce point de blocage.</div>
+          </div>
+
+          <div class="ap-sub">Un contexte géopolitique inédit</div>
+          <p>Ce qui distingue le référendum de 2026 des débats passés, c'est le contexte géopolitique radicalement transformé. Le retour de Donald Trump à la Maison-Blanche et ses menaces répétées d'annexer le Groenland — archipel voisin situé entre l'Islande et les États-Unis — ont mis en lumière la vulnérabilité des petites nations de l'Arctique face aux grandes puissances. La Première ministre Frostadóttir a explicitement cité cette pression comme l'une des raisons ayant accéléré le calendrier référendaire, initialement prévu d'ici fin 2027.</p>
+          <p>Dans ce contexte, l'adhésion à l'UE est présentée par ses partisans non plus seulement comme une opportunité économique, mais comme une garantie de sécurité et d'ancrage géopolitique. La Commission européenne a accueilli favorablement l'annonce du référendum. La commissaire à l'Élargissement, Marta Kos, a estimé qu'une « décision importante » attendait le peuple islandais.</p>
+
+          <div class="ap-quote">
+            <p>« Une décision importante attend le peuple islandais. »</p>
+            <cite>— Marta Kos, commissaire européenne à l'Élargissement, mars 2026</cite>
+          </div>
+
+          <div class="ap-sub">Une opinion publique partagée</div>
+          <p>Les sondages reflètent une société divisée. Selon une enquête du Grand Continent publiée en mars 2026, environ 57 % des Islandais seraient favorables à la reprise des négociations. Mais un sondage de la télévision publique RÚV publié début février montre une opinion plus équilibrée, avec les partisans et les opposants à l'adhésion quasiment à égalité. Les jeunes urbains de Reykjavík penchent davantage vers le « oui » ; les communautés rurales de pêcheurs restent profondément attachées au statu quo.</p>
+          <p>La campagne référendaire est également marquée par des inquiétudes sur les ingérences extérieures et la désinformation. La Première ministre a publiquement averti que toute influence étrangère — qu'elle vienne de l'UE, de la Russie, de la Chine ou des États-Unis — sera considérée comme inacceptable. La présidente Halla Tómasdóttir a, quant à elle, alerté sur les risques que font peser les outils d'intelligence artificielle dans un petit marché médiatique comme celui de l'Islande.</p>
+
+          <div class="ap-sub">Un référendum en deux temps</div>
+          <p>La question posée le 29 août est soigneusement calibrée : <em>« L'Islande doit-elle reprendre les négociations d'adhésion avec l'Union européenne ? »</em> Un « oui » ne signifie pas l'adhésion immédiate, mais seulement la réouverture du dossier. Si les négociations aboutissent à un accord, un second référendum sera organisé pour que les citoyens tranchent sur l'adhésion elle-même. Cette procédure en deux étapes est conçue pour rassurer les sceptiques : voter « oui » en août, c'est accepter d'explorer les conditions d'une adhésion, pas signer un chèque en blanc à Bruxelles.</p>
+          <p>Reste que certains juristes et la Commission électorale nationale ont relevé une ambiguïté dans le libellé : parler de « reprendre » les négociations suppose qu'elles n'ont jamais été officiellement clôturées, ce qui fait débat depuis le retrait de 2015. Le gouvernement a néanmoins maintenu la date et la formulation.</p>
+
+          <div class="ap-ctx">
+            <div class="ap-ctx-label">Ce que le « oui » changerait — et ce qui resterait à négocier</div>
+            <p>Un vote favorable le 29 août relancerait les négociations d'adhésion suspendues depuis 2013. L'Islande part d'une position favorable : déjà intégrée au marché unique via l'EEE, déjà dans Schengen, sans les problèmes de corruption ou de recul démocratique associés à certains candidats balkaniques. Mais les chapitres les plus sensibles n'avaient pas été clôturés lors du précédent cycle : agriculture, pêche, politique monétaire (adoption éventuelle de l'euro) et souveraineté sur les ressources naturelles restent à négocier. Ce sont précisément ces sujets qui cristallisent les résistances les plus profondes dans la société islandaise. Le 29 août n'est pas une fin — c'est le début d'un long débat.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — Europe · Islande · Géopolitique — Mai 2026</div>
+
+</body>
+</html>

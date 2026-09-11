@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cinéma — Valse avec Bachir</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0c09;
+    --surface: #1a140d;
+    --surface2: #221a10;
+    --surface3: #291f13;
+    --border: #3d2c17;
+    --border-soft: #4d3a1f;
+    --accent: #e0983e;
+    --accent-dim: #e0983e99;
+    --accent-soft: #e0983e1a;
+    --accent2: #7c9ec9;
+    --accent2-soft: #7c9ec91a;
+    --accent3: #c8a96e;
+    --accent3-soft: #c8a96e1a;
+    --accent4: #c97c9e;
+    --accent4-soft: #c97c9e1a;
+    --text: #ede6de;
+    --text-dim: #ab9f8f;
+    --text-faint: #5e5445;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--accent); cursor: pointer; letter-spacing: 0.02em; }
+  .nav-logo a { color: inherit; text-decoration: none; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .breadcrumb a { color: inherit; text-decoration: none; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb a:hover span, .breadcrumb span:hover { color: var(--accent); }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); cursor: default; }
+
+  /* ─── HERO ─── */
+  .ch-hero {
+    background: var(--surface2);
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+  .ch-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23E0983E' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem; opacity: 0.9; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 4rem); color: var(--text); font-weight: 900; max-width: 900px; margin: 0 auto 1.5rem; line-height: 1.1; position: relative; z-index: 1; }
+  .ch-hero p { color: var(--text-dim); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  /* ─── TOC ─── */
+  .toc-bar { background: var(--surface); padding: 2rem; border-bottom: 1px solid var(--border); }
+  .toc-inner { max-width: 960px; margin: 0 auto; }
+  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 1.2rem; }
+  .toc-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; list-style: none; }
+  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: var(--text); font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
+  .toc-list a:hover { border-color: var(--border-soft); background: var(--surface2); color: var(--accent); }
+  .toc-num { font-family: "DM Mono", monospace; font-size: 0.65rem; color: var(--accent); flex-shrink: 0; margin-top: 0.15rem; }
+
+  /* ─── CONTENT ─── */
+  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 8rem; }
+
+  /* PART */
+  .hgg-part { margin-bottom: 5rem; }
+  .hgg-part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--accent); }
+  .hgg-part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: var(--border-soft); line-height: 1; flex-shrink: 0; }
+  .hgg-part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--text); line-height: 1.25; }
+
+  /* SECTION */
+  .hgg-section { margin-bottom: 3.5rem; }
+  .hgg-section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--accent); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--accent); scroll-margin-top: 2rem; }
+  .hgg-subsection-title { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin: 2rem 0 0.75rem; }
+
+  /* TEXT */
+  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: var(--text); line-height: 1.75; font-weight: 300; }
+  .content strong { color: var(--text); font-weight: 600; }
+  .content em { color: var(--text-dim); }
+
+  /* KEY FACT */
+  .hgg-key-fact { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 0.6rem; padding: 0.85rem 1.1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; }
+  .hgg-key-bullet { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; flex-shrink: 0; margin-top: 0.5rem; }
+  .hgg-key-fact > div { font-size: 0.91rem; color: var(--text); line-height: 1.65; font-weight: 300; }
+
+  /* CONCEPT BOX */
+  .hgg-concept { background: var(--surface2); color: var(--text); padding: 1.75rem; margin: 2rem 0; position: relative; border-radius: 4px; border: 1px solid var(--border); }
+  .hgg-concept::before { content: '→'; position: absolute; top: 1.25rem; right: 1.25rem; color: var(--accent2); font-size: 1.3rem; }
+  .hgg-concept .concept-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent2); margin-bottom: 0.7rem; }
+  .hgg-concept p { color: var(--text-dim); font-size: 0.93rem; margin: 0; }
+  .hgg-concept strong { color: var(--accent2); }
+
+  /* HIGHLIGHT */
+  .hgg-highlight { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 1.25rem 1.75rem; margin: 1.5rem 0; font-style: italic; color: var(--text); font-size: 0.93rem; line-height: 1.7; border-radius: 0 6px 6px 0; }
+
+  /* AUTHOR CARD */
+  .hgg-author { background: var(--surface2); color: var(--text); padding: 1.75rem; margin: 1.2rem 0; position: relative; border-radius: 4px; border-left: 4px solid var(--accent4); border-top: 1px solid var(--border); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .hgg-author::before { content: '✎'; position: absolute; top: 1.25rem; right: 1.25rem; color: var(--accent4); font-size: 1.1rem; opacity: 0.8; }
+  .hgg-author .author-name { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent4); margin-bottom: 0.7rem; font-weight: 700; }
+  .hgg-author p { color: var(--text-dim); font-size: 0.93rem; margin: 0; line-height: 1.7; font-weight: 300; }
+  .hgg-author strong { color: var(--accent4); }
+
+  /* STATS GRID */
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: var(--border); margin: 1.5rem 0; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .hgg-stat-cell { background: var(--surface); padding: 1.3rem; text-align: center; }
+  .hgg-stat-num { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 900; color: var(--accent); display: block; }
+  .hgg-stat-label { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.2rem; font-family: 'DM Mono', monospace; }
+
+  /* BIG QUOTE */
+  .big-quote { background: var(--surface2); color: var(--text); padding: 1.6rem 2rem; margin: 1.5rem 0; border-radius: 8px; text-align: center; position: relative; border: 1px solid var(--border); }
+  .big-quote::before { content: '\201C'; font-family: 'Playfair Display', serif; font-size: 5rem; color: var(--accent); position: absolute; top: -1rem; left: 1.5rem; line-height: 1; opacity: 0.3; }
+  .big-quote blockquote { font-family: 'Playfair Display', serif; font-size: clamp(0.88rem, 1.6vw, 1rem); font-style: italic; line-height: 1.6; color: var(--text); position: relative; z-index: 1; margin-bottom: 0.6rem; }
+  .big-quote cite { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); }
+
+  /* COMPARE BOX */
+  .compare-box { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 1.5rem 0; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+  .compare-side { padding: 1.3rem 1.5rem; }
+  .compare-side h5 { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.7rem; }
+  .compare-side p { font-size: 0.85rem; line-height: 1.65; margin-bottom: 0.5rem; font-weight: 300; color: var(--text-dim); }
+  .compare-side p:last-child { margin-bottom: 0; }
+  .compare-a { background: var(--accent-soft); }
+  .compare-a h5 { color: var(--accent); }
+  .compare-b { background: var(--accent2-soft); }
+  .compare-b h5 { color: var(--accent2); }
+
+  /* TWO COL */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+  .col-card { border-radius: 8px; padding: 1.2rem 1.4rem; border: 1px solid; }
+  .col-card h5 { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.6rem; }
+  .col-card p { margin: 0; font-size: 0.85rem; line-height: 1.6; font-weight: 300; }
+  .col-teal { background: var(--accent-soft); border-color: var(--accent-dim); }
+  .col-teal h5 { color: var(--accent); }
+  .col-teal p { color: var(--text-dim); }
+  .col-cyan { background: var(--accent2-soft); border-color: #c8a96e55; }
+  .col-cyan h5 { color: var(--accent2); }
+  .col-cyan p { color: var(--text-dim); }
+  .col-dark { background: var(--accent4-soft); border-color: #c97c9e55; }
+  .col-dark h5 { color: var(--accent4); }
+  .col-dark p { color: var(--text-dim); }
+  .col-green { background: var(--accent3-soft); border-color: #9ecba055; }
+  .col-green h5 { color: var(--accent3); }
+  .col-green p { color: var(--text-dim); }
+
+  /* DEF CARD */
+  .def-card { background: var(--surface); border-radius: 10px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.25), 0 0 0 1px var(--border); display: flex; margin-bottom: 0.75rem; }
+  .def-accent-bar { width: 5px; background: linear-gradient(180deg, var(--accent) 0%, var(--accent4) 100%); flex-shrink: 0; }
+  .def-body { padding: 1.1rem 1.4rem; flex: 1; }
+  .def-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.65rem; }
+  .def-term { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--accent); }
+  .def-tag { margin-left: auto; font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); padding: 2px 8px; border-radius: 20px; }
+  .def-text { font-size: 0.91rem; color: var(--text-dim); line-height: 1.7; font-weight: 300; margin: 0 !important; }
+  .def-text strong { color: var(--text); font-weight: 600; }
+
+  /* CRISIS CARD (preuve card) */
+  .crisis-card { border-radius: 10px; padding: 1.4rem 1.6rem; margin: 1rem 0; border: 1px solid var(--border); border-left: 4px solid var(--accent); background: var(--surface); }
+  .crisis-date { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.4rem; font-weight: 700; }
+  .crisis-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
+  .crisis-card p { margin: 0 0 0.5rem; font-size: 0.88rem; color: var(--text-dim); line-height: 1.65; font-weight: 300; }
+  .crisis-card p:last-child { margin-bottom: 0; }
+
+  /* PROBLEMATIQUE BANNER */
+  .prob-banner { background: linear-gradient(135deg, var(--surface2) 0%, #14141a 100%); border-radius: 10px; padding: 2rem 2.5rem; margin: 2rem 0; text-align: center; border: 1px solid var(--border); }
+  .prob-banner .prob-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--accent2); margin-bottom: 0.9rem; }
+  .prob-banner p { font-family: 'Playfair Display', serif; font-size: clamp(1rem, 2.5vw, 1.3rem); font-style: italic; color: var(--text); line-height: 1.55; margin: 0; }
+
+  /* TRANSITION */
+  .transition-block { background: var(--accent-soft); border: 1px dashed var(--accent-dim); border-radius: 8px; padding: 1.25rem 1.6rem; margin: 2.5rem 0; }
+  .transition-block .t-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; }
+  .transition-block p { font-style: italic; font-size: 0.92rem; color: var(--text); line-height: 1.65; margin: 0; font-weight: 300; }
+
+  /* STEP BLOCK */
+  .step-block { display: flex; gap: 1rem; margin-bottom: 1.1rem; align-items: flex-start; }
+  .step-num { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 900; color: var(--border-soft); line-height: 1.2; flex-shrink: 0; width: 2rem; text-align: right; }
+  .step-content { flex: 1; font-size: 0.93rem; color: var(--text-dim); line-height: 1.7; font-weight: 300; padding-top: 0.1rem; }
+  .step-content strong { color: var(--text); font-weight: 600; }
+
+  /* MINI CALLOUT */
+  .mini-callout { border-radius: 6px; padding: 0.9rem 1.2rem; margin: 1.2rem 0; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; gap: 0.8rem; }
+  .mini-callout-icon { font-size: 1.1rem; flex-shrink: 0; color: var(--accent); }
+  .mini-callout-text { font-size: 0.9rem; color: var(--text-dim); line-height: 1.6; font-weight: 300; }
+  .mini-callout-text strong { color: var(--text); font-weight: 600; }
+
+  /* INLINE TAG */
+  .tag { display: inline-block; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; background: var(--accent-soft); color: var(--accent); padding: 2px 7px; border-radius: 4px; vertical-align: middle; margin-left: 4px; }
+
+  /* PREUVE STRIP */
+  .preuve-strip { border-top: 1px solid var(--border); margin: 2rem 0 0.5rem; padding-top: 1rem; display: flex; align-items: baseline; gap: 0.8rem; flex-wrap: wrap; }
+  .preuve-strip .ps-num { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--accent); letter-spacing: 0.25em; }
+  .preuve-strip .ps-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--text); }
+  .preuve-strip .ps-sub { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--text-faint); letter-spacing: 0.1em; }
+
+  /* RETENIR BOX */
+  .retenir-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.4rem 1.6rem; margin: 2rem 0; }
+  .retenir-box .rb-label { display: block; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem !important; }
+  .retenir-box .rb-items { display: block; }
+  .retenir-box .rb-item { display: block; font-size: 0.9rem; color: var(--text-dim); line-height: 1.65; font-weight: 300; padding: 0.45rem 0 0.45rem 1.4rem; border-bottom: 1px dashed var(--border); margin: 0 !important; position: relative; }
+  .retenir-box .rb-item:last-child { border-bottom: none; }
+  .retenir-box .rb-item::before { content: '—'; color: var(--accent); position: absolute; left: 0; top: 0.45rem; }
+  .retenir-box .rb-item strong { color: var(--text); }
+
+  /* Neutraliser le margin global sur les <p> dans les boîtes spéciales */
+  .retenir-box p, .transition-block p, .hgg-concept p,
+  .hgg-author p, .crisis-card p, .col-card p { margin-bottom: 0 !important; }
+  .crisis-card p + p { margin-top: 0.5rem; }
+
+  /* FOOTER */
+  .site-footer { background: var(--surface2); border-top: 1px solid var(--border); padding: 2.5rem 2rem; text-align: center; }
+  .site-footer .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--accent); letter-spacing: 0.02em; margin-bottom: 0.4rem; }
+  .site-footer .footer-meta { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-faint); }
+
+  /* BACK TO TOP */
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--accent); color: #0d0d0f; border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 4px 14px rgba(0,0,0,0.5); opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 200; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+  .back-to-top:hover { background: var(--accent2); }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .toc-list { grid-template-columns: 1fr; }
+    .two-col, .three-col, .compare-box { grid-template-columns: 1fr; }
+    .ch-hero { padding: 3rem 1.5rem 2.5rem; }
+  }
+
+  /* ═══════════════════════════════════════════
+     STYLES D'IMPRESSION
+  ═══════════════════════════════════════════ */
+  @media print {
+    @page { size: A4; margin: 18mm 15mm 18mm 15mm; }
+    nav, .back-to-top, .toc-bar, .site-footer { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    html, body { background: white !important; color: #000 !important; font-size: 10pt; }
+    .ch-hero { background: #16161a !important; padding: 0.9rem 1rem 0.7rem !important; min-height: unset !important; height: auto !important; }
+    .ch-hero::before { display: none !important; }
+    .ch-hero h1 { font-size: 16pt !important; color: #fff !important; margin-bottom: 0.3rem !important; }
+    .ch-hero .chap-label { font-size: 7pt !important; color: #e0983e !important; margin-bottom: 0.4rem !important; }
+    .ch-hero p { font-size: 7pt !important; color: #e0983e !important; margin: 0 !important; }
+    .content { max-width: 100% !important; padding: 0.8rem 0 !important; margin: 0 !important; }
+    .hgg-part { page-break-before: auto; break-before: auto; margin-bottom: 1rem; }
+    .hgg-part-header, .hgg-section-title, .hgg-subsection-title, .preuve-strip, .crisis-date { page-break-after: avoid; break-after: avoid; }
+    .hgg-section { page-break-inside: auto; break-inside: auto; margin-bottom: 1rem; }
+    .hgg-key-fact, .hgg-author, .hgg-concept, .hgg-highlight, .hgg-stat-cell, .def-card, .crisis-card, .mini-callout, .retenir-box, .transition-block, .step-block, .big-quote, .prob-banner, .col-card, .compare-side {
+      page-break-inside: avoid; break-inside: avoid;
+    }
+    .hgg-part-header { border-bottom: 2pt solid #e0983e !important; padding-bottom: 0.5rem; margin-bottom: 1rem; }
+    .hgg-part-num { font-size: 2.5rem !important; color: #8a8880 !important; }
+    .hgg-part-title { font-size: 14pt !important; color: #000 !important; }
+    .hgg-section-title { font-size: 11pt !important; border-left: 3pt solid #e0983e !important; padding-left: 0.6rem !important; margin-bottom: 0.6rem !important; color: #6b5731 !important; }
+    .hgg-subsection-title { font-size: 8pt !important; color: #6b5731 !important; margin: 0.8rem 0 0.4rem !important; }
+    .content p { font-size: 9.5pt !important; line-height: 1.55 !important; margin-bottom: 0.5rem !important; color: #000 !important; }
+    .hgg-key-fact { background: #f7f5f0 !important; border: 1pt solid #e0983e !important; padding: 0.5rem 0.7rem !important; margin-bottom: 0.35rem !important; }
+    .hgg-key-fact > div { font-size: 9pt !important; color: #000 !important; }
+    .hgg-concept { background: #16161a !important; color: #F0F0EC !important; padding: 0.9rem 1rem !important; margin: 0.8rem 0 !important; border-radius: 4px; }
+    .hgg-concept p { color: #dcdcd6 !important; font-size: 9pt !important; }
+    .hgg-concept .concept-label { color: #c8a96e !important; font-size: 7pt !important; }
+    .hgg-concept strong { color: #c8a96e !important; }
+    .hgg-concept::before { display: none; }
+    .hgg-author { background: #16161a !important; color: #F0F0EC !important; padding: 0.9rem 1rem !important; margin: 0.8rem 0 !important; }
+    .hgg-author p { color: #dcdcd6 !important; font-size: 9pt !important; }
+    .hgg-author .author-name { color: #c97c9e !important; font-size: 7pt !important; }
+    .hgg-author strong { color: #c97c9e !important; }
+    .hgg-author::before { display: none; }
+    .hgg-highlight { background: #f7ecdf !important; border-left: 3pt solid #e0983e !important; padding: 0.7rem 1rem !important; margin: 0.8rem 0 !important; font-size: 9pt !important; color: #3a2a10 !important; }
+    .hgg-stats { border: 1pt solid #e0983e !important; margin: 0.8rem 0 !important; }
+    .hgg-stat-cell { background: white !important; padding: 0.8rem !important; }
+    .hgg-stat-num { font-size: 12pt !important; color: #6b5731 !important; }
+    .hgg-stat-label { font-size: 7.5pt !important; color: #55524a !important; }
+    .big-quote { background: #16161a !important; color: #F0F0EC !important; padding: 1rem 1.4rem !important; margin: 0.8rem 0 !important; }
+    .big-quote blockquote { font-size: 10pt !important; color: #F0F0EC !important; }
+    .big-quote cite { color: #e0983e !important; font-size: 7pt !important; }
+    .big-quote::before { font-size: 3rem !important; top: -0.3rem !important; }
+    .compare-box { margin: 0.7rem 0 !important; }
+    .compare-side { padding: 0.7rem 0.9rem !important; }
+    .compare-side p { font-size: 8.5pt !important; }
+    .compare-side h5 { font-size: 6.5pt !important; }
+    .two-col { grid-template-columns: 1fr 1fr !important; gap: 0.5rem !important; margin: 0.6rem 0 !important; }
+    .three-col { grid-template-columns: 1fr 1fr 1fr !important; gap: 0.5rem !important; margin: 0.6rem 0 !important; }
+    .col-card { padding: 0.7rem 0.9rem !important; }
+    .col-card p { font-size: 8.5pt !important; }
+    .col-card h5 { font-size: 6.5pt !important; }
+    .def-card { box-shadow: none !important; border: 1pt solid #e0983e !important; margin-bottom: 0.5rem !important; }
+    .def-term { font-size: 10pt !important; }
+    .def-text { font-size: 9pt !important; color: #000 !important; }
+    .def-accent-bar { background: #e0983e !important; }
+    .crisis-card { background: white !important; border: 1pt solid #e0983e !important; border-left: 4pt solid #e0983e !important; padding: 0.7rem 1rem !important; margin: 0.5rem 0 !important; }
+    .crisis-card p { font-size: 8.5pt !important; }
+    .crisis-title { font-size: 10pt !important; color: #000 !important; }
+    .crisis-date { font-size: 6.5pt !important; color: #6b5731 !important; }
+    .mini-callout { background: #f7f5f0 !important; border: 1pt solid #e0983e !important; padding: 0.5rem 0.8rem !important; margin: 0.6rem 0 !important; }
+    .mini-callout-text { font-size: 8.5pt !important; color: #000 !important; }
+    .mini-callout-icon { font-size: 0.9rem !important; }
+    .retenir-box { background: #f7f5f0 !important; border: 1pt solid #e0983e !important; padding: 0.8rem 1rem !important; margin: 0.8rem 0 !important; }
+    .retenir-box .rb-label { font-size: 7pt !important; color: #6b5731 !important; }
+    .retenir-box .rb-item { font-size: 9pt !important; color: #000 !important; }
+    .transition-block { background: rgba(224,152,62,0.08) !important; border: 1pt dashed #e0983e !important; padding: 0.7rem 1rem !important; margin: 0.8rem 0 !important; }
+    .transition-block .t-label { font-size: 7pt !important; color: #6b5731 !important; }
+    .transition-block p { font-size: 9pt !important; color: #3a2a10 !important; }
+    .step-block { margin-bottom: 0.5rem !important; }
+    .step-num { font-size: 1.1rem !important; color: #e0983e !important; }
+    .step-content { font-size: 9pt !important; color: #000 !important; }
+    .preuve-strip { border-top: 1pt solid #e5ddc8 !important; margin: 1rem 0 0.4rem !important; padding-top: 0.6rem !important; }
+    .preuve-strip .ps-num { font-size: 7pt !important; color: #6b5731 !important; }
+    .preuve-strip .ps-title { font-size: 10pt !important; color: #000 !important; }
+    .preuve-strip .ps-sub { font-size: 7pt !important; }
+    .prob-banner { background: #16161a !important; padding: 1rem 1.4rem !important; margin: 0.8rem 0 !important; }
+    .prob-banner .prob-label { font-size: 7pt !important; color: #e0983e !important; }
+    .prob-banner p { font-size: 10pt !important; color: #F0F0EC !important; }
+    a { text-decoration: none !important; color: inherit !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">/</span>
+    <a href="../../humanite.html"><span>L'Humanité</span></a>
+    <span class="sep">/</span>
+    <a href="cinema.html"><span>Cinéma</span></a>
+    <span class="sep">/</span>
+    <span class="current">Valse avec Bachir</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="chap-label">🎬 Cinéma · L'Humanité</div>
+  <h1>Valse avec Bachir</h1>
+  <p>Ari Folman · 2008 · Documentaire d'animation</p>
+</div>
+
+<!-- ─── TOC ─── -->
+<div class="toc-bar">
+  <div class="toc-inner">
+    <div class="toc-title">Plan de la fiche</div>
+    <ul class="toc-list">
+      <li><a href="#intro"><span class="toc-num">I —</span> Présentation de l'œuvre</a></li>
+      <li><a href="#p1"><span class="toc-num">II —</span> Résumé</a></li>
+      <li><a href="#p2"><span class="toc-num">III —</span> Une plongée animée dans la mémoire d'une guerre</a></li>
+      <li><a href="#p3"><span class="toc-num">IV —</span> Pistes pour la dissertation</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ─── CONTENT ─── -->
+<div class="content">
+
+<!-- ══════════════════════════════════════ -->
+<!--  PARTIE I — PRÉSENTATION              -->
+<!-- ══════════════════════════════════════ -->
+<div class="hgg-part" id="intro">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">I</div>
+    <div class="hgg-part-title">Présentation de l'œuvre</div>
+  </div>
+
+  <p><strong>Valse avec Bachir</strong> (<em>Vals Im Bashir</em>) est un film d'animation israélien réalisé par <strong>Ari Folman</strong>, sorti en 2008. Le film se présente comme un <strong>documentaire animé</strong> et largement autobiographique : Folman y part en quête de ses propres souvenirs disparus de son service militaire pendant la <strong>guerre du Liban de 1982</strong>, et en particulier de la nuit du massacre des camps de réfugiés palestiniens de <strong>Sabra et Chatila</strong>.</p>
+
+  <div class="hgg-stats">
+    <div class="hgg-stat-cell"><span class="hgg-stat-num">2008</span><div class="hgg-stat-label">Année de sortie</div></div>
+    <div class="hgg-stat-cell"><span class="hgg-stat-num">1982</span><div class="hgg-stat-label">Guerre du Liban, événement au cœur du film</div></div>
+    <div class="hgg-stat-cell"><span class="hgg-stat-num">19</span><div class="hgg-stat-label">Âge de Folman comme jeune soldat</div></div>
+  </div>
+
+  <p>Le titre renvoie à une scène marquante du film, où un soldat israélien danse, sous le feu ennemi et entouré d'affiches du leader phalangiste <strong>Bachir Gemayel</strong>, dans une rue de Beyrouth — image absurde et fascinante de la guerre. À travers une succession d'entretiens avec d'anciens compagnons d'armes, mis en image par une animation stylisée, Folman reconstitue peu à peu ce que sa mémoire avait effacé.</p>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  PARTIE II — RÉSUMÉ                   -->
+<!-- ══════════════════════════════════════ -->
+<div class="hgg-part" id="p1">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">II</div>
+    <div class="hgg-part-title">Résumé</div>
+  </div>
+
+  <div class="hgg-section" id="s1-1">
+    <div class="hgg-section-title">1 — Le rêve de Boaz et le trou noir de la mémoire</div>
+
+    <p>Le film s'ouvre sur le récit d'un cauchemar récurrent que fait <strong>Boaz</strong>, ancien compagnon d'armes de Folman : celui de <strong>26 chiens furieux</strong> qui le poursuivent chaque nuit, souvenir déformé des chiens qu'il devait abattre pendant la guerre pour ne pas alerter l'ennemi de l'arrivée des soldats. Ce récit réveille chez Folman un vide troublant : il réalise qu'il n'a <strong>aucun souvenir</strong> de cette période, et en particulier de la nuit du massacre de Sabra et Chatila, à laquelle il a pourtant assisté de près en tant que jeune soldat.</p>
+
+    <div class="hgg-key-fact">
+      <div class="hgg-key-bullet"></div>
+      <div>Une seule image revient sans cesse à l'esprit de Folman : lui-même, jeune homme, émergeant nu de la mer avec deux autres soldats, sous un ciel éclairé de fusées lumineuses — une image dont il ne sait ni si elle est un vrai souvenir, ni ce qu'elle signifie exactement.</div>
+    </div>
+
+    <p>Décidé à comprendre, Folman part à la rencontre d'anciens camarades, d'un psychologue et d'un journaliste, dans une véritable <strong>enquête sur sa propre mémoire</strong> — chaque témoignage venant ajouter une pièce au puzzle de cette nuit oubliée.</p>
+  </div>
+
+  <div class="hgg-section" id="s1-2">
+    <div class="hgg-section-title">2 — La reconstitution progressive de la nuit de Sabra et Chatila</div>
+
+    <p>Au fil des entretiens, le film reconstitue le contexte : en 1982, l'armée israélienne encercle Beyrouth-Ouest après l'assassinat de Bachir Gemayel, et laisse les milices <strong>phalangistes chrétiennes</strong> pénétrer dans les camps de réfugiés palestiniens de Sabra et Chatila pour, officiellement, en déloger des combattants. Les milices y massacrent plusieurs centaines de civils, tandis que les soldats israéliens, dont Folman, éclairent la zone de fusées sans intervenir.</p>
+
+    <div class="hgg-concept">
+      <div class="concept-label">Le trauma refoulé</div>
+      <p>Folman comprend peu à peu que son amnésie n'est pas un hasard, mais un <strong>mécanisme de défense psychique</strong> : incapable d'assumer sur le moment sa proximité avec l'horreur du massacre, son esprit a effacé le souvenir plutôt que de le laisser le détruire. L'image récurrente de la sortie de mer se révèle être le souvenir, à peine transformé, de son arrivée sur les lieux du massacre.</p>
+    </div>
+
+    <div class="info-box">Le film bascule, dans ses toutes dernières secondes, de l'animation à de véritables images d'archives montrant les conséquences du massacre — rupture esthétique brutale qui rappelle que, derrière la reconstitution animée, il y a une réalité historique et des morts bien réels.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  PARTIE III — ANALYSE                 -->
+<!-- ══════════════════════════════════════ -->
+<div class="hgg-part" id="p2">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">III</div>
+    <div class="hgg-part-title">Une plongée animée dans la mémoire d'une guerre</div>
+  </div>
+
+  <div class="hgg-section" id="s2-1">
+    <div class="hgg-section-title">1 — L'oubli, une défense de l'humain face à l'insoutenable</div>
+
+    <p>Le film montre que l'<strong>oubli</strong> n'est pas simplement une faiblesse de la mémoire, mais peut être une stratégie de survie psychique face à un traumatisme trop lourd à porter. En interrogeant ses anciens camarades, Folman découvre que chacun a développé sa propre manière de composer avec ce passé — déni, distanciation, cauchemars récurrents — révélant la diversité des <strong>mécanismes de défense</strong> que l'esprit humain met en place face à la violence de la guerre.</p>
+
+    <div class="two-col">
+      <div class="col-card col-teal">
+        <h5>🧠 L'amnésie comme protection</h5>
+        <p>En effaçant le souvenir de sa proximité avec le massacre, l'esprit de Folman se protège d'une culpabilité qu'il ne pouvait, à l'époque, ni comprendre ni assumer.</p>
+      </div>
+      <div class="col-card col-cyan">
+        <h5>🐕 Le rêve, langage du refoulé</h5>
+        <p>Le cauchemar des 26 chiens de Boaz montre comment le traumatisme, refoulé du souvenir conscient, continue de s'exprimer par des voies détournées, en particulier le rêve.</p>
+      </div>
+    </div>
+
+    <div class="hgg-highlight">
+      Le film rejoint ici une question centrale du thème de l'Humanité : la mémoire n'est pas un simple enregistrement du réel, mais une construction psychique que l'esprit humain façonne, déforme ou efface pour rester vivable.
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-2">
+    <div class="hgg-section-title">2 — L'animation, un détour esthétique vers la vérité</div>
+
+    <p>Le choix de l'<strong>animation</strong> pour traiter d'un massacre bien réel peut surprendre : elle introduit une distance, un filtre esthétique entre le spectateur et l'horreur. Mais cette distance n'est pas un évitement — elle permet au contraire d'approcher un traumatisme trop douloureux pour être filmé ou raconté frontalement, en épousant la façon dont la mémoire elle-même travaille : par fragments, par images stylisées, par associations plutôt que par un récit linéaire et réaliste.</p>
+
+    <div class="hgg-author">
+      <div class="author-name">La bascule finale vers le réel</div>
+      <p>En clôturant le film sur des images d'archives authentiques du massacre, Folman brise soudainement la distance protectrice de l'animation. Ce choix formal rappelle que, quels que soient les détours empruntés par la mémoire et la fiction pour s'approcher d'un événement, il existe un noyau de réalité — des victimes réelles — que l'art ne peut ni inventer, ni dissoudre entièrement.</p>
+    </div>
+
+    <div class="mini-callout">
+      <span class="mini-callout-icon">🎞️</span>
+      <span class="mini-callout-text">Cette tension entre <strong>reconstitution artistique</strong> et <strong>vérité historique</strong> fait écho aux débats sur la représentation des grandes violences de l'Histoire — du témoignage littéraire au documentaire.</span>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-3">
+    <div class="hgg-section-title">3 — Complicité, responsabilité et déshumanisation en temps de guerre</div>
+
+    <p>Le film pose avec force la question de la <strong>responsabilité indirecte</strong> : les soldats israéliens n'ont pas eux-mêmes commis le massacre, mais ils en ont permis les conditions en éclairant la zone et en laissant les milices agir sans intervenir. Folman interroge ainsi la frontière trouble entre l'acte et l'inaction complice, entre être témoin passif et être, d'une certaine façon, partie prenante d'un crime.</p>
+
+    <div class="compare-box">
+      <div class="compare-side compare-a">
+        <h5>🪖 Le soldat, rouage d'un système</h5>
+        <p>Pris dans une chaîne de commandement et d'ordres, le jeune Folman n'a ni compris ni maîtrisé sur le moment la portée de ce à quoi il assistait.</p>
+      </div>
+      <div class="compare-side compare-b">
+        <h5>👤 L'homme, sujet moral</h5>
+        <p>Des décennies plus tard, l'adulte Folman ressent le besoin impérieux de comprendre et d'assumer sa part de responsabilité — signe que la conscience morale finit par exiger des comptes, même différés.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  PARTIE IV — PISTES DE DISSERTATION   -->
+<!-- ══════════════════════════════════════ -->
+<div class="hgg-part" id="p3">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">IV</div>
+    <div class="hgg-part-title">Pistes pour la dissertation</div>
+  </div>
+
+  <div class="hgg-section" id="s3-1">
+    <div class="hgg-section-title">Comment mobiliser cette œuvre dans une copie ?</div>
+
+    <div class="retenir-box">
+      <div class="rb-label">Idées à retenir</div>
+      <div class="rb-items">
+        <div class="rb-item">L'<strong>oubli</strong> peut être un mécanisme de protection psychique face à un traumatisme trop violent pour être assumé consciemment.</div>
+        <div class="rb-item">La mémoire humaine ne restitue pas fidèlement le réel : elle le <strong>reconstruit</strong>, le déforme et parfois l'efface pour rester vivable.</div>
+        <div class="rb-item">La guerre expose des hommes ordinaires à des situations où la frontière entre <strong>témoin passif</strong> et <strong>complice</strong> devient trouble.</div>
+        <div class="rb-item">L'art — ici l'animation — peut constituer un <strong>détour nécessaire</strong> pour approcher une vérité trop douloureuse pour être représentée frontalement.</div>
+      </div>
+    </div>
+
+    <div class="hgg-subsection-title">→ Notions du thème « L'Humanité » éclairées par l'œuvre</div>
+    <div class="three-col">
+      <div class="col-card col-teal">
+        <h5>🧠 Mémoire et oubli</h5>
+        <p>Le film interroge ce que l'esprit humain choisit, consciemment ou non, de retenir ou d'effacer de son passé.</p>
+      </div>
+      <div class="col-card col-cyan">
+        <h5>⚖️ Responsabilité en temps de guerre</h5>
+        <p>Entre obéissance aux ordres et conscience individuelle, le film questionne les limites de la responsabilité morale du soldat.</p>
+      </div>
+      <div class="col-card col-dark">
+        <h5>🎨 L'art face à l'indicible</h5>
+        <p>L'animation devient un moyen détourné, mais nécessaire, de dire une violence que le réalisme ne pourrait pas montrer.</p>
+      </div>
+    </div>
+
+    <div class="hgg-concept">
+      <div class="concept-label">À rapprocher</div>
+      <p>Primo Levi, <em>Si c'est un homme</em> (1947) : comme Folman, Levi cherche à mettre en mots une expérience-limite que le langage ordinaire peine à contenir. Les deux œuvres partagent l'idée que <strong>témoigner</strong> d'une violence extrême exige de trouver une forme nouvelle — récit, dessin, mémoire fragmentée — capable d'en approcher la vérité sans jamais prétendre l'épuiser tout à fait.</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<footer class="site-footer">
+  <div class="footer-logo">Valse avec Bachir — Ari Folman</div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
+
+<script>
+  document.querySelectorAll('.toc-list a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>

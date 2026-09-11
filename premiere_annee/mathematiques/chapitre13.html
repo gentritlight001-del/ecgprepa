@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Maths Chapitre 13 : Séries numériques</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false}]});"></script>
+<style>
+  :root {
+    --cream: #F6F0E7;
+    --dark: #201509;
+    --teal: #8A5A2B;
+    --teal-dark: #3B2414;
+    --teal-mid: #A9773F;
+    --teal-light: #EDE0CC;
+    --teal-border: #CBA877;
+    --mint: #E9D3A8;
+    --muted: #7A6247;
+    --accent: #8A5A2B;
+    --accent-soft: #8A5A2B22;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--dark); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid rgba(138,90,43,0.25);
+    background: var(--teal-dark); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--mint); cursor: pointer; letter-spacing: 0.02em; }
+  .nav-logo a { color: inherit; text-decoration: none; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(246,240,231,0.5); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: inherit; text-decoration: none; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb a:hover span, .breadcrumb span:hover { color: var(--mint); }
+  .breadcrumb .sep { color: rgba(246,240,231,0.25); }
+  .breadcrumb .current { color: #F6F0E7; cursor: default; }
+
+  /* ─── HERO ─── */
+  .ch-hero {
+    background: var(--teal-dark);
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ch-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%238A5A2B' fill-opacity='0.18'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--mint); margin-bottom: 1.5rem; opacity: 0.85; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 4rem); color: var(--cream); font-weight: 900; max-width: 900px; margin: 0 auto 1.5rem; line-height: 1.1; position: relative; z-index: 1; }
+  .ch-hero p { color: rgba(246,240,231,0.45); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  /* ─── TOC ─── */
+  .toc-bar { background: #EFE4D2; padding: 2rem; border-bottom: 1px solid var(--teal-border); }
+  .toc-inner { max-width: 960px; margin: 0 auto; }
+  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
+  .toc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.4rem; list-style: none; }
+  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: #2E2013; font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
+  .toc-list a:hover { border-color: var(--teal-border); background: white; color: #000; }
+  .toc-num { font-family: "DM Mono", monospace; font-size: 0.65rem; color: var(--teal); flex-shrink: 0; margin-top: 0.15rem; }
+
+  /* ─── CONTENT ─── */
+  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 3rem; }
+
+  /* PART */
+  .math-part { margin-bottom: 5rem; }
+  .math-part:last-of-type { margin-bottom: 0; }
+  .math-part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--teal); }
+  .math-part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: var(--teal-border); line-height: 1; flex-shrink: 0; }
+  .math-part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--dark); line-height: 1.25; }
+
+  /* SECTION */
+  .math-section { margin-bottom: 3.5rem; }
+  .math-section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--teal-dark); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--teal); scroll-margin-top: 2rem; }
+  .math-subsection-title { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--teal); margin: 2rem 0 0.75rem; }
+
+  /* TEXT */
+  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: #241A0F; line-height: 1.85; font-weight: 300; }
+  .content strong { color: var(--dark); font-weight: 600; }
+
+  /* DÉFINITION CARD */
+  .def-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(138,90,43,0.10), 0 0 0 1px rgba(138,90,43,0.12);
+    display: flex;
+    margin: 1.4rem 0;
+  }
+  .def-accent-bar {
+    width: 5px;
+    background: linear-gradient(180deg, #B4854F 0%, #3B2414 100%);
+    flex-shrink: 0;
+    border-radius: 10px 0 0 10px;
+  }
+  .def-body { padding: 1.2rem 1.5rem; flex: 1; }
+  .def-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.65rem; }
+  .def-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--teal); font-weight: 500; }
+  .def-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--teal-dark); }
+  .def-body p { margin-bottom: 0.5rem; font-size: 0.93rem; line-height: 1.75; }
+  .def-body p:last-child { margin-bottom: 0; }
+
+  /* PROPRIÉTÉ CARD */
+  .prop-card {
+    background: var(--teal-light);
+    border-radius: 8px;
+    border: 1px solid var(--teal-border);
+    border-left: 4px solid var(--teal);
+    padding: 1.2rem 1.5rem;
+    margin: 1.4rem 0;
+  }
+  .prop-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--teal-dark); font-weight: 700; margin-bottom: 0.6rem; }
+  .prop-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--teal-dark); margin-bottom: 0.7rem; }
+  .prop-card p { margin-bottom: 0.5rem; font-size: 0.93rem; color: var(--teal-dark); line-height: 1.75; }
+  .prop-card p:last-child { margin-bottom: 0; }
+  .prop-card ol, .prop-card ul { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .prop-card ol li, .prop-card ul li { font-size: 0.93rem; color: var(--teal-dark); line-height: 1.8; margin-bottom: 0.35rem; }
+
+  /* THÉORÈME CARD */
+  .thm-card {
+    background: var(--teal-dark);
+    color: var(--cream);
+    border-radius: 8px;
+    padding: 1.5rem 1.75rem;
+    margin: 1.4rem 0;
+  }
+  .thm-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--mint); margin-bottom: 0.5rem; }
+  .thm-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--cream); margin-bottom: 0.75rem; }
+  .thm-card p { color: rgba(246,240,231,0.88); font-size: 0.93rem; margin-bottom: 0.5rem; line-height: 1.75; }
+  .thm-card p:last-child { margin-bottom: 0; }
+
+  /* MÉTHODE CARD */
+  .meth-card {
+    background: white;
+    border: 2px solid var(--teal);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.4rem 0;
+  }
+  .meth-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--teal); font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+  .meth-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--teal-dark); margin-bottom: 0.7rem; }
+  .meth-card p { font-size: 0.93rem; line-height: 1.75; margin-bottom: 0.5rem; }
+  .meth-card p:last-child { margin-bottom: 0; }
+  .meth-card ul, .meth-card ol { padding-left: 1.4rem; margin: 0.3rem 0 0.5rem; }
+  .meth-card li { font-size: 0.93rem; line-height: 1.8; margin-bottom: 0.3rem; }
+
+  /* REMARQUE */
+  .remark { background: white; border-left: 3px solid var(--teal-border); padding: 1rem 1.4rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; font-size: 0.9rem; color: #2E2013; line-height: 1.7; font-style: italic; }
+  .remark::before { content: 'Remarque — '; font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--teal); display: block; margin-bottom: 0.3rem; }
+  .remark ul, .remark ol { padding-left: 1.4rem; margin-top: 0.3rem; }
+  .remark li { margin-bottom: 0.3rem; }
+
+  /* FORMULE DISPLAY */
+  .formula-block {
+    background: white;
+    border: 1px solid var(--teal-border);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.2rem 0;
+    text-align: center;
+    overflow-x: auto;
+  }
+  .formula-block .katex-display { margin: 0; }
+  .formula-block .katex { font-size: 1.05em; }
+
+  /* TABLE */
+  .math-table-wrap { overflow-x: auto; margin: 1.5rem 0; border-radius: 8px; border: 1px solid var(--teal-border); box-shadow: 0 2px 8px rgba(138,90,43,0.08); }
+  .math-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .math-table th { background: var(--teal-dark); color: var(--cream); font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.75rem 1rem; text-align: center; font-weight: 500; border: 1px solid rgba(255,255,255,0.1); }
+  .math-table td { padding: 0.65rem 1rem; text-align: center; border: 1px solid var(--teal-light); color: #241A0F; vertical-align: middle; background: white; line-height: 1.6; }
+  .math-table tr:nth-child(even) td { background: #F6F0E7; }
+  .math-table tr:hover td { background: var(--teal-light); }
+  .math-table td.left { text-align: left; }
+  .math-table .katex { font-size: 0.95em; }
+
+  /* KEY FACT */
+  .math-key { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 0.6rem; padding: 0.85rem 1.1rem; background: white; border: 1px solid var(--teal-light); border-radius: 6px; }
+  .math-key-bullet { width: 6px; height: 6px; background: var(--teal); border-radius: 50%; flex-shrink: 0; margin-top: 0.55rem; }
+  .math-key > div { font-size: 0.91rem; color: #241A0F; line-height: 1.75; font-weight: 300; }
+
+  /* INLINE MATH */
+  .katex { font-size: 1em; }
+  .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.2rem 0; }
+
+  /* DEUX COLONNES */
+  .two-col-formulas { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
+  .two-col-formulas .formula-block { margin: 0; }
+
+  /* TROIS COLONNES */
+  .three-col-formulas { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
+  .three-col-formulas .formula-block { margin: 0; }
+
+  /* HIGHLIGHT BOX */
+  .math-highlight { background: var(--teal-light); border-left: 4px solid var(--teal); padding: 1.25rem 1.75rem; margin: 1.5rem 0; color: var(--teal-dark); font-size: 0.93rem; line-height: 1.75; border-radius: 0 6px 6px 0; }
+  .math-highlight ol, .math-highlight ul { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .math-highlight li { margin-bottom: 0.35rem; }
+
+  /* FOOTER */
+  .site-footer {
+    background: var(--teal-dark);
+    border-top: 1px solid rgba(138,90,43,0.35);
+    padding: 2.5rem 2rem;
+    text-align: center;
+  }
+  .site-footer .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--mint);
+    letter-spacing: 0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+  /* BACK TO TOP */
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--teal); color: var(--cream); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 4px 14px rgba(138,90,43,0.45); opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 200; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+  .back-to-top:hover { background: var(--teal-mid); }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--teal-border); border-radius: 3px; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .two-col-formulas { grid-template-columns: 1fr; }
+    .three-col-formulas { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    @page { size: A4; margin: 15mm 14mm 15mm 14mm; }
+    nav, .back-to-top, .toc-bar, .site-footer { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    html, body { background: white !important; color: #000 !important; font-size: 10pt; width: 100% !important; }
+    .ch-hero { background: #3B2414 !important; padding: 0.9rem 1rem 0.7rem !important; }
+    .ch-hero::before { display: none !important; }
+    .ch-hero h1 { font-size: 16pt !important; color: #fff !important; margin-bottom: 0.3rem !important; }
+    .ch-hero .chap-label { font-size: 7pt !important; color: #E9D3A8 !important; margin-bottom: 0.4rem !important; }
+    .ch-hero p { font-size: 7pt !important; color: #E9D3A8 !important; margin: 0 !important; }
+    .content { max-width: 100% !important; padding: 0.6rem 0 !important; margin: 0 !important; }
+    .content p { font-size: 9pt !important; line-height: 1.5 !important; margin-bottom: 0.45rem !important; color: #000 !important; }
+    .math-part { margin-bottom: 0.8rem; page-break-inside: auto; }
+    .math-part-header { page-break-after: avoid; padding-bottom: 0.6rem !important; margin-bottom: 1rem !important; border-bottom: 2pt solid #8A5A2B !important; }
+    .math-part-num { font-size: 2rem !important; color: #CBA877 !important; }
+    .math-part-title { font-size: 13pt !important; }
+    .math-section { page-break-inside: auto; margin-bottom: 0.8rem; }
+    .math-section-title { page-break-after: avoid; font-size: 11pt !important; padding-left: 0.7rem !important; border-left: 2.5pt solid #8A5A2B !important; margin-bottom: 0.55rem !important; color: #3B2414 !important; }
+    .math-subsection-title { page-break-after: avoid; font-size: 7pt !important; margin: 0.65rem 0 0.35rem !important; color: #8A5A2B !important; }
+    .def-card { page-break-inside: avoid; box-shadow: none !important; border: 1pt solid #CBA877 !important; display: flex !important; border-radius: 0 !important; margin: 0.55rem 0 !important; }
+    .def-accent-bar { background: #8A5A2B !important; width: 4px !important; border-radius: 0 !important; }
+    .def-body { padding: 0.7rem 1rem !important; }
+    .def-body p { font-size: 8.5pt !important; line-height: 1.5 !important; color: #000 !important; }
+    .prop-card { page-break-inside: avoid; background: #EDE0CC !important; border: 1pt solid #CBA877 !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .prop-card p, .prop-card li { font-size: 8.5pt !important; line-height: 1.5 !important; }
+    .thm-card { page-break-inside: avoid; background: #3B2414 !important; padding: 0.7rem 1rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .thm-label { font-size: 6pt !important; color: #E9D3A8 !important; }
+    .thm-title { font-size: 9.5pt !important; color: #fff !important; }
+    .thm-card p { font-size: 8.5pt !important; color: rgba(246,240,231,0.9) !important; line-height: 1.5 !important; }
+    .meth-card { page-break-inside: avoid; border: 1.5pt solid #8A5A2B !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .meth-card p { font-size: 8.5pt !important; line-height: 1.5 !important; }
+    .remark { page-break-inside: avoid; border-left: 2pt solid #CBA877 !important; padding: 0.5rem 0.9rem !important; margin: 0.45rem 0 !important; font-size: 8pt !important; border-radius: 0 !important; }
+    .formula-block { page-break-inside: avoid; border: 1pt solid #CBA877 !important; padding: 0.5rem 0.8rem !important; margin: 0.45rem 0 !important; border-radius: 0 !important; }
+    .math-key { page-break-inside: avoid; padding: 0.4rem 0.8rem !important; margin-bottom: 0.3rem !important; border: 1pt solid #EDE0CC !important; border-radius: 0 !important; }
+    .math-key > div { font-size: 8.5pt !important; line-height: 1.45 !important; color: #000 !important; }
+    .math-highlight { page-break-inside: avoid; background: #EDE0CC !important; border-left: 2.5pt solid #8A5A2B !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; font-size: 8.5pt !important; color: #3B2414 !important; border-radius: 0 !important; }
+    .math-table-wrap { page-break-inside: avoid; margin: 0.55rem 0 !important; border: 1pt solid #CBA877 !important; border-radius: 0 !important; box-shadow: none !important; }
+    .math-table th { background: #3B2414 !important; color: #E9D3A8 !important; font-size: 6.5pt !important; padding: 0.4rem 0.6rem !important; }
+    .math-table td { font-size: 8pt !important; padding: 0.4rem 0.6rem !important; border: 0.5pt solid #EDE0CC !important; }
+    .two-col-formulas, .three-col-formulas { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 0.5rem !important; margin: 0.45rem 0 !important; }
+    .katex { font-size: 0.82em !important; }
+    .katex-display { margin: 0.15rem 0 !important; overflow: visible !important; }
+    .katex-html { white-space: normal !important; }
+    .katex .base { display: inline !important; white-space: nowrap !important; }
+    .def-body p, .prop-card p, .thm-card p, .remark, .math-key > div, .content p { overflow: visible !important; word-break: break-word !important; }
+    .formula-block { overflow: visible !important; height: auto !important; min-height: 0 !important; text-align: center !important; }
+    .formula-block .katex-display { overflow-x: visible !important; overflow-y: visible !important; text-align: center !important; }
+    .math-table td, .math-table th { overflow: visible !important; word-break: break-word !important; }
+    .katex *, .katex-html * { position: static !important; top: auto !important; bottom: auto !important; left: auto !important; right: auto !important; }
+    .math-table .katex { font-size: 0.75em !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left"><div class="nav-logo"><a href="../../index.html">ECG Prépa</a></div></div>
+  <div class="breadcrumb">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">/</span>
+    <a href="index.html"><span>Mathématiques</span></a>
+    <span class="sep">/</span>
+    <span class="current">Chapitre 13</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="chap-label">&#x2015;&nbsp; Chapitre 13 · Mathématiques approfondies &nbsp;&#x2015;</div>
+  <h1>Séries numériques</h1>
+  <p>Convergence · Séries de référence · Critères de nature · Convergence absolue</p>
+</div>
+
+<!-- TOC -->
+<div class="toc-bar">
+  <div class="toc-inner">
+    <div class="toc-title">Table des matières</div>
+    <ul class="toc-list">
+      <li><a href="#part1"><span class="toc-num">I</span> Généralités sur les séries</a></li>
+      <li><a href="#part2"><span class="toc-num">II</span> Étude de la nature d'une série</a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════════
+     PARTIE I — GÉNÉRALITÉS SUR LES SÉRIES
+════════════════════════════════════════ -->
+<div class="math-part" id="part1">
+  <div class="math-part-header">
+    <div class="math-part-num">I</div>
+    <div class="math-part-title">Généralités sur les séries</div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="math-section" id="s1-1">
+    <div class="math-section-title">1 — Définitions</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span></div>
+        <p>Soit \((u_n)_{n \geq n_0}\) une suite (avec \(n_0 \in \mathbb{N}\) fixé. En général, \(n_0 = 0\) ou \(n_0 = 1\)).</p>
+        <p>On appelle <strong>série de terme général \(u_n\)</strong>, et on note \(\sum u_n\), la suite \((S_n)_n\) définie par :</p>
+        <div class="formula-block">\[\forall n \geq n_0, \quad S_n = \sum_{k=n_0}^{n} u_k\]</div>
+        <p>Pour tout \(n \geq n_0\), la somme finie \(S_n\) s'appelle la <strong>somme partielle</strong> de la série \(\sum u_n\).</p>
+      </div>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 2</span></div>
+        <p>Soit \((u_n)_{n \geq n_0}\) une suite.</p>
+        <ul style="padding-left:1.4rem;">
+          <li>On dit que la série \(\sum u_n\) <strong>diverge</strong> ssi la suite \((S_n)_n\) diverge : pas de limite finie.</li>
+          <li>On dit que la série \(\sum u_n\) <strong>converge</strong> ssi la suite \((S_n)_n\) converge : limite finie.</li>
+        </ul>
+        <p>Dans ce cas la limite de la suite \((S_n)_n\) s'appelle la <strong>somme de la série</strong> et se note \(\displaystyle\sum_{n=n_0}^{+\infty} u_n\).</p>
+        <div class="formula-block">\[\sum_{n=n_0}^{+\infty} u_n = \lim_{N\to+\infty} S_N = \lim_{N\to+\infty} \sum_{n=n_0}^{N} u_n\]</div>
+        <p>Étudier la nature d'une série, c'est déterminer si elle converge ou si elle diverge. Pour cela, on étudie la limite éventuelle de la suite \((S_n)\) de ses sommes partielles.</p>
+      </div>
+    </div>
+
+    <div class="remark">
+      <ul style="padding-left:1.4rem; font-style:normal;">
+        <li>Ne pas confondre les différentes notations : \(\displaystyle\sum u_n\), \(\displaystyle\sum_{n=0}^{p} u_n\) et \(\displaystyle\sum_{n=0}^{+\infty} u_n\).</li>
+        <li>Intuitivement, \(\displaystyle\sum_{n=0}^{+\infty} u_n = u_0+u_1+u_2+\dots+u_n+u_{n+1}+u_{n+2}+\dots\) jusqu'à l'infini.</li>
+        <li>Donc, lorsqu'elle existe, \(\displaystyle\sum_{n=0}^{+\infty} u_n\) désigne la somme de <em>tous</em> les termes de la suite \((u_n)_n\) (somme « totale » infinie, à distinguer des sommes « partielles » qui, elles, sont des sommes finies).</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="math-section" id="s1-2">
+    <div class="math-section-title">2 — Séries de référence</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <div class="prop-title">Séries de Riemann</div>
+      <ul>
+        <li>On appelle <strong>série de Riemann</strong> toute série du type \(\displaystyle\sum \frac{1}{n^\alpha}\) avec \(\alpha \in \mathbb{R}\).</li>
+        <li>La série \(\displaystyle\sum \frac{1}{n^\alpha}\) converge pour \(\alpha > 1\) et diverge pour \(\alpha \leq 1\).</li>
+      </ul>
+    </div>
+
+    <div class="remark">La série \(\sum \dfrac{1}{n}\) s'appelle la <strong>série harmonique</strong>. Elle diverge. On montre que \(\displaystyle\sum_{k=1}^{n} \frac{1}{k} \sim \ln n\).</div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 2</div>
+      <div class="thm-title">Série exponentielle</div>
+      <p>On appelle <strong>série exponentielle</strong> toute série du type \(\displaystyle\sum \frac{x^k}{k!}\) avec \(x \in \mathbb{R}\).</p>
+      <p>La série exponentielle \(\displaystyle\sum \frac{x^k}{k!}\) converge pour tout réel \(x\) et on a :</p>
+      <div class="formula-block" style="background:rgba(246,240,231,0.06); border-color:rgba(246,240,231,0.25);">\[\forall x \in \mathbb{R}, \quad \sum_{k=0}^{+\infty} \frac{x^k}{k!} = e^x\]</div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 3</div>
+      <div class="prop-title">Série géométrique</div>
+      <ul>
+        <li>On appelle <strong>série géométrique</strong> toute série du type \(\displaystyle\sum x^k\) avec \(x \in \mathbb{R}\).</li>
+        <li>Si \(|x| < 1\), la série géométrique \(\displaystyle\sum x^k\) converge et \(\displaystyle\sum_{k=0}^{+\infty} x^k = \dfrac{1}{1-x}\).</li>
+        <li>Si \(|x| \geq 1\), la série géométrique \(\displaystyle\sum x^k\) diverge.</li>
+      </ul>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 4</div>
+      <div class="prop-title">Dérivées de la série géométrique</div>
+      <ul>
+        <li>On appelle <strong>dérivées de la série géométrique</strong> les séries \(\displaystyle\sum k x^{k-1}\) et \(\displaystyle\sum k(k-1)x^{k-2}\) avec \(x\) réel.</li>
+        <li>Si \(|x|<1\) ces séries convergent et on a :</li>
+      </ul>
+      <div class="formula-block">\[\sum_{k=0}^{+\infty} k x^{k-1} = \frac{1}{(1-x)^2} \qquad \text{et} \qquad \sum_{k=0}^{+\infty} k(k-1)x^{k-2} = \frac{2}{(1-x)^3}\]</div>
+      <ul>
+        <li>Si \(|x| \geq 1\), ces séries divergent.</li>
+      </ul>
+    </div>
+
+    <div class="remark">On a : \(\displaystyle\sum k x^{k-1} = \sum [x^k]' = \left(\sum x^k\right)' = \left(\frac{1}{1-x}\right)' = \frac{1}{(1-x)^2}\). D'où le nom de dérivée de la série géométrique. On peut faire le même type de calcul pour la dérivée seconde.</div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="math-section" id="s1-3">
+    <div class="math-section-title">3 — Premiers théorèmes sur les séries</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 5</div>
+      <div class="prop-title">Condition nécessaire de convergence</div>
+      <p>Si la série \(\displaystyle\sum u_n\) converge alors \(\displaystyle\lim_{n \to +\infty} u_n = 0\).</p>
+      <p>Par conséquent, si \(\displaystyle\lim_{n \to +\infty} u_n \neq 0\), alors la série \(\sum u_n\) diverge.</p>
+    </div>
+
+    <div class="remark">
+      Si \(\displaystyle\lim_{n\to+\infty} u_n = 0\), on ne peut rien dire sur la nature de la série \(\sum u_n\) (elle peut converger ou diverger !). La série harmonique \(\sum \dfrac{1}{n}\) diverge (on a \(\displaystyle\sum_{k=1}^n \frac{1}{k} \sim \ln n\)) alors que la série \(\sum \dfrac{1}{n^2}\) converge. C'est pour cela qu'on parle de <em>condition nécessaire</em> de convergence (c'est le minimum requis !). Ce théorème permet de justifier que \(\forall x \in \mathbb{R}\), \(x^n \underset{n \to +\infty}{=} o(n!)\).
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 6</div>
+      <p>Soit \((u_n)_n\) et \((v_n)_n\) deux suites.</p>
+      <ul>
+        <li>Si \(\sum u_n\) converge alors, pour tout \(\lambda \in \mathbb{R}\), la série \(\sum \lambda u_n\) converge et \(\displaystyle\sum_{n=n_0}^{+\infty} (\lambda u_n) = \lambda \left(\sum_{n=n_0}^{+\infty} u_n\right)\).</li>
+        <li>Si \(\sum u_n\) et \(\sum v_n\) convergent alors \(\sum (u_n+v_n)\) converge et \(\displaystyle\sum_{n=n_0}^{+\infty} (u_n+v_n) = \left(\sum_{n=n_0}^{+\infty} u_n\right) + \left(\sum_{n=n_0}^{+\infty} v_n\right)\).</li>
+      </ul>
+    </div>
+
+    <div class="remark">Pour manipuler des sommes infinies, il faut que tout converge.</div>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="math-section" id="s1-4">
+    <div class="math-section-title">4 — Calculs de sommes de séries convergentes</div>
+
+    <div class="meth-card">
+      <div class="meth-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Méthode — calcul en utilisant les séries de référence
+      </div>
+      <p>Pour prouver que la série \(\sum u_k\) converge et calculer sa somme :</p>
+      <ol>
+        <li>Écrire la somme finie associée \(\displaystyle S_n = \sum_{k=n_0}^{n} u_k\).</li>
+        <li>Transformer \(S_n\) pour faire apparaître les quantités à sommer de sommes de référence (par découpage, changement d'indice, etc.).</li>
+        <li>Rectifier si nécessaire les premiers termes (car toutes les sommes de référence commencent à \(k=0\)).</li>
+        <li>Justifier la convergence des séries obtenues puis faire tendre \(n\) vers \(+\infty\) dans l'égalité pour conclure.</li>
+      </ol>
+    </div>
+
+    <div class="remark">
+      <ul style="padding-left:1.4rem; font-style:normal;">
+        <li>Ici, on modifie le terme général \(u_n\) pour faire apparaître le terme général d'une série de référence (par changement d'indice, simplification, mise en facteur, etc.).</li>
+        <li>TOUJOURS travailler sur les sommes partielles, puis passer à la limite après avoir justifié la convergence.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE II — ÉTUDE DE LA NATURE D'UNE SÉRIE
+════════════════════════════════════════ -->
+<div class="math-part" id="part2">
+  <div class="math-part-header">
+    <div class="math-part-num">II</div>
+    <div class="math-part-title">Étude de la nature d'une série</div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="math-section" id="s2-1">
+    <div class="math-section-title">1 — Critères d'étude pour les séries à termes positifs</div>
+
+    <p>Dans tout ce paragraphe, \(\sum u_n\) et \(\sum v_n\) sont deux séries à termes positifs, c'est-à-dire telles que :</p>
+    <div class="formula-block">\[\forall n \geq n_0, \quad u_n \geq 0 \ \text{ et } \ v_n \geq 0\]</div>
+    <p>(leur terme général est positif, éventuellement seulement à partir d'un certain rang). Les critères de ce paragraphe permettent d'étudier la nature d'une série sans passer par ses sommes partielles ; par contre, ils ne permettent pas d'obtenir la valeur de la somme.</p>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <div class="prop-title">Critère d'équivalence</div>
+      <p>Si \(u_n \sim v_n\) avec \(\forall n \geq n_0\), \(v_n \geq 0\), alors les séries \(\sum u_n\) et \(\sum v_n\) sont de <strong>même nature</strong>, c'est-à-dire qu'elles sont toutes deux convergentes ou toutes deux divergentes.</p>
+      <p>Ce critère demeure vrai si les deux suites sont négatives.</p>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 2</div>
+      <div class="prop-title">Critère de convergence par négligeabilité</div>
+      <p>Soit \(\sum u_n\) une série à termes positifs (telle que \(\forall n \geq n_0\), \(u_n \geq 0\)).</p>
+      <p>Si \(u_n = o(v_n)\) avec \(\sum v_n\) converge alors la série \(\sum u_n\) converge.</p>
+      <p>En particulier, si \(\displaystyle\lim_{n\to+\infty} n^2 u_n = 0\) alors \(u_n = o\left(\dfrac{1}{n^2}\right)\) avec \(\sum \dfrac{1}{n^2}\) converge donc \(\sum u_n\) converge.</p>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 3</div>
+      <div class="prop-title">Critère d'étude par comparaison</div>
+      <p>On suppose que \(\forall n \geq n_0\), \(0 \leq u_n \leq v_n\).</p>
+      <ul>
+        <li>Si la série \(\sum v_n\) converge alors la série \(\sum u_n\) converge et on a : \(\displaystyle\sum_{n=n_0}^{+\infty} u_n \leq \sum_{n=n_0}^{+\infty} v_n\).</li>
+        <li>Si la série \(\sum u_n\) diverge alors la série \(\sum v_n\) diverge.</li>
+      </ul>
+    </div>
+
+    <div class="remark">
+      <ul style="padding-left:1.4rem; font-style:normal;">
+        <li>Pour étudier \(\sum u_n\) avec \(u_n \leq 0\), \(n \geq n_0\), on étudie la série \(\sum (-u_n)\).</li>
+        <li>Pour écrire des sommes infinies, il faut avoir justifié que <u>toutes</u> les séries convergent.</li>
+      </ul>
+    </div>
+
+    <div class="meth-card">
+      <div class="meth-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Méthode — étude de nature de séries à termes positifs
+      </div>
+      <p>Pour déterminer la nature d'une série à termes positifs \(\sum u_n\) :</p>
+      <ol>
+        <li>Chercher un équivalent de \(u_n\) (si \(u_n\) n'est pas déjà une expression simple de série de référence). Si on connaît la nature de la série \(\sum v_n\) obtenue, on peut conclure avec le critère d'étude par équivalence.</li>
+        <li>Sinon, appliquer la règle d'étude par négligeabilité ou celle d'étude par comparaison. Pour cela, regarder \(\displaystyle\lim_{n\to+\infty} n^2 u_n\), \(\displaystyle\lim_{n\to+\infty} n u_n\) et \(\displaystyle\lim_{n\to+\infty} \sqrt{n}\, u_n\), puis si nécessaire, \(\displaystyle\lim_{n\to+\infty} n^\alpha u_n\) avec \(\alpha\) quelconque.</li>
+        <li>Si rien ne marche, revenir aux sommes partielles ou suivre le texte...</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="math-section" id="s2-2">
+    <div class="math-section-title">2 — Étude des séries à termes quelconques</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span><span class="def-name">Convergence absolue</span></div>
+        <p>Soit \((u_n)_n\) une suite quelconque.</p>
+        <p>On dit que \(\sum u_n\) <strong>converge absolument</strong> ssi la série \(\sum |u_n|\) converge.</p>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 4</div>
+      <p>Si \(\sum |u_n|\) converge alors \(\sum u_n\) converge. <strong>(La convergence absolue entraîne la convergence.)</strong></p>
+    </div>
+
+    <div class="remark">
+      <ol style="padding-left:1.4rem; font-style:normal;">
+        <li>On utilise cette notion lorsqu'on ne connaît pas le signe de \(u_n\) (ou lorsqu'il n'est pas fixe).</li>
+        <li>La convergence absolue permet de ramener l'étude d'une série à termes de signe quelconque à celle d'une série à termes positifs (pour laquelle on a des théorèmes).</li>
+        <li>Si on trouve que \(\sum |u_n|\) diverge, on ne peut rien dire sur \(\sum u_n\). Il faut suivre une autre piste.</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+</div><!-- fin .content -->
+
+<footer class="site-footer">
+  <div class="footer-logo">Chapitre 13 : Séries numériques</div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut de page">↑</button>
+
+<script>
+  document.querySelectorAll('.toc-list a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
+
+</body>
+</html>

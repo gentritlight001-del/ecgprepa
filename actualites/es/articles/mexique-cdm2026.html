@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Mexique : Coupe du Monde 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #006847;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #006847; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #ce1126; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #ffffff; top: 40%; left: 30%; opacity: 0.03; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #006847; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #006847; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#006847; border-color:#006847; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  /* Article styles */
+  .ap-band { background: linear-gradient(90deg, #006847, #ce1126, #006847); text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(0,20,10,0.95); padding:12px 60px; border-bottom: 1px solid rgba(0,104,71,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#ce1126; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(0,104,71,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(206,17,38,0.2);  color:#f08080; border:1px solid rgba(206,17,38,0.35); }
+  .ap-tag-navy   { background:rgba(13,27,42,0.6);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(0,104,71,0.25);  color:#4caf7d; border:1px solid rgba(76,175,125,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #ce1126; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(0,104,71,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(206,17,38,0.8); }
+
+  /* Rich article components */
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#ce1126; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(206,17,38,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#071422,#0d2540); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#003a1a,#006832); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #ce1126; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(206,17,38,0.06),rgba(206,17,38,0.02)); border-left:3px solid #ce1126; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(206,17,38,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(206,17,38,0.8); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(0,30,15,0.9),rgba(0,15,8,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(0,104,71,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#4caf7d; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(0,104,71,0.06); border:1px solid rgba(0,104,71,0.18); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info.warning { background:rgba(206,17,38,0.06); border-color:rgba(206,17,38,0.18); }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(206,17,38,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#ce1126; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(206,17,38,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#ce1126; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(0,30,15,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-es-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-es.html">Espagnol</a>
+    <span class="sep">/</span>
+    <a href="../mexique.html">Mexique</a>
+    <span class="sep">/</span>
+    <span class="current">Coupe du Monde 2026</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-es" class="ap-lang-btn" onclick="setLang('es')">🇲🇽 ES</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇲🇽 Mexique et la Coupe du Monde 2026</div>
+<div class="ap-back-bar">
+  <a href="../mexique.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+    <div class="ap-hero-img-wrap"><img class="ap-hero-img" src="../images/mexique-cdm2026.jpg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+    <!-- ═══ SECTION FR ═══ -->
+    <div class="ap-fr-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-green">🇲🇽 Mexique</span>
+          <span class="ap-tag ap-tag-gold">Sport & Géopolitique</span>
+          <span class="ap-tag ap-tag-red">Sécurité</span>
+          <span class="ap-tag ap-tag-navy">Cartels</span>
+          <span class="ap-tag ap-tag-blue">Coupe du Monde</span>
+        </div>
+        <div class="ap-date">AVRIL 2026 — ECG PRÉPA</div>
+        <h1 class="ap-title">La Coupe du Monde 2026 au Mexique : entre vitrine mondiale et enjeux sécuritaires</h1>
+        <p class="ap-intro">Organisée conjointement par les États-Unis, le Canada et le Mexique, la Coupe du Monde de football 2026 constitue pour ce dernier bien plus qu'un événement sportif. Dans un contexte marqué par la mort controversée d'El Mencho, chef du cartel CJNG, et par une violence endémique qui touche les États hôtes, le tournoi est devenu un révélateur des tensions profondes qui traversent la société mexicaine.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat green">
+            <span class="ap-stat-num">3</span>
+            <span class="ap-stat-desc">Pays co-organisateurs<br>USA · Canada · Mexique</span>
+          </div>
+          <div class="ap-stat gold">
+            <span class="ap-stat-num">48</span>
+            <span class="ap-stat-desc">Équipes participantes<br>(format élargi)</span>
+          </div>
+          <div class="ap-stat red">
+            <span class="ap-stat-num">3</span>
+            <span class="ap-stat-desc">Villes mexicaines hôtes<br>CDMX · Guadalajara · Monterrey</span>
+          </div>
+          <div class="ap-stat">
+            <span class="ap-stat-num">~5M</span>
+            <span class="ap-stat-desc">Visiteurs attendus<br>sur l'ensemble du tournoi</span>
+          </div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Un événement inédit : trois nations, un tournoi</div>
+            <p>Pour la première fois de son histoire, la Coupe du Monde de la FIFA réunit trois nations co-organisatrices. Si les États-Unis accueillent la majorité des matchs (60 rencontres dans 11 stades), le Mexique tient un rôle symbolique fort : il organise <strong>trois matchs d'ouverture</strong> dans ses stades iconiques, dont le légendaire Estadio Azteca de Mexico, qui devient ainsi le premier stade à accueillir trois Coupes du Monde (1970, 1986, 2026). Guadalajara et Monterrey complètent le dispositif mexicain.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Dates</div><div class="ap-fact-val">11 juin – 19 juillet 2026</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Stade principal MX</div><div class="ap-fact-val">Estadio Azteca (87 000 places)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Matchs au Mexique</div><div class="ap-fact-val">13 rencontres (phase de groupes)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Investissement MX</div><div class="ap-fact-val">~2,5 milliards USD</div></div>
+            </div>
+
+            <div class="ap-sub">La mort d'El Mencho : tournant ou illusion ?</div>
+            <p>La mort de <strong>Nemesio Oseguera Cervantes</strong>, alias « El Mencho », chef du Cartel Jalisco Nueva Generación (CJNG), annoncée début 2026 par les autorités mexicaines, a été présentée par la présidente <strong>Claudia Sheinbaum</strong> comme un signal fort à quelques mois du coup d'envoi. Le CJNG était considéré comme le cartel le plus violent et le plus expansif du pays, présent dans plus de 26 des 32 États mexicains.</p>
+            <p>Cependant, les experts en sécurité tempèrent cet optimisme affiché. L'histoire des cartels mexicains montre qu'<strong>éliminer un chef ne démantèle pas l'organisation</strong> : après la capture d'El Chapo en 2016, le Cartel de Sinaloa s'est fragmenté mais a maintenu sa puissance. La disparition d'El Mencho risque de provoquer une guerre de succession au sein du CJNG et d'intensifier les affrontements avec le Cartel de Sinaloa pour le contrôle des corridors du trafic de drogue — notamment dans l'État de Jalisco, dont Guadalajara est la capitale et ville hôte de la Coupe du Monde.</p>
+
+            <div class="ap-info warning">
+              <div class="ap-info-icon">⚠️</div>
+              <div class="ap-info-text"><strong>Précédent historique :</strong> lors de la capture d'El Chapo Guzmán en 2016, la fragmentation du Cartel de Sinaloa avait engendré une vague de violence sans précédent dans plusieurs États. Les spécialistes redoutent un scénario similaire à Jalisco après la mort d'El Mencho.</div>
+            </div>
+
+            <div class="ap-sub">Chronologie des enjeux sécuritaires (2024–2026)</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">Oct. 2023</div><p class="ap-tl-text">Claudia Sheinbaum remporte l'élection présidentielle avec 59 % des voix. Elle hérite d'un Mexique où 33 000 homicides annuels ont été enregistrés sous AMLO. Promesse de « sécurité sans guerre ».</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Jan. 2025</div><p class="ap-tl-text">La FIFA et le Comité d'organisation publient le plan de sécurité conjoint pour les trois pays hôtes. Pour le Mexique, déploiement prévu de 15 000 membres de la Garde nationale dans les trois villes hôtes.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Fév. 2026</div><p class="ap-tl-text">Annonce officielle de la mort d'El Mencho. Le gouvernement mexicain parle de « tournant décisif ». Première série d'affrontements entre factions rivales du CJNG à Jalisco dans les semaines suivantes.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Avr. 2026</div><p class="ap-tl-text">Deux mois avant le coup d'envoi : tensions persistantes à Monterrey (conflits Sinaloa / CJNG pour le contrôle du Nuevo León). La Garde nationale renforce ses effectifs. Pression diplomatique américaine sur Mexico.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Juin 2026</div><p class="ap-tl-text">Début du tournoi. L'Estadio Azteca accueille le match d'ouverture. Dispositif sécuritaire sans précédent dans l'histoire mexicaine : drones, checkpoints, coordination FBI–DEA–Policía Federal.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">Les trois villes mexicaines sous surveillance</div>
+            <p>Les trois villes désignées présentent des profils de risque très différents. <strong>Mexico (CDMX)</strong> bénéficie d'une sécurité relative grâce à son statut de capitale fédérale et d'une présence institutionnelle dense. <strong>Guadalajara</strong>, capitale du Jalisco, est le bastion historique du CJNG — la ville a connu des blocages routiers, des incendies de véhicules et des affrontements armés à plusieurs reprises depuis 2020. Enfin, <strong>Monterrey</strong>, métropole industrielle du nord, est un carrefour stratégique entre les cartels de Sinaloa et du Golfe, qui se disputent les routes de passage vers les États-Unis.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Ville</th><th>Cartel dominant</th><th>Niveau de risque</th><th>Matchs</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Mexico (CDMX)</td><td>Fragmenté / Sinaloa</td><td style="color:#81c784">Modéré</td><td>5</td></tr>
+                <tr><td class="ap-cell-bold">Guadalajara</td><td>CJNG (post-Mencho)</td><td style="color:#ffb74d">Élevé</td><td>4</td></tr>
+                <tr><td class="ap-cell-bold">Monterrey</td><td>Sinaloa / Golfo</td><td style="color:#f08080">Très élevé</td><td>4</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-sub">Enjeux géopolitiques : la pression américaine</div>
+            <p>Les États-Unis, co-organisateurs et principal marché touristique du tournoi, exercent une <strong>pression diplomatique considérable</strong> sur Mexico pour garantir la sécurité des centaines de milliers de supporters étrangers attendus. Les administrations successives ont conditionné leur coopération logistique à des avancées concrètes dans la lutte anticartel.</p>
+            <p>La DEA et le FBI disposent d'une présence renforcée sur le sol mexicain dans le cadre d'accords bilatéraux. Cette coopération sécuritaire soulève néanmoins des questions de souveraineté délicates, que le gouvernement Sheinbaum gère avec prudence, soucieux de ne pas paraître céder à des injonctions étrangères à quelques semaines d'une échéance sportive nationale.</p>
+
+            <div class="ap-quote">
+              <p>« Le Mexique sera à la hauteur. Le monde entier verra un pays sûr, fier et festif. »</p>
+              <cite>— Claudia Sheinbaum, présidente du Mexique, mars 2026</cite>
+            </div>
+            <div class="ap-quote">
+              <p>« Chaque fois qu'on a capturé ou tué un chef de cartel, on a eu plus de violence, pas moins. »</p>
+              <cite>— Falko Ernst, analyste ICG, spécialiste des cartels mexicains, février 2026</cite>
+            </div>
+
+            <div class="ap-sub">Le football comme instrument politique</div>
+            <p>Au-delà de la sécurité, la Coupe du Monde 2026 représente pour le gouvernement Sheinbaum une opportunité de <strong>redéfinir l'image internationale du Mexique</strong>. Le pays, régulièrement classé parmi les plus violents du monde, espère que l'événement sportif servira de vitrine pour attirer des investissements étrangers et renforcer son attractivité touristique — secteur qui représente près de 9 % du PIB national.</p>
+            <p>Mais cette ambition se heurte à une réalité tenace : <strong>le narco-business irrigue une partie significative de l'économie informelle</strong> mexicaine. Les économistes estiment que les cartels génèrent entre 25 et 50 milliards de dollars annuels, finançant indirectement certaines infrastructures locales. La question n'est pas uniquement sécuritaire — elle est structurelle.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Enjeu pour le Bac + Concours</div>
+              <p>La Coupe du Monde 2026 illustre plusieurs thèmes centraux du programme : la tension entre soft power et violence interne, la coopération internationale en matière de sécurité, le rôle des grandes puissances dans les affaires internes des États et la capacité des événements sportifs à constituer un instrument de politique étrangère. Elle soulève aussi la question du « nation branding » : un État peut-il exporter une image de stabilité que son territoire ne reflète pas ?</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-fr-section -->
+
+    <!-- ═══ SECTION ES ═══ -->
+    <div class="ap-es-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-green">🇲🇽 México</span>
+          <span class="ap-tag ap-tag-gold">Deporte y Geopolítica</span>
+          <span class="ap-tag ap-tag-red">Seguridad</span>
+          <span class="ap-tag ap-tag-navy">Cárteles</span>
+          <span class="ap-tag ap-tag-blue">Mundial 2026</span>
+        </div>
+        <div class="ap-date">ABRIL 2026 — ECG PRÉPA</div>
+        <h1 class="ap-title">El Mundial 2026 en México: entre escaparate mundial y crisis de seguridad</h1>
+        <p class="ap-intro">Organizado conjuntamente por Estados Unidos, Canadá y México, el Mundial de fútbol 2026 representa para este último mucho más que un evento deportivo. En un contexto marcado por la muerte controvertida de El Mencho, jefe del CJNG, y por una violencia endémica que afecta a los estados anfitriones, el torneo se ha convertido en un revelador de las tensiones profundas que atraviesan la sociedad mexicana.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat green">
+            <span class="ap-stat-num">3</span>
+            <span class="ap-stat-desc">Países co-anfitriones<br>USA · Canadá · México</span>
+          </div>
+          <div class="ap-stat gold">
+            <span class="ap-stat-num">48</span>
+            <span class="ap-stat-desc">Equipos participantes<br>(formato ampliado)</span>
+          </div>
+          <div class="ap-stat red">
+            <span class="ap-stat-num">3</span>
+            <span class="ap-stat-desc">Ciudades mexicanas sede<br>CDMX · Guadalajara · Monterrey</span>
+          </div>
+          <div class="ap-stat">
+            <span class="ap-stat-num">~5M</span>
+            <span class="ap-stat-desc">Visitantes esperados<br>en todo el torneo</span>
+          </div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Un evento inédito: tres naciones, un torneo</div>
+            <p>Por primera vez en la historia, la Copa Mundial de la FIFA reúne a tres naciones co-organizadoras. Aunque Estados Unidos acoge la mayoría de los partidos (60 encuentros en 11 estadios), México desempeña un papel simbólico fundamental: organiza <strong>tres partidos inaugurales</strong> en sus estadios emblemáticos, incluido el legendario Estadio Azteca de Ciudad de México, que se convierte así en el primer recinto en albergar tres Mundiales (1970, 1986, 2026). Guadalajara y Monterrey completan el dispositivo mexicano.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Fechas</div><div class="ap-fact-val">11 jun – 19 jul 2026</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Estadio principal MX</div><div class="ap-fact-val">Estadio Azteca (87 000 plazas)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Partidos en México</div><div class="ap-fact-val">13 encuentros (fase de grupos)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Inversión MX</div><div class="ap-fact-val">~2 500 millones USD</div></div>
+            </div>
+
+            <div class="ap-sub">La muerte de El Mencho: ¿punto de inflexión o ilusión?</div>
+            <p>La muerte de <strong>Nemesio Oseguera Cervantes</strong>, alias «El Mencho», jefe del Cartel Jalisco Nueva Generación (CJNG), anunciada a principios de 2026 por las autoridades mexicanas, fue presentada por la presidenta <strong>Claudia Sheinbaum</strong> como una señal contundente a pocos meses del pitazo inicial. El CJNG era considerado el cartel más violento y expansivo del país, con presencia en más de 26 de los 32 estados mexicanos.</p>
+            <p>Sin embargo, los expertos en seguridad matizan este optimismo. La historia de los cárteles mexicanos demuestra que <strong>eliminar a un líder no desmantela la organización</strong>: tras la captura de El Chapo en 2016, el Cartel de Sinaloa se fragmentó pero mantuvo su poder. La desaparición de El Mencho podría desencadenar una guerra de sucesión dentro del CJNG e intensificar los enfrentamientos con el Cartel de Sinaloa por el control de los corredores del narcotráfico.</p>
+
+            <div class="ap-sub">Cronología de los desafíos de seguridad (2024–2026)</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">Oct. 2023</div><p class="ap-tl-text">Claudia Sheinbaum gana las elecciones presidenciales con el 59 % de los votos. Hereda un México con 33 000 homicidios anuales. Promete «seguridad sin guerra».</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Ene. 2025</div><p class="ap-tl-text">La FIFA y el Comité Organizador publican el plan de seguridad conjunto. México prevé desplegar 15 000 miembros de la Guardia Nacional en las tres ciudades sede.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Feb. 2026</div><p class="ap-tl-text">Anuncio oficial de la muerte de El Mencho. Primera serie de enfrentamientos entre facciones rivales del CJNG en Jalisco en las semanas siguientes.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Abr. 2026</div><p class="ap-tl-text">Dos meses antes del inicio: tensiones persistentes en Monterrey. La Guardia Nacional refuerza efectivos. Presión diplomática estadounidense sobre Ciudad de México.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">Las tres ciudades mexicanas bajo vigilancia</div>
+            <p>Las tres ciudades elegidas presentan perfiles de riesgo muy diferentes. <strong>Ciudad de México</strong> se beneficia de una seguridad relativa gracias a su estatuto de capital federal. <strong>Guadalajara</strong>, capital de Jalisco, es el bastión histórico del CJNG. <strong>Monterrey</strong>, metrópoli industrial del norte, es un cruce estratégico disputado entre los cárteles de Sinaloa y del Golfo.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Ciudad</th><th>Cártel dominante</th><th>Nivel de riesgo</th><th>Partidos</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">CDMX</td><td>Fragmentado / Sinaloa</td><td style="color:#81c784">Moderado</td><td>5</td></tr>
+                <tr><td class="ap-cell-bold">Guadalajara</td><td>CJNG (post-Mencho)</td><td style="color:#ffb74d">Alto</td><td>4</td></tr>
+                <tr><td class="ap-cell-bold">Monterrey</td><td>Sinaloa / Golfo</td><td style="color:#f08080">Muy alto</td><td>4</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-sub">El fútbol como instrumento político</div>
+            <p>Más allá de la seguridad, el Mundial 2026 representa para el gobierno Sheinbaum una oportunidad de <strong>redefinir la imagen internacional de México</strong>. El país espera que el evento sirva de vitrina para atraer inversión extranjera y reforzar su atractivo turístico — sector que representa cerca del 9 % del PIB nacional.</p>
+            <p>Pero esta ambición choca con una realidad persistente: <strong>el narconegocio financia parte de la economía informal</strong> mexicana. Los economistas estiman que los cárteles generan entre 25 000 y 50 000 millones de dólares anuales. El desafío no es solo de seguridad — es estructural.</p>
+
+            <div class="ap-quote">
+              <p>« México estará a la altura. El mundo entero verá un país seguro, orgulloso y festivo. »</p>
+              <cite>— Claudia Sheinbaum, presidenta de México, marzo de 2026</cite>
+            </div>
+            <div class="ap-quote">
+              <p>« Cada vez que capturamos o matamos a un líder de cártel, la violencia aumenta, no disminuye. »</p>
+              <cite>— Falko Ernst, analista ICG, especialista en cárteles mexicanos, febrero de 2026</cite>
+            </div>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Desafíos de cara al Mundial y más allá</div>
+              <p>El Mundial 2026 ilustra la tensión permanente entre el soft power y la violencia interna, la cooperación internacional en materia de seguridad, y la capacidad de los grandes eventos deportivos para funcionar como instrumento de política exterior. También plantea la cuestión del «nation branding»: ¿puede un Estado exportar una imagen de estabilidad que su territorio no refleja? Para México, la respuesta a esta pregunta determinará en gran medida el legado del torneo.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-es-section -->
+
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — Mexique — Avril 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-es').classList.toggle('active', lang === 'es');
+  const isEs = lang === 'es';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEs ? 'none' : 'block');
+  document.querySelectorAll('.ap-es-section').forEach(el => el.style.display = isEs ? 'block' : 'none');
+}
+setLang('fr');
+</script>
+</body>
+</html>

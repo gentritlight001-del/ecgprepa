@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leçon 9 — Les Modaux | Anglais ECG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #06080f;
+    --surface: #0a0d18;
+    --surface2: #101425;
+    --border: #1a2040;
+    --accent: #818cf8;
+    --accent2: #a5b4fc;
+    --accent3: #c7d2fe;
+    --accent4: #4f46e5;
+    --accent5: #eef2ff;
+    --text: #e4e6f0;
+    --text-dim: #7880a0;
+    --text-faint: #1a2040;
+    /* column colors */
+    --col-aff: #818cf8;
+    --col-neg: #f87171;
+    --col-int: #34d399;
+    --col-pp: #fbbf24;
+    --col-modal: #c084fc;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  /* ─── BACKGROUND ─── */
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(180px); pointer-events: none; z-index: 0; }
+  .orb1 { width: 800px; height: 800px; background: rgba(129,140,248,0.07); top: -300px; right: -200px; }
+  .orb2 { width: 600px; height: 600px; background: rgba(192,132,252,0.04); bottom: -200px; left: -200px; }
+  .orb3 { width: 500px; height: 500px; background: rgba(251,191,36,0.03); top: 50%; left: 50%; transform: translate(-50%,-50%); }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(6,8,15,0.92); backdrop-filter: blur(20px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: var(--accent); cursor: pointer; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: var(--text-dim); flex-wrap: wrap; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb span:hover { color: var(--accent); }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); cursor: default; }
+
+  /* ─── CHAPTER HERO ─── */
+  .chapter-hero {
+    position: relative; overflow: hidden;
+    padding: 80px 64px 64px;
+    background: linear-gradient(135deg, #06080f 0%, #0d1030 50%, #060810 100%);
+    border-bottom: 1px solid rgba(129,140,248,0.12);
+    z-index: 1;
+    text-align: center; display: flex; flex-direction: column; align-items: center;
+  }
+  .chapter-hero::after {
+    content: '09';
+    position: absolute; right: -10px; bottom: -40px;
+    font-family: 'Playfair Display', serif; font-size: 22rem; font-weight: 900;
+    color: rgba(129,140,248,0.04); line-height: 1; pointer-events: none;
+    letter-spacing: -0.05em;
+  }
+  .ch-eyebrow {
+    font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px; justify-content: center;
+  }
+  .ch-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--accent); }
+  .ch-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 6vw, 5.5rem); font-weight: 900;
+    line-height: 1.0; margin-bottom: 20px; color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .ch-title span { color: var(--accent); }
+  .ch-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .ch-tag {
+    padding: 5px 14px; border-radius: 20px; font-family: 'DM Mono', monospace;
+    font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em;
+    border: 1px solid;
+  }
+  .ch-tag.indigo  { color: var(--col-aff);   border-color: rgba(129,140,248,0.3); background: rgba(129,140,248,0.08); }
+  .ch-tag.red     { color: var(--col-neg);   border-color: rgba(248,113,113,0.3); background: rgba(248,113,113,0.08); }
+  .ch-tag.green   { color: var(--col-int);   border-color: rgba(52,211,153,0.3);  background: rgba(52,211,153,0.08); }
+  .ch-tag.yellow  { color: var(--col-pp);    border-color: rgba(251,191,36,0.3);  background: rgba(251,191,36,0.08); }
+  .ch-tag.purple  { color: var(--col-modal); border-color: rgba(192,132,252,0.3); background: rgba(192,132,252,0.08); }
+
+  /* ─── LAYOUT ─── */
+  .page-body { display: block; min-height: calc(100vh - 300px); position: relative; z-index: 1; }
+  .main-content { width: 100%; padding: 48px 80px 100px; max-width: 1100px; margin: 0 auto; box-sizing: border-box; }
+
+  /* ─── SECTION ─── */
+  .section { margin-bottom: 72px; scroll-margin-top: 80px; }
+  .section-header {
+    display: flex; align-items: flex-start; gap: 20px; margin-bottom: 32px;
+    padding-bottom: 20px; border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 900;
+    color: var(--text-faint); line-height: 1; flex-shrink: 0; min-width: 48px;
+  }
+  .section-info {}
+  .section-tag { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--text); line-height: 1.2; }
+
+  /* ─── PROSE ─── */
+  .prose { font-size: 0.95rem; color: var(--text-dim); line-height: 1.85; font-weight: 300; }
+  .prose p { margin-bottom: 14px; }
+  .prose strong { color: var(--text); font-weight: 500; }
+  .prose em { color: var(--accent); font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.9rem; }
+
+  /* ─── DEFINITION BOX ─── */
+  .def-box {
+    background: linear-gradient(135deg, rgba(129,140,248,0.06) 0%, rgba(129,140,248,0.02) 100%);
+    border: 1px solid rgba(129,140,248,0.2); border-left: 3px solid var(--accent);
+    border-radius: 0 12px 12px 0; padding: 24px 28px; margin: 24px 0;
+  }
+  .def-box .def-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .def-box p { font-size: 0.92rem; color: var(--text-dim); line-height: 1.7; font-style: italic; }
+  .def-box strong { color: var(--text); font-style: normal; }
+
+  /* ─── HIGHLIGHT BOX ─── */
+  .hl-box {
+    border-radius: 12px; padding: 20px 24px; margin: 20px 0;
+    border: 1px solid; display: flex; gap: 16px; align-items: flex-start;
+  }
+  .hl-box.warning { background: rgba(129,140,248,0.05); border-color: rgba(129,140,248,0.2); }
+  .hl-box.tip     { background: rgba(52,211,153,0.05);  border-color: rgba(52,211,153,0.2); }
+  .hl-box.info    { background: rgba(251,191,36,0.05);  border-color: rgba(251,191,36,0.2); }
+  .hl-box.danger  { background: rgba(248,113,113,0.05); border-color: rgba(248,113,113,0.2); }
+  .hl-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 1px; }
+  .hl-body { font-size: 0.88rem; color: var(--text-dim); line-height: 1.7; }
+  .hl-body strong { color: var(--text); font-weight: 500; }
+
+  /* ─── FORMULA GRID ─── */
+  .formula-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 24px 0; }
+  .formula-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px 22px;
+  }
+  .formula-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 14px; }
+  .formula-label.aff { color: var(--col-aff); }
+  .formula-label.neg { color: var(--col-neg); }
+  .formula-label.int { color: var(--col-int); }
+  .formula-label.yel { color: var(--col-pp); }
+  .formula-label.pur { color: var(--col-modal); }
+
+  .formula-expr {
+    font-family: 'DM Mono', monospace; font-size: 0.9rem; font-weight: 500;
+    display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-bottom: 16px;
+    line-height: 1.6;
+  }
+  .f-subj  { color: var(--col-aff);   background: rgba(129,140,248,0.1); padding: 2px 8px; border-radius: 4px; }
+  .f-verb  { color: var(--col-pp);    background: rgba(251,191,36,0.1);  padding: 2px 8px; border-radius: 4px; }
+  .f-obj   { color: var(--col-int);   background: rgba(52,211,153,0.1);  padding: 2px 8px; border-radius: 4px; }
+  .f-aux   { color: var(--col-neg);   background: rgba(248,113,113,0.1); padding: 2px 8px; border-radius: 4px; }
+  .f-mod   { color: var(--col-modal); background: rgba(192,132,252,0.12);padding: 2px 8px; border-radius: 4px; }
+  .f-neg   { color: var(--col-neg);   background: rgba(248,113,113,0.12);padding: 2px 8px; border-radius: 4px; }
+  .f-q     { color: var(--col-aff);   background: rgba(129,140,248,0.12);padding: 2px 8px; border-radius: 4px; }
+  .f-sep   { color: var(--text-faint); font-size: 0.7rem; }
+
+  .formula-example { font-size: 0.82rem; color: var(--text-dim); line-height: 1.7; }
+  .formula-example span { font-family: 'DM Mono', monospace; }
+  .formula-example .e-aff { color: var(--col-aff); }
+  .formula-example .e-neg { color: var(--col-neg); }
+  .formula-example .e-int { color: var(--col-int); }
+  .formula-example .e-yel { color: var(--col-pp); }
+  .formula-example .e-mod { color: var(--col-modal); }
+
+  /* ─── MODAL OVERVIEW GRID ─── */
+  .modal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin: 28px 0; }
+  .modal-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 22px 20px; transition: all 0.2s;
+  }
+  .modal-card:hover { border-color: rgba(129,140,248,0.3); background: var(--surface2); }
+  .modal-word {
+    font-family: 'DM Mono', monospace; font-size: 1.2rem; font-weight: 500;
+    color: var(--accent); margin-bottom: 6px;
+  }
+  .modal-neg {
+    font-family: 'DM Mono', monospace; font-size: 0.72rem;
+    color: var(--col-neg); margin-bottom: 10px;
+  }
+  .modal-meaning { font-family: 'Playfair Display', serif; font-size: 0.95rem; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+  .modal-ex { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text-dim); background: rgba(129,140,248,0.05); border-left: 2px solid rgba(129,140,248,0.3); padding: 7px 10px; border-radius: 0 5px 5px 0; line-height: 1.5; }
+
+  /* ─── USAGE CARDS ─── */
+  .usage-grid { display: grid; grid-template-columns: 1fr; gap: 14px; margin: 24px 0; }
+  .usage-card {
+    display: grid; grid-template-columns: auto 1fr 1.6fr; align-items: center; gap: 24px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px 24px; transition: border-color 0.2s;
+  }
+  .usage-card:hover { border-color: rgba(129,140,248,0.3); background: var(--surface2); }
+  .usage-icon { font-size: 1.6rem; }
+  .usage-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .usage-desc { font-size: 0.82rem; color: var(--text-dim); line-height: 1.65; font-weight: 300; }
+  .usage-example {
+    font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--accent);
+    background: rgba(129,140,248,0.06); border-left: 2px solid var(--accent);
+    padding: 8px 12px; border-radius: 0 6px 6px 0;
+  }
+  .usage-example .trans { display: block; color: var(--text-faint); font-size: 0.72rem; margin-top: 4px; font-style: italic; }
+
+  /* ─── COMPARISON TABLE ─── */
+  .cmp-table {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; overflow: hidden; margin: 24px 0;
+  }
+  .cmp-head {
+    display: grid; padding: 12px 20px; background: var(--surface2); border-bottom: 1px solid var(--border);
+  }
+  .cmp-head .th { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; }
+  .cmp-row {
+    display: grid; padding: 11px 20px; border-bottom: 1px solid rgba(26,32,64,0.8); align-items: start;
+  }
+  .cmp-row:last-child { border-bottom: none; }
+  .cmp-row:hover { background: rgba(129,140,248,0.03); }
+  .cmp-label { font-size: 0.82rem; color: var(--text-dim); font-weight: 300; line-height: 1.5; }
+  .cmp-c0 { font-family: 'DM Mono', monospace; font-size: 0.76rem; color: var(--col-aff); line-height: 1.55; }
+  .cmp-c1 { font-family: 'DM Mono', monospace; font-size: 0.76rem; color: var(--col-neg); line-height: 1.55; }
+  .cmp-c2 { font-family: 'DM Mono', monospace; font-size: 0.76rem; color: var(--col-modal); line-height: 1.55; }
+
+  /* ─── ADVERBS / PILLS ─── */
+  .adv-grid { display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 0; }
+  .adv-pill {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 10px 16px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; transition: all 0.2s; cursor: default;
+  }
+  .adv-pill:hover { border-color: rgba(129,140,248,0.3); background: var(--surface2); }
+  .adv-en  { font-family: 'DM Mono', monospace; font-size: 0.82rem; color: var(--col-aff); font-weight: 500; }
+  .adv-fr  { font-size: 0.72rem; color: var(--text-dim); margin-top: 2px; }
+
+  /* ─── EXERCISE BLOCK ─── */
+  .exercise-block {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 14px; padding: 28px 32px; margin: 28px 0;
+  }
+  .ex-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .ex-badge {
+    font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em;
+    text-transform: uppercase; padding: 4px 10px; border-radius: 6px;
+    background: rgba(129,140,248,0.1); color: var(--accent); border: 1px solid rgba(129,140,248,0.25);
+  }
+  .ex-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--text); }
+  .ex-items { display: flex; flex-direction: column; gap: 12px; }
+  .ex-item { display: flex; gap: 14px; align-items: flex-start; font-size: 0.88rem; }
+  .ex-num { font-family: 'DM Mono', monospace; color: var(--text-faint); font-size: 0.75rem; min-width: 20px; margin-top: 2px; }
+  .ex-q { color: var(--text-dim); line-height: 1.6; }
+  .ex-q strong { color: var(--text); }
+  .ex-answer { display: none; margin-top: 4px; font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--accent); }
+  .ex-item.revealed .ex-answer { display: block; }
+  .show-answers-btn {
+    margin-top: 20px; padding: 9px 20px;
+    background: rgba(129,140,248,0.08); border: 1px solid rgba(129,140,248,0.25);
+    border-radius: 8px; color: var(--accent); font-family: 'DM Mono', monospace;
+    font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .show-answers-btn:hover { background: rgba(129,140,248,0.15); }
+
+  /* ─── SCROLL ─── */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-up { animation: fadeUp 0.5s ease forwards; opacity: 0; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .usage-card { grid-template-columns: 1fr; gap: 12px; padding: 18px 20px; }
+    .main-content { padding: 32px 24px 80px; }
+    .chapter-hero { padding: 48px 24px 48px; }
+    nav { padding: 14px 20px; }
+    .formula-grid { grid-template-columns: 1fr; }
+    .usage-card { grid-template-columns: auto 1fr; }
+    .usage-example { display: none; }
+    .modal-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-logo" onclick="window.location.href='../../index.html'">ECG Prépa</div>
+  <div class="breadcrumb">
+    <span onclick="window.location.href='../../index.html'">Accueil</span>
+    <span class="sep">/</span>
+    <span onclick="window.location.href='../index.html'">1ère Année</span>
+    <span class="sep">/</span>
+    <span onclick="window.location.href='index.html'">Anglais</span>
+    <span class="sep">/</span>
+    <span class="current">Leçon 9 · Les Modaux</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="chapter-hero">
+  <div class="ch-eyebrow">Leçon 09 — Grammaire fondamentale</div>
+  <div class="ch-title">Les <span>Modaux</span></div>
+  <div class="ch-tags" style="margin-top: 20px;">
+    <span class="ch-tag indigo">Capacité</span>
+    <span class="ch-tag purple">Obligation</span>
+    <span class="ch-tag green">Permission</span>
+    <span class="ch-tag yellow">Probabilité</span>
+    <span class="ch-tag red">Conseil</span>
+  </div>
+</div>
+
+<div class="page-body">
+  <main class="main-content">
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 1 : INTRODUCTION                      -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="introduction">
+      <div class="section-header">
+        <div class="section-num">1</div>
+        <div class="section-info">
+          <div class="section-tag">Fondamentaux</div>
+          <div class="section-title">Qu'est-ce qu'un modal ?</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>Les <strong>auxiliaires modaux</strong> (modal verbs) sont des verbes auxiliaires qui modifient le sens du verbe principal. Ils expriment des notions essentielles comme la <strong>capacité, l'obligation, la permission, la probabilité ou le conseil</strong>. Ils sont omniprésents en anglais, notamment dans le registre professionnel et académique.</p>
+        <p>Les modaux ont des propriétés grammaticales particulières qui les distinguent des verbes ordinaires : ils s'utilisent avec une <strong>structure fixe et invariable</strong>.</p>
+      </div>
+
+      <div class="def-box">
+        <div class="def-label">Règles grammaticales des modaux</div>
+        <p>
+          <strong>1.</strong> Toujours suivis de la <strong>base verbale</strong> (infinitif sans <em>to</em>) : <em>can speak</em>, non <em>can to speak</em>.<br><br>
+          <strong>2.</strong> Pas de <strong>-s</strong> à la 3ème personne du singulier : <em>she can</em>, non <em>she cans</em>.<br><br>
+          <strong>3.</strong> Négatif : <strong>modal + not</strong> (souvent contracté) : <em>cannot / can't, must not / mustn't</em>.<br><br>
+          <strong>4.</strong> Interrogatif : <strong>inversion sujet / modal</strong> : <em>Can she…? Must we…?</em><br><br>
+          <strong>5.</strong> <strong>Pas de forme infinitive, participiale ou gérondive</strong> : pas de <em>to can</em>, <em>canning</em>, <em>canned</em>.
+        </p>
+      </div>
+
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 2 : CAN / COULD                       -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="can-could">
+      <div class="section-header">
+        <div class="section-num">2</div>
+        <div class="section-info">
+          <div class="section-tag">Capacité &amp; Permission</div>
+          <div class="section-title">Can / Could</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p><em>Can</em> et <em>could</em> sont parmi les modaux les plus fréquents. <em>Can</em> exprime ce qui est possible <strong>maintenant</strong> — capacité présente, permission ou possibilité. <em>Could</em> est le prétérit de <em>can</em> : il exprime une capacité <strong>passée</strong>, mais sert aussi à formuler des demandes <strong>plus polies</strong> ou des hypothèses <strong>plus incertaines</strong>.</p>
+      </div>
+
+      <div class="formula-grid">
+        <div class="formula-card">
+          <div class="formula-label aff">✦ Can — Capacité présente</div>
+          <div class="formula-expr">
+            <span class="f-subj">Sujet</span>
+            <span class="f-sep">+</span>
+            <span class="f-mod">can</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">base verbale</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-aff">The team can deliver the project ahead of schedule.</span><br>
+            <span class="e-aff">She can negotiate in three languages.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label neg">✦ Can't — Impossibilité</div>
+          <div class="formula-expr">
+            <span class="f-subj">Sujet</span>
+            <span class="f-sep">+</span>
+            <span class="f-neg">can't</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">base verbale</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-neg">We can't proceed without board approval.</span><br>
+            <span class="e-neg">The system can't process more than 1,000 requests.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label pur">✦ Could — Capacité passée</div>
+          <div class="formula-expr">
+            <span class="f-subj">Sujet</span>
+            <span class="f-sep">+</span>
+            <span class="f-mod">could</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">base verbale</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-mod">In the 1990s, the firm could expand rapidly.</span><br>
+            <span class="e-mod">She could speak fluent Mandarin by age 25.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label int">✦ Could — Demande polie</div>
+          <div class="formula-expr">
+            <span class="f-mod">Could</span>
+            <span class="f-sep">+</span>
+            <span class="f-subj">you</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">base verbale</span>
+            <span class="f-sep">?</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-int">Could you send me the updated forecast?</span><br>
+            <span class="e-int">Could the board review this proposal?</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="usage-grid">
+        <div class="usage-card">
+          <div class="usage-icon">💪</div>
+          <div>
+            <div class="usage-title">Capacité (can)</div>
+            <div class="usage-desc">Exprimer qu'une personne ou une organisation est en mesure de faire quelque chose.</div>
+          </div>
+          <div class="usage-example">
+            Our new platform can process 10,000 transactions per second.<br>
+            <span class="trans">Notre nouvelle plateforme peut traiter 10 000 transactions par seconde.</span>
+          </div>
+        </div>
+        <div class="usage-card">
+          <div class="usage-icon">✅</div>
+          <div>
+            <div class="usage-title">Permission (can / could)</div>
+            <div class="usage-desc"><em>Can</em> pour donner ou demander la permission de façon neutre. <em>Could</em> est plus formel et poli.</div>
+          </div>
+          <div class="usage-example">
+            Can I access the financial records? / Could I see the contract?<br>
+            <span class="trans">Puis-je accéder aux dossiers financiers ? / Pourrais-je voir le contrat ?</span>
+          </div>
+        </div>
+        <div class="usage-card">
+          <div class="usage-icon">🔮</div>
+          <div>
+            <div class="usage-title">Possibilité (could)</div>
+            <div class="usage-desc">Exprimer une possibilité présente ou future, moins certaine que <em>can</em>.</div>
+          </div>
+          <div class="usage-example">
+            Interest rates could fall next quarter if inflation drops.<br>
+            <span class="trans">Les taux d'intérêt pourraient baisser au prochain trimestre si l'inflation recule.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hl-box warning">
+        <div class="hl-icon">⚠️</div>
+        <div class="hl-body">
+          <strong>Can't vs Couldn't :</strong> <em>Can't</em> = impossible maintenant. <em>Couldn't</em> = impossible dans le passé ou suggestion hypothétique polie.<br>
+          <em>We can't expand</em> → impossible actuellement.<br>
+          <em>We couldn't expand in 2020</em> → impossible à ce moment-là.
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 3 : MUST / HAVE TO                    -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="must-have-to">
+      <div class="section-header">
+        <div class="section-num">3</div>
+        <div class="section-info">
+          <div class="section-tag">Obligation</div>
+          <div class="section-title">Must / Have to / Need to</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p><em>Must</em>, <em>have to</em> et <em>need to</em> expriment tous une forme d'obligation, mais avec des nuances importantes. <em>Must</em> vient d'une <strong>volonté interne</strong> du locuteur (obligation personnelle ou morale). <em>Have to</em> renvoie à une <strong>contrainte externe</strong> (règle, loi, obligation imposée). <em>Need to</em> exprime la <strong>nécessité logique</strong>.</p>
+      </div>
+
+      <div class="formula-grid">
+        <div class="formula-card">
+          <div class="formula-label pur">✦ Must — Obligation interne</div>
+          <div class="formula-expr">
+            <span class="f-subj">Sujet</span>
+            <span class="f-sep">+</span>
+            <span class="f-mod">must</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">base verbale</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-mod">We must cut costs to remain competitive.</span><br>
+            <span class="e-mod">I must review the contract before signing.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label aff">✦ Have to — Obligation externe</div>
+          <div class="formula-expr">
+            <span class="f-subj">Sujet</span>
+            <span class="f-sep">+</span>
+            <span class="f-mod">have to</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">base verbale</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-aff">All companies have to comply with GDPR regulations.</span><br>
+            <span class="e-aff">She has to submit the audit report by law.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label neg">✦ Must not — Interdiction absolue</div>
+          <div class="formula-expr">
+            <span class="f-subj">Sujet</span>
+            <span class="f-sep">+</span>
+            <span class="f-neg">must not</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">base verbale</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-neg">Companies must not engage in insider trading.</span><br>
+            <span class="e-neg">Staff must not share client data externally.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label int">✦ Don't have to — Absence d'obligation</div>
+          <div class="formula-expr">
+            <span class="f-subj">Sujet</span>
+            <span class="f-sep">+</span>
+            <span class="f-neg">don't have to</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">base verbale</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-int">You don't have to attend the optional briefing.</span><br>
+            <span class="e-int">Small firms don't have to publish annual reports.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hl-box danger">
+        <div class="hl-icon">🚨</div>
+        <div class="hl-body">
+          <strong>Piège classique :</strong> <em>Must not</em> ≠ <em>Don't have to</em> — confusion très fréquente !<br>
+          <em>You <strong>mustn't</strong> sign this</em> → C'est interdit, il ne faut absolument pas signer.<br>
+          <em>You <strong>don't have to</strong> sign this</em> → Ce n'est pas obligatoire, vous pouvez choisir.
+        </div>
+      </div>
+
+      <div class="def-box">
+        <div class="def-label">Must — Déduction logique</div>
+        <p>
+          <em>Must</em> peut aussi exprimer une <strong>déduction logique forte</strong> au présent :<br><br>
+          <strong>The results must be wrong</strong> — Les résultats doivent forcément être erronés.<br>
+          <strong>He must know the sector well</strong> — Il doit certainement bien connaître le secteur.<br><br>
+          Pour la déduction au passé : <em><strong>must have + participe passé</strong></em><br>
+          <strong>They must have underestimated the risks</strong> — Ils ont dû sous-estimer les risques.
+        </p>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 4 : MAY / MIGHT                       -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="may-might">
+      <div class="section-header">
+        <div class="section-num">4</div>
+        <div class="section-info">
+          <div class="section-tag">Permission &amp; Probabilité</div>
+          <div class="section-title">May / Might</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p><em>May</em> et <em>might</em> expriment principalement la <strong>probabilité ou la possibilité</strong>. <em>May</em> indique une probabilité <strong>plus élevée</strong> ou une permission formelle. <em>Might</em> exprime une probabilité <strong>plus faible</strong> ou une hypothèse plus incertaine. En contexte professionnel et juridique, <em>may</em> est souvent employé pour accorder ou décrire une <strong>permission officielle</strong>.</p>
+      </div>
+
+      <div class="formula-grid">
+        <div class="formula-card">
+          <div class="formula-label aff">✦ May — Probabilité élevée</div>
+          <div class="formula-expr">
+            <span class="f-subj">Sujet</span>
+            <span class="f-sep">+</span>
+            <span class="f-mod">may</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">base verbale</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-aff">The merger may be approved by Q3.</span><br>
+            <span class="e-aff">Inflation may ease in the second half.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label pur">✦ Might — Probabilité faible</div>
+          <div class="formula-expr">
+            <span class="f-subj">Sujet</span>
+            <span class="f-sep">+</span>
+            <span class="f-mod">might</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">base verbale</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-mod">The deal might fall through if conditions worsen.</span><br>
+            <span class="e-mod">We might reconsider the strategy next year.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label int">✦ May — Permission formelle</div>
+          <div class="formula-expr">
+            <span class="f-subj">Sujet</span>
+            <span class="f-sep">+</span>
+            <span class="f-mod">may</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">base verbale</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-int">Shareholders may attend the general assembly.</span><br>
+            <span class="e-int">Employees may request a copy of their contract.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label yel">✦ Might have — Hypothèse passée</div>
+          <div class="formula-expr">
+            <span class="f-mod">might have</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">participe passé</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-yel">The firm might have avoided collapse with better governance.</span><br>
+            <span class="e-yel">They might have misread the market signals.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hl-box tip">
+        <div class="hl-icon">📊</div>
+        <div class="hl-body">
+          <strong>Échelle de probabilité :</strong> Les modaux se classent par degré de certitude :<br>
+          <span style="color:var(--col-aff);">will</span> → <span style="color:var(--col-aff);">should</span> → <span style="color:var(--col-int);">may</span> → <span style="color:var(--col-modal);">might / could</span><br>
+          (de la plus haute à la plus faible probabilité)
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 5 : SHOULD / OUGHT TO                 -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="should">
+      <div class="section-header">
+        <div class="section-num">5</div>
+        <div class="section-info">
+          <div class="section-tag">Conseil &amp; Recommandation</div>
+          <div class="section-title">Should / Ought to</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p><em>Should</em> est le modal du <strong>conseil, de la recommandation et de l'obligation morale légère</strong>. Il est très fréquent en anglais professionnel pour formuler des suggestions sans imposer. <em>Ought to</em> est son équivalent plus formel et légèrement plus fort — il implique souvent une obligation morale ou normative.</p>
+      </div>
+
+      <div class="formula-grid">
+        <div class="formula-card">
+          <div class="formula-label aff">✦ Should — Conseil présent</div>
+          <div class="formula-expr">
+            <span class="f-subj">Sujet</span>
+            <span class="f-sep">+</span>
+            <span class="f-mod">should</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">base verbale</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-aff">Companies should invest in digital transformation.</span><br>
+            <span class="e-aff">The CEO should communicate more transparently.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label neg">✦ Shouldn't — Déconseillé</div>
+          <div class="formula-expr">
+            <span class="f-subj">Sujet</span>
+            <span class="f-sep">+</span>
+            <span class="f-neg">shouldn't</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">base verbale</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-neg">Management shouldn't ignore employee feedback.</span><br>
+            <span class="e-neg">Firms shouldn't over-rely on a single supplier.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label yel">✦ Should have — Reproche / regret</div>
+          <div class="formula-expr">
+            <span class="f-mod">should have</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">participe passé</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-yel">They should have diversified their assets earlier.</span><br>
+            <span class="e-yel">The board should have anticipated the crisis.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label pur">✦ Ought to — Obligation normative</div>
+          <div class="formula-expr">
+            <span class="f-subj">Sujet</span>
+            <span class="f-sep">+</span>
+            <span class="f-mod">ought to</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">base verbale</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-mod">Corporations ought to disclose their carbon footprint.</span><br>
+            <span class="e-mod">Leaders ought to lead by example.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="usage-grid">
+        <div class="usage-card">
+          <div class="usage-icon">💡</div>
+          <div>
+            <div class="usage-title">Conseil stratégique</div>
+            <div class="usage-desc">Recommander une ligne d'action sans contraindre — fréquent dans les rapports et présentations.</div>
+          </div>
+          <div class="usage-example">
+            The company should consider expanding into emerging markets.<br>
+            <span class="trans">L'entreprise devrait envisager une expansion vers les marchés émergents.</span>
+          </div>
+        </div>
+        <div class="usage-card">
+          <div class="usage-icon">📉</div>
+          <div>
+            <div class="usage-title">Reproche sur le passé (should have)</div>
+            <div class="usage-desc">Critiquer une décision passée jugée mauvaise ou exprimée comme un regret rétrospectif.</div>
+          </div>
+          <div class="usage-example">
+            The firm should have hedged its currency exposure before the crash.<br>
+            <span class="trans">L'entreprise aurait dû couvrir son exposition aux devises avant le krach.</span>
+          </div>
+        </div>
+        <div class="usage-card">
+          <div class="usage-icon">⚖️</div>
+          <div>
+            <div class="usage-title">Obligation morale / éthique (ought to)</div>
+            <div class="usage-desc">Insister sur ce qui est juste ou attendu d'un point de vue normatif ou éthique.</div>
+          </div>
+          <div class="usage-example">
+            Businesses ought to take corporate social responsibility seriously.<br>
+            <span class="trans">Les entreprises devraient prendre la responsabilité sociale au sérieux.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 6 : WILL / WOULD / SHALL              -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="will-would">
+      <div class="section-header">
+        <div class="section-num">6</div>
+        <div class="section-info">
+          <div class="section-tag">Futur, Volonté &amp; Registre formel</div>
+          <div class="section-title">Will / Would / Shall</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p><em>Will</em> exprime la <strong>prédiction, la volonté ou le futur certain</strong>. <em>Would</em>, son prétérit modal, sert au <strong>conditionnel, aux habitudes passées et aux requêtes polies</strong>. <em>Shall</em>, plus formel, est réservé aux <strong>textes juridiques, contrats et propositions officielles</strong> — surtout en anglais britannique.</p>
+      </div>
+
+      <div class="formula-grid">
+        <div class="formula-card">
+          <div class="formula-label aff">✦ Will — Prédiction / Décision</div>
+          <div class="formula-expr">
+            <span class="f-subj">Sujet</span>
+            <span class="f-sep">+</span>
+            <span class="f-mod">will</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">base verbale</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-aff">The new regulation will take effect in January.</span><br>
+            <span class="e-aff">I will call the client this afternoon.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label pur">✦ Would — Requête polie</div>
+          <div class="formula-expr">
+            <span class="f-mod">Would</span>
+            <span class="f-sep">+</span>
+            <span class="f-subj">you</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">base verbale</span>
+            <span class="f-sep">?</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-mod">Would you be able to attend the board meeting?</span><br>
+            <span class="e-mod">Would you consider revising the proposal?</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label yel">✦ Would — Habitude passée</div>
+          <div class="formula-expr">
+            <span class="f-subj">Sujet</span>
+            <span class="f-sep">+</span>
+            <span class="f-mod">would</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">base verbale</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-yel">In the 1980s, companies would invest heavily in physical assets.</span><br>
+            <span class="e-yel">The chairman would open each meeting with a market update.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label int">✦ Shall — Obligation légale (formel)</div>
+          <div class="formula-expr">
+            <span class="f-subj">Sujet</span>
+            <span class="f-sep">+</span>
+            <span class="f-mod">shall</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">base verbale</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-int">The parties shall comply with applicable law.</span><br>
+            <span class="e-int">The contractor shall deliver the project by 31 December.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hl-box info">
+        <div class="hl-icon">📄</div>
+        <div class="hl-body">
+          <strong>Shall dans les contrats :</strong> En anglais juridique et contractuel, <em>shall</em> est le modal de l'obligation stricte — il crée une obligation légale pour la partie concernée. Il s'utilise à toutes les personnes (et non uniquement à la 1ère personne comme autrefois).<br>
+          <em>The lessee shall pay rent on the first of each month.</em>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 7 : MODAUX PARFAITS (PASSÉ)           -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="parfaits">
+      <div class="section-header">
+        <div class="section-num">7</div>
+        <div class="section-info">
+          <div class="section-tag">Passé modal</div>
+          <div class="section-title">Les Modaux au Passé — Modal + have + PP</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>Les <strong>modaux parfaits</strong> (modal + <em>have</em> + participe passé) permettent d'exprimer des nuances au passé : regret, reproche, déduction rétrospective ou possibilité non réalisée. Ils sont très fréquents dans les analyses économiques et les études de cas.</p>
+      </div>
+
+      <div class="cmp-table">
+        <div class="cmp-head" style="grid-template-columns: 1.6fr 1fr 1.8fr;">
+          <div class="th" style="color:var(--col-modal);">Structure</div>
+          <div class="th" style="color:var(--col-pp);">Sens</div>
+          <div class="th" style="color:var(--text-dim);">Exemple</div>
+        </div>
+        <div class="cmp-row" style="grid-template-columns: 1.6fr 1fr 1.8fr;">
+          <div class="cmp-c2">must have + PP</div>
+          <div class="cmp-c0">Déduction forte</div>
+          <div class="cmp-label">The data must have been corrupted.</div>
+        </div>
+        <div class="cmp-row" style="grid-template-columns: 1.6fr 1fr 1.8fr;">
+          <div class="cmp-c2">should have + PP</div>
+          <div class="cmp-c0">Reproche / regret</div>
+          <div class="cmp-label">They should have acted sooner.</div>
+        </div>
+        <div class="cmp-row" style="grid-template-columns: 1.6fr 1fr 1.8fr;">
+          <div class="cmp-c2">could have + PP</div>
+          <div class="cmp-c0">Possibilité non réalisée</div>
+          <div class="cmp-label">We could have avoided the loss.</div>
+        </div>
+        <div class="cmp-row" style="grid-template-columns: 1.6fr 1fr 1.8fr;">
+          <div class="cmp-c2">might have + PP</div>
+          <div class="cmp-c0">Hypothèse incertaine</div>
+          <div class="cmp-label">The deal might have succeeded otherwise.</div>
+        </div>
+        <div class="cmp-row" style="grid-template-columns: 1.6fr 1fr 1.8fr;">
+          <div class="cmp-c2">would have + PP</div>
+          <div class="cmp-c0">Conditionnel passé</div>
+          <div class="cmp-label">They would have invested with better info.</div>
+        </div>
+        <div class="cmp-row" style="grid-template-columns: 1.6fr 1fr 1.8fr;">
+          <div class="cmp-c2">needn't have + PP</div>
+          <div class="cmp-c0">Inutile rétrospectivement</div>
+          <div class="cmp-label">We needn't have hired extra staff.</div>
+        </div>
+      </div>
+
+      <div class="hl-box warning">
+        <div class="hl-icon">🔍</div>
+        <div class="hl-body">
+          <strong>Can't have vs Mustn't have :</strong><br>
+          <em>He <strong>can't have</strong> signed the contract</em> → Déduction : c'est impossible, il ne l'a certainement pas signé.<br>
+          <em>He <strong>must have</strong> misread the clause</em> → Déduction positive forte : il a forcément mal lu la clause.
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 8 : EXERCICES                         -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="exercices">
+      <div class="section-header">
+        <div class="section-num">8</div>
+        <div class="section-info">
+          <div class="section-tag">Pratique</div>
+          <div class="section-title">Exercices</div>
+        </div>
+      </div>
+
+      <!-- Exercice 1 -->
+      <div class="exercise-block">
+        <div class="ex-header">
+          <span class="ex-badge">Exercice 1</span>
+          <span class="ex-title">Choisissez le bon modal selon le contexte</span>
+        </div>
+        <div class="ex-items" id="ex1items">
+          <div class="ex-item">
+            <div class="ex-num">01.</div>
+            <div class="ex-q">All employees <strong>(must / should)</strong> wear a badge — it's mandatory by law.</div>
+            <div class="ex-answer">→ must (obligation externe imposée par la loi)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">02.</div>
+            <div class="ex-q">The board <strong>(might / must)</strong> approve the merger next month — we're fairly confident.</div>
+            <div class="ex-answer">→ might (probabilité incertaine, non garantie)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">03.</div>
+            <div class="ex-q">You <strong>(mustn't / don't have to)</strong> attend the optional training session.</div>
+            <div class="ex-answer">→ don't have to (pas d'obligation — c'est optionnel, non interdit)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">04.</div>
+            <div class="ex-q">Investors <strong>(should / may)</strong> consider the long-term implications of this decision. (conseil)</div>
+            <div class="ex-answer">→ should (conseil / recommandation)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">05.</div>
+            <div class="ex-q"><strong>(Can / May)</strong> I access the confidential files, please? (demande formelle)</div>
+            <div class="ex-answer">→ May (permission formelle — plus poli que can)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">06.</div>
+            <div class="ex-q">The contractor <strong>(shall / will)</strong> deliver the project by 31 December. (clause contractuelle)</div>
+            <div class="ex-answer">→ shall (obligation légale, registre contractuel)</div>
+          </div>
+        </div>
+        <button class="show-answers-btn" onclick="showAnswers('ex1items')">Afficher les réponses</button>
+      </div>
+
+      <!-- Exercice 2 -->
+      <div class="exercise-block">
+        <div class="ex-header">
+          <span class="ex-badge">Exercice 2</span>
+          <span class="ex-title">Modaux au passé — Modal + have + PP</span>
+        </div>
+        <div class="ex-items" id="ex2items">
+          <div class="ex-item">
+            <div class="ex-num">01.</div>
+            <div class="ex-q">The firm lost millions. They <strong>(should / invest)</strong> in risk management earlier. (reproche)</div>
+            <div class="ex-answer">→ should have invested (ils auraient dû investir — reproche rétrospectif)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">02.</div>
+            <div class="ex-q">The CEO resigned unexpectedly. He <strong>(must / know)</strong> about the scandal. (déduction)</div>
+            <div class="ex-answer">→ must have known (il devait forcément être au courant — déduction forte)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">03.</div>
+            <div class="ex-q">With a better strategy, we <strong>(could / avoid)</strong> the market downturn. (possibilité non réalisée)</div>
+            <div class="ex-answer">→ could have avoided (nous aurions pu éviter — possibilité manquée)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">04.</div>
+            <div class="ex-q">The deal <strong>(might / succeed)</strong> if they had negotiated more carefully. (hypothèse incertaine passée)</div>
+            <div class="ex-answer">→ might have succeeded (aurait peut-être réussi — hypothèse au passé)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">05.</div>
+            <div class="ex-q">The numbers are inconsistent. Someone <strong>(can / make)</strong> a serious error. (déduction — impossibilité)</div>
+            <div class="ex-answer">→ can't have made (ne peut pas avoir fait cette erreur — déduction négative)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">06.</div>
+            <div class="ex-q">The team hired extra consultants but it was unnecessary. They <strong>(needn't / hire)</strong> them. (inutile rétrospectivement)</div>
+            <div class="ex-answer">→ needn't have hired (n'auraient pas eu besoin de les embaucher)</div>
+          </div>
+        </div>
+        <button class="show-answers-btn" onclick="showAnswers('ex2items')">Afficher les réponses</button>
+      </div>
+
+      <!-- Exercice 3 -->
+      <div class="exercise-block">
+        <div class="ex-header">
+          <span class="ex-badge">Exercice 3</span>
+          <span class="ex-title">Reformulez les phrases en utilisant un modal équivalent</span>
+        </div>
+        <div class="ex-items" id="ex3items">
+          <div class="ex-item">
+            <div class="ex-num">01.</div>
+            <div class="ex-q">It is possible that the company will restructure its debt. → (may)</div>
+            <div class="ex-answer">→ The company may restructure its debt.</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">02.</div>
+            <div class="ex-q">It is obligatory for all staff to complete the compliance training. → (must)</div>
+            <div class="ex-answer">→ All staff must complete the compliance training.</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">03.</div>
+            <div class="ex-q">It would be a good idea for the firm to review its pricing strategy. → (should)</div>
+            <div class="ex-answer">→ The firm should review its pricing strategy.</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">04.</div>
+            <div class="ex-q">I'm certain that the analyst made an error in the forecast. → (must have)</div>
+            <div class="ex-answer">→ The analyst must have made an error in the forecast.</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">05.</div>
+            <div class="ex-q">It is forbidden to disclose any client information to third parties. → (must not)</div>
+            <div class="ex-answer">→ Employees must not disclose any client information to third parties.</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">06.</div>
+            <div class="ex-q">It is not necessary for junior staff to attend the executive briefing. → (don't have to)</div>
+            <div class="ex-answer">→ Junior staff don't have to attend the executive briefing.</div>
+          </div>
+        </div>
+        <button class="show-answers-btn" onclick="showAnswers('ex3items')">Afficher les réponses</button>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // Show/hide answers
+  function showAnswers(id) {
+    const items = document.querySelectorAll('#' + id + ' .ex-item');
+    const btn = document.querySelector('#' + id).closest('.exercise-block').querySelector('.show-answers-btn');
+    const allRevealed = [...items].every(i => i.classList.contains('revealed'));
+    items.forEach(item => item.classList.toggle('revealed', !allRevealed));
+    btn.textContent = allRevealed ? 'Afficher les réponses' : 'Masquer les réponses';
+  }
+
+  // Fade-up animation on scroll
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('fade-up'); obs.unobserve(e.target); } });
+  }, { threshold: 0.05 });
+  document.querySelectorAll('.section').forEach(s => obs.observe(s));
+</script>
+</body>
+</html>

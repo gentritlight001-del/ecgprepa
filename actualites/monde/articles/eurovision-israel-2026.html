@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Eurovision & Israël : le concours sous haute tension</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #003087;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #003087; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #c8a200; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #6a1a6a; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #7ca8c9; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #7ca8c9; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+
+  .ap-band { background: linear-gradient(90deg, #003087, #6a1a6a, #003087, #c8a200, #003087); text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(0,15,40,0.95); padding:12px 60px; border-bottom: 1px solid rgba(100,140,200,0.18); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#7ca8c9; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(100,140,200,0.3); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+
+  .ap-hero-placeholder {
+    width:100%; aspect-ratio: 16/7; position:relative;
+    background: linear-gradient(135deg, #0a0f1e 0%, #1a001a 35%, #001a30 60%, #1a001a 85%, #0a0f1e 100%);
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
+    font-size: 6rem;
+    filter: grayscale(0.1) drop-shadow(0 4px 32px rgba(0,0,0,0.8));
+    opacity: 0.7;
+  }
+  .ap-hero-placeholder::after {
+    content:''; position:absolute; inset:0;
+    background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.88) 100%);
+  }
+
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(181,19,31,0.2);  color:#f08080; border:1px solid rgba(181,19,31,0.35); }
+  .ap-tag-navy   { background:rgba(0,48,135,0.4);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.25);  color:#ffb74d; border:1px solid rgba(255,183,77,0.35); }
+
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #7ca8c9; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(100,140,200,0.2); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(100,181,246,0.7); }
+
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#7ca8c9; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(124,168,201,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#071422,#0d2540); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.red    { background:linear-gradient(135deg,#5a0000,#8b0000); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#3a2a00,#5a4000); }
+  .ap-stat.navy   { background:linear-gradient(135deg,#001a4a,#003087); }
+  .ap-stat.purple { background:linear-gradient(135deg,#2a004a,#4a0080); }
+  .ap-stat.dark   { background:linear-gradient(135deg,#1a1a1a,#2e2e2e); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #7ca8c9; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(124,168,201,0.06),rgba(124,168,201,0.02)); border-left:3px solid #7ca8c9; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(124,168,201,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(124,168,201,0.8); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(0,15,40,0.9),rgba(0,8,24,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(124,168,201,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#7ca8c9; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-ctx p + p { margin-top:10px; }
+  .ap-info { background:rgba(124,168,201,0.05); border:1px solid rgba(124,168,201,0.15); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(124,168,201,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#7ca8c9; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(124,168,201,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#7ca8c9; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(0,15,40,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+
+  /* Images */
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-monde.html">Monde</a>
+    <span class="sep">/</span>
+    <a href="../europe.html">Europe</a>
+    <span class="sep">/</span>
+    <span class="current">Eurovision & Israël</span>
+  </div>
+</nav>
+
+<div class="ap-band">🎵 EUROVISION — QUAND LA CHANSON DEVIENT ARÈNE POLITIQUE 🇮🇱</div>
+<div class="ap-back-bar">
+  <a href="../europe.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+
+    <div class="ap-hero-img-wrap">
+      <img class="ap-hero-img" src="../images/eurovision-israel-2026.jpg" alt="Eurovision 2026 Vienne Israël" onerror="this.parentElement.innerHTML='<div class=\'ap-hero-placeholder\'>🎤🇮🇱🇪🇺</div>'">
+    </div>
+
+    <div class="ap-header">
+      <div class="ap-tags">
+        <span class="ap-tag ap-tag-purple">🎵 Culture</span>
+        <span class="ap-tag ap-tag-navy">🇪🇺 Europe</span>
+        <span class="ap-tag ap-tag-red">🇮🇱 Israël</span>
+        <span class="ap-tag ap-tag-blue">Géopolitique</span>
+        <span class="ap-tag ap-tag-gold">Diplomatie</span>
+      </div>
+      <div class="ap-date">Mai 2026 — ECG Prépa · Europe</div>
+      <h1 class="ap-title">Eurovision 2026 : quand la scène musicale devient l'arène du monde</h1>
+      <p class="ap-intro">La 70e édition de l'Eurovision, organisée à Vienne du 12 au 16 mai 2026, s'ouvre sous une tempête politique sans précédent. Cinq pays boycottent le concours en raison de la participation d'Israël, dont la présence est contestée depuis le début de la guerre à Gaza en octobre 2023. Après la quasi-victoire israélienne controversée à Bâle en 2025, l'UER a durci ses règles de vote, maintenu la candidature de Tel-Aviv — et déclenché le plus grand boycott de l'histoire du concours. Entre musique, géopolitique et débat sur les « deux poids, deux mesures », l'Eurovision 2026 interroge la capacité de la culture à rester apolitique dans un monde en crise.</p>
+    </div>
+
+    <div class="ap-body">
+
+      <div class="ap-stats">
+        <div class="ap-stat red"><span class="ap-stat-num">5</span><span class="ap-stat-desc">Pays boycotteurs<br>record historique</span></div>
+        <div class="ap-stat navy"><span class="ap-stat-num">35</span><span class="ap-stat-desc">Pays participants<br>en 2026</span></div>
+        <div class="ap-stat gold"><span class="ap-stat-num">70e</span><span class="ap-stat-desc">Édition du concours<br>depuis 1956</span></div>
+        <div class="ap-stat purple"><span class="ap-stat-num">1 000+</span><span class="ap-stat-desc">Artistes signataires<br>lettre de boycott</span></div>
+      </div>
+
+      <div class="ap-cols">
+
+        <!-- COLONNE GAUCHE -->
+        <div>
+          <div class="ap-sub">Bâle 2025 : la quasi-victoire israélienne qui a tout changé</div>
+          <p>Pour comprendre la crise de 2026, il faut revenir à la finale de Bâle, le 17 mai 2025. L'Autrichien JJ remporte l'Eurovision avec sa chanson <em>Wasted Love</em> (436 points). La représentante israélienne, Yuval Raphael, avec <em>New Day Will Rise</em>, termine deuxième (357 points) — mais cette deuxième place cache une anomalie statistique frappante. Survivante du massacre du festival Nova du 7 octobre 2023, Raphael recueille 297 points du vote public, soit le score le plus élevé de toute l'édition. En revanche, les jurés professionnels des pays participants la placent en 14e position, avec seulement 60 points — un écart abyssal.</p>
+
+          <p>Cet écart exceptionnel entre vote populaire et vote des jurys nourrit un débat acéré sur l'intégrité du scrutin. Le New York Times révèle en mai 2026 que le gouvernement israélien a dépensé au moins 800 000 dollars en publicités ciblées pour promouvoir sa candidate en 2024, et davantage encore en 2025. Des diplomates israéliens auraient directement contacté des responsables de l'UER pour défendre la participation du pays. Le Guardian relève par ailleurs une contradiction entre les résultats du télévote et la popularité réelle des chansons : <em>New Day Will Rise</em> ne se classait qu'en 19e position sur Spotify la semaine du concours.</p>
+
+          <div class="ap-info">
+            <div class="ap-info-icon">🔍</div>
+            <div class="ap-info-text"><strong>L'UER audite mais valide :</strong> face aux accusations, l'Union européenne de radio-télévision mandate un contrôleur indépendant. Celui-ci conclut qu'aucune preuve de fraude automatisée n'est établie. Lors d'un vote secret des membres, l'UER décide de modifier ses règles plutôt que d'exclure Israël : le nombre de votes par personne passe de 20 à 10, les jurys professionnels sont réintroduits dans les demi-finales, et les campagnes publicitaires « disproportionnées » sont formellement interdites.</div>
+          </div>
+
+          <div class="ap-sub">Décembre 2025 : le boycott se déclare</div>
+          <p>Le 4 décembre 2025, l'UER confirme officiellement la participation d'Israël à l'Eurovision 2026, à Vienne. La réaction est immédiate. Cinq pays annoncent leur retrait : les Pays-Bas (AVROTROS), l'Espagne (RTVE), l'Islande (RÚV), la Slovénie (RTV Slovenija) et l'Irlande (RTÉ). Leurs motivations convergent : la guerre à Gaza — qui a fait plus de 72 000 morts selon les chiffres disponibles en mai 2026 — et ce qu'ils qualifient d'ingérence prouvée d'Israël dans le vote 2025. Trois d'entre eux (Irlande, Espagne, Slovénie) décident également de ne pas diffuser le concours. La Slovénie remplace la retransmission par un cycle de films <em>Voices of Palestine</em>.</p>
+
+          <div class="ap-sub">Timeline : de la victoire de Bâle au boycott de Vienne</div>
+          <div class="ap-tl">
+            <div class="ap-tl-item">
+              <div class="ap-tl-date">7 octobre 2023</div>
+              <p class="ap-tl-text">Attaques du Hamas en Israël : 1 200 morts, 250 otages. Début de la guerre à Gaza. La question de la participation israélienne à l'Eurovision s'invite dans le débat dès l'édition 2024 à Malmö.</p>
+            </div>
+            <div class="ap-tl-item">
+              <div class="ap-tl-date">Mai 2024 — Malmö</div>
+              <p class="ap-tl-text">Première edition post-7 octobre. Manifestations à Malmö. Eden Golan représente Israël avec "Hurricane" et termine 5e. L'UER écope d'une amende après des incidents. L'Islande est condamnée pour des foulards palestiniens en 2019 — précédent invoqué par les boycotteurs.</p>
+            </div>
+            <div class="ap-tl-item">
+              <div class="ap-tl-date">17 mai 2025 — Bâle</div>
+              <p class="ap-tl-text">JJ (Autriche) remporte l'Eurovision avec 436 points. Yuval Raphael (Israël) est 2e grâce au vote public (297 pts) malgré la 14e place des jurys (60 pts). L'écart sans précédent déclenche la controverse sur l'intégrité du vote.</p>
+            </div>
+            <div class="ap-tl-item">
+              <div class="ap-tl-date">Novembre 2025</div>
+              <p class="ap-tl-text">L'UER convoque un vote extraordinaire de ses membres sur l'exclusion de KAN, le diffuseur israélien. Le scrutin secret ne réunit pas la majorité absolue requise : Israël reste dans la compétition. Réformes du vote adoptées en contrepartie.</p>
+            </div>
+            <div class="ap-tl-item">
+              <div class="ap-tl-date">4 décembre 2025</div>
+              <p class="ap-tl-text">L'UER confirme la participation d'Israël à Vienne 2026. Cinq pays annoncent leur boycott en cascade dans les jours suivants.</p>
+            </div>
+            <div class="ap-tl-item">
+              <div class="ap-tl-date">Avril 2026</div>
+              <p class="ap-tl-text">Plus de 1 100 artistes — dont Peter Gabriel, Macklemore et Massive Attack — signent une lettre ouverte du mouvement « No Music for Genocide » appelant au boycott. Salvador Sobral, vainqueur 2017, avait refusé dès décembre 2025 de se produire à Vienne.</p>
+            </div>
+            <div class="ap-tl-item">
+              <div class="ap-tl-date">12 mai 2026 — 1re demi-finale</div>
+              <p class="ap-tl-text">Noam Bettan chante « Michelle » à la Wiener Stadthalle sous des cris de « Stop the genocide » audibles en direct. Quatre personnes sont expulsées. Israël se qualifie pour la finale aux côtés de la Grèce, la Finlande, la Belgique, la Suède, la Moldavie, la Serbie, la Croatie, la Lituanie et la Pologne.</p>
+            </div>
+            <div class="ap-tl-item">
+              <div class="ap-tl-date">16 mai 2026 — Finale</div>
+              <p class="ap-tl-text">Grande finale à la Wiener Stadthalle. 70e anniversaire du concours fondé en 1956. Israël concourt parmi 25 finalistes.</p>
+            </div>
+          </div>
+
+          <div class="ap-facts">
+            <div class="ap-fact"><div class="ap-fact-label">Lieu 2026</div><div class="ap-fact-val">Wiener Stadthalle, Vienne</div></div>
+            <div class="ap-fact"><div class="ap-fact-label">Dates</div><div class="ap-fact-val">12, 14 et 16 mai 2026</div></div>
+            <div class="ap-fact"><div class="ap-fact-label">Représentant Israël</div><div class="ap-fact-val">Noam Bettan — Michelle</div></div>
+            <div class="ap-fact"><div class="ap-fact-label">Pays qualifiés</div><div class="ap-fact-val">35 pays (record bas)</div></div>
+            <div class="ap-fact"><div class="ap-fact-label">Vainqueur 2025</div><div class="ap-fact-val">JJ (Autriche) — Wasted Love</div></div>
+            <div class="ap-fact"><div class="ap-fact-label">Votes max/personne</div><div class="ap-fact-val">10 (contre 20 en 2025)</div></div>
+          </div>
+
+        </div>
+
+        <!-- COLONNE DROITE -->
+        <div>
+          <div class="ap-sub">Vienne 2026 : Noam Bettan sous les huées, qualifié malgré tout</div>
+          <p>Noam Bettan, 24 ans, vainqueur du télé-crochet israélien <em>Rising Star</em>, représente Israël à Vienne avec la ballade <em>Michelle</em>, écrite en hébreu, anglais et français. La chanson a été co-écrite avec Yuval Raphael, la représentante de 2025. Bettan se prépare à affronter les sifflets dès les semaines précédant le concours, s'entraînant délibérément sur fond de huées enregistrées. Le 12 mai, lors de la première demi-finale, des cris de « Stop the genocide » sont audibles en direct au début de sa performance. L'ORF, la chaîne autrichienne organisatrice, avait décidé de ne pas recourir à des technologies d'atténuation des sifflets. Quatre spectateurs perturbateurs sont expulsés par la sécurité.</p>
+
+          <div class="ap-quote">
+            <p>« J'ai entendu les huées au début. Elles étaient très, très fortes. Mais je me suis concentré sur la performance. J'ai cherché des yeux les drapeaux israéliens dans le public. »</p>
+            <cite>— Noam Bettan, après sa qualification en finale, 12 mai 2026</cite>
+          </div>
+
+          <p>Israël se qualifie pour la grande finale du 16 mai, marquant la cinquième fois en six ans que le pays atteint la finale. L'UER avertit également Kan, le diffuseur israélien, d'avoir lancé une campagne publicitaire en plusieurs langues invitant le public à voter dix fois pour Bettan — « contraire aux règles et à l'esprit du concours ». Kan retire la campagne tout en niant avoir enfreint le règlement.</p>
+
+          <div class="ap-sub">La question du « deux poids, deux mesures »</div>
+          <p>Le paradoxe central de la polémique est celui-ci : la Russie a été exclue de l'Eurovision dès mars 2022, deux semaines après le début de son invasion de l'Ukraine, sans vote des membres de l'UER. Israël, accusé par plusieurs gouvernements, organisations internationales et la Cour internationale de justice d'actes pouvant constituer un génocide à Gaza, est maintenu dans la compétition après un vote secret. Cette asymétrie est dénoncée par les boycotteurs et les associations de défense des droits de l'homme.</p>
+
+          <div class="ap-quote">
+            <p>« Le fait que l'UER n'ait pas suspendu Israël comme elle l'avait fait avec la Russie est un acte de lâcheté et une illustration de deux poids deux mesures flagrants. »</p>
+            <cite>— Agnès Callamard, Secrétaire générale d'Amnesty International, mai 2026</cite>
+          </div>
+
+          <p>Les défenseurs de la participation d'Israël avancent de leur côté que l'Eurovision est une compétition entre diffuseurs membres — KAN, la télévision publique israélienne, est membre de l'UER depuis 1957 — et non entre gouvernements. L'Allemagne souligne que toute exclusion créerait un précédent politiquement dangereux. L'Autriche, en tant que pays hôte, a refusé d'interférer dans la décision de l'UER.</p>
+
+          <div class="ap-info">
+            <div class="ap-info-icon">⚖️</div>
+            <div class="ap-info-text"><strong>Russie vs Israël — les termes du débat :</strong> en 2022, l'UER exclut la Russie en invoquant le risque de « discréditer le concours ». En 2025-2026, elle refuse d'appliquer le même raisonnement à Israël, arguant que le conflit est « différent » et que KAN n'est pas une entité gouvernementale. Les boycotteurs répondent que cette distinction est intenable dès lors qu'Israël utilise le concours comme vitrine diplomatique — comme en témoignent les campagnes publicitaires financées par l'État.</div>
+          </div>
+
+          <div class="ap-sub">L'Eurovision, un miroir de l'Europe politique</div>
+          <p>L'Eurovision n'a jamais été totalement imperméable à la politique internationale. Le Liban s'est retiré en 2005 pour refuser de diffuser la prestation israélienne. La Grèce et la Turquie ont pratiqué des boycotts mutuels dans les années 1970. La victoire de l'Ukraine en 2022, interprétée comme un vote de solidarité après l'invasion russe, avait renforcé les critiques sur la politisation du télévote. Ce qui est nouveau en 2026, c'est l'ampleur du phénomène : jamais cinq pays n'avaient simultanément boycotté l'édition.</p>
+
+          <table class="ap-table">
+            <thead><tr><th>Pays boycotteur</th><th>Diffuseur</th><th>Diffusion du concours ?</th></tr></thead>
+            <tbody>
+              <tr><td class="ap-cell-bold">🇪🇸 Espagne</td><td>RTVE</td><td>Non — programme spécial</td></tr>
+              <tr><td class="ap-cell-bold">🇮🇪 Irlande</td><td>RTÉ</td><td>Non — Father Ted & autres</td></tr>
+              <tr><td class="ap-cell-bold">🇸🇮 Slovénie</td><td>RTV Slovenija</td><td>Non — cycle Voices of Palestine</td></tr>
+              <tr><td class="ap-cell-bold">🇳🇱 Pays-Bas</td><td>AVROTROS</td><td>Oui (par NOS/NTR)</td></tr>
+              <tr><td class="ap-cell-bold">🇮🇸 Islande</td><td>RÚV</td><td>Oui</td></tr>
+            </tbody>
+          </table>
+
+          <div class="ap-ctx">
+            <div class="ap-ctx-label">L'Eurovision pris en étau entre universalisme et géopolitique</div>
+            <p>Fondé en 1956 sur le slogan « unis par la musique », l'Eurovision porte depuis l'origine une ambition universaliste — réunir les peuples par la culture au-delà des clivages politiques. Cette ambition est aujourd'hui soumise à une tension inédite. Le concours a su exclure la Russie en 2022 au nom de ses valeurs, reconnaissant implicitement que la neutralité absolue est impossible. En maintenant Israël malgré des pressions équivalentes, l'UER se retrouve accusée non pas de neutralité, mais de partialité. Le débat dépasse le concours lui-même : il reflète la difficulté de l'Europe à parler d'une seule voix sur le conflit israélo-palestinien, entre États proches de Jérusalem et ceux plus sensibles à la cause palestinienne. À Vienne, la scène de l'Eurovision est devenue le lieu où cette fracture européenne s'expose sous les projecteurs — et le monde entier regarde.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — Europe · Culture · Géopolitique — Mai 2026</div>
+
+</body>
+</html>

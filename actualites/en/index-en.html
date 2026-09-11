@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Actualité Anglophone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #7c9ec9;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #7c9ec9; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #c8a96e; bottom: -250px; left: -250px; }
+
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--accent); cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb span:hover { color: var(--accent); }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); cursor: default; }
+
+  /* ── HERO ── */
+  .hero {
+    text-align: center;
+    padding: 70px 48px 50px;
+    position: relative; z-index: 1;
+  }
+  .hero-eyebrow {
+    font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 18px; font-family: 'DM Mono', monospace;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.4rem, 5vw, 4.2rem);
+    font-weight: 900; line-height: 1.05; margin-bottom: 14px; color: var(--text);
+  }
+  .hero-sub {
+    font-size: 0.95rem; color: var(--text-dim); margin-bottom: 0;
+    font-weight: 300; letter-spacing: 0.05em;
+  }
+
+  /* ── COUNTRY GRID ── */
+  .countries-wrapper {
+    position: relative; z-index: 1;
+    padding: 20px 48px 80px;
+    display: flex; flex-direction: column; align-items: center; gap: 18px;
+    max-width: 780px; margin: 0 auto;
+  }
+
+  .country-card {
+    width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    height: 110px;
+    border: 1px solid rgba(255,255,255,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    text-decoration: none;
+    display: block;
+  }
+  .country-card:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+    border-color: rgba(255,255,255,0.22);
+  }
+
+  .country-card .flag-bg {
+    position: absolute; inset: 0;
+    background-size: cover;
+    background-position: center;
+    filter: blur(3px) brightness(0.38) saturate(0.7);
+    transform: scale(1.05);
+    transition: filter 0.3s ease;
+  }
+  .country-card:hover .flag-bg {
+    filter: blur(2px) brightness(0.45) saturate(0.85);
+  }
+
+  .country-card::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(110deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.15) 100%);
+  }
+
+  .card-content {
+    position: relative; z-index: 2;
+    height: 100%;
+    display: flex; align-items: center;
+    padding: 0 40px;
+    gap: 24px;
+  }
+  .card-flag-emoji {
+    font-size: 2.6rem;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.6));
+    flex-shrink: 0;
+  }
+  .card-text { flex: 1; }
+  .card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem; letter-spacing: 0.22em; text-transform: uppercase;
+    color: rgba(255,255,255,0.45); margin-bottom: 5px;
+  }
+  .card-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem; font-weight: 900;
+    color: #fff;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+    line-height: 1;
+    margin-bottom: 5px;
+  }
+  .card-sub {
+    font-size: 0.75rem; color: rgba(255,255,255,0.4);
+    font-weight: 300; font-family: 'DM Sans', sans-serif;
+  }
+  .card-arrow {
+    font-size: 1.4rem; color: rgba(255,255,255,0.4);
+    transition: transform 0.2s, color 0.2s;
+    flex-shrink: 0;
+  }
+  .country-card:hover .card-arrow {
+    transform: translateX(6px);
+    color: rgba(255,255,255,0.85);
+  }
+
+  /* ── TOUS ── */
+  .card-tous .flag-bg {
+    background: linear-gradient(135deg, #061220 0%, #0a1e35 35%, #081a30 65%, #05101f 100%);
+  }
+  .card-tous .card-label { color: rgba(124,158,201,0.7); }
+  .card-tous .card-arrow { color: rgba(124,158,201,0.5); }
+  .card-tous:hover .card-arrow { color: var(--accent); }
+
+  /* ── FLAG BACKGROUNDS ── */
+
+  /* Royaume-Uni : bleu + croix rouge/blanche */
+  .card-uk .flag-bg {
+    background: linear-gradient(135deg,
+      #003087 0% 50%,
+      #8b0000 50% 100%
+    );
+  }
+
+  /* États-Unis : rayures rouge et blanc */
+  .card-usa .flag-bg {
+    background: linear-gradient(180deg,
+      #8b0000 0%, #8b0000 14%,
+      #d0d0d0 14%, #d0d0d0 28%,
+      #8b0000 28%, #8b0000 42%,
+      #d0d0d0 42%, #d0d0d0 56%,
+      #8b0000 56%, #8b0000 70%,
+      #d0d0d0 70%, #d0d0d0 84%,
+      #8b0000 84%, #8b0000 100%
+    );
+  }
+
+  /* Australie : bleu foncé */
+  .card-australie .flag-bg {
+    background: linear-gradient(135deg,
+      #003087 0% 60%,
+      #1a1a6e 60% 100%
+    );
+  }
+
+  /* Canada : rouge-blanc-rouge */
+  .card-canada .flag-bg {
+    background: linear-gradient(90deg,
+      #8b0000 0%, #8b0000 25%,
+      #d0d0d0 25%, #d0d0d0 75%,
+      #8b0000 75%, #8b0000 100%
+    );
+  }
+
+  /* Irlande : vert-blanc-orange */
+  .card-irlande .flag-bg {
+    background: linear-gradient(90deg,
+      #006847 0%, #006847 33.3%,
+      #d0d0d0 33.3%, #d0d0d0 66.6%,
+      #c8600a 66.6%, #c8600a 100%
+    );
+  }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .hero { padding: 50px 20px 30px; }
+    .countries-wrapper { padding: 16px 20px 60px; gap: 14px; }
+    .country-card { height: 88px; }
+    .card-content { padding: 0 24px; gap: 16px; }
+    .card-flag-emoji { font-size: 2rem; }
+    .card-name { font-size: 1.3rem; }
+  }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+
+<nav>
+  <div class="nav-logo" onclick="window.location.href='../../index.html'">ECG Prépa</div>
+  <div class="breadcrumb">
+    <span onclick="window.location.href='../../index.html'">Accueil</span>
+    <span class="sep">/</span>
+    <span onclick="window.location.href='../actualites.html'">Actualité</span>
+    <span class="sep">/</span>
+    <span class="current">Anglais</span>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">🗞 Presse & Actualité</div>
+  <h1>English-Speaking World</h1>
+  <p class="hero-sub">Choisissez un pays pour explorer les articles</p>
+</div>
+
+<div class="countries-wrapper">
+
+  <!-- TOUS -->
+  <a class="country-card card-tous" href="tous-en.html">
+    <div class="flag-bg"></div>
+    <div class="card-content">
+      <div class="card-flag-emoji">🌍</div>
+      <div class="card-text">
+        <div class="card-label">All countries</div>
+        <div class="card-name">Tous</div>
+        <div class="card-sub">Ensemble du monde anglophone</div>
+      </div>
+      <div class="card-arrow">→</div>
+    </div>
+  </a>
+
+  <!-- ROYAUME-UNI -->
+  <a class="country-card card-uk" href="royaume-uni.html">
+    <div class="flag-bg"></div>
+    <div class="card-content">
+      <div class="card-flag-emoji">🇬🇧</div>
+      <div class="card-text">
+        <div class="card-label">United Kingdom</div>
+        <div class="card-name">Royaume-Uni</div>
+        <div class="card-sub">Articles sur l'actualité britannique</div>
+      </div>
+      <div class="card-arrow">→</div>
+    </div>
+  </a>
+
+  <!-- ÉTATS-UNIS -->
+  <a class="country-card card-usa" href="etats-unis.html">
+    <div class="flag-bg"></div>
+    <div class="card-content">
+      <div class="card-flag-emoji">🇺🇸</div>
+      <div class="card-text">
+        <div class="card-label">United States</div>
+        <div class="card-name">États-Unis</div>
+        <div class="card-sub">Articles sur l'actualité américaine</div>
+      </div>
+      <div class="card-arrow">→</div>
+    </div>
+  </a>
+
+  <!-- AUSTRALIE -->
+  <a class="country-card card-australie" href="australie.html">
+    <div class="flag-bg"></div>
+    <div class="card-content">
+      <div class="card-flag-emoji">🇦🇺</div>
+      <div class="card-text">
+        <div class="card-label">Australia</div>
+        <div class="card-name">Australie</div>
+        <div class="card-sub">Articles sur l'actualité australienne</div>
+      </div>
+      <div class="card-arrow">→</div>
+    </div>
+  </a>
+
+  <!-- CANADA -->
+  <a class="country-card card-canada" href="canada.html">
+    <div class="flag-bg"></div>
+    <div class="card-content">
+      <div class="card-flag-emoji">🇨🇦</div>
+      <div class="card-text">
+        <div class="card-label">Canada</div>
+        <div class="card-name">Canada</div>
+        <div class="card-sub">Articles sur l'actualité canadienne</div>
+      </div>
+      <div class="card-arrow">→</div>
+    </div>
+  </a>
+
+  <!-- IRLANDE -->
+  <a class="country-card card-irlande" href="irlande.html">
+    <div class="flag-bg"></div>
+    <div class="card-content">
+      <div class="card-flag-emoji">🇮🇪</div>
+      <div class="card-text">
+        <div class="card-label">Ireland</div>
+        <div class="card-name">Irlande</div>
+        <div class="card-sub">Articles sur l'actualité irlandaise</div>
+      </div>
+      <div class="card-arrow">→</div>
+    </div>
+  </a>
+
+
+</div>
+</body>
+</html>

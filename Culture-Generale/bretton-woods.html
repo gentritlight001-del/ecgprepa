@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Bretton Woods : l'architecture monétaire mondiale</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=Newsreader:ital,wght@0,400;0,500;1,400;1,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --kraft:#cdd4dc; --paper:#eef1f5; --paper2:#dfe5ec; --ink:#141a22; --ink-dim:#454f5c; --ink-faint:#7d8798;
+    --rule:#a9b8c9; --stamp:#0f2038; --ledger:#1e5c8c;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--kraft); color:var(--ink); font-family:'Newsreader',Georgia,serif;
+    padding:8px 16px 60px; overflow-x:hidden;
+    background-image:
+      radial-gradient(ellipse at 15% 10%, rgba(255,255,255,0.25), transparent 55%),
+      radial-gradient(ellipse at 90% 85%, rgba(0,0,0,0.05), transparent 50%);
+  }
+
+  nav{
+    width:100%; margin:0 auto 22px; display:flex; align-items:center; justify-content:space-between;
+    padding:18px 24px; box-sizing:border-box; background:var(--paper2); border-bottom:1px solid var(--rule);
+    position:sticky; top:0; z-index:100;
+  }
+  .nav-logo{font-family:'Fraunces',serif; font-size:1.1rem; font-weight:700; color:var(--stamp); cursor:pointer}
+  .breadcrumb{display:flex; align-items:center; gap:8px; font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--ink-dim); flex-wrap:wrap}
+  .breadcrumb a{color:var(--ink-dim); text-decoration:none}
+  .breadcrumb a:hover{color:var(--stamp)}
+  .breadcrumb .sep{color:var(--ink-faint)}
+  .breadcrumb .current{color:var(--ink)}
+
+  .card{
+    max-width:1000px; margin:0 auto; background:var(--paper);
+    border:1px solid var(--rule); position:relative;
+    box-shadow:0 1px 0 rgba(255,255,255,0.5) inset, 0 18px 40px rgba(15,32,56,0.18);
+  }
+  .tab{
+    position:absolute; top:-16px; left:36px; background:var(--paper);
+    border:1px solid var(--rule); border-bottom:none;
+    padding:6px 16px 10px; font-family:'IBM Plex Mono',monospace; font-size:10px;
+    letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-dim);
+  }
+  .stamp{
+    position:absolute; top:34px; right:34px; width:76px; height:76px;
+    border:2px solid var(--stamp); border-radius:50%;
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    transform:rotate(-8deg); opacity:0.85; background:var(--paper);
+  }
+  .stamp span{
+    font-family:'IBM Plex Mono',monospace; font-size:8.5px; font-weight:600;
+    letter-spacing:0.08em; text-transform:uppercase; color:var(--stamp); line-height:1.4;
+  }
+
+  .head{padding:54px 48px 30px; border-bottom:1px dashed var(--rule)}
+  .catno{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ledger); letter-spacing:0.08em; margin-bottom:18px}
+  .catno b{color:var(--ink)}
+  h1{font-family:'Fraunces',serif; font-weight:700; font-size:32px; line-height:1.18; margin-bottom:16px; text-wrap:balance; max-width:520px}
+  .intro{font-size:15px; line-height:1.75; color:var(--ink-dim); font-style:italic; border-left:2px solid var(--stamp); padding-left:16px; max-width:640px}
+
+  .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--rule); border-top:1px dashed var(--rule); border-bottom:1px dashed var(--rule)}
+  .stat{background:var(--paper2); padding:18px 14px; text-align:center}
+  .stat-num{font-family:'Fraunces',serif; font-weight:700; font-size:22px; color:var(--stamp); display:block; margin-bottom:4px}
+  .stat-desc{font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:0.04em; color:var(--ink-dim); line-height:1.4}
+
+  .body{padding:36px 48px 46px}
+  .cols{display:grid; grid-template-columns:1fr 1fr; gap:44px}
+  .sub{font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--stamp); margin:26px 0 10px; padding-bottom:7px; border-bottom:1px solid var(--rule)}
+  .sub:first-child{margin-top:0}
+  p{font-size:14.5px; line-height:1.78; color:var(--ink); margin-bottom:13px}
+  em{color:var(--ledger); font-style:italic}
+
+  .quote{background:rgba(15,32,56,0.06); border-left:2px solid var(--stamp); padding:16px 20px; margin:20px 0; border-radius:0 6px 6px 0}
+  .quote p{margin:0 0 7px; font-size:14.5px; font-style:italic}
+  .quote cite{font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--stamp); font-style:normal; letter-spacing:0.04em}
+
+  .note{
+    background:var(--paper2); border:1px solid var(--rule); border-radius:6px;
+    padding:15px 18px; margin:18px 0; display:flex; gap:13px; align-items:flex-start;
+  }
+  .note-icon{font-size:22px; flex-shrink:0; margin-top:1px}
+  .note-text{font-size:13px; line-height:1.65; color:var(--ink-dim)}
+  .note-text strong{color:var(--ink)}
+
+  .tl{margin:18px 0 6px; border-left:2px dashed var(--rule); padding-left:20px}
+  .tl-item{margin-bottom:16px; position:relative}
+  .tl-item::before{
+    content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%;
+    background:var(--stamp); border:2px solid var(--paper); box-shadow:0 0 0 1px var(--rule);
+  }
+  .tl-date{font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--stamp); margin-bottom:3px}
+  .tl-text{font-size:13.5px; color:var(--ink-dim); line-height:1.6; margin:0}
+
+  .ctx{ background:linear-gradient(160deg,#0f2038,#050d18); color:#e6ecf2; border-radius:8px; padding:24px 26px; margin-top:26px; border:1px solid #1e5c8c; }
+  .ctx-label{font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.2em; text-transform:uppercase; color:#8fbfe0; margin-bottom:10px; font-weight:600}
+  .ctx p{font-family:'Newsreader',serif; font-size:13.5px; color:rgba(230,236,242,0.88); line-height:1.7; margin:0}
+  .ctx p + p{margin-top:10px}
+
+  .foot{
+    border-top:1px dashed var(--rule); padding:16px 48px; display:flex; justify-content:space-between;
+    font-family:'IBM Plex Mono',monospace; font-size:9.5px; color:var(--ink-dim); letter-spacing:0.05em;
+  }
+
+  @media(max-width:768px){
+    .cols{grid-template-columns:1fr}
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .head{padding:48px 24px 24px}
+    .body{padding:24px 24px 32px}
+    .foot{padding:14px 24px}
+    .stamp{width:58px; height:58px; top:22px; right:20px}
+    h1{font-size:26px; max-width:100%}
+    nav{padding:14px 16px}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo" onclick="window.location.href='../index.html'">ECG Prépa</div>
+  <div class="breadcrumb">
+    <a href="../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../culture-generale.html">Culture Générale</a>
+    <span class="sep">/</span>
+    <span class="current">Bretton Woods</span>
+  </div>
+</nav>
+
+<div class="card">
+  <div class="tab">Dossier n° 018</div>
+  <div class="stamp"><span>Fiche<br>vérifiée</span></div>
+
+  <div class="head">
+    <div class="catno">CLASSÉE SOUS — <b>Économie · Relations internationales · Institutions</b></div>
+    <h1>Bretton Woods : l'architecture monétaire mondiale</h1>
+    <p class="intro">En juillet 1944, alors que la Seconde Guerre mondiale n'est pas encore achevée, 730 délégués de 44 pays se réunissent dans un hôtel du New Hampshire pour bâtir l'ordre monétaire et financier de l'après-guerre. De cette conférence naissent le FMI, la Banque mondiale et un système de changes fixes arrimé au dollar — l'architecture qui, bien qu'effondrée en 1971, structure encore la gouvernance économique mondiale.</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><span class="stat-num">44</span><span class="stat-desc">Pays représentés<br>à la conférence</span></div>
+    <div class="stat"><span class="stat-num">1944</span><span class="stat-desc">Conférence de<br>Bretton Woods</span></div>
+    <div class="stat"><span class="stat-num">35$</span><span class="stat-desc">Once d'or, parité fixe<br>du dollar jusqu'en 1971</span></div>
+    <div class="stat"><span class="stat-num">1971</span><span class="stat-desc">Fin de la convertibilité,<br>« choc Nixon »</span></div>
+  </div>
+
+  <div class="body">
+    <div class="cols">
+
+      <div>
+        <div class="sub">Tirer les leçons de l'entre-deux-guerres</div>
+        <p>La conférence monétaire et financière des Nations unies se tient du 1er au 22 juillet 1944 à Bretton Woods, dans le New Hampshire, alors que le débarquement en Normandie a eu lieu quelques semaines plus tôt. L'objectif est d'éviter la répétition du chaos économique de l'entre-deux-guerres : dévaluations compétitives, protectionnisme en cascade et effondrement des échanges qui ont aggravé la Grande Dépression et nourri les tensions ayant mené à la guerre.</p>
+        <p>Les négociations sont dominées par l'affrontement entre deux plans rivaux : celui de l'économiste britannique John Maynard Keynes, qui propose une monnaire internationale neutre, le <em>bancor</em>, et celui de l'Américain Harry Dexter White, représentant du Trésor des États-Unis, qui impose finalement sa vision centrée sur le dollar.</p>
+
+        <div class="quote">
+          <p>« Les mesures adoptées ici seront jugées bonnes ou mauvaises selon un seul critère : contribuent-elles à une prospérité durable, largement partagée ? »</p>
+          <cite>— Henry Morgenthau, secrétaire au Trésor américain, discours d'ouverture, 1944</cite>
+        </div>
+
+        <div class="sub">Un système de changes fixes ajustables</div>
+        <p>Le compromis final instaure un système de parités fixes mais ajustables : chaque monnaie est arrimée au dollar américain, lui-même convertible en or à un taux fixe de 35 dollars l'once. Les pays s'engagent à défendre leur parité, avec la possibilité de la réajuster en cas de « déséquilibre fondamental » de leur balance des paiements.</p>
+
+        <div class="note">
+          <div class="note-icon">🏛️</div>
+          <div class="note-text"><strong>Deux institutions jumelles :</strong> la conférence crée le Fonds monétaire international (FMI), chargé de surveiller le système et de prêter aux pays en difficulté de balance des paiements, et la Banque internationale pour la reconstruction et le développement (BIRD), ancêtre de la Banque mondiale, dédiée initialement à la reconstruction de l'Europe.</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="sub">Le « privilège exorbitant » du dollar</div>
+        <p>En faisant du dollar la seule monnaie directement convertible en or, Bretton Woods installe les États-Unis au centre du système monétaire mondial, une position que le ministre français des Finances Valéry Giscard d'Estaing qualifiera en 1965 de « privilège exorbitant » : les États-Unis peuvent financer leurs déficits simplement en émettant leur propre monnaie, utilisée comme réserve par le reste du monde.</p>
+
+        <div class="quote">
+          <p>« Le dollar est notre monnaie, mais c'est votre problème. »</p>
+          <cite>— John Connally, secrétaire au Trésor américain, 1971</cite>
+        </div>
+
+        <div class="sub">L'effondrement du système en 1971</div>
+        <p>À mesure que les déficits américains se creusent — guerre du Vietnam, programmes sociaux —, les réserves d'or américaines ne suffisent plus à garantir la convertibilité promise. Le 15 août 1971, le président Richard Nixon suspend unilatéralement la convertibilité du dollar en or, un choc connu sous le nom de <em>Nixon Shock</em>. Les accords de la Jamaïque, en 1976, entérinent officiellement le passage à un système de changes flottants.</p>
+
+        <div class="sub">Chronologie</div>
+        <div class="tl">
+          <div class="tl-item"><div class="tl-date">Juil. 1944</div><p class="tl-text">Conférence de Bretton Woods, 44 pays présents.</p></div>
+          <div class="tl-item"><div class="tl-date">1945</div><p class="tl-text">Création officielle du FMI et de la BIRD (Banque mondiale).</p></div>
+          <div class="tl-item"><div class="tl-date">1958</div><p class="tl-text">Retour à la convertibilité des principales monnaies européennes.</p></div>
+          <div class="tl-item"><div class="tl-date">1965</div><p class="tl-text">Giscard d'Estaing dénonce le « privilège exorbitant » du dollar.</p></div>
+          <div class="tl-item"><div class="tl-date">15 août 1971</div><p class="tl-text">Nixon suspend la convertibilité du dollar en or (Nixon Shock).</p></div>
+          <div class="tl-item"><div class="tl-date">1976</div><p class="tl-text">Accords de la Jamaïque : officialisation des changes flottants.</p></div>
+        </div>
+
+        <div class="ctx">
+          <div class="ctx-label">Un héritage institutionnel toujours actif</div>
+          <p>Si le système de parités fixes a disparu, les institutions nées à Bretton Woods, FMI et Banque mondiale, continuent de structurer la gouvernance économique mondiale et restent régulièrement critiquées pour la sous-représentation des pays émergents dans leur gouvernance, alimentant les débats sur une réforme de l'ordre économique international face à la montée de la Chine.</p>
+          <p>Incontournable pour les sujets sur la monnaie et la souveraineté, la gouvernance économique mondiale, la puissance américaine, ou les institutions internationales et leur légitimité.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="foot"><span>ECG Prépa — Culture Générale</span><span>Dossier n° 018 · Économie</span></div>
+</div>
+
+</body>
+</html>

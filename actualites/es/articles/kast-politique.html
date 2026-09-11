@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Kast : la droite dure au pouvoir au Chili</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #c0392b;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #c0392b; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #1a4f9c; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #c0392b; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #c0392b; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #c0392b; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#c0392b; border-color:#c0392b; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  /* Article styles */
+  .ap-band { background: linear-gradient(90deg, #c0392b, #1a4f9c, #c0392b); text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(13,27,42,0.95); padding:12px 60px; border-bottom: 1px solid rgba(192,57,43,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#e8c840; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative;z-index:1;}
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(192,57,43,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(192,57,43,0.2);   color:#e88080; border:1px solid rgba(192,57,43,0.35); }
+  .ap-tag-navy   { background:rgba(13,27,42,0.6);    color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);    color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2);  color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2);  color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);   color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);    color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #e8c840; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(192,57,43,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(232,200,64,0.7); }
+
+  /* Rich article components */
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#e8c840; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(232,200,64,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#071422,#0d2540); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #e8c840; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(232,200,64,0.06),rgba(232,200,64,0.02)); border-left:3px solid #e8c840; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(232,200,64,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(232,200,64,0.7); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(13,27,42,0.9),rgba(7,16,28,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(192,57,43,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#e8c840; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(192,57,43,0.06); border:1px solid rgba(192,57,43,0.18); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(232,200,64,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#e8c840; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(232,200,64,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#e8c840; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(13,27,42,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-es-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-es.html">Espagnol</a>
+    <span class="sep">/</span>
+    <a href="../chili.html">Chili</a>
+    <span class="sep">/</span>
+    <span class="current">Politique de Kast</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-es" class="ap-lang-btn" onclick="setLang('es')">🇨🇱 ES</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇨🇱 Kast et la droite chilienne</div>
+<div class="ap-back-bar">
+  <a href="../chili.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+    <div class="ap-hero-img-wrap"><img class="ap-hero-img" src="../images/kast-politique.jpg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+    <!-- SECTION FR -->
+    <div class="ap-fr-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-red">🇨🇱 Chili</span>
+          <span class="ap-tag ap-tag-gold">Politique</span>
+          <span class="ap-tag ap-tag-navy">Conservatisme</span>
+          <span class="ap-tag ap-tag-blue">Économie</span>
+          <span class="ap-tag ap-tag-orange">Sécurité</span>
+        </div>
+        <div class="ap-date">Avril 2026 — ECG Prépa · Chili</div>
+        <h1 class="ap-title">José Antonio Kast au pouvoir : le Chili vire à droite toute</h1>
+        <p class="ap-intro">Élu en novembre 2025 dans un contexte de crise sécuritaire et de rejet du gouvernement Boric, José Antonio Kast incarne un conservatisme dur inédit dans le Chili post-dictature. Entre agenda sécuritaire ambitieux, libéralisme économique et tensions institutionnelles, ses premiers mois au pouvoir dessinent un virage politique majeur pour l'Amérique latine.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red"><span class="ap-stat-num">+40 %</span><span class="ap-stat-desc">Hausse des homicides<br>sous Boric (2022–2025)</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">52,4 %</span><span class="ap-stat-desc">Score de Kast<br>au 2e tour (nov. 2025)</span></div>
+          <div class="ap-stat"><span class="ap-stat-num">4,2 %</span><span class="ap-stat-desc">Croissance du PIB<br>prévision 2026</span></div>
+          <div class="ap-stat green"><span class="ap-stat-num">5,1 %</span><span class="ap-stat-desc">Taux de chômage<br>début 2026</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Le contexte : un Chili fracturé après Boric</div>
+            <p>Lorsque José Antonio Kast prête serment le 11 mars 2026, il hérite d'un pays profondément divisé. Le mandat de Gabriel Boric (2022–2026) aura été marqué par deux échecs constitutionnels retentissants — le projet de constitution progressiste rejeté à 62 % en septembre 2022, puis le contre-projet conservatiste rejeté à son tour en décembre 2023 —, laissant le Chili dans un vide institutionnel prolongé. La montée en puissance du crime organisé, notamment dans les régions de La Araucanía et dans les ports du nord, a dominé les dernières années du débat public.</p>
+            <p>C'est sur ce terreau de frustration sécuritaire et de désillusion politique que Kast a construit sa victoire. Fondateur du Partido Republicano en 2019, après avoir quitté l'UDI — héritière de la droite pinochetiste —, il avait déjà atteint le second tour en 2021 avant de s'incliner face à Boric. Son retour en 2025 s'appuie sur une coalition élargie à la droite traditionnelle de Chile Vamos et sur une campagne centrée sur trois axes : ordre, croissance et frontières.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Prise de fonctions</div><div class="ap-fact-val">11 mars 2026</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Parti</div><div class="ap-fact-val">Partido Republicano</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Coalition</div><div class="ap-fact-val">Republicanos + Chile Vamos</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Parlement</div><div class="ap-fact-val">Majorité relative à la Cámara</div></div>
+            </div>
+
+            <div class="ap-sub">La campagne : la sécurité comme axe central</div>
+            <p>La campagne de Kast a marqué un tournant dans la politique chilienne par sa radicalité assumée. Sur l'immigration, il a plaidé pour la fermeture de la frontière nord avec le Pérou et la Bolivie, la création d'un « fossé physique » pour stopper les entrées irrégulières, et l'expulsion accélérée des étrangers en situation irrégulière. Sur la sécurité intérieure, il a promis de déclarer l'état d'urgence dans les zones de narco-trafic et de confier à l'armée des missions de maintien de l'ordre aux côtés des carabiniers.</p>
+            <p>Sur le plan économique, sa plateforme s'est inscrite dans une orthodoxie libérale classique : réduction de l'impôt sur les sociétés, abandon du projet de réforme fiscale de Boric, assouplissement du code du travail et relance de l'investissement minier — secteur clé d'une économie chilienne largement tributaire du cuivre.</p>
+
+            <div class="ap-sub">Chronologie : les premiers mois d'un mandat sous tension</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">Nov. 2025</div><p class="ap-tl-text">Victoire au second tour (52,4 % contre Jeannette Jara, candidate de la gauche unie). Kast devient le président le plus à droite du Chili depuis le retour à la démocratie en 1990.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Mars 2026</div><p class="ap-tl-text">Investiture. Déclaration immédiate de l'état d'urgence dans quatre régions du nord (Tarapacá, Antofagasta) et en La Araucanía. Déploiement de 3 000 militaires aux frontières.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Mars–Avr. 2026</div><p class="ap-tl-text">Présentation du projet de loi sur la sécurité (Ley de Seguridad Interior) au Congrès, durcissant les peines pour les crimes liés au narco et facilitant les expulsions. Tensions avec l'opposition de gauche.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Avr. 2026</div><p class="ap-tl-text">Annonce du plan économique « Chile Crece » : baisse de l'IS de 27 % à 22 %, assouplissement des permis environnementaux pour les projets miniers, révision des accords avec les communautés mapuches.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">La politique sécuritaire : entre efficacité et polémiques</div>
+            <p>Le premier acte fort du gouvernement Kast a été la déclaration de l'état d'urgence dans les zones les plus affectées par la criminalité organisée. Cette mesure, qui confie à l'armée des prérogatives élargies de contrôle des personnes et des zones frontalières, a suscité un vif débat constitutionnel. Des organisations de défense des droits humains ont saisi la Cour suprême, arguant que la prolongation de l'état d'urgence au-delà de quinze jours requiert l'approbation du Congrès — approbation que Kast a obtenue de justesse grâce à ses alliés de Chile Vamos.</p>
+            <p>Les premières semaines ont vu des opérations spectaculaires dans les quartiers contrôlés par des bandes vénézuéliennes (Tren de Aragua) à Santiago et Iquique. Si le gouvernement a enregistré plusieurs centaines d'interpellations, les experts criminologues soulignent que ces opérations coup-de-poing ont un effet limité sur les structures des réseaux criminels, sans s'attaquer aux racines économiques du phénomène.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Indicateur</th><th>2022 (Boric)</th><th>Avr. 2026</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Homicides (pour 100 000 hab.)</td><td>4,6</td><td class="ap-cell-bold">6,4</td></tr>
+                <tr><td class="ap-cell-bold">Migrants en situation irrégulière</td><td>~400 000</td><td class="ap-cell-bold">~500 000</td></tr>
+                <tr><td class="ap-cell-bold">Approbation du gouvernement</td><td>—</td><td class="ap-cell-bold">~51 %</td></tr>
+                <tr><td class="ap-cell-bold">Croissance PIB (annuelle)</td><td>2,4 %</td><td class="ap-cell-bold">4,2 % (prév.)</td></div></tr>
+                <tr><td class="ap-cell-bold">Confiance dans les inst.</td><td>25 %</td><td class="ap-cell-bold">31 %</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">⚠️</div>
+              <div class="ap-info-text"><strong>Question mapuche :</strong> la tension dans les régions du sud reste un dossier hautement sensible. Kast a suspendu les négociations entamées par Boric sur la restitution de terres ancestrales et a renforcé la présence militaire en La Araucanía, suscitant la condamnation des organisations indigènes et des rapporteurs de l'ONU.</div>
+            </div>
+
+            <div class="ap-sub">L'agenda économique : libéralisme orthodoxe</div>
+            <p>Sur le plan économique, Kast entend faire du Chili le fer de lance du libéralisme en Amérique latine. Son plan « Chile Crece » prévoit une réduction progressive de l'impôt sur les sociétés, la suppression de plusieurs taxes sectorielles introduites par Boric, et une simplification draconienne des procédures d'octroi de permis environnementaux pour les projets miniers et énergétiques.</p>
+            <p>Le secteur du cuivre, qui représente environ 50 % des exportations chiliennes, est au cœur de cette stratégie. Kast souhaite accélérer les projets de nouvelles mines à ciel ouvert et d'expansion des gisements existants, tout en révisant les conditions imposées à Codelco — la compagnie nationale — pour accroître sa productivité. Cette politique attire les investisseurs étrangers mais inquiète les défenseurs de l'environnement dans des zones déjà soumises au stress hydrique.</p>
+
+            <div class="ap-quote">
+              <p>« Chile necesita orden, crecimiento y fronteras que funcionen. Con esas tres cosas, recuperamos el país. »</p>
+              <cite>— José Antonio Kast, discours d'investiture, 11 mars 2026</cite>
+            </div>
+            <div class="ap-quote">
+              <p>« Lo que propone Kast es volver a un modelo que ya fracasó. La seguridad no se resuelve con militares en las calles. »</p>
+              <cite>— Gabriel Boric, ex-président, mars 2026</cite>
+            </div>
+
+            <div class="ap-sub">Position géopolitique : ancrage dans la droite internationale</div>
+            <p>En politique étrangère, Kast a opéré un repositionnement net. Le Chili se rapproche des États-Unis de Donald Trump — avec lequel Kast entretient des relations cordiales — et de l'Argentine de Milei, avec lequel il partage plusieurs convergences idéologiques. Les deux présidents ont tenu un sommet bilatéral dès avril 2026, évoquant une coordination sur les politiques migratoires et sécuritaires dans le Cône Sud.</p>
+            <p>En revanche, les relations avec le Mexique de Claudia Sheinbaum et avec le Brésil de Lula se sont refroidies. Kast a également suspendu la participation active du Chili au Forum de São Paulo et distancé le pays des instances régionales perçues comme proches des gauches latino-américaines. Cette recomposition géopolitique dessine une nouvelle fracture dans l'intégration régionale.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Un pari risqué sur la durée</div>
+              <p>La victoire de Kast représente un moment charnière pour la démocratie chilienne, longtemps citée en exemple de stabilité institutionnelle en Amérique latine. Sa capacité à tenir ses promesses sécuritaires sans dériver vers l'autoritarisme, à relancer la croissance sans accentuer les inégalités structurelles, et à gouverner avec une majorité parlementaire fragile définira la portée réelle de ce virage à droite. Le Chili, laboratoire politique depuis les années 1970, reste sous observation.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-fr-section -->
+
+    <!-- SECTION ES -->
+    <div class="ap-es-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-red">🇨🇱 Chile</span>
+          <span class="ap-tag ap-tag-gold">Política</span>
+          <span class="ap-tag ap-tag-navy">Conservadurismo</span>
+          <span class="ap-tag ap-tag-blue">Economía</span>
+          <span class="ap-tag ap-tag-orange">Seguridad</span>
+        </div>
+        <div class="ap-date">Abril 2026 — ECG Prépa · Chile</div>
+        <h1 class="ap-title">José Antonio Kast en el poder : Chile gira a la derecha</h1>
+        <p class="ap-intro">Elegido en noviembre de 2025 en un contexto de crisis de seguridad y rechazo al gobierno Boric, José Antonio Kast encarna un conservadurismo duro inédito en el Chile post-dictadura. Entre agenda de seguridad ambiciosa, liberalismo económico y tensiones institucionales, sus primeros meses en el poder dibujan un viraje político mayor para América Latina.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red"><span class="ap-stat-num">+40 %</span><span class="ap-stat-desc">Aumento de homicidios<br>bajo Boric (2022–2025)</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">52,4 %</span><span class="ap-stat-desc">Resultado de Kast<br>en 2ª vuelta (nov. 2025)</span></div>
+          <div class="ap-stat"><span class="ap-stat-num">4,2 %</span><span class="ap-stat-desc">Crecimiento del PIB<br>previsión 2026</span></div>
+          <div class="ap-stat green"><span class="ap-stat-num">5,1 %</span><span class="ap-stat-desc">Tasa de desempleo<br>principios de 2026</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">El contexto: un Chile fracturado tras Boric</div>
+            <p>Cuando José Antonio Kast jura su cargo el 11 de marzo de 2026, hereda un país profundamente dividido. El mandato de Gabriel Boric (2022–2026) estuvo marcado por dos sonados fracasos constitucionales —el proyecto de constitución progresista rechazado con un 62 % en septiembre de 2022, luego el contraproyecto conservador rechazado a su vez en diciembre de 2023—, dejando a Chile en un prolongado vacío institucional. El auge del crimen organizado, especialmente en las regiones de La Araucanía y en los puertos del norte, dominó los últimos años del debate público.</p>
+            <p>Sobre este terreno de frustración en materia de seguridad y desilusión política construyó Kast su victoria. Fundador del Partido Republicano en 2019, tras abandonar la UDI —heredera de la derecha pinochetista—, ya había alcanzado la segunda vuelta en 2021 antes de caer ante Boric. Su regreso en 2025 se apoya en una coalición ampliada a la derecha tradicional de Chile Vamos y en una campaña centrada en tres ejes: orden, crecimiento y fronteras.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Toma de posesión</div><div class="ap-fact-val">11 de marzo de 2026</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Partido</div><div class="ap-fact-val">Partido Republicano</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Coalición</div><div class="ap-fact-val">Republicanos + Chile Vamos</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Parlamento</div><div class="ap-fact-val">Mayoría relativa en la Cámara</div></div>
+            </div>
+
+            <div class="ap-sub">La campaña: la seguridad como eje central</div>
+            <p>La campaña de Kast marcó un punto de inflexión en la política chilena por su radicalidad asumida. Sobre inmigración, abogó por el cierre de la frontera norte con Perú y Bolivia, la creación de una «zanja física» para detener las entradas irregulares, y la expulsión acelerada de extranjeros en situación irregular. En materia de seguridad interior, prometió declarar el estado de excepción en las zonas de narcotráfico y encomendar al Ejército misiones de mantenimiento del orden junto a los carabineros.</p>
+            <p>En el plano económico, su plataforma se inscribió en una ortodoxia liberal clásica: reducción del impuesto de sociedades, abandono del proyecto de reforma fiscal de Boric, flexibilización del código laboral y relanzamiento de la inversión minera —sector clave de una economía chilena ampliamente dependiente del cobre.</p>
+
+            <div class="ap-sub">Cronología: los primeros meses de un mandato bajo tensión</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">Nov. 2025</div><p class="ap-tl-text">Victoria en la segunda vuelta (52,4 % frente a Jeannette Jara, candidata de la izquierda unida). Kast se convierte en el presidente más a la derecha de Chile desde el retorno a la democracia en 1990.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Mar. 2026</div><p class="ap-tl-text">Investidura. Declaración inmediata del estado de excepción en cuatro regiones del norte (Tarapacá, Antofagasta) y en La Araucanía. Despliegue de 3.000 militares en las fronteras.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Mar.–Abr. 2026</div><p class="ap-tl-text">Presentación del proyecto de Ley de Seguridad Interior al Congreso, que endurece las penas por delitos vinculados al narcotráfico y facilita las expulsiones. Tensiones con la oposición de izquierda.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Abr. 2026</div><p class="ap-tl-text">Anuncio del plan económico «Chile Crece»: bajada del IS del 27 % al 22 %, flexibilización de los permisos medioambientales para proyectos mineros, revisión de los acuerdos con las comunidades mapuches.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">La política de seguridad: entre eficacia y polémicas</div>
+            <p>El primer acto firme del gobierno Kast fue la declaración del estado de excepción en las zonas más afectadas por el crimen organizado. Esta medida, que otorga al Ejército atribuciones ampliadas de control de personas y de zonas fronterizas, suscitó un vivo debate constitucional. Organizaciones de defensa de los derechos humanos recurrieron ante la Corte Suprema, argumentando que la prórroga del estado de excepción más allá de quince días requiere la aprobación del Congreso —aprobación que Kast obtuvo por escaso margen gracias a sus aliados de Chile Vamos.</p>
+            <p>Las primeras semanas vieron operaciones espectaculares en los barrios controlados por bandas venezolanas (Tren de Aragua) en Santiago e Iquique. Si bien el gobierno registró varios centenares de detenciones, los expertos criminólogos señalan que estas operaciones de golpe de efecto tienen un impacto limitado sobre las estructuras de las redes criminales, sin abordar las raíces económicas del fenómeno.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Indicador</th><th>2022 (Boric)</th><th>Abr. 2026</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Homicidios (por 100 000 hab.)</td><td>4,6</td><td class="ap-cell-bold">6,4</td></tr>
+                <tr><td class="ap-cell-bold">Migrantes irregulares</td><td>~400 000</td><td class="ap-cell-bold">~500 000</td></tr>
+                <tr><td class="ap-cell-bold">Aprobación del gobierno</td><td>—</td><td class="ap-cell-bold">~51 %</td></tr>
+                <tr><td class="ap-cell-bold">Crecimiento PIB (anual)</td><td>2,4 %</td><td class="ap-cell-bold">4,2 % (prev.)</td></tr>
+                <tr><td class="ap-cell-bold">Confianza en las inst.</td><td>25 %</td><td class="ap-cell-bold">31 %</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">⚠️</div>
+              <div class="ap-info-text"><strong>La cuestión mapuche:</strong> la tensión en las regiones del sur sigue siendo un expediente altamente sensible. Kast suspendió las negociaciones iniciadas por Boric sobre la restitución de tierras ancestrales y reforzó la presencia militar en La Araucanía, lo que generó la condena de las organizaciones indígenas y de los relatores de la ONU.</div>
+            </div>
+
+            <div class="ap-sub">La agenda económica: liberalismo ortodoxo</div>
+            <p>En el plano económico, Kast pretende convertir a Chile en la punta de lanza del liberalismo en América Latina. Su plan «Chile Crece» prevé una reducción progresiva del impuesto de sociedades, la supresión de varios impuestos sectoriales introducidos por Boric, y una simplificación drástica de los procedimientos de otorgamiento de permisos medioambientales para proyectos mineros y energéticos.</p>
+            <p>El sector del cobre, que representa cerca del 50 % de las exportaciones chilenas, ocupa el centro de esta estrategia. Kast desea acelerar los proyectos de nuevas minas a cielo abierto y la expansión de los yacimientos existentes, revisando al mismo tiempo las condiciones impuestas a Codelco —la empresa nacional— para aumentar su productividad. Esta política atrae a los inversores extranjeros, pero inquieta a los defensores del medio ambiente en zonas ya sometidas a estrés hídrico.</p>
+
+            <div class="ap-quote">
+              <p>« Chile necesita orden, crecimiento y fronteras que funcionen. Con esas tres cosas, recuperamos el país. »</p>
+              <cite>— José Antonio Kast, discurso de investidura, 11 de marzo de 2026</cite>
+            </div>
+            <div class="ap-quote">
+              <p>« Lo que propone Kast es volver a un modelo que ya fracasó. La seguridad no se resuelve con militares en las calles. »</p>
+              <cite>— Gabriel Boric, expresidente, marzo de 2026</cite>
+            </div>
+
+            <div class="ap-sub">Posición geopolítica: anclaje en la derecha internacional</div>
+            <p>En política exterior, Kast ha efectuado un reposicionamiento claro. Chile se acerca a los Estados Unidos de Donald Trump —con quien Kast mantiene relaciones cordiales— y a la Argentina de Milei, con quien comparte varias convergencias ideológicas. Ambos presidentes celebraron una cumbre bilateral en abril de 2026, abordando una coordinación en materia de políticas migratorias y de seguridad en el Cono Sur.</p>
+            <p>En cambio, las relaciones con el México de Claudia Sheinbaum y con el Brasil de Lula se han enfriado. Kast también suspendió la participación activa de Chile en el Foro de São Paulo y distanció al país de las instancias regionales percibidas como cercanas a las izquierdas latinoamericanas. Esta recomposición geopolítica dibuja una nueva fractura en la integración regional.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Una apuesta arriesgada a largo plazo</div>
+              <p>La victoria de Kast representa un momento decisivo para la democracia chilena, citada durante mucho tiempo como ejemplo de estabilidad institucional en América Latina. Su capacidad para cumplir sus promesas de seguridad sin derivar hacia el autoritarismo, para relanzar el crecimiento sin acentuar las desigualdades estructurales, y para gobernar con una mayoría parlamentaria frágil definirá el alcance real de este giro a la derecha. Chile, laboratorio político desde los años setenta, sigue bajo observación.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-es-section -->
+
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — Chili — Avril 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-es').classList.toggle('active', lang === 'es');
+  const isEs = lang === 'es';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEs ? 'none' : 'block');
+  document.querySelectorAll('.ap-es-section').forEach(el => el.style.display = isEs ? 'block' : 'none');
+}
+setLang('fr');
+</script>
+</body>
+</html>

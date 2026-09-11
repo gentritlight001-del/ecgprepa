@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — PEN America : liberté d'expression et censure aux États-Unis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #b22234;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #b22234; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #3c3b6e; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #b22234; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #b22234; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #b22234; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#b22234; border-color:#b22234; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  /* Article styles */
+  .ap-band { background: linear-gradient(90deg, #3c3b6e, #b22234, #3c3b6e); text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(10,10,28,0.95); padding:12px 60px; border-bottom: 1px solid rgba(178,34,52,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#e8c84a; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(178,34,52,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(178,34,52,0.2);  color:#f08080; border:1px solid rgba(178,34,52,0.35); }
+  .ap-tag-navy   { background:rgba(60,59,110,0.4);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #e8c84a; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(178,34,52,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(232,200,74,0.7); }
+
+  /* Rich components */
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#e8c84a; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(232,200,74,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#071422,#0d2540); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat.navy   { background:linear-gradient(135deg,#0e0e3a,#2a2870); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #e8c84a; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(178,34,52,0.06),rgba(178,34,52,0.02)); border-left:3px solid #e8c84a; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(232,200,74,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(232,200,74,0.7); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(10,10,28,0.9),rgba(5,5,18,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(178,34,52,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#e8c84a; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(178,34,52,0.06); border:1px solid rgba(178,34,52,0.15); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(232,200,74,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#e8c84a; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(232,200,74,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#e8c84a; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(10,10,28,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-en-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-en.html">Anglais</a>
+    <span class="sep">/</span>
+    <a href="../etats-unis.html">États-Unis</a>
+    <span class="sep">/</span>
+    <span class="current">PEN America et la censure</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-en" class="ap-lang-btn" onclick="setLang('en')">🇺🇸 EN</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇺🇸 PEN America — Liberté d'expression et censure aux États-Unis</div>
+<div class="ap-back-bar">
+  <a href="../etats-unis.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+    <div class="ap-hero-img-wrap">
+      <img class="ap-hero-img" src="../images/pen-america-censorship.jpg" alt="PEN America et la censure aux États-Unis" onerror="this.parentElement.style.display='none'">
+    </div>
+
+    <!-- ══ SECTION FR ══ -->
+    <div class="ap-fr-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-navy">🇺🇸 États-Unis</span>
+          <span class="ap-tag ap-tag-red">Liberté d'expression</span>
+          <span class="ap-tag ap-tag-gold">Censure</span>
+          <span class="ap-tag ap-tag-green">Éducation</span>
+          <span class="ap-tag ap-tag-purple">Société civile</span>
+        </div>
+        <div class="ap-date">Avril 2026 — ECG Prépa · États-Unis</div>
+        <h1 class="ap-title">PEN America face à la censure : quand la liberté d'expression devient un champ de bataille politique</h1>
+        <p class="ap-intro">Fondée en 1922, PEN America est l'une des organisations les plus influentes du monde dans la défense de la liberté d'expression et des droits des écrivains. Depuis 2021, elle documente une vague sans précédent d'interdictions de livres dans les écoles publiques américaines et de censure des universités, une dynamique que l'administration Trump a encore accélérée dès son retour au pouvoir en janvier 2025. En avril 2025, son rapport phare qualifiait la situation d'«&nbsp;alarme à cinq sonnettes&nbsp;» pour la liberté d'expression aux États-Unis. Portrait d'une organisation en première ligne d'une bataille qui dépasse le monde des lettres.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red"><span class="ap-stat-num">23 000</span><span class="ap-stat-desc">Interdictions de livres<br>documentées depuis 2021</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">6 870</span><span class="ap-stat-desc">Cas recensés<br>en 2024-2025</span></div>
+          <div class="ap-stat green"><span class="ap-stat-num">14</span><span class="ap-stat-desc">Lois de censure<br>éducative adoptées en 2025</span></div>
+          <div class="ap-stat navy"><span class="ap-stat-num">350+</span><span class="ap-stat-desc">Mots et expressions<br>bannis par l'exécutif fédéral</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Qu'est-ce que PEN America ?</div>
+            <p>PEN America est la branche américaine de PEN International, réseau mondial fondé à Londres en 1921 pour défendre les écrivains persécutés et la liberté d'expression à travers le monde. L'organisation américaine, créée en 1922 à New York, réunit aujourd'hui plusieurs milliers de membres — auteurs, journalistes, traducteurs, éditeurs — et dispose d'un bureau à Washington pour ses activités de plaidoyer.</p>
+            <p>Ses missions se déclinent sur plusieurs fronts : soutien aux écrivains emprisonnés ou menacés à l'étranger, défense de la liberté de la presse aux États-Unis, lutte contre la censure dans les écoles et universités, et promotion de la diversité littéraire. L'organisation publie régulièrement des rapports de référence qui font autorité dans le débat public américain.</p>
+            <p>En février 2026, PEN America a nommé Summer Lopez et Clarisse Rosaz Shariyf co-directrices générales, après une période de transition à la tête de l'organisation. À son assemblée générale de décembre 2025, le romancier Dinaw Mengestu a été élu président du conseil d'administration.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Fondée en</div><div class="ap-fact-val">1922 (New York)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Affiliation</div><div class="ap-fact-val">PEN International (depuis 1921)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Co-CEOs (2026)</div><div class="ap-fact-val">Summer Lopez &amp; Clarisse Rosaz Shariyf</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Président du CA</div><div class="ap-fact-val">Dinaw Mengestu (élu déc. 2025)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Siège</div><div class="ap-fact-val">New York (+ bureau Washington)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Dernier grand rapport</div><div class="ap-fact-val">Avril 2025 — «&nbsp;Five-Alarm Fire&nbsp;»</div></div>
+            </div>
+
+            <div class="ap-sub">Une vague d'interdictions de livres sans précédent</div>
+            <p>Depuis 2021, PEN America documente une explosion des interdictions de livres dans les écoles publiques américaines. Son bilan cumulé fait état de près de 23 000 cas recensés dans 45 États et 451 districts scolaires — un chiffre «&nbsp;sans précédent dans la vie de tout Américain vivant aujourd'hui&nbsp;», selon l'organisation.</p>
+            <p>Pour la seule année scolaire 2024-2025, 6 870 cas ont été enregistrés dans 23 États et 87 districts, portant sur 3 752 titres différents. La Floride concentrait le plus grand nombre de suppressions (2 304), suivie du Texas (1 781) et du Tennessee (1 622). Parmi les œuvres les plus touchées figurent des auteurs aussi reconnus que Toni Morrison, Margaret Atwood ou Judy Blume.</p>
+
+            <div class="ap-quote">
+              <p>«&nbsp;Une "normalisation quotidienne" de la censure, inquiétante et croissante, s'est aggravée et étendue sur les quatre dernières années. Le résultat est sans précédent.&nbsp;»</p>
+              <cite>— Kasey Meehan, directrice du programme Freedom to Read, PEN America, octobre 2025</cite>
+            </div>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">📚</div>
+              <div class="ap-info-text"><strong>Quels livres sont ciblés ?</strong> Les ouvrages visés représentent de manière disproportionnée des auteurs issus de minorités raciales, des personnages LGBTQ+, ou abordent des questions de violence sexuelle pour un lectorat adulte. Le roman <em>Looking for Alaska</em> de John Green a été le titre le plus fréquemment interdit, suivi de <em>Nineteen Minutes</em> de Jodi Picoult. Le Département de la Défense a par ailleurs retiré près de 590 titres des bibliothèques de ses établissements scolaires sur sept États et onze pays à la suite d'ordres exécutifs de Trump.</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">L'administration Trump : un nouveau vecteur de censure</div>
+            <p>Le retour de Donald Trump à la Maison Blanche en janvier 2025 a représenté un tournant majeur selon PEN America. Pour la première fois, le gouvernement fédéral est devenu un acteur direct de la censure éducative — et non plus seulement un spectateur des dynamiques locales et étatiques. L'organisation a qualifié cette évolution d'«&nbsp;alarme à cinq sonnettes&nbsp;» dans son rapport de bilan des 100 premiers jours de l'administration, publié en avril 2025.</p>
+            <p>Parmi les mesures pointées par PEN America : le bannissement de plus de 350 mots et expressions dans les agences et documents fédéraux (incluant des termes liés au genre, à la diversité et au changement climatique) ; la prise de contrôle du Kennedy Center ; la censure des musées Smithsonian ; et le licenciement de la bibliothécaire du Congrès, la Dre Carla Hayden. Dès le 24 janvier 2025, le Département de l'éducation a classé onze plaintes relatives à des interdictions de livres comme une «&nbsp;imposture&nbsp;», supprimant par la même occasion le poste de coordinateur fédéral chargé de ce dossier.</p>
+
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">Janvier 2025</div><p class="ap-tl-text">Retour de Trump au pouvoir. Le Département de l'éducation classe les plaintes sur les interdictions de livres comme une «&nbsp;imposture&nbsp;» et supprime le poste de coordinateur dédié. Multiplication des ordres exécutifs bannissant des termes dans les documents fédéraux.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Avril 2025</div><p class="ap-tl-text">PEN America publie son rapport «&nbsp;A Five-Alarm Fire for Free Speech&nbsp;», dressant un bilan alarmant des 100 premiers jours de l'administration : plus de 350 mots bannis, prise de contrôle d'institutions culturelles, pression inédite sur les universités.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Octobre 2025</div><p class="ap-tl-text">Publication du bilan annuel sur les interdictions de livres (2024-2025) : 6 870 cas dans 23 États. PEN America dénonce la «&nbsp;normalisation&nbsp;» de la censure et l'émergence du gouvernement fédéral comme nouveau vecteur de pression.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Janvier 2026</div><p class="ap-tl-text">PEN America publie «&nbsp;America's Censored Campuses 2025 : Expanding the Web of Control&nbsp;», un rapport consacré à l'enseignement supérieur : 93 projets de loi de censure en 2025 dans 32 États, dont 21 promulgués, et cinq politiques administratives supplémentaires.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Février 2026</div><p class="ap-tl-text">PEN America conduit une délégation d'auteurs à Texas A&amp;M, aux côtés de 36 organisations partenaires, pour demander l'abrogation de deux politiques institutionnelles ayant conduit à la censure de cours entiers et à la fermeture du programme d'études de genre.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Avril 2026</div><p class="ap-tl-text">PEN America envoie une lettre signée par plus de 1 000 personnes au Conseil des régents de Texas A&amp;M, dénonçant des restrictions ayant conduit jusqu'à la suppression de lectures de Platon dans certains cours.</p></div>
+            </div>
+
+            <div class="ap-sub">Le combat pour les campus universitaires</div>
+            <p>Au-delà des écoles primaires et secondaires, PEN America a étendu son travail de documentation à l'enseignement supérieur. Son rapport de janvier 2026 dresse un tableau accablant : en 2025, 93 projets de loi de censure visant les universités ont été déposés dans 32 États, dont 21 ont été adoptés dans 15 États. Cinq politiques administratives supplémentaires ont également été mises en place par des responsables étatiques ou des conseils universitaires.</p>
+            <p>PEN America décrit deux formes de censure : directe (lois restreignant l'enseignement sur la race, le genre, l'histoire américaine ou les identités LGBTQ+) et indirecte (lois affaiblissant la gouvernance des facultés, fragilisant la tenure, ou démantelant les initiatives de diversité, d'équité et d'inclusion). L'organisation note que la précarisation des statuts universitaires — le taux de professeurs titulaires est passé de 53 % en 1987 à 32 % en 2021 — accroît la vulnérabilité des enseignants aux pressions politiques.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Un enjeu démocratique au-delà des livres</div>
+              <p>Pour PEN America, la censure des écoles et des universités n'est pas une question marginale : elle touche au cœur du fonctionnement d'une démocratie libérale. L'organisation souligne que les ouvrages et contenus visés reflètent avant tout des identités et des expériences minoritaires — et que leur suppression envoie un message puissant aux élèves sur leur place dans la société. Dans un contexte de polarisation politique extrême, l'action de PEN America illustre les tensions croissantes entre, d'un côté, des gouvernements qui invoquent les droits des parents et la «&nbsp;protection&nbsp;» des valeurs traditionnelles et, de l'autre, des organisations civiles qui y voient une offensive contre la liberté de penser, d'apprendre et d'enseigner.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-fr-section -->
+
+    <!-- ══ SECTION EN ══ -->
+    <div class="ap-en-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-navy">🇺🇸 United States</span>
+          <span class="ap-tag ap-tag-red">Free Expression</span>
+          <span class="ap-tag ap-tag-gold">Censorship</span>
+          <span class="ap-tag ap-tag-green">Education</span>
+          <span class="ap-tag ap-tag-purple">Civil Society</span>
+        </div>
+        <div class="ap-date">April 2026 — ECG Prépa · United States</div>
+        <h1 class="ap-title">PEN America and the Censorship Crisis: When Free Expression Becomes a Political Battlefield</h1>
+        <p class="ap-intro">Founded in 1922, PEN America is one of the world's most influential organisations defending free expression and the rights of writers. Since 2021, it has documented an unprecedented wave of book bans in American public schools and censorship of universities — a dynamic that the Trump administration sharply accelerated upon returning to power in January 2025. In April 2025, its flagship report described the situation as "a five-alarm fire" for free speech in the United States. A portrait of an organisation on the frontlines of a battle that extends far beyond the literary world.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red"><span class="ap-stat-num">23,000</span><span class="ap-stat-desc">Book bans documented<br>since 2021</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">6,870</span><span class="ap-stat-desc">Cases recorded<br>in 2024–2025</span></div>
+          <div class="ap-stat green"><span class="ap-stat-num">14</span><span class="ap-stat-desc">Educational censorship<br>laws enacted in 2025</span></div>
+          <div class="ap-stat navy"><span class="ap-stat-num">350+</span><span class="ap-stat-desc">Words and phrases<br>banned by the federal executive</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">What is PEN America?</div>
+            <p>PEN America is the U.S. branch of PEN International, a global network founded in London in 1921 to defend persecuted writers and free expression worldwide. The American organisation, established in New York in 1922, now brings together several thousand members — authors, journalists, translators, and publishers — and maintains a Washington office for its advocacy activities.</p>
+            <p>Its mission spans several fronts: supporting writers imprisoned or threatened abroad, defending press freedom within the United States, combating censorship in schools and universities, and promoting literary diversity. The organisation regularly publishes landmark reports that carry significant weight in American public debate.</p>
+            <p>In February 2026, PEN America appointed Summer Lopez and Clarisse Rosaz Shariyf as co-Chief Executive Officers, following a leadership transition. At its December 2025 annual general meeting, novelist Dinaw Mengestu was elected president of the board of directors.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Founded</div><div class="ap-fact-val">1922 (New York)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Affiliation</div><div class="ap-fact-val">PEN International (since 1921)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Co-CEOs (2026)</div><div class="ap-fact-val">Summer Lopez &amp; Clarisse Rosaz Shariyf</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Board President</div><div class="ap-fact-val">Dinaw Mengestu (elected Dec. 2025)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Headquarters</div><div class="ap-fact-val">New York (+ Washington D.C. office)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Latest major report</div><div class="ap-fact-val">April 2025 — "Five-Alarm Fire"</div></div>
+            </div>
+
+            <div class="ap-sub">An Unprecedented Wave of Book Bans</div>
+            <p>Since 2021, PEN America has documented an explosion of book bans in American public schools. Its cumulative tally stands at nearly 23,000 cases across 45 states and 451 school districts — a figure "without precedent in the life of any living American," according to the organisation.</p>
+            <p>For the 2024–2025 school year alone, 6,870 cases were recorded across 23 states and 87 districts, covering 3,752 different titles. Florida had the highest number of removals (2,304), followed by Texas (1,781) and Tennessee (1,622). Among the most frequently targeted works are books by authors of the stature of Toni Morrison, Margaret Atwood, and Judy Blume.</p>
+
+            <div class="ap-quote">
+              <p>"A disturbing 'everyday banning' and normalisation of censorship has worsened and spread over the last four years. The result is unprecedented."</p>
+              <cite>— Kasey Meehan, Director of the Freedom to Read Programme, PEN America, October 2025</cite>
+            </div>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">📚</div>
+              <div class="ap-info-text"><strong>Which books are targeted?</strong> The titles removed disproportionately feature authors from racial minorities, LGBTQ+ characters, or address sexual violence aimed at older readers. John Green's <em>Looking for Alaska</em> was the most frequently banned title, followed by Jodi Picoult's <em>Nineteen Minutes</em>. The Department of Defense separately removed nearly 590 titles from its school libraries across seven states and eleven countries following Trump executive orders.</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">The Trump Administration: A New Vector of Censorship</div>
+            <p>Donald Trump's return to the White House in January 2025 marked a turning point, according to PEN America. For the first time, the federal government became a direct actor in educational censorship — no longer merely a bystander to local and state-level dynamics. The organisation described this shift as "a five-alarm fire" in its report on the administration's first 100 days, published in April 2025.</p>
+            <p>Among the measures highlighted by PEN America: the banning of more than 350 words and phrases across federal agencies and documents (including terms related to gender, diversity, and climate science); the takeover of the Kennedy Center; censorship at the Smithsonian museums; and the dismissal of the Librarian of Congress, Dr. Carla Hayden. As early as January 24, 2025, the Department of Education dismissed eleven complaints related to book bans as a "hoax," simultaneously eliminating the federal coordinator position overseeing this issue.</p>
+
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">January 2025</div><p class="ap-tl-text">Trump returns to power. The Department of Education dismisses book ban complaints as a "hoax" and eliminates the dedicated coordinator role. A stream of executive orders bans terms from federal documents.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">April 2025</div><p class="ap-tl-text">PEN America publishes "A Five-Alarm Fire for Free Speech," a damning review of the administration's first 100 days: 350+ words banned, takeover of cultural institutions, and unprecedented pressure on universities.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">October 2025</div><p class="ap-tl-text">Annual book ban report (2024–2025): 6,870 cases in 23 states. PEN America denounces the "normalisation" of censorship and the emergence of the federal government as a new source of pressure.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">January 2026</div><p class="ap-tl-text">PEN America publishes "America's Censored Campuses 2025: Expanding the Web of Control," focused on higher education: 93 censorship bills introduced in 32 states in 2025, with 21 enacted and five additional administrative policies.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">February 2026</div><p class="ap-tl-text">PEN America leads a writer delegation to Texas A&amp;M alongside 36 partner organisations, calling for the repeal of two institutional policies that led to the censorship of entire courses and the announced closure of the Women's &amp; Gender Studies Programme.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">April 2026</div><p class="ap-tl-text">PEN America sends a letter signed by over 1,000 individuals to the Texas A&amp;M Board of Regents, denouncing restrictions that have led to the removal of readings from Plato in certain courses.</p></div>
+            </div>
+
+            <div class="ap-sub">The Battle for University Campuses</div>
+            <p>Beyond primary and secondary schools, PEN America has extended its documentation work to higher education. Its January 2026 report paints a bleak picture: in 2025, 93 censorship bills targeting universities were introduced in 32 states, with 21 enacted in 15 states. Five additional administrative policies were also put in place by state officials or university system boards.</p>
+            <p>PEN America identifies two forms of censorship: direct (laws restricting teaching on race, gender, American history, or LGBTQ+ identities) and indirect (laws weakening faculty governance, undermining tenure, or dismantling diversity, equity, and inclusion initiatives). The organisation notes that the growing precariousness of academic employment — the share of tenured faculty fell from 53% in 1987 to 32% in 2021 — increases instructors' vulnerability to political pressure.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">A Democratic Stake Beyond Books</div>
+              <p>For PEN America, the censorship of schools and universities is not a marginal issue: it strikes at the heart of how a liberal democracy functions. The organisation emphasises that the books and content being removed disproportionately reflect the identities and experiences of minority communities — and that their suppression sends a powerful message to students about their place in society. Against a backdrop of extreme political polarisation, PEN America's work illustrates the growing tensions between governments invoking parental rights and the defence of traditional values on one side, and civil society organisations that view these moves as an assault on the freedom to think, learn, and teach on the other.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-en-section -->
+
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — États-Unis — Avril 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-en').classList.toggle('active', lang === 'en');
+  const isEn = lang === 'en';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEn ? 'none' : 'block');
+  document.querySelectorAll('.ap-en-section').forEach(el => el.style.display = isEn ? 'block' : 'none');
+
+  const band = document.getElementById('ap-band');
+  if (band) band.textContent = isEn
+    ? '🇺🇸 PEN America — Free Expression and Censorship in the United States'
+    : '🇺🇸 PEN America — Liberté d\'expression et censure aux États-Unis';
+}
+setLang('fr');
+</script>
+</body>
+</html>

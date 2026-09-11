@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Maths Chapitre 7 : Ensembles, Applications</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false}]});"></script>
+<style>
+  :root {
+    --cream: #F6F4FA;
+    --dark: #1D1626;
+    --violet: #6C5B8C;
+    --violet-dark: #2A2138;
+    --violet-mid: #8B7BAE;
+    --violet-light: #ECE6F5;
+    --violet-border: #C7BADB;
+    --lilac: #E2D6F2;
+    --muted: #6E6478;
+    --accent: #6C5B8C;
+    --accent-soft: #6C5B8C22;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--dark); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid rgba(108,91,140,0.25);
+    background: var(--violet-dark); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--lilac); cursor: pointer; letter-spacing: 0.02em; }
+  .nav-logo a { color: inherit; text-decoration: none; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(246,244,250,0.5); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: inherit; text-decoration: none; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb a:hover span, .breadcrumb span:hover { color: var(--lilac); }
+  .breadcrumb .sep { color: rgba(246,244,250,0.25); }
+  .breadcrumb .current { color: #F6F4FA; cursor: default; }
+
+  /* ─── HERO ─── */
+  .ch-hero {
+    background: var(--violet-dark);
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ch-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236C5B8C' fill-opacity='0.18'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--lilac); margin-bottom: 1.5rem; opacity: 0.85; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 4rem); color: var(--cream); font-weight: 900; max-width: 900px; margin: 0 auto 1.5rem; line-height: 1.1; position: relative; z-index: 1; }
+  .ch-hero p { color: rgba(246,244,250,0.45); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  /* ─── TOC ─── */
+  .toc-bar { background: #EDE8F5; padding: 2rem; border-bottom: 1px solid var(--violet-border); }
+  .toc-inner { max-width: 960px; margin: 0 auto; }
+  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
+  .toc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.4rem; list-style: none; }
+  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: #241D30; font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
+  .toc-list a:hover { border-color: var(--violet-border); background: white; color: #000; }
+  .toc-num { font-family: "DM Mono", monospace; font-size: 0.65rem; color: var(--violet); flex-shrink: 0; margin-top: 0.15rem; }
+
+  /* ─── CONTENT ─── */
+  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 3rem; }
+
+  /* PART */
+  .math-part { margin-bottom: 5rem; }
+  .math-part:last-of-type { margin-bottom: 0; }
+  .math-part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--violet); }
+  .math-part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: var(--violet-border); line-height: 1; flex-shrink: 0; }
+  .math-part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--dark); line-height: 1.25; }
+
+  /* SECTION */
+  .math-section { margin-bottom: 3.5rem; }
+  .math-section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--violet-dark); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--violet); scroll-margin-top: 2rem; }
+  .math-subsection-title { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--violet); margin: 2rem 0 0.75rem; }
+
+  /* TEXT */
+  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: #241D2C; line-height: 1.85; font-weight: 300; }
+  .content strong { color: var(--dark); font-weight: 600; }
+
+  /* DÉFINITION CARD */
+  .def-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(108,91,140,0.10), 0 0 0 1px rgba(108,91,140,0.12);
+    display: flex;
+    margin: 1.4rem 0;
+  }
+  .def-accent-bar {
+    width: 5px;
+    background: linear-gradient(180deg, #A492C4 0%, #2A2138 100%);
+    flex-shrink: 0;
+    border-radius: 10px 0 0 10px;
+  }
+  .def-body { padding: 1.2rem 1.5rem; flex: 1; }
+  .def-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.65rem; }
+  .def-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--violet); font-weight: 500; }
+  .def-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--violet-dark); }
+  .def-body p { margin-bottom: 0.5rem; font-size: 0.93rem; line-height: 1.75; }
+  .def-body p:last-child { margin-bottom: 0; }
+  .def-body ul { padding-left: 1.4rem; margin: 0.3rem 0 0.5rem; }
+  .def-body li { font-size: 0.93rem; line-height: 1.8; margin-bottom: 0.35rem; }
+
+  /* PROPRIÉTÉ CARD */
+  .prop-card {
+    background: var(--violet-light);
+    border-radius: 8px;
+    border: 1px solid var(--violet-border);
+    border-left: 4px solid var(--violet);
+    padding: 1.2rem 1.5rem;
+    margin: 1.4rem 0;
+  }
+  .prop-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--violet-dark); font-weight: 700; margin-bottom: 0.6rem; }
+  .prop-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--violet-dark); margin-bottom: 0.7rem; }
+  .prop-card p { margin-bottom: 0.5rem; font-size: 0.93rem; color: var(--violet-dark); line-height: 1.75; }
+  .prop-card p:last-child { margin-bottom: 0; }
+  .prop-card ol, .prop-card ul { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .prop-card ol li, .prop-card ul li { font-size: 0.93rem; color: var(--violet-dark); line-height: 1.8; margin-bottom: 0.35rem; }
+
+  /* THÉORÈME CARD */
+  .thm-card {
+    background: var(--violet-dark);
+    color: var(--cream);
+    border-radius: 8px;
+    padding: 1.5rem 1.75rem;
+    margin: 1.4rem 0;
+  }
+  .thm-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--lilac); margin-bottom: 0.5rem; }
+  .thm-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--cream); margin-bottom: 0.75rem; }
+  .thm-card p { color: rgba(246,244,250,0.88); font-size: 0.93rem; margin-bottom: 0.5rem; line-height: 1.75; }
+  .thm-card p:last-child { margin-bottom: 0; }
+
+  /* MÉTHODE CARD */
+  .meth-card {
+    background: white;
+    border: 2px solid var(--violet);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.4rem 0;
+  }
+  .meth-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--violet); font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+  .meth-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--violet-dark); margin-bottom: 0.7rem; }
+  .meth-card p { font-size: 0.93rem; line-height: 1.75; margin-bottom: 0.5rem; }
+  .meth-card p:last-child { margin-bottom: 0; }
+  .meth-card ul, .meth-card ol { padding-left: 1.4rem; margin: 0.3rem 0 0.5rem; }
+  .meth-card li { font-size: 0.93rem; line-height: 1.8; margin-bottom: 0.3rem; }
+
+  /* REMARQUE */
+  .remark { background: white; border-left: 3px solid var(--violet-border); padding: 1rem 1.4rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; font-size: 0.9rem; color: #241D2C; line-height: 1.7; font-style: italic; }
+  .remark::before { content: 'Remarque — '; font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--violet); display: block; margin-bottom: 0.3rem; }
+
+  /* FORMULE DISPLAY */
+  .formula-block {
+    background: white;
+    border: 1px solid var(--violet-border);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.2rem 0;
+    text-align: center;
+    overflow-x: auto;
+  }
+  .formula-block .katex-display { margin: 0; }
+  .formula-block .katex { font-size: 1.05em; }
+
+  /* TABLE */
+  .math-table-wrap { overflow-x: auto; margin: 1.5rem 0; border-radius: 8px; border: 1px solid var(--violet-border); box-shadow: 0 2px 8px rgba(108,91,140,0.08); }
+  .math-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .math-table th { background: var(--violet-dark); color: var(--cream); font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.75rem 1rem; text-align: center; font-weight: 500; border: 1px solid rgba(255,255,255,0.1); }
+  .math-table td { padding: 0.65rem 1rem; text-align: center; border: 1px solid var(--violet-light); color: #241D2C; vertical-align: middle; background: white; line-height: 1.6; }
+  .math-table tr:nth-child(even) td { background: #F6F4FA; }
+  .math-table tr:hover td { background: var(--violet-light); }
+  .math-table td.left { text-align: left; }
+  .math-table .katex { font-size: 0.95em; }
+
+  /* KEY FACT */
+  .math-key { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 0.6rem; padding: 0.85rem 1.1rem; background: white; border: 1px solid var(--violet-light); border-radius: 6px; }
+  .math-key-bullet { width: 6px; height: 6px; background: var(--violet); border-radius: 50%; flex-shrink: 0; margin-top: 0.55rem; }
+  .math-key > div { font-size: 0.91rem; color: #241D2C; line-height: 1.75; font-weight: 300; }
+
+  /* INLINE MATH */
+  .katex { font-size: 1em; }
+  .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.2rem 0; }
+
+  /* DEUX COLONNES */
+  .two-col-formulas { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
+  .two-col-formulas .formula-block { margin: 0; }
+
+  /* TROIS COLONNES */
+  .three-col-formulas { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
+  .three-col-formulas .formula-block { margin: 0; }
+
+  /* HIGHLIGHT BOX */
+  .math-highlight { background: var(--violet-light); border-left: 4px solid var(--violet); padding: 1.25rem 1.75rem; margin: 1.5rem 0; color: var(--violet-dark); font-size: 0.93rem; line-height: 1.75; border-radius: 0 6px 6px 0; }
+
+  /* FOOTER */
+  .site-footer {
+    background: var(--violet-dark);
+    border-top: 1px solid rgba(108,91,140,0.35);
+    padding: 2.5rem 2rem;
+    text-align: center;
+  }
+  .site-footer .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--lilac);
+    letter-spacing: 0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+  /* BACK TO TOP */
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--violet); color: var(--cream); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 4px 14px rgba(108,91,140,0.45); opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 200; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+  .back-to-top:hover { background: var(--violet-mid); }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--violet-border); border-radius: 3px; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .two-col-formulas { grid-template-columns: 1fr; }
+    .three-col-formulas { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    @page { size: A4; margin: 15mm 14mm 15mm 14mm; }
+    nav, .back-to-top, .toc-bar, .site-footer { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    html, body { background: white !important; color: #000 !important; font-size: 10pt; width: 100% !important; }
+    .ch-hero { background: #2A2138 !important; padding: 0.9rem 1rem 0.7rem !important; }
+    .ch-hero::before { display: none !important; }
+    .ch-hero h1 { font-size: 16pt !important; color: #fff !important; margin-bottom: 0.3rem !important; }
+    .ch-hero .chap-label { font-size: 7pt !important; color: #E2D6F2 !important; margin-bottom: 0.4rem !important; }
+    .ch-hero p { font-size: 7pt !important; color: #E2D6F2 !important; margin: 0 !important; }
+    .content { max-width: 100% !important; padding: 0.6rem 0 !important; margin: 0 !important; }
+    .content p { font-size: 9pt !important; line-height: 1.5 !important; margin-bottom: 0.45rem !important; color: #000 !important; }
+    .math-part { margin-bottom: 0.8rem; page-break-inside: auto; }
+    .math-part-header { page-break-after: avoid; padding-bottom: 0.6rem !important; margin-bottom: 1rem !important; border-bottom: 2pt solid #6C5B8C !important; }
+    .math-part-num { font-size: 2rem !important; color: #C7BADB !important; }
+    .math-part-title { font-size: 13pt !important; }
+    .math-section { page-break-inside: auto; margin-bottom: 0.8rem; }
+    .math-section-title { page-break-after: avoid; font-size: 11pt !important; padding-left: 0.7rem !important; border-left: 2.5pt solid #6C5B8C !important; margin-bottom: 0.55rem !important; color: #2A2138 !important; }
+    .math-subsection-title { page-break-after: avoid; font-size: 7pt !important; margin: 0.65rem 0 0.35rem !important; color: #6C5B8C !important; }
+    .def-card { page-break-inside: avoid; box-shadow: none !important; border: 1pt solid #C7BADB !important; display: flex !important; border-radius: 0 !important; margin: 0.55rem 0 !important; }
+    .def-accent-bar { background: #6C5B8C !important; width: 4px !important; border-radius: 0 !important; }
+    .def-body { padding: 0.7rem 1rem !important; }
+    .def-body p { font-size: 8.5pt !important; line-height: 1.5 !important; color: #000 !important; }
+    .prop-card { page-break-inside: avoid; background: #ECE6F5 !important; border: 1pt solid #C7BADB !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .prop-card p, .prop-card li { font-size: 8.5pt !important; line-height: 1.5 !important; }
+    .thm-card { page-break-inside: avoid; background: #2A2138 !important; padding: 0.7rem 1rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .thm-label { font-size: 6pt !important; color: #E2D6F2 !important; }
+    .thm-title { font-size: 9.5pt !important; color: #fff !important; }
+    .thm-card p { font-size: 8.5pt !important; color: rgba(246,244,250,0.9) !important; line-height: 1.5 !important; }
+    .meth-card { page-break-inside: avoid; border: 1.5pt solid #6C5B8C !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .meth-card p, .meth-card li { font-size: 8.5pt !important; line-height: 1.5 !important; }
+    .remark { page-break-inside: avoid; border-left: 2.5pt solid #C7BADB !important; padding: 0.5rem 0.8rem !important; margin: 0.5rem 0 !important; border-radius: 0 !important; font-size: 8.5pt !important; }
+    .formula-block { page-break-inside: avoid; border: 1pt solid #C7BADB !important; padding: 0.5rem 0.8rem !important; margin: 0.45rem 0 !important; border-radius: 0 !important; }
+    .math-table-wrap { border: 1pt solid #C7BADB !important; box-shadow: none !important; border-radius: 0 !important; }
+    .math-table th { font-size: 7pt !important; padding: 0.4rem 0.6rem !important; }
+    .math-table td { font-size: 8pt !important; padding: 0.4rem 0.6rem !important; border: 0.5pt solid #ECE6F5 !important; }
+    .two-col-formulas, .three-col-formulas { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 0.5rem !important; margin: 0.45rem 0 !important; }
+    .katex { font-size: 0.82em !important; }
+    .katex-display { margin: 0.15rem 0 !important; overflow: visible !important; }
+    .katex-html { white-space: normal !important; }
+    .katex .base { display: inline !important; white-space: nowrap !important; }
+    .def-body p, .prop-card p, .thm-card p, .remark, .math-key > div, .content p { overflow: visible !important; word-break: break-word !important; }
+    .formula-block { overflow: visible !important; height: auto !important; min-height: 0 !important; text-align: center !important; }
+    .formula-block .katex-display { overflow-x: visible !important; overflow-y: visible !important; text-align: center !important; }
+    .math-table td, .math-table th { overflow: visible !important; word-break: break-word !important; }
+    .katex *, .katex-html * { position: static !important; top: auto !important; bottom: auto !important; left: auto !important; right: auto !important; }
+    .math-table .katex { font-size: 0.75em !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left"><div class="nav-logo"><a href="../../index.html">ECG Prépa</a></div></div>
+  <div class="breadcrumb">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">/</span>
+    <a href="index.html"><span>Mathématiques</span></a>
+    <span class="sep">/</span>
+    <span class="current">Chapitre 7</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="chap-label">&#x2015;&nbsp; Chapitre 7 · Mathématiques approfondies &nbsp;&#x2015;</div>
+  <h1>Ensembles, Applications</h1>
+  <p>Image directe, image réciproque · Injectivité, surjectivité, bijectivité</p>
+</div>
+
+<!-- TOC -->
+<div class="toc-bar">
+  <div class="toc-inner">
+    <div class="toc-title">Table des matières</div>
+    <ul class="toc-list">
+      <li><a href="#part1"><span class="toc-num">I</span> Vocabulaire sur les ensembles</a></li>
+      <li><a href="#part2"><span class="toc-num">II</span> Image directe, image réciproque</a></li>
+      <li><a href="#part3"><span class="toc-num">III</span> Applications bijectives, surjectives, injectives</a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════════
+     PARTIE I — VOCABULAIRE SUR LES ENSEMBLES
+════════════════════════════════════════ -->
+<div class="math-part" id="part1">
+  <div class="math-part-header">
+    <div class="math-part-num">I</div>
+    <div class="math-part-title">Vocabulaire sur les ensembles</div>
+  </div>
+
+  <!-- SECTION 1 : Appartenance, produit cartésien -->
+  <div class="math-section" id="s1-1">
+    <div class="math-section-title">1 — Ensemble, appartenance, produit cartésien</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span></div>
+        <p>Un ensemble \(E\) est défini par l'écriture entre accolades de ses éléments ou d'une propriété qui les caractérise.</p>
+        <p>Si \(x\) est un élément de \(E\), on note \(x \in E\) (qui se lit « \(x\) appartient à \(E\) »). Si \(x\) n'appartient pas à \(E\), on note \(x \notin E\).</p>
+        <p>Soit \(E\) et \(F\) deux ensembles. On appelle <strong>produit cartésien</strong> de \(E\) et \(F\) l'ensemble \(E \times F\) défini par :</p>
+        <div class="formula-block">\[E \times F = \{(x,y) \text{ où } x \in E,\ y \in F\}\]</div>
+        <p>Pour \(n \in \mathbb{N}^*\) fixé, on pose :</p>
+        <div class="formula-block">\[E^n = \{(x_1, x_2, \dots, x_n) \text{ où } \forall i \in [\![1,n]\!],\ x_i \in E\}\]</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2 : Inclusion, égalité, ensemble vide -->
+  <div class="math-section" id="s1-2">
+    <div class="math-section-title">2 — Inclusion, égalité, ensemble vide</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 2</span></div>
+        <p>Soit \(E\) et \(F\) deux ensembles.</p>
+        <ul>
+          <li>On dit que \(E\) est <strong>inclus</strong> dans \(F\), noté \(E \subset F\), ssi \(E\) est un sous-ensemble de \(F\). Ainsi, \(E \subset F \iff \forall x \in E,\ x \in F\). Si \(\exists x \in E\) tel que \(x \notin F\) alors \(E \not\subset F\).</li>
+          <li>Les ensembles \(E\) et \(F\) sont <strong>égaux</strong> ssi ils ont les mêmes éléments. On le note \(E = F\).</li>
+          <li>On dit qu'un ensemble \(E\) est <strong>vide</strong> ssi \(E\) ne contient aucun élément. On note \(E = \varnothing\).</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="remark">Le symbole \(\in\) se met entre un objet et un ensemble contenant des objets de ce type. Par contre \(\subset\) se met entre deux ensembles contenant des objets d'un même type.</div>
+
+    <div class="meth-card">
+      <div class="meth-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Méthode
+      </div>
+      <ul>
+        <li>Pour montrer que \(E \subset F\) : prendre \(x\) quelconque dans \(E\) et montrer qu'alors \(x\) est dans \(F\).</li>
+        <li>Pour montrer que \(E = F\) : procéder par double inclusion, c'est-à-dire montrer que \(E \subset F\) puis que \(F \subset E\).</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 3 : Complémentaire -->
+  <div class="math-section" id="s1-3">
+    <div class="math-section-title">3 — Complémentaire d'une partie</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 3</span></div>
+        <p>Soit \(E\) un ensemble et soit \(A \subset E\). On appelle <strong>complémentaire</strong> de \(A\) dans \(E\) l'ensemble des éléments de \(E\) qui ne sont pas dans \(A\). On le note \(\overline{A}\).</p>
+        <p>On a : \(x \in \overline{A} \iff x \notin A\).</p>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <p>Soit \(A, B\) deux sous-ensembles de \(E\). On a :</p>
+      <div class="formula-block">\[\overline{\overline{A}} = A \qquad \text{et} \qquad \text{si } A \subset B \text{ alors } \overline{B} \subset \overline{A}\]</div>
+    </div>
+  </div>
+
+  <!-- SECTION 4 : Intersection, réunion -->
+  <div class="math-section" id="s1-4">
+    <div class="math-section-title">4 — Intersection, réunion</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 4</span><span class="def-name">Intersection</span></div>
+        <p>Soit \(E\) et \(F\) deux ensembles. Leur intersection, notée \(E \cap F\), est définie par :</p>
+        <div class="formula-block">\[x \in E \cap F \iff x \in E \text{ et } x \in F\]</div>
+        <p>Soit \((A_n)_{n \geq 0}\) une famille d'ensembles. Leur intersection, notée \(\displaystyle\bigcap_{n=0}^{+\infty} A_n\), est définie par :</p>
+        <div class="formula-block">\[x \in \bigcap_{n=0}^{+\infty} A_n \iff \forall n \in \mathbb{N},\ x \in A_n\]</div>
+        <p>(un élément \(x\) est dans l'intersection s'il est dans \(A_0\) <strong>et</strong> dans \(A_1\) <strong>et</strong> dans \(A_2\) <strong>et</strong>… c'est-à-dire si \(x\) est dans chacun des \(A_n\))</p>
+      </div>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 5</span><span class="def-name">Réunion</span></div>
+        <p>Soit \(E\) et \(F\) deux ensembles. Leur réunion, notée \(E \cup F\), est définie par :</p>
+        <div class="formula-block">\[x \in E \cup F \iff x \in E \text{ ou } x \in F\]</div>
+        <p>Soit \((A_n)_{n \geq 0}\) une famille d'ensembles. Leur réunion, notée \(\displaystyle\bigcup_{n=0}^{+\infty} A_n\), est définie par :</p>
+        <div class="formula-block">\[x \in \bigcup_{n=0}^{+\infty} A_n \iff \exists\, i \in \mathbb{N} \text{ tel que } x \in A_i\]</div>
+        <p>(un élément \(x\) est dans la réunion s'il est dans l'un, au moins, des \(A_n\))</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 5 : Distributivité, De Morgan -->
+  <div class="math-section" id="s1-5">
+    <div class="math-section-title">5 — Distributivité et lois de De Morgan</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 2</div>
+      <div class="prop-title">Distributivité</div>
+      <p>Soient \(A, B_1, B_2\) des sous-ensembles de \(E\).</p>
+      <div class="formula-block">\[A \cup (B_1 \cap B_2) = (A \cup B_1) \cap (A \cup B_2)\]</div>
+      <div class="formula-block">\[A \cap (B_1 \cup B_2) = (A \cap B_1) \cup (A \cap B_2)\]</div>
+      <p>Soit \(A \subset E\) et soient \((B_n)_{n \in I}\) des sous-ensembles de \(E\).</p>
+      <div class="formula-block">\[A \cup \left(\bigcap_{n \in I} B_n\right) = \bigcap_{n \in I} (A \cup B_n)\]</div>
+      <div class="formula-block">\[A \cap \left(\bigcup_{n \in I} B_n\right) = \bigcup_{n \in I} (A \cap B_n)\]</div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 3</div>
+      <div class="prop-title">Passage au complémentaire</div>
+      <p>Soient \(A, B\) et \((A_n)_{n \in I}\) des sous-ensembles de \(E\).</p>
+      <div class="two-col-formulas">
+        <div class="formula-block">\[\overline{A \cup B} = \overline{A} \cap \overline{B}\]</div>
+        <div class="formula-block">\[\overline{A \cap B} = \overline{A} \cup \overline{B}\]</div>
+      </div>
+      <div class="two-col-formulas">
+        <div class="formula-block">\[\overline{\bigcup_{n \in I} A_n} = \bigcap_{n \in I} \left(\overline{A_n}\right)\]</div>
+        <div class="formula-block">\[\overline{\bigcap_{n \in I} A_n} = \bigcup_{n \in I} \left(\overline{A_n}\right)\]</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 6 : Ensembles disjoints, partitions -->
+  <div class="math-section" id="s1-6">
+    <div class="math-section-title">6 — Ensembles disjoints, partitions</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 6</span></div>
+        <p>Soit \(A\) et \(B\) deux sous-ensembles de \(E\). On dit que \(A\) et \(B\) sont <strong>disjoints</strong> ssi \(A \cap B = \varnothing\).</p>
+      </div>
+    </div>
+
+    <div class="remark">Pour tout sous-ensemble \(A\), on a \(A \cap \overline{A} = \varnothing\).</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 7</span><span class="def-name">Partition</span></div>
+        <p>Soit \((A_n)_{n \in I}\) une famille de sous-ensembles non vides de \(E\). On dit que \((A_n)_{n \in I}\) est une <strong>partition</strong> de \(E\) ssi</p>
+        <div class="formula-block">\[\forall i \neq j,\ A_i \cap A_j = \varnothing \qquad \text{et} \qquad \bigcup_{n \in I} A_n = E\]</div>
+        <p>On note alors \(\displaystyle\bigsqcup_{n \in I} A_n = E\).</p>
+      </div>
+    </div>
+
+    <div class="remark">\(A_1, A_2, \dots, A_n\) partitionnent \(E\) ssi \(\forall x \in E\) il existe un unique \(A_i\) tel que \(x \in A_i\). Une partition est donc un « découpage » de \(E\) en parties deux à deux disjointes.</div>
+  </div>
+
+  <!-- SECTION 7 : Parties d'un ensemble -->
+  <div class="math-section" id="s1-7">
+    <div class="math-section-title">7 — Parties d'un ensemble</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 8</span></div>
+        <p>On appelle <strong>partie</strong> d'un ensemble \(E\) tout sous-ensemble de \(E\).</p>
+        <p>L'ensemble des parties de \(E\) se note \(\mathcal{P}(E)\).</p>
+        <p>Si \(A \subset E\) alors \(A\) est une partie de \(E\) et on note \(A \in \mathcal{P}(E)\).</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE II — IMAGE DIRECTE, IMAGE RÉCIPROQUE
+════════════════════════════════════════ -->
+<div class="math-part" id="part2">
+  <div class="math-part-header">
+    <div class="math-part-num">II</div>
+    <div class="math-part-title">Image directe, image réciproque d'un ensemble par une application</div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="math-section" id="s2-1">
+    <div class="math-section-title">1 — Image réciproque</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span><span class="def-name">Image réciproque</span></div>
+        <p>Soit \(E, F\) deux ensembles et soit \(f : E \to F\) une application. Pour tout sous-ensemble \(B\) de \(F\), on appelle <strong>image réciproque</strong> de \(B\) par \(f\) l'ensemble noté \(f^{-1}(B)\) défini par :</p>
+        <div class="formula-block">\[f^{-1}(B) = \{x \in E \text{ tel que } f(x) \in B\}\]</div>
+        <p>Ainsi, on a : \(x \in f^{-1}(B) \iff f(x) \in B\)</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="math-section" id="s2-2">
+    <div class="math-section-title">2 — Image directe</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 2</span><span class="def-name">Image directe</span></div>
+        <p>Soit \(E, F\) deux ensembles et soit \(f : E \to F\) une application. Pour toute partie \(A\) de \(E\), on appelle <strong>image directe</strong> de \(A\) par \(f\) l'ensemble noté \(f(A)\) constitué des images des éléments de \(A\) par \(f\). Ainsi :</p>
+        <div class="formula-block">\[f(A) = \{f(x) \text{ avec } x \in A\}\]</div>
+        <p>On a alors : \(y \in f(A) \iff\) il existe \(x \in A\) tel que \(y = f(x)\)</p>
+      </div>
+    </div>
+
+    <div class="remark">En général, l'image directe est plus compliquée que l'image réciproque.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE III — APPLICATIONS BIJECTIVES, SURJECTIVES, INJECTIVES
+════════════════════════════════════════ -->
+<div class="math-part" id="part3">
+  <div class="math-part-header">
+    <div class="math-part-num">III</div>
+    <div class="math-part-title">Applications bijectives, surjectives, injectives</div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="math-section" id="s3-1">
+    <div class="math-section-title">1 — Application bijective</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span><span class="def-name">Application bijective</span></div>
+        <p>Soit \(f : E \to F\) une application. On dit que \(f\) est <strong>bijective</strong> ssi tout élément \(y\) de \(F\) admet un unique antécédent \(x\) dans \(E\). Ainsi,</p>
+        <div class="formula-block">\[f \text{ est bijective ssi } \forall y \in F,\ \exists! x \in E \text{ tq } f(x) = y\]</div>
+        <p>On dit alors que \(f\) est une <strong>bijection</strong> de \(E\) sur \(F\). Dans ce cas, l'application \(\begin{array}{ccc} F & \to & E \\ y & \mapsto & x \end{array}\) s'appelle la bijection réciproque de \(f\) et se note \(f^{-1}\).</p>
+        <p>On a alors, pour tout \((x,y) \in E \times F\), l'équivalence :</p>
+        <div class="formula-block">\[y = f(x) \iff x = f^{-1}(y)\]</div>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <p>Soit \(f : E \to F\) une application. On a l'équivalence :</p>
+      <div class="formula-block">\[f \text{ bijective } \iff \exists\, g : F \to E \text{ application telle que } f \circ g = Id_F \text{ et } g \circ f = Id_E\]</div>
+      <p>Dans ce cas, on a \(g = f^{-1}\).</p>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="math-section" id="s3-2">
+    <div class="math-section-title">2 — Application surjective</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 2</span><span class="def-name">Application surjective</span></div>
+        <p>Soit \(E, F\) deux ensembles et soit \(f : E \to F\) une application. On dit que \(f\) est <strong>surjective</strong> ssi \(f(E) = F\).</p>
+      </div>
+    </div>
+
+    <div class="remark">\(f\) est surjective ssi \(\forall y \in F\), il existe au moins un \(x \in E\) tel que \(y = f(x)\) (tout élément de l'ensemble d'arrivée \(F\) admet au moins un antécédent dans l'ensemble de départ \(E\)). Dans le cas où \(f\) n'est pas surjective, on a \(f(E) \subsetneq F\).</div>
+
+    <div class="meth-card">
+      <div class="meth-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Méthode
+      </div>
+      <div class="meth-title">Chercher si \(f\) est surjective</div>
+      <p>Prendre \(y\) quelconque dans \(F\) (c'est-à-dire écrire « Soit \(y \in F\) ») puis montrer que l'équation \(y = f(x)\) d'inconnue \(x\) admet au moins une solution dans \(E\), c'est-à-dire montrer que \(\exists x \in E\) tq \(f(x) = y\).</p>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="math-section" id="s3-3">
+    <div class="math-section-title">3 — Application injective</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 3</span><span class="def-name">Application injective</span></div>
+        <p>Soit \(E, F\) deux ensembles et soit \(f : E \to F\) une application. On dit que \(f\) est <strong>injective</strong> ssi :</p>
+        <div class="formula-block">\[\forall (x,y) \in E^2,\quad f(x) = f(y) \Rightarrow x = y\]</div>
+        <p>\(f\) est injective lorsque des éléments qui ont la même image sont nécessairement égaux. Ainsi, \(f\) est injective ssi tout élément de \(F\) a au plus un antécédent.</p>
+      </div>
+    </div>
+
+    <div class="meth-card">
+      <div class="meth-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Méthode
+      </div>
+      <ul>
+        <li>Pour prouver que \(f\) est injective : supposer que \(f(x) = f(t)\). Montrer qu'alors \(x = t\).</li>
+        <li>Pour prouver que \(f\) n'est pas injective : trouver deux éléments différents qui ont même image.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="math-section" id="s3-4">
+    <div class="math-section-title">4 — Caractérisation de la bijectivité</div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 2</div>
+      <p>Soit \(f : E \to F\) une application.</p>
+      <div class="formula-block" style="background:rgba(255,255,255,0.06);border-color:rgba(226,214,242,0.35);">\[f \text{ est bijective } \iff f \text{ est injective et surjective}\]</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- fin .content -->
+
+<footer class="site-footer">
+  <div class="footer-logo">Chapitre 7 : Ensembles, Applications</div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut de page">↑</button>
+
+<script>
+  document.querySelectorAll('.toc-list a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
+
+</body>
+</html>

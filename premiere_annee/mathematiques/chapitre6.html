@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Maths Chapitre 6 : Systèmes linéaires</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<style>
+
+  :root {
+    --cream: #F1F5FC;
+    --dark: #071426;
+    --amber: #1E5FB8;
+    --amber-dark: #0B2545;
+    --amber-mid: #2E7BD6;
+    --amber-light: #E1EBFA;
+    --amber-border: #A9C6EC;
+    --gold: #7FB4F5;
+    --muted: #3F5A80;
+    --accent: #1E5FB8;
+    --accent-soft: #1E5FB822;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--dark); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid rgba(30,95,184,0.25);
+    background: var(--amber-dark); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--gold); cursor: pointer; letter-spacing: 0.02em; }
+  .nav-logo a { color: inherit; text-decoration: none; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(241,245,252,0.5); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: inherit; text-decoration: none; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb a:hover span, .breadcrumb span:hover { color: var(--gold); }
+  .breadcrumb .sep { color: rgba(241,245,252,0.25); }
+  .breadcrumb .current { color: #F1F5FC; cursor: default; }
+
+  /* ─── HERO ─── */
+  .ch-hero {
+    background: var(--amber-dark);
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ch-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231E5FB8' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; opacity: 0.85; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 4rem); color: var(--cream); font-weight: 900; max-width: 900px; margin: 0 auto 1.5rem; line-height: 1.1; position: relative; z-index: 1; }
+  .ch-hero p { color: rgba(241,245,252,0.5); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  /* ─── TOC ─── */
+  .toc-bar { background: #DCE9FB; padding: 2rem; border-bottom: 1px solid #A9C6EC; }
+  .toc-inner { max-width: 960px; margin: 0 auto; }
+  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
+  .toc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.4rem; list-style: none; }
+  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: #0B2545; font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
+  .toc-list a:hover { border-color: var(--amber-border); background: white; color: #000; }
+  .toc-num { font-family: "DM Mono", monospace; font-size: 0.65rem; color: var(--amber); flex-shrink: 0; margin-top: 0.15rem; }
+
+  /* ─── CONTENT ─── */
+  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 8rem; }
+
+  /* PART */
+  .math-part { margin-bottom: 5rem; }
+  .math-part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--amber); }
+  .math-part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: var(--amber-border); line-height: 1; flex-shrink: 0; }
+  .math-part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--dark); line-height: 1.25; }
+
+  /* SECTION */
+  .math-section { margin-bottom: 3.5rem; }
+  .math-section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--amber-dark); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--amber); scroll-margin-top: 2rem; }
+  .math-subsection-title { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--amber); margin: 2rem 0 0.75rem; }
+
+  /* TEXT */
+  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: #0C1E36; line-height: 1.85; font-weight: 300; }
+  .content strong { color: var(--dark); font-weight: 600; }
+
+  /* DÉFINITION CARD */
+  .def-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(30,95,184,0.10), 0 0 0 1px rgba(30,95,184,0.12);
+    display: flex;
+    margin: 1.4rem 0;
+  }
+  .def-accent-bar {
+    width: 5px;
+    background: linear-gradient(180deg, #2E7BD6 0%, #0B2545 100%);
+    flex-shrink: 0;
+    border-radius: 10px 0 0 10px;
+  }
+  .def-body { padding: 1.2rem 1.5rem; flex: 1; }
+  .def-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.65rem; }
+  .def-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--amber); font-weight: 500; }
+  .def-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--amber-dark); }
+  .def-body p { margin-bottom: 0.5rem; font-size: 0.93rem; line-height: 1.75; }
+  .def-body p:last-child { margin-bottom: 0; }
+  .def-body ul { margin: 0 0 0.5rem 1.2rem; }
+  .def-body li { font-size: 0.93rem; line-height: 1.75; margin-bottom: 0.3rem; }
+
+  /* PROPRIÉTÉ CARD */
+  .prop-card {
+    background: var(--amber-light);
+    border-radius: 8px;
+    border: 1px solid var(--amber-border);
+    border-left: 4px solid var(--amber);
+    padding: 1.2rem 1.5rem;
+    margin: 1.4rem 0;
+  }
+  .prop-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--amber-dark); font-weight: 700; margin-bottom: 0.6rem; }
+  .prop-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--amber-dark); margin-bottom: 0.7rem; }
+  .prop-card p { margin-bottom: 0.5rem; font-size: 0.93rem; color: var(--amber-dark); line-height: 1.75; }
+  .prop-card p:last-child { margin-bottom: 0; }
+  .prop-card ul { margin: 0 0 0.5rem 1.2rem; }
+  .prop-card li { font-size: 0.93rem; line-height: 1.75; margin-bottom: 0.3rem; color: var(--amber-dark); }
+
+  /* THÉORÈME / MÉTHODE CARD */
+  .thm-card {
+    background: var(--amber-dark);
+    color: var(--cream);
+    border-radius: 8px;
+    padding: 1.5rem 1.75rem;
+    margin: 1.4rem 0;
+    position: relative;
+  }
+  .thm-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.5rem; }
+  .thm-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--cream); margin-bottom: 0.75rem; }
+  .thm-card p { color: rgba(241,245,252,0.88); font-size: 0.93rem; margin-bottom: 0.5rem; line-height: 1.75; }
+  .thm-card p:last-child { margin-bottom: 0; }
+  .thm-card ul { margin: 0 0 0.5rem 1.2rem; }
+  .thm-card li { color: rgba(241,245,252,0.88); font-size: 0.93rem; line-height: 1.75; margin-bottom: 0.3rem; }
+
+  /* REMARQUE */
+  .remark { background: white; border-left: 3px solid var(--amber-border); padding: 1rem 1.4rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; font-size: 0.9rem; color: #142F52; line-height: 1.7; font-style: italic; }
+  .remark::before { content: 'Remarque — '; font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--amber); display: block; margin-bottom: 0.3rem; }
+  .remark ul { margin: 0.3rem 0 0 1.2rem; font-style: normal; }
+  .remark li { margin-bottom: 0.25rem; }
+
+  /* FORMULE DISPLAY */
+  .formula-block {
+    background: white;
+    border: 1px solid var(--amber-border);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.2rem 0;
+    text-align: center;
+    overflow-x: auto;
+  }
+  .formula-block .katex-display { margin: 0; }
+  .formula-block .katex { font-size: 1.05em; }
+
+  /* INLINE MATH */
+  .katex { font-size: 1em; }
+  .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.2rem 0; }
+
+  /* HIGHLIGHT BOX */
+  .math-highlight { background: var(--amber-light); border-left: 4px solid var(--amber); padding: 1.25rem 1.75rem; margin: 1.5rem 0; color: var(--amber-dark); font-size: 0.93rem; line-height: 1.75; border-radius: 0 6px 6px 0; }
+
+  /* FOOTER */
+  .site-footer { background: var(--amber-dark); border-top: 1px solid rgba(30,95,184,0.35); padding: 2.5rem 2rem; text-align: center; }
+  .site-footer .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--gold); letter-spacing: 0.02em; }
+
+  /* BACK TO TOP */
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--amber); color: var(--cream); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 4px 14px rgba(30,95,184,0.45); opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 200; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+  .back-to-top:hover { background: var(--amber-mid); }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--amber-border); border-radius: 3px; }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+  }
+
+  @media print {
+    @page { size: A4; margin: 15mm 14mm 15mm 14mm; }
+    nav, .back-to-top, .toc-bar, .site-footer { display: none !important; }
+    html, body { background: white !important; color: #000 !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left"><div class="nav-logo"><a href="../../index.html">ECG Prépa</a></div></div>
+  <div class="breadcrumb">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">/</span>
+    <a href="index.html"><span>Mathématiques</span></a>
+    <span class="sep">/</span>
+    <span class="current">Chapitre 6</span>
+  </div>
+<div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="chap-label">&#x2015;&nbsp; Chapitre 6 · Mathématiques approfondies &nbsp;&#x2015;</div>
+  <h1>Systèmes linéaires</h1>
+  <p>Écriture matricielle · Pivot de Gauss · Inversibilité</p>
+</div>
+
+<!-- TOC -->
+<div class="toc-bar">
+  <div class="toc-inner">
+    <div class="toc-title">Table des matières</div>
+    <ul class="toc-list">
+      <li><a href="#part1"><span class="toc-num">I</span> Systèmes linéaires</a></li>
+      <li><a href="#part2"><span class="toc-num">II</span> Résolution par pivot de Gauss</a></li>
+      <li><a href="#part3"><span class="toc-num">III</span> Inversibilité des matrices</a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════════
+     PARTIE I — SYSTÈMES LINÉAIRES
+════════════════════════════════════════ -->
+<div class="math-part" id="part1">
+  <div class="math-part-header">
+    <div class="math-part-num">I</div>
+    <div class="math-part-title">Systèmes linéaires</div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="math-section" id="s1-1">
+    <div class="math-section-title">1 — Écriture matricielle d'un système linéaire</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span></div>
+        <p>Soit \(A = \begin{pmatrix} a_{11} & a_{12} & .. & a_{1p} \\ a_{21} & a_{22} & .. & a_{2p} \\ .. & .. & & .. \\ a_{n1} & a_{n2} & .. & a_{np} \end{pmatrix} \in M_{n,p}(\mathbb{R})\), \(X = \begin{pmatrix} x_1 \\ x_2 \\ \vdots \\ x_p \end{pmatrix}\) et \(B = \begin{pmatrix} b_1 \\ b_2 \\ \vdots \\ b_n \end{pmatrix}\) deux matrices colonnes.</p>
+        <p>L'égalité \(A \times X = B\) est l'écriture matricielle du système linéaire \((S)\) à \(n\) équations et \(p\) inconnues :</p>
+        <div class="formula-block">
+          \[(S)\ \begin{cases} a_{11}x_1 + a_{12}x_2 + \dots + a_{1p}x_p = b_1 \\ a_{21}x_1 + a_{22}x_2 + \dots + a_{2p}x_p = b_2 \\ \dots \\ a_{n1}x_1 + a_{n2}x_2 + \dots + a_{np}x_p = b_n \end{cases}\]
+        </div>
+        <p>\(A\) est la matrice associée au système (\(k^{\text{ième}}\) colonne de \(A\) = coefficients de la \(k^{\text{ième}}\) inconnue). \(X\) est la matrice colonne des inconnues et \(B\) la matrice colonne du second membre.</p>
+        <p>Résoudre \((S)\) revient à chercher les matrices colonnes \(X\) telles que \(A \times X = B\), c'est-à-dire les \(p\)-uplets \((x_1,\dots,x_p) \in \mathbb{R}^p\) solutions de chacune des \(n\) équations.</p>
+      </div>
+    </div>
+
+    <div class="remark">La matrice du système se construit colonne par colonne à partir des matrices colonnes des inconnues. La \(k^{\text{ième}}\) colonne de \(A\) = coefficients de la \(k^{\text{ième}}\) inconnue.</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 2</span><span class="def-name">Système homogène</span></div>
+        <p>On dit qu'un système est <strong>homogène</strong> lorsque son second membre est nul.</p>
+      </div>
+    </div>
+
+    <div class="remark">
+      <ul>
+        <li>Un système homogène admet toujours au moins une solution (car \(X = 0\) vérifie \(AX = 0\)).</li>
+        <li>Si le système admet une autre solution que la solution nulle, alors il y a une infinité de solutions.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="math-section" id="s1-2">
+    <div class="math-section-title">2 — Solutions d'un système linéaire</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <div class="prop-title">Structure de l'espace des solutions</div>
+      <ul>
+        <li>Tout système homogène \(AX = 0\) admet ou bien une unique solution \(X = 0\), ou bien une infinité de solutions.</li>
+        <li>Un système \(AX = B\) peut admettre aucune solution, une seule solution, ou une infinité de solutions.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE II — PIVOT DE GAUSS
+════════════════════════════════════════ -->
+<div class="math-part" id="part2">
+  <div class="math-part-header">
+    <div class="math-part-num">II</div>
+    <div class="math-part-title">Résolution par la méthode du pivot de Gauss</div>
+  </div>
+
+  <p><strong>Principe :</strong> On transforme, par des opérations sur les lignes, le système initial en un système triangulaire ayant les mêmes solutions.</p>
+
+  <p>On utilise une ligne, appelée <strong>ligne pivot</strong>, pour éliminer l'une des inconnues (de notre choix) dans TOUTES les autres égalités écrites en dessous. On répète l'opération jusqu'à ce qu'il n'y ait plus d'inconnue à éliminer (ou plus de ligne pivot pour le faire).</p>
+
+  <div class="thm-card">
+    <div class="thm-label">Méthode</div>
+    <div class="thm-title">Opérations autorisées</div>
+    <p>Afin de conserver des systèmes ayant les mêmes solutions, les seules opérations autorisées sont :</p>
+    <ul>
+      <li>\(L_i \leftarrow \alpha L_i + \beta L_p\) avec \(\alpha \neq 0\) et \(\beta\) quelconque (\(L_p\) étant la ligne pivot)</li>
+      <li>ou \(L_i \leftrightarrow L_j\) (pour échanger les lignes \(L_i\) et \(L_j\))</li>
+    </ul>
+  </div>
+
+  <p>On peut choisir l'ordre d'élimination des inconnues et la ligne utilisée comme pivot (quitte à la replacer au bon endroit). Par contre, il faudra <strong>TOUJOURS</strong> expliquer ce qui est fait (et que cela corresponde à l'une des opérations autorisées).</p>
+
+  <div class="remark">Différents choix d'inconnue et de ligne « pivot » peuvent permettre d'avoir des calculs plus simples. L'important est de n'utiliser que des opérations autorisées (et de coder les opérations effectuées). Un système sous forme triangulaire (après pivot) est dit <em>échelonné</em>, et se résout par remontée.</div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE III — INVERSIBILITÉ DES MATRICES
+════════════════════════════════════════ -->
+<div class="math-part" id="part3">
+  <div class="math-part-header">
+    <div class="math-part-num">III</div>
+    <div class="math-part-title">Inversibilité des matrices et systèmes linéaires</div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="math-section" id="s3-1">
+    <div class="math-section-title">1 — Existence de l'inverse par résolution du système homogène</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <div class="prop-title">Critère d'inversibilité</div>
+      <p>Soit \(A \in M_n(\mathbb{R})\).</p>
+      <ul>
+        <li>\(A\) inversible \(\iff\) le système \(A \times X = O\) admet pour unique solution \(X = 0\).</li>
+        <li>Si \(\exists X_0 \neq 0\) telle que \(AX_0 = 0\) alors \(A\) n'est pas inversible.</li>
+      </ul>
+    </div>
+
+    <div class="remark">
+      <ul>
+        <li>Si on note \(K_1, K_2, .., K_n\) les colonnes de \(A\), résoudre \(AX = 0\) revient à chercher \(x_1, x_2, .., x_n\) tels que \(x_1 K_1 + x_2 K_2 + .. + x_n K_n = 0\).</li>
+        <li>Ainsi si on peut reconstituer la colonne nulle à l'aide des colonnes de \(A\), alors \(A\) n'est pas inversible. Par exemple une matrice ayant deux colonnes identiques ou ayant une colonne nulle n'est pas inversible.</li>
+      </ul>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span></div>
+        <p>Soit \(A \in M_n(\mathbb{R})\) et \(K_1, K_2, .., K_n\) les colonnes de \(A\).</p>
+        <ul>
+          <li>On dit que les colonnes \(K_1, K_2, .., K_n\) sont <strong>liées</strong> s'il existe une relation non triviale entre elles (c'est-à-dire si on peut reconstituer la colonne nulle à partir de ces colonnes). Sinon, ces colonnes non liées sont dites <strong>libres</strong>.</li>
+          <li>On appelle <strong>rang</strong> de \(A\) le nombre maximum de colonnes libres.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 2</div>
+      <div class="prop-title">Récapitulatif des critères d'inversibilité</div>
+      <p>Soit \(A \in M_n(\mathbb{R})\). On note \(K_1, K_2, .., K_n\) ses colonnes. On a les équivalences suivantes :</p>
+      <p>\(A\) est inversible \(\iff\) le système linéaire \(A \times X = O\) admet pour unique solution \(X = O\)<br>
+      \(\iff\) la famille \((K_1, K_2, .., K_n)\) est libre<br>
+      \(\iff\) \(rg(A) = n\)</p>
+      <p>\(A\) est non inversible \(\iff\) le système linéaire \(A \times X = O\) admet au moins une solution \(\neq 0\)<br>
+      \(\iff\) la famille \((K_1, K_2, .., K_n)\) est liée<br>
+      \(\iff\) \(rg(A) < n\)</p>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 3</div>
+      <div class="prop-title">Inversibilité des matrices particulières</div>
+      <ul>
+        <li>Une matrice triangulaire est inversible \(\iff\) tous ses coefficients diagonaux sont \(\neq 0\).</li>
+        <li>Une matrice diagonale est inversible \(\iff\) tous ses coefficients diagonaux sont \(\neq 0\).</li>
+        <li>Si \(M\) est une matrice \(2\times 2\) avec \(M = \begin{pmatrix} a & c \\ b & d \end{pmatrix}\) alors \(M\) est inversible \(\iff ad - bc \neq 0\).</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="math-section" id="s3-2">
+    <div class="math-section-title">2 — Calcul de l'inverse par résolution du système à second membre quelconque</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 2</span><span class="def-name">Système de Cramer</span></div>
+        <p>Soit un système linéaire à \(n\) équations et \(n\) inconnues ayant pour écriture matricielle \(A \times X = B\). On dit que c'est un <strong>système de Cramer</strong> ssi la matrice \(A\) est inversible.</p>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 4</div>
+      <p>Un système de Cramer \(A \times X = B\) admet une unique solution \(X_0\) donnée par \(X_0 = A^{-1} \times B\).</p>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 5</div>
+      <p>Soit \(A \in M_n(\mathbb{R})\). On suppose que pour \(Y = \begin{pmatrix} y_1 \\ \vdots \\ y_n \end{pmatrix}\) quelconque le système \(A \times X = Y\) admet une unique solution, notée \(Z\), alors \(A\) est inversible et \(A^{-1}\) est donné par la relation \(Z = A^{-1} \times Y\).</p>
+    </div>
+
+    <div class="thm-card">
+      <div class="thm-label">Méthode</div>
+      <p>Lorsque \(A \in M_3(\mathbb{R})\), on prend \(X = \begin{pmatrix} x \\ y \\ z \end{pmatrix}\), \(Y = \begin{pmatrix} a \\ b \\ c \end{pmatrix}\) et on résout le système \(S : A \times X = Y\).</p>
+      <ul>
+        <li>Si \(S\) a une seule solution, \(A\) est inversible et la valeur de \(X\) permet d'écrire \(A^{-1}\).</li>
+        <li>Sinon (c'est-à-dire si \(S\) est sans solution ou \(S\) a plusieurs solutions) alors \(A\) n'est pas inversible.</li>
+      </ul>
+    </div>
+
+    <div class="remark">La résolution de \(S\) doit suivre la méthode du pivot de Gauss en faisant à chaque étape \(L_i \leftarrow \alpha L_i + \beta L_p\) où \(\alpha \neq 0\) et \(L_p\) = ligne pivot.</div>
+
+    <div class="thm-card">
+      <div class="thm-label">Récapitulatif</div>
+      <p>Bien repérer la question :</p>
+      <ul>
+        <li>Pour prouver que \(A\) est inversible : résoudre \(AX = O\).</li>
+        <li>Pour calculer \(A^{-1}\) : résoudre \(AX = Y\) avec \(Y\) quelconque.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="site-footer">
+  <div class="footer-logo">Chapitre 6 : Systèmes linéaires</div>
+</div>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">&#x2191;</button>
+
+<script>
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: '\\[', right: '\\]', display: true },
+      { left: '\\(', right: '\\)', display: false }
+    ],
+    throwOnError: false,
+    strict: false,
+    trust: true
+  });
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  document.querySelectorAll('.toc-list a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+</script>
+</body>
+</html>

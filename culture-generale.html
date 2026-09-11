@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="auth.js"></script>
+<script src="favoris.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Culture Générale</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #c8a96e;
+    --accent2: #7c9ec9;
+    --accent3: #9ecba0;
+    --accent4: #c97c9e;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: var(--accent); top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: var(--accent2); bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: var(--accent4); top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--accent); cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb span:hover { color: var(--accent); }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); cursor: default; }
+
+  .page-header { padding: 60px 64px 40px; border-bottom: 1px solid var(--border); position: relative; z-index: 1; }
+  .page-header::after { content: ''; position: absolute; bottom: -1px; left: 64px; width: 60px; height: 2px; background: var(--accent); }
+  .page-header-left { display: flex; flex-direction: column; }
+  .page-header-row { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+  .page-eyebrow { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 500; font-family: 'DM Mono', monospace; }
+  .page-title { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 900; color: var(--text); }
+
+  /* Search bar */
+  .search-wrap { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; }
+  .search-inner { position: relative; width: 260px; }
+  .search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-faint); font-size: 0.95rem; pointer-events: none; transition: color 0.2s; }
+  .search-input {
+    width: 100%; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 44px 12px 42px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--text);
+    outline: none; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  }
+  .search-input::placeholder { color: var(--text-faint); }
+  .search-input:focus { border-color: var(--accent); background: var(--surface2); box-shadow: 0 0 0 3px rgba(200,169,110,0.12); }
+  .search-inner:focus-within .search-icon { color: var(--accent); }
+  .search-clear { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-faint); font-size: 1rem; cursor: pointer; display: none; line-height: 1; padding: 4px; border-radius: 4px; transition: color 0.2s; }
+  .search-clear:hover { color: var(--text); }
+  .search-count { margin-top: 6px; font-size: 0.75rem; color: var(--text-faint); font-family: 'DM Mono', monospace; letter-spacing: 0.05em; min-height: 18px; text-align: right; }
+  .search-count .hl { color: var(--accent); }
+
+  /* Layout */
+  .actu-layout { display: flex; flex: 1; overflow: hidden; }
+  .actu-sidebar { width: 220px; min-width: 220px; border-right: 1px solid var(--border); padding: 28px 18px; background: var(--surface); overflow-y: auto; }
+  .actu-main { flex: 1; overflow-y: auto; padding: 40px 48px; }
+  .actu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+
+  /* Cards */
+  .actu-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 28px 26px; cursor: pointer; transition: all 0.25s; position: relative; overflow: hidden; }
+  .actu-card:hover { border-color: var(--card-color, var(--accent)); background: var(--surface2); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+  .actu-card-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  .actu-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.68rem; font-weight: 500; font-family: 'DM Mono', monospace; letter-spacing: 0.05em; }
+  .actu-badge.domaine { background: rgba(200,169,110,0.15); color: #d4b87a; }
+  .actu-badge.theme { background: var(--surface2); color: var(--text-dim); }
+  .actu-card-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--text); line-height: 1.35; margin-bottom: 12px; }
+  .actu-card.title-only { padding: 20px 22px; }
+  .actu-card.title-only .actu-card-meta { margin-bottom: 10px; }
+  .actu-card.title-only .actu-card-title { font-size: 1rem; margin-bottom: 0; }
+  .actu-card-img-wrap { margin: -28px -26px 16px -26px; overflow: hidden; border-radius: 13px 13px 0 0; aspect-ratio: 16/9; }
+  .actu-card.title-only .actu-card-img-wrap { margin: -20px -22px 14px -22px; }
+  .actu-card-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
+  .actu-card:hover .actu-card-img { transform: scale(1.04); }
+
+  /* Sidebar */
+  .cg-sidebar-section { margin-bottom: 28px; }
+  .cg-sidebar-label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.2em; color: var(--text-faint); margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border); font-family: 'DM Mono', monospace; }
+  .cg-filter-btn { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; cursor: pointer; font-size: 0.82rem; color: var(--text-dim); transition: all 0.2s; margin-bottom: 3px; }
+  .cg-filter-btn:hover { background: var(--surface2); color: var(--text); }
+  .cg-filter-btn.active { background: var(--surface2); color: var(--accent); }
+  .cg-filter-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+  /* Empty state */
+  .empty-state { text-align: center; padding: 80px 24px; color: var(--text-dim); }
+  .es-flag { font-size: 3rem; margin-bottom: 16px; }
+  .es-line { width: 40px; height: 2px; background: var(--border); margin: 0 auto 20px; }
+  .es-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+  .es-sub { font-size: 0.85rem; color: var(--text-dim); }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-up { animation: fadeUp 0.4s ease forwards; }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+
+  @media (max-width: 900px) {
+    .search-wrap { padding: 0; margin-top: 20px; align-items: stretch; }
+    .search-inner { width: 100%; }
+    .page-header { padding: 40px 24px 28px; }
+    .page-header-row { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .page-header::after { left: 24px; }
+    .actu-sidebar { display: none; }
+    nav { padding: 14px 20px; }
+    .actu-main { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-logo" onclick="window.location.href='index.html'">ECG Prépa</div>
+  <div class="breadcrumb">
+    <span onclick="window.location.href='index.html'">Accueil</span>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="page-eyebrow">🌍 Fiches quotidiennes</div>
+  <div class="page-header-row">
+    <div class="page-header-left">
+      <div class="page-title">Culture Générale</div>
+    </div>
+    <div class="search-wrap">
+      <div class="search-inner">
+        <span class="search-icon">🔍</span>
+        <input
+          class="search-input"
+          id="search-input"
+          type="text"
+          placeholder="Rechercher une fiche…"
+          autocomplete="off"
+          oninput="onSearch(this.value)"
+        >
+        <span class="search-clear" id="search-clear" onclick="clearSearch()">✕</span>
+      </div>
+      <div class="search-count" id="search-count"></div>
+    </div>
+  </div>
+</div>
+
+<div class="actu-layout">
+  <div class="actu-sidebar">
+    <div class="cg-sidebar-section">
+      <div class="cg-sidebar-label">Thèmes</div>
+      <div class="cg-filter-btn domain-btn active" onclick="filterCG('tous', event)"><div class="cg-filter-dot" style="background:var(--accent)"></div>Tous</div>
+      <div class="cg-filter-btn domain-btn" onclick="filterCG('philosophie', event)"><div class="cg-filter-dot" style="background:#c8a96e"></div>Philosophie</div>
+      <div class="cg-filter-btn domain-btn" onclick="filterCG('politique', event)"><div class="cg-filter-dot" style="background:#7c9ec9"></div>Politique</div>
+      <div class="cg-filter-btn domain-btn" onclick="filterCG('economie', event)"><div class="cg-filter-dot" style="background:#e8c84a"></div>Économie</div>
+      <div class="cg-filter-btn domain-btn" onclick="filterCG('societe', event)"><div class="cg-filter-dot" style="background:#c97c9e"></div>Société</div>
+      <div class="cg-filter-btn domain-btn" onclick="filterCG('histoire', event)"><div class="cg-filter-dot" style="background:#e07a3a"></div>Histoire</div>
+      <div class="cg-filter-btn domain-btn" onclick="filterCG('geopolitique', event)"><div class="cg-filter-dot" style="background:#9ecba0"></div>Géopolitique</div>
+      <div class="cg-filter-btn domain-btn" onclick="filterCG('culture', event)"><div class="cg-filter-dot" style="background:#ce93d8"></div>Culture & Arts</div>
+      <div class="cg-filter-btn domain-btn" onclick="filterCG('sciences', event)"><div class="cg-filter-dot" style="background:#4db6ac"></div>Sciences</div>
+      <div class="cg-filter-btn domain-btn" onclick="filterCG('sport', event)"><div class="cg-filter-dot" style="background:#0d7a3a"></div>Sport</div>
+      <div class="cg-filter-btn domain-btn" onclick="filterCG('environnement', event)"><div class="cg-filter-dot" style="background:#5bbfa8"></div>Environnement</div>
+      <div class="cg-filter-btn domain-btn" onclick="filterCG('organisations', event)"><div class="cg-filter-dot" style="background:#8c8fd6"></div>Organisations</div>
+      <div class="cg-filter-btn domain-btn" onclick="filterCG('entreprise', event)"><div class="cg-filter-dot" style="background:#d68f5a"></div>Entreprise</div>
+      <div class="cg-filter-btn domain-btn" onclick="filterCG('lieux', event)"><div class="cg-filter-dot" style="background:#59a5c7"></div>Lieux</div>
+      <div class="cg-filter-btn domain-btn" onclick="filterCG('pays', event)"><div class="cg-filter-dot" style="background:#d4a017"></div>Pays</div>
+    </div>
+  </div>
+
+  <div class="actu-main">
+    <div class="actu-grid" id="cg-grid"></div>
+  </div>
+</div>
+
+<script>
+const CG_DATA = [
+  {
+    id: 'socrate',
+    jour: -1,
+    titre: 'Socrate : penser par soi-même jusqu\'à en mourir',
+    theme: 'Philosophie',
+    domain: 'philosophie',
+    image: 'Culture-Generale/images/socrate.jpg',
+    externalUrl: 'Culture-Generale/socrate.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'institutions-americaines',
+    jour: -4,
+    titre: 'Les Institutions américaines : anatomie du pouvoir fédéral',
+    theme: 'Politique',
+    domain: 'politique',
+    image: 'Culture-Generale/images/institutions-americaines.jpg',
+    externalUrl: 'Culture-Generale/institutions-americaines.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'feminisme',
+    jour: -3,
+    titre: 'Le Féminisme : histoire d\'une émancipation',
+    theme: 'Société',
+    domain: 'societe',
+    image: 'Culture-Generale/images/feminisme.jpg',
+    externalUrl: 'Culture-Generale/feminisme.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'rapport-meadows',
+    jour: -2,
+    titre: 'Le Rapport Meadows : les limites d\'une planète finie',
+    theme: 'Environnement',
+    domain: 'environnement',
+    image: 'Culture-Generale/images/rapport-meadows.jpg',
+    externalUrl: 'Culture-Generale/rapport-meadows.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'guerre-peloponnese',
+    jour: 0,
+    titre: 'La guerre du Péloponnèse : le suicide de la Grèce classique',
+    theme: 'Histoire',
+    domain: 'histoire',
+    image: 'Culture-Generale/images/guerre-peloponnese.jpg',
+    externalUrl: 'Culture-Generale/guerre-peloponnese.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'monroe-donroe',
+    jour: 1,
+    titre: 'La doctrine Monroe : aux origines de l\'hégémonie américaine',
+    theme: 'Géopolitique',
+    domain: 'geopolitique',
+    image: 'Culture-Generale/images/monroe-doctrine.jpg',
+    externalUrl: 'Culture-Generale/monroe-doctrine.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'adam-smith',
+    jour: 2,
+    titre: 'Adam Smith : aux origines du libéralisme économique',
+    theme: 'Économie',
+    domain: 'economie',
+    image: 'Culture-Generale/images/adam-smith.jpg',
+    externalUrl: 'Culture-Generale/adam-smith.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'roland-garros',
+    jour: 3,
+    titre: 'Roland Garros : le temple de la terre battue',
+    theme: 'Sport',
+    domain: 'sport',
+    image: 'Culture-Generale/images/roland-garros.jpg',
+    externalUrl: 'Culture-Generale/roland-garros.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'darwin',
+    jour: 4,
+    titre: 'Darwin : la théorie qui a bouleversé l\'humanité',
+    theme: 'Sciences',
+    domain: 'sciences',
+    image: 'Culture-Generale/images/darwin.jpg',
+    externalUrl: 'Culture-Generale/darwin.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'picasso',
+    jour: -5,
+    titre: 'Picasso : la révolution cubiste',
+    theme: 'Culture & Arts',
+    domain: 'culture',
+    image: 'Culture-Generale/images/picasso.jpg',
+    externalUrl: 'Culture-Generale/picasso.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'mai-68',
+    jour: -6,
+    titre: 'Mai 68 : la révolte qui a changé la société française',
+    theme: 'Histoire',
+    domain: 'histoire',
+    image: 'Culture-Generale/images/mai-68.jpg',
+    externalUrl: 'Culture-Generale/mai-68.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'crise-2008',
+    jour: -7,
+    titre: 'La crise de 2008 : anatomie d\'un effondrement mondial',
+    theme: 'Économie',
+    domain: 'economie',
+    image: 'Culture-Generale/images/crise-2008.jpg',
+    externalUrl: 'Culture-Generale/crise-2008.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'tesla',
+    jour: -8,
+    titre: 'Nikola Tesla : le génie que l\'histoire a failli oublier',
+    theme: 'Sciences',
+    domain: 'sciences',
+    image: 'Culture-Generale/images/tesla.jpg',
+    externalUrl: 'Culture-Generale/tesla.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'machiavel',
+    jour: -9,
+    titre: 'Machiavel : la politique sans la morale',
+    theme: 'Politique',
+    domain: 'politique',
+    image: 'Culture-Generale/images/machiavel.jpg',
+    externalUrl: 'Culture-Generale/machiavel.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'mackinder-heartland',
+    jour: -10,
+    titre: 'Mackinder : la théorie du Heartland',
+    theme: 'Géopolitique',
+    domain: 'geopolitique',
+    image: 'Culture-Generale/images/mackinder.jpg',
+    externalUrl: 'Culture-Generale/mackinder.html',
+    month: 9, year: 2025
+  },
+  {
+    id: '11-septembre',
+    jour: -11,
+    titre: 'Le 11 septembre 2001 : le jour qui a changé le monde',
+    theme: 'Histoire',
+    domain: 'histoire',
+    image: 'Culture-Generale/images/11-septembre.jpg',
+    externalUrl: 'Culture-Generale/11-septembre.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'metoo',
+    jour: -12,
+    titre: '#MeToo : un tournant dans les rapports de genre',
+    theme: 'Société',
+    domain: 'societe',
+    image: 'Culture-Generale/images/metoo.jpg',
+    externalUrl: 'Culture-Generale/metoo.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'bretton-woods',
+    jour: -14,
+    titre: 'Bretton Woods : l\'architecture monétaire mondiale',
+    theme: 'Économie',
+    domain: 'economie',
+    image: 'Culture-Generale/images/bretton-woods.jpg',
+    externalUrl: 'Culture-Generale/bretton-woods.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'wimbledon',
+    jour: -15,
+    titre: 'Wimbledon : le sanctuaire du tennis',
+    theme: 'Sport',
+    domain: 'sport',
+    image: 'Culture-Generale/images/wimbledon.jpg',
+    externalUrl: 'Culture-Generale/wimbledon.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'onu',
+    jour: -16,
+    titre: 'L\'ONU : promesses et impasses du multilatéralisme',
+    theme: 'Organisations',
+    domain: 'organisations',
+    image: 'Culture-Generale/images/onu.jpg',
+    externalUrl: 'Culture-Generale/onu.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'nvidia',
+    jour: -17,
+    titre: 'Nvidia : du jeu vidéo à l\'empire de l\'IA',
+    theme: 'Entreprise',
+    domain: 'entreprise',
+    image: 'Culture-Generale/images/nvidia.jpg',
+    externalUrl: 'Culture-Generale/nvidia.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'lumieres',
+    jour: -18,
+    titre: 'Le siècle des Lumières : la raison contre l\'obscurantisme',
+    theme: 'Histoire',
+    domain: 'histoire',
+    image: 'Culture-Generale/images/lumieres.jpg',
+    externalUrl: 'Culture-Generale/lumieres.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'lvmh',
+    jour: 5,
+    titre: 'LVMH : l\'empire du luxe français',
+    theme: 'Entreprise',
+    domain: 'entreprise',
+    image: 'Culture-Generale/images/lvmh.jpg',
+    externalUrl: 'Culture-Generale/lvmh.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'george-washington',
+    jour: 6,
+    titre: 'George Washington : l\'homme qui refusa d\'être roi',
+    theme: 'Histoire',
+    domain: 'histoire',
+    image: 'Culture-Generale/images/george-washington.jpg',
+    externalUrl: 'Culture-Generale/george-washington.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'ice-immigration',
+    jour: 7,
+    titre: 'ICE : l\'agence qui incarne le tournant sécuritaire américain',
+    theme: 'Politique',
+    domain: 'politique',
+    image: 'Culture-Generale/images/ice-immigration.jpg',
+    externalUrl: 'Culture-Generale/ice-immigration.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'jeux-olympiques',
+    jour: 8,
+    titre: 'Les Jeux Olympiques : de la trêve sacrée à la diplomatie du sport',
+    theme: 'Sport',
+    domain: 'sport',
+    image: 'Culture-Generale/images/jeux-olympiques.jpg',
+    externalUrl: 'Culture-Generale/jeux-olympiques.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'alexandre-le-grand',
+    jour: 9,
+    titre: 'Alexandre le Grand : la conquête d\'un monde',
+    theme: 'Histoire',
+    domain: 'histoire',
+    image: 'Culture-Generale/images/alexandre-le-grand.jpg',
+    externalUrl: 'Culture-Generale/alexandre-le-grand.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'hannah-arendt',
+    jour: 10,
+    titre: 'Hannah Arendt et la banalité du mal',
+    theme: 'Philosophie',
+    domain: 'philosophie',
+    image: 'Culture-Generale/images/hannah-arendt.jpg',
+    externalUrl: 'Culture-Generale/hannah-arendt.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'accords-de-paris',
+    jour: 11,
+    titre: 'L\'Accord de Paris : dix ans de diplomatie du climat',
+    theme: 'Environnement',
+    domain: 'environnement',
+    image: 'Culture-Generale/images/accords-de-paris.jpg',
+    externalUrl: 'Culture-Generale/accords-de-paris.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'fmi',
+    jour: 12,
+    titre: 'Le FMI : gardien contesté de la stabilité financière mondiale',
+    theme: 'Organisations',
+    domain: 'organisations',
+    image: 'Culture-Generale/images/fmi.jpg',
+    externalUrl: 'Culture-Generale/fmi.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'piege-de-thucydide',
+    jour: 13,
+    titre: 'Le piège de Thucydide : la guerre est-elle inévitable ?',
+    theme: 'Géopolitique',
+    domain: 'geopolitique',
+    image: 'Culture-Generale/images/piege-de-thucydide.jpg',
+    externalUrl: 'Culture-Generale/piege-de-thucydide.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'uranium',
+    jour: 14,
+    titre: 'L\'uranium : le minerai qui redessine la géopolitique de l\'énergie',
+    theme: 'Sciences',
+    domain: 'sciences',
+    image: 'Culture-Generale/images/uranium.jpg',
+    externalUrl: 'Culture-Generale/uranium.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'blackrock',
+    jour: 15,
+    titre: 'BlackRock : le colosse discret de la finance mondiale',
+    theme: 'Entreprise',
+    domain: 'entreprise',
+    image: 'Culture-Generale/images/blackrock.jpg',
+    externalUrl: 'Culture-Generale/blackrock.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'leonard-de-vinci',
+    jour: 16,
+    titre: 'Léonard de Vinci : l\'art et la science sans frontière',
+    theme: 'Culture & Arts',
+    domain: 'culture',
+    image: 'Culture-Generale/images/leonard-de-vinci.jpg',
+    externalUrl: 'Culture-Generale/leonard-de-vinci.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'bulle-internet',
+    jour: 17,
+    titre: 'La bulle internet : anatomie d\'un krach fondateur',
+    theme: 'Économie',
+    domain: 'economie',
+    image: 'Culture-Generale/images/bulle-internet.jpg',
+    externalUrl: 'Culture-Generale/bulle-internet.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'brexit',
+    jour: 18,
+    titre: 'Le Brexit : dix ans de rupture et de reconstruction',
+    theme: 'Politique',
+    domain: 'politique',
+    image: 'Culture-Generale/images/brexit.jpg',
+    externalUrl: 'Culture-Generale/brexit.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'silicon-valley',
+    jour: 19,
+    titre: 'La Silicon Valley : anatomie d\'un écosystème unique au monde',
+    theme: 'Lieux',
+    domain: 'lieux',
+    image: 'Culture-Generale/images/silicon-valley.jpg',
+    externalUrl: 'Culture-Generale/silicon-valley.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'ouganda',
+    jour: 20,
+    titre: 'Ouganda : portrait de la « Perle de l\'Afrique »',
+    theme: 'Pays',
+    domain: 'pays',
+    image: 'Culture-Generale/images/ouganda.jpg',
+    externalUrl: 'Culture-Generale/ouganda.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'mercator',
+    jour: 21,
+    titre: 'La projection de Mercator : une carte, un regard sur le monde',
+    theme: 'Géopolitique',
+    domain: 'geopolitique',
+    image: 'Culture-Generale/images/mercator.jpg',
+    externalUrl: 'Culture-Generale/mercator.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'affaire-epstein',
+    jour: 22,
+    titre: 'L\'affaire Epstein : réseau, impunité et crise de confiance',
+    theme: 'Société',
+    domain: 'societe',
+    image: 'Culture-Generale/images/affaire-epstein.jpg',
+    externalUrl: 'Culture-Generale/affaire-epstein.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'petrole',
+    jour: 23,
+    titre: 'Le pétrole : l\'or noir qui a façonné le monde moderne',
+    theme: 'Géopolitique',
+    domain: 'geopolitique',
+    image: 'Culture-Generale/images/petrole.jpg',
+    externalUrl: 'Culture-Generale/petrole.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'contrat-social',
+    jour: 24,
+    titre: 'Le Contrat social de Rousseau : fonder la légitimité politique',
+    theme: 'Philosophie',
+    domain: 'philosophie',
+    image: 'Culture-Generale/images/contrat-social.jpg',
+    externalUrl: 'Culture-Generale/contrat-social.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'genocide-armenien',
+    jour: 25,
+    titre: 'Le génocide des Arméniens : la mémoire et la reconnaissance',
+    theme: 'Histoire',
+    domain: 'histoire',
+    image: 'Culture-Generale/images/genocide-armenien.jpg',
+    externalUrl: 'Culture-Generale/genocide-armenien.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'problemes-millenaire',
+    jour: 26,
+    titre: 'Les sept problèmes du millénaire : les grandes énigmes des mathématiques',
+    theme: 'Sciences',
+    domain: 'sciences',
+    image: 'Culture-Generale/images/problemes-millenaire.jpg',
+    externalUrl: 'Culture-Generale/problemes-millenaire.html',
+    month: 9, year: 2025
+  },
+  // Ajoutez vos fiches ici en suivant ce modèle :
+  // {
+  //   id: 'identifiant-unique',
+  //   jour: 2,
+  //   titre: 'Titre de la fiche',
+  //   theme: 'Philosophie',        // Philosophie | Politique | Économie | Société | Histoire | Géopolitique | Culture & Arts | Sciences
+  //   domain: 'philosophie',       // philosophie | politique | economie | societe | histoire | geopolitique | culture | sciences
+  //   image: 'images/nom-image.jpg',   // ou null
+  //   externalUrl: 'Culture-Generale/nom-fichier.html',
+  //   month: 9, year: 2025
+  // },
+];
+
+let currentDomain = 'tous';
+let currentQuery = '';
+
+function normalize(str) {
+  return (str || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+}
+
+function onSearch(val) {
+  currentQuery = val.trim();
+  const clearBtn = document.getElementById('search-clear');
+  clearBtn.style.display = currentQuery ? 'block' : 'none';
+  buildGrid();
+}
+
+function clearSearch() {
+  const input = document.getElementById('search-input');
+  input.value = '';
+  currentQuery = '';
+  document.getElementById('search-clear').style.display = 'none';
+  input.focus();
+  buildGrid();
+}
+
+function filterCG(domain, e) {
+  document.querySelectorAll('.domain-btn').forEach(b => b.classList.remove('active'));
+  if (e && e.currentTarget) e.currentTarget.classList.add('active');
+  currentDomain = domain;
+  buildGrid();
+}
+
+function buildGrid() {
+  const grid = document.getElementById('cg-grid');
+  let data = [...CG_DATA];
+
+  if (currentDomain !== 'tous') {
+    data = data.filter(d => d.domain === currentDomain);
+  }
+
+  if (currentQuery) {
+    const q = normalize(currentQuery);
+    data = data.filter(d =>
+      normalize(d.titre).includes(q) ||
+      normalize(d.theme).includes(q)
+    );
+  }
+
+  const countEl = document.getElementById('search-count');
+
+  if (!data.length) {
+    if (countEl) countEl.innerHTML = '';
+    grid.innerHTML = `
+      <div class="empty-state" style="grid-column:1/-1;">
+        <div class="es-flag">${currentQuery ? '🔍' : '📚'}</div>
+        <div class="es-line"></div>
+        <div class="es-title">${currentQuery ? 'Aucun résultat' : 'Aucune fiche dans ce thème'}</div>
+        <div class="es-sub">${currentQuery ? `Aucune fiche ne correspond à « ${currentQuery} »` : 'Essayez un autre filtre'}</div>
+      </div>`;
+    return;
+  }
+
+  if (countEl) {
+    if (currentQuery) {
+      countEl.innerHTML = `<span class="hl">${data.length}</span> résultat${data.length > 1 ? 's' : ''} pour « ${currentQuery} »`;
+    } else {
+      countEl.innerHTML = '';
+    }
+  }
+
+  // Les nouvelles fiches sont ajoutées à la fin du tableau CG_DATA :
+  // on inverse donc l'ordre pour que la dernière ajoutée apparaisse en premier.
+  data = data.reverse();
+
+  const themeColors = {
+    'Philosophie':    '#c8a96e',
+    'Politique':      '#7c9ec9',
+    'Économie':       '#e8c84a',
+    'Société':        '#c97c9e',
+    'Histoire':       '#e07a3a',
+    'Géopolitique':   '#9ecba0',
+    'Culture & Arts': '#ce93d8',
+    'Sciences':       '#4db6ac',
+    'Sport':          '#0d7a3a',
+    'Environnement':  '#5bbfa8',
+    'Organisations':  '#8c8fd6',
+    'Entreprise':     '#d68f5a',
+  };
+
+  grid.innerHTML = '';
+
+  data.forEach((a, i) => {
+    const color = themeColors[a.theme] || 'var(--accent)';
+    const card = document.createElement('div');
+    card.className = 'actu-card title-only fade-up';
+    card.style.cssText = `--card-color:${color}; animation-delay:${i * 40}ms`;
+
+    const imgHtml = a.image
+      ? `<div class="actu-card-img-wrap"><img class="actu-card-img" src="${a.image}" alt="${a.titre}" loading="lazy" onerror="this.parentElement.style.display='none'"></div>`
+      : '';
+
+    card.innerHTML =
+      imgHtml +
+      `<div class="actu-card-meta">` +
+      `<span class="actu-badge theme" style="color:${color}">${a.theme}</span>` +
+      `</div>` +
+      `<div class="actu-card-title">${a.titre}</div>`;
+
+    card.onclick = () => a.externalUrl ? window.location.href = a.externalUrl : null;
+    grid.appendChild(card);
+  });
+}
+
+buildGrid();
+</script>
+</body>
+</html>

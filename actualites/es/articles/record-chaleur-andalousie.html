@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Record de chaleur en Andalousie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #c60b1e;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #c60b1e; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #f1bf00; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #c60b1e; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #c60b1e; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #c60b1e; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+
+  .ap-band { background: #c60b1e; text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(28,5,8,0.95); padding:12px 60px; border-bottom: 1px solid rgba(198,11,30,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#f1bf00; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(198,11,30,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(181,19,31,0.2);  color:#f08080; border:1px solid rgba(181,19,31,0.35); }
+  .ap-tag-navy   { background:rgba(13,27,42,0.6);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #f1bf00; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(14,5,5,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(198,11,30,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(241,191,0,0.7); }
+
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#f1bf00; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(241,191,0,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#1a0204,#2e080c); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat.blue   { background:linear-gradient(135deg,#071422,#0d2540); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #f1bf00; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(241,191,0,0.06),rgba(241,191,0,0.02)); border-left:3px solid #f1bf00; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(241,191,0,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(241,191,0,0.7); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(28,5,8,0.9),rgba(14,3,4,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(198,11,30,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#f1bf00; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(198,11,30,0.06); border:1px solid rgba(198,11,30,0.18); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(241,191,0,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#f1bf00; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(241,191,0,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#f1bf00; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(28,5,8,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-es.html">Espagnol</a>
+    <span class="sep">/</span>
+    <a href="../espagne.html">Espagne</a>
+    <span class="sep">/</span>
+    <span class="current">Record de chaleur en Andalousie</span>
+  </div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇪🇸 Canicule en Andalousie</div>
+<div class="ap-back-bar">
+  <a href="../espagne.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main">
+<div class="ap-card fade-in">
+
+  <div class="ap-hero-img-wrap">
+    <img class="ap-hero-img" src="../images/record-chaleur-andalousie.jpg" alt="Record de chaleur en Andalousie" onerror="this.parentElement.style.display='none'">
+  </div>
+
+  <div class="ap-header">
+    <div class="ap-tags">
+      <span class="ap-tag ap-tag-red">🇪🇸 Espagne</span>
+      <span class="ap-tag ap-tag-orange">Climat</span>
+      <span class="ap-tag ap-tag-gold">Andalousie</span>
+      <span class="ap-tag ap-tag-navy">Environnement</span>
+      <span class="ap-tag ap-tag-teal">Agriculture</span>
+    </div>
+    <div class="ap-date">Septembre 2026 — ECG Prépa · Espagne</div>
+    <h1 class="ap-title">El Granado, 45,7°C : l'Andalousie égale son record de chaleur pour un mois de septembre</h1>
+    <p class="ap-intro">Le 4 septembre 2026, le village d'El Granado, dans la province de Huelva, a enregistré 45,7°C, égalant le record national pour un mois de septembre détenu depuis 2016 par Montoro, en Andalousie également. L'épisode clôt un été que l'Agence d'État de météorologie (Aemet) qualifie déjà de plus chaud jamais enregistré dans l'Espagne péninsulaire depuis le début des relevés, en 1961.</p>
+  </div>
+
+  <div class="ap-body">
+
+    <div class="ap-stats">
+      <div class="ap-stat red"><span class="ap-stat-num">45,7°C</span><span class="ap-stat-desc">El Granado (Huelva)<br>4 septembre 2026</span></div>
+      <div class="ap-stat gold"><span class="ap-stat-num">47,4°C</span><span class="ap-stat-desc">Record absolu espagnol<br>Montoro, 14 août 2021</span></div>
+      <div class="ap-stat blue"><span class="ap-stat-num">24,5°C</span><span class="ap-stat-desc">Moy. été 2026 en Espagne<br>+2,5°C sur la normale</span></div>
+      <div class="ap-stat green"><span class="ap-stat-num">1961</span><span class="ap-stat-desc">Début des relevés Aemet —<br>été le plus chaud jamais mesuré</span></div>
+    </div>
+
+    <div class="ap-cols">
+      <div>
+        <div class="ap-sub">El Granado, la « poêle à frire » de l'Espagne</div>
+        <p>Situé dans l'Andévalo occidental, à quelques kilomètres de la frontière portugaise, El Granado est devenu ces dernières années l'un des points chauds les plus réguliers du réseau de mesure de l'Aemet. Sa configuration géographique — cuvette intérieure éloignée de l'influence atlantique — favorise une accumulation de chaleur particulièrement intense lors des épisodes de canicule. Le village avait déjà atteint 46°C en juin 2025, un record national pour ce mois, avant d'égaler cette fois le record de septembre, jusque-là détenu par Montoro, dans la province de Córdoba, où 45,7°C avaient été relevés en 2016.</p>
+        <p>Montoro, dans la vallée du Haut-Guadalquivir, reste par ailleurs la référence absolue de la chaleur espagnole : c'est là qu'a été enregistrée, le 14 août 2021, la température la plus élevée jamais mesurée de façon fiable en Espagne, avec 47,4°C — un dixième de degré au-dessus du précédent record, établi au même endroit en juillet 2017. L'intérieur andalou, enclavé entre les reliefs de la Sierra Morena et de la Sierra Nevada, concentre ainsi une part disproportionnée des records de chaleur du pays.</p>
+
+        <div class="ap-tl">
+          <div class="ap-tl-item"><div class="ap-tl-date">Juil. 2017</div><p class="ap-tl-text">Montoro (Córdoba) enregistre 47,3°C, un temps considéré comme la température la plus élevée jamais mesurée en Espagne.</p></div>
+          <div class="ap-tl-item"><div class="ap-tl-date">2016</div><p class="ap-tl-text">Montoro atteint 45,7°C, établissant le record national pour un mois de septembre.</p></div>
+          <div class="ap-tl-item"><div class="ap-tl-date">Août 2021</div><p class="ap-tl-text">Montoro repousse le record absolu espagnol à 47,4°C, en pleine vague de chaleur exceptionnelle sur le sud de la péninsule.</p></div>
+          <div class="ap-tl-item"><div class="ap-tl-date">Juin 2025</div><p class="ap-tl-text">El Granado (Huelva) atteint 46°C, un record national pour un mois de juin.</p></div>
+          <div class="ap-tl-item"><div class="ap-tl-date">4 sept. 2026</div><p class="ap-tl-text">El Granado égale à 45,7°C le record national de septembre, tandis que l'Aemet active l'alerte rouge en Andalousie pour la première fois en septembre depuis 2007.</p></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="ap-sub">Un été hors normes selon l'Aemet</div>
+        <p>Au-delà de l'épisode d'El Granado, c'est l'ensemble de la saison qui bat des records. L'Aemet a confirmé que l'été météorologique 2026 (juin-juillet-août) a été le plus chaud jamais enregistré dans l'Espagne péninsulaire depuis 1961, avec une température moyenne d'environ 24,5°C, soit 2,5°C au-dessus de la moyenne de référence 1991-2020. L'été 2025 occupait jusque-là la première place, avec une anomalie de 2,2°C, suivi de celui de 2022, à +2,1°C : la hiérarchie des étés les plus chauds se resserre presque chaque année depuis le début des années 2020. Juillet 2026 a en outre égalé juillet 2022 comme mois de juillet le plus chaud de la série, tout en étant le plus sec jamais enregistré à cette période, avec à peine 26 % des précipitations habituelles.</p>
+
+        <table class="ap-table">
+          <thead><tr><th>Record</th><th>Lieu</th><th>Date</th><th>Température</th></tr></thead>
+          <tbody>
+            <tr><td class="ap-cell-bold">Record absolu Espagne</td><td>Montoro (Córdoba)</td><td>14/08/2021</td><td>47,4°C</td></tr>
+            <tr><td class="ap-cell-bold">Record de septembre</td><td>Montoro (Córdoba)</td><td>2016</td><td>45,7°C</td></tr>
+            <tr><td class="ap-cell-bold">Record de septembre égalé</td><td>El Granado (Huelva)</td><td>04/09/2026</td><td>45,7°C</td></tr>
+            <tr><td class="ap-cell-bold">Record de juin</td><td>El Granado (Huelva)</td><td>2025</td><td>46°C</td></tr>
+          </tbody>
+        </table>
+
+        <div class="ap-sub">Un paradoxe hydrique andalou</div>
+        <p>Fait notable, cette chaleur extrême ne s'accompagne pas, pour l'instant, d'une sécheresse aussi marquée qu'ailleurs dans le pays. Alors que des régions habituellement épargnées comme la Galice, les Asturies ou la Cantabrie font face à des restrictions d'eau inédites, l'Andalousie — comme la Catalogne, sortie en mai d'une sécheresse de cinq ans — présente des réserves dans ses barrages à des niveaux élevés pour la saison, grâce à des précipitations abondantes en début d'année. La région conjugue ainsi une chaleur historique et une situation hydrique provisoirement plus favorable que la moyenne nationale, un équilibre que les services météorologiques jugent fragile si les prochains mois restent secs.</p>
+
+        <div class="ap-quote">
+          <p>« Ce n'est pas un été isolé, mais une tendance liée au changement climatique : les étés commencent plus tôt et sont marqués par des vagues de chaleur qui s'étendent désormais jusqu'aux premiers jours de septembre. »</p>
+          <cite>— Synthèse des bilans saisonniers de l'Aemet, été 2026</cite>
+        </div>
+
+        <div class="ap-info">
+          <div class="ap-info-icon">⚠️</div>
+          <div class="ap-info-text"><strong>Un été qui pèse sur la santé et l'agriculture :</strong> selon le ministère espagnol de la Santé, l'été 2026 a été marqué par quatre vagues de chaleur et plus de 5 000 décès attribuables à la chaleur au niveau national. En Andalousie, la sécheresse relative et les températures extrêmes ont contribué à une chute d'environ 35 % de la récolte de céréales, tombée à près de 1,2 million de tonnes, tandis que plusieurs grands incendies ont frappé la région, dont celui de Niebla, dans la province de Huelva, qui a détruit environ 33 000 hectares.</div>
+        </div>
+
+        <div class="ap-ctx">
+          <div class="ap-ctx-label">L'Andalousie, laboratoire du réchauffement espagnol</div>
+          <p>Avec 45,7°C relevés à El Granado le 4 septembre 2026, l'Andalousie confirme sa place de région la plus exposée aux extrêmes thermiques du pays : elle concentre déjà le record absolu espagnol, le record de juin et, désormais à égalité, celui de septembre. Ce nouvel épisode s'inscrit dans un été que l'Aemet range parmi les plus chauds et les plus secs jamais mesurés en Espagne, avec des conséquences tangibles sur la santé publique, l'agriculture et les écosystèmes forestiers de la région. Si les réserves en eau andalouses restent, pour l'instant, à des niveaux rassurants, la répétition de ces records d'une année sur l'autre interroge sur la capacité du territoire à absorber, dans la durée, une chaleur devenue structurelle plutôt qu'exceptionnelle.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — Espagne — Septembre 2026</div>
+
+</body>
+</html>

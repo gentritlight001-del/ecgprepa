@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Maths Chapitre 4 : Suites de nombres réels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false}]});"></script>
+<style>
+  :root {
+    --cream: #F5F5F4;
+    --dark: #1A1A19;
+    --teal: #5B5B57;
+    --teal-dark: #2B2B29;
+    --teal-mid: #7C7C77;
+    --teal-light: #E6E6E3;
+    --teal-border: #B7B7B1;
+    --mint: #D8D8D3;
+    --muted: #6E6E69;
+    --accent: #5B5B57;
+    --accent-soft: #5B5B5722;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--dark); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid rgba(91,91,87,0.25);
+    background: var(--teal-dark); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--mint); cursor: pointer; letter-spacing: 0.02em; }
+  .nav-logo a { color: inherit; text-decoration: none; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(245,245,244,0.5); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: inherit; text-decoration: none; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb a:hover span, .breadcrumb span:hover { color: var(--mint); }
+  .breadcrumb .sep { color: rgba(245,245,244,0.25); }
+  .breadcrumb .current { color: #F5F5F4; cursor: default; }
+
+  /* ─── HERO ─── */
+  .ch-hero {
+    background: var(--teal-dark);
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ch-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%235B5B57' fill-opacity='0.18'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--mint); margin-bottom: 1.5rem; opacity: 0.85; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 4rem); color: var(--cream); font-weight: 900; max-width: 900px; margin: 0 auto 1.5rem; line-height: 1.1; position: relative; z-index: 1; }
+  .ch-hero p { color: rgba(245,245,244,0.45); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  /* ─── TOC ─── */
+  .toc-bar { background: #EAEAE7; padding: 2rem; border-bottom: 1px solid var(--teal-border); }
+  .toc-inner { max-width: 960px; margin: 0 auto; }
+  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
+  .toc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.4rem; list-style: none; }
+  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: #262624; font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
+  .toc-list a:hover { border-color: var(--teal-border); background: white; color: #000; }
+  .toc-num { font-family: "DM Mono", monospace; font-size: 0.65rem; color: var(--teal); flex-shrink: 0; margin-top: 0.15rem; }
+
+  /* ─── CONTENT ─── */
+  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 3rem; }
+
+  /* PART */
+  .math-part { margin-bottom: 5rem; }
+  .math-part:last-of-type { margin-bottom: 0; }
+  .math-part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--teal); }
+  .math-part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: var(--teal-border); line-height: 1; flex-shrink: 0; }
+  .math-part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--dark); line-height: 1.25; }
+
+  /* SECTION */
+  .math-section { margin-bottom: 3.5rem; }
+  .math-section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--teal-dark); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--teal); scroll-margin-top: 2rem; }
+  .math-subsection-title { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--teal); margin: 2rem 0 0.75rem; }
+
+  /* TEXT */
+  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: #1E1E1C; line-height: 1.85; font-weight: 300; }
+  .content strong { color: var(--dark); font-weight: 600; }
+
+  /* DÉFINITION CARD */
+  .def-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(91,91,87,0.10), 0 0 0 1px rgba(91,91,87,0.12);
+    display: flex;
+    margin: 1.4rem 0;
+  }
+  .def-accent-bar {
+    width: 5px;
+    background: linear-gradient(180deg, #92928C 0%, #2A2A28 100%);
+    flex-shrink: 0;
+    border-radius: 10px 0 0 10px;
+  }
+  .def-body { padding: 1.2rem 1.5rem; flex: 1; }
+  .def-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.65rem; }
+  .def-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--teal); font-weight: 500; }
+  .def-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--teal-dark); }
+  .def-body p { margin-bottom: 0.5rem; font-size: 0.93rem; line-height: 1.75; }
+  .def-body p:last-child { margin-bottom: 0; }
+
+  /* PROPRIÉTÉ CARD */
+  .prop-card {
+    background: var(--teal-light);
+    border-radius: 8px;
+    border: 1px solid var(--teal-border);
+    border-left: 4px solid var(--teal);
+    padding: 1.2rem 1.5rem;
+    margin: 1.4rem 0;
+  }
+  .prop-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--teal-dark); font-weight: 700; margin-bottom: 0.6rem; }
+  .prop-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--teal-dark); margin-bottom: 0.7rem; }
+  .prop-card p { margin-bottom: 0.5rem; font-size: 0.93rem; color: var(--teal-dark); line-height: 1.75; }
+  .prop-card p:last-child { margin-bottom: 0; }
+  .prop-card ol { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .prop-card ol li { font-size: 0.93rem; color: var(--teal-dark); line-height: 1.8; margin-bottom: 0.35rem; }
+
+  /* THÉORÈME CARD */
+  .thm-card {
+    background: var(--teal-dark);
+    color: var(--cream);
+    border-radius: 8px;
+    padding: 1.5rem 1.75rem;
+    margin: 1.4rem 0;
+  }
+  .thm-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--mint); margin-bottom: 0.5rem; }
+  .thm-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--cream); margin-bottom: 0.75rem; }
+  .thm-card p { color: rgba(245,245,244,0.88); font-size: 0.93rem; margin-bottom: 0.5rem; line-height: 1.75; }
+  .thm-card p:last-child { margin-bottom: 0; }
+
+  /* MÉTHODE CARD */
+  .meth-card {
+    background: white;
+    border: 2px solid var(--teal);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.4rem 0;
+  }
+  .meth-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--teal); font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+  .meth-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--teal-dark); margin-bottom: 0.7rem; }
+  .meth-card p { font-size: 0.93rem; line-height: 1.75; margin-bottom: 0.5rem; }
+  .meth-card p:last-child { margin-bottom: 0; }
+  .meth-card ul, .meth-card ol { padding-left: 1.4rem; margin: 0.3rem 0 0.5rem; }
+  .meth-card li { font-size: 0.93rem; line-height: 1.8; margin-bottom: 0.3rem; }
+
+  /* REMARQUE */
+  .remark { background: white; border-left: 3px solid var(--teal-border); padding: 1rem 1.4rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; font-size: 0.9rem; color: #262624; line-height: 1.7; font-style: italic; }
+  .remark::before { content: 'Remarque — '; font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--teal); display: block; margin-bottom: 0.3rem; }
+
+  /* FORMULE DISPLAY */
+  .formula-block {
+    background: white;
+    border: 1px solid var(--teal-border);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.2rem 0;
+    text-align: center;
+    overflow-x: auto;
+  }
+  .formula-block .katex-display { margin: 0; }
+  .formula-block .katex { font-size: 1.05em; }
+
+  /* TABLE */
+  .math-table-wrap { overflow-x: auto; margin: 1.5rem 0; border-radius: 8px; border: 1px solid var(--teal-border); box-shadow: 0 2px 8px rgba(91,91,87,0.08); }
+  .math-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .math-table th { background: var(--teal-dark); color: var(--cream); font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.75rem 1rem; text-align: center; font-weight: 500; border: 1px solid rgba(255,255,255,0.1); }
+  .math-table td { padding: 0.65rem 1rem; text-align: center; border: 1px solid var(--teal-light); color: #1E1E1C; vertical-align: middle; background: white; line-height: 1.6; }
+  .math-table tr:nth-child(even) td { background: #F5F5F4; }
+  .math-table tr:hover td { background: var(--teal-light); }
+  .math-table td.left { text-align: left; }
+  .math-table .katex { font-size: 0.95em; }
+
+  /* KEY FACT */
+  .math-key { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 0.6rem; padding: 0.85rem 1.1rem; background: white; border: 1px solid var(--teal-light); border-radius: 6px; }
+  .math-key-bullet { width: 6px; height: 6px; background: var(--teal); border-radius: 50%; flex-shrink: 0; margin-top: 0.55rem; }
+  .math-key > div { font-size: 0.91rem; color: #1E1E1C; line-height: 1.75; font-weight: 300; }
+
+  /* INLINE MATH */
+  .katex { font-size: 1em; }
+  .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.2rem 0; }
+
+  /* DEUX COLONNES */
+  .two-col-formulas { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
+  .two-col-formulas .formula-block { margin: 0; }
+
+  /* TROIS COLONNES */
+  .three-col-formulas { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
+  .three-col-formulas .formula-block { margin: 0; }
+
+  /* HIGHLIGHT BOX */
+  .math-highlight { background: var(--teal-light); border-left: 4px solid var(--teal); padding: 1.25rem 1.75rem; margin: 1.5rem 0; color: var(--teal-dark); font-size: 0.93rem; line-height: 1.75; border-radius: 0 6px 6px 0; }
+
+  /* FOOTER */
+  .site-footer {
+    background: var(--teal-dark);
+    border-top: 1px solid rgba(91,91,87,0.35);
+    padding: 2.5rem 2rem;
+    text-align: center;
+  }
+  .site-footer .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--mint);
+    letter-spacing: 0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+  /* BACK TO TOP */
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--teal); color: var(--cream); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 4px 14px rgba(91,91,87,0.45); opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 200; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+  .back-to-top:hover { background: var(--teal-mid); }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--teal-border); border-radius: 3px; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .two-col-formulas { grid-template-columns: 1fr; }
+    .three-col-formulas { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    @page { size: A4; margin: 15mm 14mm 15mm 14mm; }
+    nav, .back-to-top, .toc-bar, .site-footer { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    html, body { background: white !important; color: #000 !important; font-size: 10pt; width: 100% !important; }
+    .ch-hero { background: #2B2B29 !important; padding: 0.9rem 1rem 0.7rem !important; }
+    .ch-hero::before { display: none !important; }
+    .ch-hero h1 { font-size: 16pt !important; color: #fff !important; margin-bottom: 0.3rem !important; }
+    .ch-hero .chap-label { font-size: 7pt !important; color: #D8D8D3 !important; margin-bottom: 0.4rem !important; }
+    .ch-hero p { font-size: 7pt !important; color: #D8D8D3 !important; margin: 0 !important; }
+    .content { max-width: 100% !important; padding: 0.6rem 0 !important; margin: 0 !important; }
+    .content p { font-size: 9pt !important; line-height: 1.5 !important; margin-bottom: 0.45rem !important; color: #000 !important; }
+    .math-part { margin-bottom: 0.8rem; page-break-inside: auto; }
+    .math-part-header { page-break-after: avoid; padding-bottom: 0.6rem !important; margin-bottom: 1rem !important; border-bottom: 2pt solid #5B5B57 !important; }
+    .math-part-num { font-size: 2rem !important; color: #B7B7B1 !important; }
+    .math-part-title { font-size: 13pt !important; }
+    .math-section { page-break-inside: auto; margin-bottom: 0.8rem; }
+    .math-section-title { page-break-after: avoid; font-size: 11pt !important; padding-left: 0.7rem !important; border-left: 2.5pt solid #5B5B57 !important; margin-bottom: 0.55rem !important; color: #2B2B29 !important; }
+    .math-subsection-title { page-break-after: avoid; font-size: 7pt !important; margin: 0.65rem 0 0.35rem !important; color: #5B5B57 !important; }
+    .def-card { page-break-inside: avoid; box-shadow: none !important; border: 1pt solid #B7B7B1 !important; display: flex !important; border-radius: 0 !important; margin: 0.55rem 0 !important; }
+    .def-accent-bar { background: #5B5B57 !important; width: 4px !important; border-radius: 0 !important; }
+    .def-body { padding: 0.7rem 1rem !important; }
+    .def-body p { font-size: 8.5pt !important; line-height: 1.5 !important; color: #000 !important; }
+    .prop-card { page-break-inside: avoid; background: #E6E6E3 !important; border: 1pt solid #B7B7B1 !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .prop-card p, .prop-card li { font-size: 8.5pt !important; line-height: 1.5 !important; }
+    .thm-card { page-break-inside: avoid; background: #2B2B29 !important; padding: 0.7rem 1rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .thm-label { font-size: 6pt !important; color: #D8D8D3 !important; }
+    .thm-title { font-size: 9.5pt !important; color: #fff !important; }
+    .thm-card p { font-size: 8.5pt !important; color: rgba(245,245,244,0.9) !important; line-height: 1.5 !important; }
+    .meth-card { page-break-inside: avoid; border: 1.5pt solid #5B5B57 !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .meth-card p { font-size: 8.5pt !important; line-height: 1.5 !important; }
+    .remark { page-break-inside: avoid; border-left: 2pt solid #B7B7B1 !important; padding: 0.5rem 0.9rem !important; margin: 0.45rem 0 !important; font-size: 8pt !important; border-radius: 0 !important; }
+    .formula-block { page-break-inside: avoid; border: 1pt solid #B7B7B1 !important; padding: 0.5rem 0.8rem !important; margin: 0.45rem 0 !important; border-radius: 0 !important; }
+    .math-key { page-break-inside: avoid; padding: 0.4rem 0.8rem !important; margin-bottom: 0.3rem !important; border: 1pt solid #E6E6E3 !important; border-radius: 0 !important; }
+    .math-key > div { font-size: 8.5pt !important; line-height: 1.45 !important; color: #000 !important; }
+    .math-highlight { page-break-inside: avoid; background: #E6E6E3 !important; border-left: 2.5pt solid #5B5B57 !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; font-size: 8.5pt !important; color: #2B2B29 !important; border-radius: 0 !important; }
+    .math-table-wrap { page-break-inside: avoid; margin: 0.55rem 0 !important; border: 1pt solid #B7B7B1 !important; border-radius: 0 !important; box-shadow: none !important; }
+    .math-table th { background: #2B2B29 !important; color: #D8D8D3 !important; font-size: 6.5pt !important; padding: 0.4rem 0.6rem !important; }
+    .math-table td { font-size: 8pt !important; padding: 0.4rem 0.6rem !important; border: 0.5pt solid #E6E6E3 !important; }
+    .two-col-formulas, .three-col-formulas { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 0.5rem !important; margin: 0.45rem 0 !important; }
+    .katex { font-size: 0.82em !important; }
+    .katex-display { margin: 0.15rem 0 !important; overflow: visible !important; }
+    .katex-html { white-space: normal !important; }
+    .katex .base { display: inline !important; white-space: nowrap !important; }
+    .def-body p, .prop-card p, .thm-card p, .remark, .math-key > div, .content p { overflow: visible !important; word-break: break-word !important; }
+    .formula-block { overflow: visible !important; height: auto !important; min-height: 0 !important; text-align: center !important; }
+    .formula-block .katex-display { overflow-x: visible !important; overflow-y: visible !important; text-align: center !important; }
+    .math-table td, .math-table th { overflow: visible !important; word-break: break-word !important; }
+    .katex *, .katex-html * { position: static !important; top: auto !important; bottom: auto !important; left: auto !important; right: auto !important; }
+    .math-table .katex { font-size: 0.75em !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left"><div class="nav-logo"><a href="../../index.html">ECG Prépa</a></div></div>
+  <div class="breadcrumb">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">/</span>
+    <a href="index.html"><span>Mathématiques</span></a>
+    <span class="sep">/</span>
+    <span class="current">Chapitre 4</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="chap-label">&#x2015;&nbsp; Chapitre 4 · Mathématiques approfondies &nbsp;&#x2015;</div>
+  <h1>Suites de nombres réels</h1>
+  <p>Suites particulières · Convergence · Limites · Suites monotones</p>
+</div>
+
+<!-- TOC -->
+<div class="toc-bar">
+  <div class="toc-inner">
+    <div class="toc-title">Table des matières</div>
+    <ul class="toc-list">
+      <li><a href="#part1"><span class="toc-num">I</span> Suites particulières</a></li>
+      <li><a href="#part2"><span class="toc-num">II</span> Suite convergente, suite divergente</a></li>
+      <li><a href="#part3"><span class="toc-num">III</span> Opérations sur les limites</a></li>
+      <li><a href="#part4"><span class="toc-num">IV</span> Théorèmes d'existence de limite</a></li>
+      <li><a href="#part5"><span class="toc-num">V</span> Autres théorèmes d'existence de limite</a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════════
+     PARTIE I — SUITES PARTICULIÈRES
+════════════════════════════════════════ -->
+<div class="math-part" id="part1">
+  <div class="math-part-header">
+    <div class="math-part-num">I</div>
+    <div class="math-part-title">Suites particulières</div>
+  </div>
+
+  <!-- SECTION 1 : Suites géométriques -->
+  <div class="math-section" id="s1-1">
+    <div class="math-section-title">1 — Suites géométriques</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span><span class="def-name">Suite géométrique</span></div>
+        <p>On dit qu'une suite \((u_n)_n\) est <strong>géométrique</strong> de raison \(q\) lorsqu'elle est définie par une relation du type :</p>
+        <div class="formula-block">\[\forall n \geq n_0, \quad u_{n+1} = q\,u_n\]</div>
+        <p>(avec \(q\) constante indépendante de \(n\))</p>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <div class="prop-title">Terme général d'une suite géométrique</div>
+      <ol>
+        <li>La suite \((q^n)_n\) est une suite géométrique de raison \(q\) ; les suites \((\lambda q^n)_n\) (avec \(\lambda\) réel fixé) le sont aussi.</li>
+        <li>Si \((u_n)_n\) est une suite géométrique de raison \(q\) et de premier terme \(u_{n_0}\), alors \[\exists\, \lambda \in \mathbb{R} \text{ tq } \forall n \geq n_0,\quad u_n = \lambda q^n\] (où \(\lambda\) est calculé avec le premier terme de la suite). On a la formule : \[\forall n \geq n_0, \quad u_n = u_{n_0}\, q^{\,n-n_0}\]</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- SECTION 2 : Suites récurrentes linéaires d'ordre 2 -->
+  <div class="math-section" id="s1-2">
+    <div class="math-section-title">2 — Suites récurrentes linéaires d'ordre 2</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 2</span><span class="def-name">Suite récurrente linéaire d'ordre 2</span></div>
+        <p>On dit qu'une suite \((u_n)_n\) est une suite <strong>récurrente linéaire d'ordre 2</strong> ssi elle vérifie une relation du type :</p>
+        <div class="formula-block">\[\forall n \in \mathbb{N}, \quad u_{n+2} = a\,u_{n+1} + b\,u_n\]</div>
+        <p>(avec \(a\) et \(b\) des nombres indépendants de \(n\), et \(b \neq 0\))</p>
+        <p>On définit alors l'équation caractéristique associée à cette suite :</p>
+        <div class="formula-block">\[(E) \quad r^2 = a r + b\]</div>
+        <p>(on l'obtient en remplaçant le terme de plus petit indice par « 1 », le suivant par « \(r\) » et le dernier par « \(r^2\) »)</p>
+      </div>
+    </div>
+
+    <p><strong>Terme général d'une suite récurrente linéaire d'ordre 2 :</strong> Soit \((u_n)_n\) une suite récurrente linéaire d'ordre 2 avec \(\forall n \in \mathbb{N}\), \(u_{n+2} = a u_{n+1} + b u_n\) (où \(a,b\) réels et \(b \neq 0\)). Soit \((E): r^2 = ar+b\) l'équation caractéristique associée. On note \(\Delta\) son discriminant. Les solutions de l'équation caractéristique permettent de créer le terme général de la suite \((u_n)_n\). Plus précisément :</p>
+
+    <div class="math-table-wrap">
+      <table class="math-table">
+        <thead><tr><th>Cas</th><th>Solution de (E)</th><th>2 suites de base</th><th>Terme général</th></tr></thead>
+        <tbody>
+          <tr><td>\(\Delta > 0\)</td><td class="left">deux solutions dans \(\mathbb{R}\) : \(s\) et \(t\)</td><td>\((s^n)_n\) et \((t^n)_n\)</td><td>\(\exists (\lambda,\mu)\in\mathbb{R}^2\) tq \(\forall n \in \mathbb{N},\; u_n = \lambda s^n + \mu t^n\)</td></tr>
+          <tr><td>\(\Delta = 0\)</td><td class="left">une racine double : \(s\)</td><td>\((s^n)_n\) et \((ns^n)_n\)</td><td>\(\exists (\lambda,\mu)\in\mathbb{R}^2\) tq \(\forall n \in \mathbb{N},\; u_n = \lambda s^n + \mu n s^n\)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Dans chaque cas, deux constantes \(\lambda\) et \(\mu\) à calculer, si nécessaire, à l'aide des premiers termes.</p>
+
+    <div class="meth-card">
+      <div class="meth-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Méthode
+      </div>
+      <div class="meth-title">Déterminer le terme général d'une suite récurrente linéaire d'ordre 2</div>
+      <ul>
+        <li>Écrire puis résoudre l'équation caractéristique</li>
+        <li>Écrire l'allure du terme général à l'aide du théorème (selon le cas \(\Delta > 0\) ou \(\Delta = 0\))</li>
+        <li>Déterminer \(\lambda\) et \(\mu\) en donnant des valeurs à \(n\).</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 3 : Suites arithmético-géométriques -->
+  <div class="math-section" id="s1-3">
+    <div class="math-section-title">3 — Suites arithmético-géométriques</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 3</span><span class="def-name">Suite arithmético-géométrique</span></div>
+        <p>On dit qu'une suite \((u_n)_n\) est <strong>arithmético-géométrique</strong> lorsqu'elle est définie par une relation du type :</p>
+        <div class="formula-block">\[\forall n \geq n_0, \quad u_{n+1} = a\,u_n + b\]</div>
+        <p>(avec \(a\) et \(b\) constantes indépendantes de \(n\))</p>
+      </div>
+    </div>
+
+    <div class="meth-card">
+      <div class="meth-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Méthode
+      </div>
+      <div class="meth-title">Déterminer le terme général d'une suite arithmético-géométrique</div>
+      <ul>
+        <li>Introduire un réel \(\ell\) tel que \(\ell = a\ell + b\) (pour trouver \(\ell\) résoudre l'équation)</li>
+        <li>Introduire une suite annexe \((w_n)_n\) définie par : \(\forall n\), \(w_n = u_n - \ell\), et montrer que cette suite \((w_n)_n\) est géométrique de raison \(a\)</li>
+        <li>Déterminer une expression de \(w_n\) en fonction de \(n\) puis en déduire \(u_n\) (car \(u_n = w_n + \ell\))</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE II — SUITE CONVERGENTE, SUITE DIVERGENTE
+════════════════════════════════════════ -->
+<div class="math-part" id="part2">
+  <div class="math-part-header">
+    <div class="math-part-num">II</div>
+    <div class="math-part-title">Suite convergente, suite divergente</div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="math-section" id="s2-1">
+    <div class="math-section-title">1 — Définition mathématique de la limite d'une suite</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span><span class="def-name">Partie entière</span></div>
+        <p>Soit \(x \in \mathbb{R}\). On appelle partie entière de \(x\) le plus grand des entiers relatifs inférieurs ou égaux à \(x\). On le note \(\lfloor x \rfloor\) et on a :</p>
+        <div class="formula-block">\[\forall x \in \mathbb{R}, \quad \lfloor x \rfloor \leq x < \lfloor x \rfloor + 1\]</div>
+      </div>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 2</span><span class="def-name">Suite tendant vers \(+\infty\) ou \(-\infty\)</span></div>
+        <p>Lorsque les termes \(u_n\) finissent par dépasser n'importe quel réel, aussi grand soit-il, on dit que la suite \((u_n)_n\) tend vers \(+\infty\). On note alors \(\displaystyle\lim_{n\to+\infty} u_n = +\infty\). Mathématiquement, cette définition s'écrit :</p>
+        <div class="formula-block">\[\lim_{n\to+\infty} u_n = +\infty \iff \forall a > 0,\ \exists N \in \mathbb{N},\ \text{tq } \forall n \geq N,\ u_n > a\]</div>
+        <p>Lorsque les termes \(u_n\) finissent par être plus petits que n'importe quel réel négatif, on dit que la suite \((u_n)_n\) tend vers \(-\infty\). On note alors \(\displaystyle\lim_{n\to+\infty} u_n = -\infty\). Mathématiquement, cette définition s'écrit :</p>
+        <div class="formula-block">\[\lim_{n\to+\infty} u_n = -\infty \iff \forall b < 0,\ \exists N \in \mathbb{N},\ \text{tq } \forall n \geq N,\ u_n < b\]</div>
+      </div>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 3</span><span class="def-name">Limite réelle</span></div>
+        <p>Lorsque les termes \(u_n\) se rapprochent d'un réel \(L\), on dit que la suite \((u_n)_n\) tend vers \(L\) et on note \(\displaystyle\lim_{n\to+\infty} u_n = L\). Mathématiquement, cette définition s'écrit :</p>
+        <div class="formula-block">\[\lim_{n\to+\infty} u_n = L \iff \forall \varepsilon > 0,\ \exists N \in \mathbb{N},\ \text{tq } \forall n \geq N,\ |u_n - L| < \varepsilon\]</div>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <p>Si on trouve une suite \((v_n)_n\) telle que \(\forall n \in \mathbb{N}\), \(0 \leq |u_n - L| \leq v_n\) avec \(\displaystyle\lim_{n\to+\infty} v_n = 0\) alors \(\displaystyle\lim_{n\to+\infty} u_n = L\)</p>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 4</span><span class="def-name">Suite convergente, suite divergente</span></div>
+        <p>On dit que la suite \((u_n)_n\) <strong>converge</strong> ssi la suite \((u_n)_n\) admet une <strong>limite finie</strong>.</p>
+        <p>On dit que la suite \((u_n)_n\) <strong>diverge</strong> ssi elle ne converge pas.</p>
+        <p>Ainsi \((u_n)_n\) est une suite <strong>divergente</strong> ssi elle tend vers \(+\infty\), vers \(-\infty\) ou lorsque sa limite n'existe pas.</p>
+      </div>
+    </div>
+
+    <div class="remark">Pour certaines suites, la limite n'existe pas. C'est le cas, par exemple, pour \((\cos n)_n\) ou \(((-1)^n)_n\).</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE III — OPÉRATIONS SUR LES LIMITES
+════════════════════════════════════════ -->
+<div class="math-part" id="part3">
+  <div class="math-part-header">
+    <div class="math-part-num">III</div>
+    <div class="math-part-title">Opérations sur les limites</div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="math-section" id="s3-1">
+    <div class="math-section-title">1 — Limite d'une suite et limite de fonction</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <p>Soit \(f\) une fonction définie sur \(I\) et \((u_n)_n\) une suite telle que \(\forall n \in \mathbb{N}\), \(u_n \in I\).</p>
+      <ol>
+        <li>Si \(\displaystyle\lim_{n\to+\infty} u_n = a\) et \(\displaystyle\lim_{t\to a} f(t) = L\) alors \(\displaystyle\lim_{n\to+\infty} f(u_n) = L\) (ici \(a\) et \(L\) sont des limites réelles ou infinies)</li>
+        <li>En particulier, si \(\displaystyle\lim_{n\to+\infty} u_n = a\) avec \(a \in \mathbb{R}\) et \(f\) continue en \(a\), alors \(\displaystyle\lim_{n\to+\infty} f(u_n) = f(a)\)</li>
+      </ol>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 2</div>
+      <div class="prop-title">Limite d'une suite géométrique</div>
+      <p>Soit \((u_n)_n\) une suite géométrique de raison \(q\) (avec \(q \neq 1\))</p>
+      <ol>
+        <li>Si \(|q| < 1\) alors \(\displaystyle\lim_{n\to+\infty} u_n = 0\)</li>
+        <li>Si \(|q| \geq 1\) alors la suite \((u_n)_n\) diverge.</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="math-section" id="s3-2">
+    <div class="math-section-title">2 — Calcul des limites</div>
+
+    <div class="math-subsection-title">a) Opérations algébriques</div>
+
+    <p>Les règles de calculs sur les limites de suites sont identiques aux règles de calculs des limites de fonctions.</p>
+
+    <p>Pour les quotients, on a :</p>
+    <div class="formula-block">\[\dfrac{1}{\infty} = 0 \qquad \dfrac{1}{0^+} = +\infty \qquad \dfrac{1}{0^-} = -\infty\]</div>
+
+    <div class="math-subsection-title">b) Outils pour étudier des formes indéterminées : suites équivalentes, suites négligeables</div>
+
+    <p>Les formes indéterminées sont : \((+\infty)+(-\infty)\) et \(\infty \times 0\), \(\dfrac{\infty}{\infty}\), \(\dfrac{0}{0}\). Lorsque l'on rencontre une forme indéterminée, cela signifie seulement que les règles ne permettent pas de conclure ; il faudra étudier autrement la limite. On utilisera la notion suivante :</p>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span><span class="def-name">Suites équivalentes, suites négligeables</span></div>
+        <p>Soit \((u_n)_n\) et \((v_n)_n\) deux suites avec \(\forall n \in \mathbb{N}\), \(v_n \neq 0\).</p>
+        <p>On dit que les suites \((u_n)_n\) et \((v_n)_n\) sont <strong>équivalentes</strong> et on note \(u_n \sim v_n\) ssi \(\displaystyle\lim_{n\to+\infty} \frac{u_n}{v_n} = 1\)</p>
+        <p>On dit que \((u_n)_n\) est <strong>négligeable</strong> devant \((v_n)_n\) ssi \(\displaystyle\lim_{n\to+\infty} \frac{u_n}{v_n} = 0\). On note alors \(u_n = o(v_n)\)</p>
+        <p>Si \(b_n = o(a_n)\) alors \(a_n + b_n \sim a_n\) (pour trouver l'équivalent d'une somme, on garde la partie non négligeable)</p>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 3</div>
+      <div class="prop-title">Équivalent d'un polynôme</div>
+      <p>Un polynôme est équivalent en \(+\infty\) à son terme de plus haut degré.</p>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 4</div>
+      <div class="prop-title">Équivalents de référence</div>
+      <p>Si \(\varepsilon_n \to 0\) alors :</p>
+      <div class="three-col-formulas">
+        <div class="formula-block">\[e^{\varepsilon_n} - 1 \sim \varepsilon_n\]</div>
+        <div class="formula-block">\[\ln(1+\varepsilon_n) \sim \varepsilon_n\]</div>
+        <div class="formula-block">\[\sin(\varepsilon_n) \sim \varepsilon_n\]</div>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 5</div>
+      <div class="prop-title">Croissances comparées et tableau des négligeabilités</div>
+      <p>Croissances comparées de référence :</p>
+      <div class="three-col-formulas">
+        <div class="formula-block">\[\lim_{u\to+\infty} \frac{\ln u}{u} = 0\]</div>
+        <div class="formula-block">\[\lim_{u\to+\infty} u\,e^{-u} = 0\]</div>
+        <div class="formula-block">\[\lim_{u\to 0} u\ln(u) = 0\]</div>
+      </div>
+      <p>On a : \(\ln(n) = o(n^\alpha)\), \(n^\alpha = o(e^n)\) et \(n^\alpha = o(q^n)\) (avec \(q>1\)) et \(q^n = o(n!)\)</p>
+      <p>On obtient le tableau ci-dessous, dans lequel chaque suite est négligeable devant une écrite à sa droite :</p>
+      <div class="math-table-wrap">
+        <table class="math-table">
+          <thead><tr><th>Logarithmes</th><th>Puissances</th><th>Exponentielles \(q^n\), \(q>1\)</th><th>Factorielle</th></tr></thead>
+          <tbody>
+            <tr><td>\(\sqrt{\ln n}\ \ \ln(n)\ \ (\ln n)^2\)</td><td>\(\sqrt{n}\ \ n^2\ \ n^4\)</td><td>\(2^n \ \ e^n \ \ 4^n\)</td><td>\(n!\)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 6</div>
+      <p>Si \(u_n \sim v_n\) avec \(\displaystyle\lim_{n\to+\infty} v_n = L\) (avec \(L\) réel ou infini) alors \(\displaystyle\lim_{n\to+\infty} u_n = L\)</p>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 7</div>
+      <p>Si \(u_n \sim v_n\) et \(a_n \sim b_n\) alors \(u_n \times a_n \sim v_n \times b_n\) et \(\dfrac{u_n}{a_n} \sim \dfrac{v_n}{b_n}\)</p>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="math-section" id="s3-3">
+    <div class="math-section-title">3 — Théorème d'existence de limite pour les suites monotones</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span></div>
+        <p>On dit qu'une suite \((u_n)_n\) est <strong>croissante</strong> ssi \(\forall n \in \mathbb{N}\), \(u_n \leq u_{n+1}\)</p>
+        <p>On dit qu'une suite \((u_n)_n\) est <strong>décroissante</strong> ssi \(\forall n \in \mathbb{N}\), \(u_{n+1} \leq u_n\)</p>
+      </div>
+    </div>
+
+    <div class="meth-card">
+      <div class="meth-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Méthode
+      </div>
+      <p>Pour étudier la monotonie d'une suite, on cherche le signe de \(u_{n+1} - u_n\) :</p>
+      <ul>
+        <li>si \(u_{n+1} - u_n \geq 0\) alors \(u_{n+1} \geq u_n\) donc \(u_n \leq u_{n+1}\) et la suite est croissante</li>
+        <li>si \(u_{n+1} - u_n \leq 0\) alors \(u_{n+1} \leq u_n\) et la suite est décroissante</li>
+      </ul>
+    </div>
+
+    <div class="remark">Lorsque \(u_n\) est un produit, on peut aussi regarder \(\dfrac{u_{n+1}}{u_n}\).</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 5</div>
+      <div class="prop-title">Existence de la limite pour une suite croissante</div>
+      <p>Soit \((u_n)_n\) une suite croissante càd une suite telle que \(\forall n \in \mathbb{N}\), \(u_n \leq u_{n+1}\)</p>
+      <ol>
+        <li>ou bien la suite \((u_n)_n\) est majorée. Elle est alors convergente. Dans ce cas, en posant \(\displaystyle\lim_{n\to+\infty} u_n = L\), on a \(\forall n \in \mathbb{N}\), \(u_n \leq L\)</li>
+        <li>ou bien la suite \((u_n)_n\) n'est pas majorée alors elle diverge vers \(+\infty\)</li>
+      </ol>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 6</div>
+      <div class="prop-title">Existence de la limite pour une suite décroissante</div>
+      <p>Soit \((u_n)_n\) une suite décroissante càd une suite telle que \(\forall n \in \mathbb{N}\), \(u_{n+1} \leq u_n\)</p>
+      <ol>
+        <li>ou bien la suite \((u_n)_n\) est minorée. Elle est alors convergente. Dans ce cas en posant \(\displaystyle\lim_{n\to+\infty} u_n = \ell\), on a : \(\forall n \in \mathbb{N}\), \(u_n \geq \ell\)</li>
+        <li>ou bien la suite \((u_n)_n\) n'est pas minorée alors elle diverge vers \(-\infty\)</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE IV — THÉORÈMES D'EXISTENCE DE LIMITE
+════════════════════════════════════════ -->
+<div class="math-part" id="part4">
+  <div class="math-part-header">
+    <div class="math-part-num">IV</div>
+    <div class="math-part-title">Théorèmes d'existence de limite</div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="math-section" id="s4-1">
+    <div class="math-section-title">1 — Équation vérifiée par une limite, limites et inégalités</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <div class="prop-title">Unicité de la limite et équation vérifiée par une limite</div>
+      <ol>
+        <li>La limite d'une suite, si elle existe, est unique. Ainsi, si \(\displaystyle\lim_{n\to+\infty} u_n = L\) et \(\displaystyle\lim_{n\to+\infty} u_n = L'\) alors \(L = L'\) (ici \(L\) et \(L'\) réels ou infinis)</li>
+        <li>Soit \(f\) une fonction continue sur \(\mathbb{R}\) et \((u_n)_n\) une suite du type \(u_{n+1} = f(u_n)\). Si on sait que la suite \((u_n)_n\) converge vers \(L\) alors on a \(L = f(L)\)</li>
+      </ol>
+    </div>
+
+    <div class="meth-card">
+      <div class="meth-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Méthode
+      </div>
+      <p>Ceci permet de créer une équation vérifiée par la limite en faisant tendre \(n\) vers \(+\infty\) dans l'égalité permettant de définir la suite (sous réserve d'existence dans \(\mathbb{R}\) de cette limite)</p>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 2</div>
+      <div class="prop-title">Passage à la limite dans les inégalités</div>
+      <p>Soient \((u_n)_n\) et \((v_n)_n\) deux suites vérifiant \(\forall n \geq n_0\), \(u_n \leq v_n\) ou \(\forall n \geq n_0\), \(u_n < v_n\)</p>
+      <p>Si <strong>les deux suites convergent</strong> alors l'inégalité se transmet à leurs limites en devenant <strong>large</strong>. Ainsi, si \(\forall n \geq n_0\), \(u_n < v_n\) avec \(\displaystyle\lim_{n\to+\infty} u_n = L \in \mathbb{R}\) et \(\displaystyle\lim_{n\to+\infty} v_n = L' \in \mathbb{R}\) alors \(L \leq L'\)</p>
+      <p>En particulier, si \(\forall n \geq n_0\), \(a < u_n < b\), et \(\displaystyle\lim_{n\to+\infty} u_n = L \in \mathbb{R}\), alors \(a \leq L \leq b\)</p>
+      <p>Si \(\forall n \in \mathbb{N}\), \(u_n > 0\) avec \(\displaystyle\lim_{n\to+\infty} u_n = L \in \mathbb{R}\) alors \(L \geq 0\)</p>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="math-section" id="s4-2">
+    <div class="math-section-title">2 — Théorème de comparaison, théorème d'encadrement</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 3</div>
+      <div class="prop-title">Théorème de comparaison</div>
+      <p>Soient \((u_n)_n\) et \((v_n)_n\) deux suites réelles telles que \(\forall n \geq n_0\), \(u_n \leq v_n\)</p>
+      <ol>
+        <li>Si \(\displaystyle\lim_{n\to+\infty} u_n = +\infty\) alors \(\displaystyle\lim_{n\to+\infty} v_n = +\infty\)</li>
+        <li>Si \(\displaystyle\lim_{n\to+\infty} v_n = -\infty\) alors \(\displaystyle\lim_{n\to+\infty} u_n = -\infty\)</li>
+      </ol>
+    </div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 4</div>
+      <div class="thm-title">Théorème de l'encadrement</div>
+      <p>Soient \((u_n)_n\), \((v_n)_n\) et \((w_n)_n\) trois suites réelles telles que \(\forall n \geq n_0\), \(u_n \leq v_n \leq w_n\)</p>
+      <p>Si les suites \((u_n)_n\) et \((w_n)_n\) convergent et ont la même limite \(L \in \mathbb{R}\) alors la suite \((v_n)_n\) converge et sa limite est égale à \(L\)</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE V — AUTRES THÉORÈMES D'EXISTENCE DE LIMITE
+════════════════════════════════════════ -->
+<div class="math-part" id="part5">
+  <div class="math-part-header">
+    <div class="math-part-num">V</div>
+    <div class="math-part-title">Autres théorèmes d'existence de limite</div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="math-section" id="s5-1">
+    <div class="math-section-title">1 — Limite et suites extraites</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <p>Soit \((u_n)_n\) une suite réelle et soit \(L\) réel ou infini. On a l'équivalence :</p>
+      <div class="formula-block">\[\lim_{n\to+\infty} u_n = L \iff \lim_{n\to+\infty} u_{2n} = L \ \text{ et } \ \lim_{n\to+\infty} u_{2n+1} = L\]</div>
+      <p>En particulier : si \(\displaystyle\lim_{n\to+\infty} u_{2n} \neq \lim_{n\to+\infty} u_{2n+1}\) alors \((u_n)_n\) n'a pas de limite.</p>
+    </div>
+
+    <div class="remark">La suite \((u_{2n})_n\) est la suite des termes de rangs pairs. On dit que c'est une suite extraite de la suite \((u_n)_n\).</div>
+
+    <p>Cette proposition dit donc que :</p>
+    <div class="math-key"><div class="math-key-bullet"></div><div>(\(\Rightarrow\)) Si on connaît le comportement de la suite \((u_n)_n\), c'est celui de toutes ses suites extraites \((u_{n+1})_n\), \((u_{2n})_n\) et \((u_{2n+1})_n\)</div></div>
+    <div class="math-key"><div class="math-key-bullet"></div><div>(\(\Leftarrow\)) Si les suites extraites \((u_{2n})_n\) et \((u_{2n+1})_n\) ont le même comportement, alors c'est celui de la suite \((u_n)_n\)</div></div>
+
+    <p>Ainsi, si \((u_{2n})_n\) et \((u_{2n+1})_n\) ont des comportements différents, la suite \((u_n)_n\) n'a pas de limite.</p>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="math-section" id="s5-2">
+    <div class="math-section-title">2 — Cas des suites adjacentes</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span></div>
+        <p>On dit que deux suites \((u_n)_n\) et \((v_n)_n\) sont <strong>adjacentes</strong> ssi</p>
+        <div class="formula-block">\[\begin{cases} \text{l'une est croissante, l'autre est décroissante} \\ \displaystyle\lim_{n\to+\infty} |u_n - v_n| = 0 \end{cases}\]</div>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 2</div>
+      <p>Soit \((u_n)_n\) et \((v_n)_n\) deux suites adjacentes avec \((u_n)_n\) croissante et \((v_n)_n\) décroissante alors ces deux suites convergent et ont la même limite. Ainsi, on a \(\displaystyle\lim_{n\to+\infty} u_n = \lim_{n\to+\infty} v_n\)</p>
+    </div>
+
+    <div class="remark">Si \((u_n)_n\) et \((v_n)_n\) sont adjacentes avec \((u_n)_n\) croissante et \((v_n)_n\) décroissante alors on a \(\forall n \in \mathbb{N}\), \(u_n \leq L \leq v_n\). Ceci permet d'encadrer \(L\).</div>
+  </div>
+</div>
+
+</div><!-- fin .content -->
+
+<footer class="site-footer">
+  <div class="footer-logo">Chapitre 4 : Suites de nombres réels</div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut de page">↑</button>
+
+<script>
+  document.querySelectorAll('.toc-list a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Venezuela post-Maduro : transition incertaine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #c62828;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #c62828; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #ffd600; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #1565c0; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #c62828; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #c62828; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#c62828; border-color:#c62828; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  /* Article styles */
+  .ap-band { background: linear-gradient(90deg, #c62828, #ffd600, #1565c0, #ffd600, #c62828); text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(13,27,42,0.95); padding:12px 60px; border-bottom: 1px solid rgba(198,40,40,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#ffd600; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(198,40,40,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(181,19,31,0.2);  color:#f08080; border:1px solid rgba(181,19,31,0.35); }
+  .ap-tag-navy   { background:rgba(13,27,42,0.6);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #ffd600; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(198,40,40,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(255,214,0,0.7); }
+
+  /* Rich article components */
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#ffd600; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(255,214,0,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#1a0a0a,#2d1010); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat.blue   { background:linear-gradient(135deg,#0a1e42,#1a3a7a); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #ffd600; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(255,214,0,0.06),rgba(255,214,0,0.02)); border-left:3px solid #ffd600; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(255,214,0,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,214,0,0.7); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(13,27,42,0.9),rgba(7,16,28,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(198,40,40,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#ffd600; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(198,40,40,0.06); border:1px solid rgba(198,40,40,0.18); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(255,214,0,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#ffd600; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(255,214,0,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#ffd600; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(13,27,42,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-es-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-es.html">Espagnol</a>
+    <span class="sep">/</span>
+    <a href="../venezuela.html">Venezuela</a>
+    <span class="sep">/</span>
+    <span class="current">Venezuela post-Maduro</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-es" class="ap-lang-btn" onclick="setLang('es')">🇻🇪 ES</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇻🇪 Le Venezuela post-Maduro</div>
+<div class="ap-back-bar">
+  <a href="../venezuela.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+    <div class="ap-hero-img-wrap"><img class="ap-hero-img" src="../images/venezuela-post-maduro.jpg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+    <!-- ══ SECTION FR ══ -->
+    <div class="ap-fr-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-red">🇻🇪 Venezuela</span>
+          <span class="ap-tag ap-tag-gold">Politique</span>
+          <span class="ap-tag ap-tag-navy">Transition</span>
+          <span class="ap-tag ap-tag-purple">Géopolitique</span>
+          <span class="ap-tag ap-tag-orange">Crise humanitaire</span>
+        </div>
+        <div class="ap-date">Avril 2026 — ECG Prépa · Venezuela</div>
+        <h1 class="ap-title">Venezuela post-Maduro : entre transition incertaine et recomposition du pouvoir</h1>
+        <p class="ap-intro">Après plus de deux décennies de chavisme, le Venezuela traverse une période charnière. La fragilisation du régime Maduro, accélérée par la crise économique, les sanctions internationales et la contestation électorale de 2024, a ouvert un processus de recomposition politique dont l'issue reste profondément incertaine. Entre espoir de normalisation et risque d'enlisement, analyse d'un pays à la croisée des chemins.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red"><span class="ap-stat-num">7,7 M</span><span class="ap-stat-desc">Vénézuéliens en exil<br>(UNHCR, 2025)</span></div>
+          <div class="ap-stat"><span class="ap-stat-num">-75 %</span><span class="ap-stat-desc">Effondrement du PIB<br>entre 2013 et 2023</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">57 %</span><span class="ap-stat-desc">Score revendiqué par<br>l'opposition en juill. 2024</span></div>
+          <div class="ap-stat blue"><span class="ap-stat-num">3</span><span class="ap-stat-desc">Alliés régionaux restants<br>(Cuba, Nicaragua, Bolivie)</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">L'héritage du chavisme : un pays fracturé</div>
+            <p>Pour comprendre la période post-Maduro, il faut mesurer l'ampleur du désastre laissé par deux décennies de bolivarisme. Lorsque Hugo Chávez décède en 2013, laissant le pouvoir à Nicolás Maduro, le Venezuela est encore le pays le plus riche d'Amérique latine en réserves pétrolières prouvées. Dix ans plus tard, le tableau est celui d'un effondrement sans précédent en temps de paix : une contraction du PIB estimée à <strong>75 % entre 2013 et 2023</strong>, une hyperinflation ayant culminé à plusieurs millions de pourcents annuels, et une émigration massive de 7,7 millions de personnes selon le Haut-Commissariat des Nations Unies pour les réfugiés.</p>
+            <p>Maduro a maintenu le régime au pouvoir en s'appuyant sur trois piliers : le contrôle des forces armées via des avantages économiques (participation aux trafics de drogue, gestion des ressources pétrolières), l'appui diplomatique de Cuba, de la Russie et de la Chine, et un système de répression politique sophistiqué — les <em>colectivos</em> armés et le service de renseignement SEBIN — qui a fait du Venezuela l'un des pays les plus répressifs du continent.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Président (contesté)</div><div class="ap-fact-val">N. Maduro depuis 2013</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Opposition</div><div class="ap-fact-val">Edmundo González / M. Machado</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Élection présidentielle</div><div class="ap-fact-val">28 juillet 2024</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Reconnaissance internationale</div><div class="ap-fact-val">Divisée (UE/USA vs Russie/Chine)</div></div>
+            </div>
+
+            <div class="ap-sub">L'élection du 28 juillet 2024 : le tournant contesté</div>
+            <p>Le 28 juillet 2024, le Venezuela tient une élection présidentielle qui va cristalliser toutes les tensions du régime. L'opposition, rassemblée derrière <strong>Edmundo González Urrutia</strong> et portée par la figure charismatique de <strong>María Corina Machado</strong> — privée du droit de se présenter —, revendique une victoire massive avec 57 % des suffrages, étayée par des actes de vote (<em>actas</em>) collectés dans plus de 80 % des bureaux de vote.</p>
+            <p>Le Conseil national électoral, contrôlé par le régime, proclame Maduro vainqueur avec 51 % des voix sans produire les résultats détaillés. La communauté internationale, y compris des pays traditionnellement proches comme le Brésil de Lula et la Colombie de Petro, exige la publication des actas. Les manifestations qui suivent sont violemment réprimées : plus de 2 000 arrestations, une vingtaine de morts, et l'exil forcé de González en Espagne.</p>
+
+            <div class="ap-sub">Chronologie : de l'élection à la recomposition</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">Juil. 2024</div><p class="ap-tl-text">Élection présidentielle. Maduro proclamé vainqueur par le CNE. L'opposition publie les actas et revendique la victoire de González. Manifestations réprimées.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Août 2024</div><p class="ap-tl-text">González s'exile en Espagne. Machado reste au Venezuela en semi-clandestinité. Vague d'arrestations d'opposants, de journalistes et de membres de la société civile.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Jan. 2025</div><p class="ap-tl-text">Maduro prête serment pour un troisième mandat. Les États-Unis, l'UE et la majorité des pays d'Amérique latine refusent de reconnaître sa réélection. Nouvelles sanctions américaines.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Mi-2025</div><p class="ap-tl-text">Fractures au sein du chavisme. Des dissidences internes signalées dans les forces armées et parmi certains cadres du PSUV. Négociations informelles facilitées par la Norvège.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Fin 2025</div><p class="ap-tl-text">Détérioration de l'économie malgré une légère reprise pétrolière. Maduro multiplie les arrestations de figures de l'opposition. Machado libérée brièvement puis reconduite sous surveillance.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Avr. 2026</div><p class="ap-tl-text">Situation de blocage. Maduro maintient le pouvoir sans légitimité internationale. L'opposition reste mobilisée depuis l'exil. La question d'une transition négociée reste ouverte.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">L'économie : entre effritement et survie du régime</div>
+            <p>Paradoxalement, la situation économique du Venezuela, après des années d'hyperinflation catastrophique, a connu une relative stabilisation à partir de 2021. La <strong>dollarisation de facto</strong> de l'économie — non officielle mais tolérée par le régime — a permis de mettre fin à l'hyperinflation. Les marchés de Caracas se sont progressivement réouverts, alimentés par les dollars de la diaspora et des exportations pétrolières partielles. Pourtant, cette stabilisation est profondément inégalitaire : elle profite à une petite minorité dollarisée tandis que les 70 % de la population vivant en dessous du seuil de pauvreté restent largement exclus de cette reprise.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Indicateur</th><th>2018 (pic de crise)</th><th>2025</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Inflation annuelle</td><td>> 1 000 000 %</td><td class="ap-cell-bold">~50 %</td></tr>
+                <tr><td class="ap-cell-bold">Production pétrolière</td><td>~1,5 Mb/j (2013)</td><td class="ap-cell-bold">~900 000 b/j</td></tr>
+                <tr><td class="ap-cell-bold">Pauvreté extrême</td><td>> 50 %</td><td class="ap-cell-bold">~40 %</td></tr>
+                <tr><td class="ap-cell-bold">PIB/habitant (USD)</td><td>~3 200</td><td class="ap-cell-bold">~1 600</td></tr>
+                <tr><td class="ap-cell-bold">Émigration cumulée</td><td>~3 M</td><td class="ap-cell-bold">7,7 M</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">⚠️</div>
+              <div class="ap-info-text"><strong>La rente pétrolière, nerf du régime :</strong> PDVSA, la compagnie pétrolière d'État, reste le principal levier économique du gouvernement. Malgré des sanctions américaines sévères, le régime a contourné les restrictions en vendant du pétrole à la Chine et à des intermédiaires internationaux via des navires « fantômes ». Cette manne, bien qu'inférieure à son niveau des années 2000, suffit à maintenir les réseaux de fidélité militaires.</div>
+            </div>
+
+            <div class="ap-sub">Le jeu géopolitique : isolement partiel et résistances</div>
+            <p>Sur le plan international, le Venezuela de Maduro présente le paradoxe d'un régime isolé de l'Occident mais maintenu en vie par ses alliés stratégiques. La <strong>Russie</strong> y voit un pied-à-terre géopolitique dans l'hémisphère occidental et un marché pour ses armements. La <strong>Chine</strong> a investi plusieurs dizaines de milliards dans le secteur pétrolier et n'entend pas abandonner ses créances. <strong>Cuba</strong>, enfin, entretient des milliers de coopérants au sein des forces de sécurité et des services de renseignement vénézuéliens, dans une relation de dépendance mutuelle.</p>
+            <p>La posture des grands pays régionaux a évolué. Le Brésil de Lula et la Colombie de Petro — pourtant des alliés naturels du bolivarisme — ont choisi de conditionner leur soutien à la transparence électorale, rompant avec une forme de solidarité idéologique aveugle. Cette évolution traduit un réalisme croissant face à l'ampleur de la crise migratoire : le Brésil et la Colombie accueillent respectivement plus de 500 000 et 2,8 millions de Vénézuéliens.</p>
+
+            <div class="ap-quote">
+              <p>« Le peuple vénézuélien a décidé. Ces résultats existent, ils sont incontestables. »</p>
+              <cite>— María Corina Machado, août 2024, en référence aux actas publiées par l'opposition</cite>
+            </div>
+            <div class="ap-quote">
+              <p>« Nous avons gagné et nous allons gouverner. »</p>
+              <cite>— Nicolás Maduro, nuit du 28 juillet 2024, après la proclamation du CNE</cite>
+            </div>
+
+            <div class="ap-sub">Scénarios de sortie de crise</div>
+            <p>Les analystes dessinent principalement trois scénarios pour la suite. Le premier, celui du <strong>statu quo autoritaire</strong>, voit Maduro consolider son contrôle en s'appuyant sur les militaires et ses alliés extérieurs, au prix d'un isolement international durable et d'une économie en survie permanente. Le second, d'une <strong>transition négociée</strong>, reste possible si des pressions internes et externes suffisantes contraignent le régime à accepter un accord de sortie garantissant l'impunité de ses cadres — sur le modèle des négociations facilitées par la Norvège depuis 2019. Le troisième, le plus imprévisible, est celui d'une <strong>rupture interne</strong> au sein du chavisme ou des forces armées, susceptible d'ouvrir un processus constituant.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Un pays suspendu entre deux Venezuela</div>
+              <p>Ce qui se joue au Venezuela dépasse la question d'un régime et de ses dirigeants. C'est l'avenir d'un modèle et d'une génération entière. Près de huit millions de Vénézuéliens vivent hors de leurs frontières, portant avec eux une double exigence : celle d'un retour possible et celle d'un pays reconstruit. Toute sortie de crise durable devra articuler justice transitionnelle, reconstruction économique et réconciliation nationale — un défi immense pour une société profondément polarisée. L'histoire du Venezuela post-Maduro reste à écrire, mais ses premières pages signalent déjà que ce pays ne sera jamais simplement la page blanche que certains espèrent ni la continuité que d'autres cherchent à imposer.</p>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-fr-section -->
+
+    <!-- ══ SECTION ES ══ -->
+    <div class="ap-es-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-red">🇻🇪 Venezuela</span>
+          <span class="ap-tag ap-tag-gold">Política</span>
+          <span class="ap-tag ap-tag-navy">Transición</span>
+          <span class="ap-tag ap-tag-purple">Geopolítica</span>
+          <span class="ap-tag ap-tag-orange">Crisis humanitaria</span>
+        </div>
+        <div class="ap-date">Abril 2026 — ECG Prépa · Venezuela</div>
+        <h1 class="ap-title">Venezuela post-Maduro : entre transición incierta y recomposición del poder</h1>
+        <p class="ap-intro">Tras más de dos décadas de chavismo, Venezuela atraviesa un período de encrucijada. El debilitamiento del régimen de Maduro, acelerado por la crisis económica, las sanciones internacionales y la impugnación electoral de 2024, abrió un proceso de recomposición política cuyo desenlace sigue siendo profundamente incierto. Entre esperanza de normalización y riesgo de estancamiento, análisis de un país en la encrucijada.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red"><span class="ap-stat-num">7,7 M</span><span class="ap-stat-desc">Venezolanos en el exilio<br>(ACNUR, 2025)</span></div>
+          <div class="ap-stat"><span class="ap-stat-num">-75 %</span><span class="ap-stat-desc">Caída del PIB<br>entre 2013 y 2023</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">57 %</span><span class="ap-stat-desc">Resultado reivindicado<br>por la oposición jul. 2024</span></div>
+          <div class="ap-stat blue"><span class="ap-stat-num">3</span><span class="ap-stat-desc">Aliados regionales restantes<br>(Cuba, Nicaragua, Bolivia)</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">El legado del chavismo : un país fracturado</div>
+            <p>Para comprender el período post-Maduro, hay que medir la magnitud del desastre dejado por dos décadas de bolivarismo. Cuando Hugo Chávez muere en 2013, dejando el poder a Nicolás Maduro, Venezuela sigue siendo el país más rico de América Latina en reservas petroleras probadas. Diez años después, el panorama es el de un colapso sin precedentes en tiempos de paz: una contracción del PIB estimada en <strong>75 % entre 2013 y 2023</strong>, una hiperinflación que llegó a varios millones de porcientos anuales, y una emigración masiva de 7,7 millones de personas según el ACNUR.</p>
+            <p>Maduro mantuvo el régimen en el poder apoyándose en tres pilares: el control de las fuerzas armadas mediante ventajas económicas (participación en el narcotráfico, gestión de los recursos petroleros), el apoyo diplomático de Cuba, Rusia y China, y un sofisticado sistema de represión política — los <em>colectivos</em> armados y el servicio de inteligencia SEBIN — que convirtió a Venezuela en uno de los países más represivos del continente.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Presidente (impugnado)</div><div class="ap-fact-val">N. Maduro desde 2013</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Oposición</div><div class="ap-fact-val">E. González / M. Machado</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Elección presidencial</div><div class="ap-fact-val">28 de julio de 2024</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Reconocimiento internacional</div><div class="ap-fact-val">Dividido (UE/EE.UU. vs Rusia/China)</div></div>
+            </div>
+
+            <div class="ap-sub">La elección del 28 de julio de 2024 : el giro impugnado</div>
+            <p>El 28 de julio de 2024, Venezuela celebra una elección presidencial que cristalizará todas las tensiones del régimen. La oposición, unida en torno a <strong>Edmundo González Urrutia</strong> y sostenida por la carismática figura de <strong>María Corina Machado</strong> —privada del derecho a presentarse—, reivindica una victoria aplastante con el 57 % de los sufragios, respaldada por actas recogidas en más del 80 % de las mesas de votación.</p>
+            <p>El Consejo Nacional Electoral, controlado por el régimen, proclama a Maduro vencedor con el 51 % sin publicar los resultados detallados. La comunidad internacional, incluidos países tradicionalmente cercanos como el Brasil de Lula y la Colombia de Petro, exige la publicación de las actas. Las protestas que siguen son reprimidas violentamente: más de 2 000 detenidos, una veintena de muertos y el exilio forzado de González a España.</p>
+
+            <div class="ap-sub">Cronología : de la elección a la recomposición</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">Jul. 2024</div><p class="ap-tl-text">Elección presidencial. Maduro proclamado vencedor por el CNE. La oposición publica las actas y reivindica la victoria de González. Protestas reprimidas.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Ago. 2024</div><p class="ap-tl-text">González se exilia en España. Machado permanece en Venezuela en semiclandestinidad. Ola de detenciones de opositores, periodistas y miembros de la sociedad civil.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Ene. 2025</div><p class="ap-tl-text">Maduro presta juramento para un tercer mandato. EE.UU., la UE y la mayoría de los países latinoamericanos se niegan a reconocer su reelección. Nuevas sanciones estadounidenses.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Med. 2025</div><p class="ap-tl-text">Fisuras dentro del chavismo. Disidencias internas señaladas en las fuerzas armadas y entre algunos cuadros del PSUV. Negociaciones informales facilitadas por Noruega.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Fin. 2025</div><p class="ap-tl-text">Deterioro económico pese a una leve recuperación petrolera. Maduro multiplica las detenciones de figuras opositoras. Machado liberada brevemente, luego puesta bajo vigilancia.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Abr. 2026</div><p class="ap-tl-text">Situación de bloqueo. Maduro mantiene el poder sin legitimidad internacional. La oposición sigue movilizada desde el exilio. La cuestión de una transición negociada permanece abierta.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">La economía : entre erosión y supervivencia del régimen</div>
+            <p>Paradójicamente, la situación económica de Venezuela, tras años de hiperinflación catastrófica, experimentó una relativa estabilización a partir de 2021. La <strong>dolarización de facto</strong> de la economía — no oficial pero tolerada por el régimen — permitió poner fin a la hiperinflación. Los mercados de Caracas se reabrieron progresivamente, alimentados por los dólares de la diáspora y las exportaciones petroleras parciales. Sin embargo, esta estabilización es profundamente desigual: beneficia a una pequeña minoría dolarizada mientras que el 70 % de la población que vive bajo el umbral de la pobreza sigue excluido en gran medida de esta recuperación.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Indicador</th><th>2018 (pico de crisis)</th><th>2025</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Inflación anual</td><td>> 1 000 000 %</td><td class="ap-cell-bold">~50 %</td></tr>
+                <tr><td class="ap-cell-bold">Producción petrolera</td><td>~1,5 Mb/d (2013)</td><td class="ap-cell-bold">~900 000 b/d</td></tr>
+                <tr><td class="ap-cell-bold">Pobreza extrema</td><td>> 50 %</td><td class="ap-cell-bold">~40 %</td></tr>
+                <tr><td class="ap-cell-bold">PIB/habitante (USD)</td><td>~3 200</td><td class="ap-cell-bold">~1 600</td></tr>
+                <tr><td class="ap-cell-bold">Emigración acumulada</td><td>~3 M</td><td class="ap-cell-bold">7,7 M</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">⚠️</div>
+              <div class="ap-info-text"><strong>La renta petrolera, nervio del régimen:</strong> PDVSA, la compañía petrolera estatal, sigue siendo el principal palanca económico del gobierno. A pesar de las duras sanciones estadounidenses, el régimen sorteó las restricciones vendiendo petróleo a China y a intermediarios internacionales a través de barcos «fantasma». Esta renta, aunque inferior a su nivel de los años 2000, es suficiente para mantener las redes de lealtad militar.</div>
+            </div>
+
+            <div class="ap-sub">El juego geopolítico : aislamiento parcial y resistencias</div>
+            <p>En el plano internacional, el Venezuela de Maduro presenta la paradoja de un régimen aislado de Occidente pero mantenido con vida por sus aliados estratégicos. <strong>Rusia</strong> ve en él una cabeza de puente geopolítica en el hemisferio occidental y un mercado para su armamento. <strong>China</strong> ha invertido decenas de miles de millones en el sector petrolero y no tiene intención de abandonar sus créditos. <strong>Cuba</strong>, finalmente, mantiene miles de cooperantes dentro de las fuerzas de seguridad y los servicios de inteligencia venezolanos, en una relación de dependencia mutua.</p>
+            <p>La postura de los grandes países regionales ha evolucionado. El Brasil de Lula y la Colombia de Petro — aliados naturales del bolivarismo — optaron por condicionar su apoyo a la transparencia electoral, rompiendo con una forma de solidaridad ideológica ciega. Esta evolución refleja un pragmatismo creciente ante la magnitud de la crisis migratoria: Brasil y Colombia acogen respectivamente a más de 500 000 y 2,8 millones de venezolanos.</p>
+
+            <div class="ap-quote">
+              <p>« El pueblo venezolano decidió. Estas actas existen, son incontestables. »</p>
+              <cite>— María Corina Machado, agosto de 2024, en referencia a las actas publicadas por la oposición</cite>
+            </div>
+            <div class="ap-quote">
+              <p>« Ganamos y vamos a gobernar. »</p>
+              <cite>— Nicolás Maduro, noche del 28 de julio de 2024, tras la proclamación del CNE</cite>
+            </div>
+
+            <div class="ap-sub">Escenarios de salida de la crisis</div>
+            <p>Los analistas perfilan tres escenarios principales. El primero, el del <strong>statu quo autoritario</strong>, ve a Maduro consolidar su control apoyándose en los militares y sus aliados exteriores, a costa de un aislamiento internacional duradero y una economía en supervivencia permanente. El segundo, el de una <strong>transición negociada</strong>, sigue siendo posible si presiones internas y externas suficientes obligan al régimen a aceptar un acuerdo de salida que garantice la impunidad de sus cuadros — siguiendo el modelo de las negociaciones facilitadas por Noruega desde 2019. El tercero, el más impredecible, es el de una <strong>ruptura interna</strong> dentro del chavismo o de las fuerzas armadas, susceptible de abrir un proceso constituyente.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Un país suspendido entre dos Venezuela</div>
+              <p>Lo que está en juego en Venezuela va más allá de la cuestión de un régimen y sus dirigentes. Es el futuro de un modelo y de toda una generación. Casi ocho millones de venezolanos viven fuera de sus fronteras, portando una doble exigencia: la de un regreso posible y la de un país reconstruido. Cualquier salida de crisis duradera deberá articular justicia transicional, reconstrucción económica y reconciliación nacional — un reto inmenso para una sociedad profundamente polarizada. La historia del Venezuela post-Maduro aún está por escribirse, pero sus primeras páginas ya revelan que este país nunca será la página en blanco que algunos esperan ni la continuidad que otros pretenden imponer.</p>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-es-section -->
+
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — Venezuela — Avril 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-es').classList.toggle('active', lang === 'es');
+  const isEs = lang === 'es';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEs ? 'none' : 'block');
+  document.querySelectorAll('.ap-es-section').forEach(el => el.style.display = isEs ? 'block' : 'none');
+}
+setLang('fr');
+</script>
+</body>
+</html>

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Vox : le silence stratégique sur les questions de société</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #c60b1e;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #c60b1e; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #f1bf00; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #c60b1e; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #c60b1e; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #c60b1e; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#c60b1e; border-color:#c60b1e; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  .ap-band { background: linear-gradient(90deg, #c60b1e, #f1bf00, #c60b1e); text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(28,5,8,0.95); padding:12px 60px; border-bottom: 1px solid rgba(198,11,30,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#f1bf00; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(198,11,30,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(181,19,31,0.2);  color:#f08080; border:1px solid rgba(181,19,31,0.35); }
+  .ap-tag-navy   { background:rgba(13,27,42,0.6);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #f1bf00; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(14,5,5,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(198,11,30,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(241,191,0,0.7); }
+
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#f1bf00; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(241,191,0,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#1a0204,#2e080c); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat.blue   { background:linear-gradient(135deg,#071422,#0d2540); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #f1bf00; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(241,191,0,0.06),rgba(241,191,0,0.02)); border-left:3px solid #f1bf00; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(241,191,0,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(241,191,0,0.7); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(28,5,8,0.9),rgba(14,3,4,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(198,11,30,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#f1bf00; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(198,11,30,0.06); border:1px solid rgba(198,11,30,0.18); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(241,191,0,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#f1bf00; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(241,191,0,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#f1bf00; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(28,5,8,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-es-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-es.html">Espagnol</a>
+    <span class="sep">/</span>
+    <a href="../espagne.html">Espagne</a>
+    <span class="sep">/</span>
+    <span class="current">Vox et les questions de société</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-es" class="ap-lang-btn" onclick="setLang('es')">🇪🇸 ES</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇪🇸 Vox face à la société espagnole</div>
+<div class="ap-back-bar">
+  <a href="../espagne.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main">
+<div class="ap-card fade-in">
+
+  <div class="ap-hero-img-wrap">
+    <img class="ap-hero-img" src="../images/vox-questions-societales.jpg" alt="Vox et les questions de société" onerror="this.parentElement.style.display='none'">
+  </div>
+
+  <!-- ═══ SECTION FR ═══ -->
+  <div class="ap-fr-section">
+    <div class="ap-header">
+      <div class="ap-tags">
+        <span class="ap-tag ap-tag-red">🇪🇸 Espagne</span>
+        <span class="ap-tag ap-tag-orange">Politique</span>
+        <span class="ap-tag ap-tag-gold">Extrême droite</span>
+        <span class="ap-tag ap-tag-navy">Société</span>
+        <span class="ap-tag ap-tag-purple">Stratégie électorale</span>
+      </div>
+      <div class="ap-date">Mai 2026 — ECG Prépa · Espagne</div>
+      <h1 class="ap-title">Vox, le silence calculé : quand l'extrême droite espagnole met en sourdine l'avortement, le genre et les droits LGBT</h1>
+      <p class="ap-intro">Fondé sur des positions traditionalistes radicales — hostilité à l'avortement, rejet des lois sur la violence de genre, opposition aux droits LGBT —, Vox adopte depuis plusieurs années une stratégie de discrétion sur ces sujets au profit d'un discours centré sur l'immigration et l'unité nationale. Ce repositionnement tactique, particulièrement visible dans ses accords de gouvernement régionaux, révèle les tensions internes d'un parti qui cherche à élargir son électorat sans renoncer à son socle idéologique.</p>
+    </div>
+
+    <div class="ap-body">
+
+      <div class="ap-stats">
+        <div class="ap-stat red"><span class="ap-stat-num">~18 %</span><span class="ap-stat-desc">Intentions de vote<br>Vox — sondages 2026</span></div>
+        <div class="ap-stat gold"><span class="ap-stat-num">3e</span><span class="ap-stat-desc">Force politique<br>du pays depuis 2023</span></div>
+        <div class="ap-stat blue"><span class="ap-stat-num">2013</span><span class="ap-stat-desc">Fondation du parti<br>par d'anciens membres du PP</span></div>
+        <div class="ap-stat green"><span class="ap-stat-num">6</span><span class="ap-stat-desc">Sièges au Parlement<br>européen (juin 2024)</span></div>
+      </div>
+
+      <div class="ap-cols">
+        <div>
+          <div class="ap-sub">Un socle idéologique traditionaliste affiché</div>
+          <p>Depuis sa fondation en 2013 par d'anciens cadres du Parti populaire (PP), Vox s'est défini comme le défenseur d'un conservatisme radical sur les questions de société. Le parti souhaite interdire l'avortement, supprimer des soins de santé publique les traitements accompagnant les transitions de genre, abroger les lois sur la violence de genre pour les remplacer par un texte neutre sur le genre, et démanteler les dispositifs de protection anti-discrimination en faveur des personnes LGBT. Il prône également le retrait des aides publiques aux associations LGBT et le refus de reconnaissance des familles arc-en-ciel.</p>
+          <p>Ces positions s'inscrivent dans une vision du monde dans laquelle la famille traditionnelle est conçue comme une institution antérieure à l'État, à protéger contre ce que le parti désigne comme des « idéologies de genre ». Vox est également hostile au féminisme institutionnel, qu'il accuse de promouvoir une théorie du genre jugée contraire aux valeurs espagnoles. Ces convictions ont structuré les premières années du parti et contribué à le différencier du PP, perçu comme trop modéré sur ces thèmes.</p>
+
+          <div class="ap-sub">La stratégie du silence : l'effacement des sujets clivants</div>
+          <p>Malgré ce socle idéologique affiché, Vox a progressivement développé une stratégie de discrétion sur les questions sociétales. Le phénomène est particulièrement documenté dans le cadre de ses accords de gouvernement régionaux avec le PP : dans les régions d'Aragon et de Castille-et-León notamment, aucune mesure concernant l'avortement, la violence de genre ou les lois LGBTBI n'a figuré dans les textes d'accord de coalition. Le parti a délibérément mis de côté ces « drapeaux » pour renforcer un discours ouvriériste et attirer des électeurs de gauche.</p>
+          <p>Santiago Abascal lui-même illustre cette ambivalence. Évitant les déclarations incendiaires sur l'homosexualité ou l'avortement, il concentre ses attaques les plus virulentes sur l'immigration et les indépendantistes. En octobre 2025, il a même tenté un rapprochement tactique avec les électeurs homosexuels, se présentant comme le seul parti capable de les protéger des violences islamistes — tout en maintenant par ailleurs des propos homophobes qui ont suscité de vives critiques.</p>
+
+          <div class="ap-tl">
+            <div class="ap-tl-item"><div class="ap-tl-date">2013</div><p class="ap-tl-text">Fondation de Vox par d'anciens membres du PP. Positionnement dès l'origine contre l'avortement, le mariage homosexuel et en défense de la famille traditionnelle.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">2018</div><p class="ap-tl-text">Percée en Andalousie (11 %). Vox devient audible avant tout sur l'immigration et l'unité nationale, ses sujets porteurs électoralement.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">2023</div><p class="ap-tl-text">Gouvernements de coalition régionaux avec le PP. Dans plusieurs accords (Aragon, Castille-et-León), les mesures sur l'avortement, la violence de genre et les droits LGBT sont absentes des textes.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">Juil. 2024</div><p class="ap-tl-text">Rupture de toutes les coalitions régionales avec le PP sur la question des mineurs migrants. L'immigration reste le premier levier politique de Vox.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">Juil. 2025</div><p class="ap-tl-text">Vox propose un projet de « remigration » visant l'expulsion de 7 à 8 millions de personnes. Le discours sociétal reste marginal face à la priorité migratoire.</p></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="ap-sub">Pourquoi mettre en sourdine ces thèmes ?</div>
+          <p>Plusieurs raisons expliquent cette mise en sourdine tactique. D'abord, les études d'opinion montrent que l'opinion espagnole est très favorable aux acquis progressistes en matière de droits sociaux : le mariage homosexuel est soutenu par une large majorité des Espagnols depuis des années, et l'avortement est une question sur laquelle Vox paie un coût électoral chaque fois qu'il l'aborde frontalement. L'Espagne figure parmi les pays européens où ces droits sont les plus ancrés dans les mentalités.</p>
+          <p>Ensuite, les accords de gouvernement régionaux avec le PP imposent une logique de compromis : plus Vox est minoritaire dans une coalition, plus il doit atténuer ses exigences les plus clivantes pour maintenir l'alliance. La stratégie de virage « ouvriériste » vise à séduire une partie de l'électorat populaire de gauche, notamment les couches modestes touchées par la crise du logement et la précarité, pour qui l'immigration et le pouvoir d'achat sont des préoccupations plus immédiates que les questions sociétales.</p>
+
+          <table class="ap-table">
+            <thead><tr><th>Thème</th><th>Position officielle Vox</th><th>Discours public actuel</th></tr></thead>
+            <tbody>
+              <tr><td class="ap-cell-bold">Avortement</td><td>Abrogation souhaitée</td><td>Mis en retrait</td></tr>
+              <tr><td class="ap-cell-bold">Droits LGBT</td><td>Démantèlement des lois</td><td>Discours atténué</td></tr>
+              <tr><td class="ap-cell-bold">Violence de genre</td><td>Abrogation de la loi</td><td>Absent des accords régionaux</td></tr>
+              <tr><td class="ap-cell-bold">Immigration</td><td>Remigration massive</td><td>Priorité absolue affichée</td></tr>
+              <tr><td class="ap-cell-bold">Unité nationale</td><td>Anti-indépendantisme</td><td>Thème central constant</td></tr>
+            </tbody>
+          </table>
+
+          <div class="ap-sub">Une stratégie aux limites visibles</div>
+          <p>Cette ambivalence n'est pas sans tensions internes. Lors de la participation de Vox au gouvernement de Castille-et-León, une initiative anti-avortement avait déclenché une vive controverse avec le PP et mis en péril la coalition. La base militante traditionaliste du parti, attachée aux thèmes de société, ne comprend pas toujours ces mises en sourdine perçues comme des trahisons idéologiques. En Aragon, la décision de ne pas inclure de mesures anti-avortement dans l'accord de coalition a été justifiée par les cadres du parti comme une concession tactique nécessaire, non comme un abandon de conviction.</p>
+          <p>Le positionnement de Vox en 2026, crédité d'environ 17 à 19 % des intentions de vote selon les sondages, révèle également les limites de cette stratégie : malgré la radicalisation de son discours migratoire — notamment avec le projet de « remigration » annoncé en juillet 2025 — le parti stagne après son revers des législatives de 2023 (12,6 %, -19 sièges). L'élargissement vers un électorat ouvrier ou modéré bute sur la méfiance que suscite son profil idéologique global.</p>
+
+          <div class="ap-quote">
+            <p>« Aucune mesure concernant l'avortement, la violence de genre ou les lois LGTBI n'apparaîtra en Aragon — des drapeaux que le parti a abaissés pour renforcer le virage ouvriériste. »</p>
+            <cite>— Analyse des accords de coalition régionaux de Vox, 2023-2026</cite>
+          </div>
+
+          <div class="ap-info">
+            <div class="ap-info-icon">⚠️</div>
+            <div class="ap-info-text"><strong>L'exception espagnole :</strong> L'Espagne a légalisé le mariage homosexuel en 2005 et dispose depuis 2023 d'une loi trans permettant le changement de genre dès 16 ans. Seul Vox a voté contre cette dernière loi au Parlement. Le PP s'était abstenu et avait promis de la réformer. Cette avance législative rend particulièrement coûteux, électoralement, tout retour en arrière affiché sur ces sujets.</div>
+          </div>
+
+          <div class="ap-ctx">
+            <div class="ap-ctx-label">Vox, entre idéologie et pragmatisme électoral</div>
+            <p>La mise en sourdine des questions sociétales par Vox n'est pas un abandon idéologique, mais un calcul politique. Le parti conserve un programme traditionaliste radical, tout en comprenant que le terrain électoral espagnol ne lui permet pas de le mettre au premier plan sans perdre des voix. En concentrant l'essentiel de son énergie sur l'immigration, l'unité nationale et la critique du gouvernement Sánchez, Vox cherche à occuper un espace de « droite populaire » comparable à celui du Rassemblement national en France ou de Fratelli d'Italia en Italie — des formations qui ont également appris à mettre en sourdine leurs positions les plus clivantes sur la société pour accéder au pouvoir. Cette normalisation tactique, qui ne résout pas les contradictions internes du parti, sera mise à l'épreuve des prochaines échéances électorales espagnoles, attendues en 2027.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <!-- /ap-fr-section -->
+
+  <!-- ═══ SECTION ES ═══ -->
+  <div class="ap-es-section">
+    <div class="ap-header">
+      <div class="ap-tags">
+        <span class="ap-tag ap-tag-red">🇪🇸 España</span>
+        <span class="ap-tag ap-tag-orange">Política</span>
+        <span class="ap-tag ap-tag-gold">Extrema derecha</span>
+        <span class="ap-tag ap-tag-navy">Sociedad</span>
+        <span class="ap-tag ap-tag-purple">Estrategia electoral</span>
+      </div>
+      <div class="ap-date">Mayo 2026 — ECG Prépa · España</div>
+      <h1 class="ap-title">Vox, el silencio calculado : cuando la extrema derecha española silencia el aborto, el género y los derechos LGBT</h1>
+      <p class="ap-intro">Fundado sobre posiciones tradicionalistas radicales —hostilidad al aborto, rechazo de las leyes de violencia de género, oposición a los derechos LGBT—, Vox lleva varios años adoptando una estrategia de discreción sobre estos temas, en beneficio de un discurso centrado en la inmigración y la unidad nacional. Este reposicionamiento táctico, especialmente visible en sus acuerdos de gobierno regional, revela las tensiones internas de un partido que busca ampliar su electorado sin renunciar a su base ideológica.</p>
+    </div>
+
+    <div class="ap-body">
+
+      <div class="ap-stats">
+        <div class="ap-stat red"><span class="ap-stat-num">~18 %</span><span class="ap-stat-desc">Intención de voto<br>Vox — sondeos 2026</span></div>
+        <div class="ap-stat gold"><span class="ap-stat-num">3ª</span><span class="ap-stat-desc">Fuerza política<br>del país desde 2023</span></div>
+        <div class="ap-stat blue"><span class="ap-stat-num">2013</span><span class="ap-stat-desc">Fundación del partido<br>por exmiembros del PP</span></div>
+        <div class="ap-stat green"><span class="ap-stat-num">6</span><span class="ap-stat-desc">Escaños en el Parlamento<br>Europeo (junio 2024)</span></div>
+      </div>
+
+      <div class="ap-cols">
+        <div>
+          <div class="ap-sub">Una base ideológica tradicionalista declarada</div>
+          <p>Desde su fundación en 2013 por exdirigentes del Partido Popular (PP), Vox se definió como el defensor de un conservadurismo radical en las cuestiones sociales. El partido desea prohibir el aborto, eliminar de la sanidad pública los tratamientos de transición de género, derogar las leyes de violencia de género para reemplazarlas por un texto de aplicación neutral en cuanto al sexo, y desmantelar los dispositivos de protección antidiscriminación en favor de las personas LGBT. También defiende la retirada de ayudas públicas a las asociaciones LGBT y el no reconocimiento de las familias arcoíris.</p>
+          <p>Estas posiciones forman parte de una cosmovisión en la que la familia tradicional se concibe como una institución anterior al Estado, que hay que proteger frente a lo que el partido denomina « ideologías de género ». Vox también es hostil al feminismo institucional, al que acusa de promover una teoría de género contraria a los valores españoles. Estas convicciones estructuraron los primeros años del partido y contribuyeron a diferenciarlo del PP, considerado demasiado moderado en estos temas.</p>
+
+          <div class="ap-sub">La estrategia del silencio : el borrado de los temas más divisivos</div>
+          <p>A pesar de esta base ideológica declarada, Vox ha desarrollado progresivamente una estrategia de discreción sobre las cuestiones societales. El fenómeno está especialmente documentado en el marco de sus acuerdos de gobierno regional con el PP : en regiones como Aragón y Castilla y León, ninguna medida relativa al aborto, la violencia de género o las leyes LGTBI figuró en los textos de acuerdo de coalición. El partido puso deliberadamente a un lado estas « banderas » para reforzar un discurso obrerista y atraer a votantes de izquierda.</p>
+          <p>El propio Santiago Abascal ilustra esta ambivalencia. Evitando declaraciones incendiarias sobre la homosexualidad o el aborto, concentra sus ataques más virulentos en la inmigración y los independentistas. En octubre de 2025, incluso intentó un acercamiento táctico con los votantes homosexuales, presentándose como el único partido capaz de protegerlos de la violencia islamista, aunque mantuvo comentarios homófobos que suscitaron fuertes críticas.</p>
+
+          <div class="ap-tl">
+            <div class="ap-tl-item"><div class="ap-tl-date">2013</div><p class="ap-tl-text">Fundación de Vox por exmiembros del PP. Posicionamiento desde el origen contra el aborto, el matrimonio homosexual y en defensa de la familia tradicional.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">2018</div><p class="ap-tl-text">Irrupción en Andalucía (11 %). Vox se hace audible principalmente sobre inmigración y unidad nacional, sus temas con mayor rendimiento electoral.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">2023</div><p class="ap-tl-text">Gobiernos de coalición regional con el PP. En varios acuerdos (Aragón, Castilla y León), las medidas sobre aborto, violencia de género y derechos LGBT están ausentes de los textos.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">Jul. 2024</div><p class="ap-tl-text">Ruptura de todas las coaliciones regionales con el PP por la cuestión de los menores migrantes. La inmigración sigue siendo el primer palanca política de Vox.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">Jul. 2025</div><p class="ap-tl-text">Vox propone un proyecto de « remigración » que pretende expulsar entre 7 y 8 millones de personas. El discurso societal sigue siendo marginal frente a la prioridad migratoria.</p></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="ap-sub">¿Por qué silenciar estos temas?</div>
+          <p>Varios factores explican este silenciamiento táctico. En primer lugar, los estudios de opinión muestran que la sociedad española es mayoritariamente favorable a los derechos sociales conquistados : el matrimonio homosexual cuenta con el apoyo de una amplia mayoría de españoles desde hace años, y el aborto es una cuestión en la que Vox paga un coste electoral cada vez que lo aborda de frente. España figura entre los países europeos donde estos derechos están más arraigados en la mentalidad colectiva.</p>
+          <p>Además, los acuerdos de gobierno regional con el PP imponen una lógica de compromiso : cuanto más minoritario es Vox en una coalición, más debe atenuar sus exigencias más polarizadoras para mantener la alianza. La estrategia de giro « obrerista » busca seducir a parte del electorado popular de izquierda, especialmente las clases populares afectadas por la crisis de vivienda y la precariedad, para quienes la inmigración y el poder adquisitivo son preocupaciones más inmediatas que las cuestiones societales.</p>
+
+          <table class="ap-table">
+            <thead><tr><th>Tema</th><th>Posición oficial de Vox</th><th>Discurso público actual</th></tr></thead>
+            <tbody>
+              <tr><td class="ap-cell-bold">Aborto</td><td>Derogación deseada</td><td>Puesto en segundo plano</td></tr>
+              <tr><td class="ap-cell-bold">Derechos LGBT</td><td>Desmantelamiento de las leyes</td><td>Discurso atenuado</td></tr>
+              <tr><td class="ap-cell-bold">Violencia de género</td><td>Derogación de la ley</td><td>Ausente de acuerdos regionales</td></tr>
+              <tr><td class="ap-cell-bold">Inmigración</td><td>Remigración masiva</td><td>Prioridad absoluta declarada</td></tr>
+              <tr><td class="ap-cell-bold">Unidad nacional</td><td>Antiindependentismo</td><td>Tema central constante</td></tr>
+            </tbody>
+          </table>
+
+          <div class="ap-sub">Una estrategia con límites visibles</div>
+          <p>Esta ambivalencia no está exenta de tensiones internas. Cuando Vox participó en el gobierno de Castilla y León, una iniciativa antiaborto desencadenó una fuerte polémica con el PP y puso en peligro la coalición. La base militante tradicionalista del partido, apegada a los temas sociales, no siempre comprende estos silencios, percibidos como traiciones ideológicas. En Aragón, la decisión de no incluir medidas antiaborto en el acuerdo de coalición fue justificada por los dirigentes del partido como una concesión táctica necesaria, no como un abandono de convicciones.</p>
+          <p>El posicionamiento de Vox en 2026, con cerca del 17 al 19 % de intención de voto según los sondeos, revela también los límites de esta estrategia : a pesar de la radicalización de su discurso migratorio —con el proyecto de « remigración » anunciado en julio de 2025— el partido se estanca tras su revés en las legislativas de 2023 (12,6 %, -19 escaños). La ampliación hacia un electorado obrero o moderado choca con la desconfianza que genera su perfil ideológico global.</p>
+
+          <div class="ap-quote">
+            <p>« Ninguna medida relativa al aborto, la violencia de género o las leyes LGTBI aparecerá en Aragón — banderas que el partido ha arriado para reforzar el giro obrerista. »</p>
+            <cite>— Análisis de los acuerdos de coalición regional de Vox, 2023-2026</cite>
+          </div>
+
+          <div class="ap-info">
+            <div class="ap-info-icon">⚠️</div>
+            <div class="ap-info-text"><strong>La excepción española :</strong> España legalizó el matrimonio homosexual en 2005 y dispone desde 2023 de una ley trans que permite el cambio de género a partir de los 16 años. Solo Vox votó en contra de esta última ley en el Parlamento. El PP se abstuvo y prometió reformarla. Este avance legislativo hace especialmente costoso, en términos electorales, cualquier retroceso explícito en estas materias.</div>
+          </div>
+
+          <div class="ap-ctx">
+            <div class="ap-ctx-label">Vox entre ideología y pragmatismo electoral</div>
+            <p>El silenciamiento de las cuestiones societales por parte de Vox no es un abandono ideológico, sino un cálculo político. El partido conserva un programa tradicionalista radical, pero comprende que el terreno electoral español no le permite situarlo en primer plano sin perder votos. Al centrar la mayor parte de su energía en la inmigración, la unidad nacional y la crítica al gobierno Sánchez, Vox aspira a ocupar un espacio de « derecha popular » comparable al del Rassemblement National en Francia o al de Fratelli d'Italia en Italia — formaciones que también aprendieron a silenciar sus posiciones más polarizadoras en materia social para acceder al poder. Esta normalización táctica, que no resuelve las contradicciones internas del partido, se pondrá a prueba en las próximas citas electorales españolas, previstas para 2027.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <!-- /ap-es-section -->
+
+</div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — Espagne — Mai 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-es').classList.toggle('active', lang === 'es');
+  const isEs = lang === 'es';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEs ? 'none' : 'block');
+  document.querySelectorAll('.ap-es-section').forEach(el => el.style.display = isEs ? 'block' : 'none');
+}
+setLang('fr');
+</script>
+</body>
+</html>

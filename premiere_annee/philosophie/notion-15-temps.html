@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Philosophie · Notion 15 : Le Temps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F4F5F6;
+    --dark: #0D0F12;
+    /* TEMPS PALETTE — gris ardoise / argent / horloge */
+    --te-dark:   #0C0E11;
+    --te-deep:   #2C3038;
+    --te-mid:    #5A6270;
+    --te-accent: #7A8494;
+    --te-bright: #B4BEC9;
+    --te-gold:   #C8A84A;
+    --te-light:  #F1F2F4;
+    --te-pale:   #D3D8DF;
+    --te-text:   #2C3038;
+    --te-green:  #1E6B56;
+    --te-blue:   #1E5A7A;
+    --te-warm:   #B84A2A;
+    --muted:     #6A7280;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--dark); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px; border-bottom: 1px solid rgba(90,98,112,0.3);
+    background: var(--te-dark); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--te-bright); cursor: pointer; letter-spacing: 0.02em; }
+  .nav-logo a { color: inherit; text-decoration: none; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(244,245,246,0.5); flex-wrap: wrap; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb span:hover { color: var(--te-bright); }
+  .breadcrumb .sep { color: rgba(244,245,246,0.25); }
+  .breadcrumb .current { color: #F4F5F6; cursor: default; }
+
+  /* ─── HERO ─── */
+  .ch-hero {
+    background: var(--te-dark);
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ch-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%237A8494' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hero-left-svg {
+    position: absolute; left: 4%; top: 50%; transform: translateY(-50%);
+    opacity: 0.09; pointer-events: none; display: none;
+  }
+  @media(min-width:900px){ .hero-left-svg { display: block; } }
+  .hero-right-svg {
+    position: absolute; right: 4%; top: 50%; transform: translateY(-50%);
+    opacity: 0.09; pointer-events: none; display: none;
+  }
+  @media(min-width:900px){ .hero-right-svg { display: block; } }
+
+  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--te-bright); margin-bottom: 1.5rem; opacity: 0.85; position: relative; z-index: 1; display: block; }
+  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 4rem); color: var(--cream); font-weight: 900; max-width: 900px; margin: 0 auto 1.5rem; line-height: 1.1; position: relative; z-index: 1; }
+  .ch-hero p.hero-sub { color: rgba(244,245,246,0.45); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  /* ─── DEFINITION BOX ─── */
+  .hero-def {
+    position: relative; z-index: 1;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(180,190,201,0.25);
+    border-radius: 8px;
+    padding: 1.4rem 2rem;
+    max-width: 700px;
+    margin: 1.5rem auto 0;
+    font-size: 0.92rem;
+    color: rgba(244,245,246,0.8);
+    line-height: 1.7;
+  }
+  .hero-def strong { color: var(--te-bright); }
+
+  /* ─── TOC ─── */
+  .toc-bar { background: var(--te-light); padding: 2rem; border-bottom: 1px solid rgba(0,0,0,0.08); }
+  .toc-inner { max-width: 960px; margin: 0 auto; }
+  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
+  .toc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.4rem; list-style: none; }
+  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: var(--te-text); font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
+  .toc-list a:hover { border-color: var(--te-mid); background: white; color: var(--dark); }
+  .toc-num { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--te-mid); flex-shrink: 0; margin-top: 0.15rem; }
+
+  /* ─── CONTENT ─── */
+  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 8rem; }
+
+  /* PART */
+  .part { margin-bottom: 5rem; }
+  .part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--te-mid); }
+  .part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: var(--te-pale); line-height: 1; flex-shrink: 0; }
+  .part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--dark); line-height: 1.25; }
+
+  /* SECTION */
+  .section { margin-bottom: 3.5rem; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--te-deep); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--te-mid); scroll-margin-top: 2rem; display: flex; align-items: center; gap: 0.8rem; }
+  .section-title .s-icon { font-size: 1.2rem; }
+  .subsection { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--te-mid); margin: 2rem 0 0.75rem; }
+
+  /* TEXT */
+  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: #22262E; line-height: 1.75; font-weight: 300; }
+  .content strong { color: var(--dark); font-weight: 600; }
+
+  /* KEY FACT */
+  .key-fact { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 0.6rem; padding: 0.85rem 1.1rem; background: white; border: 1px solid var(--te-pale); border-radius: 6px; }
+  .key-bullet { width: 6px; height: 6px; background: var(--te-mid); border-radius: 50%; flex-shrink: 0; margin-top: 0.55rem; }
+  .key-fact > div { font-size: 0.91rem; color: #22262E; line-height: 1.65; font-weight: 300; }
+
+  /* CONCEPT BOX */
+  .concept { background: var(--te-dark); color: var(--cream); padding: 1.75rem; margin: 2rem 0; position: relative; border-radius: 4px; }
+  .concept::before { content: '→'; position: absolute; top: 1.25rem; right: 1.25rem; color: var(--te-bright); font-size: 1.3rem; }
+  .concept .concept-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--te-bright); margin-bottom: 0.7rem; }
+  .concept p { color: rgba(244,245,246,0.82); font-size: 0.93rem; margin: 0; }
+  .concept strong { color: #D4DBE2; }
+
+  /* HIGHLIGHT / QUOTE */
+  .highlight { background: var(--te-light); border-left: 4px solid var(--te-mid); padding: 1.25rem 1.75rem; margin: 1.5rem 0; font-style: italic; color: var(--te-deep); font-size: 0.93rem; line-height: 1.7; border-radius: 0 6px 6px 0; }
+  .highlight cite { display: block; margin-top: 0.7rem; font-style: normal; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; font-family: 'DM Mono', monospace; color: var(--muted); }
+
+  /* CITATION FORTE */
+  .quote-strong {
+    background: var(--te-dark);
+    color: rgba(244,245,246,0.9);
+    border-radius: 6px;
+    padding: 1.5rem 2rem;
+    margin: 1.5rem 0;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1rem;
+    line-height: 1.65;
+    border-left: 3px solid var(--te-bright);
+  }
+  .quote-strong cite { display: block; margin-top: 0.7rem; padding-top: 0; font-style: normal; font-size: 0.65rem; font-family: 'DM Mono', monospace; letter-spacing: 0.12em; text-transform: uppercase; color: var(--te-bright); }
+
+  /* AUTHOR CARD */
+  .author { border: 1px solid var(--te-pale); padding: 1.25rem 1.75rem; margin: 1.2rem 0; background: white; border-radius: 6px; display: flex; gap: 1.2rem; align-items: flex-start; }
+  .author-icon { font-size: 2.4rem; flex-shrink: 0; margin-top: 0.1rem; }
+  .author .author-name { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--te-deep); }
+  .author .author-dates { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; margin: 0.25rem 0 0.5rem; }
+  .author p { font-size: 0.91rem; color: #22262E; line-height: 1.65; font-weight: 300; margin: 0; }
+
+  /* TWO COL */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0; }
+  @media(max-width:680px) { .two-col { grid-template-columns: 1fr; } }
+  .col-card { border-radius: 6px; padding: 1.2rem 1.4rem; font-size: 0.88rem; line-height: 1.65; font-weight: 300; }
+  .col-card h5 { font-size: 0.82rem; font-weight: 600; margin-bottom: 0.5rem; }
+  .col-card p { margin: 0; font-size: 0.86rem; }
+  .col-grey { background: var(--te-light); border: 1px solid var(--te-pale); color: var(--te-text); }
+  .col-grey h5 { color: var(--te-mid); }
+  .col-dark { background: var(--te-dark); border: 1px solid rgba(180,190,201,0.2); color: rgba(244,245,246,0.8); }
+  .col-dark h5 { color: var(--te-bright); }
+  .col-warm { background: #FBF5E8; border: 1px solid #EDD9A0; color: #2D1A08; }
+  .col-warm h5 { color: var(--te-warm); }
+  .col-green { background: #EAF3EF; border: 1px solid #B5D9CA; color: #1D3D2F; }
+  .col-green h5 { color: var(--te-green); }
+  .col-blue { background: #EAF1F5; border: 1px solid #A8CADB; color: #0F2836; }
+  .col-blue h5 { color: var(--te-blue); }
+
+  /* DIMENSIONS BOX */
+  .dim-box { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; background: var(--te-pale); border: 1px solid var(--te-pale); border-radius: 8px; overflow: hidden; margin: 1.5rem 0; }
+  .dim-box-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--te-pale); border: 1px solid var(--te-pale); border-radius: 8px; overflow: hidden; margin: 1.5rem 0; }
+  .dim-cell { background: white; padding: 1.5rem 1.4rem; }
+  .dim-num { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 900; color: var(--te-pale); line-height: 1; }
+  .dim-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--te-mid); margin: 0.3rem 0 0.4rem; }
+  .dim-desc { font-size: 0.85rem; color: #22262E; line-height: 1.6; font-weight: 300; }
+  @media(max-width:560px){ .dim-box, .dim-box-2 { grid-template-columns: 1fr; } }
+
+  /* VERSUS STRIP */
+  .vs-strip { display: flex; align-items: stretch; gap: 0; margin: 1.5rem 0; border-radius: 8px; overflow: hidden; border: 1px solid var(--te-pale); }
+  .vs-side { flex: 1; padding: 1.2rem; }
+  .vs-left { background: #F1F2F4; }
+  .vs-right { background: #F3F4F6; }
+  .vs-mid { background: var(--te-dark); color: var(--te-bright); font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 900; padding: 1.2rem 1rem; text-align: center; flex-shrink: 0; display: flex; align-items: center; }
+  .vs-side .vs-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; margin-bottom: 0.25rem; }
+  .vs-left .vs-title { color: var(--te-mid); }
+  .vs-right .vs-title { color: var(--te-warm); }
+  .vs-side p { font-size: 0.82rem; color: var(--muted); margin: 0; line-height: 1.5; font-weight: 300; }
+
+  /* SUMMARY TABLE */
+  .sum-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 1.5rem 0; border-radius: 8px; overflow: hidden; border: 1px solid var(--te-pale); }
+  .sum-table th { background: var(--te-deep); color: var(--te-bright); font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; padding: 0.75rem 1rem; text-align: left; font-weight: 500; }
+  .sum-table td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--te-pale); color: #22262E; line-height: 1.55; vertical-align: top; font-weight: 300; }
+  .sum-table tr:last-child td { border-bottom: none; }
+  .sum-table tr:nth-child(even) td { background: rgba(211,216,223,0.25); }
+  .sum-table td:first-child { font-family: 'Playfair Display', serif; font-weight: 700; color: var(--te-deep); white-space: nowrap; }
+  .sum-table td:nth-child(2) { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--te-mid); }
+
+  @media(max-width:640px){ nav { padding: 14px 20px; } .ch-hero { padding: 3.5rem 1.2rem 2.5rem; } .content { padding: 2.5rem 1.2rem 5rem; } .toc-bar { padding: 1.5rem 1.2rem; } }
+
+  /* ─── FOOTER ─── */
+  .site-footer {
+    background: var(--te-dark);
+    border-top: 1px solid rgba(0,0,0,0.15);
+    padding: 2.5rem 2rem;
+    text-align: center;
+  }
+  .site-footer .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--te-bright);
+    letter-spacing: 0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- ─── NAV ─── -->
+<nav>
+  <div class="nav-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb">
+    <span onclick="window.location.href='../../index.html'">Accueil</span>
+    <span class="sep">/</span>
+    <span onclick="window.location.href='index.html'">Notions</span>
+    <span class="sep">/</span>
+    <span class="current">Notion 15 — Le Temps</span>
+  </div>
+</nav>
+
+<!-- ─── HERO ─── -->
+<div class="ch-hero">
+  <!-- Illustration gauche : sablier -->
+  <svg class="hero-left-svg" width="150" height="240" viewBox="0 0 150 240" fill="none">
+    <line x1="20" y1="20" x2="130" y2="20" stroke="white" stroke-width="5"/>
+    <line x1="20" y1="220" x2="130" y2="220" stroke="white" stroke-width="5"/>
+    <path d="M25 20 L125 20 L75 115 Z" stroke="white" stroke-width="4" fill="none"/>
+    <path d="M25 220 L125 220 L75 125 Z" stroke="white" stroke-width="4" fill="none"/>
+    <line x1="75" y1="115" x2="75" y2="125" stroke="white" stroke-width="3"/>
+    <path d="M60 155 Q75 145 90 155 L85 200 Q75 210 65 200 Z" fill="white" fill-opacity="0.5"/>
+  </svg>
+  <!-- Illustration droite : horloge -->
+  <svg class="hero-right-svg" width="200" height="200" viewBox="0 0 200 200" fill="none">
+    <circle cx="100" cy="100" r="75" stroke="white" stroke-width="5" fill="none"/>
+    <line x1="100" y1="100" x2="100" y2="50" stroke="white" stroke-width="4" stroke-linecap="round"/>
+    <line x1="100" y1="100" x2="135" y2="115" stroke="white" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="100" cy="100" r="6" fill="white"/>
+    <line x1="100" y1="30" x2="100" y2="40" stroke="white" stroke-width="3"/>
+    <line x1="100" y1="160" x2="100" y2="170" stroke="white" stroke-width="3"/>
+    <line x1="30" y1="100" x2="40" y2="100" stroke="white" stroke-width="3"/>
+    <line x1="160" y1="100" x2="170" y2="100" stroke="white" stroke-width="3"/>
+  </svg>
+
+  <span class="chap-label">Philosophie ECG · 1ère Année</span>
+  <h1>Le Temps</h1>
+  <div class="hero-def">
+    <strong>Temps :</strong> Ce qui permet de distinguer le <strong>passé, le présent et le futur</strong>, et de penser le changement et la succession des événements.
+  </div>
+</div>
+
+<!-- ─── TOC ─── -->
+<div class="toc-bar">
+  <div class="toc-inner">
+    <div class="toc-title">Sommaire</div>
+    <ul class="toc-list">
+      <li><a href="#s2-aristote"><span class="toc-num">01.</span>Aristote — Le temps mesure le changement</a></li>
+      <li><a href="#s2-descartes"><span class="toc-num">02.</span>Descartes — Le temps comme durée</a></li>
+      <li><a href="#s3-augustin"><span class="toc-num">03.</span>Saint Augustin — Le temps difficile à définir</a></li>
+      <li><a href="#s3-kant"><span class="toc-num">04.</span>Kant — Une forme de la sensibilité</a></li>
+      <li><a href="#s4-bergson-duree"><span class="toc-num">05.</span>Bergson — Temps vécu et temps mesuré</a></li>
+      <li><a href="#s4-bergson-passe"><span class="toc-num">06.</span>Bergson — Le passé demeure en nous</a></li>
+      <li><a href="#s4-heidegger"><span class="toc-num">07.</span>Heidegger — Un être temporel</a></li>
+      <li><a href="#s5-nietzsche"><span class="toc-num">08.</span>Nietzsche — L'éternel retour</a></li>
+      <li><a href="#s5-epicure"><span class="toc-num">09.</span>Épicure — Ne pas craindre le temps</a></li>
+      <li><a href="#s5-pascal"><span class="toc-num">10.</span>Pascal — La fuite du présent</a></li>
+      <li><a href="#s6-proust"><span class="toc-num">11.</span>Proust — Retrouver le passé</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ─── CONTENT ─── -->
+<div class="content">
+
+  <!-- ════ PARTIE I ════ -->
+  <div class="part" id="s1-sens">
+    <div class="part-header">
+      <div class="part-num">I</div>
+      <div class="part-title">Les fondements — Qu'est-ce que le temps ?</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="s-icon">📖</span>Définition</div>
+      <p>Le <strong>temps</strong> est ce qui permet de distinguer le passé, le présent et le futur, et de penser le <strong>changement</strong> et la <strong>succession</strong> des événements.</p>
+      <p>Le temps semble être quelque chose de très évident : les événements se succèdent, nous vieillissons et les choses changent. Pourtant, dès qu'on cherche à comprendre ce qu'est <strong>réellement</strong> le temps, les difficultés apparaissent.</p>
+
+      <div class="concept">
+        <div class="concept-label">Une évidence trompeuse</div>
+        <p>Le temps est l'une des notions les plus familières de l'expérience humaine — et pourtant l'une des plus résistantes à toute définition rigoureuse. Cette tension entre <strong>évidence vécue</strong> et <strong>difficulté conceptuelle</strong> traverse toute l'histoire de la philosophie du temps.</p>
+      </div>
+
+      <div class="subsection">→ Questions centrales</div>
+      <div class="two-col">
+        <div class="col-card col-grey">
+          <h5>⏳ Le temps existe-t-il vraiment ?</h5>
+          <p>Si le passé n'est plus, le futur pas encore, et le présent instantané, comment le temps peut-il avoir une <strong>réalité</strong> ?</p>
+        </div>
+        <div class="col-card col-grey">
+          <h5>🕰️ Le temps vécu et le temps mesuré sont-ils identiques ?</h5>
+          <p>L'heure d'une horloge et l'heure telle que nous la <strong>ressentons</strong> sont-elles la même chose ?</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ PARTIE II ════ -->
+  <div class="part" id="s2-objectif">
+    <div class="part-header">
+      <div class="part-num">II</div>
+      <div class="part-title">Le temps du monde — Changement et durée</div>
+    </div>
+
+    <!-- ARISTOTE -->
+    <div class="section" id="s2-aristote">
+      <div class="section-title"><span class="s-icon">⏱️</span>Aristote — Le temps mesure le changement</div>
+      <div class="author">
+        <div class="author-icon">🏛️</div>
+        <div>
+          <div class="author-name">Aristote</div>
+          <div class="author-dates">384 – 322 av. J.-C. · Physique, Livre IV</div>
+          <p>Philosophe grec. Il conçoit le temps comme intimement lié au mouvement, dont il permet de mesurer la succession selon un avant et un après.</p>
+        </div>
+      </div>
+
+      <p>Pour <strong>Aristote</strong>, le temps est lié au <strong>mouvement</strong> et au <strong>changement</strong>. Nous percevons le temps parce que les choses changent et se succèdent. Par exemple, nous pouvons mesurer le temps grâce au mouvement régulier d'une horloge ou à la succession du jour et de la nuit.</p>
+
+      <div class="concept">
+        <div class="concept-label">Un avant et un après</div>
+        <p>Le temps est lié au changement : il permet de <strong>mesurer la succession</strong> des événements entre un avant et un après.</p>
+      </div>
+    </div>
+
+    <!-- DESCARTES -->
+    <div class="section" id="s2-descartes">
+      <div class="section-title"><span class="s-icon">🔭</span>Descartes — Le temps permet de penser notre existence comme durée</div>
+      <div class="author">
+        <div class="author-icon">📘</div>
+        <div>
+          <div class="author-name">René Descartes</div>
+          <div class="author-dates">1596 – 1650 · Méditations métaphysiques (1641)</div>
+          <p>Philosophe et mathématicien français. Sa réflexion sur le temps articule la durée des choses matérielles avec la conscience que nous avons de notre propre existence.</p>
+        </div>
+      </div>
+
+      <p><strong>Descartes</strong> distingue notamment la <strong>durée des choses</strong> de l'idée d'une existence éternelle. Les êtres matériels existent dans le temps : ils commencent, changent et cessent d'exister. Le temps est donc associé à la durée des choses.</p>
+
+      <div class="key-fact"><div class="key-bullet"></div><div>Notre <strong>conscience</strong> nous permet de saisir notre propre existence à travers le temps.</div></div>
+
+      <div class="concept">
+        <div class="concept-label">Une existence successive</div>
+        <p>Le temps est lié à la <strong>durée</strong> et au fait que les choses existent de manière <strong>successive et changeante</strong>.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ PARTIE III ════ -->
+  <div class="part" id="s3-esprit">
+    <div class="part-header">
+      <div class="part-num">III</div>
+      <div class="part-title">Le temps et l'esprit — Conscience et sensibilité</div>
+    </div>
+
+    <!-- SAINT AUGUSTIN -->
+    <div class="section" id="s3-augustin">
+      <div class="section-title"><span class="s-icon">🕯️</span>Saint Augustin — Le temps est difficile à définir</div>
+      <div class="author">
+        <div class="author-icon">📖</div>
+        <div>
+          <div class="author-name">Saint Augustin</div>
+          <div class="author-dates">354 – 430 · Confessions, Livre XI</div>
+          <p>Théologien et philosophe latin. Son analyse du temps, célèbre pour sa lucidité, fait dépendre l'existence du passé et du futur de la conscience qui les retient et les anticipe.</p>
+        </div>
+      </div>
+
+      <p><strong>Saint Augustin</strong> remarque une difficulté célèbre.</p>
+
+      <div class="quote-strong">
+        « Qu'est-ce donc que le temps ? Si personne ne me le demande, je le sais ; si on me le demande, je l'ignore. »
+        <cite>— Saint Augustin, Confessions, Livre XI</cite>
+      </div>
+
+      <p>Le problème vient du fait que le passé et le futur semblent <strong>ne pas exister</strong>.</p>
+
+      <div class="dim-box">
+        <div class="dim-cell">
+          <div class="dim-num">1</div>
+          <div class="dim-label">Le passé</div>
+          <div class="dim-desc">N'existe <strong>plus</strong>.</div>
+        </div>
+        <div class="dim-cell">
+          <div class="dim-num">2</div>
+          <div class="dim-label">Le futur</div>
+          <div class="dim-desc">N'existe <strong>pas encore</strong>.</div>
+        </div>
+        <div class="dim-cell">
+          <div class="dim-num">3</div>
+          <div class="dim-label">Le présent</div>
+          <div class="dim-desc">Disparaît <strong>immédiatement</strong>.</div>
+        </div>
+      </div>
+
+      <p>Alors, comment le temps peut-il exister ? Augustin explique que le temps est notamment lié à notre <strong>conscience</strong>. Nous conservons le passé sous forme de souvenir et nous anticipons le futur. Il parle ainsi de trois dimensions présentes dans l'esprit : le <strong>présent du passé</strong> (la mémoire), le <strong>présent du présent</strong> (l'attention) et le <strong>présent du futur</strong> (l'attente).</p>
+
+      <div class="concept">
+        <div class="concept-label">Un temps inséparable de la conscience</div>
+        <p>Le temps est inséparable de la conscience : nous faisons exister le passé par la <strong>mémoire</strong> et le futur par l'<strong>attente</strong>.</p>
+      </div>
+    </div>
+
+    <!-- KANT -->
+    <div class="section" id="s3-kant">
+      <div class="section-title"><span class="s-icon">⚖️</span>Kant — Le temps est une forme de notre sensibilité</div>
+      <div class="author">
+        <div class="author-icon">📐</div>
+        <div>
+          <div class="author-name">Emmanuel Kant</div>
+          <div class="author-dates">1724 – 1804 · Critique de la raison pure (1781)</div>
+          <p>Philosophe allemand des Lumières. Sa théorie fait du temps une structure a priori de l'esprit humain, condition de toute expérience possible plutôt que réalité extérieure à découvrir.</p>
+        </div>
+      </div>
+
+      <p>Pour <strong>Kant</strong>, le temps n'est pas une chose que nous découvririons simplement dans le monde extérieur. Le temps est une <strong>forme a priori de notre sensibilité</strong> : c'est la manière dont notre esprit organise nécessairement nos expériences.</p>
+
+      <div class="key-fact"><div class="key-bullet"></div><div>Nous ne pouvons pas faire l'expérience d'un événement sans le situer dans le temps : il nous apparaît toujours comme étant <strong>avant, après ou simultané</strong> à autre chose.</div></div>
+      <div class="key-fact"><div class="key-bullet"></div><div>Nous ne pouvons pas connaître le temps comme une réalité <strong>indépendante</strong> de notre manière humaine de percevoir.</div></div>
+
+      <div class="concept">
+        <div class="concept-label">Une structure de l'esprit</div>
+        <p>Le temps n'est pas une réalité que nous percevons extérieurement : c'est une <strong>structure de notre esprit</strong> qui rend notre expérience possible.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ PARTIE IV ════ -->
+  <div class="part" id="s4-vecu">
+    <div class="part-header">
+      <div class="part-num">IV</div>
+      <div class="part-title">Le temps vécu — Durée et existence</div>
+    </div>
+
+    <!-- BERGSON 1 -->
+    <div class="section" id="s4-bergson-duree">
+      <div class="section-title"><span class="s-icon">🌊</span>Bergson — Le temps vécu est différent du temps mesuré</div>
+      <div class="author">
+        <div class="author-icon">🕰️</div>
+        <div>
+          <div class="author-name">Henri Bergson</div>
+          <div class="author-dates">1859 – 1941 · Essai sur les données immédiates de la conscience (1889)</div>
+          <p>Philosophe français, prix Nobel de littérature 1927. Sa notion de « durée » distingue radicalement le temps homogène des horloges de l'expérience intérieure et qualitative de la conscience.</p>
+        </div>
+      </div>
+
+      <p><strong>Bergson</strong> distingue le temps des horloges de ce qu'il appelle la <strong>durée</strong>. Le temps scientifique est divisé en secondes, minutes et heures : il est homogène et mesurable. Mais notre temps vécu est différent.</p>
+
+      <div class="two-col">
+        <div class="col-card col-warm">
+          <h5>😩 L'ennui</h5>
+          <p>Une heure peut sembler <strong>très longue</strong> lorsqu'on s'ennuie — le temps semble s'étirer indéfiniment.</p>
+        </div>
+        <div class="col-card col-green">
+          <h5>😊 Le bonheur</h5>
+          <p>Une heure peut sembler <strong>très courte</strong> lorsqu'on est heureux — le temps semble s'accélérer.</p>
+        </div>
+      </div>
+
+      <div class="concept">
+        <div class="concept-label">Une expérience qualitative</div>
+        <p>Le temps vécu par la conscience n'est pas réductible au temps mesuré par les horloges : notre expérience du temps est <strong>subjective et qualitative</strong>.</p>
+      </div>
+    </div>
+
+    <!-- BERGSON 2 -->
+    <div class="section" id="s4-bergson-passe">
+      <div class="section-title"><span class="s-icon">🗝️</span>Bergson — Le passé demeure en nous</div>
+      <p>Pour <strong>Bergson</strong>, le passé ne disparaît pas complètement. Nos expériences passées constituent notre <strong>mémoire</strong> et continuent d'influencer notre présent. Nous sommes donc littéralement <strong>constitués par notre histoire</strong>.</p>
+
+      <div class="highlight">
+        Le présent n'est jamais totalement séparé du passé : notre personnalité actuelle est le résultat de toute notre histoire, accumulée et conservée en nous.
+      </div>
+
+      <div class="concept">
+        <div class="concept-label">Une mémoire constitutive</div>
+        <p>Le passé ne disparaît pas complètement : il <strong>demeure dans notre mémoire</strong> et participe à ce que nous sommes aujourd'hui.</p>
+      </div>
+    </div>
+
+    <!-- HEIDEGGER -->
+    <div class="section" id="s4-heidegger">
+      <div class="section-title"><span class="s-icon">🚪</span>Heidegger — L'homme est un être temporel</div>
+      <div class="author">
+        <div class="author-icon">🌫️</div>
+        <div>
+          <div class="author-name">Martin Heidegger</div>
+          <div class="author-dates">1889 – 1976 · Être et Temps (1927)</div>
+          <p>Philosophe allemand. Sa réflexion fait de la temporalité non pas un cadre extérieur à l'existence humaine, mais sa structure la plus intime — l'homme comme être-pour-la-mort.</p>
+        </div>
+      </div>
+
+      <p>Pour <strong>Heidegger</strong>, le temps n'est pas simplement quelque chose qui passe autour de nous. L'être humain est lui-même <strong>profondément temporel</strong>. Nous sommes toujours issus d'un <strong>passé</strong>, engagés dans un <strong>présent</strong>, et tournés vers des <strong>possibilités futures</strong>.</p>
+
+      <div class="key-fact"><div class="key-bullet"></div><div>Notre existence consiste donc à nous <strong>projeter</strong> vers ce que nous pouvons devenir.</div></div>
+      <div class="key-fact"><div class="key-bullet"></div><div>La conscience de notre avenir, et notamment de notre <strong>mort</strong>, donne une dimension fondamentale à notre existence.</div></div>
+
+      <div class="concept">
+        <div class="concept-label">Une existence structurée par le temps</div>
+        <p>L'homme n'est pas simplement dans le temps : son <strong>existence elle-même</strong> est structurée par le passé, le présent et le futur.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ PARTIE V ════ -->
+  <div class="part" id="s5-existence">
+    <div class="part-header">
+      <div class="part-num">V</div>
+      <div class="part-title">Le temps et notre rapport à l'existence</div>
+    </div>
+
+    <!-- NIETZSCHE -->
+    <div class="section" id="s5-nietzsche">
+      <div class="section-title"><span class="s-icon">🔁</span>Nietzsche — L'éternel retour</div>
+      <div class="author">
+        <div class="author-icon">🌀</div>
+        <div>
+          <div class="author-name">Friedrich Nietzsche</div>
+          <div class="author-dates">1844 – 1900 · Le Gai Savoir (1882) · Ainsi parlait Zarathoustra (1883-1885)</div>
+          <p>Philosophe allemand. Son hypothèse de l'éternel retour fonctionne comme une épreuve existentielle destinée à mesurer notre degré d'adhésion à notre propre vie.</p>
+        </div>
+      </div>
+
+      <p><strong>Nietzsche</strong> imagine l'hypothèse de l'<strong>éternel retour</strong> : et si nous devions revivre exactement notre vie, encore et encore, à l'infini ? Cette idée constitue une épreuve.</p>
+
+      <div class="key-fact"><div class="key-bullet"></div><div>Si nous détestons notre vie, l'idée de devoir la revivre éternellement serait <strong>insupportable</strong>.</div></div>
+      <div class="key-fact"><div class="key-bullet"></div><div>Mais si nous sommes capables de répondre oui à cette répétition, alors nous montrons une profonde <strong>affirmation de notre existence</strong>.</div></div>
+
+      <div class="concept">
+        <div class="concept-label">Une épreuve d'affirmation</div>
+        <p>L'éternel retour nous invite à aimer suffisamment notre existence pour pouvoir vouloir qu'elle se <strong>répète éternellement</strong>.</p>
+      </div>
+    </div>
+
+    <!-- ÉPICURE -->
+    <div class="section" id="s5-epicure">
+      <div class="section-title"><span class="s-icon">🌤️</span>Épicure — Il ne faut pas craindre le temps</div>
+      <div class="author">
+        <div class="author-icon">🏺</div>
+        <div>
+          <div class="author-name">Épicure</div>
+          <div class="author-dates">341 – 270 av. J.-C. · Lettre à Ménécée</div>
+          <p>Philosophe grec, fondateur de l'épicurisme. Sa philosophie vise l'ataraxie — l'absence de trouble — notamment en dissipant les craintes irrationnelles liées au passé, au futur et à la mort.</p>
+        </div>
+      </div>
+
+      <p>Pour <strong>Épicure</strong>, nous avons souvent peur de ce qui n'existe pas. Le passé n'est plus et le futur n'est pas encore.</p>
+
+      <div class="highlight">
+        Lorsque nous existons, la mort n'est pas là ; lorsque la mort est là, nous ne sommes plus là pour la ressentir. La mort ne doit donc pas être une source d'angoisse permanente.
+      </div>
+
+      <div class="concept">
+        <div class="concept-label">Vivre dans le présent</div>
+        <p>Nous devons éviter de <strong>gâcher le présent</strong> en nous préoccupant excessivement du passé ou en craignant constamment l'avenir.</p>
+      </div>
+    </div>
+
+    <!-- PASCAL -->
+    <div class="section" id="s5-pascal">
+      <div class="section-title"><span class="s-icon">🎭</span>Pascal — L'homme fuit le présent</div>
+      <div class="author">
+        <div class="author-icon">📿</div>
+        <div>
+          <div class="author-name">Blaise Pascal</div>
+          <div class="author-dates">1623 – 1662 · Pensées (posthume, 1670)</div>
+          <p>Philosophe, mathématicien et physicien français. Sa théorie du divertissement montre comment l'homme fuit sa condition présente et sa finitude par une agitation permanente.</p>
+        </div>
+      </div>
+
+      <p><strong>Pascal</strong> remarque que l'homme a beaucoup de mal à vivre dans le présent. Nous passons notre temps à <strong>regretter le passé</strong>, à <strong>attendre le futur</strong>, à chercher à nous <strong>distraire</strong>.</p>
+
+      <div class="key-fact"><div class="key-bullet"></div><div>Nous avons du mal à supporter notre <strong>condition présente</strong> et notre propre <strong>finitude</strong>.</div></div>
+      <div class="key-fact"><div class="key-bullet"></div><div>Nous cherchons constamment à nous <strong>divertir</strong> pour éviter de penser à nous-mêmes et à notre mort.</div></div>
+
+      <div class="concept">
+        <div class="concept-label">Le divertissement comme fuite</div>
+        <p>L'homme fuit le présent parce qu'il supporte difficilement sa condition et cherche à se distraire pour ne pas affronter sa <strong>finitude</strong>.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ PARTIE VI ════ -->
+  <div class="part" id="s6-retrouver">
+    <div class="part-header">
+      <div class="part-num">VI</div>
+      <div class="part-title">Retrouver le temps — La mémoire involontaire</div>
+    </div>
+
+    <!-- PROUST -->
+    <div class="section" id="s6-proust">
+      <div class="section-title"><span class="s-icon">🌸</span>Marcel Proust — Le passé peut être retrouvé grâce à la mémoire</div>
+      <div class="author">
+        <div class="author-icon">🖋️</div>
+        <div>
+          <div class="author-name">Marcel Proust</div>
+          <div class="author-dates">1871 – 1922 · À la recherche du temps perdu (1913-1927)</div>
+          <p>Écrivain français. Son œuvre explore la mémoire involontaire, capable de faire ressurgir un passé que la mémoire volontaire ne parvient pas à retrouver.</p>
+        </div>
+      </div>
+
+      <p><strong>Proust</strong> montre que notre passé n'est pas toujours définitivement perdu. Certains souvenirs peuvent être <strong>réveillés de manière inattendue</strong> par une sensation : une odeur, un goût, un son...</p>
+
+      <div class="key-fact"><div class="key-bullet"></div><div>Le souvenir peut alors ressurgir avec une <strong>intensité particulière</strong>.</div></div>
+
+      <div class="concept">
+        <div class="concept-label">Un temps en partie retrouvé</div>
+        <p>Le temps semble ainsi pouvoir être en partie <strong>retrouvé grâce à la mémoire</strong> — la mémoire permet de faire ressurgir des expériences passées et de retrouver une partie du temps vécu.</p>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- end content -->
+
+<footer class="site-footer">
+  <div class="footer-logo">Notion 15 : Le Temps</div>
+</footer>
+
+<script>
+  document.querySelectorAll('.breadcrumb span:not(.current)').forEach(s => {
+    s.addEventListener('click', () => window.location.href = 'index.html');
+  });
+</script>
+</body>
+</html>

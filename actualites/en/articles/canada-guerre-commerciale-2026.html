@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Canada–États-Unis, la guerre commerciale</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #c0392b;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #c0392b; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #d40000; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #c0392b; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #c0392b; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #c0392b; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#c0392b; border-color:#c0392b; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  /* Article styles */
+  .ap-band { background: linear-gradient(90deg, #d40000, #8b0000, #d40000); text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(20,0,0,0.95); padding:12px 60px; border-bottom: 1px solid rgba(192,57,43,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#e8c84a; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(192,57,43,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(181,19,31,0.2);  color:#f08080; border:1px solid rgba(181,19,31,0.35); }
+  .ap-tag-navy   { background:rgba(0,48,135,0.4);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #e8c84a; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(192,57,43,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(232,200,74,0.7); }
+
+  /* Rich components */
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#e8c84a; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(232,200,74,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#071422,#0d2540); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #e8c84a; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(192,57,43,0.06),rgba(192,57,43,0.02)); border-left:3px solid #e8c84a; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(232,200,74,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(232,200,74,0.7); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(0,15,40,0.9),rgba(0,8,24,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(192,57,43,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#e8c84a; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(192,57,43,0.06); border:1px solid rgba(192,57,43,0.15); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(232,200,74,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#e8c84a; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(232,200,74,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#e8c84a; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(0,15,40,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-en-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-en.html">Anglais</a>
+    <span class="sep">/</span>
+    <span class="current">Canada — guerre commerciale</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-en" class="ap-lang-btn" onclick="setLang('en')">🇨🇦 EN</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇨🇦🇺🇸 Guerre commerciale : le Canada et les États-Unis « en guerre » tarifaire</div>
+<div class="ap-back-bar">
+  <a href="../tous-en.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+    <div class="ap-hero-img-wrap">
+      <img class="ap-hero-img" src="../images/canada-guerre-commerciale-2026.jpg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'">
+    </div>
+
+    <!-- ══ SECTION FR ══ -->
+    <div class="ap-fr-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-red">🇨🇦 Canada</span>
+          <span class="ap-tag ap-tag-navy">🇺🇸 États-Unis</span>
+          <span class="ap-tag ap-tag-green">Économie</span>
+          <span class="ap-tag ap-tag-gold">Commerce international</span>
+          <span class="ap-tag ap-tag-blue">Tarifs douaniers</span>
+        </div>
+        <div class="ap-date">Janvier 2025 – août 2026 — ECG Prépa · Canada</div>
+        <h1 class="ap-title">Guerre commerciale : le Canada et les États-Unis « en guerre » tarifaire, Ottawa réplique dollar pour dollar</h1>
+        <p class="ap-intro">Depuis le retour de Donald Trump à la Maison-Blanche en janvier 2025, Ottawa et Washington s'affrontent dans une guerre commerciale qui n'a cessé de s'intensifier. Le 22 août 2026, l'échec de trois jours de négociations à Washington a conduit les États-Unis à imposer 50 % de droits de douane sur environ 20 milliards de dollars de produits canadiens. Le 25 août, le Canada a annoncé des contre-tarifs « dollar pour dollar », effectifs le 8 septembre — une escalade que le premier ministre Mark Carney n'a pas hésité à qualifier de guerre.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat"><span class="ap-stat-num">50 %</span><span class="ap-stat-desc">Droits de douane américains<br>imposés au Canada (22 août)</span></div>
+          <div class="ap-stat red"><span class="ap-stat-num">≈20 Md$</span><span class="ap-stat-desc">Valeur des produits touchés,<br>de part et d'autre de la frontière</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">7,5 Md$ CA</span><span class="ap-stat-desc">Plan de soutien canadien aux<br>travailleurs et entreprises</span></div>
+          <div class="ap-stat green"><span class="ap-stat-num">8 sept. 2026</span><span class="ap-stat-desc">Entrée en vigueur des<br>contre-tarifs canadiens</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Un conflit commercial ouvert depuis janvier 2025</div>
+            <p>Depuis le retour de Donald Trump à la Maison-Blanche le 20 janvier 2025, le Canada et les États-Unis enchaînent les rounds de tarifs douaniers, de menaces et de négociations avortées. L'acier, l'aluminium, l'automobile et le bois d'œuvre ont été les premiers secteurs touchés, avant que le conflit ne s'étende à des dizaines d'autres catégories de produits.</p>
+            <p>Le tournant le plus récent remonte au 20 juillet 2026, lorsque Donald Trump a invoqué la Section 338 du Trade Act de 1930 — une loi datant de la Grande Dépression — pour menacer d'un tarif de 50 % sur environ 20 milliards de dollars de produits canadiens (vin, meubles, produits laitiers, ciment, vêtements, cannes à pêche, équipement de hockey). Trois jours de négociations intensives à Washington n'ont pas suffi à éviter la mise en application de la mesure le 22 août. Le tout intervient alors que l'Accord Canada–États-Unis–Mexique (ACEUM), non reconduit par Washington au 1er juillet 2026, est désormais soumis à un examen annuel plutôt qu'à un cycle fixe.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Origine du conflit</div><div class="ap-fact-val">Retour de D. Trump au pouvoir, 20 janvier 2025</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Base légale (dernier volet)</div><div class="ap-fact-val">Section 338 du Trade Act de 1930</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Statut de l'ACEUM</div><div class="ap-fact-val">Non reconduit au 1er juillet 2026, examen annuel</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Exportations canadiennes visées</div><div class="ap-fact-val">Environ 5 %, selon les analystes</div></div>
+            </div>
+
+            <div class="ap-sub">Chronologie d'un an et demi de tensions</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">1er février 2025</div><p class="ap-tl-text">Donald Trump annonce des tarifs de 25 % sur les produits canadiens (10 % sur l'énergie) ; Ottawa réplique avec un train de mesures pouvant atteindre 155 milliards de dollars canadiens.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">4 mars 2025</div><p class="ap-tl-text">Les tarifs américains entrent en vigueur ; le Canada impose en retour 25 % sur 30 milliards de dollars canadiens de produits américains.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">12-13 mars 2025</div><p class="ap-tl-text">Les tarifs américains de 25 % sur l'acier et l'aluminium s'appliquent ; le Canada riposte sur 29,8 milliards de dollars canadiens de produits.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">3 juin 2025</div><p class="ap-tl-text">Washington double ses droits sur l'acier et l'aluminium, de 25 % à 50 %.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">31 juillet 2025</div><p class="ap-tl-text">Les tarifs sur les produits non conformes à l'ACEUM passent à 35 %, au nom — contesté — de la lutte contre le trafic de fentanyl.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">29 sept. 2025</div><p class="ap-tl-text">Un nouveau tarif de 10 % frappe le bois d'œuvre canadien, portant le total des droits à plus de 45 %.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">24 oct. 2025</div><p class="ap-tl-text">Trump suspend les négociations après la diffusion, en Ontario, d'une publicité citant Ronald Reagan contre les tarifs douaniers.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">1er juillet 2026</div><p class="ap-tl-text">Trump renonce à reconduire l'ACEUM, désormais soumis à un examen annuel plutôt qu'à une révision programmée.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">20 juillet 2026</div><p class="ap-tl-text">Trump invoque la Section 338 du Trade Act pour menacer d'un tarif de 50 % sur environ 20 milliards de dollars de produits canadiens.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">22 août 2026</div><p class="ap-tl-text">Les pourparlers de Washington échouent ; les tarifs de 50 % entrent en vigueur à minuit ; Mark Carney suspend les négociations et rappelle ses négociateurs.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">24 août 2026</div><p class="ap-tl-text">Trump annonce des tarifs de 50 % sur les véhicules et pièces automobiles canadiennes, à compter du 1er janvier 2027.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">25 août 2026</div><p class="ap-tl-text">Le Canada dévoile ses contre-tarifs — effectifs le 8 septembre — ainsi qu'un plan de soutien de 7,5 milliards de dollars canadiens.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">Pourquoi les négociations ont échoué</div>
+            <p>Trois jours de discussions serrées à Washington devaient permettre d'éviter l'entrée en vigueur des nouveaux tarifs. Elles ont capoté dans la nuit de vendredi à samedi. Mark Carney a expliqué avoir rappelé ses négociateurs après que Washington eut présenté, selon lui, des conditions de dernière minute jugées inéquitables et économiquement intenables, allant jusqu'à chercher à limiter la capacité du Canada à conclure des accords commerciaux avec d'autres pays. Le représentant américain au Commerce, Jamieson Greer, a rejeté la responsabilité de l'échec sur Ottawa, évoquant de nouvelles exigences canadiennes de dernière minute ayant fait dérailler l'équilibre trouvé durant la semaine.</p>
+            <p>Dans la foulée, le Canada a annoncé des contre-tarifs conçus pour répliquer « dollar pour dollar, taux pour taux » : des droits de 15 %, 25 % et 50 % sur des centaines de produits américains — acier, produits laitiers, électroménagers, machinerie agricole, pâtes et papiers, électronique — pour un total avoisinant 20 milliards de dollars canadiens d'importations annuelles. Ottawa double au passage ses droits sur l'acier et l'aluminium américains, à 50 %, pour s'aligner sur les tarifs déjà imposés par Washington.</p>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">⚡</div>
+              <div class="ap-info-text">Le premier ministre ontarien Doug Ford a évoqué la possibilité de <strong>couper les exportations d'électricité</strong> vers les États-Unis en cas d'aggravation du conflit — l'Ontario alimentant notamment New York, le Michigan et le Minnesota. Mark Carney a répondu que « rien n'était exclu », la potasse canadienne étant également citée comme autre levier possible.</div>
+            </div>
+
+            <div class="ap-sub">Les secteurs les plus exposés</div>
+            <table class="ap-table">
+              <thead><tr><th>Mesure</th><th>Taux</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Acier et aluminium (tarif américain)</td><td>50 %</td></tr>
+                <tr><td class="ap-cell-bold">Acier et aluminium (contre-tarif canadien)</td><td>50 %</td></tr>
+                <tr><td class="ap-cell-bold">Automobiles et pièces (US, dès 1er janv. 2027)</td><td>50 %</td></tr>
+                <tr><td class="ap-cell-bold">Bois d'œuvre canadien (cumul des droits US)</td><td>Plus de 45 %</td></tr>
+                <tr><td class="ap-cell-bold">Produits visés par la Section 338 (US, ≈20 Md$)</td><td>50 %</td></tr>
+                <tr><td class="ap-cell-bold">Contre-tarifs canadiens (dès 8 sept., ≈20 Md$ CA)</td><td>15 % – 50 %</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-quote">
+              <p>« On est en guerre quand on est attaqué. Nous avons été attaqués. »</p>
+              <cite>— Mark Carney, premier ministre du Canada, 22 août 2026</cite>
+            </div>
+
+            <div class="ap-quote">
+              <p>« C'est une question d'équité, d'égalité des chances, de soutien aux travailleurs canadiens. »</p>
+              <cite>— François-Philippe Champagne, ministre des Finances du Canada, 25 août 2026</cite>
+            </div>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Un partenariat économique à refonder</div>
+              <p>Huit décennies d'intégration économique nord-américaine sont aujourd'hui mises à l'épreuve par une succession de rounds tarifaires qui, depuis janvier 2025, n'a laissé aucun grand secteur indemne — acier, aluminium, automobile, bois d'œuvre, produits laitiers, électronique. Avec un ACEUM désormais soumis à un simple examen annuel et des négociateurs rentrés à Ottawa sans accord, la relation la plus étroitement imbriquée au monde entre deux économies semble entrer dans une phase plus durablement conflictuelle. C'est aussi ce climat qui pousse Mark Carney à multiplier les gestes de diversification commerciale vers l'Europe et au-delà — un pari dont l'issue dépendra largement de ce qui se jouera dans les prochaines semaines, entre l'échéance canadienne du 8 septembre et une possible reprise du dialogue avec Washington.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-fr-section -->
+
+    <!-- ══ SECTION EN ══ -->
+    <div class="ap-en-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-red">🇨🇦 Canada</span>
+          <span class="ap-tag ap-tag-navy">🇺🇸 United States</span>
+          <span class="ap-tag ap-tag-green">Economy</span>
+          <span class="ap-tag ap-tag-gold">Trade</span>
+          <span class="ap-tag ap-tag-blue">Tariffs</span>
+        </div>
+        <div class="ap-date">January 2025 – August 2026 — ECG Prépa · Canada</div>
+        <h1 class="ap-title">Trade War: Canada and the US Are "At War" Over Tariffs, Ottawa Strikes Back Dollar for Dollar</h1>
+        <p class="ap-intro">Since Donald Trump returned to the White House in January 2025, Ottawa and Washington have been locked in an escalating trade war. On 22 August 2026, three days of talks in Washington collapsed, and the United States imposed 50% tariffs on roughly $20 billion worth of Canadian goods. On 25 August, Canada announced matching "dollar for dollar" countertariffs, effective 8 September — an escalation Prime Minister Mark Carney did not hesitate to call a war.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat"><span class="ap-stat-num">50%</span><span class="ap-stat-desc">US tariffs imposed<br>on Canada (Aug. 22)</span></div>
+          <div class="ap-stat red"><span class="ap-stat-num">≈$20B</span><span class="ap-stat-desc">Value of goods hit<br>on each side of the border</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">C$7.5B</span><span class="ap-stat-desc">Canadian support package<br>for workers and businesses</span></div>
+          <div class="ap-stat green"><span class="ap-stat-num">Sept. 8, 2026</span><span class="ap-stat-desc">Canadian countertariffs<br>take effect</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">An open trade conflict since January 2025</div>
+            <p>Since Donald Trump returned to the White House on 20 January 2025, Canada and the United States have gone through repeated rounds of tariffs, threats and stalled negotiations. Steel, aluminum, autos and softwood lumber were the first sectors hit, before the dispute spread to dozens of other product categories.</p>
+            <p>The latest turning point came on 20 July 2026, when Trump invoked Section 338 of the Trade Act of 1930 — a Depression-era statute — to threaten 50% tariffs on roughly $20 billion worth of Canadian goods, including wine, furniture, dairy products, cement, clothing, fishing rods and hockey equipment. Three days of intensive talks in Washington failed to avert the measure, which took effect on 22 August. All of this comes as CUSMA, which Trump declined to renew as of 1 July 2026, is now subject to annual review rather than a fixed cycle.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Origin of the dispute</div><div class="ap-fact-val">Trump returns to office, Jan. 20, 2025</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Legal basis (latest round)</div><div class="ap-fact-val">Section 338, Trade Act of 1930</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">CUSMA status</div><div class="ap-fact-val">Not renewed as of July 1, 2026; annual review</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Canadian exports affected</div><div class="ap-fact-val">Roughly 5%, per analyst estimates</div></div>
+            </div>
+
+            <div class="ap-sub">Timeline of a year and a half of tension</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">Feb. 1, 2025</div><p class="ap-tl-text">Trump announces 25% tariffs on Canadian goods (10% on energy); Ottawa responds with a retaliatory package that could reach C$155 billion.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">March 4, 2025</div><p class="ap-tl-text">US tariffs take effect; Canada imposes 25% tariffs on C$30 billion worth of American products in response.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">March 12–13, 2025</div><p class="ap-tl-text">US 25% tariffs on steel and aluminum take effect; Canada retaliates on C$29.8 billion worth of goods.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">June 3, 2025</div><p class="ap-tl-text">Washington doubles its steel and aluminum tariffs, from 25% to 50%.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">July 31, 2025</div><p class="ap-tl-text">Tariffs on goods not compliant with CUSMA rise to 35%, citing — disputed — concerns over fentanyl trafficking.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Sept. 29, 2025</div><p class="ap-tl-text">A new 10% tariff hits Canadian softwood lumber, pushing total US duties on the product above 45%.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Oct. 24, 2025</div><p class="ap-tl-text">Trump suspends negotiations after Ontario airs a television ad using Ronald Reagan's remarks against tariffs.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">July 1, 2026</div><p class="ap-tl-text">Trump declines to renew CUSMA, which is now subject to annual review rather than a scheduled revision.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">July 20, 2026</div><p class="ap-tl-text">Trump invokes Section 338 of the Trade Act to threaten 50% tariffs on roughly $20 billion worth of Canadian goods.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Aug. 22, 2026</div><p class="ap-tl-text">Talks in Washington collapse; 50% tariffs take effect at midnight; Mark Carney suspends negotiations and recalls his negotiators.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Aug. 24, 2026</div><p class="ap-tl-text">Trump announces 50% tariffs on Canadian cars, trucks and auto parts, effective January 1, 2027.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Aug. 25, 2026</div><p class="ap-tl-text">Canada unveils its countertariffs — effective September 8 — alongside a C$7.5 billion support package.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">Why the negotiations collapsed</div>
+            <p>Three days of tense talks in Washington were meant to head off the new tariffs. They fell apart late Friday night. Mark Carney said he recalled his negotiators after Washington presented last-minute terms he called unfair and economically unworkable, including an attempt to limit Canada's ability to strike trade deals with other countries. US Trade Representative Jamieson Greer placed the blame on Ottawa instead, pointing to new last-minute Canadian demands that he said upset the careful balance reached earlier in the week.</p>
+            <p>In response, Canada announced countertariffs designed to match Washington "dollar for dollar, rate for rate": duties of 15%, 25% and 50% on hundreds of American products — steel, dairy, appliances, agricultural machinery, pulp and paper, and electronics — totalling close to C$20 billion of annual imports. Ottawa is also doubling its own duties on US steel and aluminum to 50%, in line with the tariffs Washington had already imposed on Canadian metals.</p>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">⚡</div>
+              <div class="ap-info-text">Ontario Premier Doug Ford raised the possibility of <strong>cutting off electricity exports</strong> to the United States if the conflict worsens — Ontario supplies power to New York, Michigan and Minnesota. Mark Carney responded that "nothing is off the table," with Canadian potash also floated as a possible lever.</div>
+            </div>
+
+            <div class="ap-sub">The sectors most exposed</div>
+            <table class="ap-table">
+              <thead><tr><th>Measure</th><th>Rate</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Steel and aluminum (US tariff)</td><td>50%</td></tr>
+                <tr><td class="ap-cell-bold">Steel and aluminum (Canadian countertariff)</td><td>50%</td></tr>
+                <tr><td class="ap-cell-bold">Autos and parts (US, from Jan. 1, 2027)</td><td>50%</td></tr>
+                <tr><td class="ap-cell-bold">Canadian softwood lumber (cumulative US duties)</td><td>Over 45%</td></tr>
+                <tr><td class="ap-cell-bold">Section 338 goods (US, ≈$20B)</td><td>50%</td></tr>
+                <tr><td class="ap-cell-bold">Canadian countertariffs (from Sept. 8, ≈C$20B)</td><td>15% – 50%</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-quote">
+              <p>"You're at war when you get attacked. We got attacked."</p>
+              <cite>— Mark Carney, Prime Minister of Canada, August 22, 2026</cite>
+            </div>
+
+            <div class="ap-quote">
+              <p>"It's all about fairness. It's all about level playing field."</p>
+              <cite>— François-Philippe Champagne, Canada's Finance Minister, August 25, 2026</cite>
+            </div>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">A Partnership Being Rebuilt Under Pressure</div>
+              <p>Eight decades of North American economic integration are being tested by a string of tariff rounds that, since January 2025, has left almost no major sector untouched — steel, aluminum, autos, softwood lumber, dairy, electronics. With CUSMA now reduced to a simple annual review and negotiators back in Ottawa without a deal, the world's most tightly interwoven bilateral economic relationship appears to be entering a more durably adversarial phase. It is this climate that is also pushing Mark Carney to step up trade diversification toward Europe and beyond — a bet whose outcome will hinge largely on what unfolds in the coming weeks, between Canada's September 8 deadline and any possible resumption of talks with Washington.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-en-section -->
+
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — Canada / États-Unis — Août 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-en').classList.toggle('active', lang === 'en');
+  const isEn = lang === 'en';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEn ? 'none' : 'block');
+  document.querySelectorAll('.ap-en-section').forEach(el => el.style.display = isEn ? 'block' : 'none');
+
+  const band = document.getElementById('ap-band');
+  if (band) band.textContent = isEn
+    ? '🇨🇦🇺🇸 Trade War: Canada and the US "At War" Over Tariffs'
+    : '🇨🇦🇺🇸 Guerre commerciale : le Canada et les États-Unis « en guerre » tarifaire';
+}
+setLang('fr');
+</script>
+</body>
+</html>

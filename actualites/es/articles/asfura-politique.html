@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Asfura : le Honduras à la croisée des chemins</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #003087;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #003087; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #ffffff; bottom: -250px; left: -250px; opacity: 0.04; }
+  .orb3 { width: 400px; height: 400px; background: #003087; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #003087; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #4a7fd4; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#003087; border-color:#003087; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  /* Article styles */
+  .ap-band { background: linear-gradient(90deg, #003087, #7c9ec9, #003087); text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(0,15,40,0.95); padding:12px 60px; border-bottom: 1px solid rgba(0,48,135,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#7c9ec9; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(0,48,135,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(181,19,31,0.2);  color:#f08080; border:1px solid rgba(181,19,31,0.35); }
+  .ap-tag-navy   { background:rgba(13,27,42,0.6);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(0,48,135,0.25);  color:#7cb5f0; border:1px solid rgba(74,127,212,0.35); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #7c9ec9; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(0,48,135,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(124,158,201,0.8); }
+
+  /* Rich article components */
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#7c9ec9; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(124,158,201,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#071422,#0d2540); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #7c9ec9; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(0,48,135,0.08),rgba(0,48,135,0.03)); border-left:3px solid #7c9ec9; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(0,48,135,0.2); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(124,158,201,0.8); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(0,15,40,0.9),rgba(0,10,28,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(0,48,135,0.3); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#7c9ec9; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(0,48,135,0.06); border:1px solid rgba(0,48,135,0.18); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(124,158,201,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#7c9ec9; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(124,158,201,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#7c9ec9; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(0,15,40,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-es-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-es.html">Espagnol</a>
+    <span class="sep">/</span>
+    <a href="../honduras.html">Honduras</a>
+    <span class="sep">/</span>
+    <span class="current">Politique d'Asfura</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-es" class="ap-lang-btn" onclick="setLang('es')">🇭🇳 ES</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇭🇳 Asfura et les élections honduriennes</div>
+<div class="ap-back-bar">
+  <a href="../honduras.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+    <div class="ap-hero-img-wrap"><img class="ap-hero-img" src="../images/asfura-politique.jpg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+    <!-- ══ SECTION FR ══ -->
+    <div class="ap-fr-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-blue">🇭🇳 Honduras</span>
+          <span class="ap-tag ap-tag-gold">Politique</span>
+          <span class="ap-tag ap-tag-navy">Droite conservatrice</span>
+          <span class="ap-tag ap-tag-red">Sécurité</span>
+          <span class="ap-tag ap-tag-orange">Géopolitique</span>
+        </div>
+        <div class="ap-date">Avril 2026 — ECG Prépa · Honduras</div>
+        <h1 class="ap-title">Nasry Asfura au pouvoir : le Honduras à la croisée des chemins</h1>
+        <p class="ap-intro">Élu en novembre 2025 face à la candidate de gauche sortante Xiomara Castro, Nasry « Tito » Asfura prend la tête du Honduras en janvier 2026. Ancien maire de Tegucigalpa et figure du Parti National, il incarne un retour de la droite conservatrice après quatre ans d'expérience progressiste. Entre promesses sécuritaires, pressions des cartels et repositionnement géopolitique, son arrivée au pouvoir dessine un Honduras en tension.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat"><span class="ap-stat-num">52,3 %</span><span class="ap-stat-desc">Score d'Asfura<br>au 1er tour (nov. 2025)</span></div>
+          <div class="ap-stat red"><span class="ap-stat-num">35,7</span><span class="ap-stat-desc">Indice de pauvreté<br>(% pop., 2025)</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">~38</span><span class="ap-stat-desc">Homicides / 100 000 hab.<br>(2024, parmi les + élevés)</span></div>
+          <div class="ap-stat green"><span class="ap-stat-num">3,5 %</span><span class="ap-stat-desc">Croissance du PIB<br>prévue 2026</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Le contexte : quatre ans de rupture progressiste</div>
+            <p>Lorsque Nasry Asfura prête serment le 27 janvier 2026, il hérite d'un Honduras profondément transformé par le mandat de <strong>Xiomara Castro</strong> (2022–2026), première femme présidente du pays. Le gouvernement Castro avait opéré une rupture symbolique majeure : retrait du Honduras des politiques d'austérité du FMI, ouverture diplomatique vers Cuba et Venezuela, et surtout proclamation de zones d'emploi et de développement spéciales (<em>ZEDE</em>) partiellement remises en cause.</p>
+            <p>Mais le bilan de Castro est contrasté. Si elle a affiché une ambition sociale réelle, les violences liées au narcotrafic ont persisté, l'émigration vers les États-Unis n'a pas faibli, et les accusations de corruption au sein de son propre gouvernement ont fragilisé sa majorité au Congrès. C'est dans ce contexte de désillusion partielle que le Parti National, avec Asfura, réussit à reconquérir la présidence.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Investiture</div><div class="ap-fact-val">27 janvier 2026</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Parti</div><div class="ap-fact-val">Partido Nacional (PN)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Résultat 1er tour</div><div class="ap-fact-val">52,3 % (victoire directe)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Mandat</div><div class="ap-fact-val">4 ans (2026–2030)</div></div>
+            </div>
+
+            <div class="ap-sub">Qui est Nasry Asfura ?</div>
+            <p>Né en 1955 à Tegucigalpa dans une famille d'origine palestinienne — comme de nombreuses familles de la bourgeoisie hondurienne —, Nasry Asfura dit « <em>Papi a la orden</em> » a construit son capital politique sur la mairie de Tegucigalpa, qu'il a dirigée de 2014 à 2021. Populiste jovial et homme d'affaires prospère, il s'est imposé comme un candidat de proximité, multipliant les inaugurations d'infrastructures et cultivant une image de gestionnaire pragmatique.</p>
+            <p>Sa popularité n'est pas sans ombre : sous son mandat à la mairie, une enquête du Ministère Public l'accuse de détournement de fonds publics à hauteur de plusieurs millions de dollars, une affaire classée sans suite par une juridiction contestée. Cette fragilité judiciaire potentielle constitue l'une des premières vulnérabilités de sa présidence.</p>
+
+            <div class="ap-sub">Chronologie : du scrutin à l'exercice du pouvoir</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">Nov. 2025</div><p class="ap-tl-text">Élection présidentielle. Asfura obtient 52,3 % dès le premier tour face à la candidate du Libre, évitant un second tour. Le Parti National reconquiert également une majorité relative au Congrès.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Déc. 2025</div><p class="ap-tl-text">Période de transition. Asfura annonce son cabinet : profil technocratique mêlant anciens ministres nationalistes et hommes d'affaires. Nomination controversée d'un ancien proche des frères Hernández au sein de la sécurité.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">27 Jan. 2026</div><p class="ap-tl-text">Investiture. Dans son discours, Asfura place la sécurité et l'emploi au cœur de son mandat. Il appelle à une « réconciliation nationale » et évoque un possible rapprochement avec Washington.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Fév. 2026</div><p class="ap-tl-text">Premières tensions avec la société civile. Des organisations féministes et LGBTQ+ dénoncent des déclarations du nouveau gouvernement sur les droits reproductifs. Manifestations à Tegucigalpa et San Pedro Sula.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Mars 2026</div><p class="ap-tl-text">Plan de sécurité « Puño de Hierro » lancé dans les principales villes. Déploiement de l'armée dans les zones urbaines les plus criminogènes. Premières critiques des ONG de défense des droits humains.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Avr. 2026</div><p class="ap-tl-text">Visite officielle à Washington. Rencontre avec des responsables de l'administration américaine. Signature d'un accord de coopération sécuritaire renforcée. Réouverture du dialogue avec le FMI.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">La politique sécuritaire : entre modèle Bukele et pragmatisme régional</div>
+            <p>La priorité absolue d'Asfura est la réduction de la violence. Le Honduras reste l'un des pays les plus meurtriers d'Amérique centrale, avec un taux d'homicides d'environ 38 pour 100 000 habitants en 2024 — en baisse par rapport aux pics des années 2010, mais toujours structurellement élevé. Les <em>maras</em> (MS-13, Barrio 18) et les cartels de trafiquants continuent d'exercer un contrôle territorial dans de nombreux quartiers urbains et zones rurales.</p>
+            <p>Le plan <strong>« Puño de Hierro »</strong> lancé en mars 2026 s'inspire ostensiblement du modèle salvadorien de Nayib Bukele, avec des déploiements militaires massifs et des arrestations préventives. Mais Asfura se défend de tout autoritarisme : il promet de maintenir les garanties constitutionnelles et de ne pas recourir à l'état d'exception systématique. Les premiers résultats sont encourageants dans certains quartiers de Tegucigalpa, mais contestés par des organisations de droits humains qui documentent des abus.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Indicateur sécuritaire</th><th>2022</th><th>2025</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Homicides / 100 000 hab.</td><td>35,8</td><td class="ap-cell-bold">~38</td></tr>
+                <tr><td class="ap-cell-bold">Zones sous contrôle mara</td><td>Élevé</td><td class="ap-cell-bold">Persistant</td></tr>
+                <tr><td class="ap-cell-bold">Migrants expulsés des USA</td><td>52 000</td><td class="ap-cell-bold">~70 000</td></tr>
+                <tr><td class="ap-cell-bold">Arrestations liées au trafic</td><td>4 200</td><td class="ap-cell-bold">6 800</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">⚠️</div>
+              <div class="ap-info-text"><strong>L'héritage Hernández :</strong> Juan Orlando Hernández, prédécesseur nationaliste d'Asfura et allié historique du Parti National, a été extradé vers les États-Unis en 2022 et condamné à 45 ans de prison en 2024 pour complicité avec le cartel de Sinaloa. Asfura doit composer avec cet héritage toxique tout en maintenant la cohésion interne de son parti.</div>
+            </div>
+
+            <div class="ap-sub">Le pivot géopolitique : retour dans l'orbite américaine</div>
+            <p>L'un des changements les plus immédiats concerne la politique étrangère. Castro avait rompu avec Taïwan en 2023 pour reconnaître la République populaire de Chine, obtenant en échange d'importants engagements d'investissements en infrastructures. Asfura <strong>ne remet pas en cause la reconnaissance de Pékin</strong> — un retournement serait trop coûteux diplomatiquement et financièrement — mais il opère un rééquilibrage net vers Washington.</p>
+            <p>Sa visite en avril 2026 à Washington a abouti à la signature d'un accord de coopération sécuritaire renforcée incluant une aide financière pour la lutte anti-narco et un programme de formation des forces de l'ordre honduriennes. En contrepartie, Asfura s'engage à intensifier la coopération sur la gestion migratoire, enjeu central de l'agenda américain en Amérique centrale.</p>
+
+            <div class="ap-quote">
+              <p>« Honduras primero. Vamos a recuperar la paz en nuestras calles, con la ley y con orden. »</p>
+              <cite>— Nasry Asfura, discours d'investiture, Tegucigalpa, 27 janvier 2026</cite>
+            </div>
+            <div class="ap-quote">
+              <p>« On a voté pour lui parce qu'on avait peur, mais maintenant c'est l'armée dans nos rues. Ce n'est pas ce qu'on voulait. »</p>
+              <cite>— Ramona, habitante du quartier de La Sosa, Tegucigalpa, mars 2026</cite>
+            </div>
+
+            <div class="ap-sub">L'économie : dépendances structurelles et défis du développement</div>
+            <p>Sur le plan économique, Asfura hérite d'un pays dont les <strong>remesas</strong> (transferts des Honduriens de l'étranger, principalement des États-Unis) représentent plus de 25 % du PIB — une dépendance structurelle qui rend le pays extrêmement sensible aux politiques migratoires américaines. La coopération renforcée avec Washington est donc à double tranchant : elle améliore l'image du pays auprès des investisseurs, mais toute politique d'expulsion massive affaiblirait directement les revenus des ménages honduriens.</p>
+            <p>Le gouvernement a annoncé un plan de relance industrielle centré sur les <em>maquiladoras</em> (zones franches manufacturières) du corridor nord, et souhaite attirer des investissements dans le secteur agro-alimentaire et les énergies renouvelables. Des négociations sont en cours avec le FMI pour un programme d'appui budgétaire conditionné à des réformes fiscales.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Un Honduras en quête d'équilibre</div>
+              <p>En prenant la tête du Honduras, Nasry Asfura incarne le retour d'une droite conservatrice qui parie sur la sécurité et le pragmatisme économique pour répondre aux attentes d'une population épuisée par la violence et la pauvreté. Mais son chemin est semé d'embûches : la question judiciaire qui plane sur lui, la profondeur des liens entre État et crime organisé, l'équilibre délicat entre Washington et Pékin, et les exigences d'une société civile qui n'a pas renoncé aux acquis de l'ère Castro. Le Honduras reste l'un des terrains les plus révélateurs des tensions qui traversent l'Amérique centrale contemporaine — entre aspiration à la stabilité et risque d'un autoritarisme de façade.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-fr-section -->
+
+    <!-- ══ SECTION ES ══ -->
+    <div class="ap-es-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-blue">🇭🇳 Honduras</span>
+          <span class="ap-tag ap-tag-gold">Política</span>
+          <span class="ap-tag ap-tag-navy">Derecha conservadora</span>
+          <span class="ap-tag ap-tag-red">Seguridad</span>
+          <span class="ap-tag ap-tag-orange">Geopolítica</span>
+        </div>
+        <div class="ap-date">Abril 2026 — ECG Prépa · Honduras</div>
+        <h1 class="ap-title">Nasry Asfura en el poder: Honduras en la encrucijada</h1>
+        <p class="ap-intro">Elegido en noviembre de 2025, Nasry «Tito» Asfura toma posesión del cargo el 27 de enero de 2026. Exalcalde de Tegucigalpa y figura histórica del Partido Nacional, encarna el retorno de la derecha conservadora tras cuatro años de gobierno progresista. Entre promesas de seguridad, presiones del narcotráfico y reposicionamiento geopolítico, su llegada al poder dibuja un Honduras en tensión.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat"><span class="ap-stat-num">52,3 %</span><span class="ap-stat-desc">Resultado de Asfura<br>en 1ª vuelta (nov. 2025)</span></div>
+          <div class="ap-stat red"><span class="ap-stat-num">35,7</span><span class="ap-stat-desc">Índice de pobreza<br>(% pob., 2025)</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">~38</span><span class="ap-stat-desc">Homicidios / 100 000 hab.<br>(2024, entre los más altos)</span></div>
+          <div class="ap-stat green"><span class="ap-stat-num">3,5 %</span><span class="ap-stat-desc">Crecimiento del PIB<br>previsto 2026</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">El contexto: cuatro años de ruptura progresista</div>
+            <p>Cuando Nasry Asfura jura el cargo el 27 de enero de 2026, hereda un Honduras profundamente marcado por el mandato de <strong>Xiomara Castro</strong> (2022–2026), primera mujer presidenta del país. Su gobierno llevó a cabo una ruptura simbólica mayor: retirada de las políticas de austeridad del FMI, apertura diplomática hacia Cuba y Venezuela, y cuestionamiento parcial de las Zonas de Empleo y Desarrollo Económico (<em>ZEDE</em>).</p>
+            <p>Sin embargo, el balance de Castro es ambivalente. Si bien mostró una ambición social real, la violencia ligada al narcotráfico persistió, la emigración hacia Estados Unidos no cedió, y las acusaciones de corrupción al interior de su propio gobierno debilitaron su mayoría en el Congreso. Es en este contexto de desilusión parcial que el Partido Nacional logra reconquistar la presidencia.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Toma de posesión</div><div class="ap-fact-val">27 de enero de 2026</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Partido</div><div class="ap-fact-val">Partido Nacional (PN)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Resultado 1ª vuelta</div><div class="ap-fact-val">52,3 % (victoria directa)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Mandato</div><div class="ap-fact-val">4 años (2026–2030)</div></div>
+            </div>
+
+            <div class="ap-sub">¿Quién es Nasry Asfura?</div>
+            <p>Nacido en 1955 en Tegucigalpa en el seno de una familia de origen palestino —como muchas familias de la burguesía hondureña—, Nasry Asfura apodado «<em>Papi a la orden</em>» construyó su capital político como alcalde de Tegucigalpa entre 2014 y 2021. Populista jovial y próspero hombre de negocios, se consolidó como candidato de proximidad, multiplicando inauguraciones de infraestructuras y cultivando una imagen de gestor pragmático.</p>
+            <p>Su popularidad no está exenta de sombras: durante su gestión municipal, el Ministerio Público lo investigó por desvío de fondos públicos por varios millones de dólares, causa sobreseída por una jurisdicción cuestionada. Esta fragilidad judicial potencial constituye una de las primeras vulnerabilidades de su presidencia.</p>
+
+            <div class="ap-sub">Cronología: de las urnas al ejercicio del poder</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">Nov. 2025</div><p class="ap-tl-text">Elecciones presidenciales. Asfura obtiene el 52,3 % en primera vuelta. El Partido Nacional recupera también una mayoría relativa en el Congreso.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Dic. 2025</div><p class="ap-tl-text">Período de transición. Asfura anuncia su gabinete: perfil tecnocrático que mezcla exministros nacionalistas y empresarios. Nombramiento controvertido en el área de seguridad.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">27 Ene. 2026</div><p class="ap-tl-text">Investidura. Asfura coloca la seguridad y el empleo en el centro de su mandato. Llama a la «reconciliación nacional» e insinúa un acercamiento a Washington.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Feb. 2026</div><p class="ap-tl-text">Primeras tensiones con la sociedad civil. Organizaciones feministas y LGBTQ+ denuncian declaraciones del nuevo gobierno sobre derechos reproductivos.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Mar. 2026</div><p class="ap-tl-text">Lanzamiento del plan de seguridad «Puño de Hierro». Despliegue del ejército en las principales ciudades. Primeras críticas de ONG de derechos humanos.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Abr. 2026</div><p class="ap-tl-text">Visita oficial a Washington. Firma de un acuerdo de cooperación en seguridad. Reapertura del diálogo con el FMI.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">La política de seguridad: entre modelo Bukele y pragmatismo regional</div>
+            <p>La prioridad absoluta de Asfura es la reducción de la violencia. Honduras sigue siendo uno de los países más violentos de Centroamérica, con una tasa de homicidios de aproximadamente 38 por 100 000 habitantes en 2024. Las <em>maras</em> (MS-13, Barrio 18) y los cárteles continúan ejerciendo control territorial en numerosos barrios urbanos y zonas rurales.</p>
+            <p>El plan <strong>«Puño de Hierro»</strong> lanzado en marzo de 2026 se inspira abiertamente en el modelo salvadoreño de Nayib Bukele, con despliegues militares masivos y detenciones preventivas. Pero Asfura rechaza el calificativo de autoritario: promete mantener las garantías constitucionales y no recurrir al estado de excepción sistematizado.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Indicador de seguridad</th><th>2022</th><th>2025</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Homicidios / 100 000 hab.</td><td>35,8</td><td class="ap-cell-bold">~38</td></tr>
+                <tr><td class="ap-cell-bold">Zonas bajo control mara</td><td>Elevado</td><td class="ap-cell-bold">Persistente</td></tr>
+                <tr><td class="ap-cell-bold">Migrantes expulsados de EE. UU.</td><td>52 000</td><td class="ap-cell-bold">~70 000</td></tr>
+                <tr><td class="ap-cell-bold">Detenciones por tráfico</td><td>4 200</td><td class="ap-cell-bold">6 800</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">⚠️</div>
+              <div class="ap-info-text"><strong>El legado Hernández:</strong> Juan Orlando Hernández, predecesor nacionalista de Asfura, fue extraditado a Estados Unidos en 2022 y condenado a 45 años de prisión en 2024 por complicidad con el cártel de Sinaloa. Asfura debe gestionar este legado tóxico mientras mantiene la cohesión interna de su partido.</div>
+            </div>
+
+            <div class="ap-sub">El giro geopolítico: retorno a la órbita estadounidense</div>
+            <p>Uno de los cambios más inmediatos concierne la política exterior. Castro había roto con Taiwán en 2023 para reconocer a la República Popular China. Asfura <strong>no cuestiona el reconocimiento de Pekín</strong> —un giro sería demasiado costoso diplomática y financieramente—, pero opera un reequilibrio neto hacia Washington.</p>
+            <p>Su visita en abril de 2026 a la capital estadounidense desembocó en la firma de un acuerdo de cooperación en seguridad que incluye ayuda financiera para la lucha antidroga y un programa de formación de las fuerzas del orden hondureñas. A cambio, Asfura se compromete a intensificar la cooperación en gestión migratoria.</p>
+
+            <div class="ap-quote">
+              <p>« Honduras primero. Vamos a recuperar la paz en nuestras calles, con la ley y con orden. »</p>
+              <cite>— Nasry Asfura, discurso de investidura, Tegucigalpa, 27 de enero de 2026</cite>
+            </div>
+            <div class="ap-quote">
+              <p>« Votamos por él porque teníamos miedo, pero ahora hay militares en nuestras calles. No era lo que queríamos. »</p>
+              <cite>— Ramona, vecina del barrio La Sosa, Tegucigalpa, marzo de 2026</cite>
+            </div>
+
+            <div class="ap-sub">La economía: dependencias estructurales y retos del desarrollo</div>
+            <p>En el plano económico, Asfura hereda un país cuyas <strong>remesas</strong> representan más del 25 % del PIB, una dependencia estructural que hace al país extremadamente sensible a las políticas migratorias estadounidenses. El gobierno anunció un plan de reactivación industrial centrado en las <em>maquiladoras</em> del corredor norte y la atracción de inversiones en agroindustria y energías renovables.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Un Honduras en busca de equilibrio</div>
+              <p>Al tomar la presidencia de Honduras, Nasry Asfura encarna el retorno de una derecha conservadora que apuesta por la seguridad y el pragmatismo económico para responder a las expectativas de una población agotada por la violencia y la pobreza. Pero su camino está lleno de obstáculos: la cuestión judicial pendiente, la profundidad de los vínculos entre el Estado y el crimen organizado, el delicado equilibrio entre Washington y Pekín, y las exigencias de una sociedad civil que no ha renunciado a los avances de la era Castro. Honduras sigue siendo uno de los escenarios más reveladores de las tensiones que atraviesan Centroamérica: entre aspiración a la estabilidad y riesgo de un autoritarismo de fachada.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-es-section -->
+
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — Honduras — Avril 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-es').classList.toggle('active', lang === 'es');
+  const isEs = lang === 'es';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEs ? 'none' : 'block');
+  document.querySelectorAll('.ap-es-section').forEach(el => el.style.display = isEs ? 'block' : 'none');
+  document.getElementById('ap-band').textContent = isEs
+    ? '🇭🇳 HONDURAS — POLÍTICA — ASFURA — ELECCIONES 2025 🇭🇳'
+    : '🇭🇳 HONDURAS — POLITIQUE — ASFURA — ÉLECTIONS 2025 🇭🇳';
+}
+setLang('fr');
+</script>
+</body>
+</html>

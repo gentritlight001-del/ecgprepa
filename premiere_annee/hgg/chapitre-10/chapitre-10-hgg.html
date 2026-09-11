@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — HGG Chapitre 10 : Les modèles de croissance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FDF7F4;
+    --dark: #1A0800;
+    --amber: #A0402A;
+    --amber-dark: #5C1E0E;
+    --amber-mid: #C45E3E;
+    --amber-light: #FAE8E0;
+    --amber-border: #D49880;
+    --gold: #E8A882;
+    --muted: #7A4030;
+    --accent: #A0402A;
+    --accent-soft: #A0402A22;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--dark); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid rgba(196,121,0,0.25);
+    background: var(--amber-dark); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--gold); cursor: pointer; letter-spacing: 0.02em; }
+  .nav-logo a { color: inherit; text-decoration: none; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(253,250,242,0.5); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: inherit; text-decoration: none; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb a:hover span, .breadcrumb span:hover { color: var(--gold); }
+  .breadcrumb .sep { color: rgba(253,250,242,0.25); }
+  .breadcrumb .current { color: #FDF7F4; cursor: default; }
+
+  /* ─── CHAPTER HERO ─── */
+  .ch-hero {
+    background: var(--amber-dark);
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ch-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23A0402A' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; opacity: 0.85; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 4rem); color: var(--cream); font-weight: 900; max-width: 900px; margin: 0 auto 1.5rem; line-height: 1.1; position: relative; z-index: 1; }
+  .ch-hero p { color: rgba(253,250,242,0.45); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  /* ─── TOC ─── */
+  .toc-bar { background: #FAE8E0; padding: 2rem; border-bottom: 1px solid #D49880; }
+  .toc-inner { max-width: 960px; margin: 0 auto; }
+  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
+  .toc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.4rem; list-style: none; }
+  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: #2A0E08; font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
+  .toc-list a:hover { border-color: var(--amber-border); background: white; color: #000; }
+  .toc-num { font-family: "DM Mono", monospace; font-size: 0.65rem; color: var(--amber); flex-shrink: 0; margin-top: 0.15rem; }
+
+  /* ─── CONTENT ─── */
+  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 8rem; }
+
+  /* PART */
+  .hgg-part { margin-bottom: 5rem; }
+  .hgg-part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--amber); }
+  .hgg-part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: var(--amber-border); line-height: 1; flex-shrink: 0; }
+  .hgg-part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--dark); line-height: 1.25; }
+
+  /* SECTION */
+  .hgg-section { margin-bottom: 3.5rem; }
+  .hgg-section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--amber-dark); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--amber); scroll-margin-top: 2rem; }
+  .hgg-subsection-title { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--amber); margin: 2rem 0 0.75rem; }
+
+  /* TEXT */
+  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: #1E0A00; line-height: 1.75; font-weight: 300; }
+  .content strong { color: var(--dark); font-weight: 600; }
+
+  /* KEY FACT */
+  .hgg-key-fact { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 0.6rem; padding: 0.85rem 1.1rem; background: white; border: 1px solid var(--amber-light); border-radius: 6px; }
+  .hgg-key-bullet { width: 6px; height: 6px; background: var(--amber); border-radius: 50%; flex-shrink: 0; margin-top: 0.5rem; }
+  .hgg-key-fact > div { font-size: 0.91rem; color: #1E0A00; line-height: 1.65; font-weight: 300; }
+
+  /* CONCEPT BOX */
+  .hgg-concept { background: var(--amber-dark); color: var(--cream); padding: 1.75rem; margin: 2rem 0; position: relative; border-radius: 4px; }
+  .hgg-concept::before { content: '→'; position: absolute; top: 1.25rem; right: 1.25rem; color: var(--gold); font-size: 1.3rem; }
+  .hgg-concept .concept-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.7rem; }
+  .hgg-concept p { color: rgba(253,250,242,0.82); font-size: 0.93rem; margin: 0; }
+  .hgg-concept strong { color: var(--gold); }
+
+  /* HIGHLIGHT */
+  .hgg-highlight { background: var(--amber-light); border-left: 4px solid var(--amber); padding: 1.25rem 1.75rem; margin: 1.5rem 0; font-style: italic; color: var(--amber-dark); font-size: 0.93rem; line-height: 1.7; border-radius: 0 6px 6px 0; }
+
+  /* CITE CARD */
+  .cite-card { position: relative; background: #FFFDF9; border: 1px solid var(--amber-border); border-radius: 3px; padding: 1.7rem 1.8rem 1.5rem; box-shadow: 5px 5px 0 rgba(160,64,42,0.09); margin: 1.5rem 0; }
+  .cite-card::before { content: '\201C'; position: absolute; top: -0.9rem; left: 1.3rem; font-family: 'Playfair Display', serif; font-size: 4.2rem; font-weight: 900; color: var(--amber); opacity: 0.16; line-height: 1; pointer-events: none; }
+  .cite-card::after { content: ''; position: absolute; top: 0.7rem; right: 0.9rem; width: 26px; height: 10px; background: rgba(224,152,128,0.35); transform: rotate(3deg); }
+  .cite-top { position: relative; z-index: 1; display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-wrap: wrap; border-bottom: 1px dashed var(--amber-border); padding-bottom: 0.7rem; margin-bottom: 1rem; }
+  .cite-id { display: flex; align-items: center; gap: 0.65rem; }
+  .cite-icon { font-size: 1.15rem; color: var(--amber); flex-shrink: 0; }
+  .cite-id-text { display: flex; flex-direction: column; gap: 0.1rem; }
+  .cite-name { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.08rem; color: var(--amber-dark); }
+  .cite-role { font-family: 'DM Mono', monospace; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.13em; color: var(--muted); }
+  .cite-ref { font-family: 'DM Mono', monospace; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--amber-dark); background: var(--amber-light); border: 1px solid var(--amber-border); padding: 0.28rem 0.65rem; border-radius: 3px; white-space: nowrap; }
+  .cite-text { position: relative; z-index: 1; }
+  .cite-text p { font-size: 0.89rem; color: #1E0A00; line-height: 1.72; margin: 0 0 0.65rem; font-weight: 300; }
+  .cite-pull { position: relative; z-index: 1; margin-top: 0.9rem; padding: 0.15rem 0 0.15rem 1.1rem; border-left: 3px solid var(--amber); font-family: 'Playfair Display', serif; font-style: italic; font-size: 0.96rem; color: var(--amber-dark); line-height: 1.6; }
+
+  /* AUTHOR CARD */
+  .hgg-author { background: var(--amber-dark); color: var(--cream); padding: 1.75rem; margin: 1.2rem 0; position: relative; border-radius: 4px; border-left: 4px solid var(--amber-mid); }
+  .hgg-author::before { content: '✎'; position: absolute; top: 1.25rem; right: 1.25rem; color: var(--amber-mid); font-size: 1.1rem; opacity: 0.7; }
+  .hgg-author .author-name { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; color: #E8A882; margin-bottom: 0.7rem; font-weight: 700; }
+  .hgg-author p { color: rgba(253,250,242,0.85); font-size: 0.93rem; margin: 0; line-height: 1.7; font-weight: 300; }
+  .hgg-author strong { color: #E8A882; }
+
+  /* STATS GRID */
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: var(--amber-border); margin: 1.5rem 0; border: 1px solid var(--amber-border); border-radius: 6px; overflow: hidden; }
+  .hgg-stat-cell { background: white; padding: 1.3rem; text-align: center; }
+  .hgg-stat-num { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 900; color: var(--amber); display: block; }
+  .hgg-stat-label { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; font-family: 'DM Mono', monospace; }
+
+  /* TIMELINE */
+  .hgg-timeline { margin: 1.5rem 0; position: relative; padding-left: 2rem; }
+  .hgg-timeline::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--amber-border); }
+  .hgg-timeline-item { position: relative; padding: 0.8rem 0 0.8rem 1.25rem; border-bottom: 1px solid var(--amber-light); }
+  .hgg-timeline-item:last-child { border-bottom: none; }
+  .hgg-timeline-item::before { content: ''; position: absolute; left: -1.55rem; top: 1.2rem; width: 10px; height: 10px; background: var(--amber); border-radius: 50%; }
+  .hgg-timeline-date { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--amber); margin-bottom: 0.2rem; font-weight: 700; }
+  .hgg-timeline-item p { margin: 0; font-size: 0.88rem; color: #1E0A00; }
+
+  /* COLOR COLUMNS */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+  .col-card { border-radius: 8px; padding: 1.2rem 1.4rem; border: 1px solid; }
+  .col-card h5 { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.6rem; }
+  .col-card p { margin: 0; font-size: 0.85rem; line-height: 1.6; font-weight: 300; }
+
+  .col-amber { background: rgba(196,121,0,0.07); border-color: rgba(196,121,0,0.3); }
+  .col-amber h5 { color: var(--amber); }
+  .col-amber p { color: #2A0E08; }
+
+  .col-gold { background: rgba(245,200,66,0.1); border-color: rgba(245,200,66,0.35); }
+  .col-gold h5 { color: #7A4030; }
+  .col-gold p { color: #2A0E08; }
+
+  .col-dark { background: rgba(107,58,0,0.06); border-color: rgba(107,58,0,0.2); }
+  .col-dark h5 { color: var(--amber-dark); }
+  .col-dark p { color: #2A0E08; }
+
+  .col-light { background: rgba(224,184,112,0.15); border-color: rgba(224,184,112,0.4); }
+  .col-light h5 { color: var(--amber-mid); }
+  .col-light p { color: #2A0E08; }
+
+  /* CRISIS CARD */
+  .crisis-card { border-radius: 10px; padding: 1.4rem 1.6rem; margin: 1rem 0; border: 1px solid rgba(196,121,0,0.2); border-left: 4px solid var(--amber); background: white; }
+  .crisis-date { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--amber); margin-bottom: 0.4rem; font-weight: 700; }
+  .crisis-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--dark); margin-bottom: 0.5rem; }
+  .crisis-card p { margin: 0; font-size: 0.88rem; color: #1E0A00; line-height: 1.65; font-weight: 300; }
+
+  /* BIG QUOTE */
+  .big-quote { background: var(--amber-dark); color: var(--cream); padding: 2.5rem; margin: 2rem 0; border-radius: 8px; text-align: center; position: relative; }
+  .big-quote::before { content: '"'; font-family: 'Playfair Display', serif; font-size: 8rem; color: var(--amber-mid); position: absolute; top: -1.5rem; left: 2rem; line-height: 1; opacity: 0.3; }
+  .big-quote blockquote { font-family: 'Playfair Display', serif; font-size: clamp(0.95rem, 2vw, 1.2rem); font-style: italic; line-height: 1.6; color: var(--cream); position: relative; z-index: 1; margin-bottom: 0.75rem; }
+  .big-quote cite { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); }
+
+  /* COMPARE BOX */
+  .compare-box { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 1.5rem 0; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); overflow: visible; }
+  .compare-side { padding: 1.3rem 1.5rem; }
+  .compare-side h5 { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.7rem; }
+  .compare-side p { font-size: 0.85rem; line-height: 1.6; margin: 0; font-weight: 300; }
+  .compare-a { background: rgba(196,121,0,0.07); border-radius: 8px 0 0 8px; }
+  .compare-a h5 { color: var(--amber); }
+  .compare-b { background: rgba(245,200,66,0.1); border-radius: 0 8px 8px 0; }
+  .compare-b h5 { color: #7A4030; }
+
+  /* ─── FOOTER ─── */
+  .site-footer {
+    background: var(--amber-dark);
+    border-top: 1px solid rgba(196,121,0,0.35);
+    padding: 2.5rem 2rem;
+    text-align: center;
+  }
+  .site-footer .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+  /* ─── BACK TO TOP ─── */
+  .back-to-top {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 44px;
+    height: 44px;
+    background: var(--amber);
+    color: var(--cream);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 14px rgba(196,121,0,0.45);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 200;
+  }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+  .back-to-top:hover { background: var(--amber-mid); }
+
+  /* DÉFINITIONS */
+  .doctrine-block { margin: 1.5rem 0; position: relative; }
+  .def-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(196,121,0,0.10), 0 0 0 1px rgba(196,121,0,0.12);
+    display: flex;
+  }
+  .def-accent-bar {
+    width: 5px;
+    background: linear-gradient(180deg, #C45E3E 0%, #2A0E08 100%);
+    flex-shrink: 0;
+    border-radius: 10px 0 0 10px;
+  }
+  .def-body { padding: 1.1rem 1.4rem; flex: 1; }
+  .def-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.65rem; }
+  .def-icon { font-size: 0.85rem; color: var(--amber-mid); flex-shrink: 0; opacity: 0.7; }
+  .def-term { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--amber-dark); letter-spacing: 0.01em; }
+  .def-tag { margin-left: auto; font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--amber-mid); background: var(--amber-light); padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
+  .def-text { font-size: 0.91rem; color: #1E0A00; line-height: 1.7; font-weight: 300; margin: 0 !important; }
+  .def-text strong { color: var(--amber-dark); font-weight: 600; }
+
+  /* SYNTHESIS BOX */
+  .synth-box { background: #FAE8E0; border: 2px solid var(--amber); border-radius: 10px; padding: 2rem; margin: 2rem 0; }
+  .synth-title { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 900; color: var(--amber-dark); margin-bottom: 1.5rem; text-align: center; border-bottom: 1px solid var(--amber-border); padding-bottom: 0.9rem; }
+  .synth-section { margin-bottom: 0; }
+  .synth-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--amber); font-weight: 700; margin-bottom: 0.6rem; }
+  .synth-section p { font-size: 0.9rem; color: #2A0E08; margin-bottom: 0.5rem; line-height: 1.7; font-weight: 300; }
+  .synth-divider { border: none; border-top: 1px dashed var(--amber-border); margin: 1.2rem 0; }
+  .synth-conclusion { background: var(--amber); color: white; border-radius: 6px; padding: 1rem 1.3rem; font-family: 'Playfair Display', serif; font-size: 0.95rem; font-style: italic; line-height: 1.65; margin-top: 1.4rem; text-align: center; }
+
+  /* THINKERS GRID */
+  .thinkers-grid { display: grid; grid-template-columns: 1fr; gap: 1.2rem; margin: 1.5rem 0; }
+  .thinker-card { display: grid; grid-template-columns: auto 1fr; gap: 0; border-radius: 8px; box-shadow: 0 2px 12px rgba(196,121,0,0.10), 0 0 0 1px rgba(196,121,0,0.12); background: white; overflow: hidden; }
+  .thinker-sidebar { background: var(--amber-dark); padding: 1.2rem 1rem; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; min-width: 120px; gap: 0.5rem; }
+  .thinker-icon { font-size: 1.6rem; margin-bottom: 0.2rem; }
+  .thinker-year { font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.2em; color: var(--gold); text-transform: uppercase; text-align: center; }
+  .thinker-body { padding: 1.2rem 1.4rem; }
+  .thinker-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--amber-dark); margin-bottom: 0.25rem; }
+  .thinker-work { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--amber); margin-bottom: 0.7rem; }
+  .thinker-body p { font-size: 0.88rem; color: #1E0A00; line-height: 1.7; font-weight: 300; margin: 0; }
+  .thinker-body strong { color: var(--amber-dark); font-weight: 600; }
+  .thinker-key { background: var(--amber-light); border-left: 3px solid var(--amber); border-radius: 0 4px 4px 0; padding: 0.6rem 0.85rem; font-size: 0.82rem; color: var(--amber-dark); line-height: 1.6; margin-top: 0.8rem; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-up { animation: fadeUp 0.5s ease forwards; }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--amber-border); border-radius: 3px; }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .two-col, .three-col, .compare-box { grid-template-columns: 1fr; }
+    .thinker-card { grid-template-columns: 1fr; }
+    .thinker-sidebar { flex-direction: row; min-width: unset; padding: 0.75rem 1rem; }
+  }
+
+  @media print {
+    @page { size: A4; margin: 15mm 14mm 15mm 14mm; }
+    nav, .back-to-top, .toc-bar, .site-footer { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    html, body { background: white !important; color: #000 !important; font-size: 10pt; }
+    .ch-hero { background: #5C1E0E !important; padding: 0.9rem 1rem 0.7rem !important; }
+    .ch-hero h1 { font-size: 16pt !important; color: #fff !important; margin-bottom: 0.3rem !important; }
+    .content { max-width: 100% !important; padding: 0.6rem 0 !important; }
+    .content p { font-size: 9pt !important; line-height: 1.5 !important; margin-bottom: 0.45rem !important; }
+    .hgg-part { margin-bottom: 0.8rem; page-break-inside: auto; }
+    .hgg-section { margin-bottom: 0.8rem; page-break-inside: auto; }
+    /* Empêche la coupure au milieu des blocs "carte" en fin/début de page */
+    .hgg-key-fact, .hgg-stat-cell, .hgg-timeline-item, .synth-conclusion, .hgg-highlight, .def-card,
+    .hgg-concept, .hgg-author, .doctrine-block, .col-card, .synth-box, .big-quote, .compare-box,
+    .hgg-stats, .crisis-card, .cite-card, .thinker-card, .nation-card {
+      page-break-inside: avoid; break-inside: avoid;
+    }
+    /* Évite qu'un titre se retrouve seul en bas de page, séparé de son contenu */
+    .hgg-part-header, .hgg-section-title, .hgg-subsection-title, .crisis-date, .hgg-timeline-date,
+    h1, h2, h3, .hgg-part-title { page-break-after: avoid; break-after: avoid; }
+    /* Règles générales anti-veuves/orphelines pour le texte courant */
+    p, .hgg-key-fact > div, .def-text, .content li { orphans: 3; widows: 3; }
+    .hgg-part-header { padding-bottom: 0.6rem !important; margin-bottom: 1rem !important; border-bottom: 2pt solid #A0402A !important; }
+    .hgg-part-num { font-size: 2rem !important; color: #D49880 !important; }
+    .hgg-section-title { font-size: 11pt !important; padding-left: 0.7rem !important; border-left: 2.5pt solid #A0402A !important; margin-bottom: 0.55rem !important; color: #5C1E0E !important; }
+    .hgg-subsection-title { font-size: 7pt !important; margin: 0.65rem 0 0.35rem !important; color: #A0402A !important; }
+    .def-card { box-shadow: none !important; border: 1pt solid #D49880 !important; display: flex !important; border-radius: 0 !important; }
+    .def-text { font-size: 8.5pt !important; line-height: 1.5 !important; }
+    .hgg-highlight { background: #FAE8E0 !important; border-left: 2.5pt solid #A0402A !important; padding: 0.6rem 0.9rem !important; font-size: 8.5pt !important; }
+    .hgg-concept { background: #5C1E0E !important; padding: 0.75rem 1rem !important; }
+    .hgg-concept p { font-size: 8.5pt !important; }
+    .synth-box { background: #FAE8E0 !important; border: 1.5pt solid #A0402A !important; padding: 0.9rem !important; }
+    .synth-conclusion { background: #A0402A !important; color: white !important; font-size: 8.5pt !important; }
+    .two-col, .three-col { display: grid !important; gap: 0.5rem !important; }
+    #tiersmonde-strategies { grid-template-columns: 1fr !important; }
+    .hgg-key-fact { padding: 0.45rem 0.7rem !important; background: white !important; }
+    .hgg-stats { display: grid !important; gap: 0 !important; border: 1pt solid #D49880 !important; }
+    .hgg-stat-num { font-size: 1.1rem !important; color: #A0402A !important; }
+    .crisis-card { padding: 0.6rem 0.9rem !important; border-radius: 0 !important; box-shadow: none !important; }
+    .cite-card { box-shadow: none !important; border: 1pt solid var(--amber-border) !important; border-radius: 0 !important; padding: 0.8rem 0.9rem !important; margin: 0.5rem 0 !important; }
+    .cite-card::before, .cite-card::after { display: none !important; }
+    .cite-top { padding-bottom: 0.4rem !important; margin-bottom: 0.5rem !important; }
+    .cite-name { font-size: 9pt !important; }
+    .cite-role { font-size: 6pt !important; }
+    .cite-ref { font-size: 6pt !important; padding: 0.15rem 0.4rem !important; }
+    .cite-text p { font-size: 8pt !important; line-height: 1.5 !important; }
+    .cite-pull { font-size: 7.5pt !important; padding-left: 0.6rem !important; line-height: 1.4 !important; }
+    .hgg-timeline { padding-left: 1.3rem !important; }
+    .hgg-timeline-item { padding: 0.35rem 0 0.35rem 0.8rem !important; }
+    .hgg-timeline-date { font-size: 6.5pt !important; color: #A0402A !important; }
+    .thinker-card { display: grid !important; grid-template-columns: 62pt 1fr !important; box-shadow: none !important; border: 1pt solid #D49880 !important; border-radius: 0 !important; margin-bottom: 0.45rem !important; }
+    .thinker-sidebar { background: #5C1E0E !important; padding: 0.7rem 0.5rem !important; min-width: 0 !important; width: 100% !important; flex-direction: column !important; gap: 0.3rem !important; }
+    .thinker-icon { font-size: 1.2rem !important; }
+    .thinker-year { font-size: 5.5pt !important; color: #E8A882 !important; }
+    .thinker-body { padding: 0.7rem 0.9rem !important; }
+    .thinker-name { font-size: 9pt !important; }
+    .thinker-work { font-size: 5.5pt !important; margin-bottom: 0.3rem !important; }
+    .thinker-body p { font-size: 8pt !important; line-height: 1.5 !important; }
+    .thinker-key { font-size: 7pt !important; padding: 0.35rem 0.55rem !important; margin-right: 0 !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left"><div class="nav-logo"><a href="../../../index.html">ECG Prépa</a></div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html"><span>Accueil</span></a>
+    <span class="sep">/</span>
+    <a href="../index.html"><span>HGG</span></a>
+    <span class="sep">/</span>
+    <span class="current">Chapitre 10</span>
+  </div>
+  <div class="nav-right"><a href="chapitre10.pdf" download style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:var(--gold);text-decoration:none;border:1px solid rgba(253,250,242,0.25);padding:6px 14px;border-radius:6px;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='transparent'">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    PDF
+  </a></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="chap-label">HGG ECG — Chapitre 10</div>
+  <h1>Les modèles<br>de croissance</h1>
+  <p><strong>Trente Glorieuses</strong> · Fordisme · Modèle soviétique · Néolibéralisme · Mondialisation</p>
+</div>
+
+<!-- TOC -->
+<div class="toc-bar">
+  <div class="toc-inner">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;">
+      <div class="toc-title" style="margin-bottom:0;">Sommaire du chapitre</div>
+      <a href="resume-chapitre10.pdf" download style="font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--muted)'">Résumé (PDF)</a>
+    </div>
+    <ul class="toc-list">
+      <li><a href="#part1"><span class="toc-num">I</span> La diversité des modèles de croissance entre 1945 et les années 1970 : succès et limites</a></li>
+      <li><a href="#part2"><span class="toc-num">II</span> Des modèles en crise dans les années 1970</a></li>
+      <li><a href="#part3"><span class="toc-num">III</span> Des modèles qui convergent à partir des années 1980–1990 : la 3ᵉ mondialisation</a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════════
+     PARTIE I
+═══════════════════════════════════════ -->
+<div class="hgg-part" id="part1">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">I</div>
+    <div class="hgg-part-title">La diversité des modèles de croissance entre 1945 et les années 1970 : succès et limites</div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="hgg-section" id="s1-1">
+    <div class="hgg-section-title">1 — Qu'est-ce qu'un modèle de croissance ?</div>
+
+    <p>Après 1945, l'<strong>économie mondiale</strong> entre dans une période de <strong>forte croissance économique</strong>. Cette croissance est exceptionnelle après les crises de l'<strong>entre-deux-guerres</strong> et la <strong>Seconde Guerre mondiale</strong>. Les <strong>pays capitalistes développés</strong> ou <strong>pays développés à économie de marché</strong> (<strong>PDEM</strong>) mettent en place différents <strong>modèles de croissance</strong>.</p>
+
+    <div class="doctrine-block">
+      <div class="def-card">
+        <div class="def-accent-bar"></div>
+        <div class="def-body">
+          <div class="def-header">
+            <span class="def-icon">◆</span>
+            <span class="def-term">Modèle de croissance</span>
+            <span class="def-tag">Définition</span>
+          </div>
+          <p class="def-text">Un modèle de croissance est l'<strong>organisation économique d'un pays</strong> qui repose sur plusieurs points : la <strong>source principale de croissance</strong> (consommation, exportations, investissement…), un <strong>compromis politique et social</strong>, la <strong>répartition du revenu national</strong>, et la <strong>régulation entre production et distribution</strong>.</p>
+        </div>
+      </div>
+    </div>
+
+    <p>Selon le sociologue <strong>Michel Freyssenet</strong>, les modèles de croissance apparaissent souvent de manière <strong>progressive et non planifiée</strong>. Les acteurs économiques prennent seulement conscience du modèle après coup et peuvent ensuite le renforcer. Ce caractère émergent est fondamental : il explique pourquoi les Trente Glorieuses n'ont été identifiées comme telles qu'après leur fin.</p>
+  </div>
+
+  <!-- SECTION 2 : Trente Glorieuses -->
+  <div class="hgg-section" id="s1-2">
+    <div class="hgg-section-title">2 — Les modèles libéraux des PDEM : la parenthèse enchantée des « Trente Glorieuses »</div>
+
+    <div class="hgg-highlight">Les « Trente Glorieuses » désignent les 30 années de croissance économique exceptionnelle qui ont suivi la Seconde Guerre mondiale (1945–1973), selon l'expression forgée par l'économiste Jean Fourastié dans son ouvrage paru en 1979.</div>
+
+    <div class="hgg-subsection-title">→ Une norme ou une exception ?</div>
+
+    <div class="cite-card">
+      <div class="cite-top">
+        <div class="cite-id">
+          <span class="cite-icon">✦</span>
+          <div class="cite-id-text">
+            <span class="cite-name">Dominique Guellec</span>
+            <span class="cite-role">Économiste</span>
+          </div>
+        </div>
+        <span class="cite-ref">En route vers l'état régulier · 1999</span>
+      </div>
+      <div class="cite-text">
+        <p>Les vingt-cinq dernières années présentent par rapport aux Trente Glorieuses des traits nouveaux : <strong>ralentissement de la croissance et de la productivité</strong>, <strong>mondialisation des activités économiques</strong>, <strong>retrait des États au bénéfice des marchés</strong>.</p>
+      </div>
+      <p class="cite-pull"><strong>Guellec</strong> explore l'hypothèse d'un retour (douloureux) à « l'état régulier » après trois décennies de rattrapage (1945–1973), qui venaient elles-mêmes à la suite de trois décennies de crise (1914–1945).</p>
+    </div>
+
+    <p>Les historiens <strong>Jacques Marseille</strong> et <strong>François Caron</strong> présentent les Trente Glorieuses comme <strong>une anomalie et une parenthèse de l'histoire</strong> plus que comme l'expression de la normalité historique de la croissance capitaliste. Pour les économistes <strong>Elie Cohen</strong> et <strong>Thomas Piketty</strong>, elles sont surtout une <strong>phase de rattrapage</strong> après deux guerres mondiales et une Grande crise. Cette lecture nuancée est essentielle : elle explique pourquoi cette période ne pouvait pas durer indéfiniment.</p>
+
+    <div class="hgg-subsection-title">→ Une croissance économique sans précédent</div>
+
+    <p>Dès la fin de la Seconde Guerre mondiale, pratiquement tous les PDEM connaissent une croissance économique exceptionnelle, appelée « Haute croissance » par les Japonais. L'historien <strong>Jacques Marseille</strong> a parlé d'un <strong>« carré magique »</strong> pour en désigner les quatre caractéristiques principales.</p>
+
+    <div class="hgg-stats">
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">4–5 %</span><div class="hgg-stat-label">Croissance annuelle dans les pays de l'OCDE (1950–1973)</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">9–10 %</span><div class="hgg-stat-label">Croissance annuelle au Japon — « Haute croissance »</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">× 3</span><div class="hgg-stat-label">Multiplication du PIB français entre 1950 et 1973</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">< 2 %</span><div class="hgg-stat-label">Taux de chômage en France — l'âge du plein-emploi</div></div>
+    </div>
+
+    <div class="hgg-key-fact">
+      <div class="hgg-key-bullet"></div>
+      <div><strong>Une croissance forte et régulière :</strong> très peu de fluctuations conjoncturelles, avec un PIB mondial multiplié par 3 de 1950 à 1973 (contre un doublement seulement entre 1914 et 1950).</div>
+    </div>
+    <div class="hgg-key-fact">
+      <div class="hgg-key-bullet"></div>
+      <div><strong>Le plein-emploi :</strong> le chômage passe sous les 2 % de la population active en France, laissant croire qu'il appartient désormais au passé.</div>
+    </div>
+    <div class="hgg-key-fact">
+      <div class="hgg-key-bullet"></div>
+      <div><strong>Hausse du pouvoir d'achat :</strong> entre 1945 et 1973, le pouvoir d'achat moyen est multiplié par trois, celui d'un ouvrier par quatre.</div>
+    </div>
+
+    <div class="hgg-subsection-title">→ Le rôle moteur des États-Unis</div>
+
+    <p>Dès 1944, les <strong>États-Unis</strong>, forts de leur position dominante, entendent restaurer la compétitivité des PDEM afin de relancer les échanges. Ils annulent la majeure partie des dettes des économies occidentales européennes et multiplient les prêts et les dons, à travers le <strong>Plan Marshall (1947)</strong> et le <strong>Plan Dodge (1949)</strong> pour le <strong>Japon</strong> occupé.</p>
+
+    <div class="hgg-key-fact">
+      <div class="hgg-key-bullet"></div>
+      <div><strong>Un triple objectif</strong> pour le Plan Marshall : éviter un effondrement économique dont profiteraient les communistes, fournir des débouchés aux entreprises américaines, et accélérer la reconstruction des partenaires économiques.</div>
+    </div>
+    <div class="hgg-key-fact">
+      <div class="hgg-key-bullet"></div>
+      <div><strong>Un rôle moteur durable :</strong> première puissance économique mondiale, les États-Unis imposent le dollar comme <strong>monnaie de référence internationale</strong> et gonflent leur masse monétaire pour irriguer l'économie mondiale en liquidités.</div>
+    </div>
+
+    <div class="hgg-subsection-title">→ Le rôle central des États</div>
+
+    <p>Aidés financièrement par les <strong>États-Unis</strong>, les États occidentaux interviennent massivement pour stimuler la croissance. Cette intervention résulte de la <strong>Grande Transformation</strong> théorisée par <strong>Karl Polanyi</strong>.</p>
+
+    <div class="cite-card">
+      <div class="cite-top">
+        <div class="cite-id">
+          <span class="cite-icon">✦</span>
+          <div class="cite-id-text">
+            <span class="cite-name">Karl Polanyi</span>
+            <span class="cite-role">Économiste et historien</span>
+          </div>
+        </div>
+        <span class="cite-ref">La Grande Transformation · 1944</span>
+      </div>
+      <div class="cite-text">
+        <p><strong>Polanyi</strong> désigne par « Grande transformation » le processus par lequel les sociétés européennes passent d'une économie <strong>encastrée</strong> dans les relations sociales à une économie de marché <strong>autonome et dominante</strong>. Il développe l'idée d'un « double mouvement » : d'un côté l'expansion du marché, de l'autre une réaction de la société qui se protège par des <strong>lois sociales, des régulations et l'intervention de l'État</strong>.</p>
+      </div>
+      <p class="cite-pull">Pour <strong>Polanyi</strong>, le marché autorégulateur n'est pas un phénomène naturel mais une <strong>construction historique</strong> — une « utopie sombre » dont la tentative de fonctionner de manière totalement autonome a provoqué la crise de 1929 et la Seconde Guerre mondiale.</p>
+    </div>
+
+    <p>Parallèlement, les idées de <strong>John Maynard Keynes</strong> (Théorie générale de l'emploi, 1936) inspirent la mise en place de l'<strong>État-providence</strong>. Refusant le « laisser-faire », <strong>Keynes</strong> se montre favorable au « réamorçage de la pompe » par l'État, par le biais notamment de grands travaux, pour réduire le chômage et redresser les prix. Partout, l'État acquiert un <strong>rôle central dans la régulation macroéconomique</strong>.</p>
+
+    <div class="hgg-subsection-title">→ L'État planificateur et modernisateur</div>
+
+    <p>Les États occidentaux mettent en place une <strong>planification incitative</strong> de l'économie, élaborant des plans économiques pour lesquels l'État fixe les objectifs. On trouve ainsi le <strong>Commissariat au Plan en France (1946)</strong>, présidé par <strong>Jean Monnet</strong>, le <strong>MITI</strong> (Ministère de l'Industrie et du Commerce Extérieur, 1949) au <strong>Japon</strong>, ou encore l'<strong>IRI</strong> (Institut pour la Reconstruction Industrielle, 1933) en <strong>Italie</strong>.</p>
+
+    <div class="crisis-card">
+      <div class="crisis-date">Exemple de la France</div>
+      <div class="crisis-title">Le Commissariat au Plan et les nationalisations</div>
+      <p>Créé en janvier 1946, le Commissariat au Plan est destiné à reconstruire et orienter l'économie française. L'État renforce son rôle économique par les nationalisations à partir de décembre 1944 dans des domaines stratégiques : banques, charbon, électricité (EDF, GDF), gaz, transports aériens (Air <strong>France</strong>), automobile (Renault), aéronautique (SNECMA). L'État emploie alors 10 % des actifs. En 1948, le Plan Marshall permet de moderniser l'agriculture et l'industrie et d'ancrer la <strong>France</strong> dans le bloc occidental.</p>
+    </div>
+
+    <p>L'État devient également <strong>entrepreneur</strong>, réalisant des investissements massifs dans les industries de pointe via la R&D, dans le contexte géopolitique de la guerre froide. En <strong>France</strong>, <strong>De Gaulle</strong> puis <strong>Pompidou</strong> reprennent le <strong>modèle de l'État dirigiste</strong>, soutenant de grands projets industriels.</p>
+
+    <div class="hgg-timeline">
+      <div class="hgg-timeline-item">
+        <div class="hgg-timeline-date">Nucléaire & aérospatiale</div>
+        <p>Création du <strong>CNES</strong> en 1961 pour le programme spatial français, en parallèle du développement du nucléaire civil et militaire.</p>
+      </div>
+      <div class="hgg-timeline-item">
+        <div class="hgg-timeline-date">1969 — Le Concorde</div>
+        <p>Programme franco-britannique d'avion supersonique, symbole de la puissance technologique de l'<strong>État dirigiste</strong>.</p>
+      </div>
+      <div class="hgg-timeline-item">
+        <div class="hgg-timeline-date">1981 — Le TGV</div>
+        <p>Mise en service de la <strong>première ligne à grande vitesse</strong>, aboutissement d'un investissement public de long terme.</p>
+      </div>
+    </div>
+
+    <div class="hgg-subsection-title">→ L'État aménageur du territoire</div>
+
+    <p>En <strong>France</strong>, le géographe <strong>Jean-François Gravier</strong> publie en 1947 <em><strong>Paris</strong> et le désert français</em>, dénonçant l'hypertrophie parisienne. En réponse, l'État crée la <strong>DATAR (1963)</strong> et mène une politique volontariste d'aménagement du territoire.</p>
+
+    <div class="three-col">
+      <div class="col-card col-amber">
+        <h5>🏙️ 8 métropoles d'équilibre</h5>
+        <p><strong>Nantes</strong>, <strong>Bordeaux</strong>, <strong>Toulouse</strong>, <strong>Marseille</strong>, <strong>Lyon</strong>, <strong>Lille</strong>, <strong>Strasbourg</strong> : des pôles urbains destinés à contrebalancer le poids de <strong>Paris</strong>.</p>
+      </div>
+      <div class="col-card col-gold">
+        <h5>🏗️ 5 villes nouvelles (1965)</h5>
+        <p><strong>Cergy</strong>, <strong>Évry</strong>, <strong>Saint-Quentin-en-Yvelines</strong>, <strong>Marne-la-Vallée</strong>, <strong>Melun-Sénart</strong> : décongestionner la région parisienne.</p>
+      </div>
+      <div class="col-card col-dark">
+        <h5>🏔️ Aménagement touristique</h5>
+        <p><strong>Mission Racine</strong> (1967) sur le littoral du <strong>Languedoc-Roussillon</strong>, <strong>Plan Neige</strong> (1964) pour les stations de montagne.</p>
+      </div>
+    </div>
+
+    <div class="hgg-subsection-title">→ L'État social et l'État-providence</div>
+
+    <div class="doctrine-block">
+      <div class="def-card">
+        <div class="def-accent-bar"></div>
+        <div class="def-body">
+          <div class="def-header">
+            <span class="def-icon">◆</span>
+            <span class="def-term">L'État-providence (Welfare State)</span>
+            <span class="def-tag">Définition</span>
+          </div>
+          <p class="def-text">Système où l'État joue un <strong>rôle social primordial</strong> afin de prémunir les citoyens contre les risques de l'existence (maladies, accident, chômage, maternité) en leur assurant des ressources, financées par les <strong>impôts et les cotisations sociales</strong>, selon un principe de <strong>solidarité nationale</strong>.</p>
+        </div>
+      </div>
+    </div>
+
+    <p>L'État-providence, développé au <strong>Royaume-Uni</strong> par le rapport Beveridge (1942), s'installe dans tous les PDEM. Les dépenses sociales augmentent massivement (santé, éducation) pour soutenir la demande sur le long terme, ce qui permet aux classes les plus modestes d'accéder à la <strong>société de consommation</strong>.</p>
+
+    <div class="hgg-stats">
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">30 % → 50 %</span><div class="hgg-stat-label">Prélèvements obligatoires (PIB) au Royaume-Uni, 1950–1977</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">27 % → 41 %</span><div class="hgg-stat-label">Prélèvements obligatoires (PIB) en France, 1950–1977</div></div>
+    </div>
+
+    <div class="two-col">
+      <div class="col-card col-amber">
+        <h5>🇬🇧 Royaume-Uni</h5>
+        <p>Système de santé entièrement gratuit dès 1946 (<strong>National Health Service</strong>). Modèle beveridgien universel financé par l'impôt.</p>
+      </div>
+      <div class="col-card col-gold">
+        <h5>🇫🇷 France</h5>
+        <p>Création de la Sécurité sociale (ordonnances d'octobre 1945), des comités d'entreprise, politique familiale et nataliste (allocations familiales). Mise en œuvre par <strong>Ambroise Croizat</strong> et <strong>Pierre Laroque</strong>.</p>
+      </div>
+    </div>
+
+    <div class="hgg-subsection-title">→ La vitalité du capital humain</div>
+
+    <p>La vitalité démographique contribue également au succès du modèle : les États mènent des <strong>politiques natalistes et familiales</strong> et encouragent l'<strong>immigration de travail</strong>. Mais c'est surtout la <strong>qualité du capital humain</strong> qui est décisive, avec une main-d'œuvre de mieux en mieux formée.</p>
+
+    <div class="hgg-stats">
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">2,5 → 3,9 Md</span><div class="hgg-stat-label">Population mondiale, 1950–1973</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">1,7 → 3,4 M</span><div class="hgg-stat-label">Étrangers en France, 1954–1975</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">20 % → 55 %</span><div class="hgg-stat-label">Taux de scolarisation à 18 ans, 1960–1975</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">× 3</span><div class="hgg-stat-label">PIB par heure travaillée en Europe de l'Ouest, 1950–1975 (5,5 $ → 16 $)</div></div>
+    </div>
+
+    <p>En <strong>France</strong>, le <strong>baby-boom</strong> apparaît dès 1942 et se poursuit jusqu'aux années 1960, avec une fécondité de 2,6 à 3 enfants par femme.</p>
+
+    <div class="hgg-subsection-title">→ La transformation des entreprises : taylorisme et fordisme</div>
+
+    <div class="doctrine-block">
+      <div class="def-card">
+        <div class="def-accent-bar"></div>
+        <div class="def-body">
+          <div class="def-header">
+            <span class="def-icon">◆</span>
+            <span class="def-term">Taylorisme et Fordisme</span>
+            <span class="def-tag">Définition</span>
+          </div>
+          <p class="def-text">Le <strong>taylorisme</strong> est l'organisation scientifique du travail qui repose sur la division et la rationalisation du travail (chronométrage, suppression des gestes inutiles, contrôle du personnel). Le <strong>fordisme</strong> y ajoute le travail à la chaîne, la standardisation des pièces et une politique salariale motivante (<em>Five Dollars Day</em>), permettant le développement de la <strong>production de masse</strong> et de la <strong>consommation de masse</strong>.</p>
+        </div>
+      </div>
+    </div>
+
+    <p>Le modèle tayloro-fordiste, hérité des <strong>États-Unis</strong>, devient la norme dans tous les PDEM. Les entreprises connaissent également un phénomène de <strong>concentration</strong>, développant un capitalisme de type oligopolistique.</p>
+
+    <div class="two-col">
+      <div class="col-card col-amber">
+        <h5>🇯🇵 Les keiretsu japonais</h5>
+        <p>Les grands conglomérats — Mitsubishi, Mitsui, Sumitomo — contrôlent à eux trois <strong>20 % de l'économie nationale</strong> dans les années 1970.</p>
+      </div>
+      <div class="col-card col-gold">
+        <h5>🇫🇷 Les « champions nationaux »</h5>
+        <p>Sous <strong>De Gaulle</strong>, l'État encourage la création de <strong>deux « champions nationaux »</strong> dans chaque branche industrielle.</p>
+      </div>
+    </div>
+
+    <div class="hgg-highlight">Le sociologue <strong>Georges Friedmann</strong> souligne dans <em>Le travail en miettes</em> (1956) le coût humain de ces nouvelles cadences : les ouvriers deviennent des « bras sans cerveaux, des automates de chair et d'os ».</div>
+  </div>
+
+  <!-- SECTION 3 : Modèle japonais -->
+  <div class="hgg-section" id="s1-3">
+    <div class="hgg-section-title">3 — Le modèle japonais : la « Haute croissance »</div>
+
+    <p>En 1945, le <strong>Japon</strong> est anéanti, occupé et appauvri — 6ᵉ puissance mondiale avec un niveau de vie 5 fois plus faible que les Américains. Trente ans plus tard, il est la 2ᵉ puissance économique mondiale (depuis 1968). Selon l'historien français <strong>Sébastien Lechevalier</strong>, cette réussite est liée à un état d'esprit nationaliste qu'il qualifie d'« <strong>économie de guerre en temps de paix</strong> ».</p>
+
+    <div class="two-col">
+      <div class="col-card col-amber">
+        <h5>🔺 Le « triangle de fer »</h5>
+        <p>Entente entre les élites politiques, administratives et économiques, toutes formées à l'Université de <strong>Tokyo</strong>, permettant un consensus autour du PLD au pouvoir de 1948 à 1993. Rôle clé du MITI (Ministère de l'Industrie et du Commerce Extérieur).</p>
+      </div>
+      <div class="col-card col-gold">
+        <h5>🚗 Le toyotisme</h5>
+        <p>Développé par <strong>Ohno Taiichi</strong> dès les années 1950 chez Toyota : zéro défaut, zéro panne, zéro stock, zéro papier, zéro délai. Production en flux tendus. En 1982, Toyota atteint le même chiffre d'affaires que Renault ou VW avec 4 fois moins d'effectifs.</p>
+      </div>
+    </div>
+
+    <p>La stratégie de développement japonaise s'appuie sur le modèle du <strong>« vol d'oies sauvages »</strong>, une stratégie extravertie qui permet une haute croissance de 10 %/an en moyenne.</p>
+
+    <div class="hgg-concept">
+      <div class="concept-label">Le modèle d'Akamatsu (1937)</div>
+      <p>Le pays débute par des produits à <strong>faible valeur ajoutée</strong> exportés vers les pays riches, puis investit par cycles dans des secteurs à valeur ajoutée croissante — <strong>textile → sidérurgie → automobiles → électronique → biotechnologies</strong> — tandis que les productions à faible VA sont progressivement délocalisées vers les pays voisins, à la manière d'un vol d'oies migratrices.</p>
+    </div>
+
+    <p>En 1979, un navire sur deux dans le monde est construit au <strong>Japon</strong>, tandis que Sony invente le walkman.</p>
+
+    <div class="hgg-highlight">Au milieu des années 1980, le Japon connaît à la fois une croissance vigoureuse, une inflation basse, une balance commerciale très excédentaire, des taux d'épargne élevés et un niveau faible d'inégalités. Il est en passe, pour certains commentateurs, de devenir la première économie mondiale.</div>
+  </div>
+
+  <!-- SECTION 4 : Transformations sociales -->
+  <div class="hgg-section" id="s1-4">
+    <div class="hgg-section-title">4 — Croissance, transformations sociales et société de consommation (1945–1975)</div>
+
+    <p>La forte croissance entraîne une <strong>profonde mutation des sociétés occidentales</strong>. Cette transformation touche toutes les catégories sociales et recompose en profondeur la structure de la population active.</p>
+
+    <div class="hgg-subsection-title">→ Une société en profonde mutation</div>
+
+    <div class="thinkers-grid">
+      <div class="thinker-card">
+        <div class="thinker-sidebar">
+          <div class="thinker-icon">🌾</div>
+          <div class="thinker-year">Henri Mendras · 1967</div>
+        </div>
+        <div class="thinker-body">
+          <div class="thinker-name">La « révolution silencieuse » du monde agricole</div>
+          <div class="thinker-work">La fin des paysans</div>
+          <p>En <strong>France</strong>, les paysans représentent <strong>36 % de la population active en 1946</strong>, soit 7 millions de personnes, contre seulement <strong>15 % en 1968</strong>. <strong>Mendras</strong> qualifie ce phénomène de « révolution silencieuse » car il entraîne progressivement la disparition de la société paysanne traditionnelle. La mécanisation et l'agriculture intensive transforment le monde rural.</p>
+        </div>
+      </div>
+    </div>
+
+    <p>Parallèlement, le nombre d'<strong>ouvriers augmente fortement</strong> (environ 40 % de la population active dans les pays industrialisés) tandis que la société voit l'essor des <strong>« cols blancs »</strong> — employés de bureau, ingénieurs, cadres. Le secteur tertiaire passe de 37 % en 1950 à 50 % en 1970. Le sociologue <strong>Henri Mendras</strong> (1988) parle de <strong>« moyennisation » de la société</strong> dans <em>La seconde révolution française</em>.</p>
+
+    <div class="hgg-subsection-title">→ Vers une société de consommation</div>
+
+    <p>Selon <strong>Jean Baudrillard</strong> (<em>La société de consommation</em>, 1970), les sociétés occidentales passent rapidement d'une société de pénurie (tickets de rationnement en <strong>France</strong> jusqu'en 1947) à une <strong>société d'abondance</strong>.</p>
+
+    <div class="two-col">
+      <div class="col-card col-amber">
+        <h5>🛒 La société d'abondance</h5>
+        <p>Diffusion de produits standardisés (2CV, 4L, appareils ménagers), essor de la publicité et des crédits à la consommation. Le premier Carrefour ouvre à <strong>Sainte-Geneviève-des-Bois</strong> en 1963.</p>
+      </div>
+      <div class="col-card col-gold">
+        <h5>🏖️ Le temps libre en hausse</h5>
+        <p>3 semaines de congés payés en 1956, 4 semaines en 1969. Le <strong>tourisme se démocratise</strong> grâce aux clubs de vacances (Club Med, 1950) et à la baisse du coût du transport aérien.</p>
+      </div>
+    </div>
+
+    <div class="hgg-highlight">Cette société de consommation n'est toutefois pas sans critiques : <strong>Guy Debord</strong> dénonce dans <em>La société du spectacle</em> (1967) l'aliénation produite par la marchandise.</div>
+
+    <div class="hgg-subsection-title">→ De l'internationalisation à la mondialisation des échanges</div>
+
+    <p>Les échanges mondiaux connaissent une croissance rapide, portée par la généralisation du <strong>libre-échange</strong> via les accords de <strong>Bretton Woods (1944)</strong> et le <strong>GATT (1947)</strong>, ainsi que par les progrès techniques des transports (conteneurs, supertankers). Elle profite cependant surtout aux PDEM, qui concentrent l'essentiel des exportations.</p>
+
+    <div class="hgg-stats">
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">124 Md $</span><div class="hgg-stat-label">Commerce mondial en 1950</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">260 Md $</span><div class="hgg-stat-label">Commerce mondial en 1960</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">600 Md $</span><div class="hgg-stat-label">Commerce mondial en 1973</div></div>
+    </div>
+  </div>
+
+  <!-- SECTION 5 : Limites -->
+  <div class="hgg-section" id="s1-5">
+    <div class="hgg-section-title">5 — Les limites de la croissance et les alternatives au capitalisme libéral</div>
+
+    <div class="hgg-subsection-title">→ Les limites internes du modèle occidental</div>
+
+    <p>Malgré la prospérité, la croissance ne profite pas à tous et révèle des <strong>contradictions internes au modèle occidental</strong> — sociales comme environnementales.</p>
+
+    <div class="two-col">
+      <div class="col-card col-amber">
+        <h5>✊ Des tensions sociales majeures</h5>
+        <p>Aux <strong>États-Unis</strong>, les 5 % les plus riches détiennent 40 % du patrimoine en 1975. Le mouvement pour les droits civiques mené par <strong>Martin Luther King</strong>, les émeutes des ghettos noirs (<strong>Los Angeles</strong>, 1965) et <strong>Mai 1968</strong> en <strong>France</strong> en témoignent.</p>
+      </div>
+      <div class="col-card col-gold">
+        <h5>🌍 Les premières alertes environnementales</h5>
+        <p>Maladie de <strong>Minamata</strong> au <strong>Japon</strong> (mercure, 1949–1965), pollution agricole en Bretagne, dénonciation des pesticides par <strong>Rachel Carson</strong> (<em>Silent Spring</em>, 1962). Le <strong>Club de Rome</strong> publie en 1972 le <strong>rapport Meadows</strong> sur les limites de la croissance infinie.</p>
+      </div>
+    </div>
+
+    <div class="hgg-subsection-title">→ Le modèle soviétique : une alternative planifiée</div>
+
+    <p>En réponse au capitalisme libéral, l'<strong>URSS</strong> adopte un système <strong>collectiviste</strong> : toutes les ressources, industries et exploitations agricoles appartiennent à l'État. L'économie est dirigée par la planification centralisée du <strong>Gosplan</strong>, qui fixe des objectifs quantitatifs sans critères qualitatifs.</p>
+
+    <div class="hgg-timeline">
+      <div class="hgg-timeline-item">
+        <div class="hgg-timeline-date">Staline (jusqu'en 1953)</div>
+        <p>Planification rigide et inefficace : recollectivisation brutale (IV<sup>e</sup> plan, 1946–50) provoquant <strong>famine et 1 million de morts</strong>. Priorité à l'industrie lourde, au détriment des biens de consommation.</p>
+      </div>
+      <div class="hgg-timeline-item">
+        <div class="hgg-timeline-date">Khrouchtchev (1956–1964)</div>
+        <p>Déstalinisation dès 1956 : slogan « rattraper et dépasser les <strong>États-Unis</strong> ». Plan septennal favorisant biens de consommation et agriculture. Échecs agricoles : la « bataille du maïs » (1962), mise en valeur des « terres vierges ». Chute en 1964 due aux échecs économiques et à la crise de <strong>Cuba</strong>.</p>
+      </div>
+      <div class="hgg-timeline-item">
+        <div class="hgg-timeline-date">Brejnev (1964–1982)</div>
+        <p>Selon <strong>Nicolas Werth</strong>, « la grande stagnation » : immobilisme politique, gérontocratie, stagnation économique avec priorisation du complexe militaro-industriel. L'<strong>URSS</strong> reste importatrice nette de biens agricoles. Baisse de l'espérance de vie masculine de 65 à 61 ans (1965–1980). Apparition de dissidents : <strong>Soljenitsyne</strong>, <strong>Sakharov</strong>.</p>
+      </div>
+    </div>
+
+    <div class="hgg-subsection-title">→ La voie chinoise sous Mao</div>
+
+    <p>Le 1ᵉʳ octobre 1949, <strong>Mao</strong> proclame la République populaire de <strong>Chine</strong> et s'aligne d'abord sur l'<strong>URSS</strong> (nationalisations, collectivisation, premier plan quinquennal 1953–57). Après la rupture sino-soviétique, il élabore une voie socialiste chinoise résumée par la formule « <strong>Marcher sur ses deux jambes</strong> ».</p>
+
+    <div class="compare-box">
+      <div class="compare-side compare-a">
+        <h5>🚜 Le Grand Bond en avant (1958–1961)</h5>
+        <p>Objectif : « dépasser la Grande-Bretagne et rattraper les <strong>États-Unis</strong> ». Communes populaires, dissémination des hauts fourneaux, grands travaux hydrauliques. Catastrophe : la production agricole s'effondre et <strong>entre 18 et 45 millions de personnes meurent de faim</strong> (« les Trois années noires »).</p>
+      </div>
+      <div class="compare-side compare-b">
+        <h5>📕 La Révolution culturelle (1966–1969)</h5>
+        <p><strong>Mao</strong> mobilise les jeunes (« gardes rouges ») pour éliminer ses adversaires au sein du PCC. Distribution massive du « Petit livre rouge ». Des milliers de suspects tués. Doit être arrêtée en 1969 à cause du désordre engendré.</p>
+      </div>
+    </div>
+
+    <div class="hgg-subsection-title">→ Les modèles de croissance du Tiers-Monde : un développement difficile</div>
+
+    <p>Les pays du Tiers-Monde héritent de la colonisation de <strong>structures économiques archaïques</strong> fondées sur l'exportation de matières premières sans véritable industrialisation, comme l'a montré <strong>Paul Bairoch</strong> dans <em>Le Tiers-Monde dans l'impasse</em> (1971). À cela s'ajoute une <strong>explosion démographique</strong> après 1950 et une forte dépendance financière. Face à ces obstacles, les stratégies de développement divergent.</p>
+
+    <div class="three-col" id="tiersmonde-strategies">
+      <div class="col-card col-amber">
+        <h5>🌾 Stratégies extraverties</h5>
+        <p>Exportations agricoles ou minières (avantages comparatifs de <strong>Ricardo</strong>). Ex. : le « miracle ivoirien » (7–9 % de croissance dans les années 1960–70 grâce au café et au cacao). Mais vulnérabilité à la chute des cours : le « mirage » des années 1980.</p>
+      </div>
+      <div class="col-card col-gold">
+        <h5>🏭 Industrialisation par les exportations</h5>
+        <p>Modèle des NPIA (<strong>Singapour</strong>, <strong>Corée du Sud</strong>, <strong>Taïwan</strong>, <strong>Hong Kong</strong>) suivant le modèle japonais. Main-d'œuvre bon marché + État interventionniste + IDE. Ces pays sortent du Tiers-Monde et rejoignent les économies développées.</p>
+      </div>
+      <div class="col-card col-dark">
+        <h5>🔒 Stratégies autocentrées</h5>
+        <p>Industries industrialisantes (<strong>Perroux</strong>) en <strong>Algérie</strong> et <strong>Égypte</strong>. Industrialisation par substitution aux importations (ISI) en <strong>Amérique latine</strong> (<strong>Prebisch</strong>, CEPAL). Ex. : Petrobras au <strong>Brésil</strong>. Résultats mitigés : inflation, faible productivité, dépendance persistante.</p>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /part1 -->
+
+<!-- ═══════════════════════════════════════
+     PARTIE II
+═══════════════════════════════════════ -->
+<div class="hgg-part" id="part2">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">II</div>
+    <div class="hgg-part-title">Des modèles en crise dans les années 1970</div>
+  </div>
+
+  <p>Les années 1970 marquent une <strong>rupture majeure</strong> qui met fin au cycle de forte croissance des Trente Glorieuses. Cette crise touche à la fois les pays capitalistes développés, le bloc soviétique et les pays du Tiers-Monde, mais selon des modalités propres à chacun.</p>
+
+  <!-- SECTION 1 -->
+  <div class="hgg-section" id="s2-1">
+    <div class="hgg-section-title">1 — La fin brutale des Trente Glorieuses dans les pays développés</div>
+
+    <div class="hgg-subsection-title">→ Une triple rupture économique</div>
+
+    <p>Le tournant des années 1970 se manifeste simultanément sur trois fronts, monétaire, énergétique et productif, qui s'enchaînent et se renforcent mutuellement pour mettre fin aux Trente Glorieuses.</p>
+
+    <div class="synth-box">
+      <div class="synth-title">Une triple rupture économique</div>
+      <div class="synth-section">
+        <div class="synth-label">💵 Crise monétaire</div>
+        <p>Le système de <strong>Bretton Woods (1944)</strong>, fondé sur la convertibilité du dollar en or, est fragilisé dès la fin des années 1960. Les <strong>États-Unis</strong> accumulent des déficits (guerre du <strong>Vietnam</strong>, concurrence européenne et japonaise). En 1971, <strong>Nixon</strong> suspend la convertibilité du dollar en or. <strong>Robert Reich</strong> parle d'« <strong>effet boomerang</strong> » : les pays aidés par les <strong>États-Unis</strong> deviennent leurs concurrents. Le système s'effondre et laisse place aux changes flottants (accords de la Jamaïque, 1976).</p>
+      </div>
+      <hr class="synth-divider">
+      <div class="synth-section">
+        <div class="synth-label">🛢️ Crise énergétique</div>
+        <p>1ᵉʳ choc pétrolier (1973) : le baril passe de 2,48 $ à 11,60 $ (×5). 2ᵉ choc pétrolier (1979) : de 13,9 $ à 34 $ (×3). En 7 ans, le prix du pétrole est multiplié par 15. Cette hausse provoque <strong>inflation, ralentissement économique et montée du chômage</strong> dans les pays industrialisés.</p>
+      </div>
+      <hr class="synth-divider">
+      <div class="synth-section">
+        <div class="synth-label">⚙️ Crise du modèle fordiste</div>
+        <p>Le taylorisme-fordisme est remis en cause : hausse des coûts de production, baisse des gains de productivité, contestation ouvrière. <strong>Grégoire Chamayou</strong> (<em>La société ingouvernable</em>, 2018) montre le rejet du « travail en miettes » : absentéisme massif (jusqu'à 25 % chez Fiat), grèves sauvages (General Motors, <strong>Lordstown</strong>, 1972). La rentabilité des entreprises et le taux de profit chutent.</p>
+      </div>
+    </div>
+
+    <div class="hgg-stats">
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">–0,5 %</span><div class="hgg-stat-label">Croissance des pays développés en 1975 (contre +5,7 % en 1973)</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">Stagflation</span><div class="hgg-stat-label">Inflation élevée malgré la stagnation — phénomène inédit</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">9 %</span><div class="hgg-stat-label">Taux de chômage dans l'OCDE en 1981 (contre 4 % en 1973)</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">3 M</span><div class="hgg-stat-label">Chômeurs en France en 1995 (700 000 en 1975)</div></div>
+    </div>
+
+    <div class="hgg-subsection-title">→ Sociétés et territoires face à la crise</div>
+
+    <p>Face à la baisse de rentabilité, les entreprises délocalisent vers des pays à bas salaires. Les industries traditionnelles (charbon, textile, sidérurgie) sont les plus touchées par cette vague de <strong>désindustrialisation</strong>.</p>
+
+    <div class="hgg-key-fact">
+      <div class="hgg-key-bullet"></div>
+      <div><strong>Une désindustrialisation massive :</strong> en France, 2 millions d'emplois industriels disparaissent entre 1980 et 2007. Le plan Usinor (1978) en préfigure l'ampleur.</div>
+    </div>
+    <div class="hgg-key-fact">
+      <div class="hgg-key-bullet"></div>
+      <div><strong>Un nouveau modèle productif :</strong> le taylorisme est progressivement remplacé par le <strong>toyotisme</strong>, fondé sur le « juste-à-temps ».</div>
+    </div>
+    <div class="hgg-key-fact">
+      <div class="hgg-key-bullet"></div>
+      <div><strong>Des tensions politiques :</strong> la crise de l'État-providence creuse les déficits et alimente l'inflation, tandis que le malaise social favorise la <strong>montée des extrémismes</strong> (Front national en France à partir de 1983).</div>
+    </div>
+
+    <div class="crisis-card">
+      <div class="crisis-date">France — Plan Messmer, 1974</div>
+      <div class="crisis-title">Le pari du tout-nucléaire</div>
+      <p>En réponse à la crise énergétique, la <strong>France</strong> mise sur le <strong>nucléaire</strong> : 54 réacteurs sont construits. Le slogan « En <strong>France</strong>, on n'a pas de pétrole, mais on a des idées » symbolise cette stratégie de sobriété et d'indépendance énergétique.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="hgg-section" id="s2-2">
+    <div class="hgg-section-title">2 — L'enlisement et la chute du modèle soviétique</div>
+
+    <p>Le système soviétique souffre d'une <strong>sous-productivité chronique</strong> : en 1984, l'<strong>URSS</strong> doit importer des produits agricoles alors qu'un actif sur 12 travaille dans l'agriculture, et la productivité industrielle reste 4 fois inférieure à celle des PDEM. Arrivé au pouvoir en 1985, <strong>Mikhaïl Gorbatchev</strong> tente de sauver le communisme, sans succès.</p>
+
+    <div class="hgg-timeline">
+      <div class="hgg-timeline-item">
+        <div class="hgg-timeline-date">1986 — La perestroïka</div>
+        <p><strong>Gorbatchev</strong> lance l'autonomie des entreprises, la décentralisation et une légalisation partielle de la propriété privée. La réforme échoue face au blocage de la <em>nomenklatura</em> et à la montée des nationalismes.</p>
+      </div>
+      <div class="hgg-timeline-item">
+        <div class="hgg-timeline-date">1989 — Effet domino en Europe de l'Est</div>
+        <p>L'abandon de la doctrine <strong>Brejnev</strong> (souveraineté limitée) ouvre la voie à l'effondrement des régimes communistes d'Europe de l'Est.</p>
+      </div>
+      <div class="hgg-timeline-item">
+        <div class="hgg-timeline-date">Août – décembre 1991</div>
+        <p>Le putsch manqué d'août accélère l'implosion : <strong>l'URSS disparaît en décembre 1991</strong>. Le CAEM (bloc économique socialiste) est dissous la même année.</p>
+      </div>
+    </div>
+
+    <div class="crisis-card">
+      <div class="crisis-date">Pologne, 1980–1994</div>
+      <div class="crisis-title">Solidarność et le choc de la transition</div>
+      <p>Dès la fin des années 1970, les dysfonctionnements s'aggravent en Europe de l'Est. En <strong>Pologne</strong>, les grèves de <strong>Gdańsk</strong> (1980) aboutissent à la création du syndicat <strong>Solidarność</strong>, dirigé par <strong>Lech Wałęsa</strong>. La transition vers l'économie de marché est ensuite brutale : le chômage passe de 1 % à 17 % entre 1990 et 1994.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="hgg-section" id="s2-3">
+    <div class="hgg-section-title">3 — Le Tiers-Monde dans le piège de la dette</div>
+
+    <p>Pour financer leur développement, de nombreux pays du Tiers-Monde recourent massivement à l'endettement : entre 1970 et 1982, la dette est multipliée par 8. La crise mondiale des années 1970 transforme cet endettement en <strong>piège</strong>.</p>
+
+    <div class="hgg-key-fact">
+      <div class="hgg-key-bullet"></div>
+      <div><strong>Dégradation des termes de l'échange :</strong> les pays du Sud vendent des produits agricoles et miniers dont les prix stagnent, tandis que les produits manufacturés importés du Nord deviennent plus chers.</div>
+    </div>
+    <div class="hgg-key-fact">
+      <div class="hgg-key-bullet"></div>
+      <div><strong>Le choc de la dette :</strong> la politique monétaire restrictive des États-Unis au début des années 1980 (hausse des taux d'intérêt) fait exploser une dette libellée en dollars. Le Mexique, le 23 août 1982, est le premier État à annoncer son incapacité à rembourser.</div>
+    </div>
+    <div class="hgg-key-fact">
+      <div class="hgg-key-bullet"></div>
+      <div><strong>Les réponses :</strong> rééchelonnement de la dette (Club de Paris, Club de Londres), programmes d'ajustement structurel (PAS) du FMI, plan Brady (1990), initiative PPTE (pays pauvres très endettés).</div>
+    </div>
+
+    <p>En 1973, 75 pays se réunissent à la conférence d'<strong>Alger</strong> pour réclamer un <strong>Nouvel Ordre Économique International (NOEI)</strong>, mais le projet échoue face à l'opposition des <strong>États-Unis</strong>. Le Tiers-Monde se retrouve ainsi contraint de se tourner vers les institutions financières internationales, qui imposent leurs conditions.</p>
+  </div>
+
+</div><!-- /part2 -->
+
+<!-- ═══════════════════════════════════════
+     PARTIE III
+═══════════════════════════════════════ -->
+<div class="hgg-part" id="part3">
+  <div class="hgg-part-header">
+    <div class="hgg-part-num">III</div>
+    <div class="hgg-part-title">Des modèles qui convergent à partir des années 1980–1990 : la 3ᵉ mondialisation</div>
+  </div>
+
+  <p>À partir de la fin des années 1970, le capitalisme occidental opère un <strong>tournant néolibéral</strong> qui marque une rupture avec le modèle keynésien des Trente Glorieuses. Cette évolution repose sur trois dynamiques convergentes : la révolution conservatrice, l'émergence d'un nouveau régime d'accumulation financière et la fin de la guerre froide.</p>
+
+  <!-- SECTION 1 -->
+  <div class="hgg-section" id="s3-1">
+    <div class="hgg-section-title">1 — La « révolution conservatrice » et le tournant néolibéral</div>
+
+    <div class="doctrine-block">
+      <div class="def-card">
+        <div class="def-accent-bar"></div>
+        <div class="def-body">
+          <div class="def-header">
+            <span class="def-icon">◆</span>
+            <span class="def-term">Le néolibéralisme</span>
+            <span class="def-tag">Définition</span>
+          </div>
+          <p class="def-text">Renouvellement des thèses économiques libérales visant à refonder le système économique dans l'optique du marché : <strong>dérégulation des marchés</strong>, réduction du rôle de l'État, <strong>baisse des dépenses publiques et de la fiscalité</strong>, contrôle strict de la masse monétaire, <strong>privatisation des entreprises publiques</strong> et abaissement du coût du travail. Le néolibéralisme s'attaque à l'État-providence jugé coûteux et inefficace.</p>
+        </div>
+      </div>
+    </div>
+
+    <p>Ces idées sont défendues par des économistes comme <strong>Milton Friedman</strong> (prix Nobel 1976), <strong>Arthur Laffer</strong> ou <strong>George Gilder</strong>. <strong>Friedman</strong> affirme que « la main invisible du marché » est plus efficace que l'intervention publique. La <strong>révolution conservatrice</strong> désigne la politique menée à partir des années 1970 visant à réduire les interventions de l'État dans la sphère économique et sociale.</p>
+
+    <div class="compare-box">
+      <div class="compare-side compare-a">
+        <h5>🇬🇧 Thatchérisme (1979–1990)</h5>
+        <p>Privatisations massives et dérégulation au <strong>Royaume-Uni</strong>. Relance de la croissance mais désindustrialisation brutale : 1/3 des emplois industriels disparaissent, chômage de 5 % à 13 % entre 1979 et 1989. Démantèlement du pouvoir syndical (grève des mineurs, 1984).</p>
+      </div>
+      <div class="compare-side compare-b">
+        <h5>🇺🇸 Reaganomics (1980–1988)</h5>
+        <p>4 piliers : réduction des dépenses publiques sociales, baisse des impôts, réduction de la masse monétaire, ouverture aux investissements extérieurs. Relance dès 1983 mais triplement du déficit public. Les 1 % les plus riches captent 58 % de la croissance des revenus entre 1976 et 2007 (<strong>Saez</strong>, <strong>Zucman</strong>).</p>
+      </div>
+    </div>
+
+    <p>Le mouvement s'étend à l'ensemble du monde occidental : <strong>Allemagne</strong> (<strong>Helmut Kohl</strong>), <strong>France</strong> (tournant de la rigueur en 1983, privatisations sous <strong>Chirac</strong> en 1986–1988). La construction européenne s'inscrit dans cette logique avec l'<strong>Acte unique (1986)</strong>, impulsé par <strong>Jacques Delors</strong>. Même la gauche française adopte une ligne social-démocrate : <strong>Jospin</strong> déclare en 1999 « L'État ne peut pas tout ».</p>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="hgg-section" id="s3-2">
+    <div class="hgg-section-title">2 — La 3ᵉ mondialisation commerciale et financière</div>
+
+    <p>La 3ᵉ mondialisation débute dans les années 1970–1980 et correspond à la diffusion mondiale d'un <strong>capitalisme financier</strong>. L'économie mondiale s'organise alors autour de la <strong>Triade</strong> (concept de <strong>Kenichi Ohmae</strong>) : Europe occidentale, <strong>États-Unis</strong>, <strong>Japon</strong>.</p>
+
+    <div class="hgg-stats">
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">579 Md $</span><div class="hgg-stat-label">Valeur des échanges commerciaux mondiaux en 1976</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">5 000 Md $</span><div class="hgg-stat-label">Valeur des échanges commerciaux mondiaux en 1995</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">12 178 Md $</span><div class="hgg-stat-label">Valeur des échanges commerciaux mondiaux en 2009</div></div>
+    </div>
+
+    <div class="cite-card">
+      <div class="cite-top">
+        <div class="cite-id">
+          <span class="cite-icon">✦</span>
+          <div class="cite-id-text">
+            <span class="cite-name">Henri Bourguinat</span>
+            <span class="cite-role">Économiste</span>
+          </div>
+        </div>
+        <span class="cite-ref">Les « 3 D » de la finance</span>
+      </div>
+      <div class="cite-text">
+        <p>Selon <strong>John Hicks</strong> (1974), les années 1980 marquent le passage d'une « économie d'endettement » à des économies de marchés financiers. <strong>Bourguinat</strong> résume cette transformation par les « 3 D » : <strong>Déréglementation</strong>, <strong>Décloisonnement</strong>, <strong>Désintermédiation</strong> (auxquels s'ajoute la dématérialisation).</p>
+      </div>
+      <p class="cite-pull">Les flux financiers explosent : le stock mondial de capital financier est <strong>multiplié par 3,5</strong> entre 1990 et 2007 et représente plus de <strong>10 fois le PIB mondial</strong>.</p>
+    </div>
+
+    <div class="hgg-subsection-title">→ Apogée et fin du modèle japonais</div>
+
+    <p>La croissance annuelle japonaise reste supérieure à 4 % jusqu'en 1990, avant un <strong>retournement brutal</strong>.</p>
+
+    <div class="hgg-timeline">
+      <div class="hgg-timeline-item">
+        <div class="hgg-timeline-date">Avril 1987</div>
+        <p>La Bourse de <strong>Tokyo</strong> devient la première place mondiale pour la capitalisation boursière, devant <strong>New York</strong>.</p>
+      </div>
+      <div class="hgg-timeline-item">
+        <div class="hgg-timeline-date">1989</div>
+        <p>Le <strong>Japon</strong> devient le premier producteur mondial d'automobiles — l'apogée de la « Haute croissance ».</p>
+      </div>
+      <div class="hgg-timeline-item">
+        <div class="hgg-timeline-date">29 décembre 1989</div>
+        <p>Le marché boursier s'effondre, puis le marché immobilier chute : c'est la <strong>fin de la « Haute croissance »</strong>.</p>
+      </div>
+      <div class="hgg-timeline-item">
+        <div class="hgg-timeline-date">1993</div>
+        <p>Pour la première fois depuis 1955, le PLD perd le pouvoir. La fusion Renault-Nissan et la fin de l'emploi à vie symbolisent l'entrée du <strong>Japon</strong> dans une nouvelle ère.</p>
+      </div>
+    </div>
+
+    <div class="hgg-subsection-title">→ La reconversion difficile des économies socialistes</div>
+
+    <p>Entre 1989 et 1991, les anciens pays socialistes passent brutalement d'une économie planifiée à une économie de marché : privatisations, libéralisation des prix, ouverture commerciale. Cette transition provoque de forts déséquilibres sociaux, en particulier avec la <strong>« thérapie de choc »</strong> d'<strong>Eltsine</strong> (1992) en <strong>Russie</strong>, dont les privatisations profitent surtout aux <strong>oligarques</strong> proches du pouvoir.</p>
+
+    <div class="hgg-stats">
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">600 %</span><div class="hgg-stat-label">Inflation en Pologne et en Yougoslavie</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">2 500 %</span><div class="hgg-stat-label">Inflation en Russie en 1992</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">– 50 %</span><div class="hgg-stat-label">Chute du PIB russe, 1991–1998</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">7 % → 30 %</span><div class="hgg-stat-label">Taux de pauvreté en Russie</div></div>
+    </div>
+
+    <p>Sous <strong>Poutine</strong>, au début des années 2000, l'État reprend le contrôle des secteurs stratégiques (Gazprom, Rosneft) et met en place un <strong>capitalisme administré</strong>. Le politiste <strong>Jean-Robert Raviot</strong> parle de « <em>korpokratoura</em> » pour décrire ce système où intérêts politiques et économiques sont étroitement imbriqués. L'énergie devient un outil de politique étrangère via la « diplomatie du gaz ».</p>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="hgg-section" id="s3-3">
+    <div class="hgg-section-title">3 — La conversion néolibérale dans les Suds : de la « décennie perdue » à l'émergence</div>
+
+    <p>Dans les années 1980, de nombreux pays du <strong>Tiers-Monde</strong> ne peuvent plus supporter le poids de leur dette. Cette situation débouche sur l'imposition d'une nouvelle doctrine économique.</p>
+
+    <div class="doctrine-block">
+      <div class="def-card">
+        <div class="def-accent-bar"></div>
+        <div class="def-body">
+          <div class="def-header">
+            <span class="def-icon">◆</span>
+            <span class="def-term">Le « consensus de Washington »</span>
+            <span class="def-tag">Définition</span>
+          </div>
+          <p class="def-text">Formulé par <strong>James Williamson en 1989</strong>, un ensemble de 10 mesures inspirées de la théorie néoclassique visant à étendre la logique du marché : <strong>discipline budgétaire, privatisations, libéralisation du commerce, dérégulation</strong>. Ces mesures s'appliquent sous forme de <strong>plans d'ajustement structurel (PAS)</strong> imposés par le FMI.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cite-card">
+      <div class="cite-top">
+        <div class="cite-id">
+          <span class="cite-icon">✦</span>
+          <div class="cite-id-text">
+            <span class="cite-name">Joseph Stiglitz</span>
+            <span class="cite-role">Économiste, prix Nobel</span>
+          </div>
+        </div>
+        <span class="cite-ref">La Grande Désillusion · 2002</span>
+      </div>
+      <div class="cite-text">
+        <p>L'efficacité des <strong>plans d'ajustement structurel</strong> reste très limitée. En Afrique, les PAS des années 1980–1990 réduisent les marges de manœuvre des États et aggravent les perspectives d'emploi.</p>
+      </div>
+      <p class="cite-pull">La CEPAL qualifie les années 1980 en <strong>Amérique latine</strong> de <strong>« décennie perdue pour le développement »</strong>.</p>
+    </div>
+
+    <div class="hgg-stats">
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">– 25 %</span><div class="hgg-stat-label">Baisse moyenne des salaires en Amérique latine</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">1 %/an</span><div class="hgg-stat-label">Croissance moyenne durant la « décennie perdue »</div></div>
+    </div>
+
+    <div class="hgg-subsection-title">→ La Chine : le pari de l'ouverture</div>
+
+    <p>À la fin des années 1970, <strong>Deng Xiaoping</strong> s'impose comme le numéro 1 du régime. Réformateur, il lance le programme des <strong>« Quatre modernisations »</strong> (agriculture, industrie, sciences, armée) : créer une économie mixte s'ouvrant sur le marché international, sous un contrôle étroit de l'État.</p>
+
+    <div class="hgg-timeline">
+      <div class="hgg-timeline-item">
+        <div class="hgg-timeline-date">1978 — Deng Xiaoping au pouvoir</div>
+        <p>Lancement des « <strong>Quatre modernisations</strong> » et de l'ouverture économique contrôlée par l'État.</p>
+      </div>
+      <div class="hgg-timeline-item">
+        <div class="hgg-timeline-date">1980 — Zones économiques spéciales</div>
+        <p>Quatre <strong>ZES</strong> sont inaugurées sur le littoral sud. <strong>Shenzhen</strong> passe de 400 000 à 1 million d'habitants entre 1978 et 1990.</p>
+      </div>
+      <div class="hgg-timeline-item">
+        <div class="hgg-timeline-date">1987</div>
+        <p>La part du commerce extérieur dans le PNB passe de <strong>10 % (1978) à 30 %</strong>.</p>
+      </div>
+      <div class="hgg-timeline-item">
+        <div class="hgg-timeline-date">1992 — « Économie socialiste de marché »</div>
+        <p>Combinaison d'économie planifiée et de loi du marché. Croissance record de 14 % en 1993 : la <strong>Chine</strong> devient un <strong>« pays-atelier »</strong> qui attire les firmes transnationales.</p>
+      </div>
+      <div class="hgg-timeline-item">
+        <div class="hgg-timeline-date">1997 — Rétrocession de Hong Kong</div>
+        <p><strong>Deng Xiaoping</strong> justifie le maintien du système libéral à <strong>Hong Kong</strong> par l'expression « <strong>un État, deux systèmes</strong> ».</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4 : Crise néolibérale -->
+  <div class="hgg-section" id="s3-4">
+    <div class="hgg-section-title">4 — Un modèle néolibéral en crise ? Vers une démondialisation ?</div>
+
+    <p>Depuis une quinzaine d'années, la multiplication des crises interroge la pérennité de la mondialisation néolibérale. Le capitalisme financiarisé est marqué par une <strong>instabilité croissante</strong> : on compte 24 crises financières majeures entre 1971 et 2008, soit une tous les 18 mois.</p>
+
+    <div class="hgg-subsection-title">→ La crise des subprimes (2007–2008)</div>
+
+    <div class="doctrine-block">
+      <div class="def-card">
+        <div class="def-accent-bar"></div>
+        <div class="def-body">
+          <div class="def-header">
+            <span class="def-icon">◆</span>
+            <span class="def-term">Les « subprimes »</span>
+            <span class="def-tag">Définition</span>
+          </div>
+          <p class="def-text">Prêts hypothécaires à <strong>haut risque</strong>, regroupés et transformés en produits financiers complexes (<strong>CDO</strong>) vendus mondialement via la <strong>titrisation</strong>.</p>
+        </div>
+      </div>
+    </div>
+
+    <p>La crise de 2007–2008, déclenchée par la faillite de <strong>Lehman Brothers</strong> (15 septembre 2008), est la plus grave depuis 1929 : impayés, saisies immobilières et effondrement financier provoquent une panique mondiale et des plans de sauvetage bancaires massifs.</p>
+
+    <div class="hgg-stats">
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">35 M</span><div class="hgg-stat-label">Chômeurs supplémentaires dans le monde</div></div>
+      <div class="hgg-stat-cell"><span class="hgg-stat-num">23 % → 117 %</span><div class="hgg-stat-label">Dette publique du G7 (part du PIB), 1974–2019</div></div>
+    </div>
+
+    <div class="hgg-subsection-title">→ Une mondialisation de plus en plus contestée</div>
+
+    <div class="two-col">
+      <div class="col-card col-amber">
+        <h5>🌱 L'altermondialisme (années 1990–2000)</h5>
+        <p>Inspiré des courants socialistes, écologistes et anarchistes. Ne rejette pas la mondialisation mais réclame une autre mondialisation plus juste. Événements clés : <strong>Seattle</strong> (1999), <strong>Gênes</strong> (2001), Forums sociaux mondiaux. Acteurs : ATTAC (<strong>Bernard Cassen</strong>), <strong>José Bové</strong>. Revendications : taxe Tobin, annulation de la dette, commerce équitable.</p>
+      </div>
+      <div class="col-card col-gold">
+        <h5>🚩 La contestation démondialiste de droite</h5>
+        <p>Selon <strong>Eddy Fougier</strong> et <strong>Anna Dimitrova</strong> : glissement de l'anticapitalisme vers l'antiélitisme de droite. Critique matérielle (emploi, pouvoir d'achat) et identitaire de la mondialisation. <strong>David Goodhart</strong> oppose les « <em>people from anywhere</em> » (gagnants) aux « <em>people from somewhere</em> » (perdants). Le Brexit et le trumpisme incarnent cette critique.</p>
+      </div>
+    </div>
+
+    <div class="hgg-subsection-title">→ Relocalisations et recomposition de la mondialisation</div>
+
+    <p>La mondialisation ne s'effondre pas mais se recompose. Trois facteurs accélèrent les <strong>relocalisations des chaînes de valeur globale</strong> :</p>
+
+    <div class="three-col">
+      <div class="col-card col-amber">
+        <h5>💰 Le rapport coût/bénéfice</h5>
+        <p>Les <strong>délocalisations</strong> perdent progressivement de leur avantage économique face aux coûts logistiques et à la hausse des salaires dans les pays émergents.</p>
+      </div>
+      <div class="col-card col-gold">
+        <h5>🇨🇳 La dépendance à la Chine</h5>
+        <p>Prise de conscience illustrée par l'élection de <strong>Trump</strong> en 2016 et le <em>Chips and Science Act</em> de <strong>Biden</strong> aux <strong>États-Unis</strong>.</p>
+      </div>
+      <div class="col-card col-dark">
+        <h5>🦠 La pandémie de Covid-19</h5>
+        <p>Elle révèle une dépendance critique aux importations : 60 à 80 % des principes actifs pharmaceutiques viennent de <strong>Chine</strong> et d'<strong>Inde</strong>.</p>
+      </div>
+    </div>
+
+    <div class="synth-box">
+      <div class="synth-title">Vers une post-mondialisation et le « capitalisme de la finitude » ?</div>
+      <div class="synth-section">
+        <div class="synth-label">La mutation plutôt que la fin</div>
+        <p>Malgré les relocalisations, la mondialisation continue : le stock mondial d'IDE est passé de 5 % du PIB en 1980 à plus de 35 % en 2016. On assiste à une <strong>mutation</strong> avec une attention accrue à la sécurisation des chaînes de valeur et à la souveraineté économique. <strong>Norbert Gaillard</strong> parle de « <strong>post-mondialisation</strong> », fondée sur des interdépendances choisies et le retour de l'État stratège.</p>
+      </div>
+      <hr class="synth-divider">
+      <div class="synth-section">
+        <div class="synth-label">Arnaud Orain — Le Monde confisqué (2025)</div>
+        <p>L'historien <strong>Arnaud Orain</strong> développe la thèse du <strong>« capitalisme de la finitude »</strong> : une nouvelle phase du capitalisme où la perception d'un monde fini — limité en ressources, en marchés et en débouchés — devient centrale. Cette finitude transforme les stratégies économiques et politiques en une logique de <strong>conquête, de privatisation et de monopolisation des ressources</strong> plutôt qu'en une compétition régulée par le marché libre.</p>
+      </div>
+      <hr class="synth-divider">
+      <div class="synth-section">
+        <div class="synth-label">Trois caractéristiques du capitalisme de la finitude</div>
+        <p><strong>1.</strong> La <strong>fermeture, la militarisation et la privatisation des espaces stratégiques</strong>, notamment maritimes et numériques.<br>
+        <strong>2.</strong> La mise à l'écart des mécanismes concurrentiels classiques : monopoles, ententes, zones d'influence.<br>
+        <strong>3.</strong> La constitution d'<strong>empires économiques formels ou informels</strong>, rappelant les périodes historiques des XVIᵉ–XVIIIᵉ siècles et 1880–1945.</p>
+      </div>
+      <div class="synth-conclusion">Ce n'est pas la fin de la mondialisation, mais sa transformation : d'un capitalisme de l'ouverture et de l'abondance vers un capitalisme de la sécurisation et de la rareté.</div>
+    </div>
+
+  </div>
+
+</div><!-- /part3 -->
+
+</div><!-- /content -->
+
+<footer class="site-footer">
+  <div class="footer-logo">Chapitre 10 : Les modèles de croissance</div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut de page">↑</button>
+
+<script>
+  document.querySelectorAll('.toc-list a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
+</body>
+</html>

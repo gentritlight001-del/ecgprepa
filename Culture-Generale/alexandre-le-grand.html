@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Alexandre le Grand : la conquête d'un monde</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=Newsreader:ital,wght@0,400;0,500;1,400;1,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --kraft:#e6e0d6; --paper:#f7f3e9; --paper2:#efe7d6; --ink:#241a2e; --ink-dim:#5a4d63; --ink-faint:#948aa0;
+    --rule:#c9bfae; --stamp:#6b2545; --ledger:#a9822a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--kraft); color:var(--ink); font-family:'Newsreader',Georgia,serif;
+    padding:8px 16px 60px; overflow-x:hidden;
+    background-image:
+      radial-gradient(ellipse at 15% 10%, rgba(255,255,255,0.3), transparent 55%),
+      radial-gradient(ellipse at 90% 85%, rgba(0,0,0,0.05), transparent 50%);
+  }
+  nav{width:100%; margin:0 auto 22px; display:flex; align-items:center; justify-content:space-between; padding:18px 24px; box-sizing:border-box; background:var(--paper2); border-bottom:1px solid var(--rule); position:sticky; top:0; z-index:100}
+  .nav-logo{font-family:'Fraunces',serif; font-size:1.1rem; font-weight:700; color:var(--stamp); cursor:pointer}
+  .breadcrumb{display:flex; align-items:center; gap:8px; font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--ink-dim); flex-wrap:wrap}
+  .breadcrumb a{color:var(--ink-dim); text-decoration:none}
+  .breadcrumb a:hover{color:var(--stamp)}
+  .breadcrumb .sep{color:var(--ink-faint)}
+  .breadcrumb .current{color:var(--ink)}
+  .card{
+    max-width:1000px; margin:0 auto; background:var(--paper);
+    border:1px solid var(--rule); position:relative;
+    box-shadow:0 1px 0 rgba(255,255,255,0.5) inset, 0 18px 40px rgba(36,26,46,0.18);
+  }
+  .tab{
+    position:absolute; top:-16px; left:36px; background:var(--paper);
+    border:1px solid var(--rule); border-bottom:none;
+    padding:6px 16px 10px; font-family:'IBM Plex Mono',monospace; font-size:10px;
+    letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-dim);
+  }
+  .stamp{
+    position:absolute; top:34px; right:34px; width:76px; height:76px;
+    border:2px solid var(--stamp); border-radius:50%;
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    transform:rotate(-8deg); opacity:0.85; background:var(--paper);
+  }
+  .stamp span{
+    font-family:'IBM Plex Mono',monospace; font-size:8.5px; font-weight:600;
+    letter-spacing:0.08em; text-transform:uppercase; color:var(--stamp); line-height:1.4;
+  }
+  .head{padding:54px 48px 30px; border-bottom:1px dashed var(--rule)}
+  .catno{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ledger); letter-spacing:0.08em; margin-bottom:18px}
+  .catno b{color:var(--ink)}
+  h1{font-family:'Fraunces',serif; font-weight:700; font-size:32px; line-height:1.18; margin-bottom:16px; text-wrap:balance; max-width:560px}
+  .intro{font-size:15px; line-height:1.75; color:var(--ink-dim); font-style:italic; border-left:2px solid var(--stamp); padding-left:16px; max-width:660px}
+  .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--rule); border-top:1px dashed var(--rule); border-bottom:1px dashed var(--rule)}
+  .stat{background:var(--paper2); padding:18px 14px; text-align:center}
+  .stat-num{font-family:'Fraunces',serif; font-weight:700; font-size:22px; color:var(--stamp); display:block; margin-bottom:4px}
+  .stat-desc{font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:0.04em; color:var(--ink-dim); line-height:1.4}
+  .body{padding:36px 48px 46px}
+  .cols{display:grid; grid-template-columns:1fr 1fr; gap:44px}
+  .sub{font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--stamp); margin:26px 0 10px; padding-bottom:7px; border-bottom:1px solid var(--rule)}
+  .sub:first-child{margin-top:0}
+  p{font-size:14.5px; line-height:1.78; color:var(--ink); margin-bottom:13px}
+  em{color:var(--ledger); font-style:italic}
+  .quote{background:rgba(36,26,46,0.045); border-left:2px solid var(--stamp); padding:16px 20px; margin:20px 0; border-radius:0 6px 6px 0}
+  .quote p{margin:0 0 7px; font-size:14.5px; font-style:italic}
+  .quote cite{font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--stamp); font-style:normal; letter-spacing:0.04em}
+  .note{background:var(--paper2); border:1px solid var(--rule); border-radius:6px; padding:15px 18px; margin:18px 0; display:flex; gap:13px; align-items:flex-start}
+  .note-icon{font-size:22px; flex-shrink:0; margin-top:1px}
+  .note-text{font-size:13px; line-height:1.65; color:var(--ink-dim)}
+  .note-text strong{color:var(--ink)}
+  .tl{margin:18px 0 6px; border-left:2px dashed var(--rule); padding-left:20px}
+  .tl-item{margin-bottom:16px; position:relative}
+  .tl-item::before{content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:var(--stamp); border:2px solid var(--paper); box-shadow:0 0 0 1px var(--rule)}
+  .tl-date{font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--stamp); margin-bottom:3px}
+  .tl-text{font-size:13.5px; color:var(--ink-dim); line-height:1.6; margin:0}
+  .ctx{ background:linear-gradient(160deg,#5c1f3d,#180810); color:#f7f3e9; border-radius:8px; padding:24px 26px; margin-top:26px; border:1px solid var(--ledger); }
+  .ctx-label{font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.2em; text-transform:uppercase; color:#e0c68a; margin-bottom:10px; font-weight:600}
+  .ctx p{font-family:'Newsreader',serif; font-size:13.5px; color:rgba(247,243,233,0.9); line-height:1.7; margin:0}
+  .ctx p + p{margin-top:10px}
+  .foot{border-top:1px dashed var(--rule); padding:16px 48px; display:flex; justify-content:space-between; font-family:'IBM Plex Mono',monospace; font-size:9.5px; color:var(--ink-dim); letter-spacing:0.05em}
+  @media(max-width:768px){
+    .cols{grid-template-columns:1fr}
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .head{padding:48px 24px 24px}
+    .body{padding:24px 24px 32px}
+    .foot{padding:14px 24px}
+    .stamp{width:58px; height:58px; top:22px; right:20px}
+    h1{font-size:26px; max-width:100%}
+    nav{padding:14px 16px}
+  }
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo" onclick="window.location.href='../index.html'">ECG Prépa</div>
+  <div class="breadcrumb">
+    <a href="../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../culture-generale.html">Culture Générale</a>
+    <span class="sep">/</span>
+    <span class="current">Alexandre le Grand : la conquête d'un monde</span>
+  </div>
+</nav>
+
+<div class="card">
+  <div class="tab">Dossier n° 027</div>
+  <div class="stamp"><span>Fiche<br>vérifiée</span></div>
+
+  <div class="head">
+    <div class="catno">CLASSÉE SOUS — <b>🏛️ Histoire · ⚔️ Antiquité · 👑 Empire · 🌍 Hellénisme</b></div>
+    <h1>Alexandre le Grand : la conquête d'un monde</h1>
+    <p class="intro">En treize ans à peine, un roi de Macédoine de vingt ans renverse le plus vaste empire de son temps et pousse ses armées jusqu'aux portes de l'Inde. Mort à 32 ans, Alexandre le Grand laisse derrière lui un empire qui s'effondre presque aussitôt — mais une empreinte culturelle, l'hellénisme, qui façonnera le bassin méditerranéen et le Proche-Orient pendant des siècles.</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><span class="stat-num">-356</span><span class="stat-desc">Naissance à Pella,<br/>en Macédoine</span></div>
+    <div class="stat"><span class="stat-num">20 ans</span><span class="stat-desc">Âge de son<br/>accession au trône</span></div>
+    <div class="stat"><span class="stat-num">-323</span><span class="stat-desc">Mort à Babylone,<br/>à 32 ans</span></div>
+    <div class="stat"><span class="stat-num">20+</span><span class="stat-desc">Villes nommées<br/>« Alexandrie » fondées</span></div>
+  </div>
+
+  <div class="body">
+    <div class="cols">
+      <div>
+        <div class="sub">Un prince formé par Aristote</div>
+        <p>Né en 356 avant notre ère à Pella, capitale de la Macédoine, Alexandre est le fils du roi Philippe II et de la reine Olympias. Son père a bâti l'armée la plus redoutable de la Grèce, fondée sur la phalange macédonienne et une cavalerie lourde d'élite, les <em>Compagnons</em>. Alexandre reçoit une éducation d'exception : Philippe engage le philosophe Aristote comme précepteur pour lui enseigner la rhétorique, la médecine et la philosophie.</p>
+        <p>En 336 avant J.-C., Philippe II est assassiné lors d'un mariage royal. Alexandre, âgé de vingt ans, monte sur le trône dans un climat de tensions internes, qu'il éteint rapidement par une série de campagnes éclair contre les cités grecques rebelles, dont la destruction de Thèbes en 335 — un acte de terreur qui dissuade toute nouvelle révolte.</p>
+        <div class="quote"><p>« Je ne vole pas la victoire. »</p><cite>— parole attribuée à Alexandre, avant Gaugamèles</cite></div>
+        <div class="sub">La chute de l'empire perse</div>
+        <p>En 334 avant J.-C., Alexandre traverse l'Hellespont avec son armée pour affronter l'Empire perse achéménide, alors la plus grande puissance du monde connu. Trois batailles majeures scellent le sort de la Perse : le Granique (334), Issos (333), où il défait en personne le roi Darius III, puis Gaugamèles (331), victoire décisive malgré l'infériorité numérique macédonienne. La même année, il fonde en Égypte la ville d'Alexandrie, appelée à devenir l'un des plus grands foyers intellectuels de l'Antiquité.</p>
+        <div class="note"><div class="note-icon">⚠️</div><div class="note-text"><strong>Persépolis incendiée :</strong> en 330, après avoir pris la capitale cérémonielle perse, Alexandre en fait incendier le palais royal — un épisode dont les historiens débattent encore : acte politique symbolique de vengeance contre l'invasion perse de la Grèce, ou débordement lors d'une soirée de beuverie.</div></div>
+        <div class="sub">Jusqu'aux confins de l'Inde</div>
+        <p>Poursuivant sa route vers l'est, Alexandre traverse l'actuel Afghanistan et pénètre dans le sous-continent indien. En 326 avant J.-C., il remporte une victoire coûteuse sur le roi Poros à la bataille de l'Hydaspe. Mais son armée, épuisée par des années de campagne, se mutine au bord de l'Hyphase et refuse d'aller plus loin : Alexandre doit rebrousser chemin, mettant un terme à son avancée vers l'Inde.</p>
+      </div>
+      <div>
+        <div class="sub">Conquérant ou tyran ? Deux lectures</div>
+        <p>La postérité retient d'Alexandre le génie militaire : jamais vaincu en bataille rangée, il invente des tactiques encore étudiées dans les écoles militaires. Mais son règne est aussi marqué par une extrême violence — massacres de populations rebelles, exécutions politiques de proches soupçonnés de complot, dont son propre général Parménion. Sa politique de fusion des élites grecques et perses, symbolisée par les noces collectives de Suse en 324 où des centaines d'officiers macédoniens épousent des femmes perses, se heurte à l'hostilité de son armée.</p>
+        <div class="note"><div class="note-icon">💡</div><div class="note-text"><strong>La mutinerie d'Opis (324) :</strong> lorsqu'Alexandre intègre des soldats perses dans l'armée macédonienne, ses vétérans se révoltent, refusant d'être remplacés par d'anciens ennemis. L'épisode illustre les limites de son projet d'unification des peuples conquis, perçu par beaucoup de ses propres soldats comme une trahison identitaire.</div></div>
+        <div class="sub">Un empire éphémère, un héritage impérissable</div>
+        <p>Alexandre meurt à Babylone en 323 avant J.-C., à 32 ans, probablement de fièvre, sans avoir désigné d'héritier clair — les causes de sa mort restent débattues, entre maladie et empoisonnement. Son empire, qui s'étend alors de la Grèce à l'Inde, se fragmente aussitôt entre ses généraux, les <em>Diadoques</em>, à l'issue de décennies de guerres de succession. De cet éclatement naissent les grands royaumes hellénistiques : l'Égypte des Ptolémées, qui durera jusqu'à Cléopâtre VII en 30 avant J.-C., l'empire séleucide en Orient, et la Macédoine des Antigonides.</p>
+        <p>Au-delà de la géopolitique, la conquête d'Alexandre diffuse la langue, l'art et la pensée grecs jusqu'en Asie centrale, donnant naissance à une civilisation de synthèse, l'hellénisme, dont la Bibliothèque d'Alexandrie restera le symbole le plus durable.</p>
+        <div class="sub">Chronologie</div>
+        <div class="tl"><div class="tl-item"><div class="tl-date">-356</div><p class="tl-text">Naissance d'Alexandre à Pella, fils de Philippe II et d'Olympias.</p></div><div class="tl-item"><div class="tl-date">-336</div><p class="tl-text">Assassinat de Philippe II ; Alexandre devient roi de Macédoine à vingt ans.</p></div><div class="tl-item"><div class="tl-date">-334</div><p class="tl-text">Début de la campagne contre la Perse ; victoire au Granique.</p></div><div class="tl-item"><div class="tl-date">-331</div><p class="tl-text">Victoire décisive à Gaugamèles ; fondation d'Alexandrie en Égypte.</p></div><div class="tl-item"><div class="tl-date">-326</div><p class="tl-text">Bataille de l'Hydaspe contre le roi Poros ; l'armée se mutine et refuse d'avancer plus loin en Inde.</p></div><div class="tl-item"><div class="tl-date">-323</div><p class="tl-text">Mort d'Alexandre à Babylone ; son empire se fragmente entre ses généraux, les Diadoques.</p></div></div>
+        <div class="ctx"><div class="ctx-label">Alexandre, matrice des empires à venir</div><p>Figure tutélaire de la stratégie militaire, étudiée aussi bien par César que par Napoléon, Alexandre le Grand incarne un modèle ambigu : celui d'un conquérant qui unifie par la force des mondes que rien ne prédisposait à se rencontrer, tout en semant sur son passage destructions et déplacements de population à une échelle inédite pour l'époque.</p><p>Son héritage interroge une question toujours actuelle : la diffusion d'une culture et la construction d'un monde connecté peuvent-elles naître autrement que dans la violence de la conquête ? L'hellénisme qu'il a involontairement engendré reste l'un des exemples les plus étudiés de syncrétisme culturel imposé par les armes.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot"><span>ECG Prépa — Culture Générale</span><span>Dossier n° 027 · Histoire</span></div>
+</div>
+
+</body>
+</html>

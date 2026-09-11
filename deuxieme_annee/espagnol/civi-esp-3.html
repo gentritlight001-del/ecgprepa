@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="espagnol3">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Transition démocratique — Civilisation Hispanophone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     TEMPLATE UNIVERSEL DE COURS DE CIVILISATION — v1
+     Pour créer un nouveau cours : dupliquer ce fichier, ne modifier QUE
+     le bloc de données (id="donnees") tout en bas. Rien d'autre à toucher.
+     ══════════════════════════════════════════════════════════════════════ -->
+
+<style>
+  /* ─── PALETTE DE BASE (identique au site) ─── */
+  :root{
+    --bg:#0d0d0f; --surface:#16161a; --surface2:#1e1e24; --border:#2a2a35;
+    --text:#e8e6e0; --text-dim:#8a8880; --text-faint:#4a4845;
+    --radius:14px;
+  }
+  /* ─── THÈMES PAR LANGUE — change data-theme sur <html> ─── */
+  html[data-theme="anglais"] { --a1:#c8a96e; --a2:#7c9ec9; --a3:#9ecba0; --a4:#c97c9e; --hero:#16233d; }
+  html[data-theme="anglais2"] { --a1:#c9633f; --a2:#5b8f6f; --a3:#6c8fc7; --a4:#a06bb0; --hero:#16241b; }
+  html[data-theme="espagnol"]{ --a1:#e0a93e; --a2:#c8553d; --a3:#7fae7a; --a4:#b06fa8; --hero:#3a1a18; }
+  html[data-theme="espagnol3"]{ --a1:#c9a24a; --a2:#4d7ea8; --a3:#5aa88f; --a4:#a85a6b; --hero:#101c2c; }
+  html[data-theme="allemand"]{ --a1:#d8b44a; --a2:#8fa4bd; --a3:#84b58e; --a4:#c06060; --hero:#241f1a; }
+  html[data-theme="italien"] { --a1:#d5a94e; --a2:#6fae8f; --a3:#a8c07a; --a4:#c4695e; --hero:#152a24; }
+  html[data-theme="chinois"] { --a1:#d9a441; --a2:#c05a4a; --a3:#83a98f; --a4:#a97fb0; --hero:#2c1618; }
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden}
+
+  /* ─── FOND ─── */
+  .bg-orb{position:fixed;border-radius:50%;filter:blur(140px);pointer-events:none;opacity:.08;z-index:0}
+  .orb1{width:700px;height:700px;background:var(--a1);top:-300px;right:-250px}
+  .orb2{width:600px;height:600px;background:var(--a2);bottom:-250px;left:-250px}
+
+  /* ─── BARRE DE PROGRESSION ─── */
+  #progress{position:fixed;top:0;left:0;height:2px;width:0;z-index:200;
+    background:linear-gradient(90deg,var(--a1),var(--a2),var(--a4));transition:width .1s linear}
+
+  /* ─── NAV ─── */
+  nav{display:flex;align-items:center;justify-content:space-between;gap:20px;
+    padding:16px 40px;border-bottom:1px solid var(--border);
+    background:rgba(13,13,15,.9);backdrop-filter:blur(16px);position:sticky;top:0;z-index:100}
+  .nav-logo{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--a1);cursor:pointer}
+  .breadcrumb{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--text-dim);flex-wrap:wrap}
+  .breadcrumb span{cursor:pointer;transition:color .2s}
+  .breadcrumb span:hover{color:var(--a1)}
+  .breadcrumb .sep{color:var(--text-faint);cursor:default}
+  .breadcrumb .current{color:var(--text);cursor:default}
+  .nav-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+  .ap-lang-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);
+    color:rgba(255,255,255,.6);font-family:'DM Mono',monospace;font-size:10px;font-weight:700;
+    letter-spacing:.12em;padding:5px 14px;border-radius:4px;cursor:pointer;transition:all .2s;text-transform:uppercase}
+  .ap-lang-btn.active{background:var(--a1);border-color:var(--a1);color:#12100c}
+  .ap-lang-btn:hover:not(.active){background:rgba(255,255,255,.15);color:#fff}
+
+  /* ─── HERO ─── */
+  .hero{position:relative;z-index:1;padding:76px 40px 56px;text-align:center;overflow:hidden;
+    background:linear-gradient(160deg,var(--hero),#0d0d0f 85%);border-bottom:1px solid var(--border)}
+  .hero::after{content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);
+    width:80px;height:2px;background:var(--a1)}
+  .hero-flag{font-size:2.6rem;line-height:1;margin-bottom:18px;display:block}
+  .hero-label{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.3em;
+    text-transform:uppercase;color:var(--a1);margin-bottom:18px}
+  .hero h1{font-family:'Playfair Display',serif;font-weight:900;line-height:1.05;
+    font-size:clamp(2.4rem,6vw,4.6rem);max-width:900px;margin:0 auto 18px}
+  .hero-sub{font-size:1rem;color:var(--text-dim);max-width:640px;margin:0 auto;line-height:1.6}
+
+  /* ─── LAYOUT ─── */
+  .layout{display:flex;gap:48px;max-width:1320px;margin:0 auto;padding:48px 40px 100px;position:relative;z-index:1}
+  main{flex:1;min-width:0;max-width:840px}
+
+  /* ─── COLONNE CHRONOLOGIE ─── */
+  .rail{width:262px;flex-shrink:0;position:sticky;top:88px;align-self:flex-start;
+    max-height:calc(100vh - 118px);overflow-y:auto;padding-right:8px}
+  .rail-title{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--a1);margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+  .rail .tl{padding-left:20px;margin:0 0 0 4px}
+  .rail .tl-item{padding-bottom:16px}
+  .rail .tl-item::before{left:-26px;top:4px;width:7px;height:7px}
+  .rail .tl-d{font-size:.66rem;letter-spacing:.08em}
+  .rail .tl-c{font-size:.79rem;line-height:1.5}
+  .rail::-webkit-scrollbar{width:3px}
+  .rail::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  .chrono-mobile{display:none}
+
+  /* ─── BLOC GÉNÉRIQUE ─── */
+  .bloc{margin-bottom:64px;scroll-margin-top:88px}
+  .bloc-head{display:flex;align-items:baseline;gap:14px;margin-bottom:24px;
+    padding-bottom:12px;border-bottom:1px solid var(--border)}
+  .bloc-kicker{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.28em;
+    text-transform:uppercase;color:var(--k,var(--a1))}
+  .bloc-title{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--text)}
+
+  /* ─── L'ESSENTIEL ─── */
+  .essentiel{background:linear-gradient(135deg,rgba(255,255,255,.045),rgba(255,255,255,.015));
+    border:1px solid var(--border);border-left:3px solid var(--a1);border-radius:var(--radius);
+    padding:28px 30px;margin-bottom:36px}
+  .essentiel-label{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.28em;
+    text-transform:uppercase;color:var(--a1);margin-bottom:14px}
+  .essentiel p{font-size:.98rem;line-height:1.75;color:var(--text);margin-bottom:0}
+  .essentiel p strong{color:var(--a1);font-weight:500}
+
+  /* ─── STATS ─── */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:22px 0}
+  .stat{border-radius:10px;padding:18px 16px;text-align:center;border:1px solid rgba(255,255,255,.08);
+    background:linear-gradient(135deg,color-mix(in srgb,var(--c,var(--a1)) 26%,#101014),
+    color-mix(in srgb,var(--c,var(--a1)) 8%,#101014))}
+  .stat-n{font-family:'DM Mono',monospace;font-size:1.5rem;font-weight:500;color:var(--text);display:block;line-height:1.1}
+  .stat-d{font-size:.7rem;color:var(--text-dim);margin-top:7px;display:block;line-height:1.45}
+
+  /* ─── PARTIES ─── */
+  .partie{margin-bottom:78px;scroll-margin-top:88px}
+  .partie-head{display:flex;align-items:center;gap:22px;margin-bottom:34px;
+    padding-bottom:18px;border-bottom:2px solid var(--p)}
+  .partie-num{font-family:'Playfair Display',serif;font-size:3.4rem;font-weight:900;
+    color:var(--p);opacity:.35;line-height:.9;flex-shrink:0}
+  .partie-title{font-family:'Playfair Display',serif;font-size:clamp(1.35rem,3vw,1.95rem);
+    font-weight:700;line-height:1.2}
+  .partie-kicker{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--p);margin-bottom:6px}
+
+  .section{margin-bottom:44px;scroll-margin-top:88px}
+  .section-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;
+    color:var(--text);margin-bottom:18px;padding-left:16px;border-left:3px solid var(--p)}
+  .section-num{color:var(--p);font-weight:900}
+
+  /* ─── TEXTE ─── */
+  .prose{font-size:.96rem;line-height:1.8;color:rgba(232,230,224,.78);margin-bottom:16px}
+  .prose strong{color:var(--text);font-weight:500}
+  .prose em{color:var(--p,var(--a1));font-style:normal;font-weight:500}
+  .es{font-family:'DM Mono',monospace;font-size:.86em;color:var(--a2)}
+
+  /* ─── LISTE ─── */
+  .liste{list-style:none;margin:14px 0 20px}
+  .liste li{font-size:.93rem;line-height:1.65;color:rgba(232,230,224,.75);
+    padding:9px 0 9px 22px;position:relative;border-bottom:1px solid rgba(255,255,255,.05)}
+  .liste li:last-child{border-bottom:none}
+  .liste li::before{content:'';position:absolute;left:0;top:17px;width:6px;height:6px;
+    border-radius:50%;background:var(--p,var(--a1))}
+  .liste li strong{color:var(--text);font-weight:500}
+
+  /* ─── FAITS CLÉS ─── */
+  .faits{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:9px;margin:20px 0}
+  .fait{background:rgba(255,255,255,.03);border:1px solid var(--border);
+    border-left:3px solid var(--p,var(--a1));border-radius:8px;padding:13px 15px}
+  .fait-l{font-family:'DM Mono',monospace;font-size:.6rem;color:var(--text-faint);
+    text-transform:uppercase;letter-spacing:.14em;margin-bottom:5px}
+  .fait-v{font-size:.86rem;font-weight:500;color:var(--text);line-height:1.4}
+
+  /* ─── CITATION ─── */
+  .citation{background:linear-gradient(135deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+    border:1px solid var(--border);border-left:3px solid var(--a1);border-radius:0 10px 10px 0;
+    padding:20px 24px;margin:22px 0}
+  .citation p{font-family:'Playfair Display',serif;font-style:italic;font-size:1.02rem;
+    line-height:1.6;color:var(--text);margin-bottom:9px}
+  .citation cite{font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.08em;
+    color:var(--a1);font-style:normal}
+
+  /* ─── ENCADRÉ ─── */
+  .encadre{display:flex;gap:15px;align-items:flex-start;border-radius:10px;padding:17px 20px;margin:20px 0;
+    background:color-mix(in srgb,var(--c,var(--a2)) 7%,transparent);
+    border:1px solid color-mix(in srgb,var(--c,var(--a2)) 26%,transparent)}
+  .encadre-ic{font-size:1.5rem;flex-shrink:0;line-height:1.2}
+  .encadre-t{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--c,var(--a2));margin-bottom:7px;font-weight:500}
+  .encadre-c{font-size:.89rem;line-height:1.7;color:rgba(232,230,224,.75)}
+  .encadre-c strong{color:var(--text);font-weight:500}
+
+  /* ─── DÉFINITION ─── */
+  .def{border:1px dashed var(--border);border-radius:10px;padding:15px 18px;margin:18px 0;
+    background:rgba(255,255,255,.02)}
+  .def-mot{font-family:'Playfair Display',serif;font-weight:700;font-size:1rem;color:var(--a3);margin-bottom:6px}
+  .def-c{font-size:.88rem;line-height:1.7;color:rgba(232,230,224,.72)}
+
+  /* ─── TABLEAU ─── */
+  .tbl-wrap{overflow-x:auto;margin:20px 0;border:1px solid var(--border);border-radius:10px}
+  table{width:100%;border-collapse:collapse;font-size:.83rem}
+  thead{background:rgba(255,255,255,.04)}
+  thead th{padding:11px 15px;text-align:left;font-family:'DM Mono',monospace;font-size:.6rem;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--text-dim);white-space:nowrap}
+  tbody tr{border-top:1px solid var(--border)}
+  tbody tr:nth-child(even){background:rgba(255,255,255,.015)}
+  tbody td{padding:11px 15px;color:rgba(232,230,224,.75);line-height:1.5}
+  tbody td:first-child{color:var(--text);font-weight:500}
+
+  /* ─── CHRONOLOGIE ─── */
+  .tl{border-left:2px solid var(--border);padding-left:26px;margin:8px 0 8px 6px}
+  .tl-item{position:relative;padding-bottom:22px}
+  .tl-item:last-child{padding-bottom:0}
+  .tl-item::before{content:'';position:absolute;left:-33px;top:5px;width:9px;height:9px;border-radius:50%;
+    background:var(--c,var(--a1));box-shadow:0 0 0 3px rgba(13,13,15,1),0 0 0 5px color-mix(in srgb,var(--c,var(--a1)) 35%,transparent)}
+  .tl-d{font-family:'DM Mono',monospace;font-size:.72rem;font-weight:500;letter-spacing:.1em;
+    color:var(--c,var(--a1));margin-bottom:4px}
+  .tl-c{font-size:.9rem;line-height:1.6;color:rgba(232,230,224,.75)}
+  .tl-c strong{color:var(--text);font-weight:500}
+
+  /* ─── ACTEURS ─── */
+  .acteurs{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+  .acteur{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;
+    transition:all .25s;position:relative;overflow:hidden}
+  .acteur:hover{border-color:var(--c,var(--a1));transform:translateY(-3px);background:var(--surface2)}
+  .acteur-nom{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;margin-bottom:3px}
+  .acteur-role{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--c,var(--a1));margin-bottom:10px}
+  .acteur-c{font-size:.82rem;line-height:1.6;color:var(--text-dim)}
+
+  /* ─── DÉBAT ─── */
+  .debat{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .debat-col{border:1px solid var(--border);border-radius:12px;padding:20px 22px;background:rgba(255,255,255,.02)}
+  .debat-col.oui{border-top:3px solid var(--a3)}
+  .debat-col.non{border-top:3px solid var(--a4)}
+  .debat-t{font-family:'DM Mono',monospace;font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:14px}
+  .debat-col.oui .debat-t{color:var(--a3)}
+  .debat-col.non .debat-t{color:var(--a4)}
+  .debat-col li{font-size:.87rem;line-height:1.6;color:rgba(232,230,224,.75);
+    padding:9px 0 9px 18px;position:relative;list-style:none;border-bottom:1px solid rgba(255,255,255,.05)}
+  .debat-col li:last-child{border-bottom:none}
+  .debat-col li::before{content:'';position:absolute;left:0;top:16px;width:5px;height:5px;border-radius:50%}
+  .debat-col.oui li::before{background:var(--a3)}
+  .debat-col.non li::before{background:var(--a4)}
+  .debat-col li strong{color:var(--text);font-weight:500}
+
+  /* ─── LEXIQUE ─── */
+  .lex-search{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;
+    color:var(--text);font-family:'DM Sans',sans-serif;font-size:.88rem;padding:11px 15px;margin-bottom:14px}
+  .lex-search:focus{outline:none;border-color:var(--a1)}
+  .lex-search::placeholder{color:var(--text-faint)}
+  .lex td:first-child{font-family:'DM Mono',monospace;color:var(--a2);font-weight:500}
+
+  /* ─── SUJETS ─── */
+  .sujet{border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:10px;
+    background:var(--surface);display:flex;gap:16px;align-items:flex-start;transition:all .2s}
+  .sujet:hover{border-color:var(--a4);transform:translateX(4px)}
+  .sujet-n{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:var(--text-faint);line-height:1;flex-shrink:0}
+  .sujet-q{font-size:.94rem;line-height:1.6;color:var(--text);margin-bottom:5px;font-weight:400}
+  .sujet-h{font-size:.79rem;color:var(--text-dim);line-height:1.55}
+
+  /* ─── À RETENIR ─── */
+  .retenir{background:linear-gradient(135deg,color-mix(in srgb,var(--a1) 12%,transparent),rgba(255,255,255,.02));
+    border:1px solid color-mix(in srgb,var(--a1) 30%,transparent);border-radius:var(--radius);padding:28px 30px}
+  .retenir li{font-size:.93rem;line-height:1.65;color:rgba(232,230,224,.82);
+    padding:10px 0 10px 26px;position:relative;list-style:none;border-bottom:1px solid rgba(255,255,255,.06)}
+  .retenir li:last-child{border-bottom:none}
+  .retenir li::before{content:'✓';position:absolute;left:0;top:9px;color:var(--a1);font-size:.85rem}
+  .retenir li strong{color:var(--text);font-weight:500}
+
+  /* ─── PIED DE PAGE ─── */
+  footer{text-align:center;padding:36px 40px;border-top:1px solid var(--border);
+    font-family:'DM Mono',monospace;font-size:.7rem;color:var(--text-dim);letter-spacing:.14em;
+    text-transform:uppercase}
+
+  /* ─── ANIMATION ─── */
+  .rev{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+  .rev.vu{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.rev{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}}
+  :focus-visible{outline:2px solid var(--a1);outline-offset:3px}
+
+  /* ─── RESPONSIVE ─── */
+  @media(max-width:1080px){
+    .rail{display:none}
+    .layout{padding:32px 22px 70px}
+    .chrono-mobile{display:block}
+  }
+  @media(max-width:680px){
+    nav{padding:12px 18px;flex-wrap:wrap}
+    .breadcrumb{font-size:.7rem;order:3;width:100%}
+    .hero{padding:52px 20px 40px}
+    .debat{grid-template-columns:1fr}
+    .partie-head{gap:14px}
+    .partie-num{font-size:2.4rem}
+  }
+  /* ─── IMPRESSION ─── */
+  @media print{
+    body{background:#fff;color:#111}
+    nav,.rail,#progress,.bg-orb,.nav-right{display:none!important}
+    .hero{background:none;border-bottom:2px solid #111;padding:0 0 22px}
+    .hero h1,.prose,.liste li,.bloc-title{color:#111}
+    .layout{display:block;padding:0}
+    .partie,.bloc{break-inside:avoid;page-break-inside:avoid}
+    .rev{opacity:1;transform:none}
+    .chrono-mobile{display:block!important}
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+
+<nav>
+  <div class="nav-logo" onclick="location.href='../../index.html'">ECG Prépa</div>
+  <div class="breadcrumb">
+    <span onclick="location.href='../../index.html'">Accueil</span>
+    <span class="sep">/</span>
+    <span onclick="location.href='../index.html'">2ème Année</span>
+    <span class="sep">/</span>
+    <span onclick="location.href='index.html'">Civilisation</span>
+    <span class="sep">/</span>
+    <span class="current" id="bc-titre">—</span>
+  </div>
+  <div class="nav-right">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-es" class="ap-lang-btn" onclick="setLang('es')">🇪🇸 ES</button>
+  </div>
+</nav>
+
+<header class="hero" id="hero"></header>
+
+<div class="layout">
+  <aside class="rail" id="rail"></aside>
+  <main id="cours"></main>
+</div>
+
+<footer id="ft"></footer>
+
+
+<!-- ══════════════════════════════════════════════════════════════════
+     ⬇⬇⬇  SEULE PARTIE À MODIFIER POUR UN NOUVEAU COURS  ⬇⬇⬇
+     ══════════════════════════════════════════════════════════════════ -->
+<script id="donnees">
+const COURS = {
+
+  /* ─── 1. IDENTITÉ DU COURS ───────────────────────────────────────── */
+  meta: {
+    theme:     "espagnol3",                  // anglais | anglais2 | espagnol | espagnol2 | espagnol3 | allemand | italien | chinois
+    drapeau:   "🕊️",
+    chapitre:  "3",
+    label:     { fr:"Espagne · Chapitre 03", es:"España · Capítulo 03" },
+    titre:     { fr:"La Transition démocratique", es:"La Transición democrática" },
+    sousTitre: { fr:"Du « royaume sans roi » à la démocratie parlementaire : sept années pour désamorcer une dictature sans rejouer une guerre civile.",
+                 es:"Del «reino sin rey» a la democracia parlamentaria: siete años para desactivar una dictadura sin repetir una guerra civil." }
+  },
+
+  /* ─── 2. L'ESSENTIEL + CHIFFRES CLÉS ─────────────────────────────── */
+  essentiel: {
+    fr:"La <strong>Transition démocratique</strong> désigne le processus par lequel l'Espagne passe, entre la mort de Franco (novembre 1975) et l'alternance socialiste (octobre 1982), d'une dictature personnelle à une <strong>monarchie parlementaire</strong>. Ce processus n'est ni une révolution ni une simple restauration : c'est une <em>« réforme pactée »</em> (<span class='es'>reforma pactada</span>) menée depuis l'intérieur même des institutions franquistes, notamment par le président du gouvernement <strong>Adolfo Suárez</strong>, avec l'aval du roi <strong>Juan Carlos Ier</strong> et le concours d'une opposition — communiste comprise — qui accepte de renoncer à toute épuration radicale (<em>ruptura</em>) au nom du <strong>consensus</strong>. Ce compromis aboutit à la légalisation des partis, aux premières élections libres depuis 1936, puis à la Constitution de 1978, avant d'être mis à l'épreuve par la tentative de coup d'État du 23 février 1981.",
+    es:"La <strong>Transición democrática</strong> designa el proceso por el cual España pasa, entre la muerte de Franco (noviembre de 1975) y la alternancia socialista (octubre de 1982), de una dictadura personal a una <strong>monarquía parlamentaria</strong>. Este proceso no es ni una revolución ni una simple restauración: es una <em>«reforma pactada»</em> llevada a cabo desde el interior mismo de las instituciones franquistas, en particular por el presidente del Gobierno <strong>Adolfo Suárez</strong>, con el aval del rey <strong>Juan Carlos I</strong> y el concurso de una oposición —comunistas incluidos— que acepta renunciar a toda depuración radical (<em>ruptura</em>) en nombre del <strong>consenso</strong>. Este compromiso desemboca en la legalización de los partidos, en las primeras elecciones libres desde 1936, y luego en la Constitución de 1978, antes de ser puesta a prueba por el intento de golpe de Estado del 23 de febrero de 1981."
+  },
+  chiffres: [
+    { n:"7", d:{ fr:"années entre la mort de Franco et l'alternance socialiste (1975-1982)", es:"años entre la muerte de Franco y la alternancia socialista (1975-1982)" } },
+    { n:"94 %", d:{ fr:"« oui » au référendum de décembre 1976 sur la réforme politique", es:"«sí» en el referéndum de diciembre de 1976 sobre la reforma política" } },
+    { n:"1978", d:{ fr:"adoption de la Constitution par référendum", es:"adopción de la Constitución por referéndum" } },
+    { n:"17", d:{ fr:"communautés autonomes issues du nouvel État des autonomies", es:"comunidades autónomas surgidas del nuevo Estado de las Autonomías" } }
+  ],
+
+  /* ─── 3. CHRONOLOGIE ─────────────────────────────────────────────── */
+  chronologie: [
+    { d:{fr:"20 novembre 1975",es:"20 de noviembre de 1975"}, c:{fr:"<strong>Mort de Francisco Franco</strong>, après 36 ans de dictature.", es:"<strong>Muerte de Francisco Franco</strong>, tras 36 años de dictadura."} },
+    { d:{fr:"22 novembre 1975",es:"22 de noviembre de 1975"}, c:{fr:"<strong>Juan Carlos Ier</strong> est proclamé roi d'Espagne devant les Cortes franquistes.", es:"<strong>Juan Carlos I</strong> es proclamado rey de España ante las Cortes franquistas."} },
+    { d:{fr:"Juillet 1976",es:"Julio de 1976"}, c:{fr:"Le roi nomme <strong>Adolfo Suárez</strong>, jeune cadre du Movimiento, président du gouvernement.", es:"El rey nombra a <strong>Adolfo Suárez</strong>, joven cuadro del Movimiento, presidente del Gobierno."} },
+    { d:{fr:"18 novembre 1976",es:"18 de noviembre de 1976"}, c:{fr:"Les Cortes franquistes votent leur propre dissolution via la <strong>Ley para la Reforma Política</strong>.", es:"Las Cortes franquistas votan su propia disolución mediante la <strong>Ley para la Reforma Política</strong>."} },
+    { d:{fr:"15 décembre 1976",es:"15 de diciembre de 1976"}, c:{fr:"<strong>Référendum</strong> : la loi de réforme politique est approuvée à 94 % des suffrages.", es:"<strong>Referéndum</strong>: la ley de reforma política es aprobada por el 94 % de los sufragios."} },
+    { d:{fr:"9 avril 1977",es:"9 de abril de 1977"}, c:{fr:"<strong>Légalisation du PCE</strong>, un « samedi saint rouge » qui provoque la colère de l'armée.", es:"<strong>Legalización del PCE</strong>, un «sábado santo rojo» que provoca la ira del ejército."} },
+    { d:{fr:"15 juin 1977",es:"15 de junio de 1977"}, c:{fr:"<strong>Premières élections libres</strong> depuis 1936 : victoire de l'UCD d'Adolfo Suárez.", es:"<strong>Primeras elecciones libres</strong> desde 1936: victoria de la UCD de Adolfo Suárez."} },
+    { d:{fr:"25 octobre 1977",es:"25 de octubre de 1977"}, c:{fr:"Signature des <strong>Pactos de la Moncloa</strong>, accords économiques et sociaux entre gouvernement et opposition.", es:"Firma de los <strong>Pactos de la Moncloa</strong>, acuerdos económicos y sociales entre el Gobierno y la oposición."} },
+    { d:{fr:"6 décembre 1978",es:"6 de diciembre de 1978"}, c:{fr:"<strong>Référendum constitutionnel</strong> : la Constitution est approuvée à 88 % des suffrages exprimés.", es:"<strong>Referéndum constitucional</strong>: la Constitución es aprobada por el 88 % de los sufragios emitidos."} },
+    { d:{fr:"27 décembre 1978",es:"27 de diciembre de 1978"}, c:{fr:"Promulgation de la <strong>Constitution espagnole de 1978</strong>.", es:"Promulgación de la <strong>Constitución española de 1978</strong>."} },
+    { d:{fr:"29 janvier 1981",es:"29 de enero de 1981"}, c:{fr:"Démission d'<strong>Adolfo Suárez</strong>, affaibli par les tensions internes à l'UCD.", es:"Dimisión de <strong>Adolfo Suárez</strong>, debilitado por las tensiones internas de la UCD."} },
+    { d:{fr:"23 février 1981",es:"23 de febrero de 1981"}, c:{fr:"Tentative de coup d'État (<strong>23-F</strong>) : le lieutenant-colonel Tejero prend d'assaut le Congrès des députés.", es:"Intento de golpe de Estado (<strong>23-F</strong>): el teniente coronel Tejero asalta el Congreso de los Diputados."} },
+    { d:{fr:"1979-1983",es:"1979-1983"}, c:{fr:"Adoption progressive des <strong>Estatutos de Autonomía</strong> des dix-sept communautés autonomes.", es:"Adopción progresiva de los <strong>Estatutos de Autonomía</strong> de las diecisiete comunidades autónomas."} },
+    { d:{fr:"28 octobre 1982",es:"28 de octubre de 1982"}, c:{fr:"<strong>Victoire écrasante du PSOE</strong> de Felipe González : première alternance démocratique.", es:"<strong>Victoria arrolladora del PSOE</strong> de Felipe González: primera alternancia democrática."} }
+  ],
+
+  /* ─── 4. LE COURS : PARTIES > SECTIONS > BLOCS ───────────────────── */
+  parties: [
+  {
+    num:"I",
+    kicker:{fr:"Les origines",es:"Los orígenes"},
+    titre:{fr:"De la mort de Franco à la loi de réforme politique : une sortie de dictature par le droit (1975-1976)",
+           es:"De la muerte de Franco a la ley de reforma política: una salida de la dictadura por la vía legal (1975-1976)"},
+    couleur:"var(--a2)",
+    sections:[
+      {
+        titre:{fr:"Un roi inattendu et un dilemme de fond : rupture ou réforme ?",
+               es:"Un rey inesperado y un dilema de fondo: ¿ruptura o reforma?"},
+        blocs:[
+          { t:"p", c:{
+            fr:"Proclamé roi le 22 novembre 1975 conformément à la <strong>Ley de Sucesión</strong> de 1947, <strong>Juan Carlos Ier</strong> était censé, aux yeux du régime, garantir la continuité du <em>Movimiento Nacional</em>. Contre cette attente, il choisit dès ses premiers mois de règne d'orienter le pays vers la démocratie — un choix qui n'a rien d'évident : l'armée, l'administration et une partie de l'appareil franquiste demeurent en place, hostiles à tout changement brutal.",
+            es:"Proclamado rey el 22 de noviembre de 1975 conforme a la <strong>Ley de Sucesión</strong> de 1947, <strong>Juan Carlos I</strong> debía, a ojos del régimen, garantizar la continuidad del <em>Movimiento Nacional</em>. Contra esa expectativa, elige desde sus primeros meses de reinado orientar el país hacia la democracia — una elección nada evidente: el ejército, la administración y buena parte del aparato franquista siguen en su sitio, hostiles a cualquier cambio brusco."} },
+          { t:"p", c:{
+            fr:"Deux stratégies s'opposent alors. L'opposition démocratique, unie dans la <em>Coordinación Democrática</em> (surnommée <span class='es'>« Platajunta »</span>), réclame une <strong>ruptura democrática</strong> : élections constituantes immédiates, amnistie totale, dissolution des institutions franquistes. Le pouvoir en place privilégie au contraire une <strong>réforme</strong> menée de l'intérieur, plus lente mais jugée moins risquée face à une armée encore fidèle à l'héritage de Franco. C'est cette seconde voie, la <em>reforma pactada</em>, qui l'emporte finalement — un compromis entre les deux logiques.",
+            es:"Se enfrentan entonces dos estrategias. La oposición democrática, unida en la <em>Coordinación Democrática</em> (apodada <span class='es'>«Platajunta»</span>), reclama una <strong>ruptura democrática</strong>: elecciones constituyentes inmediatas, amnistía total, disolución de las instituciones franquistas. El poder en el sitio privilegia en cambio una <strong>reforma</strong> llevada desde dentro, más lenta pero considerada menos arriesgada frente a un ejército todavía fiel al legado de Franco. Es esta segunda vía, la <em>reforma pactada</em>, la que finalmente se impone — un compromiso entre ambas lógicas."} },
+          { t:"encadre", icon:"👑", c:"var(--a2)",
+            titre:{fr:"Notion clé — la réforme pactée", es:"Concepto clave — la reforma pactada"},
+            c2:{fr:"Contrairement à d'autres sorties de dictature (chute par effondrement, révolution), la Transition espagnole se fait <strong>« de la loi à la loi »</strong> : ce sont les Cortes franquistes elles-mêmes qui votent, en novembre 1976, la loi organisant leur propre disparition. Ce choix évite un vide juridique mais impose de composer, au moins temporairement, avec les hommes et les structures de l'ancien régime.",
+                es:"A diferencia de otras salidas de dictadura (caída por colapso, revolución), la Transición española se realiza <strong>«de la ley a la ley»</strong>: son las propias Cortes franquistas quienes votan, en noviembre de 1976, la ley que organiza su propia desaparición. Esta elección evita un vacío jurídico pero obliga a convivir, al menos temporalmente, con los hombres y las estructuras del antiguo régimen."} },
+          { t:"faits", items:[
+            { l:{fr:"Roi d'Espagne",es:"Rey de España"}, v:{fr:"Juan Carlos Ier, depuis le 22 novembre 1975",es:"Juan Carlos I, desde el 22 de noviembre de 1975"} },
+            { l:{fr:"Premier gouvernement post-Franco",es:"Primer gobierno post-Franco"}, v:{fr:"Carlos Arias Navarro, jugé trop timoré",es:"Carlos Arias Navarro, considerado demasiado timorato"} },
+            { l:{fr:"Stratégie retenue",es:"Estrategia adoptada"}, v:{fr:"« Réforme pactée » plutôt que rupture ou immobilisme",es:"«Reforma pactada» en lugar de ruptura o inmovilismo"} }
+          ]}
+        ]
+      },
+      {
+        titre:{fr:"Adolfo Suárez et la loi pour la réforme politique",
+               es:"Adolfo Suárez y la ley para la reforma política"},
+        blocs:[
+          { t:"p", c:{
+            fr:"En juillet 1976, le roi surprend en nommant président du gouvernement <strong>Adolfo Suárez</strong>, ancien cadre du Movimiento peu connu du grand public, plutôt qu'une figure plus consensuelle de l'opposition. Le choix se révèle habile : Suárez connaît de l'intérieur les rouages de l'appareil franquiste et sait convaincre les procuradores des Cortes — dont beaucoup perdront leur siège avec la réforme — de voter leur propre dissolution, en échange de garanties et d'un discours rassurant sur la continuité de l'ordre.",
+            es:"En julio de 1976, el rey sorprende al nombrar presidente del Gobierno a <strong>Adolfo Suárez</strong>, antiguo cuadro del Movimiento poco conocido por el gran público, en lugar de una figura más consensuada de la oposición. La elección resulta hábil: Suárez conoce desde dentro los engranajes del aparato franquista y sabe convencer a los procuradores de las Cortes —muchos de los cuales perderán su escaño con la reforma— de votar su propia disolución, a cambio de garantías y de un discurso tranquilizador sobre la continuidad del orden."} },
+          { t:"p", c:{
+            fr:"Adoptée le 18 novembre 1976 par les <strong>Cortes franquistes</strong> elles-mêmes puis approuvée par référendum le 15 décembre (94 % de « oui », pour une abstention limitée à 22 %), la <strong>Ley para la Reforma Política</strong> instaure un Parlement bicaméral élu au suffrage universel et prévoit l'organisation d'élections libres. Ce texte, resté formellement une « loi fondamentale » du régime, fonctionne en réalité comme un <em>acte de suicide institutionnel</em> consenti par le franquisme à lui-même.",
+            es:"Aprobada el 18 de noviembre de 1976 por las propias <strong>Cortes franquistas</strong> y luego respaldada por referéndum el 15 de diciembre (94 % de «sí», con una abstención limitada al 22 %), la <strong>Ley para la Reforma Política</strong> instaura un Parlamento bicameral elegido por sufragio universal y prevé la organización de elecciones libres. Este texto, que sigue siendo formalmente una «ley fundamental» del régimen, funciona en realidad como un <em>acto de suicidio institucional</em> que el franquismo se aplica a sí mismo."} },
+          { t:"p", c:{
+            fr:"L'étape la plus risquée reste la légalisation des partis. Celle du Parti communiste espagnol (PCE), le <strong>9 avril 1977</strong> — un samedi saint, jour férié choisi pour limiter les réactions —, provoque la fureur d'une partie de l'armée, dont plusieurs ministres militaires menacent de démissionner. Suárez tient bon : quelques semaines plus tard, les premières élections libres depuis 1936 peuvent se tenir.",
+            es:"La etapa más arriesgada sigue siendo la legalización de los partidos. La del Partido Comunista de España (PCE), el <strong>9 de abril de 1977</strong> —un sábado santo, día festivo elegido para limitar las reacciones—, provoca la furia de una parte del ejército, cuyos ministros militares llegan a amenazar con dimitir. Suárez se mantiene firme: pocas semanas después pueden celebrarse las primeras elecciones libres desde 1936."} }
+        ]
+      }
+    ]
+  },
+  {
+    num:"II",
+    kicker:{fr:"L'exercice du pouvoir",es:"El ejercicio del poder"},
+    titre:{fr:"Construire la démocratie : élections, pactes économiques et Constitution (1977-1978)",
+           es:"Construir la democracia: elecciones, pactos económicos y Constitución (1977-1978)"},
+    couleur:"var(--a4)",
+    sections:[
+      {
+        titre:{fr:"Les élections du 15 juin 1977 : un paysage politique recomposé",
+               es:"Las elecciones del 15 de junio de 1977: un panorama político recompuesto"},
+        blocs:[
+          { t:"p", c:{
+            fr:"Le <strong>15 juin 1977</strong>, plus de 78 % des électeurs se rendent aux urnes pour la première élection libre depuis 1936. La coalition centriste <strong>Unión de Centro Democrático</strong> (UCD), fondée par Suárez quelques semaines plus tôt pour rassembler des courants réformistes issus du franquisme comme des libéraux, arrive en tête sans majorité absolue. Le <strong>PSOE</strong> de Felipe González s'impose comme principale force d'opposition, tandis que le PCE de Santiago Carrillo, malgré sa légalisation récente, obtient un score plus modeste que ne le craignait l'armée.",
+            es:"El <strong>15 de junio de 1977</strong>, más del 78 % de los electores acude a las urnas en la primera elección libre desde 1936. La coalición de centro <strong>Unión de Centro Democrático</strong> (UCD), fundada por Suárez pocas semanas antes para reunir corrientes reformistas surgidas del franquismo y liberales, queda en primer lugar sin mayoría absoluta. El <strong>PSOE</strong> de Felipe González se impone como principal fuerza de oposición, mientras que el PCE de Santiago Carrillo, pese a su reciente legalización, obtiene un resultado más modesto de lo que temía el ejército."} },
+          { t:"tableau",
+            head:{ fr:["Parti","Sièges au Congrès","% des voix"], es:["Partido","Escaños en el Congreso","% de votos"] },
+            rows:{
+              fr:[
+                ["UCD (Adolfo Suárez)","165","34,6 %"],
+                ["PSOE (Felipe González)","118","29,3 %"],
+                ["PCE (Santiago Carrillo)","20","9,3 %"],
+                ["Alianza Popular (Manuel Fraga)","16","8,3 %"],
+                ["Convergència i altres régionalistes","≈ 30","—"]
+              ],
+              es:[
+                ["UCD (Adolfo Suárez)","165","34,6 %"],
+                ["PSOE (Felipe González)","118","29,3 %"],
+                ["PCE (Santiago Carrillo)","20","9,3 %"],
+                ["Alianza Popular (Manuel Fraga)","16","8,3 %"],
+                ["Convergència y otros regionalistas","≈ 30","—"]
+              ]
+            }
+          },
+          { t:"p", c:{
+            fr:"Ces Cortes, élues sans être formellement « constituantes », se donnent néanmoins pour tâche principale de rédiger une nouvelle Constitution — un choix qui traduit, dès l'origine, la volonté de fonder le nouveau régime sur un <strong>large consensus</strong> plutôt que sur la seule victoire d'un camp.",
+            es:"Estas Cortes, elegidas sin ser formalmente «constituyentes», se marcan sin embargo como tarea principal la redacción de una nueva Constitución — una elección que traduce, desde el origen, la voluntad de fundar el nuevo régimen sobre un <strong>amplio consenso</strong> más que sobre la mera victoria de un bando."} }
+        ]
+      },
+      {
+        titre:{fr:"Les Pactos de la Moncloa : sauver la démocratie par l'économie",
+               es:"Los Pactos de la Moncloa: salvar la democracia por la economía"},
+        blocs:[
+          { t:"p", c:{
+            fr:"La jeune démocratie hérite d'une situation économique dégradée : inflation proche de 30 %, chocs pétroliers, chômage en hausse. Craignant que la crise sociale ne fragilise la Transition elle-même, le gouvernement Suárez réunit en octobre 1977, à la résidence de la Moncloa, l'ensemble des forces politiques représentées aux Cortes — y compris le PCE et le PSOE — ainsi que les syndicats.",
+            es:"La joven democracia hereda una situación económica degradada: inflación cercana al 30 %, crisis del petróleo, desempleo en aumento. Temiendo que la crisis social fragilizara la propia Transición, el gobierno de Suárez reúne en octubre de 1977, en la residencia de la Moncloa, al conjunto de las fuerzas políticas representadas en las Cortes —incluidos el PCE y el PSOE— así como a los sindicatos."} },
+          { t:"p", c:{
+            fr:"Les <strong>Pactos de la Moncloa</strong> combinent des mesures d'austérité (contrôle salarial, dévaluation de la peseta) et des engagements sociaux (réforme fiscale, protection sociale, amorce d'une politique du logement). Leur portée dépasse le seul cadre économique : ils installent une <strong>culture du compromis</strong> entre des forces politiques qui, deux ans plus tôt, s'affrontaient encore dans la clandestinité, et deviennent le symbole du <em>consenso</em> qui caractérise toute la Transition.",
+            es:"Los <strong>Pactos de la Moncloa</strong> combinan medidas de austeridad (control salarial, devaluación de la peseta) y compromisos sociales (reforma fiscal, protección social, esbozo de una política de vivienda). Su alcance va más allá del marco meramente económico: instauran una <strong>cultura del compromiso</strong> entre fuerzas políticas que, dos años antes, todavía se enfrentaban en la clandestinidad, y se convierten en el símbolo del <em>consenso</em> que caracteriza toda la Transición."} },
+          { t:"encadre", icon:"🤝", c:"var(--a3)",
+            titre:{fr:"Notion clé — le consensus", es:"Concepto clave — el consenso"},
+            c2:{fr:"Le <em>consenso</em> désigne la méthode par laquelle les principales forces politiques, y compris d'anciens adversaires de la guerre civile, choisissent de négocier plutôt que d'imposer leurs vues, afin d'éviter toute nouvelle fracture. Il structure aussi bien les Pactos de la Moncloa que l'élaboration de la Constitution de 1978.",
+                es:"El <em>consenso</em> designa el método por el cual las principales fuerzas políticas, incluidos antiguos adversarios de la guerra civil, eligen negociar en lugar de imponer sus posiciones, para evitar cualquier nueva fractura. Estructura tanto los Pactos de la Moncloa como la elaboración de la Constitución de 1978."} }
+        ]
+      },
+      {
+        titre:{fr:"La Constitution de 1978 : une monarchie parlementaire née du compromis",
+               es:"La Constitución de 1978: una monarquía parlamentaria nacida del compromiso"},
+        blocs:[
+          { t:"p", c:{
+            fr:"Rédigée par une commission de sept « pères de la Constitution » représentant l'ensemble de l'échiquier politique, la <strong>Constitution</strong> est approuvée par les Cortes puis par référendum le <strong>6 décembre 1978</strong> (88 % de « oui »). Elle fait de l'Espagne une <strong>monarchie parlementaire</strong> : le roi, chef de l'État, exerce un rôle largement protocolaire et d'arbitrage, tandis que le pouvoir exécutif revient au président du gouvernement, responsable devant le Congrès des députés.",
+            es:"Redactada por una comisión de siete «padres de la Constitución» que representan el conjunto del arco político, la <strong>Constitución</strong> es aprobada por las Cortes y luego por referéndum el <strong>6 de diciembre de 1978</strong> (88 % de «sí»). Convierte a España en una <strong>monarquía parlamentaria</strong>: el rey, jefe del Estado, ejerce un papel en gran medida protocolario y de arbitraje, mientras que el poder ejecutivo recae en el presidente del Gobierno, responsable ante el Congreso de los Diputados."} },
+          { t:"p", c:{
+            fr:"Deux innovations majeures marquent le texte. D'une part, une <strong>déclaration de droits</strong> étendue, comparable à celle des autres démocraties européennes, rompant avec les libertés fictives du <em>Fuero de los Españoles</em> franquiste. D'autre part, l'<strong>État des autonomies</strong> (<span class='es'>Estado de las Autonomías</span>), compromis entre un État unitaire classique et un modèle fédéral, qui reconnaît le droit à l'autonomie des « nationalités et régions » sans nommer explicitement de nations internes — une ambiguïté volontaire destinée à satisfaire à la fois les nationalistes catalans et basques et les tenants de l'unité de l'Espagne.",
+            es:"Dos innovaciones mayores marcan el texto. Por un lado, una <strong>declaración de derechos</strong> amplia, comparable a la de las demás democracias europeas, que rompe con las libertades ficticias del <em>Fuero de los Españoles</em> franquista. Por otro, el <strong>Estado de las Autonomías</strong>, compromiso entre un Estado unitario clásico y un modelo federal, que reconoce el derecho a la autonomía de las «nacionalidades y regiones» sin nombrar explícitamente naciones internas — una ambigüedad voluntaria destinada a satisfacer tanto a los nacionalistas catalanes y vascos como a los partidarios de la unidad de España."} },
+          { t:"encadre", icon:"⚠️", c:"var(--a4)",
+            titre:{fr:"Erreur fréquente en dissertation", es:"Un error frecuente en el ensayo"},
+            c2:{fr:"La Constitution de 1978 n'est pas la simple restauration d'une démocratie antérieure : l'Espagne n'avait connu qu'une expérience démocratique brève et instable (la Seconde République, 1931-1936). Il s'agit bien d'une <strong>fondation</strong>, pensée précisément pour éviter de reproduire les fractures qui avaient mené à la guerre civile.",
+                es:"La Constitución de 1978 no es la simple restauración de una democracia anterior: España solo había conocido una experiencia democrática breve e inestable (la Segunda República, 1931-1936). Se trata efectivamente de una <strong>fundación</strong>, pensada precisamente para evitar reproducir las fracturas que habían llevado a la guerra civil."} }
+        ]
+      }
+    ]
+  },
+  {
+    num:"III",
+    kicker:{fr:"Les mutations",es:"Las mutaciones"},
+    titre:{fr:"Consolider la démocratie : autonomies, tentative de coup d'État et alternance (1979-1982)",
+           es:"Consolidar la democracia: autonomías, intento de golpe y alternancia (1979-1982)"},
+    couleur:"var(--a3)",
+    sections:[
+      {
+        titre:{fr:"L'État des autonomies en construction",
+               es:"El Estado de las Autonomías en construcción"},
+        blocs:[
+          { t:"p", c:{
+            fr:"Entre 1979 et 1983, dix-sept <strong>communautés autonomes</strong> se dotent d'un <em>Estatuto de Autonomía</em>, texte fondateur définissant leurs compétences propres. La Catalogne et le Pays basque, dotés d'une identité nationale forte et d'une mémoire de répression spécifique sous Franco (interdiction des langues catalane et basque), obtiennent les statuts les plus avancés dès 1979, tandis que des régions sans revendication historique équivalente, comme l'Estrémadure ou La Rioja, accèdent progressivement à une autonomie de niveau comparable — un processus parfois critiqué comme un « café pour tous ».",
+            es:"Entre 1979 y 1983, diecisiete <strong>comunidades autónomas</strong> se dotan de un <em>Estatuto de Autonomía</em>, texto fundacional que define sus competencias propias. Cataluña y el País Vasco, dotados de una identidad nacional fuerte y de una memoria de represión específica bajo Franco (prohibición de las lenguas catalana y vasca), obtienen los estatutos más avanzados ya en 1979, mientras que regiones sin reivindicación histórica equivalente, como Extremadura o La Rioja, acceden progresivamente a una autonomía de nivel comparable — un proceso a veces criticado como un «café para todos»."} },
+          { t:"def", mot:{fr:"Estado de las Autonomías",es:"Estado de las Autonomías"},
+            c:{fr:"Modèle territorial original, à mi-chemin entre l'État unitaire et le fédéralisme, qui organise la décentralisation espagnole depuis 1978 sans que la Constitution ne fixe de liste fermée de compétences régionales définitives — d'où des négociations permanentes sur leur extension.",
+               es:"Modelo territorial original, a medio camino entre el Estado unitario y el federalismo, que organiza la descentralización española desde 1978 sin que la Constitución fije una lista cerrada de competencias regionales definitivas — de ahí negociaciones permanentes sobre su extensión."} }
+        ]
+      },
+      {
+        titre:{fr:"Le 23 février 1981 : la démocratie à l'épreuve du coup d'État",
+               es:"El 23 de febrero de 1981: la democracia a prueba del golpe de Estado"},
+        blocs:[
+          { t:"p", c:{
+            fr:"Affaibli par les divisions internes de l'UCD et par la contestation croissante de l'armée face aux concessions territoriales et à la légalisation du PCE, <strong>Adolfo Suárez</strong> démissionne le 29 janvier 1981. Le 23 février, lors du vote d'investiture de son successeur, le lieutenant-colonel <strong>Antonio Tejero</strong> fait irruption en armes dans l'hémicycle du Congrès des députés avec un groupe de gardes civils, tandis que des chars sortent dans les rues de Valence sous l'autorité du général Milans del Bosch.",
+            es:"Debilitado por las divisiones internas de la UCD y por la creciente contestación del ejército ante las concesiones territoriales y la legalización del PCE, <strong>Adolfo Suárez</strong> dimite el 29 de enero de 1981. El 23 de febrero, durante la votación de investidura de su sucesor, el teniente coronel <strong>Antonio Tejero</strong> irrumpe armado en el hemiciclo del Congreso de los Diputados junto a un grupo de guardias civiles, mientras tanques salen a las calles de Valencia bajo la autoridad del general Milans del Bosch."} },
+          { t:"p", c:{
+            fr:"Le coup d'État échoue en quelques heures, en grande partie grâce à l'intervention télévisée du roi <strong>Juan Carlos Ier</strong>, qui ordonne, en uniforme de capitaine général, la fidélité de l'armée aux institutions démocratiques. Cet épisode, désigné sous l'acronyme <strong>23-F</strong>, devient un moment fondateur de la légitimité de la monarchie parlementaire : le roi y apparaît, pour la première fois aux yeux de nombreux Espagnols, comme le garant effectif — et non plus seulement symbolique — de la démocratie.",
+            es:"El golpe de Estado fracasa en cuestión de horas, en gran parte gracias a la intervención televisada del rey <strong>Juan Carlos I</strong>, que ordena, con uniforme de capitán general, la fidelidad del ejército a las instituciones democráticas. Este episodio, conocido por el acrónimo <strong>23-F</strong>, se convierte en un momento fundacional de la legitimidad de la monarquía parlamentaria: el rey aparece allí, por primera vez a ojos de numerosos españoles, como el garante efectivo —y ya no solo simbólico— de la democracia."} },
+          { t:"citation", c:{fr:"La Corona no puede tolerar ninguna acción o actitud de personas que pretendan interrumpir por la fuerza el proceso democrático.", es:"La Corona no puede tolerar ninguna acción o actitud de personas que pretendan interrumpir por la fuerza el proceso democrático."},
+            src:{fr:"Message télévisé du roi Juan Carlos Ier, nuit du 23 au 24 février 1981", es:"Mensaje televisado del rey Juan Carlos I, noche del 23 al 24 de febrero de 1981"} }
+        ]
+      },
+      {
+        titre:{fr:"1982 : l'alternance socialiste, fin symbolique de la Transition",
+               es:"1982: la alternancia socialista, fin simbólico de la Transición"},
+        blocs:[
+          { t:"p", c:{
+            fr:"L'échec du coup d'État accélère paradoxalement le déclin de l'UCD, désormais perçue comme incapable de maintenir l'unité de sa propre coalition. Aux élections du <strong>28 octobre 1982</strong>, le <strong>PSOE</strong> de <strong>Felipe González</strong>, désormais recentré et rassurant après avoir abandonné le marxisme officiel deux ans plus tôt, remporte une victoire écrasante avec 202 sièges sur 350, tandis que l'UCD s'effondre.",
+            es:"El fracaso del golpe acelera paradójicamente el declive de la UCD, ya percibida como incapaz de mantener la unidad de su propia coalición. En las elecciones del <strong>28 de octubre de 1982</strong>, el <strong>PSOE</strong> de <strong>Felipe González</strong>, ya recentrado y tranquilizador tras haber abandonado el marxismo oficial dos años antes, obtiene una victoria arrolladora con 202 escaños de 350, mientras la UCD se desmorona."} },
+          { t:"p", c:{
+            fr:"Cette <strong>première alternance démocratique</strong> depuis 1936 marque, pour la plupart des historiens, la fin conventionnelle de la Transition : un parti issu de l'opposition historique au franquisme accède au pouvoir par les urnes, sans réaction de l'armée, prouvant que les institutions nées de la réforme pactée sont désormais suffisamment solides pour supporter une rotation normale du pouvoir.",
+            es:"Esta <strong>primera alternancia democrática</strong> desde 1936 marca, para la mayoría de los historiadores, el fin convencional de la Transición: un partido surgido de la oposición histórica al franquismo accede al poder mediante las urnas, sin reacción del ejército, demostrando que las instituciones nacidas de la reforma pactada son ya lo bastante sólidas para soportar una rotación normal del poder."} },
+          { t:"liste", items:{
+            fr:[
+              "<strong>1977</strong> — Premières élections libres : la démocratie retrouve une légitimité électorale.",
+              "<strong>1978</strong> — Constitution : fondation juridique de la monarchie parlementaire.",
+              "<strong>1981</strong> — 23-F : la démocratie résiste à sa première épreuve de force.",
+              "<strong>1982</strong> — Alternance PSOE : la Transition est jugée achevée par la plupart des historiens."
+            ],
+            es:[
+              "<strong>1977</strong> — Primeras elecciones libres: la democracia recupera legitimidad electoral.",
+              "<strong>1978</strong> — Constitución: fundación jurídica de la monarquía parlamentaria.",
+              "<strong>1981</strong> — 23-F: la democracia resiste su primera prueba de fuerza.",
+              "<strong>1982</strong> — Alternancia del PSOE: la Transición se considera concluida por la mayoría de los historiadores."
+            ]
+          }}
+        ]
+      }
+    ]
+  }
+  ],
+
+  /* ─── 5. ACTEURS CLÉS ─────────────────────────────────────────────── */
+  acteurs: [
+    { nom:"Juan Carlos Ier", c:"var(--a2)", role:{fr:"Roi d'Espagne",es:"Rey de España"},
+      d:{fr:"Choisi par Franco comme successeur « continuiste », il oriente pourtant le pays vers la démocratie et joue un rôle décisif lors du 23-F.",
+         es:"Elegido por Franco como sucesor «continuista», orienta sin embargo el país hacia la democracia y desempeña un papel decisivo durante el 23-F."} },
+    { nom:"Adolfo Suárez", c:"var(--a4)", role:{fr:"Président du gouvernement (1976-1981)",es:"Presidente del Gobierno (1976-1981)"},
+      d:{fr:"Ancien cadre du Movimiento devenu artisan principal de la réforme pactée ; fonde l'UCD et démissionne en 1981, affaibli par les divisions internes.",
+         es:"Antiguo cuadro del Movimiento convertido en principal artífice de la reforma pactada; funda la UCD y dimite en 1981, debilitado por las divisiones internas."} },
+    { nom:"Felipe González", c:"var(--a1)", role:{fr:"Secrétaire général du PSOE",es:"Secretario general del PSOE"},
+      d:{fr:"Mène le PSOE à l'abandon du marxisme officiel puis à une victoire écrasante en 1982, ouvrant la première alternance démocratique.",
+         es:"Lleva al PSOE al abandono del marxismo oficial y luego a una victoria arrolladora en 1982, abriendo la primera alternancia democrática."} },
+    { nom:"Santiago Carrillo", c:"var(--a3)", role:{fr:"Secrétaire général du PCE",es:"Secretario general del PCE"},
+      d:{fr:"Rentré d'exil, il accepte le drapeau et la monarchie au nom du consensus, au prix de vives tensions au sein de son propre parti.",
+         es:"De regreso del exilio, acepta la bandera y la monarquía en nombre del consenso, al precio de fuertes tensiones dentro de su propio partido."} },
+    { nom:"Manuel Fraga Iribarne", c:"var(--a2)", role:{fr:"Fondateur d'Alianza Popular",es:"Fundador de Alianza Popular"},
+      d:{fr:"Ancien ministre franquiste reconverti en chef de file de la droite parlementaire, il participe à la rédaction de la Constitution de 1978.",
+         es:"Antiguo ministro franquista reconvertido en líder de la derecha parlamentaria, participa en la redacción de la Constitución de 1978."} },
+    { nom:"Antonio Tejero", c:"var(--a4)", role:{fr:"Lieutenant-colonel putschiste",es:"Teniente coronel golpista"},
+      d:{fr:"Prend d'assaut le Congrès des députés le 23 février 1981 ; son échec renforce paradoxalement la légitimité de la démocratie naissante.",
+         es:"Asalta el Congreso de los Diputados el 23 de febrero de 1981; su fracaso refuerza paradójicamente la legitimidad de la democracia naciente."} }
+  ],
+
+  /* ─── 6. CONTROVERSE ─────────────────────────────────────────────── */
+  debat: {
+    question: {fr:"La Transition espagnole fut-elle un modèle de démocratisation réussie ?",
+               es:"¿Fue la Transición española un modelo de democratización exitosa?"},
+    oui: {
+      titre:{fr:"Pour le « modèle » de la Transition", es:"A favor del «modelo» de la Transición"},
+      items:{
+        fr:[
+          "Elle évite toute nouvelle <strong>guerre civile</strong> ou effusion de sang majeure, contrairement à d'autres sorties de dictature du XXe siècle.",
+          "Le <strong>consensus</strong> entre forces politiques rivales (Pactos de la Moncloa, Constitution de 1978) installe durablement une culture du compromis démocratique.",
+          "La démocratie résiste à l'épreuve de force du <strong>23-F</strong>, preuve de la solidité des institutions bâties en quelques années seulement."
+        ],
+        es:[
+          "Evita cualquier nueva <strong>guerra civil</strong> o derramamiento de sangre mayor, a diferencia de otras salidas de dictadura del siglo XX.",
+          "El <strong>consenso</strong> entre fuerzas políticas rivales (Pactos de la Moncloa, Constitución de 1978) instala duraderamente una cultura del compromiso democrático.",
+          "La democracia resiste la prueba de fuerza del <strong>23-F</strong>, prueba de la solidez de las instituciones construidas en apenas unos años."
+        ]
+      }
+    },
+    non: {
+      titre:{fr:"Contre l'idée d'un « modèle » sans ombres", es:"En contra de la idea de un «modelo» sin sombras"},
+      items:{
+        fr:[
+          "Le consensus impose un <strong>« pacte de l'oubli »</strong> (loi d'amnistie de 1977) qui empêche pendant des décennies tout jugement des crimes du franquisme.",
+          "D'anciens cadres et symboles franquistes conservent une influence durable dans l'administration, la magistrature et l'armée bien après 1978.",
+          "La réforme « par le haut » laisse peu de place à une véritable rupture avec les structures économiques et sociales héritées de la dictature."
+        ],
+        es:[
+          "El consenso impone un <strong>«pacto del olvido»</strong> (ley de amnistía de 1977) que impide durante décadas cualquier juicio de los crímenes del franquismo.",
+          "Antiguos cuadros y símbolos franquistas conservan una influencia duradera en la administración, la judicatura y el ejército mucho después de 1978.",
+          "La reforma «desde arriba» deja poco espacio a una verdadera ruptura con las estructuras económicas y sociales heredadas de la dictadura."
+        ]
+      }
+    },
+    synthese: {fr:"Le débat oppose une lecture institutionnelle, qui salue la sortie pacifique d'une dictature vieille de près de quarante ans sans effusion de sang majeure, à une lecture mémorielle, qui souligne le prix payé pour ce compromis : l'occultation prolongée des crimes franquistes, ravivée depuis les années 2000 par les lois de mémoire historique.",
+               es:"El debate enfrenta una lectura institucional, que celebra la salida pacífica de una dictadura de casi cuarenta años sin derramamiento de sangre mayor, con una lectura memorial, que subraya el precio pagado por ese compromiso: la ocultación prolongada de los crímenes franquistas, reavivada desde los años 2000 por las leyes de memoria histórica."}
+  },
+
+  /* ─── 7. LEXIQUE BILINGUE ─────────────────────────────────────────── */
+  lexique: [
+    { es:"Reforma pactada", fr:"« Réforme négociée » : stratégie de transition menée depuis l'intérieur des institutions franquistes, par consensus plutôt que par rupture." },
+    { es:"Ruptura democrática", fr:"Rupture démocratique : option, écartée en 1976-1977, d'une élection constituante immédiate et d'une amnistie totale sans compromis avec l'ancien régime." },
+    { es:"Ley para la Reforma Política", fr:"Loi de 1976 votée par les Cortes franquistes organisant leur propre dissolution et de futures élections libres." },
+    { es:"Pactos de la Moncloa", fr:"Accords économiques et sociaux d'octobre 1977 entre gouvernement, partis et syndicats pour stabiliser la jeune démocratie." },
+    { es:"Consenso", fr:"Méthode de compromis entre forces politiques rivales, caractéristique de toute la Transition." },
+    { es:"Estado de las Autonomías", fr:"Modèle territorial décentralisé instauré par la Constitution de 1978, entre État unitaire et fédéralisme." },
+    { es:"Estatuto de Autonomía", fr:"Texte fondateur définissant les compétences propres d'une communauté autonome." },
+    { es:"23-F", fr:"Nom donné à la tentative de coup d'État du 23 février 1981 contre le Congrès des députés." },
+    { es:"Ley de Amnistía", fr:"Loi de 1977 amnistiant à la fois les crimes politiques commis contre le franquisme et ceux commis par ses agents." },
+    { es:"Pacto del olvido", fr:"« Pacte de l'oubli » : accord tacite entre forces politiques pour ne pas juger les crimes de la dictature au nom de la réconciliation." },
+    { es:"UCD (Unión de Centro Democrático)", fr:"Coalition centriste fondée par Adolfo Suárez, au pouvoir de 1977 à 1982." },
+    { es:"Monarquía parlamentaria", fr:"Régime instauré par la Constitution de 1978, où le roi règne sans gouverner, le pouvoir exécutif revenant au président du gouvernement." },
+    { es:"Cortes Constituyentes", fr:"Assemblée élue en 1977 dont la mission principale devient la rédaction de la Constitution de 1978." },
+    { es:"Alternancia democrática", fr:"Passage pacifique du pouvoir d'un parti à un autre par les urnes, réalisé pour la première fois en 1982." }
+  ],
+
+  /* ─── 8. SUJETS POSSIBLES ─────────────────────────────────────────── */
+  sujets: [
+    { q:{fr:"La Transition espagnole fut-elle une rupture ou une continuité avec le franquisme ?",
+         es:"¿Fue la Transición española una ruptura o una continuidad con el franquismo?"},
+      h:{fr:"Distinguer la rupture institutionnelle (Constitution de 1978) et les continuités sociales et administratives.",
+         es:"Distinguir la ruptura institucional (Constitución de 1978) de las continuidades sociales y administrativas."} },
+    { q:{fr:"Dans quelle mesure le consensus a-t-il permis, mais aussi limité, la démocratisation de l'Espagne ?",
+         es:"¿En qué medida el consenso permitió, pero también limitó, la democratización de España?"},
+      h:{fr:"Mobiliser les Pactos de la Moncloa, la Constitution de 1978 et la loi d'amnistie de 1977.",
+         es:"Recurrir a los Pactos de la Moncloa, la Constitución de 1978 y la ley de amnistía de 1977."} },
+    { q:{fr:"Le 23-F : un simple échec militaire ou un moment fondateur de la démocratie espagnole ?",
+         es:"El 23-F: ¿un simple fracaso militar o un momento fundacional de la democracia española?"},
+      h:{fr:"Analyser le rôle du roi Juan Carlos Ier et l'impact symbolique de l'épisode sur la légitimité de la monarchie.",
+         es:"Analizar el papel del rey Juan Carlos I y el impacto simbólico del episodio en la legitimidad de la monarquía."} },
+    { q:{fr:"L'État des autonomies de 1978 a-t-il réglé la question territoriale espagnole ?",
+         es:"¿Resolvió el Estado de las Autonomías de 1978 la cuestión territorial española?"},
+      h:{fr:"Interroger l'ambiguïté constitutionnelle sur les « nationalités » et ses prolongements ultérieurs (Catalogne, Pays basque).",
+         es:"Examinar la ambigüedad constitucional sobre las «nacionalidades» y sus prolongaciones posteriores (Cataluña, País Vasco)."} }
+  ],
+
+  /* ─── 9. À RETENIR ───────────────────────────────────────────────── */
+  retenir: {
+    fr:[
+      "La Transition (1975-1982) fait passer l'Espagne d'une dictature personnelle à une <strong>monarchie parlementaire</strong> sans nouvelle guerre civile.",
+      "Elle s'organise selon la logique d'une <strong>réforme pactée</strong> : le changement passe par les institutions franquistes elles-mêmes, votant leur propre dissolution en 1976.",
+      "Le roi <strong>Juan Carlos Ier</strong>, choisi par Franco pour assurer la continuité, oriente au contraire le pays vers la démocratie.",
+      "Les élections du <strong>15 juin 1977</strong>, les premières libres depuis 1936, installent l'UCD au pouvoir face à un PSOE et un PCE légalisés.",
+      "Les <strong>Pactos de la Moncloa</strong> (1977) et la <strong>Constitution de 1978</strong> reposent sur une culture du <em>consenso</em> entre anciens adversaires.",
+      "La Constitution instaure l'<strong>État des autonomies</strong>, compromis territorial entre unité nationale et reconnaissance des identités régionales.",
+      "La tentative de coup d'État du <strong>23-F</strong> (1981) est déjouée grâce à l'intervention du roi, renforçant la légitimité de la monarchie.",
+      "L'<strong>alternance démocratique</strong> de 1982, avec la victoire du PSOE de Felipe González, marque pour la plupart des historiens la fin conventionnelle de la Transition."
+    ],
+    es:[
+      "La Transición (1975-1982) hace pasar a España de una dictadura personal a una <strong>monarquía parlamentaria</strong> sin una nueva guerra civil.",
+      "Se organiza según la lógica de una <strong>reforma pactada</strong>: el cambio pasa por las propias instituciones franquistas, que votan su propia disolución en 1976.",
+      "El rey <strong>Juan Carlos I</strong>, elegido por Franco para asegurar la continuidad, orienta por el contrario el país hacia la democracia.",
+      "Las elecciones del <strong>15 de junio de 1977</strong>, las primeras libres desde 1936, instalan a la UCD en el poder frente a un PSOE y un PCE legalizados.",
+      "Los <strong>Pactos de la Moncloa</strong> (1977) y la <strong>Constitución de 1978</strong> se apoyan en una cultura del <em>consenso</em> entre antiguos adversarios.",
+      "La Constitución instaura el <strong>Estado de las Autonomías</strong>, compromiso territorial entre unidad nacional y reconocimiento de las identidades regionales.",
+      "El intento de golpe de Estado del <strong>23-F</strong> (1981) es frustrado gracias a la intervención del rey, reforzando la legitimidad de la monarquía.",
+      "La <strong>alternancia democrática</strong> de 1982, con la victoria del PSOE de Felipe González, marca para la mayoría de los historiadores el fin convencional de la Transición."
+    ]
+  }
+};
+</script>
+<!-- ══════════════════════════════════════════════════════════════════
+     ⬆⬆⬆  FIN DES DONNÉES — NE RIEN MODIFIER EN DESSOUS  ⬆⬆⬆
+     ══════════════════════════════════════════════════════════════════ -->
+
+
+<script>
+/* ─── Utilitaires ─── */
+const $ = (s,r=document)=>r.querySelector(s);
+let LANG = 'fr';
+/* T() : renvoie la version dans la langue courante, ou la valeur telle quelle */
+const T = v => (v && typeof v==='object' && !Array.isArray(v) && ('fr' in v||'es' in v)) ? (v[LANG] ?? v.fr) : v;
+
+/* ─── Libellés d'interface ─── */
+const UI = {
+  fr:{ chrono:"Chronologie",
+       essentiel:"L'essentiel", reperes:"Repères", quiEstQui:"Qui est qui", acteurs:"Acteurs clés",
+       controverse:"Controverse", vocab:"Vocabulaire", lexique:"Lexique bilingue",
+       filtrer:"Filtrer le lexique…", terme:"Terme", trad:"Traduction / usage",
+       entrainement:"Entraînement", sujets:"Sujets possibles", memoriser:"Mémoriser",
+       retenir:"À retenir", synthese:"Synthèse", chapitre:"Chapitre" },
+  es:{ chrono:"Cronología",
+       essentiel:"Lo esencial", reperes:"Hitos", quiEstQui:"Quién es quién", acteurs:"Actores clave",
+       controverse:"Controversia", vocab:"Vocabulario", lexique:"Glosario bilingüe",
+       filtrer:"Filtrar el glosario…", terme:"Término", trad:"Traducción / uso",
+       entrainement:"Entrenamiento", sujets:"Posibles temas", memoriser:"Memorizar",
+       retenir:"Para recordar", synthese:"Síntesis", chapitre:"Capítulo" }
+};
+const t = k => UI[LANG][k];
+
+/* ─── Rendu des blocs de contenu ─── */
+function bloc(b){
+  switch(b.t){
+    case 'p':      return `<p class="prose">${T(b.c)}</p>`;
+    case 'liste':  return `<ul class="liste">${T(b.items).map(i=>`<li>${i}</li>`).join('')}</ul>`;
+    case 'faits':  return `<div class="faits">${T(b.items).map(i=>
+                     `<div class="fait"><div class="fait-l">${T(i.l)}</div><div class="fait-v">${T(i.v)}</div></div>`).join('')}</div>`;
+    case 'stats':  return `<div class="stats">${b.items.map(i=>
+                     `<div class="stat" style="--c:${i.c||'var(--a1)'}"><span class="stat-n">${T(i.n)}</span><span class="stat-d">${T(i.d)}</span></div>`).join('')}</div>`;
+    case 'citation':return `<blockquote class="citation"><p>« ${T(b.c)} »</p><cite>${T(b.src)}</cite></blockquote>`;
+    case 'encadre':return `<div class="encadre" style="--c:${b.c||'var(--a2)'}"><div class="encadre-ic">${b.icon||'💡'}</div>
+                     <div><div class="encadre-t">${T(b.titre)}</div><div class="encadre-c">${T(b.c2)}</div></div></div>`;
+    case 'def':    return `<div class="def"><div class="def-mot">${T(b.mot)}</div><div class="def-c">${T(b.c)}</div></div>`;
+    case 'tableau':return `<div class="tbl-wrap"><table><thead><tr>${T(b.head).map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+                     <tbody>${T(b.rows).map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    case 'tl':     return `<div class="tl">${T(b.items).map(i=>
+                     `<div class="tl-item"><div class="tl-d">${T(i.d)}</div><div class="tl-c">${T(i.c)}</div></div>`).join('')}</div>`;
+    default:       return '';
+  }
+}
+
+/* ─── En-tête ─── */
+function rendreHero(){
+  const m = COURS.meta;
+  document.documentElement.dataset.theme = m.theme;
+  document.documentElement.lang = LANG;
+  document.title = T(m.titre) + ' — Civilisation';
+  $('#bc-titre').textContent = m.titre.fr ?? m.titre;   // la nav reste en français
+  $('#ft').textContent = `${t('chapitre')} ${m.chapitre}${LANG==='fr'?' : ':': '}${T(m.titre)}`;
+  $('#hero').innerHTML = `
+    <span class="hero-flag">${m.drapeau}</span>
+    <div class="hero-label">${T(m.label)}</div>
+    <h1>${T(m.titre)}</h1>
+    <p class="hero-sub">${T(m.sousTitre)}</p>`;
+}
+
+/* ─── Corps du cours ─── */
+function rendreCours(){
+  const c = COURS, out = [];
+
+  out.push(`<section class="bloc rev" id="s-essentiel">
+    <div class="essentiel"><div class="essentiel-label">${t('essentiel')}</div><p>${T(c.essentiel)}</p></div>
+    <div class="stats">${c.chiffres.map((x,i)=>
+      `<div class="stat" style="--c:var(--a${(i%4)+1})"><span class="stat-n">${T(x.n)}</span><span class="stat-d">${T(x.d)}</span></div>`).join('')}</div>
+  </section>`);
+
+  if(c.chronologie?.length){
+    out.push(`<section class="bloc rev chrono-mobile" id="s-chrono">
+      <div class="bloc-head"><span class="bloc-kicker">${t('reperes')}</span><h2 class="bloc-title">${t('chrono')}</h2></div>
+      ${bloc({t:'tl',items:c.chronologie})}</section>`);
+  }
+
+  c.parties.forEach((p,pi)=>{
+    let html = `<section class="partie rev" id="p-${pi}" style="--p:${p.couleur}">
+      <div class="partie-head"><div class="partie-num">${p.num}</div>
+      <div><div class="partie-kicker">${T(p.kicker)}</div><h2 class="partie-title">${T(p.titre)}</h2></div></div>`;
+    p.sections.forEach((s,si)=>{
+      html += `<div class="section" id="p-${pi}-${si}"><h3 class="section-title"><span class="section-num">${si+1}.</span> ${T(s.titre)}</h3>
+        ${s.blocs.map(bloc).join('')}</div>`;
+    });
+    out.push(html+`</section>`);
+  });
+
+  if(c.acteurs?.length){
+    out.push(`<section class="bloc rev" id="s-acteurs">
+      <div class="bloc-head"><span class="bloc-kicker">${t('quiEstQui')}</span><h2 class="bloc-title">${t('acteurs')}</h2></div>
+      <div class="acteurs">${c.acteurs.map(a=>
+        `<div class="acteur" style="--c:${a.c}"><div class="acteur-nom">${a.nom}</div>
+         <div class="acteur-role">${T(a.role)}</div><div class="acteur-c">${T(a.d)}</div></div>`).join('')}</div></section>`);
+  }
+
+  if(c.debat){
+    out.push(`<section class="bloc rev" id="s-debat">
+      <div class="bloc-head"><span class="bloc-kicker" style="--k:var(--a4)">${t('controverse')}</span>
+      <h2 class="bloc-title">${T(c.debat.question)}</h2></div>
+      <div class="debat">
+        <div class="debat-col oui"><div class="debat-t">${T(c.debat.oui.titre)}</div>
+          <ul>${T(c.debat.oui.items).map(i=>`<li>${i}</li>`).join('')}</ul></div>
+        <div class="debat-col non"><div class="debat-t">${T(c.debat.non.titre)}</div>
+          <ul>${T(c.debat.non.items).map(i=>`<li>${i}</li>`).join('')}</ul></div>
+      </div>
+      ${c.debat.synthese?`<div class="encadre" style="--c:var(--a1);margin-top:14px">
+        <div class="encadre-ic">⚖️</div><div><div class="encadre-t">${t('synthese')}</div>
+        <div class="encadre-c">${T(c.debat.synthese)}</div></div></div>`:''}
+    </section>`);
+  }
+
+  if(c.lexique?.length){
+    out.push(`<section class="bloc rev" id="s-lexique">
+      <div class="bloc-head"><span class="bloc-kicker" style="--k:var(--a2)">${t('vocab')}</span>
+      <h2 class="bloc-title">${t('lexique')}</h2></div>
+      <input class="lex-search" id="lex-search" placeholder="${t('filtrer')}" aria-label="${t('filtrer')}">
+      <div class="tbl-wrap"><table class="lex"><thead><tr><th>${t('terme')}</th><th>${t('trad')}</th></tr></thead>
+      <tbody id="lex-body">${c.lexique.map(l=>`<tr><td>${l.es}</td><td>${l.fr}</td></tr>`).join('')}</tbody></table></div>
+    </section>`);
+  }
+
+  if(c.sujets?.length){
+    out.push(`<section class="bloc rev" id="s-sujets">
+      <div class="bloc-head"><span class="bloc-kicker" style="--k:var(--a4)">${t('entrainement')}</span>
+      <h2 class="bloc-title">${t('sujets')}</h2></div>
+      ${c.sujets.map((s,i)=>`<div class="sujet"><div class="sujet-n">${String(i+1).padStart(2,'0')}</div>
+        <div><div class="sujet-q">${T(s.q)}</div><div class="sujet-h">${T(s.h)}</div></div></div>`).join('')}</section>`);
+  }
+
+  if(c.retenir?.length){
+    out.push(`<section class="bloc rev" id="s-retenir">
+      <div class="bloc-head"><span class="bloc-kicker">${t('memoriser')}</span><h2 class="bloc-title">${t('retenir')}</h2></div>
+      <div class="retenir"><ul>${T(c.retenir).map(r=>`<li>${r}</li>`).join('')}</ul></div></section>`);
+  }
+
+  $('#cours').innerHTML = out.join('');
+}
+
+/* ─── Colonne chronologie ─── */
+function rendreRail(){
+  if(!COURS.chronologie?.length){ $('#rail')?.remove(); return; }
+  $('#rail').innerHTML = `<div class="rail-title">${t('chrono')}</div>${bloc({t:'tl',items:COURS.chronologie})}`;
+}
+
+/* ─── Recherche dans le lexique ─── */
+function brancherLexique(){
+  const ls = $('#lex-search'); if(!ls) return;
+  ls.addEventListener('input', ()=>{
+    const q = ls.value.toLowerCase().trim();
+    $('#lex-body').querySelectorAll('tr').forEach(tr=>{
+      tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+  });
+}
+
+/* ─── Changement de langue ─── */
+function setLang(lang){
+  LANG = lang;
+  $('#ap-btn-fr').classList.toggle('active', lang==='fr');
+  $('#ap-btn-es').classList.toggle('active', lang==='es');
+  rendreHero(); rendreCours(); rendreRail();
+  document.querySelectorAll('.rev').forEach(el=>el.classList.add('vu'));
+  brancherLexique();
+}
+
+/* ─── Démarrage ─── */
+function demarrer(){
+  rendreHero(); rendreCours(); rendreRail(); brancherLexique();
+
+  const maj = ()=>{
+    const h = document.body.scrollHeight - innerHeight;
+    $('#progress').style.width = (h>0 ? (scrollY/h)*100 : 0) + '%';
+  };
+  addEventListener('scroll', maj, {passive:true}); maj();
+
+  if(!('IntersectionObserver' in window)){
+    document.querySelectorAll('.rev').forEach(el=>el.classList.add('vu'));
+    return;
+  }
+  const io = new IntersectionObserver(es=>es.forEach(x=>{
+    if(x.isIntersecting){ x.target.classList.add('vu'); io.unobserve(x.target); }
+  }), {threshold:.06});
+  document.querySelectorAll('.rev').forEach(el=>io.observe(el));
+}
+
+demarrer();
+</script>
+</body>
+</html>

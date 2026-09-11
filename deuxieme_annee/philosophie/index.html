@@ -1,0 +1,1789 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Philosophie 1ère Année</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #c8a96e;
+    --accent2: #7c9ec9;
+    --accent3: #9ecba0;
+    --accent4: #c97c9e;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+    /* HGG light theme vars */
+    --cream: #F5F0E8;
+    --dark: #1A1208;
+    --brown: #3D2B1F;
+    --gold: #C9A84C;
+    --rust: #8B3A2A;
+    --muted: #7A6A5A;
+    --light-brown: #E8DDD0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  /* ─── PAGES ─── */
+  .page { display: none; min-height: 100vh; flex-direction: column; }
+  .page.active { display: flex; }
+
+  /* ─── BACKGROUND — subtle gradient blobs, no grid ─── */
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: var(--accent); top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: var(--accent2); bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: var(--accent4); top: 40%; left: 30%; opacity: 0.05; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--accent); cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb span:hover { color: var(--accent); }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); cursor: default; }
+
+  /* ─── ACCUEIL ─── */
+  #page-accueil { justify-content: center; align-items: center; }
+  .hero { text-align: center; padding: 80px 48px; position: relative; z-index: 1; }
+  .hero-eyebrow { font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 24px; font-family: 'DM Mono', monospace; }
+  .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(3rem, 7vw, 6rem); font-weight: 900; line-height: 1.0; margin-bottom: 20px; color: var(--text); }
+  .hero-sub { font-size: 1rem; color: var(--text-dim); margin-bottom: 72px; font-weight: 300; letter-spacing: 0.05em; }
+
+  .home-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 860px; width: 100%; }
+  .home-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 40px 36px; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; text-align: left; }
+  .home-card::before { content: ''; position: absolute; inset: 0; background: var(--card-color, var(--accent)); opacity: 0; transition: opacity 0.3s; }
+  .home-card:hover::before { opacity: 0.06; }
+  .home-card:hover { border-color: var(--card-color, var(--accent)); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+  .card-icon { font-size: 2.4rem; margin-bottom: 20px; display: block; }
+  .card-number { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--card-color, var(--accent)); margin-bottom: 10px; font-weight: 500; font-family: 'DM Mono', monospace; }
+  .card-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+  .card-desc { font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; font-weight: 300; }
+  .card-arrow { position: absolute; bottom: 24px; right: 28px; font-size: 1.2rem; color: var(--card-color, var(--accent)); opacity: 0; transform: translateX(-8px); transition: all 0.3s; }
+  .home-card:hover .card-arrow { opacity: 1; transform: translateX(0); }
+
+  /* ─── PAGE HEADER ─── */
+  .page-header { padding: 60px 64px 40px; border-bottom: 1px solid var(--border); position: relative; z-index: 1; }
+  .page-header::after { content: ''; position: absolute; bottom: -1px; left: 64px; width: 60px; height: 2px; background: var(--accent); }
+  .page-eyebrow { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 500; font-family: 'DM Mono', monospace; }
+  .page-title { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 900; color: var(--text); }
+
+  /* ─── CHOICES ─── */
+  .choices-container { padding: 60px 64px; flex: 1; position: relative; z-index: 1; }
+  .choices-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; max-width: 1000px; }
+  .choice-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 32px 28px; cursor: pointer; transition: all 0.25s; position: relative; overflow: hidden; }
+  .choice-card:hover { border-color: var(--card-color, var(--accent)); background: var(--surface2); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.35); }
+  .choice-card .card-icon { font-size: 1.8rem; margin-bottom: 14px; }
+  .choice-card .card-title { font-size: 1.15rem; margin-bottom: 6px; }
+  .choice-card .card-desc { font-size: 0.8rem; }
+  .choice-card.disabled { opacity: 0.45; cursor: default; pointer-events: none; }
+
+  /* ─── CHAPTER LIST ─── */
+  .page-body { display: flex; align-items: stretch; gap: 40px; padding: 48px 64px; position: relative; z-index: 1; }
+  .chapters-container { flex: 1; max-width: 900px; border-right: 1px solid var(--border); padding-right: 32px; }
+  .chapter-item { display: flex; align-items: center; gap: 20px; padding: 20px 24px; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; background: var(--surface); }
+  .chapter-item:hover { border-color: var(--accent); background: var(--surface2); transform: translateX(4px); }
+  .chapter-item.disabled { opacity: 0.38; cursor: default; pointer-events: none; }
+  .chapter-num { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 900; color: var(--text-faint); min-width: 48px; line-height: 1; }
+  .chapter-info { flex: 1; }
+  .chapter-info .chapter-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-dim); margin-bottom: 4px; font-family: 'DM Mono', monospace; }
+  .chapter-info .chapter-name { font-size: 1rem; font-weight: 500; color: var(--text); }
+  .chapter-arrow { color: var(--text-faint); font-size: 1.1rem; transition: all 0.2s; }
+  .chapter-item:hover .chapter-arrow { color: var(--accent); transform: translateX(4px); }
+
+  .sidebar { width: 300px; flex-shrink: 0; align-self: flex-start; position: sticky; top: 90px; display: flex; flex-direction: column; gap: 20px; }
+  .motif-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 20px 16px; }
+  .motif-card svg { width: 100%; height: auto; display: block; }
+  .motif-caption { text-align: center; margin-top: 10px; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); font-family: 'DM Mono', monospace; }
+  @media (max-width: 1000px) {
+    .sidebar { display: none; }
+  }
+
+  /* ─── HGG COURSE VIEWER (light theme matching uploaded HTML) ─── */
+  #page-hgg-course { background: var(--cream); color: var(--dark); }
+  #page-hgg-course nav { background: var(--dark); border-bottom: 1px solid rgba(201,168,76,0.2); }
+  #page-hgg-course .nav-logo { color: var(--gold); }
+  #page-hgg-course .breadcrumb { color: rgba(245,240,232,0.5); }
+  #page-hgg-course .breadcrumb span:hover { color: var(--gold); }
+  #page-hgg-course .breadcrumb .current { color: var(--cream); }
+  #page-hgg-course .breadcrumb .sep { color: rgba(245,240,232,0.25); }
+
+  .hgg-chapter-header {
+    padding: 6rem 2rem 4rem; text-align: center; position: relative;
+  }
+  .hgg-chapter-header.ch1 { background: #3D1F2B; }
+  .hgg-chapter-header.ch2 { background: #3D2B1F; }
+  .hgg-chapter-header.ch3 { background: #1F3D2B; }
+  .hgg-chapter-header.ch4 { background: #2A3D5F; }
+  .hgg-chapter-header.ch5 { background: #2D1F3D; }
+  .hgg-chapter-header.ch6 { background: #3D2200; }
+  .hgg-chapter-header.ch7 { background: #1F2D3D; }
+  .hgg-chapter-header.ch8 { background: #1A2A1A; }
+  .hgg-chapter-header.ch9 { background: #1F2A3D; }
+  .hgg-chapter-header.ch10 { background: #2A1F0A; }
+  .hgg-chapter-header.ch11 { background: #0A2A2A; }
+  .hgg-chapter-header.ch12 { background: #1A0A2A; }
+  .hgg-chapter-header h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 4.5rem); color: var(--cream); font-weight: 900; max-width: 900px; margin: 0 auto 1rem; line-height: 1.1; }
+  .hgg-chapter-header p { color: rgba(245,240,232,0.5); font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; }
+  .hgg-chapter-header .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; }
+
+  .hgg-toc { background: var(--light-brown); padding: 3rem 2rem; border-bottom: 1px solid rgba(0,0,0,0.1); }
+  .hgg-toc-inner { max-width: 900px; margin: 0 auto; }
+  .hgg-toc-title { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.5rem; }
+  .hgg-toc-list { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 0.5rem; }
+  .hgg-toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.75rem 1rem; text-decoration: none; color: var(--brown); font-size: 0.875rem; border: 1px solid transparent; transition: all 0.2s; }
+  .hgg-toc-list a:hover { border-color: var(--gold); background: white; color: var(--dark); }
+  .toc-num { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--gold); flex-shrink: 0; margin-top: 0.1rem; }
+
+  .hgg-content { max-width: 860px; margin: 0 auto; padding: 5rem 2rem 8rem; font-family: 'DM Sans', sans-serif; font-weight: 300; }
+  .hgg-content p { margin-bottom: 1.2rem; font-size: 1rem; color: #2D2016; line-height: 1.7; }
+  .hgg-content strong { color: var(--dark); font-weight: 500; }
+
+  .hgg-part { margin-bottom: 5rem; }
+  .hgg-part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 3rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--gold); }
+  .hgg-part-num { font-family: 'Playfair Display', serif; font-size: 4rem; font-weight: 900; color: var(--light-brown); line-height: 1; flex-shrink: 0; }
+  .hgg-part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.3rem, 3vw, 2rem); font-weight: 700; color: var(--dark); line-height: 1.2; }
+
+  .hgg-section { margin-bottom: 4rem; }
+  .hgg-section-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: var(--brown); margin-bottom: 2rem; padding-left: 1.5rem; border-left: 3px solid var(--gold); scroll-margin-top: 2rem; }
+  .hgg-subsection-title { font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--rust); margin: 2.5rem 0 1rem; }
+
+  .hgg-highlight { background: var(--light-brown); border-left: 4px solid var(--gold); padding: 1.5rem 2rem; margin: 2rem 0; font-style: italic; color: var(--brown); }
+  .hgg-key-fact { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 0.75rem; padding: 1rem 1.25rem; background: white; border: 1px solid var(--light-brown); }
+  .hgg-key-bullet { width: 6px; height: 6px; background: var(--gold); border-radius: 50%; flex-shrink: 0; margin-top: 0.55rem; }
+
+  .hgg-concept { background: var(--dark); color: var(--cream); padding: 2rem; margin: 2.5rem 0; position: relative; }
+  .hgg-concept::before { content: '→'; position: absolute; top: 1.5rem; right: 1.5rem; color: var(--gold); font-size: 1.5rem; }
+  .hgg-concept .concept-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.75rem; }
+  .hgg-concept p { color: rgba(245,240,232,0.8); font-size: 0.95rem; }
+  .hgg-concept strong { color: var(--gold); }
+
+  .hgg-author { border: 1px solid var(--light-brown); padding: 1.5rem 2rem; margin: 2rem 0; background: white; }
+  .hgg-author .author-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--brown); margin-bottom: 0.5rem; }
+
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1px; background: var(--light-brown); margin: 2rem 0; border: 1px solid var(--light-brown); }
+  .hgg-stat-cell { background: white; padding: 1.5rem; text-align: center; }
+  .hgg-stat-num { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900; color: var(--rust); display: block; }
+  .hgg-stat-label { font-size: 0.8rem; color: var(--muted); margin-top: 0.25rem; }
+
+  .hgg-timeline { margin: 2rem 0; position: relative; padding-left: 2rem; }
+  .hgg-timeline::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--light-brown); }
+  .hgg-timeline-item { position: relative; padding: 1rem 0 1rem 1.5rem; border-bottom: 1px solid var(--light-brown); }
+  .hgg-timeline-item:last-child { border-bottom: none; }
+  .hgg-timeline-item::before { content: ''; position: absolute; left: -1.55rem; top: 1.4rem; width: 10px; height: 10px; background: var(--gold); border-radius: 50%; }
+  .hgg-timeline-date { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--gold); margin-bottom: 0.25rem; }
+
+  /* ─── PHILO COURSE VIEWER (dark) ─── */
+  .course-body { display: flex; flex: 1; overflow: hidden; }
+  .course-sidebar { width: 280px; min-width: 280px; border-right: 1px solid var(--border); padding: 32px 24px; overflow-y: auto; background: var(--surface); }
+  .sidebar-title { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.2em; color: var(--text-faint); margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); font-family: 'DM Mono', monospace; }
+  .sidebar-item { padding: 10px 14px; border-radius: 8px; cursor: pointer; font-size: 0.82rem; color: var(--text-dim); transition: all 0.2s; margin-bottom: 4px; line-height: 1.4; }
+  .sidebar-item:hover { background: var(--surface2); color: var(--text); }
+  .sidebar-item.active { background: var(--surface2); color: var(--accent); border-left: 2px solid var(--accent); }
+  .course-content { flex: 1; overflow-y: auto; padding: 56px 72px; max-width: 900px; }
+  .course-content h1 { font-family: 'Playfair Display', serif; font-size: 2.4rem; font-weight: 900; margin-bottom: 8px; color: var(--text); line-height: 1.2; }
+  .course-tag { display: inline-block; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 14px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); margin-bottom: 40px; font-family: 'DM Mono', monospace; }
+  .course-section { margin-bottom: 48px; }
+  .course-section h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: var(--accent); margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .course-section h3 { font-size: 0.8rem; font-weight: 500; color: var(--accent2); margin: 24px 0 12px; text-transform: uppercase; letter-spacing: 0.12em; font-family: 'DM Mono', monospace; }
+  .course-section p { color: var(--text-dim); line-height: 1.8; margin-bottom: 16px; font-size: 0.95rem; font-weight: 300; }
+  .def-block { background: var(--surface2); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 20px 24px; margin: 20px 0; }
+  .def-block strong { color: var(--accent); }
+  .def-block p { margin: 6px 0 0; color: var(--text-dim); font-size: 0.9rem; }
+  .highlight-box { background: rgba(200, 169, 110, 0.08); border: 1px solid rgba(200, 169, 110, 0.25); border-radius: 10px; padding: 20px 24px; margin: 20px 0; font-style: italic; color: var(--text-dim); font-size: 0.9rem; line-height: 1.7; }
+  .highlight-box cite { display: block; margin-top: 10px; font-style: normal; font-size: 0.78rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.1em; font-family: 'DM Mono', monospace; }
+  .info-box { background: rgba(124, 158, 201, 0.08); border: 1px solid rgba(124, 158, 201, 0.25); border-radius: 10px; padding: 20px 24px; margin: 20px 0; text-align: center; font-size: 0.9rem; color: var(--text-dim); line-height: 1.6; font-style: italic; }
+  .list-styled { list-style: none; margin: 12px 0 20px; }
+  .list-styled li { position: relative; padding-left: 20px; margin-bottom: 8px; color: var(--text-dim); font-size: 0.9rem; line-height: 1.6; font-weight: 300; }
+  .list-styled li::before { content: '→'; position: absolute; left: 0; color: var(--accent); }
+  .philosopher-tag { display: inline-block; background: rgba(200,169,110,0.12); color: var(--accent); padding: 2px 10px; border-radius: 4px; font-size: 0.78rem; font-weight: 500; margin-right: 6px; font-family: 'DM Mono', monospace; }
+
+  /* ─── CULTURE GEN ─── */
+  .cg-layout { display: flex; flex: 1; overflow: hidden; }
+  .cg-sidebar { width: 240px; min-width: 240px; border-right: 1px solid var(--border); padding: 28px 20px; background: var(--surface); overflow-y: auto; }
+  .cg-sidebar-section { margin-bottom: 28px; }
+  .cg-sidebar-label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.2em; color: var(--text-faint); margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border); font-family: 'DM Mono', monospace; }
+  .cg-filter-btn { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; cursor: pointer; font-size: 0.82rem; color: var(--text-dim); transition: all 0.2s; margin-bottom: 3px; }
+  .cg-filter-btn:hover { background: var(--surface2); color: var(--text); }
+  .cg-filter-btn.active { background: var(--surface2); color: var(--accent); }
+  .cg-filter-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+  .cg-main { flex: 1; overflow-y: auto; padding: 40px 48px; }
+  /* ─── CG ACCORDION LIST ─── */
+  .cg-list { display: flex; flex-direction: column; gap: 10px; }
+  .cg-item { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s; cursor: pointer; }
+  .cg-item:hover { border-color: var(--item-color, var(--accent2)); box-shadow: 0 6px 24px rgba(0,0,0,0.25); transform: translateY(-2px); }
+  .cg-item.cg-open { border-color: var(--item-color, var(--accent2)); }
+  .cg-item-header { display: flex; align-items: center; gap: 20px; padding: 20px 24px; cursor: pointer; user-select: none; position: relative; }
+  .cg-item-header::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--item-color, var(--accent2)); border-radius: 14px 0 0 14px; opacity: 0.7; transition: opacity 0.2s; }
+  .cg-item.cg-open .cg-item-header::before { opacity: 1; }
+  .cg-item-num { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 900; color: var(--item-color, var(--text-faint)); min-width: 44px; line-height: 1; flex-shrink: 0; opacity: 0.5; }
+  .cg-item.cg-open .cg-item-num { opacity: 1; }
+  .cg-item-info { flex: 1; }
+  .cg-item-day { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.2em; color: var(--item-color, var(--text-faint)); margin-bottom: 4px; font-family: 'DM Mono', monospace; opacity: 0.7; }
+  .cg-item-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--text); line-height: 1.3; margin-bottom: 5px; }
+  .cg-item-sub { font-size: 0.78rem; color: var(--text-dim); line-height: 1.4; }
+  .cg-item-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.68rem; font-weight: 500; background: color-mix(in srgb, var(--item-color, var(--accent2)) 15%, transparent); color: var(--item-color, var(--text-dim)); margin-top: 6px; }
+  .cg-item-toggle { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--item-color, var(--accent2)); font-size: 1rem; flex-shrink: 0; transition: all 0.25s; }
+  .cg-item:hover .cg-item-toggle { background: color-mix(in srgb, var(--item-color, var(--accent2)) 15%, transparent); border-color: var(--item-color, var(--accent2)); transform: translateX(3px); }
+  /* Accordion body */
+  .cg-item-body { max-height: 0; overflow: hidden; transition: max-height 0.45s cubic-bezier(0.4,0,0.2,1); }
+  .cg-item.cg-open .cg-item-body { max-height: 6000px; }
+  .cg-item-body-inner { border-top: 1px solid var(--border); }
+
+  /* ─── FICHE CONTENT (inside accordion) ─── */
+  .cg-fiche-wrap { padding: 28px 32px 32px; font-family: 'DM Sans', sans-serif; }
+  .cg-section { margin-top: 24px; }
+  .cg-section-label {
+    font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--text-faint); margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .cg-section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .cg-prose { font-size: 0.88rem; line-height: 1.8; color: var(--text); }
+  .cg-prose strong { color: var(--text); font-weight: 600; }
+  /* Timeline */
+  .cg-timeline { display: flex; flex-direction: column; }
+  .cg-tl-row { display: grid; grid-template-columns: 72px 1fr; gap: 16px; align-items: baseline; padding: 9px 0; border-bottom: 1px solid var(--border); }
+  .cg-tl-row:last-child { border-bottom: none; }
+  .cg-tl-yr { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--text-faint); }
+  .cg-tl-text { font-size: 0.82rem; line-height: 1.55; color: var(--text); }
+  .cg-tl-text strong { font-weight: 600; }
+  /* Mini cards grid */
+  .cg-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .cg-mini { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; background: var(--surface2); }
+  .cg-mini-tag { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 6px; border-radius: 3px; display: inline-block; margin-bottom: 7px; background: var(--border); color: var(--text-dim); }
+  .cg-mini-title { font-size: 0.82rem; font-weight: 600; color: var(--text); margin-bottom: 3px; line-height: 1.3; }
+  .cg-mini-desc { font-size: 0.75rem; color: var(--text-dim); line-height: 1.45; }
+  /* Highlight box */
+  .cg-hl { border-radius: 10px; padding: 14px 18px; font-size: 0.83rem; line-height: 1.7; background: var(--surface2); color: var(--text); border-left: 3px solid var(--accent2); }
+  /* Anecdote */
+  .cg-anecdote { border-left: 3px solid var(--accent); padding: 12px 16px; border-radius: 0 8px 8px 0; font-size: 0.83rem; line-height: 1.7; font-style: italic; background: rgba(200,169,110,0.07); color: var(--text); }
+  /* Stats row */
+  .cg-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .cg-stat { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; text-align: center; background: var(--surface2); }
+  .cg-stat-num { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--accent); margin-bottom: 3px; }
+  .cg-stat-label { font-size: 0.68rem; color: var(--text-dim); line-height: 1.35; }
+  /* VS row */
+  .cg-vs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .cg-vs-card { border-radius: 10px; padding: 12px 14px; border: 1px solid; }
+  .cg-vs-name { font-size: 0.82rem; font-weight: 600; margin-bottom: 5px; }
+  .cg-vs-desc { font-size: 0.75rem; line-height: 1.45; color: var(--text-dim); }
+  /* Pillars */
+  .cg-pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .cg-pillar { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; background: var(--surface2); }
+  .cg-pillar-title { font-size: 0.82rem; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .cg-pillar-desc { font-size: 0.75rem; color: var(--text-dim); line-height: 1.4; }
+
+  @media (max-width: 600px) {
+    .cg-cards, .cg-vs, .cg-pillars, .cg-stats { grid-template-columns: 1fr; }
+    .cg-fiche-wrap { padding: 20px; }
+  }
+
+  /* ─── FICHE CG ─── */
+  .fiche-content { max-width: 800px; padding: 56px 64px; overflow-y: auto; flex: 1; }
+  .fiche-content h1 { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900; margin-bottom: 6px; }
+  .fiche-section { margin: 36px 0; }
+  .fiche-section h2 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  .fiche-fact { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 10px; font-size: 0.88rem; color: var(--text-dim); line-height: 1.6; }
+  .fiche-key { color: var(--accent); font-weight: 500; }
+
+  /* ─── FICHE PLEINE PAGE (style culture générale) ─── */
+  #page-cg-fiche { flex-direction: column; }
+  #page-cg-fiche .page-scroll { flex: 1; overflow-y: auto; }
+
+  .fp-hero {
+    position: relative;
+    overflow: hidden;
+    min-height: 280px;
+  }
+  .fp-hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  .fp-hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 48px 56px;
+  }
+  .fp-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 48px;
+    transition: color 0.2s;
+  }
+  .fp-back-btn:hover { color: rgba(255,255,255,0.9); }
+  .fp-back-btn svg { width: 14px; height: 14px; }
+
+  .fp-jour {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    opacity: 0.75;
+  }
+  .fp-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: clamp(2.4rem, 5.5vw, 4rem);
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+  .fp-tagline {
+    font-size: 1rem;
+    line-height: 1.65;
+    opacity: 0.65;
+    max-width: 500px;
+    font-weight: 300;
+  }
+
+  /* Corps de la fiche pleine page */
+  .fp-body {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 56px 48px 100px;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .fp-section {
+    margin-bottom: 48px;
+  }
+  .fp-section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .fp-section-label .fp-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .fp-section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .fp-prose {
+    font-size: 0.95rem;
+    line-height: 1.8;
+    color: rgba(232,230,224,0.85);
+    font-weight: 300;
+  }
+  .fp-prose strong { color: var(--text); font-weight: 500; }
+
+  /* Timeline full page */
+  .fp-timeline { display: flex; flex-direction: column; }
+  .fp-tl-item {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 20px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: baseline;
+  }
+  .fp-tl-item:last-child { border-bottom: none; }
+  .fp-tl-yr { font-family: 'DM Mono', monospace; font-size: 0.7rem; opacity: 0.45; }
+  .fp-tl-txt { font-size: 0.88rem; line-height: 1.65; color: rgba(232,230,224,0.8); }
+  .fp-tl-txt strong { color: var(--text); font-weight: 500; }
+
+  /* Mini grid full page */
+  .fp-mini-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .fp-mini-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    transition: border-color 0.2s;
+  }
+  .fp-mini-card:hover { border-color: rgba(255,255,255,0.15); }
+  .fp-mini-tag {
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 100px;
+    display: inline-block;
+    margin-bottom: 9px;
+  }
+  .fp-mini-title { font-size: 0.88rem; font-weight: 600; color: var(--text); margin-bottom: 4px; line-height: 1.3; }
+  .fp-mini-desc { font-size: 0.78rem; color: var(--text-dim); line-height: 1.5; }
+
+  /* Highlight box full page */
+  .fp-hl {
+    border-radius: 10px;
+    padding: 16px 20px;
+    font-size: 0.88rem;
+    line-height: 1.7;
+    border: 1px solid;
+    margin-top: 14px;
+  }
+
+  /* Anecdote full page */
+  .fp-anecdote {
+    position: relative;
+    padding: 20px 20px 20px 28px;
+    border-left: 3px solid;
+    border-radius: 0 12px 12px 0;
+    font-size: 0.88rem;
+    line-height: 1.75;
+    font-style: italic;
+    color: rgba(232,230,224,0.8);
+  }
+
+  /* VS row full page */
+  .fp-vs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .fp-vs-card { border-radius: 12px; padding: 16px 18px; border: 1px solid; }
+  .fp-vs-name { font-size: 0.88rem; font-weight: 600; margin-bottom: 6px; }
+  .fp-vs-desc { font-size: 0.8rem; color: var(--text-dim); line-height: 1.5; }
+
+  /* Stats row full page */
+  .fp-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .fp-stat { border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; text-align: center; background: var(--surface); }
+  .fp-stat-num { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 900; margin-bottom: 4px; }
+  .fp-stat-label { font-size: 0.7rem; color: var(--text-dim); line-height: 1.35; font-family: 'DM Mono', monospace; }
+
+  /* Pillars full page */
+  .fp-pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .fp-pillar { border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; background: var(--surface); }
+  .fp-pillar-title { font-size: 0.85rem; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .fp-pillar-desc { font-size: 0.75rem; color: var(--text-dim); line-height: 1.45; }
+
+  @media (max-width: 640px) {
+    .fp-hero-content, .fp-body { padding-left: 20px; padding-right: 20px; }
+    .fp-mini-grid, .fp-vs, .fp-pillars, .fp-stats { grid-template-columns: 1fr; }
+    .fp-title { font-size: 2.2rem; }
+  }
+
+  /* ─── ACTUALITÉ ─── */
+  .actu-layout { display: flex; flex: 1; overflow: hidden; }
+  .actu-sidebar { width: 220px; min-width: 220px; border-right: 1px solid var(--border); padding: 28px 18px; background: var(--surface); overflow-y: auto; }
+  .actu-main { flex: 1; overflow-y: auto; padding: 40px 48px; }
+  .actu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+
+  .actu-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 28px 26px; cursor: pointer; transition: all 0.25s; position: relative; overflow: hidden; }
+  .actu-card:hover { border-color: var(--card-color, var(--accent)); background: var(--surface2); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+  .actu-card-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  .actu-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.68rem; font-weight: 500; font-family: 'DM Mono', monospace; letter-spacing: 0.05em; }
+  .actu-badge.pays { background: rgba(200,169,110,0.12); color: var(--accent); }
+  .actu-badge.theme { background: var(--surface2); color: var(--text-dim); }
+  .actu-date { font-size: 0.7rem; color: var(--text-faint); margin-left: auto; font-family: 'DM Mono', monospace; }
+  .actu-card-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--text); line-height: 1.35; margin-bottom: 12px; }
+  .actu-card-summary { font-size: 0.82rem; color: var(--text-dim); line-height: 1.6; font-weight: 300; }
+  .actu-card.title-only { padding: 20px 22px; }
+  .actu-card.title-only .actu-card-meta { margin-bottom: 10px; }
+  .actu-card.title-only .actu-card-title { font-size: 1rem; margin-bottom: 0; }
+
+  /* ─── Image carte actu ─── */
+  .actu-card-img-wrap { margin: -20px -22px 16px -22px; overflow: hidden; border-radius: 13px 13px 0 0; aspect-ratio: 16/9; }
+  .actu-card-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
+  .actu-card:hover .actu-card-img { transform: scale(1.04); }
+  .actu-card-img-wrap + .actu-card-meta { margin-top: 0; }
+
+  /* ─── Hero image article presse ─── */
+  .ap-hero-img-wrap { width: 100%; border-radius: 12px 12px 0 0; overflow: hidden; aspect-ratio: 16/7; margin-bottom: 0; }
+  .ap-hero-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* ─── ARTICLE DE PRESSE ─── */
+  #page-article { flex-direction: column; }
+  .article-body { flex: 1; overflow-y: auto; }
+  .article-hero { padding: 60px 80px 48px; max-width: 1000px; margin: 0 auto; }
+  .article-meta-top { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; flex-wrap: wrap; }
+  .article-title { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 3.5vw, 3rem); font-weight: 900; color: var(--text); line-height: 1.15; margin-bottom: 20px; }
+  .article-lead { font-size: 1.1rem; color: var(--text-dim); line-height: 1.7; border-left: 3px solid var(--accent); padding-left: 20px; margin-bottom: 40px; font-weight: 300; }
+  .article-stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 32px 0; }
+  .article-stat-cell { background: var(--surface); padding: 20px 24px; text-align: center; }
+  .article-stat-num { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 900; color: var(--accent); display: block; }
+  .article-stat-label { font-size: 0.75rem; color: var(--text-faint); margin-top: 4px; font-family: 'DM Mono', monospace; }
+  .article-content { max-width: 1000px; margin: 0 auto; padding: 0 80px 80px; }
+  .article-h2 { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--text); margin: 36px 0 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .article-p { font-size: 0.95rem; color: var(--text-dim); line-height: 1.8; margin-bottom: 16px; font-weight: 300; }
+  .article-quote { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: 0 12px 12px 0; padding: 24px 28px; margin: 28px 0; font-style: italic; color: var(--text-dim); font-size: 1rem; line-height: 1.7; }
+  .article-quote cite { display: block; margin-top: 12px; font-style: normal; font-size: 0.75rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.1em; font-family: 'DM Mono', monospace; }
+  .article-context { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; margin: 28px 0; }
+  .article-context-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent2); margin-bottom: 12px; font-family: 'DM Mono', monospace; }
+  .article-list { list-style: none; margin: 10px 0; }
+  .article-list li { position: relative; padding-left: 18px; margin-bottom: 8px; color: var(--text-dim); font-size: 0.9rem; line-height: 1.6; }
+  .article-list li::before { content: '—'; position: absolute; left: 0; color: var(--accent); }
+  .article-divider { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  .article-sources { font-size: 0.75rem; color: var(--text-faint); font-style: italic; margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); font-family: 'DM Mono', monospace; }
+
+  /* ─── HUMANITÉ ─── */
+  /* same as course viewer dark */
+
+  /* ─── ARTICLE PRESSE — PAGE FOND ─── */
+  #page-article-anglais, #page-article, #page-article-monde {
+    background: linear-gradient(160deg, #0f1218 0%, #141820 40%, #111620 100%) !important;
+  }
+  #page-article-anglais nav, #page-article nav, #page-article-monde nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,12,18,0.92) !important;
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(212,175,90,0.15) !important;
+  }
+
+  /* ─── BANDE TITRE ─── */
+  .ap-band {
+    background: linear-gradient(90deg, #8b0000, #b5131f, #8b0000);
+    text-align:center; padding:6px 0;
+    font-family:'DM Mono',monospace; font-size:10px; letter-spacing:3px;
+    text-transform:uppercase; color:#fff;
+    letter-spacing: 0.25em;
+  }
+
+  /* ─── BARRE RETOUR ─── */
+  .ap-back-bar {
+    background: rgba(13,27,42,0.95);
+    padding:12px 60px;
+    border-bottom: 1px solid rgba(212,175,90,0.12);
+  }
+  .ap-back-btn {
+    background:none; border:none; cursor:pointer;
+    color:rgba(255,255,255,.55); font-family:'DM Mono',monospace;
+    font-size:10px; letter-spacing:1px; text-transform:uppercase;
+    display:flex; align-items:center; gap:6px; padding:0; transition:color .2s;
+  }
+  .ap-back-btn:hover { color:#d4af5a; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+
+  /* ─── CONTENEUR PRINCIPAL ─── */
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; }
+
+  /* ─── CARTE ARTICLE ─── */
+  .ap-card {
+    background: #13161f;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(212,175,90,0.12);
+    box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03);
+  }
+
+  /* ─── HERO IMAGE ─── */
+  .ap-hero-img-wrap {
+    width:100%; overflow:hidden;
+    aspect-ratio: 16/7;
+    position: relative;
+  }
+  .ap-hero-img-wrap::after {
+    content:'';
+    position:absolute; inset:0;
+    background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%);
+  }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+
+  /* ─── HEADER ─── */
+  .ap-header {
+    padding: 32px 40px 24px;
+    background: linear-gradient(180deg, rgba(19,22,31,0) 0%, #13161f 100%);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    margin-top: -2px;
+  }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag {
+    display:inline-block; font-family:'DM Mono',monospace; font-size:9px;
+    font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
+    padding:4px 10px; border-radius:3px;
+  }
+  .ap-tag-red    { background:rgba(181,19,31,0.2);  color:#f08080; border:1px solid rgba(181,19,31,0.35); }
+  .ap-tag-navy   { background:rgba(13,27,42,0.6);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-olive  { background:rgba(93,122,0,0.2);   color:#aed581; border:1px solid rgba(174,213,129,0.3); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title {
+    font-family:'Playfair Display',serif; font-size:28px; font-weight:900;
+    line-height:1.25; color:#e8e4d8; margin-bottom:16px; max-width:820px;
+  }
+  .ap-intro {
+    font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65);
+    line-height:1.7; font-style:italic;
+    border-left:3px solid #d4af5a; padding-left:18px; max-width:830px;
+  }
+
+  /* ─── BODY ─── */
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+
+  /* ─── COLONNES ─── */
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+
+  /* ─── SOUS-TITRES ─── */
+  .ap-sub {
+    font-family:'DM Mono',monospace; font-size:9px; font-weight:700;
+    letter-spacing:0.22em; text-transform:uppercase;
+    color:#d4af5a; margin:26px 0 10px; padding-bottom:8px;
+    border-bottom:1px solid rgba(212,175,90,0.2);
+  }
+
+  /* ─── STATS ─── */
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat {
+    background: linear-gradient(135deg, #8b0000, #b5131f);
+    color:#fff; padding:16px 18px; border-radius:8px;
+    text-align:center; flex:1; min-width:110px;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  }
+  .ap-stat.navy   { background: linear-gradient(135deg, #071422, #0d2540); }
+  .ap-stat.gold   { background: linear-gradient(135deg, #7a5c10, #b8922a); }
+  .ap-stat.teal   { background: linear-gradient(135deg, #00433c, #00695c); }
+  .ap-stat.red    { background: linear-gradient(135deg, #7f0000, #c62828); }
+  .ap-stat.purple { background: linear-gradient(135deg, #38006b, #6a1b9a); }
+  .ap-stat.olive  { background: linear-gradient(135deg, #2e4d00, #5d7a00); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+
+  /* ─── FAITS CLÉS ─── */
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact {
+    background: rgba(255,255,255,0.03);
+    border-radius:6px; padding:12px 14px;
+    border-left:3px solid rgba(212,175,90,0.5);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-left: 3px solid #d4af5a;
+  }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+
+  /* ─── LISTE ─── */
+  .ap-list { list-style:none; margin:10px 0 18px; }
+  .ap-list li {
+    font-family:'Georgia',serif; font-size:14px; color:rgba(232,228,216,0.72);
+    padding:8px 0 8px 22px; position:relative;
+    border-bottom:1px solid rgba(255,255,255,0.05); line-height:1.6;
+  }
+  .ap-list li::before {
+    content:''; position:absolute; left:0; top:16px;
+    width:6px; height:6px; border-radius:50%; background:#d4af5a;
+  }
+
+  /* ─── CITATION ─── */
+  .ap-quote {
+    background: linear-gradient(135deg, rgba(180,146,42,0.08), rgba(180,146,42,0.04));
+    border-left:3px solid #d4af5a; padding:18px 22px; margin:20px 0;
+    border-radius:0 8px 8px 0;
+    border: 1px solid rgba(212,175,90,0.15);
+    border-left: 3px solid #d4af5a;
+  }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(212,175,90,0.6); font-style:normal; letter-spacing:0.06em; }
+
+  /* ─── CONTEXTE ─── */
+  .ap-ctx {
+    background: linear-gradient(135deg, rgba(13,27,42,0.9), rgba(7,16,28,0.95));
+    color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px;
+    border: 1px solid rgba(100,140,180,0.2);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#d4af5a; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+
+  /* ─── INFO BOX ─── */
+  .ap-info {
+    background: rgba(100,181,246,0.05);
+    border:1px solid rgba(100,181,246,0.15); border-radius:8px;
+    padding:16px 20px; margin:18px 0;
+    display:flex; align-items:flex-start; gap:14px;
+  }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+
+  /* ─── TIMELINE ─── */
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(212,175,90,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-row { display:flex; gap:14px; align-items:baseline; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-tl-row:last-child { border-bottom:none; }
+  .ap-tl-yr { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; min-width:80px; flex-shrink:0; }
+  /* ES article language toggle */
+  body.ap-lang-es .ap-fr-section { display:none !important; }
+  body.ap-lang-es .ap-es-section { display:block !important; }
+  .ap-tl-item::before {
+    content:''; position:absolute; left:-26px; top:5px;
+    width:8px; height:8px; border-radius:50%;
+    background:#d4af5a; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(212,175,90,0.4);
+  }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#d4af5a; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+
+  /* ─── TABLEAU ─── */
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(13,27,42,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold  { font-weight:600; color:#e8e4d8; }
+  .ap-rate-red   { color:#f08080; font-weight:700; }
+  .ap-rate-orange{ color:#ffb74d; font-weight:700; }
+  .ap-rate-green { color:#81c784; font-weight:700; }
+  .ap-rate-grey  { color:rgba(255,255,255,0.4); font-weight:600; }
+
+  /* ─── SÉPARATEUR ─── */
+  .ap-divider { text-align:center; margin:24px 0 32px; color:rgba(212,175,90,0.25); font-size:20px; letter-spacing:10px; }
+
+  /* ─── FOOTER ─── */
+  .ap-footer {
+    background: rgba(5,8,14,0.8);
+    color:rgba(255,255,255,.35); text-align:center;
+    padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px;
+    border-top:1px solid rgba(212,175,90,0.1);
+    letter-spacing:0.05em;
+  }
+  .ap-footer strong { color:rgba(212,175,90,0.7); }
+
+  /* ─── LANG TOGGLE ARTICLE ─── */
+  .ap-lang-btn {
+    background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18);
+    color:rgba(255,255,255,.6); font-family:'DM Mono',monospace;
+    font-size:10px; font-weight:700; letter-spacing:0.12em;
+    padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s;
+    text-transform:uppercase;
+  }
+  .ap-lang-btn.active { background:#d4af5a; border-color:#d4af5a; color:#0d1b2a; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+  .ap-en-section { display:none; }
+  body.ap-lang-en .ap-fr-section { display:none; }
+  body.ap-lang-en .ap-en-section { display:block; }
+
+  @media(max-width:768px){
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-title { font-size:22px; }
+  }
+
+  /* ─── MUNDOHISPANO tag colors — unified with dark theme above ─── */
+
+  /* ─── SCROLL ─── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-up { animation: fadeUp 0.5s ease forwards; opacity: 0; }
+  .fade-up:nth-child(1) { animation-delay: 0s; }
+  .fade-up:nth-child(2) { animation-delay: 0.08s; }
+  .fade-up:nth-child(3) { animation-delay: 0.16s; }
+  .fade-up:nth-child(4) { animation-delay: 0.24s; }
+  .fade-up:nth-child(5) { animation-delay: 0.32s; }
+  .fade-up:nth-child(6) { animation-delay: 0.4s; }
+  .fade-up:nth-child(7) { animation-delay: 0.48s; }
+  .fade-up:nth-child(8) { animation-delay: 0.56s; }
+  .fade-up:nth-child(9) { animation-delay: 0.64s; }
+  .fade-up:nth-child(10) { animation-delay: 0.72s; }
+  .fade-up:nth-child(11) { animation-delay: 0.8s; }
+  .fade-up:nth-child(12) { animation-delay: 0.88s; }
+  .fade-up:nth-child(13) { animation-delay: 0.96s; }
+  .fade-up:nth-child(14) { animation-delay: 1.04s; }
+  .fade-up:nth-child(15) { animation-delay: 1.12s; }
+  .fade-up:nth-child(16) { animation-delay: 1.2s; }
+  .fade-up:nth-child(17) { animation-delay: 1.28s; }
+  .fade-up:nth-child(18) { animation-delay: 1.36s; }
+  .fade-up:nth-child(19) { animation-delay: 1.44s; }
+  .fade-up:nth-child(n+20) { animation-delay: 1.44s; }
+
+  @media (max-width: 768px) {
+    nav { padding: 14px 20px; }
+    .hero { padding: 60px 24px; }
+    .home-grid { grid-template-columns: 1fr; }
+    .page-header { padding: 40px 24px 30px; }
+    .page-header::after { left: 24px; }
+    .choices-container { padding: 32px 24px; }
+    .page-body { padding: 32px 24px; flex-direction: column; }
+    .course-sidebar { display: none; }
+    .course-content { padding: 32px 24px; }
+    .cg-sidebar, .actu-sidebar { display: none; }
+    .cg-main, .actu-main { padding: 24px; }
+    .fiche-content { padding: 32px 24px; }
+    .article-hero, .article-content { padding: 32px 24px; }
+    .hgg-content { padding: 3rem 1.25rem 5rem; }
+  }
+</style>
+
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<div id="page-philo" class="page active">
+  <nav>
+    <div class="nav-logo" onclick="window.location.href='../../index.html'">ECG Prépa</div>
+    <div class="breadcrumb">
+      <span onclick="window.location.href='../../index.html'">Accueil</span>
+      <span class="sep">/</span>
+      <span onclick="window.location.href='../../cours-ecg.html'">Cours</span>
+      <span class="sep">/</span>
+      <span onclick="window.location.href='../index.html'">2ème Année</span>
+      <span class="sep">/</span>
+      <span class="current">Philosophie</span>
+    </div>
+  </nav>
+  <div class="page-header"><div class="page-eyebrow">🦉 Philosophie ECG</div><div class="page-title">Notions de Philosophie</div></div>
+  <div class="page-body">
+  <div class="chapters-container">
+    <div class="chapter-item fade-up" onclick="window.location.href='notion-1-morale.html'"><div class="chapter-num">1</div><div class="chapter-info"><div class="chapter-label">Notion 1</div><div class="chapter-name">La Morale</div></div><div class="chapter-arrow">→</div></div>
+    <div class="chapter-item fade-up" onclick="window.location.href='notion-2-bonheur.html'"><div class="chapter-num">2</div><div class="chapter-info"><div class="chapter-label">Notion 2</div><div class="chapter-name">Le Bonheur</div></div><div class="chapter-arrow">→</div></div>
+    <div class="chapter-item fade-up" onclick="window.location.href='notion-3-letat.html'"><div class="chapter-num">3</div><div class="chapter-info"><div class="chapter-label">Notion 3</div><div class="chapter-name">L'État</div></div><div class="chapter-arrow">→</div></div>
+    <div class="chapter-item fade-up" onclick="window.location.href='notion-4-culture.html'"><div class="chapter-num">4</div><div class="chapter-info"><div class="chapter-label">Notion 4</div><div class="chapter-name">La Culture</div></div><div class="chapter-arrow">→</div></div>
+    <div class="chapter-item fade-up" onclick="window.location.href='notion-5-langage.html'"><div class="chapter-num">5</div><div class="chapter-info"><div class="chapter-label">Notion 5</div><div class="chapter-name">Le Langage</div></div><div class="chapter-arrow">→</div></div>
+    <div class="chapter-item fade-up" onclick="window.location.href='notion-6-liberte.html'"><div class="chapter-num">6</div><div class="chapter-info"><div class="chapter-label">Notion 6</div><div class="chapter-name">La Liberté</div></div><div class="chapter-arrow">→</div></div>
+    <div class="chapter-item fade-up" onclick="window.location.href='notion-7-conscience.html'"><div class="chapter-num">7</div><div class="chapter-info"><div class="chapter-label">Notion 7</div><div class="chapter-name">La Conscience</div></div><div class="chapter-arrow">→</div></div>
+    <div class="chapter-item fade-up" onclick="window.location.href='notion-8-technique.html'"><div class="chapter-num">8</div><div class="chapter-info"><div class="chapter-label">Notion 8</div><div class="chapter-name">La Technique</div></div><div class="chapter-arrow">→</div></div>
+    <div class="chapter-item fade-up" onclick="window.location.href='notion-9-verite.html'"><div class="chapter-num">9</div><div class="chapter-info"><div class="chapter-label">Notion 9</div><div class="chapter-name">La Vérité</div></div><div class="chapter-arrow">→</div></div>
+    <div class="chapter-item fade-up" onclick="window.location.href='notion-10-justice.html'"><div class="chapter-num">10</div><div class="chapter-info"><div class="chapter-label">Notion 10</div><div class="chapter-name">La Justice</div></div><div class="chapter-arrow">→</div></div>
+    <div class="chapter-item fade-up" onclick="window.location.href='notion-11-inconscient.html'"><div class="chapter-num">11</div><div class="chapter-info"><div class="chapter-label">Notion 11</div><div class="chapter-name">L'Inconscient</div></div><div class="chapter-arrow">→</div></div>
+    <div class="chapter-item fade-up" onclick="window.location.href='notion-12-travail.html'"><div class="chapter-num">12</div><div class="chapter-info"><div class="chapter-label">Notion 12</div><div class="chapter-name">Le Travail</div></div><div class="chapter-arrow">→</div></div>
+    <div class="chapter-item fade-up" onclick="window.location.href='notion-13-art.html'"><div class="chapter-num">13</div><div class="chapter-info"><div class="chapter-label">Notion 13</div><div class="chapter-name">L'Art</div></div><div class="chapter-arrow">→</div></div>
+    <div class="chapter-item fade-up" onclick="window.location.href='notion-14-nature.html'"><div class="chapter-num">14</div><div class="chapter-info"><div class="chapter-label">Notion 14</div><div class="chapter-name">La Nature</div></div><div class="chapter-arrow">→</div></div>
+    <div class="chapter-item fade-up" onclick="window.location.href='notion-15-temps.html'"><div class="chapter-num">15</div><div class="chapter-info"><div class="chapter-label">Notion 15</div><div class="chapter-name">Le Temps</div></div><div class="chapter-arrow">→</div></div>
+    <div class="chapter-item fade-up" onclick="window.location.href='notion-16-religion.html'"><div class="chapter-num">16</div><div class="chapter-info"><div class="chapter-label">Notion 16</div><div class="chapter-name">La Religion</div></div><div class="chapter-arrow">→</div></div>
+    <div class="chapter-item fade-up" onclick="window.location.href='notion-17-science.html'"><div class="chapter-num">17</div><div class="chapter-info"><div class="chapter-label">Notion 17</div><div class="chapter-name">La Science</div></div><div class="chapter-arrow">→</div></div>
+    <div class="chapter-item fade-up" onclick="window.location.href='notion-18-devoir.html'"><div class="chapter-num">18</div><div class="chapter-info"><div class="chapter-label">Notion 18</div><div class="chapter-name">Le Devoir</div></div><div class="chapter-arrow">→</div></div>
+    <div class="chapter-item fade-up" onclick="window.location.href='notion-19-raison.html'"><div class="chapter-num">19</div><div class="chapter-info"><div class="chapter-label">Notion 19</div><div class="chapter-name">La Raison</div></div><div class="chapter-arrow">→</div></div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="motif-card">
+      <svg viewBox="0 0 260 380" xmlns="http://www.w3.org/2000/svg">
+        <!-- open book -->
+        <g stroke="var(--accent)" stroke-width="1.3" fill="none" opacity="0.9">
+          <path d="M40 150 C 80 138, 110 138, 130 152 L 130 280 C 110 266, 80 266, 40 278 Z" />
+          <path d="M220 150 C 180 138, 150 138, 130 152 L 130 280 C 150 266, 180 266, 220 278 Z" />
+        </g>
+        <!-- page lines -->
+        <g stroke="var(--text-faint)" stroke-width="0.7" opacity="0.6">
+          <path d="M52 168 L 116 158" />
+          <path d="M52 184 L 116 174" />
+          <path d="M52 200 L 116 190" />
+          <path d="M52 216 L 116 206" />
+          <path d="M144 158 L 208 168" />
+          <path d="M144 174 L 208 184" />
+          <path d="M144 190 L 208 200" />
+          <path d="M144 206 L 208 216" />
+        </g>
+
+        <!-- owl perched above the book -->
+        <g>
+          <!-- body -->
+          <ellipse cx="130" cy="90" rx="34" ry="40" fill="none" stroke="var(--accent3)" stroke-width="1.4" opacity="0.9"/>
+          <!-- wings -->
+          <path d="M100 85 C 90 100, 90 120, 102 130" fill="none" stroke="var(--accent3)" stroke-width="1.1" opacity="0.8"/>
+          <path d="M160 85 C 170 100, 170 120, 158 130" fill="none" stroke="var(--accent3)" stroke-width="1.1" opacity="0.8"/>
+          <!-- ear tufts -->
+          <path d="M112 58 L 106 42 L 120 52 Z" fill="var(--accent3)" opacity="0.85"/>
+          <path d="M148 58 L 154 42 L 140 52 Z" fill="var(--accent3)" opacity="0.85"/>
+          <!-- eyes -->
+          <circle cx="118" cy="82" r="10" fill="none" stroke="var(--accent4)" stroke-width="1.3" opacity="0.9"/>
+          <circle cx="142" cy="82" r="10" fill="none" stroke="var(--accent4)" stroke-width="1.3" opacity="0.9"/>
+          <circle cx="118" cy="82" r="3" fill="var(--accent4)" opacity="0.9"/>
+          <circle cx="142" cy="82" r="3" fill="var(--accent4)" opacity="0.9"/>
+          <!-- beak -->
+          <path d="M130 92 L 124 100 L 136 100 Z" fill="var(--accent2)" opacity="0.9"/>
+          <!-- feet on book spine -->
+          <path d="M120 128 L 116 150 M140 128 L 144 150" stroke="var(--accent3)" stroke-width="1.1" opacity="0.8"/>
+        </g>
+
+        <!-- ornamental corner ticks -->
+        <g stroke="var(--text-faint)" stroke-width="1">
+          <path d="M20 20 L20 40 M20 20 L40 20" />
+          <path d="M240 20 L240 40 M240 20 L220 20" />
+          <path d="M20 360 L20 340 M20 360 L40 360" />
+          <path d="M240 360 L240 340 M240 360 L220 360" />
+        </g>
+      </svg>
+      <div class="motif-caption">Philosophie</div>
+    </div>
+  </aside>
+  </div>
+</div>
+
+<div id="page-course" class="page">
+  <nav>
+    <div class="nav-logo" onclick="window.location.href='../../index.html'">ECG Prépa</div>
+    <div class="breadcrumb" id="course-breadcrumb"></div>
+  </nav>
+  <div class="course-body">
+    <div class="course-sidebar" id="course-sidebar"></div>
+    <div class="course-content" id="course-content"></div>
+  </div>
+</div>
+
+<script>
+function goto(pageId) {
+  if (pageId === 'page-philo') {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-philo').classList.add('active');
+    window.scrollTo(0,0);
+    return;
+  }
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const t = document.getElementById(pageId);
+  if (t) { t.classList.add('active'); t.scrollTop = 0; window.scrollTo(0,0); }
+}
+const COURSES = {
+  'philo-bonheur': {
+    title: "Le Bonheur",
+    tag: "Philosophie · Notion 2",
+    breadcrumb: `<span onclick="goto('page-accueil')">Accueil</span><span class="sep">/</span><span onclick="goto('page-cours')">Cours</span><span class="sep">/</span><span onclick="goto('page-1ere')">1ère Année</span><span class="sep">/</span><span onclick="goto('page-philo')">Philosophie</span><span class="sep">/</span><span class="current">Le Bonheur</span>`,
+    sidebar: [
+      {label:"Définitions",id:"b-def"},
+      {label:"─── Hédonisme ───",id:"b-hedonisme"},
+      {label:"L'Hédonisme",id:"b-hedonisme"},
+      {label:"→ Calliclès — radical",id:"b-callicles"},
+      {label:"→ Épicure — modéré",id:"b-epicure"},
+      {label:"─── Eudémonisme ───",id:"b-eudemonisme"},
+      {label:"L'Eudémonisme",id:"b-eudemonisme"},
+      {label:"→ Socrate — sagesse",id:"b-socrate"},
+      {label:"→ Aristote — vertu",id:"b-aristote"},
+      {label:"→ Épictète — stoïcisme",id:"b-epictete"},
+      {label:"─── Autres approches ───",id:"b-rousseau"},
+      {label:"Rousseau — Imagination",id:"b-rousseau"},
+      {label:"Kant — Subjectivité",id:"b-kant"},
+      {label:"Schopenhauer — Pessimisme",id:"b-schopenhauer"},
+      {label:"─── Synthèse ───",id:"b-synthese"},
+      {label:"Tableau de synthèse",id:"b-synthese"}
+    ],
+    html: `<h1>Le Bonheur</h1><div class="course-tag">Philosophie ECG · Notion 2</div>
+
+    <div class="course-section" id="b-def"><h2>Définitions</h2>
+      <div class="def-block"><strong>Bonheur</strong><p>État <strong>durable et intense</strong> de pleine satisfaction. À distinguer du simple plaisir, qui est passager, et de la chance, qui est externe.</p></div>
+      <div class="def-block"><strong>Désir</strong><p>Ce qui nous pousse à rechercher un objet qui nous manque et dont on suppose qu'il pourra nous donner satisfaction. Le désir implique un <strong>manque</strong> et une <strong>projection</strong> vers un objet censé le combler.</p></div>
+      <div class="def-block"><strong>Plaisir</strong><p>Sensation agréable et <strong>éphémère</strong> provoquée par la réalisation d'un désir. Le plaisir ne suffit pas au bonheur — il est instantané là où le bonheur est durable.</p></div>
+    </div>
+
+    <div class="course-section" id="b-hedonisme"><h2>L'Hédonisme</h2>
+      <div class="def-block"><strong>Hédonisme</strong><p>Doctrine qui considère que la <strong>recherche du plaisir</strong> et l'évitement de la souffrance sont les buts de l'existence. Pour les hédonistes, être heureux revient à ressentir du plaisir. L'hédonisme peut être radical ou modéré.</p></div>
+      <div class="info-box">Pour les hédonistes, être heureux revient à ressentir du plaisir.<br>L'hédonisme peut être <strong>radical</strong> (Calliclès) ou <strong>modéré</strong> (Épicure).</div>
+
+      <h3 id="b-callicles">Hédonisme radical — Calliclès</h3>
+      <span class="philosopher-tag">Calliclès</span><span class="philosopher-tag">Gorgias — Platon</span>
+      <p style="margin-top:14px">Dans le <em>Gorgias</em>, Calliclès défend une conception radicale du bonheur fondée sur la <strong style="color:var(--text)">satisfaction illimitée des désirs</strong>, qu'il présente comme la véritable nature de l'homme libre.</p>
+      <div class="info-box">Pour Calliclès, le bonheur consiste avant tout à satisfaire tous ses désirs, sans aucune limitation morale, sociale ou rationnelle.</div>
+      <p>La vie bonne est celle où l'on <strong style="color:var(--text)">réalise ce qu'on veut</strong>, au moment où on le veut, en refusant de brider la puissance de ses désirs. Toute forme de tempérance, de retenue ou de modération lui apparaît comme contraire à la nature humaine : se limiter, c'est se priver de vivre pleinement.</p>
+      <p>Il s'oppose ainsi à la tradition grecque de la mesure. Il considère que la recherche illimitée des plaisirs demande même du <strong style="color:var(--text)">courage</strong>, car elle confronte l'individu au jugement d'autrui, aux lois et aux conventions sociales.</p>
+      <div class="highlight-box">Suivre ses désirs va parfois à l'encontre de la morale, mais c'est le seul moyen d'accéder à une existence pleine et vivante.<cite>— Calliclès, dans le Gorgias de Platon</cite></div>
+      <p><strong style="color:var(--text)">⚠ Limite</strong> : une vie entièrement tournée vers des désirs toujours renaissants peut mener à une forme de lassitude, voire d'autodestruction. Celui qui cherche à satisfaire toutes ses pulsions se soumet à une dynamique sans fin, où aucun plaisir ne peut conduire à une satisfaction durable.</p>
+
+      <h3 id="b-epicure">Hédonisme modéré — Épicure</h3>
+      <span class="philosopher-tag">Épicure</span><span class="philosopher-tag">Lettre à Ménécée</span>
+      <p style="margin-top:14px">Épicure reprend l'idée que le plaisir est le fondement du bonheur, mais il <strong style="color:var(--text)">rompt radicalement avec l'excès</strong> prôné par Calliclès. Seuls certains plaisirs permettent d'atteindre une véritable tranquillité. Il faut donc classer les désirs et distinguer ceux qu'il est bénéfique de suivre de ceux qu'il faut éviter.</p>
+      <p>Épicure distingue trois catégories de désirs :</p>
+      <ul class="list-styled">
+        <li><strong style="color:var(--text)">Naturels et nécessaires</strong> — indispensables au bonheur, à la santé et à la vie (boire, manger, dormir et philosopher)</li>
+        <li><strong style="color:var(--text)">Naturels mais non nécessaires</strong> — agréables, mais dont la satisfaction n'est pas essentielle (manger raffiné, luxe simple)</li>
+        <li><strong style="color:var(--text)">Désirs vains</strong> — illimités, artificiels, sans fin possible (richesse, gloire, honneurs)</li>
+      </ul>
+      <p>Les désirs vains sont dangereux car ils reposent sur un manque impossible à combler : en les suivant, nous créons une dynamique de frustration perpétuelle.</p>
+      <div class="info-box">Le but épicurien n'est pas d'accumuler des plaisirs mais d'éviter les troubles de l'âme (<em>ataraxie</em>) et du corps (<em>aponie</em>).</div>
+      <p>Ainsi, le bonheur est un état de calme stable, obtenu grâce au <strong style="color:var(--text)">Tétrapharmakon</strong> (le quadruple remède) :</p>
+      <ul class="list-styled">
+        <li>Ne pas craindre les dieux</li>
+        <li>Ne pas craindre la mort</li>
+        <li>Ce qui est nécessaire au bonheur est facile à obtenir</li>
+        <li>La douleur est facile à supporter</li>
+      </ul>
+      <p>Épicure propose donc un <strong style="color:var(--text)">hédonisme rationnel</strong>, fondé sur la mesure, qui permet une satisfaction durable et non pas une quête infinie.</p>
+    </div>
+
+    <div class="course-section" id="b-eudemonisme"><h2>L'Eudémonisme</h2>
+      <div class="def-block"><strong>Eudémonisme</strong><p>Doctrine morale selon laquelle le but de l'action est le bonheur, par l'œuvre de la <strong>sagesse et de la vertu</strong>. Contrairement à l'hédonisme, le bonheur n'est pas identifié au plaisir mais à l'accomplissement de ce que l'être humain a de meilleur en lui.</p></div>
+
+      <h3 id="b-socrate">Sagesse et mesure — Socrate</h3>
+      <span class="philosopher-tag">Socrate</span><span class="philosopher-tag">Gorgias — Platon</span>
+      <p style="margin-top:14px">Dans le <em>Gorgias</em>, Socrate oppose à Calliclès une vision du bonheur fondée sur la <strong style="color:var(--text)">tempérance</strong>, soutenant que seule la maîtrise de ses désirs permet une véritable satisfaction durable.</p>
+      <div class="info-box">Socrate critique la vision callicléenne du bonheur car elle confond <strong>plaisir immédiat</strong> et <strong>bonheur durable</strong>.</div>
+      <p>Il utilise l'image des <strong style="color:var(--text)">tonneaux percés</strong> pour symboliser l'homme dominé par des désirs insatiables : même s'il remplit ses tonneaux, ceux-ci se vident aussitôt, l'obligeant à une agitation constante. À l'inverse, l'homme tempérant possède des <strong style="color:var(--text)">tonneaux non percés</strong> : ses désirs, mesurés, peuvent être satisfaits durablement.</p>
+      <p>Selon Socrate, le bonheur exige donc la mesure, la maîtrise de soi, la capacité à distinguer ce qui est réellement bon pour nous de ce qui ne l'est pas.</p>
+      <div class="highlight-box">Sans maîtrise rationnelle, nous sommes esclaves de nos désirs et prisonniers d'une insatisfaction perpétuelle.</div>
+      <p>Calliclès objecte que la vie tempérée serait une « vie de pierre », mais Socrate répond que la sagesse n'annule pas les plaisirs — elle permet simplement de n'accorder leur valeur qu'aux plaisirs compatibles avec une vie harmonieuse. Le bonheur n'est pas dans la succession de plaisirs éphémères, mais dans une forme d'<strong style="color:var(--text)">équilibre intérieur</strong>.</p>
+
+      <h3 id="b-aristote">Vertu — Aristote</h3>
+      <span class="philosopher-tag">Aristote</span><span class="philosopher-tag">Éthique à Nicomaque</span>
+      <p style="margin-top:14px">Aristote définit le bonheur (<em>eudaimonia</em>) comme la <strong style="color:var(--text)">fin ultime de la vie humaine</strong>, le souverain bien, atteignable par l'exercice de la vertu et une vie conforme à la raison.</p>
+      <div class="info-box">Aristote propose une approche du bonheur fondée sur la <strong>vertu</strong> et l'accomplissement de la nature humaine.</div>
+      <p>Pour lui, le bonheur n'est pas un état passager ou une simple satisfaction de désirs, mais la <strong style="color:var(--text)">réalisation de notre potentiel</strong> en tant qu'êtres rationnels. Il distingue deux types de vertus :</p>
+      <ul class="list-styled">
+        <li><strong style="color:var(--text)">Vertus morales</strong> — régulent nos désirs et nos actions (courage, justice, tempérance…)</li>
+        <li><strong style="color:var(--text)">Vertus intellectuelles</strong> — concernent la raison et la sagesse (prudence, sagesse théorétique…)</li>
+      </ul>
+      <p>Aristote insiste aussi sur la dimension sociale : l'homme est un <em>animal politique</em>, et la vie en société, dans le respect des lois et de l'amitié, est essentielle à l'épanouissement personnel.</p>
+      <div class="highlight-box">Selon Aristote, le bonheur n'est pas simplement ressenti, mais <strong>construit</strong> par des choix justes et une vie vertueuse.</div>
+
+      <h3 id="b-epictete">Stoïcisme — Épictète</h3>
+      <span class="philosopher-tag">Épictète</span><span class="philosopher-tag">Le Manuel</span>
+      <p style="margin-top:14px">Dans le <em>Manuel</em>, Épictète soutient que le bonheur dépend uniquement de <strong style="color:var(--text)">ce qui est en notre pouvoir</strong>, et qu'il s'obtient par l'accord de notre volonté avec la nécessité.</p>
+      <p>Le stoïcisme distingue deux types de choses :</p>
+      <ul class="list-styled">
+        <li><strong style="color:var(--text)">Ce qui dépend de nous</strong> — nos pensées, nos jugements, nos choix, notre volonté</li>
+        <li><strong style="color:var(--text)">Ce qui ne dépend pas de nous</strong> — le destin, la santé, la richesse, les événements extérieurs</li>
+      </ul>
+      <p>Chercher le bonheur dans ce qui ne dépend pas de nous conduit nécessairement à la frustration. En revanche, <strong style="color:var(--text)">accorder notre volonté à la nécessité</strong> procure une paix intérieure profonde : c'est la vertu.</p>
+      <p>Le stoïcien vise l'<em>ataraxie</em> (calme total de l'âme). Le plaisir est instable et dépendant des circonstances ; la joie stoïcienne est stable, mesurée et fondée sur la raison. Le stoïcien cultive l'<em>amor fati</em> (amour du destin) : il veut ce qui arrive, parce qu'il reconnaît que le réel est nécessaire.</p>
+      <div class="info-box">Le bonheur ne réside pas dans la <strong>modification du monde</strong>, mais dans la <strong>transformation de notre rapport au monde</strong>.</div>
+    </div>
+
+    <div class="course-section" id="b-rousseau"><h2>Imaginer le désir — Rousseau</h2>
+      <span class="philosopher-tag">Rousseau</span><span class="philosopher-tag">Rêveries du promeneur solitaire</span>
+      <p style="margin-top:14px">Dans les <em>Rêveries</em>, Rousseau montre que le bonheur réside davantage dans l'<strong style="color:var(--text)">imagination du désir</strong> que dans sa réalisation concrète, toujours décevante.</p>
+      <p>Rousseau observe un paradoxe : nous avons beaucoup plus de désirs que de possibilités réelles de les satisfaire. Si le bonheur dépendait uniquement de la réalisation des désirs, il serait presque impossible.</p>
+      <div class="info-box">La véritable source de satisfaction ne se trouve pas dans la réalisation du désir, mais dans son <strong>imagination</strong>.</div>
+      <p>Lorsque nous désirons quelque chose, nous le projetons mentalement, nous le rêvons, nous l'idéalisons. Ce travail imaginatif procure un plaisir souvent <strong style="color:var(--text)">supérieur à celui de la réalisation</strong>, qui se heurte à la réalité concrète, limitée et décevante.</p>
+      <p>Ainsi, le bonheur consiste moins à satisfaire tous ses désirs qu'à les <strong style="color:var(--text)">cultiver</strong>, à maintenir un certain élan intérieur. Le pire malheur serait de ne plus rien désirer, car alors la vie perdrait sa dynamique.</p>
+      <p>Rousseau critique la société moderne qui valorise la consommation et la réalisation immédiate des désirs : cette logique nous prive de la dimension imaginative qui rend réellement heureux.</p>
+    </div>
+
+    <div class="course-section" id="b-kant"><h2>Le bonheur est subjectif — Kant</h2>
+      <span class="philosopher-tag">Kant</span><span class="philosopher-tag">Fondements de la métaphysique des mœurs</span>
+      <p style="margin-top:14px">Pour Kant, le bonheur est un concept <strong style="color:var(--text)">indéterminé et subjectif</strong>, variable selon les individus, et impossible à définir de manière universelle. Chacun se représente le bonheur différemment, en fonction de ses expériences, de ses inclinations, de sa culture.</p>
+      <div class="info-box">Il n'existe pas d'idée claire permettant de savoir exactement ce qui rend un être humain heureux.</div>
+      <p>Le bonheur est donc un <em>idéal de l'imagination</em> : nous l'imaginons, mais nous ne pouvons ni le connaître ni le définir objectivement. Cette indétermination crée une illusion : nous croyons parfois savoir ce que serait notre bonheur, mais la réalité ne correspond jamais parfaitement à nos projections.</p>
+      <p>C'est pourquoi Kant affirme que le bonheur ne peut pas constituer la fin de la morale. Si nous agissons seulement en vue d'être heureux, nos actions seraient guidées par des inclinations personnelles, changeantes, et non par des principes rationnels et universalisables.</p>
+      <div class="highlight-box">Pour Kant, le véritable objectif de la vie morale n'est pas le bonheur, mais le <strong>devoir</strong> — l'obéissance à la loi morale universelle.</div>
+      <p>Cela ne signifie pas que le bonheur soit impossible, mais qu'il ne peut pas être le fondement d'une règle morale ni un but sûr de l'existence humaine.</p>
+    </div>
+
+    <div class="course-section" id="b-schopenhauer"><h2>Absence de souffrance — Schopenhauer</h2>
+      <span class="philosopher-tag">Schopenhauer</span><span class="philosopher-tag">Le Monde comme volonté et comme représentation</span>
+      <p style="margin-top:14px">Schopenhauer expose une vision profondément <strong style="color:var(--text)">pessimiste</strong> de l'existence et du bonheur. Pour lui, la vie est essentiellement souffrance, et le bonheur, s'il existe, n'est pas quelque chose de positif, mais plutôt une <strong style="color:var(--text)">absence de douleur</strong>.</p>
+      <p>Notre volonté — la force fondamentale qui nous pousse à désirer — est à l'origine d'un mouvement perpétuel : dès qu'un désir est satisfait, un autre naît, et ce cycle ne s'arrête jamais. Il en résulte que toute satisfaction est éphémère, et que la vie est rythmée par des alternances entre :</p>
+      <ul class="list-styled">
+        <li><strong style="color:var(--text)">Souffrance</strong> — quand on désire (le manque est tangible et réel)</li>
+        <li><strong style="color:var(--text)">Ennui</strong> — quand on n'a plus rien à désirer (le vide après la satisfaction)</li>
+      </ul>
+      <div class="info-box">Pour Schopenhauer, le plaisir est « négatif » (suppression d'une souffrance) tandis que la souffrance est « positive » (tangible, indéniable).</div>
+      <p>Schopenhauer ne croit pas à un bonheur durable ou élevé : le véritable « art d'être heureux » consiste plutôt à <strong style="color:var(--text)">minimiser les souffrances</strong>, à limiter les désirs, et à accepter que la vie est foncièrement difficile. Il propose des règles pratiques : limiter ses relations sociales ou cultiver l'autosuffisance intérieure.</p>
+      <div class="highlight-box">Croire que nous sommes faits pour être heureux est une erreur : ce ne serait pas la condition naturelle de la vie. La sagesse consiste à reconnaître cette réalité, plutôt qu'à poursuivre un bonheur illusoire.</div>
+    </div>
+
+    <div class="course-section" id="b-synthese"><h2>Tableau de synthèse</h2>
+      <p>Huit positions sur le bonheur, de la satisfaction illimitée à la résignation sage :</p>
+      <div style="overflow-x:auto;margin-top:16px;">
+      <table style="width:100%;border-collapse:collapse;font-size:0.82rem;">
+        <thead>
+          <tr style="background:var(--surface2);">
+            <th style="padding:10px 12px;text-align:left;color:var(--accent);font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.15em;text-transform:uppercase;font-weight:400;border-bottom:1px solid var(--border);">Auteur</th>
+            <th style="padding:10px 12px;text-align:left;color:var(--accent);font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.15em;text-transform:uppercase;font-weight:400;border-bottom:1px solid var(--border);">Œuvre clé</th>
+            <th style="padding:10px 12px;text-align:left;color:var(--accent);font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.15em;text-transform:uppercase;font-weight:400;border-bottom:1px solid var(--border);">Conception du bonheur</th>
+            <th style="padding:10px 12px;text-align:left;color:var(--accent);font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.15em;text-transform:uppercase;font-weight:400;border-bottom:1px solid var(--border);">Notion clé</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text);font-weight:500;">Calliclès</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Gorgias (Platon)</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Satisfaction illimitée de tous les désirs</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--accent2);">Hédonisme radical</td></tr>
+          <tr style="background:rgba(255,255,255,0.02)"><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text);font-weight:500;">Épicure</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Lettre à Ménécée</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Plaisirs mesurés, ataraxie, aponie</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--accent2);">Hédonisme modéré</td></tr>
+          <tr><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text);font-weight:500;">Socrate</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Gorgias (Platon)</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Maîtrise de soi, tempérance, mesure</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--accent3);">Eudémonisme</td></tr>
+          <tr style="background:rgba(255,255,255,0.02)"><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text);font-weight:500;">Aristote</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Éthique à Nicomaque</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Vie vertueuse conforme à la raison</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--accent3);">Eudaimonia / vertu</td></tr>
+          <tr><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text);font-weight:500;">Épictète</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Le Manuel</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Liberté intérieure, accord avec la nécessité</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--accent3);">Stoïcisme / amor fati</td></tr>
+          <tr style="background:rgba(255,255,255,0.02)"><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text);font-weight:500;">Rousseau</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Rêveries du promeneur solitaire</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Bonheur dans l'imagination du désir</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--accent);">Désir imaginé</td></tr>
+          <tr><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text);font-weight:500;">Kant</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Fondements de la métaphysique des mœurs</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Bonheur subjectif, indéterminé ; le devoir prime</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--accent);">Idéal de l'imagination</td></tr>
+          <tr style="background:rgba(255,255,255,0.02)"><td style="padding:9px 12px;color:var(--text);font-weight:500;">Schopenhauer</td><td style="padding:9px 12px;color:var(--text-dim);">Le Monde comme volonté et représentation</td><td style="padding:9px 12px;color:var(--text-dim);">Bonheur = absence de souffrance ; minimiser les désirs</td><td style="padding:9px 12px;color:var(--accent4);">Pessimisme / Volonté</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>`
+  },
+  'philo-etat': {
+    title: "L'État",
+    tag: "Philosophie · Notion 3",
+    breadcrumb: `<span onclick="goto('page-accueil')">Accueil</span><span class="sep">/</span><span onclick="goto('page-cours')">Cours</span><span class="sep">/</span><span onclick="goto('page-1ere')">1ère Année</span><span class="sep">/</span><span onclick="goto('page-philo')">Philosophie</span><span class="sep">/</span><span class="current">L'État</span>`,
+    sidebar: [
+      {label:"Définition & Max Weber",id:"e-def"},{label:"4 éléments constitutifs",id:"e-elem"},
+      {label:"─── Fondements ───",id:"e-def"},
+      {label:"Hobbes — Léviathan",id:"e-hobbes"},{label:"Rousseau — Volonté générale",id:"e-rousseau"},
+      {label:"Locke — Droits naturels",id:"e-locke"},
+      {label:"─── Critiques ───",id:"e-tocqueville"},
+      {label:"Tocqueville — Despotisme doux",id:"e-tocqueville"},
+      {label:"Marx — Instrument de classe",id:"e-marx"},{label:"Bakounine — Anarchisme",id:"e-bakounine"},
+      {label:"─── Modèles ───",id:"e-platon"},
+      {label:"Platon — Cité idéale",id:"e-platon"},
+      {label:"Montesquieu — Séparation",id:"e-montesquieu"},{label:"Machiavel — Le Prince",id:"e-machiavel"},
+    ],
+    html: `<h1>L'État</h1><div class="course-tag">Philosophie ECG · Notion 3</div>
+
+    <div class="course-section" id="e-def"><h2>Définition</h2>
+      <div class="def-block"><strong>État</strong><p>Ensemble des institutions politiques, juridiques, militaires, économiques qui exercent une autorité sur les citoyens d'un pays.</p></div>
+      <p>La définition la plus opératoire est celle de <strong style="color:var(--text)">Max Weber (1919)</strong> : descriptive et non normative, elle pointe la tension centrale entre violence et légitimité.</p>
+      <div class="highlight-box">« L'État est une communauté humaine qui, dans les limites d'un territoire déterminé, revendique avec succès pour son propre compte le monopole de la violence physique légitime. »<cite>— Max Weber, Le Savant et le Politique (1919)</cite></div>
+      <p>Elle est fondatrice pour deux raisons : elle est <strong style="color:var(--text)">descriptive et non normative</strong> (Weber ne dit pas que l'État est bon ou juste, seulement ce qu'il est) et elle pointe la <strong style="color:var(--text)">tension centrale</strong> — la violence devient légitime dès lors qu'elle est exercée par l'État, mais sur quel fondement ?</p>
+    </div>
+
+    <div class="course-section" id="e-elem"><h2>Les 4 éléments constitutifs</h2>
+      <ul class="list-styled">
+        <li><strong style="color:var(--text)">Le territoire</strong> — espace délimité par des frontières reconnues. Sans territoire, pas d'État, seulement un gouvernement en exil.</li>
+        <li><strong style="color:var(--text)">La population</strong> — individus liés à l'État par la citoyenneté ou la résidence.</li>
+        <li><strong style="color:var(--text)">La souveraineté</strong> — pouvoir suprême intérieur (droit exclusif d'édicter les lois) et extérieur (indépendance vis-à-vis des autres États).</li>
+        <li><strong style="color:var(--text)">Le monopole de la violence légitime</strong> — seul l'État peut légalement contraindre (armée, police, justice). La justice privée est par définition illégitime dans un État constitué.</li>
+      </ul>
+    </div>
+
+    <div class="course-section" id="e-hobbes"><h2>État de nature & Léviathan — Hobbes</h2>
+      <span class="philosopher-tag">Hobbes</span><span class="philosopher-tag">Le Léviathan, 1651</span>
+      <p style="margin-top:14px">Pour Hobbes, l'État est <strong style="color:var(--text)">nécessaire</strong> parce que, sans lui, les hommes vivent dans un « état de nature » — sans lois ni autorité. Dans cet état, tous les hommes sont à peu près égaux, chacun cherche à survivre, et la méfiance généralisée conduit à une <strong style="color:var(--text)">guerre permanente de tous contre tous</strong>.</p>
+      <div class="info-box"><em>« L'homme est un loup pour l'homme. »</em> La vie y est « solitaire, misérable, dangereuse et brève ».</div>
+      <h3>Le contrat et le Léviathan</h3>
+      <p>Pour sortir de cette violence, les hommes passent un <strong style="color:var(--text)">contrat</strong> : chacun abandonne une partie de sa liberté à un pouvoir supérieur, le <strong style="color:var(--text)">souverain</strong> (roi, assemblée ou gouvernement — Hobbes préfère la monarchie absolue). Cet État tout-puissant est le <strong style="color:var(--text)">Léviathan</strong> : il fait respecter les lois, empêche les conflits, garantit la paix.</p>
+      <div class="highlight-box">On lui obéit non parce qu'il est juste ou démocratique, mais parce qu'il <strong style="color:var(--text)">protège les individus contre le chaos</strong>. Sans État, c'est la guerre ; avec un État fort, il y a la paix.</div>
+    </div>
+
+    <div class="course-section" id="e-rousseau"><h2>Volonté générale — Rousseau</h2>
+      <span class="philosopher-tag">Rousseau</span><span class="philosopher-tag">Du Contrat social, 1762</span>
+      <p style="margin-top:14px">Rousseau pense que <strong style="color:var(--text)">l'homme est naturellement bon</strong>. Dans l'état de nature, les hommes vivent libres, guidés par la pitié et l'amour de soi. C'est la société qui corrompt cette nature originelle — et plus précisément, l'apparition de la <strong style="color:var(--text)">propriété privée</strong> qui introduit jalousie, envie et domination.</p>
+      <h3>La volonté générale</h3>
+      <p>Rousseau critique les États existants qui servent souvent les intérêts des riches. Dans le contrat social, chacun renonce à sa <strong style="color:var(--text)">volonté particulière</strong> pour obéir à la <strong style="color:var(--text)">volonté générale</strong> — ce qui est bon pour l'ensemble de la communauté, pas la simple majorité. Quand un citoyen obéit à la loi qu'il a lui-même contribué à faire, il reste libre.</p>
+      <div class="highlight-box">« Obéir à la loi qu'on s'est prescrite est liberté. »<cite>— Rousseau, Du Contrat social (1762)</cite></div>
+      <p>L'État idéal est une <strong style="color:var(--text)">démocratie où le peuple est souverain</strong> et fait lui-même les lois.</p>
+    </div>
+
+    <div class="course-section" id="e-locke"><h2>Droits naturels — Locke</h2>
+      <span class="philosopher-tag">Locke</span><span class="philosopher-tag">Traité du gouvernement civil, 1690</span>
+      <p style="margin-top:14px">Pour Locke, dans l'état de nature, les hommes sont <strong style="color:var(--text)">libres, égaux et raisonnables</strong> — pas en guerre permanente comme chez Hobbes. Chaque individu possède naturellement trois droits fondamentaux :</p>
+      <ul class="list-styled">
+        <li><strong style="color:var(--text)">Le droit à la vie</strong></li>
+        <li><strong style="color:var(--text)">Le droit à la liberté</strong></li>
+        <li><strong style="color:var(--text)">Le droit à la propriété</strong> — fondée sur le travail : si quelqu'un cultive un champ, ce champ devient le sien.</li>
+      </ul>
+      <p>L'état de nature a un défaut : pas d'autorité commune pour faire respecter ces droits. Les hommes créent donc un État, mais à <strong style="color:var(--text)">fonction limitée</strong> : protéger les droits naturels, pas contrôler toute la vie des citoyens.</p>
+      <div class="highlight-box">Locke refuse l'État absolu. Si un gouvernement devient tyrannique, les citoyens ont le <strong style="color:var(--text)">droit de résister</strong> et même de le renverser.<br><br>« Là où cesse la loi, la tyrannie commence. »<cite>— Locke, Traité du gouvernement civil (1690)</cite></div>
+    </div>
+
+    <div class="course-section" id="e-tocqueville"><h2>Le despotisme doux — Tocqueville</h2>
+      <span class="philosopher-tag">Tocqueville</span><span class="philosopher-tag">De la démocratie en Amérique, 1835–1840</span>
+      <p style="margin-top:14px">Tocqueville observe que les sociétés démocratiques modernes, en devenant plus égalitaires, créent un danger paradoxal : les individus tendent à se <strong style="color:var(--text)">replier sur leur vie privée</strong> — famille, travail, loisirs — et laissent l'État gérer le reste.</p>
+      <p>Peu à peu, l'État prend de plus en plus de place. Les citoyens deviennent <strong style="color:var(--text)">passifs et dépendants</strong>. Tocqueville appelle cela le <strong style="color:var(--text)">« despotisme doux »</strong> — pas une dictature brutale, mais un pouvoir qui traite les citoyens comme des enfants.</p>
+      <div class="info-box">Les citoyens conservent le droit de vote, mais ne participent plus réellement à la vie politique. L'État pense et agit à leur place.</div>
+      <h3>Le remède : participer</h3>
+      <ul class="list-styled">
+        <li>Voter lors des élections</li>
+        <li>Débattre entre personnes et s'engager dans des associations</li>
+        <li>Exercer des responsabilités locales</li>
+      </ul>
+      <p><strong style="color:var(--text)">La liberté dépend moins des lois que de l'habitude de participer.</strong></p>
+    </div>
+
+    <div class="course-section" id="e-marx"><h2>Instrument de classe — Marx</h2>
+      <span class="philosopher-tag">Marx</span><span class="philosopher-tag">Manifeste du parti communiste, 1848</span>
+      <p style="margin-top:14px">Marx refuse l'idée selon laquelle l'État représenterait l'intérêt général. Dans la société capitaliste, la lutte oppose la <strong style="color:var(--text)">bourgeoisie</strong> (qui possède les moyens de production) au <strong style="color:var(--text)">prolétariat</strong> (qui ne possède que sa force de travail).</p>
+      <p>Les lois protègent la propriété privée, la police défend l'ordre établi, la justice sanctionne ceux qui menacent ce système. <strong style="color:var(--text)">L'État n'est pas neutre : il sert les dominants.</strong></p>
+      <div class="highlight-box">« Le gouvernement de l'État moderne n'est qu'un comité qui gère les affaires communes de toute la classe bourgeoise. »<cite>— Marx, Manifeste du parti communiste (1848)</cite></div>
+      <h3>La révolution et le dépérissement de l'État</h3>
+      <ul class="list-styled">
+        <li>Le prolétariat doit prendre le pouvoir par une <strong style="color:var(--text)">révolution</strong> et abolir la propriété privée des moyens de production.</li>
+        <li>Période de transition : la <strong style="color:var(--text)">dictature du prolétariat</strong>.</li>
+        <li>À terme, lorsque les classes auront disparu, l'État « <strong style="color:var(--text)">dépérira</strong> » progressivement — société sans État, sans domination ni exploitation.</li>
+      </ul>
+    </div>
+
+    <div class="course-section" id="e-bakounine"><h2>L'anarchisme — Bakounine</h2>
+      <span class="philosopher-tag">Bakounine</span><span class="philosopher-tag">L'État et l'Anarchie, 1873</span>
+      <p style="margin-top:14px">Bakounine pense que l'État est <strong style="color:var(--text)">toujours une forme de domination</strong> et qu'il faut le supprimer. Même lorsqu'il prétend défendre le peuple, l'État repose sur la contrainte — il impose des lois, oblige à obéir, utilise la police, l'armée, la justice. Même dans une démocratie, le peuple ne gouverne pas vraiment.</p>
+      <div class="highlight-box">« Qui dit État dit domination. »<cite>— Bakounine, L'État et l'Anarchie (1873)</cite></div>
+      <h3>Opposition à Marx</h3>
+      <p>Bakounine refuse la <em>dictature du prolétariat</em> : si l'on crée un nouvel État, même au nom du peuple, il deviendra à son tour oppressif. Une révolution doit supprimer <strong style="color:var(--text)">immédiatement</strong> l'État. La société s'organise librement à partir de petites communautés fondées sur la liberté, l'égalité, la coopération et l'<strong style="color:var(--text)">absence de hiérarchie politique</strong>.</p>
+    </div>
+
+    <div class="course-section" id="e-platon"><h2>La cité idéale — Platon</h2>
+      <span class="philosopher-tag">Platon</span><span class="philosopher-tag">La République</span>
+      <p style="margin-top:14px">Pour Platon, un État juste ne peut pas être dirigé par n'importe qui. Gouverner est un <strong style="color:var(--text)">art qui demande du savoir</strong>. Il critique la démocratie : tout le monde peut gouverner, même des personnes ignorantes ou manipulées.</p>
+      <h3>Les trois classes de la cité idéale</h3>
+      <div style="margin:24px 0 28px; display:flex; flex-direction:column; align-items:center; gap:0;">
+        <div style="width:38%; background:rgba(200,169,110,0.18); border:1.5px solid var(--accent); border-bottom:none; padding:18px 10px 14px; text-align:center; clip-path:polygon(12% 100%, 88% 100%, 100% 0%, 0% 0%); position:relative;">
+          <div style="font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:5px;">Sommet</div>
+          <div style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--text);">Philosophes-rois</div>
+          <div style="font-size:0.75rem;color:var(--text-dim);margin-top:4px;">Guidés par la <em>raison</em></div>
+          <div style="font-size:0.72rem;color:var(--text-faint);margin-top:3px;">→ Gouvernent la cité</div>
+        </div>
+        <div style="width:64%; background:rgba(124,158,201,0.12); border:1.5px solid var(--accent2); border-top:none; border-bottom:none; padding:16px 10px; text-align:center; position:relative;">
+          <div style="font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent2);margin-bottom:5px;">Milieu</div>
+          <div style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--text);">Guerriers</div>
+          <div style="font-size:0.75rem;color:var(--text-dim);margin-top:4px;">Guidés par le <em>courage</em></div>
+          <div style="font-size:0.72rem;color:var(--text-faint);margin-top:3px;">→ Défendent la cité</div>
+        </div>
+        <div style="width:90%; background:rgba(158,203,160,0.10); border:1.5px solid var(--accent3); border-top:none; padding:16px 10px 20px; text-align:center; clip-path:polygon(0% 0%, 100% 0%, 89% 100%, 11% 100%); position:relative;">
+          <div style="font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent3);margin-bottom:5px;">Base</div>
+          <div style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--text);">Producteurs</div>
+          <div style="font-size:0.75rem;color:var(--text-dim);margin-top:4px;">Guidés par le <em>désir</em></div>
+          <div style="font-size:0.72rem;color:var(--text-faint);margin-top:3px;">Agriculteurs, artisans, commerçants</div>
+        </div>
+      </div>
+      <p>Un État est juste lorsque chaque groupe accomplit sa fonction <strong style="color:var(--text)">sans empiéter sur celle des autres</strong>. Les philosophes-rois cherchent la vérité et la justice plutôt que leur intérêt personnel. Platon défend une <strong style="color:var(--text)">aristocratie des meilleurs</strong>, non une démocratie.</p>
+    </div>
+
+    <div class="course-section" id="e-montesquieu"><h2>Séparation des pouvoirs — Montesquieu</h2>
+      <span class="philosopher-tag">Montesquieu</span><span class="philosopher-tag">De l'Esprit des lois, 1748</span>
+      <p style="margin-top:14px">Montesquieu cherche avant tout à <strong style="color:var(--text)">protéger la liberté des citoyens</strong>. Selon lui, le danger vient du fait qu'un pouvoir devient tyrannique s'il n'est pas limité. Dans certaines monarchies absolues, le roi fait les lois, les applique et juge lui-même.</p>
+      <h3>Les trois pouvoirs séparés</h3>
+      <ul class="list-styled">
+        <li><strong style="color:var(--text)">Pouvoir législatif</strong> — vote les lois</li>
+        <li><strong style="color:var(--text)">Pouvoir exécutif</strong> — applique les lois</li>
+        <li><strong style="color:var(--text)">Pouvoir judiciaire</strong> — juge les infractions</li>
+      </ul>
+      <div class="highlight-box">« Pour qu'on ne puisse abuser du pouvoir, il faut que, par la disposition des choses, le pouvoir arrête le pouvoir. »<cite>— Montesquieu, De l'Esprit des lois (1748)</cite></div>
+      <p>Montesquieu admire le système politique anglais où le roi, le Parlement et les juges se limitent mutuellement. Sa théorie devient le fondement des démocraties modernes — notamment la Constitution américaine de 1787.</p>
+    </div>
+
+    <div class="course-section" id="e-machiavel"><h2>Le Prince — Machiavel</h2>
+      <span class="philosopher-tag">Machiavel</span><span class="philosopher-tag">Le Prince, 1513</span>
+      <p style="margin-top:14px">Machiavel ne cherche pas à imaginer un État idéal. Il veut comprendre comment le pouvoir <strong style="color:var(--text)">fonctionne réellement</strong>. Les hommes sont souvent égoïstes, ingrats, changeants et prêts à trahir — un dirigeant ne peut pas gouverner uniquement avec la bonté ou la morale.</p>
+      <h3>Le lion et le renard</h3>
+      <ul class="list-styled">
+        <li>Un <strong style="color:var(--text)">lion</strong> — pour faire peur à ses ennemis</li>
+        <li>Un <strong style="color:var(--text)">renard</strong> — pour être rusé et éviter les pièges</li>
+      </ul>
+      <p>Le prince ne doit pas toujours tenir sa parole si cela met l'État en danger. La violence n'est acceptable que si elle sert à <strong style="color:var(--text)">préserver l'État</strong>. Il vaut mieux être craint qu'aimé — mais le prince ne doit jamais se faire détester, sinon il risque une révolte.</p>
+      <div class="info-box"><em>« La fin justifie les moyens. »</em><br>Même si Machiavel n'a jamais écrit exactement cette phrase, elle exprime assez bien son idée : lorsqu'il s'agit de sauver l'État, un chef peut employer des moyens moralement discutables.</div>
+    </div>
+
+    <div class="course-section" id="e-synthese"><h2>Tableau de synthèse</h2>
+      <p>Neuf positions sur l'État, de la justification absolue à la suppression totale :</p>
+      <div style="overflow-x:auto;margin-top:16px;">
+      <table style="width:100%;border-collapse:collapse;font-size:0.82rem;">
+        <thead>
+          <tr style="background:var(--surface2);">
+            <th style="padding:10px 12px;text-align:left;color:var(--accent);font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.15em;text-transform:uppercase;font-weight:400;border-bottom:1px solid var(--border);">Auteur</th>
+            <th style="padding:10px 12px;text-align:left;color:var(--accent);font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.15em;text-transform:uppercase;font-weight:400;border-bottom:1px solid var(--border);">Vision de l'homme</th>
+            <th style="padding:10px 12px;text-align:left;color:var(--accent);font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.15em;text-transform:uppercase;font-weight:400;border-bottom:1px solid var(--border);">Rôle de l'État</th>
+            <th style="padding:10px 12px;text-align:left;color:var(--accent);font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.15em;text-transform:uppercase;font-weight:400;border-bottom:1px solid var(--border);">Forme idéale</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text);font-weight:500;">Hobbes</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Violent, égoïste</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Garantir la paix par la force</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Monarchie absolue (Léviathan)</td></tr>
+          <tr style="background:rgba(255,255,255,0.02)"><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text);font-weight:500;">Rousseau</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Naturellement bon, corrompu</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Exprimer la volonté générale</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Démocratie directe</td></tr>
+          <tr><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text);font-weight:500;">Locke</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Libre, raisonnable</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Protéger les droits naturels</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Démocratie libérale</td></tr>
+          <tr style="background:rgba(255,255,255,0.02)"><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text);font-weight:500;">Tocqueville</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Individualiste en démocratie</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Danger s'il est trop étendu</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Démocratie participative</td></tr>
+          <tr><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text);font-weight:500;">Marx</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Aliéné par le capitalisme</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Instrument de la bourgeoisie</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Dépérissement de l'État</td></tr>
+          <tr style="background:rgba(255,255,255,0.02)"><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text);font-weight:500;">Platon</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Inégal en raison</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Réaliser la justice dans la cité</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Aristocratie des philosophes</td></tr>
+          <tr><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text);font-weight:500;">Montesquieu</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Sujet à la corruption</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Garantir la liberté par l'équilibre</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Séparation des pouvoirs</td></tr>
+          <tr style="background:rgba(255,255,255,0.02)"><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text);font-weight:500;">Bakounine</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Naturellement libre et coopératif</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Toujours oppressif, à supprimer</td><td style="padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);">Anarchie / fédéralisme volontaire</td></tr>
+          <tr><td style="padding:9px 12px;color:var(--text);font-weight:500;">Machiavel</td><td style="padding:9px 12px;color:var(--text-dim);">Égoïste, ingrat</td><td style="padding:9px 12px;color:var(--text-dim);">Maintenir l'ordre et la stabilité</td><td style="padding:9px 12px;color:var(--text-dim);">Réalisme politique / Principauté</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>`
+  },
+  'humanite-tech': {
+    title: "L'essor technologique et l'idée de progrès",
+    tag: "L'Humanité · Cours 1",
+    breadcrumb: `<span onclick="goto('page-accueil')">Accueil</span><span class="sep">/</span><span onclick="goto('page-humanite')">L'Humanité</span><span class="sep">/</span><span onclick="goto('page-humanite-cours')">Cours</span><span class="sep">/</span><span class="current">Essor technologique</span>`,
+    sidebar: [
+      {label:"Introduction",id:"t-intro"},{label:"I — Développement nécessaire",id:"t-s1"},
+      {label:"Le mythe de Prométhée",id:"t-s1a"},{label:"Nature imparfaite",id:"t-s1b"},
+      {label:"Spécificité humaine",id:"t-s1c"},{label:"Progrès & technique",id:"t-s1d"},
+      {label:"II — Effets négatifs",id:"t-s2"},{label:"Menaces sur la nature",id:"t-s2a"},
+      {label:"Conséquences sur l'homme",id:"t-s2b"},{label:"Une technique qui échappe",id:"t-s2c"},
+      {label:"Effets sur la pensée",id:"t-s2d"}
+    ],
+    html: `<h1>L'essor technologique et l'idée de progrès</h1><div class="course-tag">L'Humanité · Philosophie ECG</div>
+    <div class="course-section" id="t-intro"><h2>Introduction</h2>
+      <div class="def-block"><strong>Technique</strong><p>Savoir-faire qui permet d'obtenir un résultat déterminé. Elle suppose une méthode, une intention et une maîtrise des moyens. Elle se distingue du savoir théorique et de la pratique irréfléchie.</p></div>
+      <div class="def-block"><strong>Technologie</strong><p>Étude systématique des procédés, méthodes, instruments ou outils propres à un ou plusieurs domaines techniques. C'est la technique associée à la raison et au savoir scientifique (Dominique Raynaud, 2016).</p></div>
+      <p>Selon <strong style="color:var(--text)">Gilbert Simondon</strong>, le développement technologique constitue une médiation entre l'homme et le monde : les objets techniques transforment la manière dont l'être humain agit, perçoit et comprend son environnement.</p>
+      <div class="def-block"><strong>Progrès (Pierre-André Taguieff)</strong><p>Amélioration ou évolution vers un état jugé meilleur. Trois sens : spatial (avancer dans l'espace), temporel (accumulation de connaissances), moral (amélioration de l'humanité).</p></div>
+    </div>
+    <div class="course-section" id="t-s1"><h2>I — Un nécessaire développement technique</h2>
+      <h3 id="t-s1a">1 · Le mythe de Prométhée</h3>
+      <p>Dans le <em>Protagoras</em>, l'homme est présenté comme le plus démuni des êtres : ni griffes, ni fourrure, ni instincts suffisants. Prométhée vole aux dieux le <strong style="color:var(--text)">feu et la connaissance des arts techniques</strong> pour les donner aux humains. Plus tard vient la science politique.</p>
+      <div class="def-block"><strong>Néoténie / Foetalisation (Louis Bolk)</strong><p>L'être humain naît incomplet et met beaucoup plus de temps à atteindre l'âge adulte que les autres espèces. Cette immaturité physique explique son besoin de la technique pour survivre.</p></div>
+      <div class="info-box">La faiblesse physique de l'homme par rapport aux animaux devient finalement une force : elle l'oblige à développer l'intelligence, la technique et la culture.</div>
+      <h3 id="t-s1b">2 · Une nature imparfaite</h3>
+      <p><strong style="color:var(--text)">John Stuart Mill</strong> : si la nature était parfaite, toute action humaine réfléchie serait inutile.</p>
+      <p><strong style="color:var(--text)">Descartes</strong> : l'essor technologique permet à l'homme de se rendre « comme maître et possesseur de la nature ».</p>
+      <h3 id="t-s1c">3 · Spécificité humaine</h3>
+      <p>Selon <strong style="color:var(--text)">Marx</strong>, les animaux n'ont pas de véritable technique : ils agissent par instinct sans progrès (l'araignée tisse toujours la même toile). La technique humaine suppose une <em>conscience de faire</em> et implique la connaissance des lois de la nature.</p>
+      <h3 id="t-s1d">4 · Le progrès, effet du développement des techniques ?</h3>
+      <p><strong style="color:var(--text)">Aristote</strong> constate que la technique a permis à l'homme de se libérer des contraintes matérielles et de consacrer du temps aux activités intellectuelles. Mais ce constat est partiel : le progrès technique ne s'accompagne pas toujours d'un progrès moral.</p>
+      <div class="def-block"><strong>Les 3 perceptions du progrès selon Kant</strong><p>• Terrorisme moral : l'humanité ne fait que régresser<br>• Eudémonisme : elle progresse constamment<br>• Abdéritisme : elle stagne<br><br>Kant les juge toutes insatisfaisantes. Il propose de comprendre le progrès comme une <em>Idée</em> — un principe moral : il faut agir comme si l'humanité progressait.</p></div>
+    </div>
+    <div class="course-section" id="t-s2"><h2>II — Les effets négatifs du développement technique</h2>
+      <h3 id="t-s2a">Menaces sur la nature</h3>
+      <div class="def-block"><strong>Anthropocène</strong><p>Nouvelle ère géologique commencée à la fin du XVIIIe siècle où les activités humaines deviennent la principale force de transformation de la planète : pollution, épuisement des ressources, réchauffement climatique, effondrement de la biodiversité.</p></div>
+      <p><strong style="color:var(--text)">Michel Serres</strong> (<em>Le Contrat naturel</em>, 1990) : l'homme a instauré une relation violente avec la nature. Il propose un « contrat naturel » qui reconnaîtrait à la nature des droits et imposerait à l'homme des devoirs.</p>
+      <h3 id="t-s2b">Conséquences sur l'homme</h3>
+      <p>Le développement technique entraîne parfois une augmentation du chômage, accentue les inégalités, et modifie le rapport de l'homme au travail.</p>
+      <p><strong style="color:var(--text)">Georges Friedmann</strong> : « Le citadin, dans le cours de sa journée, ne fait que quitter une machine pour en retrouver une autre. »</p>
+      <p><strong style="color:var(--text)">Alain Damasio</strong> (<em>La Vallée du silicium</em>) distingue la <em>puissance</em> (faire par soi-même) du <em>pouvoir</em> (faire faire par les machines).</p>
+      <h3 id="t-s2c">Une technique qui échappe à l'homme</h3>
+      <p>La science-fiction illustre cette idée : Frankenstein, The Matrix. Aujourd'hui : la <em>boîte noire</em> de l'intelligence artificielle.</p>
+      <p><strong style="color:var(--text)">Günther Anders</strong> : les bombardements d'Hiroshima et Nagasaki marquent une rupture. Avant, seuls les individus étaient mortels ; après, l'humanité entière peut disparaître. Passage d'un « devoir mourir » individuel à un « pouvoir mourir » collectif.</p>
+      <h3 id="t-s2d">Effets sur la pensée</h3>
+      <p><strong style="color:var(--text)">Rousseau</strong> : le progrès des sciences et des techniques corrompt la bonté naturelle de l'homme. L'amour de soi devient amour-propre ; la pitié se transforme en envie et jalousie.</p>
+      <p><strong style="color:var(--text)">Heidegger</strong> (<em>La Question de la technique</em>) : la technique moderne « provoque » la nature et impose l'<em>arraisonnement</em> — elle pousse à considérer toute chose uniquement selon son utilité. Ce danger est double : adhérer à cette vision et oublier qu'il existe d'autres façons de penser.</p>
+    </div>`
+  }
+};
+
+function showCourse(key) {
+  const c = COURSES[key];
+  if (!c) return;
+  document.getElementById('course-breadcrumb').innerHTML = c.breadcrumb;
+  const sb = document.getElementById('course-sidebar');
+  sb.innerHTML = `<div class="sidebar-title">Dans ce cours</div>`;
+  c.sidebar.forEach((item,i) => {
+    const el = document.createElement('div');
+    el.className = 'sidebar-item' + (i===0?' active':'');
+    el.textContent = item.label;
+    el.onclick = () => {
+      document.querySelectorAll('.sidebar-item').forEach(x=>x.classList.remove('active'));
+      el.classList.add('active');
+      const target = document.getElementById(item.id);
+      if (target) target.scrollIntoView({behavior:'smooth',block:'start'});
+    };
+    sb.appendChild(el);
+  });
+  document.getElementById('course-content').innerHTML = c.html;
+  goto('page-course');
+}
+
+function showPhiloBonheur() {
+  document.getElementById('hgg-breadcrumb').innerHTML = `<span onclick="goto('page-accueil')">Accueil</span><span class="sep">/</span><span onclick="goto('page-cours')">Cours</span><span class="sep">/</span><span onclick="goto('page-1ere')">1ère Année</span><span class="sep">/</span><span onclick="goto('page-philo')">Philosophie</span><span class="sep">/</span><span class="current">Le Bonheur</span>`;
+  const tocItems = [
+    ["pb-def","00","Définitions — Bonheur, Désir, Plaisir"],
+    ["pb-hedonisme","01","L'Hédonisme"],
+    ["pb-callicles","02","Calliclès — Hédonisme radical"],
+    ["pb-epicure","03","Épicure — Hédonisme modéré"],
+    ["pb-eudemonisme","04","L'Eudémonisme"],
+    ["pb-socrate","05","Socrate — Sagesse et mesure"],
+    ["pb-aristote","06","Aristote — La vertu"],
+    ["pb-epictete","07","Épictète — Le stoïcisme"],
+    ["pb-rousseau","08","Rousseau — Imaginer le désir"],
+    ["pb-kant","09","Kant — Le bonheur est subjectif"],
+    ["pb-schopenhauer","10","Schopenhauer — Absence de souffrance"],
+    ["pb-synthese","11","Tableau de synthèse"],
+  ].map(([id,n,title]) => `<li><a href="#${id}"><span class="toc-num">${n}</span>${title}</a></li>`).join('');
+
+  document.getElementById('hgg-course-body').innerHTML = `
+    <div class="hgg-chapter-header" style="background:#5C4A00;">
+      <div class="chap-label" style="color:#F5D060;">Philosophie ECG · Notion 2</div>
+      <h1>Le Bonheur</h1>
+      <p>Hédonisme, eudémonisme, désir et la question du souverain bien</p>
+    </div>
+    <div class="hgg-toc">
+      <div class="hgg-toc-inner">
+        <div class="hgg-toc-title">Sommaire</div>
+        <ul class="hgg-toc-list">${tocItems}</ul>
+      </div>
+    </div>
+    <div class="hgg-content">
+
+      <!-- DÉFINITIONS -->
+      <div id="pb-def" class="hgg-section">
+        <div class="hgg-section-title">Définitions fondamentales</div>
+        <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div><strong>Bonheur :</strong> État <strong>durable et intense</strong> de pleine satisfaction. À distinguer du simple plaisir (passager) et de la chance (externe). La question philosophique centrale : peut-on atteindre cet état, et comment ?</div></div>
+        <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div><strong>Désir :</strong> Ce qui nous pousse à rechercher un objet qui nous manque et dont on suppose qu'il pourra nous donner satisfaction. Le désir implique un <strong>manque</strong> et une <strong>projection</strong> vers un objet censé le combler.</div></div>
+        <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div><strong>Plaisir :</strong> Sensation agréable et <strong>éphémère</strong> provoquée par la réalisation d'un désir. Le plaisir est instantané là où le bonheur est durable — il ne suffit pas à constituer le bonheur.</div></div>
+      </div>
+
+      <!-- PARTIE I : HÉDONISME -->
+      <div class="hgg-part">
+        <div class="hgg-part-header"><div class="hgg-part-num">I</div><div class="hgg-part-title">L'Hédonisme : le bonheur par le plaisir</div></div>
+
+        <div id="pb-hedonisme" class="hgg-section">
+          <div class="hgg-section-title">L'Hédonisme — présentation générale</div>
+          <div class="hgg-concept">
+            <div class="concept-label">Définition</div>
+            <p><strong>L'Hédonisme</strong> est la doctrine qui considère que la <strong>recherche du plaisir</strong> et l'évitement de la souffrance sont les buts de l'existence. Pour les hédonistes, être heureux revient à ressentir du plaisir. L'hédonisme peut être <strong>radical</strong> (Calliclès) ou <strong>modéré</strong> (Épicure).</p>
+          </div>
+        </div>
+
+        <div id="pb-callicles" class="hgg-section">
+          <div class="hgg-section-title">Calliclès — L'hédonisme radical</div>
+          <div class="hgg-author"><div class="author-name">Calliclès — dans le Gorgias de Platon</div><p>Personnage du dialogue platonicien <em>Gorgias</em>, Calliclès représente la position la plus radicale : la satisfaction illimitée des désirs comme idéal de l'homme libre.</p></div>
+          <p>Dans le <em>Gorgias</em>, Calliclès défend une conception radicale du bonheur fondée sur la <strong>satisfaction illimitée des désirs</strong>, qu'il présente comme la véritable nature de l'homme libre. La vie bonne est celle où l'on réalise ce qu'on veut, au moment où on le veut, en refusant de brider la puissance de ses désirs.</p>
+          <div class="hgg-concept">
+            <div class="concept-label">Thèse centrale</div>
+            <p>Pour Calliclès, le bonheur consiste avant tout à satisfaire tous ses désirs, <strong>sans aucune limitation morale, sociale ou rationnelle</strong>. Toute tempérance est contraire à la nature humaine.</p>
+          </div>
+          <div class="hgg-subsection-title">→ Argumentaire et courage</div>
+          <p>Calliclès s'oppose à la tradition grecque de la mesure (valorisée par Socrate). Il considère que la recherche illimitée des plaisirs demande même du <strong>courage</strong>, car elle confronte l'individu au jugement d'autrui, aux lois et aux conventions sociales. Suivre ses désirs va parfois à l'encontre de la morale, mais c'est le seul moyen d'accéder à une existence pleine et vivante.</p>
+          <div class="hgg-subsection-title">→ La limite de cette position</div>
+          <div class="hgg-highlight">⚠ Une vie entièrement tournée vers des désirs toujours renaissants peut mener à une forme de <strong>lassitude, voire d'autodestruction</strong>. Celui qui cherche à satisfaire toutes ses pulsions se soumet à une dynamique sans fin, où aucun plaisir ne peut conduire à une satisfaction durable.</div>
+        </div>
+
+        <div id="pb-epicure" class="hgg-section">
+          <div class="hgg-section-title">Épicure — L'hédonisme modéré</div>
+          <div class="hgg-author"><div class="author-name">Épicure — Lettre à Ménécée (IIIe s. av. J.-C.)</div><p>Philosophe grec fondateur de l'École du Jardin. Propose un hédonisme rationnel fondé sur la mesure et la distinction des désirs.</p></div>
+          <p>Épicure reprend l'idée que le plaisir est le fondement du bonheur, mais il <strong>rompt radicalement avec l'excès</strong> prôné par Calliclès. Il faut classer les désirs et distinguer ceux qu'il est bénéfique de suivre de ceux qu'il faut éviter.</p>
+          <div class="hgg-subsection-title">→ Les trois catégories de désirs</div>
+          <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div><strong>Désirs naturels et nécessaires</strong> — indispensables au bonheur, à la santé et à la vie : boire, manger, dormir, philosopher. Ce sont les seuls qu'il faut toujours satisfaire.</div></div>
+          <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div><strong>Désirs naturels mais non nécessaires</strong> — agréables, mais dont la satisfaction n'est pas essentielle : manger raffiné, luxe simple. On peut les satisfaire sans en faire une priorité.</div></div>
+          <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div><strong>Désirs vains</strong> — illimités, artificiels, sans fin possible : richesse, gloire, honneurs. Ils reposent sur un manque impossible à combler et créent une frustration perpétuelle.</div></div>
+          <div class="hgg-subsection-title">→ Le but épicurien : ataraxie et aponie</div>
+          <div class="hgg-concept">
+            <div class="concept-label">Le Tétrapharmakon — le quadruple remède</div>
+            <p>1. Ne pas craindre les dieux · 2. Ne pas craindre la mort · 3. Ce qui est nécessaire au bonheur est facile à obtenir · 4. La douleur est facile à supporter</p>
+          </div>
+          <p>Épicure propose donc un <strong>hédonisme rationnel</strong>, fondé sur la mesure, qui permet une satisfaction durable. Le bonheur est un état de calme stable (<em>ataraxie</em> pour l'âme, <em>aponie</em> pour le corps) — non pas une quête infinie.</p>
+        </div>
+      </div>
+
+      <!-- PARTIE II : EUDÉMONISME -->
+      <div class="hgg-part">
+        <div class="hgg-part-header"><div class="hgg-part-num">II</div><div class="hgg-part-title">L'Eudémonisme : le bonheur par la vertu et la sagesse</div></div>
+
+        <div id="pb-eudemonisme" class="hgg-section">
+          <div class="hgg-section-title">L'Eudémonisme — présentation générale</div>
+          <div class="hgg-concept">
+            <div class="concept-label">Définition</div>
+            <p><strong>L'Eudémonisme</strong> est la doctrine morale selon laquelle le but de l'action est le bonheur, par l'œuvre de la sagesse et de la vertu. Contrairement à l'hédonisme, le bonheur n'est pas identifié au plaisir mais à l'accomplissement de ce que l'être humain a de meilleur en lui.</p>
+          </div>
+        </div>
+
+        <div id="pb-socrate" class="hgg-section">
+          <div class="hgg-section-title">Socrate — Sagesse et mesure</div>
+          <div class="hgg-author"><div class="author-name">Socrate — dans le Gorgias de Platon (Ve s. av. J.-C.)</div><p>Socrate oppose à Calliclès une vision du bonheur fondée sur la tempérance et la maîtrise de soi.</p></div>
+          <p>Dans le <em>Gorgias</em>, Socrate critique la vision callicléenne du bonheur car elle confond <strong>plaisir immédiat et bonheur durable</strong>. Il soutient que seule la maîtrise de ses désirs permet une véritable satisfaction durable.</p>
+          <div class="hgg-subsection-title">→ La métaphore des tonneaux percés</div>
+          <div class="hgg-highlight">Socrate utilise l'image des <strong>tonneaux percés</strong> : l'homme dominé par des désirs insatiables remplit des tonneaux troués — ils se vident aussitôt, l'obligeant à une agitation constante. L'homme tempérant possède des <strong>tonneaux non percés</strong> : ses désirs, mesurés, peuvent être satisfaits durablement.</div>
+          <p>Calliclès objecte que la vie tempérée serait une « vie de pierre », dépourvue de plaisir. Socrate répond que la sagesse n'annule pas les plaisirs — elle permet simplement de n'accorder leur valeur qu'aux plaisirs compatibles avec une vie harmonieuse.</p>
+          <div class="hgg-concept">
+            <div class="concept-label">Conclusion socratique</div>
+            <p>Sans maîtrise rationnelle, nous sommes <strong>esclaves de nos désirs</strong> et prisonniers d'une insatisfaction perpétuelle. Le bonheur n'est pas dans la succession de plaisirs éphémères, mais dans une forme d'<strong>équilibre intérieur</strong>.</p>
+          </div>
+        </div>
+
+        <div id="pb-aristote" class="hgg-section">
+          <div class="hgg-section-title">Aristote — La vertu et l'eudaimonia</div>
+          <div class="hgg-author"><div class="author-name">Aristote — Éthique à Nicomaque (IVe s. av. J.-C.)</div><p>Aristote définit le bonheur comme la fin ultime de la vie humaine, le souverain bien atteignable par l'exercice de la vertu.</p></div>
+          <p>Aristote définit le bonheur (<em>eudaimonia</em>) comme la <strong>fin ultime de la vie humaine</strong>, le souverain bien, atteignable par l'exercice de la vertu et une vie conforme à la raison. Le bonheur n'est pas un état passager ou une simple satisfaction de désirs, mais la <strong>réalisation de notre potentiel</strong> en tant qu'êtres rationnels.</p>
+          <div class="hgg-subsection-title">→ Les deux types de vertus</div>
+          <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div><strong>Vertus morales</strong> — régulent nos désirs et nos actions : courage, justice, tempérance, générosité…</div></div>
+          <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div><strong>Vertus intellectuelles</strong> — concernent la raison et la sagesse : prudence (<em>phronesis</em>), sagesse théorétique (<em>sophia</em>)…</div></div>
+          <div class="hgg-subsection-title">→ La dimension politique</div>
+          <p>Aristote insiste sur l'importance de la dimension sociale : l'homme est un <em>animal politique</em> (<em>zôon politikon</em>), et la vie en société, dans le respect des lois et de l'amitié, est essentielle à l'épanouissement personnel.</p>
+          <div class="hgg-concept">
+            <div class="concept-label">→</div>
+            <p>Selon Aristote, le bonheur n'est pas simplement <em>ressenti</em>, mais <strong>construit</strong> par des choix justes et une vie vertueuse.</p>
+          </div>
+        </div>
+
+        <div id="pb-epictete" class="hgg-section">
+          <div class="hgg-section-title">Épictète — Le stoïcisme</div>
+          <div class="hgg-author"><div class="author-name">Épictète — Le Manuel (Ier–IIe s. ap. J.-C.)</div><p>Philosophe stoïcien, ancien esclave. Soutient que le bonheur dépend uniquement de ce qui est en notre pouvoir.</p></div>
+          <p>Épictète soutient que le bonheur dépend uniquement de <strong>ce qui est en notre pouvoir</strong>, et qu'il s'obtient par l'accord de notre volonté avec la nécessité. Il distingue deux types de choses :</p>
+          <div class="hgg-stats">
+            <div class="hgg-stat-cell"><span class="hgg-stat-num" style="font-size:1.2rem;">Eph' hēmin</span><div class="hgg-stat-label">Ce qui dépend de nous : pensées, jugements, choix, volonté</div></div>
+            <div class="hgg-stat-cell"><span class="hgg-stat-num" style="font-size:1.2rem;">Ouk eph' hēmin</span><div class="hgg-stat-label">Ce qui ne dépend pas de nous : santé, richesse, réputation, destin</div></div>
+          </div>
+          <p>Chercher le bonheur dans ce qui ne dépend pas de nous conduit nécessairement à la frustration. En revanche, <strong>accorder notre volonté à la nécessité</strong> procure une paix intérieure profonde. Le stoïcien cultive l'<em>amor fati</em> (amour du destin) : il veut ce qui arrive, parce qu'il reconnaît que le réel est nécessaire.</p>
+          <div class="hgg-highlight">Le bonheur ne réside pas dans la <strong>modification du monde</strong>, mais dans la <strong>transformation de notre rapport au monde</strong>.</div>
+        </div>
+      </div>
+
+      <!-- PARTIE III : AUTRES APPROCHES -->
+      <div class="hgg-part">
+        <div class="hgg-part-header"><div class="hgg-part-num">III</div><div class="hgg-part-title">Autres approches : imagination, subjectivité, pessimisme</div></div>
+
+        <div id="pb-rousseau" class="hgg-section">
+          <div class="hgg-section-title">Rousseau — Imaginer le désir</div>
+          <div class="hgg-author"><div class="author-name">Jean-Jacques Rousseau — Rêveries du promeneur solitaire (1782)</div><p>Rousseau montre que le bonheur réside davantage dans l'imagination du désir que dans sa réalisation concrète, toujours décevante.</p></div>
+          <p>Rousseau observe un paradoxe fondamental : nous avons beaucoup plus de désirs que de possibilités réelles de les satisfaire. Si le bonheur dépendait uniquement de la réalisation des désirs, il serait presque impossible.</p>
+          <div class="hgg-concept">
+            <div class="concept-label">La thèse de Rousseau</div>
+            <p>La véritable source de satisfaction ne se trouve pas dans la <strong>réalisation</strong> du désir, mais dans son <strong>imagination</strong>. Lorsque nous désirons quelque chose, nous le projetons mentalement, nous le rêvons, nous l'idéalisons. Ce travail imaginatif procure souvent un plaisir supérieur à celui de la réalisation, qui se heurte à la réalité concrète, limitée et décevante.</p>
+          </div>
+          <p>Ainsi, le bonheur consiste moins à satisfaire tous ses désirs qu'à les <strong>cultiver</strong>, à maintenir un certain élan intérieur. Le pire malheur serait de ne plus rien désirer, car alors la vie perdrait sa dynamique. Rousseau critique la société moderne qui valorise la consommation immédiate — cette logique nous prive de la dimension imaginative qui rend réellement heureux.</p>
+        </div>
+
+        <div id="pb-kant" class="hgg-section">
+          <div class="hgg-section-title">Kant — Le bonheur est subjectif</div>
+          <div class="hgg-author"><div class="author-name">Emmanuel Kant — Fondements de la métaphysique des mœurs (1785)</div><p>Kant affirme que le bonheur est un concept indéterminé et subjectif, et que seule la loi morale peut réellement guider l'action humaine.</p></div>
+          <p>Pour Kant, le bonheur est un concept <strong>indéterminé et subjectif</strong>, variable selon les individus, impossible à définir de manière universelle. Chacun se représente le bonheur différemment en fonction de ses expériences, de ses inclinations, de sa culture. Il n'existe pas d'idée claire permettant de savoir exactement ce qui rend un être humain heureux.</p>
+          <div class="hgg-highlight">Le bonheur est donc un <strong>« idéal de l'imagination »</strong> : nous l'imaginons, mais nous ne pouvons ni le connaître ni le définir objectivement.</div>
+          <p>C'est pourquoi Kant affirme que le bonheur ne peut pas constituer la fin de la morale. Si nous agissons seulement en vue d'être heureux, nos actions seraient guidées par des inclinations personnelles, changeantes, et non par des principes rationnels et universalisables.</p>
+          <div class="hgg-concept">
+            <div class="concept-label">Conclusion kantienne</div>
+            <p>Le véritable objectif de la vie morale n'est pas le bonheur, mais le <strong>devoir</strong> — l'obéissance à la loi morale universelle. Le bonheur n'est pas impossible, mais il ne peut pas être le fondement d'une règle morale.</p>
+          </div>
+        </div>
+
+        <div id="pb-schopenhauer" class="hgg-section">
+          <div class="hgg-section-title">Schopenhauer — L'absence de souffrance</div>
+          <div class="hgg-author"><div class="author-name">Arthur Schopenhauer — Le Monde comme volonté et comme représentation (1818)</div><p>Vision profondément pessimiste : la vie est essentiellement souffrance, et le bonheur n'est qu'une absence de douleur.</p></div>
+          <p>Schopenhauer expose une vision profondément <strong>pessimiste</strong> de l'existence. Pour lui, la vie est essentiellement souffrance, et le bonheur, s'il existe, n'est pas quelque chose de positif, mais plutôt une <strong>absence de douleur</strong>.</p>
+          <div class="hgg-subsection-title">→ Le mouvement perpétuel de la volonté</div>
+          <p>Notre volonté — la force fondamentale qui nous pousse à désirer — génère un mouvement perpétuel : dès qu'un désir est satisfait, un autre naît, et ce cycle ne s'arrête jamais. La vie est rythmée par des alternances entre :</p>
+          <div class="hgg-stats">
+            <div class="hgg-stat-cell"><span class="hgg-stat-num" style="color:#8B3A2A;font-size:1.5rem;">Souffrance</span><div class="hgg-stat-label">Quand on désire — le manque est tangible et réel (« positif »)</div></div>
+            <div class="hgg-stat-cell"><span class="hgg-stat-num" style="color:#7A6A5A;font-size:1.5rem;">Ennui</span><div class="hgg-stat-label">Quand on n'a plus rien à désirer — le vide après la satisfaction (« négatif »)</div></div>
+          </div>
+          <div class="hgg-concept">
+            <div class="concept-label">Le plaisir est « négatif »</div>
+            <p>Le plaisir n'est pas un ajout mais la <strong>suppression d'une souffrance précédente</strong>. En revanche, la souffrance est « positive » : elle est tangible et indéniable, ce qui la rend plus réelle.</p>
+          </div>
+          <div class="hgg-highlight">Croire que nous sommes faits pour être heureux est une erreur fondamentale. La sagesse consiste à <strong>minimiser les souffrances</strong>, à limiter les désirs, et à reconnaître que la vie est foncièrement difficile — plutôt qu'à poursuivre un bonheur illusoire.</div>
+        </div>
+      </div>
+
+      <!-- TABLEAU DE SYNTHÈSE -->
+      <div id="pb-synthese" class="hgg-section">
+        <div class="hgg-section-title">Tableau de synthèse</div>
+        <p>Huit positions sur le bonheur, de la satisfaction illimitée à la résignation sage :</p>
+        <div style="overflow-x:auto;margin-top:20px;">
+        <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+          <thead>
+            <tr style="background:var(--dark);color:var(--cream);">
+              <th style="padding:11px 14px;text-align:left;font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.15em;text-transform:uppercase;font-weight:400;border-bottom:2px solid var(--gold);">Auteur</th>
+              <th style="padding:11px 14px;text-align:left;font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.15em;text-transform:uppercase;font-weight:400;border-bottom:2px solid var(--gold);">Œuvre clé</th>
+              <th style="padding:11px 14px;text-align:left;font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.15em;text-transform:uppercase;font-weight:400;border-bottom:2px solid var(--gold);">Conception du bonheur</th>
+              <th style="padding:11px 14px;text-align:left;font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.15em;text-transform:uppercase;font-weight:400;border-bottom:2px solid var(--gold);">Notion clé</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="padding:10px 14px;border-bottom:1px solid var(--light-brown);color:var(--dark);font-weight:600;">Calliclès</td><td style="padding:10px 14px;border-bottom:1px solid var(--light-brown);color:var(--brown);">Gorgias (Platon)</td><td style="padding:10px 14px;border-bottom:1px solid var(--light-brown);color:var(--brown);">Satisfaction illimitée de tous les désirs</td><td style="padding:10px 14px;border-bottom:1px solid var(--light-brown);color:var(--rust);font-weight:500;">Hédonisme radical</td></tr>
+            <tr style="background:white;"><td style="padding:10px 14px;border-bottom:1px solid var(--light-brown);color:var(--dark);font-weight:600;">Épicure</td><td style="padding:10px 14px;border-bottom:1px solid var(--light-brown);color:var(--brown);">Lettre à Ménécée</td><td style="padding:10px 14px;border-bottom:1px solid var(--light-brown);color:var(--brown);">Plaisirs mesurés, ataraxie, aponie</td><td style="padding:10px 14px;border-bottom:1px solid var(--light-brown);color:var(--rust);font-weight:500;">Hédonisme modéré</td></tr>
+            <tr><td style="padding:10px 14px;border-bottom:1px solid var(--light-brown);color:var(--dark);font-weight:600;">Socrate</td><td style="padding:10px 14px;border-bottom:1px solid var(--light-brown);color:var(--brown);">Gorgias (Platon)</td><td style="padding:10px 14px;border-bottom:1px solid var(--light-brown);color:var(--brown);">Maîtrise de soi, tempérance, mesure</td><td style="padding:10px 14px;border-bottom:1px solid var(--light-brown);color:var(--gold);font-weight:500;">Eudémonisme</td></tr>
+            <tr style="background:white;"><td style="padding:10px 14px;border-bottom:1px solid var(--light-brown);color:var(--dark);font-weight:600;">Aristote</td><td style="padding:10px 14px;border-bottom:1px solid var(--light-brown);color:var(--brown);">Éthique à Nicomaque</td><td style="padding:10px 14px;border-bottom:1px solid var(--light-brown);color:var(--brown);">Vie vertueuse conforme à la raison</td><td style="padding:10px 14px;border-bottom:1px solid var(--light-brown);color:var(--gold);font-weight:500;">Eudaimonia / vertu</td></tr>
+            <tr><td style="padding:10px 14px;border-bottom:1px solid var(--light-brown);color:var(--dark);font-weight:600;">Épictète</td><td style="padding:10px 14px;border-bottom:1px solid var(--light-brown);color:var(--brown);">Le Manuel</td><td style="padding:10px 14px;border-bottom:1px solid var(--light-brown);color:var(--brown);">Liberté intérieure, accord avec la nécessité</td><td style="padding:10px 14px;border-bottom:1px solid var(--light-brown);color:var(--gold);font-weight:500;">Stoïcisme / amor fati</td></tr>
+            <tr style="background:white;"><td style="padding:10px 14px;border-bottom:1px solid var(--light-brown);color:var(--dark);font-weight:600;">Rousseau</td><td style="padding:10px 14px;border-bottom:1px solid var(--light-brown);color:var(--brown);">Rêveries du promeneur solitaire</td><td style="padding:10px 14px;border-bottom:1px solid var(--light-brown);color:var(--brown);">Bonheur dans l'imagination du désir</td><td style="padding:10px 14px;border-bottom:1px solid var(--light-brown);color:var(--muted);font-weight:500;">Désir imaginé</td></tr>
+            <tr><td style="padding:10px 14px;border-bottom:1px solid var(--light-brown);color:var(--dark);font-weight:600;">Kant</td><td style="padding:10px 14px;border-bottom:1px solid var(--light-brown);color:var(--brown);">Fondements de la métaphysique des mœurs</td><td style="padding:10px 14px;border-bottom:1px solid var(--light-brown);color:var(--brown);">Bonheur subjectif, indéterminé ; le devoir prime</td><td style="padding:10px 14px;border-bottom:1px solid var(--light-brown);color:var(--muted);font-weight:500;">Idéal de l'imagination</td></tr>
+            <tr style="background:white;"><td style="padding:10px 14px;color:var(--dark);font-weight:600;">Schopenhauer</td><td style="padding:10px 14px;color:var(--brown);">Le Monde comme volonté et représentation</td><td style="padding:10px 14px;color:var(--brown);">Bonheur = absence de souffrance ; minimiser les désirs</td><td style="padding:10px 14px;color:var(--rust);font-weight:500;">Pessimisme / Volonté</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+
+    </div>
+  `;
+  goto('page-hgg-course');
+}
+
+function showPhiloEtat() {
+  document.getElementById('hgg-breadcrumb').innerHTML = `<span onclick="goto('page-accueil')">Accueil</span><span class="sep">/</span><span onclick="goto('page-cours')">Cours</span><span class="sep">/</span><span onclick="goto('page-1ere')">1ère Année</span><span class="sep">/</span><span onclick="goto('page-philo')">Philosophie</span><span class="sep">/</span><span class="current">L'État</span>`;
+  const tocItems = [
+    ["pe-def","00","Définition & caractéristiques"],
+    ["pe-hobbes","01","Hobbes — Le Léviathan"],
+    ["pe-rousseau","02","Rousseau — La Volonté générale"],
+    ["pe-locke","03","Locke — Les droits naturels"],
+    ["pe-tocqueville","04","Tocqueville — Le despotisme doux"],
+    ["pe-marx","05","Marx — Instrument de classe"],
+    ["pe-bakounine","06","Bakounine — L'anarchisme"],
+    ["pe-platon","07","Platon — La cité idéale"],
+    ["pe-montesquieu","08","Montesquieu — Séparation des pouvoirs"],
+    ["pe-machiavel","09","Machiavel — Le Prince"],
+  ].map(([id,n,title]) => `<li><a href="#${id}"><span class="toc-num">${n}</span>${title}</a></li>`).join('');
+
+  document.getElementById('hgg-course-body').innerHTML = `
+    <div class="hgg-chapter-header" style="background:#2A1F3D;">
+      <div class="chap-label">Philosophie ECG · Notion 3</div>
+      <h1>L'État</h1>
+      <p>Fondements, légitimité et critiques du pouvoir politique</p>
+    </div>
+    <div class="hgg-toc">
+      <div class="hgg-toc-inner">
+        <div class="hgg-toc-title">Sommaire</div>
+        <ul class="hgg-toc-list">${tocItems}</ul>
+      </div>
+    </div>
+    <div class="hgg-content">
+
+      <!-- DÉFINITION -->
+      <div id="pe-def" class="hgg-section">
+        <div class="hgg-section-title">Définition & caractéristiques de l'État</div>
+        <p>L'<strong>État</strong> désigne l'ensemble des institutions politiques, juridiques, militaires et économiques qui exercent une autorité sur les citoyens d'un pays. En philosophie politique, la définition de référence est celle de <strong>Max Weber</strong> (1919).</p>
+        <div class="hgg-concept">
+          <div class="concept-label">La définition wébérienne — fondatrice</div>
+          <p>« L'État est une communauté humaine qui, dans les limites d'un territoire déterminé, revendique avec succès pour son propre compte le <strong>monopole de la violence physique légitime</strong>. »</p>
+        </div>
+        <p>Elle est fondatrice pour deux raisons : elle est <strong>descriptive et non normative</strong> — Weber ne dit pas que l'État est bon ou juste, seulement ce qu'il est. Elle pointe aussi la <strong>tension centrale</strong> : la violence devient légitime dès lors qu'elle est exercée par l'État — mais sur quel fondement ?</p>
+        <div class="hgg-subsection-title">→ Les 4 éléments constitutifs</div>
+        <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div><strong>Le territoire :</strong> l'État n'existe que s'il contrôle effectivement un espace délimité par des frontières reconnues. Sans territoire, pas d'État — seulement un gouvernement en exil.</div></div>
+        <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div><strong>La population :</strong> l'État s'exerce sur des individus liés à lui par la citoyenneté ou la résidence.</div></div>
+        <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div><strong>La souveraineté :</strong> pouvoir suprême intérieur (droit exclusif d'édicter les lois) et extérieur (indépendance vis-à-vis des autres États).</div></div>
+        <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div><strong>Le monopole de la violence légitime :</strong> seul l'État peut légalement contraindre — armée, police, justice. La justice privée (vendettas, milices) est par définition illégitime dans un État constitué.</div></div>
+      </div>
+
+      <!-- PARTIE I -->
+      <div class="hgg-part">
+        <div class="hgg-part-header"><div class="hgg-part-num">I</div><div class="hgg-part-title">Les fondements contractualistes de l'État</div></div>
+
+        <div id="pe-hobbes" class="hgg-section">
+          <div class="hgg-section-title">Hobbes — L'État de nature & le Léviathan</div>
+          <div class="hgg-author"><div class="author-name">Thomas Hobbes</div><div class="author-dates">1588 – 1679 · <em>Le Léviathan</em> (1651)</div><p style="font-size:0.875rem;color:var(--muted);line-height:1.6;margin:0;">Philosophe anglais. Sa réflexion est directement nourrie de l'expérience de la guerre civile anglaise (1642–1651).</p></div>
+          <div class="hgg-subsection-title">→ L'état de nature : « la guerre de tous contre tous »</div>
+          <p>Pour Hobbes, l'État est <strong>nécessaire</strong> parce que, sans lui, les hommes vivent dans un « état de nature » — une situation sans lois ni autorité.</p>
+          <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>Tous les hommes sont à peu près <strong>égaux</strong> en capacités physiques et mentales.</div></div>
+          <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>Chacun cherche avant tout à <strong>survivre</strong> et veut plus de pouvoir que les autres.</div></div>
+          <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>La méfiance généralisée conduit à une <strong>guerre permanente de tous contre tous</strong> — <em>« l'homme est un loup pour l'homme »</em>. La vie y est « solitaire, misérable, dangereuse et brève ».</div></div>
+          <div class="hgg-subsection-title">→ Le contrat social et le Léviathan</div>
+          <p>Pour sortir de cette violence, les hommes passent un <strong>contrat</strong> : chacun accepte d'abandonner une partie de sa liberté à un pouvoir supérieur, le <strong>souverain</strong>. Hobbes préfère la <strong>monarchie absolue</strong>.</p>
+          <div class="hgg-concept">
+            <div class="concept-label">Le Léviathan — synthèse</div>
+            <p>Cet État tout-puissant doit faire respecter les lois, empêcher les conflits et garantir la paix. On lui obéit non parce qu'il est juste, mais parce qu'il <strong>protège les individus contre le chaos</strong>. <strong>Sans État, c'est la guerre ; avec un État fort, il y a la paix.</strong></p>
+          </div>
+        </div>
+
+        <div id="pe-rousseau" class="hgg-section">
+          <div class="hgg-section-title">Rousseau — La Volonté générale</div>
+          <div class="hgg-author"><div class="author-name">Jean-Jacques Rousseau</div><div class="author-dates">1712 – 1778 · <em>Du Contrat social</em> (1762)</div><p style="font-size:0.875rem;color:var(--muted);line-height:1.6;margin:0;">Philosophe des Lumières. Sa pensée inspirera directement la Révolution française et le principe de souveraineté populaire.</p></div>
+          <p>Rousseau pense que <strong>l'homme est naturellement bon</strong>. Dans l'état de nature, les hommes vivent libres, guidés par la pitié et l'amour de soi. C'est la société qui corrompt cette nature originelle — et plus précisément l'apparition de la <strong>propriété privée</strong> : quand quelqu'un dit « ceci est à moi », les inégalités commencent.</p>
+          <div class="hgg-subsection-title">→ La volonté générale</div>
+          <p>Dans le contrat social, chacun renonce à sa <strong>volonté particulière</strong> pour obéir à la <strong>volonté générale</strong> — ce qui est bon pour l'ensemble de la communauté. Quand un citoyen obéit à la loi qu'il a lui-même contribué à faire, il reste libre.</p>
+          <div class="hgg-highlight">« Obéir à la loi qu'on s'est prescrite est liberté. »<cite>— Rousseau, Du Contrat social (1762)</cite></div>
+          <p>L'État idéal est donc une <strong>démocratie où le peuple est souverain</strong> et fait lui-même les lois.</p>
+        </div>
+
+        <div id="pe-locke" class="hgg-section">
+          <div class="hgg-section-title">Locke — Les droits naturels</div>
+          <div class="hgg-author"><div class="author-name">John Locke</div><div class="author-dates">1632 – 1704 · <em>Traité du gouvernement civil</em> (1690)</div><p style="font-size:0.875rem;color:var(--muted);line-height:1.6;margin:0;">Père du libéralisme politique. Sa pensée influencera directement la Constitution américaine et la Déclaration des droits de l'homme.</p></div>
+          <p>Pour Locke, dans l'état de nature, les hommes sont <strong>libres, égaux et raisonnables</strong> — pas en guerre permanente comme chez Hobbes. Chaque individu possède naturellement trois droits fondamentaux : le droit à la <strong>vie</strong>, à la <strong>liberté</strong> et à la <strong>propriété</strong> (fondée sur le travail).</p>
+          <div class="hgg-subsection-title">→ Un État limité par le consentement</div>
+          <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>Locke refuse l'État absolu. Le pouvoir doit être limité par des lois et par le <strong>consentement du peuple</strong>.</div></div>
+          <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>Si un gouvernement devient injuste ou tyrannique, les citoyens ont le <strong>droit de résister</strong> et même de le renverser.</div></div>
+          <div class="hgg-highlight">« Là où cesse la loi, la tyrannie commence. »<cite>— Locke, Traité du gouvernement civil (1690)</cite></div>
+        </div>
+      </div>
+
+      <!-- PARTIE II -->
+      <div class="hgg-part">
+        <div class="hgg-part-header"><div class="hgg-part-num">II</div><div class="hgg-part-title">Critiques et dangers de l'État</div></div>
+
+        <div id="pe-tocqueville" class="hgg-section">
+          <div class="hgg-section-title">Tocqueville — Le despotisme doux</div>
+          <div class="hgg-author"><div class="author-name">Alexis de Tocqueville</div><div class="author-dates">1805 – 1859 · <em>De la démocratie en Amérique</em> (1835–1840)</div><p style="font-size:0.875rem;color:var(--muted);line-height:1.6;margin:0;">Aristocrate libéral français. Voyage aux États-Unis en 1831 pour observer le premier exemple de grande démocratie.</p></div>
+          <p>Tocqueville observe que les sociétés démocratiques, en devenant plus égalitaires, créent un danger paradoxal : les individus tendent à se <strong>replier sur leur vie privée</strong> et laissent l'État gérer le reste. Peu à peu, les citoyens deviennent <strong>passifs et dépendants</strong>.</p>
+          <div class="hgg-concept">
+            <div class="concept-label">Le « despotisme doux »</div>
+            <p>Ce n'est pas une dictature brutale. Les citoyens conservent le droit de vote, mais <strong>ne participent plus réellement à la vie politique</strong> — l'État pense et agit à leur place. Il risque de devenir « <strong>un pouvoir immense et tutélaire</strong> » qui traite les citoyens comme des enfants.</p>
+          </div>
+          <div class="hgg-subsection-title">→ Le remède : la participation citoyenne</div>
+          <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>Voter lors des élections.</div></div>
+          <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>Débattre entre personnes et s'engager dans des associations.</div></div>
+          <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>Exercer des responsabilités locales.</div></div>
+          <p><strong>La liberté dépend moins des lois que de l'habitude de participer.</strong></p>
+        </div>
+
+        <div id="pe-marx" class="hgg-section">
+          <div class="hgg-section-title">Marx — L'État, instrument de classe</div>
+          <div class="hgg-author"><div class="author-name">Karl Marx</div><div class="author-dates">1818 – 1883 · <em>Manifeste du parti communiste</em> (1848)</div><p style="font-size:0.875rem;color:var(--muted);line-height:1.6;margin:0;">Philosophe et économiste allemand. Fondateur du matérialisme historique.</p></div>
+          <p>Marx refuse l'idée selon laquelle l'État représenterait l'intérêt général. Dans la société capitaliste, la lutte oppose la <strong>bourgeoisie</strong> (propriétaire des moyens de production) au <strong>prolétariat</strong> (qui ne possède que sa force de travail). Les lois protègent la propriété privée, la police défend l'ordre établi. <strong>L'État n'est pas neutre : il sert les dominants.</strong></p>
+          <div class="hgg-highlight">« Le gouvernement de l'État moderne n'est qu'un comité qui gère les affaires communes de toute la classe bourgeoise. »<cite>— Marx, Manifeste du parti communiste (1848)</cite></div>
+          <div class="hgg-subsection-title">→ La révolution et le dépérissement de l'État</div>
+          <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>Le prolétariat doit prendre le pouvoir par une <strong>révolution</strong> et abolir la propriété privée des moyens de production.</div></div>
+          <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>Période de transition : la <strong>dictature du prolétariat</strong>.</div></div>
+          <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>À terme, lorsque les classes auront disparu, l'État « <strong>dépérira</strong> » progressivement — société sans État, sans domination ni exploitation.</div></div>
+        </div>
+
+        <div id="pe-bakounine" class="hgg-section">
+          <div class="hgg-section-title">Bakounine — L'anarchisme</div>
+          <div class="hgg-author"><div class="author-name">Mikhaïl Bakounine</div><div class="author-dates">1814 – 1876 · <em>L'État et l'Anarchie</em> (1873)</div><p style="font-size:0.875rem;color:var(--muted);line-height:1.6;margin:0;">Principal théoricien de l'anarchisme. Contemporain et opposant de Marx au sein de la Ire Internationale.</p></div>
+          <p>Bakounine pense que l'État est <strong>toujours une forme de domination</strong> et qu'il faut le supprimer. Même dans une démocratie, le peuple ne gouverne pas vraiment — quelques dirigeants décident à sa place.</p>
+          <div class="hgg-highlight">« Qui dit État dit domination. »<cite>— Bakounine, L'État et l'Anarchie (1873)</cite></div>
+          <div class="hgg-subsection-title">→ Opposition à Marx</div>
+          <p>Bakounine refuse la <em>dictature du prolétariat</em> : si l'on crée un nouvel État, même au nom du peuple, il deviendra à son tour oppressif. Une révolution doit supprimer <strong>immédiatement</strong> l'État. La société s'organise librement à partir de petites communautés fondées sur la liberté, l'égalité, la coopération et l'<strong>absence de hiérarchie politique</strong>.</p>
+        </div>
+      </div>
+
+      <!-- PARTIE III -->
+      <div class="hgg-part">
+        <div class="hgg-part-header"><div class="hgg-part-num">III</div><div class="hgg-part-title">Modèles alternatifs : qui doit gouverner et comment ?</div></div>
+
+        <div id="pe-platon" class="hgg-section">
+          <div class="hgg-section-title">Platon — La cité idéale</div>
+          <div class="hgg-author"><div class="author-name">Platon</div><div class="author-dates">428 – 348 av. J.-C. · <em>La République</em></div><p style="font-size:0.875rem;color:var(--muted);line-height:1.6;margin:0;">Élève de Socrate, maître d'Aristote. Fonde l'Académie à Athènes.</p></div>
+          <p>Pour Platon, gouverner est un <strong>art qui demande du savoir</strong>. Il critique la démocratie : tout le monde peut gouverner, même des personnes ignorantes ou manipulées — comme si on laissait n'importe qui naviguer un navire.</p>
+          <div class="hgg-subsection-title">→ Les trois classes de la cité idéale</div>
+          <div style="margin:2rem 0 2.5rem;display:flex;flex-direction:column;align-items:center;gap:0;">
+            <div style="width:34%;background:#f3ede0;border:2px solid var(--gold);border-bottom:none;padding:20px 12px 16px;text-align:center;clip-path:polygon(10% 100%,90% 100%,100% 0%,0% 0%);">
+              <div style="font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;">Sommet</div>
+              <div style="font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:var(--dark);">Philosophes-rois</div>
+              <div style="font-size:0.78rem;color:var(--muted);margin-top:5px;">Guidés par la <em>raison</em></div>
+              <div style="font-size:0.72rem;color:var(--rust);margin-top:3px;font-family:'DM Mono',monospace;letter-spacing:0.05em;">→ Gouvernent la cité</div>
+            </div>
+            <div style="width:62%;background:#ede5d8;border:2px solid var(--gold);border-top:none;border-bottom:none;padding:18px 12px;text-align:center;">
+              <div style="font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;">Milieu</div>
+              <div style="font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:var(--dark);">Guerriers</div>
+              <div style="font-size:0.78rem;color:var(--muted);margin-top:5px;">Guidés par le <em>courage</em></div>
+              <div style="font-size:0.72rem;color:var(--rust);margin-top:3px;font-family:'DM Mono',monospace;letter-spacing:0.05em;">→ Défendent la cité</div>
+            </div>
+            <div style="width:90%;background:#e8ddd0;border:2px solid var(--gold);border-top:none;padding:18px 12px 22px;text-align:center;clip-path:polygon(0% 0%,100% 0%,88% 100%,12% 100%);">
+              <div style="font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;">Base</div>
+              <div style="font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:var(--dark);">Producteurs</div>
+              <div style="font-size:0.78rem;color:var(--muted);margin-top:5px;">Guidés par le <em>désir</em></div>
+              <div style="font-size:0.72rem;color:var(--rust);margin-top:3px;font-family:'DM Mono',monospace;letter-spacing:0.05em;">Agriculteurs, artisans, commerçants</div>
+            </div>
+          </div>
+          <div class="hgg-concept">
+            <div class="concept-label">L'aristocratie des meilleurs</div>
+            <p>Un État est juste lorsque chaque groupe accomplit sa fonction <strong>sans empiéter sur celle des autres</strong>. Les philosophes-rois cherchent la vérité et la justice plutôt que leur intérêt personnel. Platon défend une <strong>aristocratie des meilleurs</strong>, non une démocratie.</p>
+          </div>
+        </div>
+
+        <div id="pe-montesquieu" class="hgg-section">
+          <div class="hgg-section-title">Montesquieu — La séparation des pouvoirs</div>
+          <div class="hgg-author"><div class="author-name">Montesquieu</div><div class="author-dates">1689 – 1755 · <em>De l'Esprit des lois</em> (1748)</div><p style="font-size:0.875rem;color:var(--muted);line-height:1.6;margin:0;">Juriste et philosophe français. Sa théorie devient le fondement des démocraties modernes, notamment la Constitution américaine de 1787.</p></div>
+          <p>Montesquieu cherche avant tout à <strong>protéger la liberté des citoyens</strong>. Selon lui, le principal danger vient du fait qu'un pouvoir devient tyrannique s'il n'est pas limité.</p>
+          <div class="hgg-subsection-title">→ Les trois pouvoirs séparés</div>
+          <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>Le <strong>pouvoir législatif</strong> — qui vote les lois.</div></div>
+          <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>Le <strong>pouvoir exécutif</strong> — qui applique les lois.</div></div>
+          <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>Le <strong>pouvoir judiciaire</strong> — qui juge les infractions.</div></div>
+          <div class="hgg-highlight">« Pour qu'on ne puisse abuser du pouvoir, il faut que, par la disposition des choses, le pouvoir arrête le pouvoir. »<cite>— Montesquieu, De l'Esprit des lois (1748)</cite></div>
+          <p>Montesquieu admire le système politique anglais où le roi, le Parlement et les juges se <strong>limitent mutuellement</strong>.</p>
+        </div>
+
+        <div id="pe-machiavel" class="hgg-section">
+          <div class="hgg-section-title">Machiavel — Le Prince</div>
+          <div class="hgg-author"><div class="author-name">Nicolas Machiavel</div><div class="author-dates">1469 – 1527 · <em>Le Prince</em> (1513)</div><p style="font-size:0.875rem;color:var(--muted);line-height:1.6;margin:0;">Diplomate florentin. Père du réalisme politique. Veut comprendre comment le pouvoir fonctionne réellement, non comment il devrait fonctionner.</p></div>
+          <p>Machiavel ne cherche pas à imaginer un État idéal. Les hommes sont souvent égoïstes, ingrats, changeants et prêts à trahir — un dirigeant ne peut pas gouverner uniquement avec la bonté ou la morale.</p>
+          <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>Un bon dirigeant doit être à la fois un <strong>lion</strong> — pour faire peur à ses ennemis.</div></div>
+          <div class="hgg-key-fact"><div class="hgg-key-bullet"></div><div>Et un <strong>renard</strong> — pour être rusé et éviter les pièges.</div></div>
+          <div class="hgg-concept">
+            <div class="concept-label">« La fin justifie les moyens »</div>
+            <p>Le prince ne doit pas toujours tenir sa parole si cela met l'État en danger. La violence n'est acceptable que si elle sert à <strong>préserver l'État</strong>. Il vaut mieux être <strong>craint qu'aimé</strong> — mais le prince ne doit jamais se faire détester, sinon il risque une révolte.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  goto('page-hgg-course');
+}
+
+// ═══════════════════════════════════════════
+// CULTURE GÉNÉRALE
+// ═══════════════════════════════════════════
+</script>
+</body>
+</html>

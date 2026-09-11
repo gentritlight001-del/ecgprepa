@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Cuba : effondrement énergétique et crise systémique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #003087;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #003087; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #c8121a; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #003087; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #003087; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #003087; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#003087; border-color:#003087; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  /* Article styles */
+  .ap-band { background: linear-gradient(90deg, #003087, #c8121a, #003087); text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(0,12,30,0.95); padding:12px 60px; border-bottom: 1px solid rgba(0,48,135,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#c8121a; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(0,48,135,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; background: linear-gradient(135deg, #0a0a14 0%, #0d1a2e 50%, #1a0505 100%); display:flex; align-items:center; justify-content:center; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-placeholder { font-size: 5rem; opacity: 0.3; z-index:1; }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(181,19,31,0.2);  color:#f08080; border:1px solid rgba(181,19,31,0.35); }
+  .ap-tag-navy   { background:rgba(0,48,135,0.4);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(0,48,135,0.2);   color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #c8121a; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(0,48,135,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(200,18,26,0.8); }
+
+  /* Rich article components */
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#c8121a; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(200,18,26,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#071422,#0d2540); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #c8121a; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(200,18,26,0.06),rgba(200,18,26,0.02)); border-left:3px solid #c8121a; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(200,18,26,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(200,18,26,0.85); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(0,12,30,0.9),rgba(7,0,14,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(0,48,135,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#c8121a; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(0,48,135,0.06); border:1px solid rgba(0,48,135,0.18); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(200,18,26,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#c8121a; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(200,18,26,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#c8121a; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(0,12,30,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-es-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-es.html">Espagnol</a>
+    <span class="sep">/</span>
+    <a href="../cuba.html">Cuba</a>
+    <span class="sep">/</span>
+    <span class="current">Crise & blackouts</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-es" class="ap-lang-btn" onclick="setLang('es')">🇨🇺 ES</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇨🇺 La crise cubaine : pannes et exode</div>
+<div class="ap-back-bar">
+  <a href="../cuba.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+    <div class="ap-hero-img-wrap"><img class="ap-hero-img" src="../images/cuba-crise.jpg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+    <!-- ══ SECTION FR ══ -->
+    <div class="ap-fr-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-blue">🇨🇺 Cuba</span>
+          <span class="ap-tag ap-tag-red">Crise systémique</span>
+          <span class="ap-tag ap-tag-gold">Énergie</span>
+          <span class="ap-tag ap-tag-navy">Géopolitique</span>
+          <span class="ap-tag ap-tag-orange">Migrations</span>
+        </div>
+        <div class="ap-date">Avril 2026 — ECG Prépa · Cuba</div>
+        <h1 class="ap-title">Cuba dans le noir : effondrement énergétique et crise de régime</h1>
+        <p class="ap-intro">Depuis l'automne 2024, Cuba connaît des pannes d'électricité de seize à vingt heures par jour sur l'ensemble du territoire. Derrière les blackouts, c'est l'ensemble du modèle économique et politique cubain qui vacille sous la triple pression d'un embargo renforcé, de la fin du soutien vénézuélien et d'une économie planifiée à bout de souffle.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red"><span class="ap-stat-num">20h</span><span class="ap-stat-desc">Durée quotidienne<br>moyenne des coupures</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">–500 %</span><span class="ap-stat-desc">Inflation cumulée<br>depuis 2020</span></div>
+          <div class="ap-stat red"><span class="ap-stat-num">~500k</span><span class="ap-stat-desc">Cubains émigrés<br>vers les USA (2022–24)</span></div>
+          <div class="ap-stat"><span class="ap-stat-num">11M</span><span class="ap-stat-desc">Habitants, en déclin<br>démographique accéléré</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Une crise énergétique sans précédent</div>
+            <p>À l'automne 2024, Cuba entre dans l'une des crises énergétiques les plus sévères de son histoire depuis la <strong>période spéciale</strong> des années 1990. Le réseau électrique national, vieux de plusieurs décennies et fonctionnant majoritairement au fioul importé, s'effondre progressivement. Les centrales thermoélectriques tombent en panne en cascade, faute de carburant, de pièces détachées et de maintenance.</p>
+            <p>Les coupures de courant (<em>apagones</em>) atteignent seize à vingt heures par jour dans la capitale La Havane, et jusqu'à vingt-deux heures dans les provinces orientales. Les hôpitaux fonctionnent au groupe électrogène, les denrées alimentaires se périssent faute de chaîne du froid, les pompes à eau tombent en panne — privant les foyers d'eau courante simultanément à l'électricité. Le système de transport urbain s'arrête. À l'école, les cours sont suspendus.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Capacité installée</div><div class="ap-fact-val">~3 500 MW (théoriques)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Capacité disponible</div><div class="ap-fact-val">~1 000–1 500 MW réels</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Source principale</div><div class="ap-fact-val">Fioul (pétrole vénézuélien)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Réseau solaire</div><div class="ap-fact-val">&lt; 5 % du mix énergétique</div></div>
+            </div>
+
+            <div class="ap-sub">Les causes structurelles : trois crises en une</div>
+            <p>La crise énergétique cubaine n'est pas conjoncturelle — elle est le produit de plusieurs décennies de sous-investissement et de dépendances géopolitiques. <strong>Premièrement</strong>, le pétrole vénézuélien, qui alimentait Cuba à hauteur de 50 000 barils par jour dans les années 2000 en échange de médecins et de conseillers militaires, a progressivement tari avec l'effondrement de la production vénézuélienne. Les livraisons sont passées à moins de 20 000 barils en 2023, puis à moins de 10 000 en 2024.</p>
+            <p><strong>Deuxièmement</strong>, les sanctions américaines renforcées sous l'administration Trump (2025) ont exclu Cuba de la liste des pays autorisant les transferts de fonds depuis les États-Unis, tarissant les <em>remesas</em> (envois d'argent de la diaspora) qui représentaient l'une des premières sources de devises de l'île. <strong>Troisièmement</strong>, l'économie planifiée cubaine, sans réforme structurelle profonde depuis le tournant timide des années 2010, est incapable de mobiliser les investissements privés nécessaires à la modernisation du réseau.</p>
+
+            <div class="ap-sub">Chronologie de l'effondrement</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">Juil. 2021</div><p class="ap-tl-text">Manifestations du 11-J : les plus importantes depuis 1994. Des dizaines de milliers de Cubains descendent dans les rues pour crier « ¡Se acabó! » Répression sévère : plus de 1 300 arrestations.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2022–2023</div><p class="ap-tl-text">Vague migratoire sans précédent : plus de 500 000 Cubains franchissent la frontière mexicano-américaine entre 2022 et 2024, le plus grand exode depuis la révolution.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Sept.–Oct. 2024</div><p class="ap-tl-text">Effondrement total du réseau électrique national. Blackouts de 20h/jour. Manifestations spontanées dans plusieurs provinces. Le gouvernement décrète un état d'urgence énergétique.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Nov. 2024</div><p class="ap-tl-text">L'ouragan Oscar frappe l'est de Cuba, aggravant la crise humanitaire déjà critique dans les provinces orientales déjà les plus touchées par les coupures.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Janv. 2025</div><p class="ap-tl-text">Retour de Trump à la Maison-Blanche. Renforcement des sanctions : Cuba replacée sur la liste des États sponsors du terrorisme. Les envois de fonds depuis les USA sont à nouveau bloqués.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2025–2026</div><p class="ap-tl-text">La situation se stabilise à un niveau très bas. Les pannes persistent (8 à 12h/jour en moyenne). Cuba négocie avec la Russie et l'Algérie des livraisons de pétrole à crédit. La population continue d'émigrer massivement.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">L'économie à genoux : inflation, pénuries et marché noir</div>
+            <p>La crise énergétique s'inscrit dans un contexte économique catastrophique. Depuis 2020, Cuba a connu une inflation cumulée estimée à plus de 500 %, alimentée par la réforme monétaire de 2021 (unification des deux pesos, officiel et convertible) qui a de facto multiplié par 24 les prix officiels de nombreux produits. Le salaire moyen, de l'ordre de 4 000 pesos cubains, permet à peine d'acheter quelques kilogrammes de nourriture au marché libre.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Indicateur</th><th>2019 (pré-crise)</th><th>2025–2026</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Inflation annuelle</td><td>~5 %</td><td class="ap-cell-bold">&gt; 100 %</td></tr>
+                <tr><td class="ap-cell-bold">PIB (croissance)</td><td>+0,5 %</td><td class="ap-cell-bold">–2 à –4 %</td></tr>
+                <tr><td class="ap-cell-bold">Remesas (Mds USD)</td><td>~3,7</td><td class="ap-cell-bold">~1–1,5</td></tr>
+                <tr><td class="ap-cell-bold">Tourisme (visiteurs)</td><td>4,3 millions</td><td class="ap-cell-bold">~1,5 million</td></tr>
+                <tr><td class="ap-cell-bold">Heures de coupure/j</td><td>0–2h</td><td class="ap-cell-bold">8–20h</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">🕯️</div>
+              <div class="ap-info-text"><strong>La vie quotidienne sous les blackouts :</strong> les Cubains ont développé des stratégies d'adaptation — panneaux solaires artisanaux, groupes électrogènes partagés, glace produite communautairement. Les réseaux sociaux, malgré la censure, jouent un rôle croissant dans la coordination des pénuries. Les files d'attente devant les boulangeries et pharmacies durent parfois plusieurs heures.</div>
+            </div>
+
+            <div class="ap-sub">L'exode : une île qui se vide</div>
+            <p>La conséquence démographique la plus frappante de la crise est l'ampleur de l'émigration. Cuba, qui comptait environ 11,2 millions d'habitants en 2020, pourrait avoir perdu plus d'un million de résidents d'ici 2026. La vague migratoire de 2022–2024, la plus importante depuis le <em>Mariel</em> de 1980, a vu des centaines de milliers de Cubains traverser le Nicaragua, puis le Mexique, pour atteindre la frontière américaine via la procédure dite de <em>parole humanitaire</em>.</p>
+            <p>Ce sont surtout les jeunes, les qualifiés, les médecins et les ingénieurs qui partent — ceux-là mêmes dont le système aurait le plus besoin pour sa reconstruction. Le vieillissement de la population résidante s'accélère, créant un cercle vicieux : moins de main-d'œuvre active, moins de cotisants au système de retraite, moins de capacité productive.</p>
+
+            <div class="ap-quote">
+              <p>« Nous vivons dans le noir, au sens propre comme au sens figuré. On ne sait plus quand la lumière reviendra — dans une heure, ou dans dix ans. »</p>
+              <cite>— Reinaldo, ingénieur à La Havane, 38 ans, octobre 2024</cite>
+            </div>
+
+            <div class="ap-quote">
+              <p>« Je suis parti avec ce que je portais sur moi. Ma famille reste là-bas, sans eau ni électricité. Je leur envoie de l'argent mais l'embargo bloque les transferts. »</p>
+              <cite>— Yanier, infirmier cubain installé à Miami, 2025</cite>
+            </div>
+
+            <div class="ap-sub">Le régime face à sa propre survie</div>
+            <p>Le gouvernement cubain de Miguel Díaz-Canel fait face à une équation politique impossible. La légitimité révolutionnaire s'érode avec chaque heure de blackout supplémentaire. Les arrestations qui ont suivi les manifestations de juillet 2021 — dont plusieurs condamnations à des peines supérieures à vingt ans de prison — ont alimenté la colère internationale et renforcé l'isolement de l'île.</p>
+            <p>Cuba se tourne vers des alliés de plus en plus rares : la Russie fournit du pétrole à crédit, la Chine finance quelques projets d'infrastructure, l'Algérie négocie des échanges bilatéraux. Mais aucun de ces partenariats ne peut remplacer le soutien vénézuélien des années 2000. Le régime résiste, mais son horizon s'est considérablement rétréci.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Cuba à la croisée des chemins</div>
+              <p>Cuba traverse une crise existentielle qui touche simultanément son modèle énergétique, économique, démographique et politique. L'île ne peut plus s'appuyer sur les béquilles qui l'ont soutenue depuis la révolution — la rente pétrolière vénézuélienne, la solidarité du bloc soviétique, l'attractivité touristique. Les blackouts ne sont pas seulement une panne technique : ils sont le symptôme visible d'un système à bout de souffle. La question qui se pose désormais n'est plus de savoir si Cuba changera, mais à quelle vitesse et sous quelle forme ce changement adviendra — réforme progressive, implosion, ou transition négociée que beaucoup, dans et hors de l'île, appellent de leurs vœux.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-fr-section -->
+
+    <!-- ══ SECTION ES ══ -->
+    <div class="ap-es-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-blue">🇨🇺 Cuba</span>
+          <span class="ap-tag ap-tag-red">Crisis sistémica</span>
+          <span class="ap-tag ap-tag-gold">Energía</span>
+          <span class="ap-tag ap-tag-navy">Geopolítica</span>
+          <span class="ap-tag ap-tag-orange">Migraciones</span>
+        </div>
+        <div class="ap-date">Abril 2026 — ECG Prépa · Cuba</div>
+        <h1 class="ap-title">Cuba en la oscuridad: colapso energético y crisis de régimen</h1>
+        <p class="ap-intro">Desde el otoño de 2024, Cuba sufre cortes de electricidad de dieciséis a veinte horas diarias en todo el territorio. Detrás de los apagones, es todo el modelo económico y político cubano el que tambalea bajo la triple presión de un embargo reforzado, el fin del apoyo venezolano y una economía planificada al límite de sus fuerzas.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red"><span class="ap-stat-num">20h</span><span class="ap-stat-desc">Duración diaria media<br>de los apagones</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">–500 %</span><span class="ap-stat-desc">Inflación acumulada<br>desde 2020</span></div>
+          <div class="ap-stat red"><span class="ap-stat-num">~500k</span><span class="ap-stat-desc">Cubanos emigrados<br>a EE.UU. (2022–24)</span></div>
+          <div class="ap-stat"><span class="ap-stat-num">11M</span><span class="ap-stat-desc">Habitantes, en declive<br>demográfico acelerado</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Una crisis energética sin precedentes</div>
+            <p>En el otoño de 2024, Cuba entra en una de las crisis energéticas más severas de su historia desde el <strong>Período Especial</strong> de los años 1990. La red eléctrica nacional, que tiene varias décadas de antigüedad y funciona principalmente con fuel importado, se derrumba de forma progresiva. Las centrales termoeléctricas fallan en cadena por falta de combustible, piezas de recambio y mantenimiento.</p>
+            <p>Los cortes de luz (<em>apagones</em>) alcanzan entre dieciséis y veinte horas diarias en la capital La Habana, y hasta veintidós horas en las provincias orientales. Los hospitales funcionan con generadores, los alimentos se echan a perder por falta de cadena de frío y las bombas de agua dejan de funcionar, privando a los hogares de agua corriente al mismo tiempo que de electricidad.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Capacidad instalada</div><div class="ap-fact-val">~3 500 MW (teóricos)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Capacidad disponible</div><div class="ap-fact-val">~1 000–1 500 MW reales</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Fuente principal</div><div class="ap-fact-val">Fuel (petróleo venezolano)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Red solar</div><div class="ap-fact-val">&lt; 5 % del mix energético</div></div>
+            </div>
+
+            <div class="ap-sub">Las causas estructurales: tres crisis en una</div>
+            <p>La crisis energética cubana no es coyuntural: es el producto de varias décadas de subinversión y dependencias geopolíticas. <strong>En primer lugar</strong>, el petróleo venezolano, que abastecía a Cuba con hasta 50 000 barriles diarios en los años 2000 a cambio de médicos y asesores militares, se ha reducido progresivamente con el colapso de la producción venezolana. <strong>En segundo lugar</strong>, las sanciones estadounidenses reforzadas bajo Trump (2025) han bloqueado de nuevo las remesas desde EE.UU. <strong>En tercer lugar</strong>, la economía planificada cubana, sin reforma estructural profunda, es incapaz de movilizar las inversiones privadas necesarias.</p>
+
+            <div class="ap-sub">Cronología del colapso</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">Jul. 2021</div><p class="ap-tl-text">Manifestaciones del 11-J: las más importantes desde 1994. Miles de cubanos gritan «¡Se acabó!» Represión severa: más de 1 300 detenidos.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2022–2023</div><p class="ap-tl-text">Ola migratoria sin precedentes: más de 500 000 cubanos cruzan la frontera mexicano-estadounidense entre 2022 y 2024, el mayor éxodo desde la revolución.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Sept.–Oct. 2024</div><p class="ap-tl-text">Colapso total de la red eléctrica nacional. Apagones de 20h/día. Manifestaciones espontáneas en varias provincias. El gobierno decreta un estado de emergencia energética.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Nov. 2024</div><p class="ap-tl-text">El huracán Oscar golpea el este de Cuba, agravando la crisis humanitaria ya crítica en las provincias orientales.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Ene. 2025</div><p class="ap-tl-text">Regreso de Trump. Refuerzo de sanciones: Cuba vuelve a la lista de países patrocinadores del terrorismo. Los envíos de dinero desde EE.UU. son bloqueados nuevamente.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2025–2026</div><p class="ap-tl-text">La situación se estabiliza en un nivel muy bajo. Los apagones persisten (8 a 12h/día de media). Cuba negocia con Rusia y Argelia entregas de petróleo a crédito.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">La economía de rodillas: inflación, escasez y mercado negro</div>
+            <p>La crisis energética se inscribe en un contexto económico catastrófico. Desde 2020, Cuba ha sufrido una inflación acumulada estimada en más del 500 %, alimentada por la reforma monetaria de 2021 que multiplicó por 24 los precios oficiales de muchos productos. El salario medio apenas permite comprar unos pocos kilogramos de alimentos en el mercado libre.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Indicador</th><th>2019 (pre-crisis)</th><th>2025–2026</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Inflación anual</td><td>~5 %</td><td class="ap-cell-bold">&gt; 100 %</td></tr>
+                <tr><td class="ap-cell-bold">PIB (crecimiento)</td><td>+0,5 %</td><td class="ap-cell-bold">–2 a –4 %</td></tr>
+                <tr><td class="ap-cell-bold">Remesas (Mds USD)</td><td>~3,7</td><td class="ap-cell-bold">~1–1,5</td></tr>
+                <tr><td class="ap-cell-bold">Turismo (visitantes)</td><td>4,3 millones</td><td class="ap-cell-bold">~1,5 millones</td></tr>
+                <tr><td class="ap-cell-bold">Horas de corte/día</td><td>0–2h</td><td class="ap-cell-bold">8–20h</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">🕯️</div>
+              <div class="ap-info-text"><strong>La vida cotidiana bajo los apagones:</strong> los cubanos han desarrollado estrategias de adaptación — paneles solares artesanales, generadores compartidos, hielo producido comunitariamente. Las redes sociales, pese a la censura, juegan un papel creciente en la coordinación frente a la escasez.</div>
+            </div>
+
+            <div class="ap-sub">El éxodo: una isla que se vacía</div>
+            <p>La consecuencia demográfica más llamativa de la crisis es la magnitud de la emigración. Cuba, que contaba con unos 11,2 millones de habitantes en 2020, podría haber perdido más de un millón de residentes para 2026. Son sobre todo los jóvenes, los cualificados, los médicos y los ingenieros los que se van — precisamente quienes el sistema más necesitaría para su reconstrucción.</p>
+
+            <div class="ap-quote">
+              <p>« Vivimos en la oscuridad, en el sentido literal y en el figurado. Ya no sabemos cuándo volverá la luz — en una hora o en diez años. »</p>
+              <cite>— Reinaldo, ingeniero en La Habana, 38 años, octubre de 2024</cite>
+            </div>
+
+            <div class="ap-quote">
+              <p>« Me fui con lo que llevaba puesto. Mi familia sigue allí, sin agua ni luz. Les mando dinero pero el embargo bloquea las transferencias. »</p>
+              <cite>— Yanier, enfermero cubano instalado en Miami, 2025</cite>
+            </div>
+
+            <div class="ap-sub">El régimen ante su propia supervivencia</div>
+            <p>El gobierno cubano de Miguel Díaz-Canel se enfrenta a una ecuación política imposible. La legitimidad revolucionaria se erosiona con cada hora adicional de apagón. Las detenciones tras el 11-J —con condenas superiores a veinte años de prisión— han alimentado la ira internacional y reforzado el aislamiento de la isla. Cuba se vuelve hacia aliados cada vez más escasos: Rusia, China, Argelia. Pero ninguna de estas asociaciones puede reemplazar el apoyo venezolano de los años 2000.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Cuba en la encrucijada</div>
+              <p>Cuba atraviesa una crisis existencial que afecta simultáneamente a su modelo energético, económico, demográfico y político. La isla ya no puede apoyarse en los pilares que la sostuvieron desde la revolución — la renta petrolera venezolana, la solidaridad del bloque soviético, el atractivo turístico. Los apagones no son solo un fallo técnico: son el síntoma visible de un sistema agotado. La pregunta que se plantea ya no es si Cuba cambiará, sino a qué velocidad y bajo qué forma se producirá ese cambio — reforma progresiva, implosión, o transición negociada que muchos, dentro y fuera de la isla, están esperando.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-es-section -->
+
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — Cuba — Avril 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-es').classList.toggle('active', lang === 'es');
+  const isEs = lang === 'es';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEs ? 'none' : 'block');
+  document.querySelectorAll('.ap-es-section').forEach(el => el.style.display = isEs ? 'block' : 'none');
+  const band = document.getElementById('ap-band');
+  if (isEs) {
+    band.textContent = '🇨🇺 CUBA — CRISIS ENERGÉTICA — APAGONES — ÉXODO — 2024–2026 🇨🇺';
+  } else {
+    band.textContent = '🇨🇺 CUBA — CRISIS ÉNERGÉTIQUE — BLACKOUTS — EXODE — 2024–2026 🇨🇺';
+  }
+}
+setLang('fr');
+</script>
+</body>
+</html>

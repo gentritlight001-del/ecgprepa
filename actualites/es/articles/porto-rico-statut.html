@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Porto Rico : le statut en question</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #c8102e;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #c8102e; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #0a3161; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #c8102e; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #c8102e; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #c8102e; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#c8102e; border-color:#c8102e; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  /* Article styles */
+  .ap-band { background: linear-gradient(90deg, #c8102e, #0a3161, #c8102e); text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(10,10,20,0.95); padding:12px 60px; border-bottom: 1px solid rgba(200,16,46,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#e8c04a; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(200,16,46,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(200,16,46,0.2);   color:#f08080; border:1px solid rgba(200,16,46,0.35); }
+  .ap-tag-navy   { background:rgba(10,49,97,0.6);    color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);    color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2);  color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2);  color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);   color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);    color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #c8102e; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(200,16,46,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(232,180,74,0.7); }
+
+  /* Rich components */
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#c8102e; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(200,16,46,0.25); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#071422,#0d2540); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.red    { background:linear-gradient(135deg,#5a0010,#900018); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #c8102e; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(200,16,46,0.06),rgba(200,16,46,0.02)); border-left:3px solid #c8102e; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(200,16,46,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(200,16,46,0.8); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(10,20,40,0.9),rgba(5,10,20,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(200,16,46,0.2); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#c8102e; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(200,16,46,0.05); border:1px solid rgba(200,16,46,0.18); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(200,16,46,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#c8102e; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(200,16,46,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#c8102e; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(10,20,40,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-es-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-es.html">Espagnol</a>
+    <span class="sep">/</span>
+    <a href="../porto-rico.html">Porto Rico</a>
+    <span class="sep">/</span>
+    <span class="current">Statut politique</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-es" class="ap-lang-btn" onclick="setLang('es')">🇵🇷 ES</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇵🇷 Le statut de Porto Rico</div>
+<div class="ap-back-bar">
+  <a href="../porto-rico.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+    <div class="ap-hero-img-wrap"><img class="ap-hero-img" src="../images/porto-rico-statut.jpg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+    <!-- SECTION FR -->
+    <div class="ap-fr-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-red">🇵🇷 Porto Rico</span>
+          <span class="ap-tag ap-tag-navy">Géopolitique</span>
+          <span class="ap-tag ap-tag-gold">Statut constitutionnel</span>
+          <span class="ap-tag ap-tag-blue">États-Unis</span>
+          <span class="ap-tag ap-tag-purple">Identité</span>
+        </div>
+        <div class="ap-date">Avril 2026 — ECG Prépa · Porto Rico</div>
+        <h1 class="ap-title">Le statut de Porto Rico à la croisée des chemins : entre statu quo, État fédéré et indépendance</h1>
+        <p class="ap-intro">Territoire non incorporé des États-Unis depuis 1898, Porto Rico demeure l'une des dernières grandes « colonies » formelles du monde occidental. La question de son statut — longtemps gelée par des divisions internes et l'indifférence de Washington — est revenue au premier plan depuis 2020. Entre référendums sans suite, projet de loi historique au Congrès et retour de Donald Trump à la Maison-Blanche, l'île des Caraïbes est à un tournant.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat"><span class="ap-stat-num">3,2 M</span><span class="ap-stat-desc">Habitants sur l'île<br>(2024)</span></div>
+          <div class="ap-stat navy"><span class="ap-stat-num">126 ans</span><span class="ap-stat-desc">Sous souveraineté<br>américaine (depuis 1898)</span></div>
+          <div class="ap-stat red"><span class="ap-stat-num">~46 %</span><span class="ap-stat-desc">Taux de pauvreté<br>officiel (2024)</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">5</span><span class="ap-stat-desc">Référendums sur<br>le statut depuis 1967</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Un territoire hors normes : le « Commonwealth » en question</div>
+            <p>Porto Rico occupe une position constitutionnelle unique et paradoxale. Depuis le <em>Jones Act</em> de 1917, ses habitants sont citoyens américains, mais ne votent pas pour les élections présidentielles et ne sont représentés au Congrès que par un délégué résident sans droit de vote. L'île est régie par le concept juridique de <em>territorio no incorporado</em>, issu des controverses <em>Insular Cases</em> de la Cour suprême (1901–1922) : Porto Rico « appartient » aux États-Unis mais n'en « fait pas partie ».</p>
+            <p>Ce statut hybride — officiellement appelé <em>Estado Libre Asociado</em> (Commonwealth) depuis 1952 — confère à l'île une autonomie interne limitée sur ses affaires courantes, tout en la laissant soumise à la pleine autorité du Congrès fédéral. Washington peut imposer ses lois fédérales à Porto Rico sans que l'île ait son mot à dire. Cette asymétrie est au cœur du débat sur le statut.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Statut actuel</div><div class="ap-fact-val">Territorio no incorporado</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Citoyenneté</div><div class="ap-fact-val">Américaine (depuis 1917)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Gouverneur actuel</div><div class="ap-fact-val">Jenniffer González-Colón (PNP)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Langue officielle</div><div class="ap-fact-val">Espagnol & anglais</div></div>
+            </div>
+
+            <div class="ap-sub">Les trois options en débat</div>
+            <p>Le débat sur l'avenir institutionnel de Porto Rico se structure autour de trois grandes options. La première, la <strong>statehood</strong> — intégration comme 51e État —, est soutenue par le Parti Nouveau Progressiste (PNP) au pouvoir. Ses partisans arguent qu'elle seule garantirait la pleine égalité des droits et mettrait fin à une anomalie démocratique. La seconde est le maintien ou l'amélioration du <strong>Commonwealth</strong>, défendu par le Parti Populaire Démocratique (PPD), qui préfère une association libre négociée avec davantage d'autonomie. La troisième, l'<strong>indépendance</strong>, portée par le Partido Independentista Puertorriqueño (PIP) et la Victoría Ciudadana, reste minoritaire dans les sondages mais gagne en visibilité chez les jeunes et dans les milieux culturels.</p>
+            <p>Cinq référendums ont été organisés depuis 1967. Tous ont donné des résultats en faveur de la <em>statehood</em> — dont le dernier en 2020 (52,5 %) — mais aucun n'a de valeur contraignante pour le Congrès, qui reste seul maître de la décision.</p>
+
+            <div class="ap-sub">Chronologie : vers une résolution introuvable ?</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">1898</div><p class="ap-tl-text">Porto Rico cédé aux États-Unis par l'Espagne à l'issue de la guerre hispano-américaine (traité de Paris). Fin de 400 ans de colonisation espagnole.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">1952</div><p class="ap-tl-text">Proclamation du Commonwealth (Estado Libre Asociado). Porto Rico adopte sa propre constitution mais reste sous souveraineté fédérale.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2016</div><p class="ap-tl-text">Le Congrès impose la loi PROMESA et crée la JUNTA DE SUPERVISIÓN FISCAL — une instance non élue chargée de superviser les finances de l'île, très impopulaire.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2017</div><p class="ap-tl-text">L'ouragan Maria dévaste l'île. Bilan : près de 3 000 morts, 90 milliards de dégâts. La gestion fédérale de la crise est sévèrement critiquée.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2020</div><p class="ap-tl-text">Référendum non contraignant : 52,5 % en faveur de la statehood. Résultat ignoré par le Congrès républicain.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2022</div><p class="ap-tl-text">La Chambre des représentants vote le Puerto Rico Status Act, première loi proposant un référendum contraignant avec trois options (statehood, indépendance, libre association). Le Sénat ne le soumet pas au vote.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2025–2026</div><p class="ap-tl-text">Retour de Trump. Ses déclarations hostiles à la statehood (« Porto Rico est sale et ses habitants ne parlent qu'espagnol ») relancent le débat. Le gouverneur González-Colón, proche de Trump, tente de maintenir une ligne pragmatique.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">La crise économique et la Junta : un colonialisme financier ?</div>
+            <p>L'argument économique est central dans le débat sur le statut. Porto Rico a connu en 2016 la plus grande faillite municipale de l'histoire des États-Unis, avec une dette de <strong>73 milliards de dollars</strong>. La loi PROMESA, imposée par Washington sans consultation populaire, a établi la <em>Financial Oversight and Management Board</em> — surnommée la « Junta » par ses opposants en référence aux régimes militaires latino-américains — pour restructurer cette dette.</p>
+            <p>Les critiques sont virulentes : la Junta a imposé des coupes dans les retraites, les dépenses sociales et les budgets universitaires pour satisfaire les créanciers, principalement des fonds vautours basés à New York. Pour les défenseurs de l'indépendance, c'est la démonstration que Porto Rico n'est pas un partenaire des États-Unis mais une colonie économique.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Indicateur</th><th>Porto Rico</th><th>État le plus pauvre (MS)</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Taux de pauvreté</td><td>~46 %</td><td class="ap-cell-bold">19 % (Mississippi)</td></tr>
+                <tr><td class="ap-cell-bold">PIB/habitant</td><td>~35 000 $</td><td class="ap-cell-bold">~46 000 $ (MS)</td></tr>
+                <tr><td class="ap-cell-bold">Dette publique</td><td>73 Md$ (2016)</td><td class="ap-cell-bold">—</td></tr>
+                <tr><td class="ap-cell-bold">Émigration 2010–2020</td><td>-14 % pop.</td><td class="ap-cell-bold">+0,2 %</td></tr>
+                <tr><td class="ap-cell-bold">Aide fédérale/hab.</td><td>Inférieure</td><td class="ap-cell-bold">Supérieure (Medicaid)</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">⚠️</div>
+              <div class="ap-info-text"><strong>Le paradoxe Medicaid :</strong> Porto Rico reçoit des allocations fédérales de santé (Medicaid) plafonnées, alors qu'un État américain aux mêmes revenus en percevrait bien davantage. Cette inégalité structurelle est régulièrement citée comme la preuve concrète du caractère désavantageux du statut colonial.</div>
+            </div>
+
+            <div class="ap-sub">L'enjeu identitaire : être porto-ricain dans l'Amérique de Trump</div>
+            <p>Au-delà du calcul institutionnel, la question du statut est profondément identitaire. Porto Rico est un territoire hispanophone, culturellement caribéen, avec une identité distincte forgée sur 500 ans d'histoire. Pour une partie croissante de la population — notamment la diaspora de plus de 5 millions de personnes aux États-Unis continentaux —, l'intégration comme État supposerait une assimilation culturelle redoutée.</p>
+            <p>Les déclarations de Donald Trump durant la campagne de 2024 — qualifiant l'île d'« île d'ordures » lors d'un meeting — ont provoqué un séisme politique. Elles ont galvanisé la diaspora portoricaine en Floride et en Pennsylvanie, qui a massivement voté contre lui, et réactivé sur l'île un sentiment anti-Washington qui transcende les clivages partisans traditionnels.</p>
+
+            <div class="ap-quote">
+              <p>« Somos una nación. Con o sin Estado. »</p>
+              <cite>— Slogan du mouvement indépendantiste, 2024</cite>
+            </div>
+            <div class="ap-quote">
+              <p>« We pay taxes, we fight in your wars, but we can't vote for your president. Explain that democracy to me. »</p>
+              <cite>— Manifestant portoricain à Washington, janvier 2025</cite>
+            </div>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Une question toujours ouverte</div>
+              <p>Un siècle après le Jones Act, la question du statut de Porto Rico reste sans réponse. L'île est prise en étau entre ses propres divisions internes, l'indifférence chronique du Congrès et un contexte politique américain peu favorable aux avancées institutionnelles. Ce débat illustre une tension fondamentale au cœur du projet américain : comment une démocratie peut-elle gouverner, sans les représenter, des millions de citoyens ? Porto Rico n'est pas seulement une question de droit constitutionnel — c'est un miroir tendu à l'histoire coloniale des États-Unis, et un révélateur de ce que la citoyenneté signifie réellement au XXIe siècle.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-fr-section -->
+
+    <!-- SECTION ES -->
+    <div class="ap-es-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-red">🇵🇷 Puerto Rico</span>
+          <span class="ap-tag ap-tag-navy">Geopolítica</span>
+          <span class="ap-tag ap-tag-gold">Estatus constitucional</span>
+          <span class="ap-tag ap-tag-blue">Estados Unidos</span>
+          <span class="ap-tag ap-tag-purple">Identidad</span>
+        </div>
+        <div class="ap-date">Abril 2026 — ECG Prépa · Puerto Rico</div>
+        <h1 class="ap-title">El estatus de Puerto Rico en la encrucijada: ¿estadidad, autonomía o independencia?</h1>
+        <p class="ap-intro">Territorio no incorporado de los Estados Unidos desde 1898, Puerto Rico sigue siendo una de las últimas grandes colonias formales del mundo occidental. La cuestión de su estatus —largamente congelada por divisiones internas y la indiferencia de Washington— ha vuelto al primer plano desde 2020. Entre referéndums sin consecuencias, un proyecto de ley histórico en el Congreso y el regreso de Donald Trump a la Casa Blanca, la isla del Caribe está en un punto de inflexión.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat"><span class="ap-stat-num">3,2 M</span><span class="ap-stat-desc">Habitantes en la isla<br>(2024)</span></div>
+          <div class="ap-stat navy"><span class="ap-stat-num">126 años</span><span class="ap-stat-desc">Bajo soberanía<br>estadounidense (desde 1898)</span></div>
+          <div class="ap-stat red"><span class="ap-stat-num">~46 %</span><span class="ap-stat-desc">Tasa de pobreza<br>oficial (2024)</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">5</span><span class="ap-stat-desc">Referéndums sobre<br>el estatus desde 1967</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Un territorio fuera de lo común: el "Commonwealth" en cuestión</div>
+            <p>Puerto Rico ocupa una posición constitucional única y paradójica. Desde el <em>Jones Act</em> de 1917, sus habitantes son ciudadanos estadounidenses, pero no votan en las elecciones presidenciales y solo están representados en el Congreso por un Comisionado Residente sin derecho a voto. La isla se rige por el concepto jurídico de <em>territorio no incorporado</em>, surgido de los controvertidos <em>Insular Cases</em> del Tribunal Supremo (1901–1922): Puerto Rico «pertenece» a los Estados Unidos, pero no «forma parte» de ellos.</p>
+            <p>Este estatus híbrido —oficialmente llamado <em>Estado Libre Asociado</em> desde 1952— otorga a la isla una autonomía interna limitada en sus asuntos cotidianos, mientras la deja sometida a la plena autoridad del Congreso federal. Washington puede imponer sus leyes federales a Puerto Rico sin que la isla tenga voz en ello. Esta asimetría está en el centro del debate sobre el estatus.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Estatus actual</div><div class="ap-fact-val">Territorio no incorporado</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Ciudadanía</div><div class="ap-fact-val">Estadounidense (desde 1917)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Gobernadora actual</div><div class="ap-fact-val">Jenniffer González-Colón</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Idioma oficial</div><div class="ap-fact-val">Español e inglés</div></div>
+            </div>
+
+            <div class="ap-sub">Las tres opciones en debate</div>
+            <p>El debate sobre el futuro institucional de Puerto Rico se articula en torno a tres grandes opciones. La primera, la <strong>estadidad</strong> —integración como estado 51—, es apoyada por el Partido Nuevo Progresista (PNP) en el poder. Sus defensores argumentan que es la única que garantizaría la plena igualdad de derechos. La segunda es el mantenimiento o mejora del <strong>Commonwealth</strong>, defendida por el Partido Popular Democrático (PPD). La tercera, la <strong>independencia</strong>, llevada por el PIP y la Victoria Ciudadana, sigue siendo minoritaria en las encuestas pero gana visibilidad entre los jóvenes.</p>
+            <p>Cinco referéndums han tenido lugar desde 1967. Todos han dado resultados a favor de la estadidad —incluido el último en 2020 (52,5 %)— pero ninguno tiene carácter vinculante para el Congreso.</p>
+
+            <div class="ap-sub">Cronología: ¿hacia una resolución imposible?</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">1898</div><p class="ap-tl-text">Puerto Rico cedido a EE. UU. por España tras la guerra hispanounidense. Fin de 400 años de colonización española.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">1952</div><p class="ap-tl-text">Proclamación del Estado Libre Asociado. Puerto Rico adopta su propia constitución pero sigue bajo soberanía federal.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2016</div><p class="ap-tl-text">El Congreso impone la ley PROMESA y crea la Junta de Supervisión Fiscal, muy impopular en la isla.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2017</div><p class="ap-tl-text">El huracán María devasta la isla: ~3 000 muertos, 90 000 millones en daños. La gestión federal es duramente criticada.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2020</div><p class="ap-tl-text">Referéndum no vinculante: 52,5 % a favor de la estadidad. El resultado es ignorado por el Congreso republicano.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2022</div><p class="ap-tl-text">La Cámara vota el Puerto Rico Status Act, primera ley que propone un referéndum vinculante. El Senado no lo somete a votación.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2025–2026</div><p class="ap-tl-text">Regreso de Trump. Sus declaraciones hostiles a la estadidad relancen el debate. La gobernadora González-Colón mantiene una línea pragmática.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">La crisis económica y la Junta: ¿un colonialismo financiero?</div>
+            <p>El argumento económico es central en el debate sobre el estatus. Puerto Rico vivió en 2016 la mayor quiebra municipal de la historia de los Estados Unidos, con una deuda de <strong>73 000 millones de dólares</strong>. La ley PROMESA, impuesta por Washington sin consulta popular, estableció la <em>Financial Oversight and Management Board</em> —apodada la «Junta» por sus opositores— para reestructurar esa deuda.</p>
+            <p>Las críticas son contundentes: la Junta impuso recortes en pensiones, gastos sociales y presupuestos universitarios para satisfacer a los acreedores, principalmente fondos buitre con sede en Nueva York. Para los defensores de la independencia, es la demostración de que Puerto Rico no es un socio de los Estados Unidos, sino una colonia económica.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Indicador</th><th>Puerto Rico</th><th>Estado más pobre (MS)</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Tasa de pobreza</td><td>~46 %</td><td class="ap-cell-bold">19 % (Mississippi)</td></tr>
+                <tr><td class="ap-cell-bold">PIB/habitante</td><td>~35 000 $</td><td class="ap-cell-bold">~46 000 $ (MS)</td></tr>
+                <tr><td class="ap-cell-bold">Deuda pública</td><td>73 000 M$ (2016)</td><td class="ap-cell-bold">—</td></tr>
+                <tr><td class="ap-cell-bold">Emigración 2010–2020</td><td>-14 % pob.</td><td class="ap-cell-bold">+0,2 %</td></tr>
+                <tr><td class="ap-cell-bold">Ayuda federal/hab.</td><td>Inferior</td><td class="ap-cell-bold">Superior (Medicaid)</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">⚠️</div>
+              <div class="ap-info-text"><strong>La paradoja del Medicaid:</strong> Puerto Rico recibe asignaciones federales de salud limitadas, mientras que un estado con los mismos ingresos recibiría mucho más. Esta desigualdad estructural se cita como prueba concreta del carácter desventajoso del estatus colonial.</div>
+            </div>
+
+            <div class="ap-sub">La cuestión identitaria: ser puertorriqueño en la América de Trump</div>
+            <p>Más allá del cálculo institucional, la cuestión del estatus es profundamente identitaria. Puerto Rico es un territorio hispanohablante, culturalmente caribeño, con una identidad propia forjada en 500 años de historia. Para una parte creciente de la población —en especial la diáspora de más de 5 millones de personas en el continente—, la integración como estado implicaría una asimilación cultural temida.</p>
+            <p>Las declaraciones de Donald Trump durante la campaña de 2024 —llamando a la isla una «isla de basura» en un mitin— provocaron un seísmo político. Galvanizaron a la diáspora puertorriqueña en Florida y Pensilvania, y reactivaron en la isla un sentimiento antiWashington que trasciende las divisiones partidistas.</p>
+
+            <div class="ap-quote">
+              <p>« Somos una nación. Con o sin Estado. »</p>
+              <cite>— Lema del movimiento independentista, 2024</cite>
+            </div>
+            <div class="ap-quote">
+              <p>« We pay taxes, we fight in your wars, but we can't vote for your president. Explain that democracy to me. »</p>
+              <cite>— Manifestante puertorriqueño en Washington, enero de 2025</cite>
+            </div>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Una pregunta siempre abierta</div>
+              <p>Un siglo después del Jones Act, la cuestión del estatus de Puerto Rico sigue sin respuesta. La isla está atrapada entre sus propias divisiones internas, la indiferencia crónica del Congreso y un contexto político estadounidense poco favorable. Este debate ilustra una tensión fundamental en el corazón del proyecto americano: ¿cómo puede una democracia gobernar, sin representarlos, a millones de ciudadanos? Puerto Rico no es solo una cuestión de derecho constitucional —es un espejo tendido a la historia colonial de los Estados Unidos, y un revelador de lo que significa la ciudadanía en el siglo XXI.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-es-section -->
+
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — Porto Rico — Avril 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-es').classList.toggle('active', lang === 'es');
+  const isEs = lang === 'es';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEs ? 'none' : 'block');
+  document.querySelectorAll('.ap-es-section').forEach(el => el.style.display = isEs ? 'block' : 'none');
+}
+setLang('fr');
+</script>
+</body>
+</html>
