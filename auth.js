@@ -78,7 +78,7 @@
   var PAGES_ADMIN = ['admin.html', 'idees-articles.html'];
 
   var file = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
-   if (file.indexOf('.') === -1) file = file + '.html';
+  if (file.indexOf('.') === -1) file = file + '.html';
   var pageLogin = file === 'login.html';
   var pagePublique = PAGES_PUBLIQUES.indexOf(file) !== -1;
   var pageAdmin = file === 'admin.html';

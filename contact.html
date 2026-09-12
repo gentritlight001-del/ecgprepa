@@ -133,15 +133,23 @@
     <label for="message">Message</label>
     <textarea id="message" name="message" required placeholder="Décris ta demande le plus précisément possible…"></textarea>
 
-    <button type="submit" class="btn" id="envoyer">Ouvrir dans ma messagerie</button>
+    <div id="erreurForm" style="display:none;color:var(--danger);font-size:.82rem;margin:-8px 0 16px"></div>
+
+    <button type="submit" class="btn" id="envoyer">Envoyer le message</button>
   </form>
 
+  <div class="card" id="confirmation" style="display:none;background:var(--surface);border:1px solid var(--border);
+    border-radius:14px;padding:26px;text-align:center">
+    <div style="font-size:1.4rem;margin-bottom:8px">✅</div>
+    <div style="font-weight:500;margin-bottom:6px">Message envoyé</div>
+    <div style="color:var(--text-dim);font-size:.88rem">On te répond directement à l'adresse indiquée, en général sous quelques jours.</div>
+  </div>
+
   <div class="note">
-    Le bouton ouvre ton logiciel de messagerie habituel, avec le message déjà rempli, à l'adresse
-    <strong><span class="placeholder" style="color:var(--accent)">contact@ecg-prepa.fr</span></strong>
-    (<span style="color:var(--text-faint)">adresse à mettre à jour dans le code de cette page</span>).
-    Pas de logiciel de messagerie configuré sur cet appareil ? Écris-nous directement depuis n'importe
-    quelle adresse e-mail à la même adresse. Nous répondons en général sous quelques jours.
+    Le message est envoyé directement depuis cette page — pas besoin d'avoir une messagerie configurée
+    sur cet appareil. Si l'envoi échoue pour une raison technique, on te propose automatiquement
+    d'écrire à <strong><span class="placeholder" style="color:var(--accent)">contact@ecg-prepa.fr</span></strong>
+    depuis ton logiciel de mail habituel.
   </div>
 </main>
 
@@ -168,20 +176,58 @@
     });
   });
 
-  document.getElementById('formContact').addEventListener('submit', function (e) {
-    e.preventDefault();
-    var motif = champMotif.value || 'Contact site ECG Prépa';
-    var email = document.getElementById('email').value.trim();
-    var message = document.getElementById('message').value.trim();
-
+  function ouvrirMessagerie(motif, email, message) {
     var sujet = '[ECG Prépa] ' + motif;
     var corps = message + (email ? '\n\n— répondre à : ' + email : '');
-
     var lien = 'mailto:' + encodeURIComponent(ADRESSE_CONTACT) +
       '?subject=' + encodeURIComponent(sujet) +
       '&body=' + encodeURIComponent(corps);
-
     location.href = lien;
+  }
+
+  document.getElementById('formContact').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    var motif = (champMotif.value || 'Autre demande').trim();
+    var email = document.getElementById('email').value.trim();
+    var message = document.getElementById('message').value.trim();
+    var erreurBox = document.getElementById('erreurForm');
+    var bouton = document.getElementById('envoyer');
+
+    erreurBox.style.display = 'none';
+    if (!email || !message) return;
+
+    bouton.disabled = true;
+    bouton.textContent = 'Envoi…';
+
+    if (!window.ECGAuth || !ECGAuth.client) {
+      bouton.disabled = false;
+      bouton.textContent = 'Envoyer le message';
+      ouvrirMessagerie(motif, email, message);
+      return;
+    }
+
+    ECGAuth.client().then(function (c) {
+      return c.from('messages_contact').insert({
+        motif: motif,
+        email: email,
+        message: message,
+        page_origine: location.pathname
+      });
+    }).then(function (r) {
+      if (r.error) throw r.error;
+      document.getElementById('formContact').style.display = 'none';
+      document.getElementById('motifs').style.display = 'none';
+      document.getElementById('confirmation').style.display = 'block';
+    }).catch(function () {
+      /* La base n'est pas joignable ou la table n'existe pas encore :
+         on bascule sur la messagerie plutôt que de perdre le message. */
+      bouton.disabled = false;
+      bouton.textContent = 'Envoyer le message';
+      erreurBox.textContent = 'Envoi automatique indisponible pour le moment — ouverture de ta messagerie…';
+      erreurBox.style.display = 'block';
+      setTimeout(function () { ouvrirMessagerie(motif, email, message); }, 900);
+    });
   });
 })();
 </script>

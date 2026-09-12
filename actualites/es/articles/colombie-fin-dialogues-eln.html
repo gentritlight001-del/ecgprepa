@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Colombie : fin des dialogues avec l'ELN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #c8282a;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #c8282a; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #f5d020; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #0b6e4f; top: 40%; left: 30%; opacity: 0.06; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #c8282a; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #c8282a; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#c8282a; border-color:#c8282a; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  /* Article styles */
+  .ap-band { background: #c8282a; text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(20,8,8,0.95); padding:12px 60px; border-bottom: 1px solid rgba(200,40,42,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#f5d020; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(200,40,42,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(200,40,42,0.2);  color:#f08080; border:1px solid rgba(200,40,42,0.35); }
+  .ap-tag-navy   { background:rgba(13,27,42,0.6);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(11,110,79,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #f5d020; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(200,40,42,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(245,208,32,0.7); }
+
+  /* Rich article components */
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#f5d020; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(245,208,32,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#071422,#0d2540); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #f5d020; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(245,208,32,0.06),rgba(245,208,32,0.02)); border-left:3px solid #f5d020; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(245,208,32,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(245,208,32,0.7); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(20,8,8,0.9),rgba(10,4,4,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(200,40,42,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#f5d020; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(200,40,42,0.06); border:1px solid rgba(200,40,42,0.18); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(245,208,32,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#f5d020; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(245,208,32,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#f5d020; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(20,8,8,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-es-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-es.html">Espagnol</a>
+    <span class="sep">/</span>
+    <a href="../colombie.html">Colombie</a>
+    <span class="sep">/</span>
+    <span class="current">Fin des dialogues avec l'ELN</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-es" class="ap-lang-btn" onclick="setLang('es')">🇨🇴 ES</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇨🇴 Colombie : fin des dialogues avec l'ELN</div>
+<div class="ap-back-bar">
+  <a href="../colombie.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+    <div class="ap-hero-img-wrap"><img class="ap-hero-img" src="../images/colombie-fin-dialogues-eln.jpg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+
+    <!-- ══ SECTION FR ══ -->
+    <div class="ap-fr-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-red">🇨🇴 Colombie</span>
+          <span class="ap-tag ap-tag-navy">Sécurité</span>
+          <span class="ap-tag ap-tag-gold">ELN</span>
+          <span class="ap-tag ap-tag-teal">Paix totale</span>
+          <span class="ap-tag ap-tag-purple">Groupes armés</span>
+        </div>
+        <div class="ap-date">Septembre 2026 — ECG Prépa · Colombie</div>
+        <h1 class="ap-title">Colombie : Abelardo de la Espriella met fin aux dialogues avec l'ELN et à la « paix totale »</h1>
+        <p class="ap-intro">Un mois après avoir durci sa politique sécuritaire — port d'armes, épandage aérien, méga-prisons —, le président colombien Abelardo de la Espriella a formellement mis un terme, le 11 septembre 2026, à la table de dialogue avec la guérilla de l'Armée de libération nationale (ELN) et à l'ensemble des processus hérités de la « paix totale » de Gustavo Petro. Une décision qui clôt quatre années de négociations et ouvre la voie à une doctrine fondée sur la soumission à la justice ou l'action de la force publique.</p>
+      </div>
+
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red"><span class="ap-stat-num">11 sept.</span><span class="ap-stat-desc">Signature de la résolution 391<br>mettant fin au dialogue avec l'ELN</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">7 Mds</span><span class="ap-stat-desc">Pesos colombiens dépensés en<br>honoraires de négociateurs (4 ans)</span></div>
+          <div class="ap-stat"><span class="ap-stat-num">+70</span><span class="ap-stat-desc">Porte-parole et « gestionnaires<br>de paix » démis de leurs fonctions</span></div>
+          <div class="ap-stat green"><span class="ap-stat-num">4 ans</span><span class="ap-stat-desc">Durée du dialogue engagé<br>fin 2022 sous Gustavo Petro</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">La résolution qui scelle la fin du dialogue avec l'ELN</div>
+            <p>Le 11 septembre 2026, le président Abelardo de la Espriella a signé la résolution 391 de 2026, révoquant la désignation des représentants du gouvernement à la table de dialogue avec l'Armée de libération nationale (ELN). Cette décision met formellement fin aux négociations engagées par Gustavo Petro dans le cadre de sa politique de « paix totale ». La cheffe négociatrice du gouvernement, Vera Grabe, ancienne sénatrice et ancienne membre du mouvement M-19, ainsi que les autres membres de la délégation — dont le sénateur d'opposition Iván Cepeda, l'ancienne sénatrice María José Pizarro et le dirigeant patronal José Félix Lafaurie — perdent leur mandat de négociateurs.</p>
+            <p>La même semaine, une résolution distincte, la n° 390 de 2026, a acté la fin des espaces de dialogue avec l'autoproclamée Armée gaïtaniste de Colombie (Clan du Golfe), principale organisation de narcotrafic du pays.</p>
+
+            <div class="ap-sub">Une table déjà suspendue depuis les violences du Catatumbo</div>
+            <p>Dans les faits, les pourparlers avec l'ELN étaient interrompus depuis le 17 janvier 2025. Ce jour-là, Gustavo Petro avait suspendu le dialogue après le massacre d'une famille à Tibú (Norte de Santander) — parmi les victimes, un bébé de six mois — et l'assassinat de trois signataires de l'accord de paix de 2016 avec les FARC, dans le cadre d'affrontements entre l'ELN et des dissidences des FARC qui ont fait plus de cent morts et déplacé des dizaines de milliers de familles. Un an plus tôt, le 17 septembre 2024, une attaque de l'ELN contre la base militaire de Puerto Jordán, dans le département d'Arauca, avait déjà fait deux morts et une vingtaine de blessés parmi les militaires et fragilisé durablement la confiance entre les parties.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Résolution ELN</div><div class="ap-fact-val">N° 391 du 11 sept. 2026</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Résolution Clan du Golfe</div><div class="ap-fact-val">N° 390, même semaine</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Table suspendue depuis</div><div class="ap-fact-val">17 janv. 2025 (Catatumbo)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Dialogue engagé le</div><div class="ap-fact-val">21 nov. 2022, à Caracas</div></div>
+            </div>
+
+            <div class="ap-sub">Un démantèlement généralisé de la « paix totale »</div>
+            <p>Au-delà de l'ELN, le gouvernement a mis fin, au moyen d'une douzaine de résolutions, aux espaces de dialogue ouverts avec plusieurs autres structures : les dissidences dites de « Calarcá » (État-major des blocs et fronts), la Coordination nationale Armée bolivarienne, le Front guérillero Comuneros del Sur, les Autodéfenses conquérantes de la Sierra Nevada, ainsi que les espaces socio-juridiques négociés avec des structures criminelles urbaines de Medellín, du Valle de Aburrá, de Quibdó et de Buenaventura. Au total, plus de soixante-dix porte-parole, « gestionnaires de paix » et membres de l'équipe négociatrice du gouvernement précédent ont perdu leur reconnaissance officielle.</p>
+
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">21 Nov. 2022</div><p class="ap-tl-text">Reprise, à Caracas, des dialogues de paix entre le gouvernement de Gustavo Petro et l'ELN.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">17 Sept. 2024</div><p class="ap-tl-text">Attaque de l'ELN contre la base militaire de Puerto Jordán, dans le département d'Arauca.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">17 Janv. 2025</div><p class="ap-tl-text">Massacre de Tibú, dans le Catatumbo ; Gustavo Petro suspend la table de dialogue avec l'ELN.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">7 Août 2026</div><p class="ap-tl-text">Investiture d'Abelardo de la Espriella ; annonce de la fin de la politique de « paix totale ».</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">11 Sept. 2026</div><p class="ap-tl-text">Résolution 391 : révocation officielle des négociateurs du gouvernement auprès de l'ELN.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">Une nouvelle doctrine : soumission à la justice ou intervention de la force publique</div>
+            <p>Le gouvernement colombien substitue à la négociation une doctrine fondée sur deux issues : la soumission volontaire à la justice pour les combattants souhaitant déposer les armes, sans statut politique ni bénéfice judiciaire particulier, ou l'intervention des forces armées et de la police pour les structures qui poursuivraient leurs activités violentes. Un projet de statut antiterroriste, actuellement en préparation, doit par ailleurs être soumis au Congrès.</p>
+
+            <div class="ap-quote">
+              <p>« C'en est fini de la fausse paix. »</p>
+              <cite>— Abelardo de la Espriella, président de la Colombie, 11 septembre 2026</cite>
+            </div>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">📜</div>
+              <div class="ap-info-text"><strong>Le statut de « gestionnaire de paix » remis en cause :</strong> créé sous Gustavo Petro pour permettre à des membres de groupes armés remis en liberté de participer aux processus de dialogue sans poursuites immédiates, ce mécanisme perd sa base légale avec la fin de la « paix totale ». Présenté par ses partisans comme un outil de désescalade, il était critiqué par l'opposition, qui y voyait un facteur d'impunité pour des individus parfois liés à des faits de violence graves.</div>
+            </div>
+
+            <div class="ap-sub">Une guérilla vieille de six décennies, toujours implantée sur le terrain</div>
+            <p>Fondé en 1964, l'ELN reste, avec environ six décennies d'existence, la plus ancienne guérilla encore active en Amérique latine. Trois tentatives successives de négociation avaient déjà été engagées avec les gouvernements de Juan Manuel Santos (2017-2018), d'Iván Duque et, la plus longue, de Gustavo Petro (2022-2026), sans qu'aucune n'aboutisse à un accord de paix ni à une démobilisation. L'organisation continue de tirer une part de ses ressources du trafic de coca, de l'extraction minière illégale et de l'extorsion dans plusieurs régions frontalières avec le Venezuela.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Une page se tourne, sans garantie sur la suivante</div>
+              <p>Avec la clôture de la table ELN, la Colombie referme un cycle de dialogue engagé sous trois présidences successives depuis 2016. Le pari du gouvernement d'Abelardo de la Espriella consiste à miser sur la pression militaire et judiciaire pour obtenir ce que la négociation n'a pas permis d'obtenir : le désarmement d'une guérilla toujours enracinée dans plusieurs territoires. Le test des prochains mois ne se jouera pas dans les résolutions signées à Bogotá, mais dans la capacité de l'État à occuper durablement des zones que quatre années de pourparlers n'ont pas permis de stabiliser.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-fr-section -->
+
+    <!-- ══ SECTION ES ══ -->
+    <div class="ap-es-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-red">🇨🇴 Colombia</span>
+          <span class="ap-tag ap-tag-navy">Seguridad</span>
+          <span class="ap-tag ap-tag-gold">ELN</span>
+          <span class="ap-tag ap-tag-teal">Paz total</span>
+          <span class="ap-tag ap-tag-purple">Grupos armados</span>
+        </div>
+        <div class="ap-date">Septiembre 2026 — ECG Prépa · Colombia</div>
+        <h1 class="ap-title">Colombia: Abelardo de la Espriella pone fin a los diálogos con el ELN y a la «paz total»</h1>
+        <p class="ap-intro">Un mes después de endurecer su política de seguridad — porte de armas, aspersión aérea, megacárceles —, el presidente colombiano Abelardo de la Espriella formalizó, el 11 de septiembre de 2026, el fin de la mesa de diálogo con la guerrilla del Ejército de Liberación Nacional (ELN) y de todos los procesos heredados de la «paz total» de Gustavo Petro. Una decisión que cierra cuatro años de negociación y abre paso a una doctrina basada en el sometimiento a la justicia o la actuación de la fuerza pública.</p>
+      </div>
+
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red"><span class="ap-stat-num">11 sept.</span><span class="ap-stat-desc">Firma de la resolución 391<br>que pone fin al diálogo con el ELN</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">7.000 M</span><span class="ap-stat-desc">Pesos colombianos en honorarios<br>de negociadores (4 años)</span></div>
+          <div class="ap-stat"><span class="ap-stat-num">+70</span><span class="ap-stat-desc">Voceros y «gestores de paz»<br>que pierden su reconocimiento</span></div>
+          <div class="ap-stat green"><span class="ap-stat-num">4 años</span><span class="ap-stat-desc">Duración del diálogo iniciado<br>a fines de 2022 bajo Gustavo Petro</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">La resolución que sella el fin del diálogo con el ELN</div>
+            <p>El 11 de septiembre de 2026, el presidente Abelardo de la Espriella firmó la resolución 391 de 2026, con la que revocó la designación de los representantes del Gobierno en la mesa de diálogos con el Ejército de Liberación Nacional (ELN). La decisión pone fin formalmente a las negociaciones iniciadas por Gustavo Petro en el marco de su política de «paz total». La jefa negociadora del Gobierno, Vera Grabe, exsenadora y exintegrante del M-19, así como el resto de la delegación —entre ellos el senador opositor Iván Cepeda, la exsenadora María José Pizarro y el dirigente gremial José Félix Lafaurie— pierden su mandato como negociadores.</p>
+            <p>Esa misma semana, una resolución distinta, la n.º 390 de 2026, oficializó el fin de los espacios de diálogo con el autodenominado Ejército Gaitanista de Colombia (Clan del Golfo), la principal organización de narcotráfico del país.</p>
+
+            <div class="ap-sub">Una mesa ya suspendida desde la violencia del Catatumbo</div>
+            <p>En la práctica, las conversaciones con el ELN estaban interrumpidas desde el 17 de enero de 2025. Ese día, Gustavo Petro suspendió el diálogo tras la masacre de una familia en Tibú (Norte de Santander) —entre las víctimas, un bebé de seis meses— y el homicidio de tres firmantes del acuerdo de paz de 2016 con las FARC, en el marco de enfrentamientos entre el ELN y disidencias de las FARC que dejaron más de cien muertos y decenas de miles de familias desplazadas. Un año antes, el 17 de septiembre de 2024, un ataque del ELN contra la base militar de Puerto Jordán, en el departamento de Arauca, ya había dejado dos militares muertos y una veintena de heridos, y había debilitado de forma duradera la confianza entre las partes.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Resolución ELN</div><div class="ap-fact-val">N.º 391 del 11 sept. 2026</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Resolución Clan del Golfo</div><div class="ap-fact-val">N.º 390, misma semana</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Mesa suspendida desde</div><div class="ap-fact-val">17 ene. 2025 (Catatumbo)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Diálogo iniciado el</div><div class="ap-fact-val">21 nov. 2022, en Caracas</div></div>
+            </div>
+
+            <div class="ap-sub">Un desmonte generalizado de la «paz total»</div>
+            <p>Más allá del ELN, el Gobierno puso fin, mediante una docena de resoluciones, a los espacios de diálogo abiertos con otras estructuras: las disidencias de «Calarcá» (Estado Mayor de Bloques y Frentes), la Coordinadora Nacional Ejército Bolivariano, el Frente Guerrillero Comuneros del Sur, las Autodefensas Conquistadoras de la Sierra Nevada, así como los espacios sociojurídicos negociados con estructuras criminales urbanas de Medellín, el Valle de Aburrá, Quibdó y Buenaventura. En total, más de setenta voceros, «gestores de paz» y miembros del equipo negociador del gobierno anterior perdieron su reconocimiento oficial.</p>
+
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">21 Nov. 2022</div><p class="ap-tl-text">Reanudación, en Caracas, de los diálogos de paz entre el Gobierno de Gustavo Petro y el ELN.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">17 Sept. 2024</div><p class="ap-tl-text">Ataque del ELN contra la base militar de Puerto Jordán, en el departamento de Arauca.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">17 Ene. 2025</div><p class="ap-tl-text">Masacre de Tibú, en el Catatumbo; Gustavo Petro suspende la mesa de diálogo con el ELN.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">7 Ago. 2026</div><p class="ap-tl-text">Posesión de Abelardo de la Espriella; anuncio del fin de la política de «paz total».</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">11 Sept. 2026</div><p class="ap-tl-text">Resolución 391: revocación oficial de los negociadores del Gobierno ante el ELN.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">Una nueva doctrina: sometimiento a la justicia o intervención de la fuerza pública</div>
+            <p>El Gobierno colombiano sustituye la negociación por una doctrina basada en dos salidas: el sometimiento voluntario a la justicia para los combatientes que deseen dejar las armas, sin estatus político ni beneficios judiciales particulares, o la intervención de las Fuerzas Militares y la Policía para las estructuras que persistan en la actividad violenta. Un proyecto de estatuto antiterrorista, actualmente en preparación, deberá además ser presentado al Congreso.</p>
+
+            <div class="ap-quote">
+              <p>« Se acabó la falsa paz. »</p>
+              <cite>— Abelardo de la Espriella, presidente de Colombia, 11 de septiembre de 2026</cite>
+            </div>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">📜</div>
+              <div class="ap-info-text"><strong>La figura del «gestor de paz» en entredicho:</strong> creada bajo Gustavo Petro para permitir que miembros de grupos armados en libertad participaran en los procesos de diálogo sin ser perseguidos de inmediato, esta figura pierde su base legal con el fin de la «paz total». Presentada por sus defensores como una herramienta de desescalada, era criticada por la oposición, que veía en ella un factor de impunidad para personas vinculadas en ocasiones a hechos de violencia graves.</div>
+            </div>
+
+            <div class="ap-sub">Una guerrilla con seis décadas de historia, aún presente en el territorio</div>
+            <p>Fundado en 1964, el ELN es, con cerca de seis décadas de existencia, la guerrilla activa más antigua de América Latina. Antes de este cierre ya se habían intentado tres procesos de negociación, con los gobiernos de Juan Manuel Santos (2017-2018), Iván Duque y, el más largo, el de Gustavo Petro (2022-2026), sin que ninguno desembocara en un acuerdo de paz ni en una desmovilización. La organización sigue obteniendo parte de sus recursos del narcotráfico, la minería ilegal y la extorsión en varias regiones fronterizas con Venezuela.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Se cierra una página, sin garantías sobre la siguiente</div>
+              <p>Con el cierre de la mesa con el ELN, Colombia da por terminado un ciclo de diálogo iniciado bajo tres presidencias sucesivas desde 2016. La apuesta del Gobierno de Abelardo de la Espriella consiste en confiar en la presión militar y judicial para lograr lo que la negociación no consiguió: el desarme de una guerrilla que sigue arraigada en varios territorios. La prueba de los próximos meses no se jugará en las resoluciones firmadas en Bogotá, sino en la capacidad del Estado para ocupar de forma duradera zonas que cuatro años de conversaciones no lograron estabilizar.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-es-section -->
+
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — Colombie — Fin des dialogues avec l'ELN — Septembre 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-es').classList.toggle('active', lang === 'es');
+  const isEs = lang === 'es';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEs ? 'none' : 'block');
+  document.querySelectorAll('.ap-es-section').forEach(el => el.style.display = isEs ? 'block' : 'none');
+}
+setLang('fr');
+</script>
+</body>
+</html>
