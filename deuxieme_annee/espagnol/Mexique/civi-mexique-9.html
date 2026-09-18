@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="mexique9">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La frontière avec les États-Unis et le T-MEC — Civilisation Hispanophone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     TEMPLATE UNIVERSEL DE COURS DE CIVILISATION — v1
+     Pour créer un nouveau cours : dupliquer ce fichier, ne modifier QUE
+     le bloc de données (id="donnees") tout en bas. Rien d'autre à toucher.
+     ══════════════════════════════════════════════════════════════════════ -->
+
+<style>
+  /* ─── PALETTE DE BASE (identique au site) ─── */
+  :root{
+    --bg:#0d0d0f; --surface:#16161a; --surface2:#1e1e24; --border:#2a2a35;
+    --text:#e8e6e0; --text-dim:#8a8880; --text-faint:#4a4845;
+    --radius:14px;
+  }
+  /* ─── THÈMES PAR LANGUE — change data-theme sur <html> ─── */
+  html[data-theme="anglais"] { --a1:#c8a96e; --a2:#7c9ec9; --a3:#9ecba0; --a4:#c97c9e; --hero:#16233d; }
+  html[data-theme="anglais2"] { --a1:#c9633f; --a2:#5b8f6f; --a3:#6c8fc7; --a4:#a06bb0; --hero:#16241b; }
+  html[data-theme="espagnol"]{ --a1:#e0a93e; --a2:#c8553d; --a3:#7fae7a; --a4:#b06fa8; --hero:#3a1a18; }
+  html[data-theme="espagnol2"]{ --a1:#b89355; --a2:#6b7d63; --a3:#8c5a4a; --a4:#5f7690; --hero:#211a14; }
+  html[data-theme="mexique2"]{ --a1:#d4932e; --a2:#2f8f7c; --a3:#b8433f; --a4:#8b4789; --hero:#241209; }
+  html[data-theme="mexique9"]{ --a1:#c9973f; --a2:#3f6fa8; --a3:#4a8f5c; --a4:#b8433f; --hero:#141d29; }
+  html[data-theme="allemand"]{ --a1:#d8b44a; --a2:#8fa4bd; --a3:#84b58e; --a4:#c06060; --hero:#241f1a; }
+  html[data-theme="italien"] { --a1:#d5a94e; --a2:#6fae8f; --a3:#a8c07a; --a4:#c4695e; --hero:#152a24; }
+  html[data-theme="chinois"] { --a1:#d9a441; --a2:#c05a4a; --a3:#83a98f; --a4:#a97fb0; --hero:#2c1618; }
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden}
+
+  /* ─── FOND ─── */
+  .bg-orb{position:fixed;border-radius:50%;filter:blur(140px);pointer-events:none;opacity:.08;z-index:0}
+  .orb1{width:700px;height:700px;background:var(--a1);top:-300px;right:-250px}
+  .orb2{width:600px;height:600px;background:var(--a2);bottom:-250px;left:-250px}
+
+  /* ─── BARRE DE PROGRESSION ─── */
+  #progress{position:fixed;top:0;left:0;height:2px;width:0;z-index:200;
+    background:linear-gradient(90deg,var(--a1),var(--a2),var(--a4));transition:width .1s linear}
+
+  /* ─── NAV ─── */
+  nav{display:flex;align-items:center;justify-content:space-between;gap:20px;
+    padding:16px 40px;border-bottom:1px solid var(--border);
+    background:rgba(13,13,15,.9);backdrop-filter:blur(16px);position:sticky;top:0;z-index:100}
+  .nav-logo{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--a1);cursor:pointer}
+  .breadcrumb{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--text-dim);flex-wrap:wrap}
+  .breadcrumb span{cursor:pointer;transition:color .2s}
+  .breadcrumb span:hover{color:var(--a1)}
+  .breadcrumb .sep{color:var(--text-faint);cursor:default}
+  .breadcrumb .current{color:var(--text);cursor:default}
+  .nav-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+  .ap-lang-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);
+    color:rgba(255,255,255,.6);font-family:'DM Mono',monospace;font-size:10px;font-weight:700;
+    letter-spacing:.12em;padding:5px 14px;border-radius:4px;cursor:pointer;transition:all .2s;text-transform:uppercase}
+  .ap-lang-btn.active{background:var(--a1);border-color:var(--a1);color:#12100c}
+  .ap-lang-btn:hover:not(.active){background:rgba(255,255,255,.15);color:#fff}
+
+  /* ─── HERO ─── */
+  .hero{position:relative;z-index:1;padding:76px 40px 56px;text-align:center;overflow:hidden;
+    background:linear-gradient(160deg,var(--hero),#0d0d0f 85%);border-bottom:1px solid var(--border)}
+  .hero::after{content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);
+    width:80px;height:2px;background:var(--a1)}
+  .hero-flag{font-size:2.6rem;line-height:1;margin-bottom:18px;display:block}
+  .hero-label{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.3em;
+    text-transform:uppercase;color:var(--a1);margin-bottom:18px}
+  .hero h1{font-family:'Playfair Display',serif;font-weight:900;line-height:1.05;
+    font-size:clamp(2.4rem,6vw,4.6rem);max-width:900px;margin:0 auto 18px}
+  .hero-sub{font-size:1rem;color:var(--text-dim);max-width:640px;margin:0 auto;line-height:1.6}
+
+  /* ─── LAYOUT ─── */
+  .layout{display:flex;gap:48px;max-width:1320px;margin:0 auto;padding:48px 40px 100px;position:relative;z-index:1}
+  main{flex:1;min-width:0;max-width:840px}
+
+  /* ─── COLONNE CHRONOLOGIE ─── */
+  .rail{width:262px;flex-shrink:0;position:sticky;top:88px;align-self:flex-start;
+    max-height:calc(100vh - 118px);overflow-y:auto;padding-right:8px}
+  .rail-title{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--a1);margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+  .rail .tl{padding-left:20px;margin:0 0 0 4px}
+  .rail .tl-item{padding-bottom:16px}
+  .rail .tl-item::before{left:-26px;top:4px;width:7px;height:7px}
+  .rail .tl-d{font-size:.66rem;letter-spacing:.08em}
+  .rail .tl-c{font-size:.79rem;line-height:1.5}
+  .rail::-webkit-scrollbar{width:3px}
+  .rail::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  .chrono-mobile{display:none}
+
+  /* ─── BLOC GÉNÉRIQUE ─── */
+  .bloc{margin-bottom:64px;scroll-margin-top:88px}
+  .bloc-head{display:flex;align-items:baseline;gap:14px;margin-bottom:24px;
+    padding-bottom:12px;border-bottom:1px solid var(--border)}
+  .bloc-kicker{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.28em;
+    text-transform:uppercase;color:var(--k,var(--a1))}
+  .bloc-title{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--text)}
+
+  /* ─── L'ESSENTIEL ─── */
+  .essentiel{background:linear-gradient(135deg,rgba(255,255,255,.045),rgba(255,255,255,.015));
+    border:1px solid var(--border);border-left:3px solid var(--a1);border-radius:var(--radius);
+    padding:28px 30px;margin-bottom:36px}
+  .essentiel-label{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.28em;
+    text-transform:uppercase;color:var(--a1);margin-bottom:14px}
+  .essentiel p{font-size:.98rem;line-height:1.75;color:var(--text);margin-bottom:0}
+  .essentiel p strong{color:var(--a1);font-weight:500}
+
+  /* ─── STATS ─── */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:22px 0}
+  .stat{border-radius:10px;padding:18px 16px;text-align:center;border:1px solid rgba(255,255,255,.08);
+    background:linear-gradient(135deg,color-mix(in srgb,var(--c,var(--a1)) 26%,#101014),
+    color-mix(in srgb,var(--c,var(--a1)) 8%,#101014))}
+  .stat-n{font-family:'DM Mono',monospace;font-size:1.5rem;font-weight:500;color:var(--text);display:block;line-height:1.1}
+  .stat-d{font-size:.7rem;color:var(--text-dim);margin-top:7px;display:block;line-height:1.45}
+
+  /* ─── PARTIES ─── */
+  .partie{margin-bottom:78px;scroll-margin-top:88px}
+  .partie-head{display:flex;align-items:center;gap:22px;margin-bottom:34px;
+    padding-bottom:18px;border-bottom:2px solid var(--p)}
+  .partie-num{font-family:'Playfair Display',serif;font-size:3.4rem;font-weight:900;
+    color:var(--p);opacity:.35;line-height:.9;flex-shrink:0}
+  .partie-title{font-family:'Playfair Display',serif;font-size:clamp(1.35rem,3vw,1.95rem);
+    font-weight:700;line-height:1.2}
+  .partie-kicker{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--p);margin-bottom:6px}
+
+  .section{margin-bottom:44px;scroll-margin-top:88px}
+  .section-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;
+    color:var(--text);margin-bottom:18px;padding-left:16px;border-left:3px solid var(--p)}
+  .section-num{color:var(--p);font-weight:900}
+
+  /* ─── TEXTE ─── */
+  .prose{font-size:.96rem;line-height:1.8;color:rgba(232,230,224,.78);margin-bottom:16px}
+  .prose strong{color:var(--text);font-weight:500}
+  .prose em{color:var(--p,var(--a1));font-style:normal;font-weight:500}
+  .es{font-family:'DM Mono',monospace;font-size:.86em;color:var(--a2)}
+
+  /* ─── LISTE ─── */
+  .liste{list-style:none;margin:14px 0 20px}
+  .liste li{font-size:.93rem;line-height:1.65;color:rgba(232,230,224,.75);
+    padding:9px 0 9px 22px;position:relative;border-bottom:1px solid rgba(255,255,255,.05)}
+  .liste li:last-child{border-bottom:none}
+  .liste li::before{content:'';position:absolute;left:0;top:17px;width:6px;height:6px;
+    border-radius:50%;background:var(--p,var(--a1))}
+  .liste li strong{color:var(--text);font-weight:500}
+
+  /* ─── FAITS CLÉS ─── */
+  .faits{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:9px;margin:20px 0}
+  .fait{background:rgba(255,255,255,.03);border:1px solid var(--border);
+    border-left:3px solid var(--p,var(--a1));border-radius:8px;padding:13px 15px}
+  .fait-l{font-family:'DM Mono',monospace;font-size:.6rem;color:var(--text-faint);
+    text-transform:uppercase;letter-spacing:.14em;margin-bottom:5px}
+  .fait-v{font-size:.86rem;font-weight:500;color:var(--text);line-height:1.4}
+
+  /* ─── CITATION ─── */
+  .citation{background:linear-gradient(135deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+    border:1px solid var(--border);border-left:3px solid var(--a1);border-radius:0 10px 10px 0;
+    padding:20px 24px;margin:22px 0}
+  .citation p{font-family:'Playfair Display',serif;font-style:italic;font-size:1.02rem;
+    line-height:1.6;color:var(--text);margin-bottom:9px}
+  .citation cite{font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.08em;
+    color:var(--a1);font-style:normal}
+
+  /* ─── ENCADRÉ ─── */
+  .encadre{display:flex;gap:15px;align-items:flex-start;border-radius:10px;padding:17px 20px;margin:20px 0;
+    background:color-mix(in srgb,var(--c,var(--a2)) 7%,transparent);
+    border:1px solid color-mix(in srgb,var(--c,var(--a2)) 26%,transparent)}
+  .encadre-ic{font-size:1.5rem;flex-shrink:0;line-height:1.2}
+  .encadre-t{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--c,var(--a2));margin-bottom:7px;font-weight:500}
+  .encadre-c{font-size:.89rem;line-height:1.7;color:rgba(232,230,224,.75)}
+  .encadre-c strong{color:var(--text);font-weight:500}
+
+  /* ─── DÉFINITION ─── */
+  .def{border:1px dashed var(--border);border-radius:10px;padding:15px 18px;margin:18px 0;
+    background:rgba(255,255,255,.02)}
+  .def-mot{font-family:'Playfair Display',serif;font-weight:700;font-size:1rem;color:var(--a3);margin-bottom:6px}
+  .def-c{font-size:.88rem;line-height:1.7;color:rgba(232,230,224,.72)}
+
+  /* ─── TABLEAU ─── */
+  .tbl-wrap{overflow-x:auto;margin:20px 0;border:1px solid var(--border);border-radius:10px}
+  table{width:100%;border-collapse:collapse;font-size:.83rem}
+  thead{background:rgba(255,255,255,.04)}
+  thead th{padding:11px 15px;text-align:left;font-family:'DM Mono',monospace;font-size:.6rem;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--text-dim);white-space:nowrap}
+  tbody tr{border-top:1px solid var(--border)}
+  tbody tr:nth-child(even){background:rgba(255,255,255,.015)}
+  tbody td{padding:11px 15px;color:rgba(232,230,224,.75);line-height:1.5}
+  tbody td:first-child{color:var(--text);font-weight:500}
+
+  /* ─── CHRONOLOGIE ─── */
+  .tl{border-left:2px solid var(--border);padding-left:26px;margin:8px 0 8px 6px}
+  .tl-item{position:relative;padding-bottom:22px}
+  .tl-item:last-child{padding-bottom:0}
+  .tl-item::before{content:'';position:absolute;left:-33px;top:5px;width:9px;height:9px;border-radius:50%;
+    background:var(--c,var(--a1));box-shadow:0 0 0 3px rgba(13,13,15,1),0 0 0 5px color-mix(in srgb,var(--c,var(--a1)) 35%,transparent)}
+  .tl-d{font-family:'DM Mono',monospace;font-size:.72rem;font-weight:500;letter-spacing:.1em;
+    color:var(--c,var(--a1));margin-bottom:4px}
+  .tl-c{font-size:.9rem;line-height:1.6;color:rgba(232,230,224,.75)}
+  .tl-c strong{color:var(--text);font-weight:500}
+
+  /* ─── ACTEURS ─── */
+  .acteurs{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+  .acteur{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;
+    transition:all .25s;position:relative;overflow:hidden}
+  .acteur:hover{border-color:var(--c,var(--a1));transform:translateY(-3px);background:var(--surface2)}
+  .acteur-nom{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;margin-bottom:3px}
+  .acteur-role{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--c,var(--a1));margin-bottom:10px}
+  .acteur-c{font-size:.82rem;line-height:1.6;color:var(--text-dim)}
+
+  /* ─── DÉBAT ─── */
+  .debat{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .debat-col{border:1px solid var(--border);border-radius:12px;padding:20px 22px;background:rgba(255,255,255,.02)}
+  .debat-col.oui{border-top:3px solid var(--a3)}
+  .debat-col.non{border-top:3px solid var(--a4)}
+  .debat-t{font-family:'DM Mono',monospace;font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:14px}
+  .debat-col.oui .debat-t{color:var(--a3)}
+  .debat-col.non .debat-t{color:var(--a4)}
+  .debat-col li{font-size:.87rem;line-height:1.6;color:rgba(232,230,224,.75);
+    padding:9px 0 9px 18px;position:relative;list-style:none;border-bottom:1px solid rgba(255,255,255,.05)}
+  .debat-col li:last-child{border-bottom:none}
+  .debat-col li::before{content:'';position:absolute;left:0;top:16px;width:5px;height:5px;border-radius:50%}
+  .debat-col.oui li::before{background:var(--a3)}
+  .debat-col.non li::before{background:var(--a4)}
+  .debat-col li strong{color:var(--text);font-weight:500}
+
+  /* ─── LEXIQUE ─── */
+  .lex-search{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;
+    color:var(--text);font-family:'DM Sans',sans-serif;font-size:.88rem;padding:11px 15px;margin-bottom:14px}
+  .lex-search:focus{outline:none;border-color:var(--a1)}
+  .lex-search::placeholder{color:var(--text-faint)}
+  .lex td:first-child{font-family:'DM Mono',monospace;color:var(--a2);font-weight:500}
+
+  /* ─── SUJETS ─── */
+  .sujet{border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:10px;
+    background:var(--surface);display:flex;gap:16px;align-items:flex-start;transition:all .2s}
+  .sujet:hover{border-color:var(--a4);transform:translateX(4px)}
+  .sujet-n{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:var(--text-faint);line-height:1;flex-shrink:0}
+  .sujet-q{font-size:.94rem;line-height:1.6;color:var(--text);margin-bottom:5px;font-weight:400}
+  .sujet-h{font-size:.79rem;color:var(--text-dim);line-height:1.55}
+
+  /* ─── À RETENIR ─── */
+  .retenir{background:linear-gradient(135deg,color-mix(in srgb,var(--a1) 12%,transparent),rgba(255,255,255,.02));
+    border:1px solid color-mix(in srgb,var(--a1) 30%,transparent);border-radius:var(--radius);padding:28px 30px}
+  .retenir li{font-size:.93rem;line-height:1.65;color:rgba(232,230,224,.82);
+    padding:10px 0 10px 26px;position:relative;list-style:none;border-bottom:1px solid rgba(255,255,255,.06)}
+  .retenir li:last-child{border-bottom:none}
+  .retenir li::before{content:'✓';position:absolute;left:0;top:9px;color:var(--a1);font-size:.85rem}
+  .retenir li strong{color:var(--text);font-weight:500}
+
+  /* ─── PIED DE PAGE ─── */
+  footer{text-align:center;padding:36px 40px;border-top:1px solid var(--border);
+    font-family:'DM Mono',monospace;font-size:.7rem;color:var(--text-dim);letter-spacing:.14em;
+    text-transform:uppercase}
+
+  /* ─── ANIMATION ─── */
+  .rev{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+  .rev.vu{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.rev{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}}
+  :focus-visible{outline:2px solid var(--a1);outline-offset:3px}
+
+  /* ─── RESPONSIVE ─── */
+  @media(max-width:1080px){
+    .rail{display:none}
+    .layout{padding:32px 22px 70px}
+    .chrono-mobile{display:block}
+  }
+  @media(max-width:680px){
+    nav{padding:12px 18px;flex-wrap:wrap}
+    .breadcrumb{font-size:.7rem;order:3;width:100%}
+    .hero{padding:52px 20px 40px}
+    .debat{grid-template-columns:1fr}
+    .partie-head{gap:14px}
+    .partie-num{font-size:2.4rem}
+  }
+  /* ─── IMPRESSION ─── */
+  @media print{
+    body{background:#fff;color:#111}
+    nav,.rail,#progress,.bg-orb,.nav-right{display:none!important}
+    .hero{background:none;border-bottom:2px solid #111;padding:0 0 22px}
+    .hero h1,.prose,.liste li,.bloc-title{color:#111}
+    .layout{display:block;padding:0}
+    .partie,.bloc{break-inside:avoid;page-break-inside:avoid}
+    .rev{opacity:1;transform:none}
+    .chrono-mobile{display:block!important}
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+
+<nav>
+  <div class="nav-logo" onclick="location.href='../../../index.html'">ECG Prépa</div>
+  <div class="breadcrumb">
+    <span onclick="location.href='../../../index.html'">Accueil</span>
+    <span class="sep">/</span>
+    <span onclick="location.href='../../index.html'">2ème Année</span>
+    <span class="sep">/</span>
+    <span onclick="location.href='../index.html'">Civilisation</span>
+    <span class="sep">/</span>
+    <span class="current" id="bc-titre">—</span>
+  </div>
+  <div class="nav-right">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-es" class="ap-lang-btn" onclick="setLang('es')">🇪🇸 ES</button>
+  </div>
+</nav>
+
+<header class="hero" id="hero"></header>
+
+<div class="layout">
+  <aside class="rail" id="rail"></aside>
+  <main id="cours"></main>
+</div>
+
+<footer id="ft"></footer>
+
+
+<!-- ══════════════════════════════════════════════════════════════════
+     ⬇⬇⬇  SEULE PARTIE À MODIFIER POUR UN NOUVEAU COURS  ⬇⬇⬇
+     ══════════════════════════════════════════════════════════════════ -->
+<script id="donnees">
+const COURS = {
+
+  /* ─── 1. IDENTITÉ DU COURS ───────────────────────────────────────── */
+  meta: {
+    theme:     "mexique9",
+    drapeau:   "🛂",
+    chapitre:  "9",
+    label:     { fr:"Mexique · Chapitre 09", es:"México · Capítulo 09" },
+    titre:     { fr:"La frontière avec les États-Unis et le T-MEC", es:"La frontera con Estados Unidos y el T-MEC" },
+    sousTitre: { fr:"D'une frontière née de la défaite de 1848 à l'intégration nord-américaine : commerce, migration et bras de fer tarifaire.",
+                 es:"De una frontera nacida de la derrota de 1848 a la integración norteamericana: comercio, migración y pulso arancelario." }
+  },
+
+  /* ─── 2. L'ESSENTIEL + CHIFFRES CLÉS ─────────────────────────────── */
+  essentiel: {
+    fr:"La frontière entre le Mexique et les États-Unis, longue de <strong>3 145 km</strong>, naît de la défaite mexicaine de 1848 : le <strong>traité de Guadalupe Hidalgo</strong> cède aux Américains la moitié du territoire national (Texas, Californie, Nouveau-Mexique...), plaie mémorielle jamais refermée. Un siècle plus tard, cette frontière devient paradoxalement un lieu d'intense <strong>coopération économique</strong> : le programme <em>Bracero</em> (1942-1964) organise la migration de travailleurs agricoles, puis les <strong>maquiladoras</strong>, usines d'assemblage exonérées de droits de douane, industrialisent le nord du Mexique dès 1965. L'<strong>ALENA</strong> (1994) puis son successeur, le <strong>T-MEC/USMCA</strong> (2020), scellent une intégration si poussée que le Mexique est devenu en 2023 le premier partenaire commercial des États-Unis, devant la Chine, avec près de <strong>80 %</strong> de ses exportations dirigées vers son voisin. Mais cette interdépendance économique coexiste avec une frontière hypersécurisée depuis 2001, un mur partiellement construit, des politiques migratoires restrictives (<em>Remain in Mexico</em>, Titre 42) et, depuis le retour de Donald Trump en 2025, une menace tarifaire permanente liée au trafic de fentanyl et à la migration irrégulière. La clause de <strong>révision conjointe</strong> du T-MEC, prévue pour 2026, cristallise aujourd'hui l'incertitude sur l'avenir de cette relation à la fois indispensable et déséquilibrée.",
+    es:"La frontera entre México y Estados Unidos, de <strong>3 145 km</strong> de longitud, nace de la derrota mexicana de 1848: el <strong>tratado de Guadalupe Hidalgo</strong> cede a los estadounidenses la mitad del territorio nacional (Texas, California, Nuevo México...), herida memorial nunca cerrada. Un siglo más tarde, esta frontera se convierte paradójicamente en un lugar de intensa <strong>cooperación económica</strong>: el programa <em>Bracero</em> (1942-1964) organiza la migración de trabajadores agrícolas, y luego las <strong>maquiladoras</strong>, fábricas de ensamblaje exentas de aranceles, industrializan el norte de México desde 1965. El <strong>TLCAN</strong> (1994) y luego su sucesor, el <strong>T-MEC/USMCA</strong> (2020), sellan una integración tan profunda que México se convirtió en 2023 en el primer socio comercial de Estados Unidos, por delante de China, con cerca del <strong>80 %</strong> de sus exportaciones dirigidas hacia su vecino. Pero esta interdependencia económica convive con una frontera hipersecurizada desde 2001, un muro parcialmente construido, políticas migratorias restrictivas (<em>Remain in Mexico</em>, Título 42) y, desde el regreso de Donald Trump en 2025, una amenaza arancelaria permanente ligada al tráfico de fentanilo y a la migración irregular. La cláusula de <strong>revisión conjunta</strong> del T-MEC, prevista para 2026, cristaliza hoy la incertidumbre sobre el futuro de esta relación a la vez indispensable y desequilibrada."
+  },
+  chiffres: [
+    { n:"3 145 km", d:{ fr:"longueur de la frontière terrestre entre le Mexique et les États-Unis", es:"longitud de la frontera terrestre entre México y Estados Unidos" } },
+    { n:"≈ 800 Md$", d:{ fr:"échanges commerciaux bilatéraux annuels, faisant du Mexique le premier partenaire commercial des États-Unis (2023)", es:"comercio bilateral anual, que convierte a México en el primer socio comercial de Estados Unidos (2023)" } },
+    { n:"≈ 80 %", d:{ fr:"part des exportations mexicaines à destination des États-Unis", es:"proporción de las exportaciones mexicanas con destino a Estados Unidos" } },
+    { n:"1994", d:{ fr:"entrée en vigueur de l'ALENA, premier accord de libre-échange nord-américain", es:"entrada en vigor del TLCAN, primer acuerdo de libre comercio norteamericano" } }
+  ],
+
+  /* ─── 3. CHRONOLOGIE ─────────────────────────────────────────────── */
+  chronologie: [
+    { d:{fr:"2 février 1848",es:"2 de febrero de 1848"}, c:{fr:"<strong>Traité de Guadalupe Hidalgo</strong> : le Mexique, vaincu, cède plus de la moitié de son territoire aux États-Unis.", es:"<strong>Tratado de Guadalupe Hidalgo</strong>: México, derrotado, cede más de la mitad de su territorio a Estados Unidos."} },
+    { d:{fr:"1853",es:"1853"}, c:{fr:"<em>Achat Gadsden</em> (<em>Venta de la Mesilla</em>) : cession d'une bande de territoire au sud de l'Arizona et du Nouveau-Mexique.", es:"<em>Compra de Gadsden</em> (<em>Venta de la Mesilla</em>): cesión de una franja de territorio al sur de Arizona y Nuevo México."} },
+    { d:{fr:"1942-1964",es:"1942-1964"}, c:{fr:"<strong>Programme Bracero</strong> : accord bilatéral organisant la venue temporaire de travailleurs agricoles mexicains aux États-Unis.", es:"<strong>Programa Bracero</strong>: acuerdo bilateral que organiza la llegada temporal de trabajadores agrícolas mexicanos a Estados Unidos."} },
+    { d:{fr:"1965",es:"1965"}, c:{fr:"<em>Programme d'industrialisation frontalière</em> : naissance des <strong>maquiladoras</strong>, usines d'assemblage exportatrices exonérées de droits de douane.", es:"<em>Programa de Industrialización Fronteriza</em>: nacimiento de las <strong>maquiladoras</strong>, fábricas de ensamblaje exportadoras exentas de aranceles."} },
+    { d:{fr:"1° janvier 1994",es:"1 de enero de 1994"}, c:{fr:"Entrée en vigueur de l'<strong>ALENA</strong> (TLCAN) entre le Mexique, les États-Unis et le Canada ; soulèvement zapatiste au Chiapas le même jour.", es:"Entrada en vigor del <strong>TLCAN</strong> entre México, Estados Unidos y Canadá; alzamiento zapatista en Chiapas el mismo día."} },
+    { d:{fr:"2001-2006",es:"2001-2006"}, c:{fr:"Après le 11-Septembre, sécurisation accrue de la frontière ; le <em>Secure Fence Act</em> (2006) autorise la construction de centaines de kilomètres de clôtures.", es:"Tras el 11-S, mayor securización de la frontera; la <em>Secure Fence Act</em> (2006) autoriza la construcción de cientos de kilómetros de vallas."} },
+    { d:{fr:"2017-2018",es:"2017-2018"}, c:{fr:"Donald Trump exige la renégociation de l'ALENA, jugé défavorable aux travailleurs américains, et relance le projet de <em>mur frontalier</em>.", es:"Donald Trump exige la renegociación del TLCAN, considerado desfavorable para los trabajadores estadounidenses, y relanza el proyecto de <em>muro fronterizo</em>."} },
+    { d:{fr:"30 novembre 2018",es:"30 de noviembre de 2018"}, c:{fr:"Signature à Buenos Aires de l'<strong>USMCA/T-MEC</strong>, nouvel accord remplaçant l'ALENA, par Trump, Peña Nieto et Trudeau.", es:"Firma en Buenos Aires del <strong>USMCA/T-MEC</strong>, nuevo acuerdo que sustituye al TLCAN, por Trump, Peña Nieto y Trudeau."} },
+    { d:{fr:"2019",es:"2019"}, c:{fr:"Politique <em>Remain in Mexico</em> (MPP) ; menace de tarifs américains sur les produits mexicains, levée après le déploiement de la <strong>Garde nationale</strong> mexicaine à la frontière sud.", es:"Política <em>Remain in Mexico</em> (MPP); amenaza de aranceles estadounidenses sobre productos mexicanos, retirada tras el despliegue de la <strong>Guardia Nacional</strong> mexicana en la frontera sur."} },
+    { d:{fr:"1° juillet 2020",es:"1 de julio de 2020"}, c:{fr:"Entrée en vigueur du <strong>T-MEC</strong>, qui renforce les règles d'origine automobile et les clauses sociales et environnementales.", es:"Entrada en vigor del <strong>T-MEC</strong>, que refuerza las reglas de origen automotriz y las cláusulas laborales y ambientales."} },
+    { d:{fr:"2020-2023",es:"2020-2023"}, c:{fr:"<em>Titre 42</em> : expulsions sanitaires massives de migrants durant la pandémie, levées en mai 2023.", es:"<em>Título 42</em>: expulsiones sanitarias masivas de migrantes durante la pandemia, levantadas en mayo de 2023."} },
+    { d:{fr:"2023",es:"2023"}, c:{fr:"Le Mexique devient le <strong>premier partenaire commercial</strong> des États-Unis, dépassant la Chine, porté par le <em>nearshoring</em>.", es:"México se convierte en el <strong>primer socio comercial</strong> de Estados Unidos, superando a China, impulsado por el <em>nearshoring</em>."} },
+    { d:{fr:"Octobre 2024",es:"Octubre de 2024"}, c:{fr:"<strong>Claudia Sheinbaum</strong> devient présidente du Mexique, héritant du dossier frontalier et de la relation avec Washington.", es:"<strong>Claudia Sheinbaum</strong> se convierte en presidenta de México, heredando el expediente fronterizo y la relación con Washington."} },
+    { d:{fr:"Février-mars 2025",es:"Febrero-marzo de 2025"}, c:{fr:"De retour à la Maison-Blanche, Trump impose puis suspend partiellement des <strong>droits de douane</strong> sur les produits mexicains, invoquant le fentanyl et la migration.", es:"De vuelta en la Casa Blanca, Trump impone y luego suspende parcialmente <strong>aranceles</strong> sobre productos mexicanos, invocando el fentanilo y la migración."} },
+    { d:{fr:"2026",es:"2026"}, c:{fr:"Ouverture de la <em>révision conjointe</em> du T-MEC, prévue par le traité six ans après son entrée en vigueur, dans un climat de vives tensions commerciales.", es:"Apertura de la <em>revisión conjunta</em> del T-MEC, prevista por el tratado seis años después de su entrada en vigor, en un clima de fuertes tensiones comerciales."} }
+  ],
+
+  /* ─── 4. LE COURS : PARTIES > SECTIONS > BLOCS ───────────────────── */
+  parties: [
+  {
+    num:"I",
+    kicker:{fr:"Aux origines d'une ligne",es:"Los orígenes de una línea"},
+    titre:{fr:"Naissance et humanisation d'une frontière (1848-1994)",
+           es:"Nacimiento y humanización de una frontera (1848-1994)"},
+    couleur:"var(--a2)",
+    sections:[
+      {
+        titre:{fr:"1848 : la frontière comme cicatrice d'une défaite",
+               es:"1848: la frontera como cicatriz de una derrota"},
+        blocs:[
+          { t:"p", c:{
+            fr:"La guerre américano-mexicaine (1846-1848), déclenchée après l'annexion du <strong>Texas</strong> par Washington en 1845, s'achève par une défaite totale du Mexique. Le <strong>traité de Guadalupe Hidalgo</strong>, signé le 2 février 1848, contraint le pays à céder plus de <strong>2,1 millions de km²</strong> — soit environ la moitié de son territoire d'alors — comprenant les actuels Texas, Californie, Nevada, Utah, Arizona, Nouveau-Mexique et une partie du Colorado et du Wyoming. En échange d'une indemnité de 15 millions de dollars, le <em>Río Bravo</em> (Rio Grande) devient la frontière méridionale des États-Unis. L'<strong>achat Gadsden</strong> de 1853, portant sur une bande désertique au sud de l'Arizona destinée au tracé d'un futur chemin de fer, achève de fixer le tracé actuel de la frontière.",
+            es:"La guerra entre México y Estados Unidos (1846-1848), desencadenada tras la anexión de <strong>Texas</strong> por Washington en 1845, termina con una derrota total de México. El <strong>tratado de Guadalupe Hidalgo</strong>, firmado el 2 de febrero de 1848, obliga al país a ceder más de <strong>2,1 millones de km²</strong> —cerca de la mitad de su territorio de entonces— que comprenden los actuales Texas, California, Nevada, Utah, Arizona, Nuevo México y parte de Colorado y Wyoming. A cambio de una indemnización de 15 millones de dólares, el <em>Río Bravo</em> (Río Grande) se convierte en la frontera meridional de Estados Unidos. La <strong>compra de Gadsden</strong> de 1853, sobre una franja desértica al sur de Arizona destinada al trazado de un futuro ferrocarril, termina de fijar el trazado actual de la frontera."} },
+          { t:"encadre", icon:"🗺️", c:"var(--a4)",
+            titre:{fr:"Une mémoire toujours vive", es:"Una memoria siempre viva"},
+            c2:{fr:"L'expression <em>« Pobre México, tan lejos de Dios y tan cerca de los Estados Unidos »</em> (« Pauvre Mexique, si loin de Dieu et si près des États-Unis »), attribuée à Porfirio Díaz, résume une conscience nationale marquée par cette perte territoriale. Elle continue d'irriguer le discours politique mexicain sur l'asymétrie de la relation bilatérale, y compris dans les négociations commerciales contemporaines.",
+                es:"La expresión <em>«Pobre México, tan lejos de Dios y tan cerca de los Estados Unidos»</em>, atribuida a Porfirio Díaz, resume una conciencia nacional marcada por esa pérdida territorial. Sigue irrigando el discurso político mexicano sobre la asimetría de la relación bilateral, incluso en las negociaciones comerciales contemporáneas."} },
+          { t:"faits", items:[
+            { l:{fr:"Territoire cédé",es:"Territorio cedido"}, v:{fr:"≈ 2,1 millions de km², la moitié du Mexique d'alors",es:"≈ 2,1 millones de km², la mitad del México de entonces"} },
+            { l:{fr:"Tracé actuel",es:"Trazado actual"}, v:{fr:"Fixé par Guadalupe Hidalgo (1848) et l'achat Gadsden (1853)",es:"Fijado por Guadalupe Hidalgo (1848) y la compra de Gadsden (1853)"} }
+          ]}
+        ]
+      },
+      {
+        titre:{fr:"Le programme Bracero et la migration de travail encadrée",
+               es:"El programa Bracero y la migración laboral organizada"},
+        blocs:[
+          { t:"p", c:{
+            fr:"Face à la pénurie de main-d'œuvre agricole américaine durant la Seconde Guerre mondiale, Washington et Mexico signent en 1942 un accord bilatéral créant le <strong>programme Bracero</strong> : plusieurs millions de travailleurs mexicains sont recrutés temporairement pour les champs et les chemins de fer américains, sous contrat encadré par l'État. Reconduit jusqu'en 1964, le programme installe durablement des filières migratoires entre régions mexicaines expulsives et bassins d'emploi américains, tout en exposant de nombreux <em>braceros</em> à des conditions de travail et de logement dégradées, malgré les garanties théoriques du contrat.",
+            es:"Ante la escasez de mano de obra agrícola estadounidense durante la Segunda Guerra Mundial, Washington y México firman en 1942 un acuerdo bilateral que crea el <strong>programa Bracero</strong>: varios millones de trabajadores mexicanos son reclutados temporalmente para los campos y ferrocarriles estadounidenses, bajo contrato regulado por el Estado. Prorrogado hasta 1964, el programa instala duraderamente circuitos migratorios entre regiones mexicanas expulsoras y cuencas de empleo estadounidenses, exponiendo a la vez a numerosos <em>braceros</em> a condiciones de trabajo y alojamiento degradadas, pese a las garantías teóricas del contrato."} },
+          { t:"p", c:{
+            fr:"La fin du programme en 1964, décidée unilatéralement par Washington sous la pression syndicale américaine, ne tarit pas les flux migratoires : elle les rend en grande partie <strong>irréguliers</strong>, posant les bases du débat migratoire qui structure encore aujourd'hui la relation bilatérale.",
+            es:"El fin del programa en 1964, decidido unilateralmente por Washington bajo presión sindical estadounidense, no seca los flujos migratorios: los vuelve en gran parte <strong>irregulares</strong>, sentando las bases del debate migratorio que aún hoy estructura la relación bilateral."} }
+        ]
+      },
+      {
+        titre:{fr:"Les maquiladoras : une intégration industrielle précoce",
+               es:"Las maquiladoras: una integración industrial precoz"},
+        blocs:[
+          { t:"p", c:{
+            fr:"Pour absorber le chômage frontalier laissé par la fin du programme Bracero, le Mexique lance en 1965 le <em>Programme d'industrialisation frontalière</em> : des usines d'assemblage — les <strong>maquiladoras</strong> — s'installent le long de la frontière (Tijuana, Ciudad Juárez, Matamoros), important des composants américains sans droits de douane pour les réexporter, une fois assemblés par une main-d'œuvre mexicaine bon marché, vers les États-Unis. Ce modèle préfigure, trois décennies avant l'ALENA, l'intégration productive nord-américaine et fait de villes comme <strong>Ciudad Juárez</strong> de véritables pôles industriels transfrontaliers, tout en suscitant des critiques récurrentes sur les salaires, les conditions de travail et l'impact environnemental.",
+            es:"Para absorber el desempleo fronterizo dejado por el fin del programa Bracero, México lanza en 1965 el <em>Programa de Industrialización Fronteriza</em>: fábricas de ensamblaje —las <strong>maquiladoras</strong>— se instalan a lo largo de la frontera (Tijuana, Ciudad Juárez, Matamoros), importando componentes estadounidenses sin aranceles para reexportarlos, una vez ensamblados por mano de obra mexicana barata, hacia Estados Unidos. Este modelo prefigura, tres décadas antes del TLCAN, la integración productiva norteamericana y convierte a ciudades como <strong>Ciudad Juárez</strong> en verdaderos polos industriales transfronterizos, suscitando a la vez críticas recurrentes sobre los salarios, las condiciones laborales y el impacto ambiental."} },
+          { t:"tableau",
+            head:{ fr:["Étape", "Période", "Logique dominante"],
+                   es:["Etapa", "Período", "Lógica dominante"] },
+            rows:{
+              fr:[
+                ["Guadalupe Hidalgo / Gadsden", "1848-1853", "Fixation territoriale par la défaite militaire"],
+                ["Programme Bracero", "1942-1964", "Migration de travail agricole encadrée par l'État"],
+                ["Maquiladoras", "Depuis 1965", "Industrialisation frontalière, assemblage exportateur"],
+                ["ALENA / T-MEC", "Depuis 1994", "Libre-échange nord-américain intégré"]
+              ],
+              es:[
+                ["Guadalupe Hidalgo / Gadsden", "1848-1853", "Fijación territorial por la derrota militar"],
+                ["Programa Bracero", "1942-1964", "Migración laboral agrícola regulada por el Estado"],
+                ["Maquiladoras", "Desde 1965", "Industrialización fronteriza, ensamblaje exportador"],
+                ["TLCAN / T-MEC", "Desde 1994", "Libre comercio norteamericano integrado"]
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    num:"II",
+    kicker:{fr:"L'intégration commerciale",es:"La integración comercial"},
+    titre:{fr:"De l'ALENA au T-MEC : la construction d'un marché nord-américain (1994-2020)",
+           es:"Del TLCAN al T-MEC: la construcción de un mercado norteamericano (1994-2020)"},
+    couleur:"var(--a1)",
+    sections:[
+      {
+        titre:{fr:"1994 : l'ALENA, promesse de modernisation et double naissance",
+               es:"1994: el TLCAN, promesa de modernización y doble nacimiento"},
+        blocs:[
+          { t:"p", c:{
+            fr:"Négocié sous la présidence de <strong>Carlos Salinas de Gortari</strong>, l'<strong>Accord de libre-échange nord-américain</strong> (ALENA, ou <em>TLCAN</em> en espagnol, <em>NAFTA</em> en anglais) entre en vigueur le <strong>1er janvier 1994</strong>, supprimant progressivement la quasi-totalité des droits de douane entre le Mexique, les États-Unis et le Canada. Présenté par le gouvernement mexicain comme le sésame vers le développement et l'entrée dans le « Premier Monde », l'accord voit paradoxalement, le jour même de son entrée en vigueur, se déclencher au Chiapas le <strong>soulèvement zapatiste</strong>, dénonçant un modèle économique jugé néfaste pour les paysans et les peuples indigènes.",
+            es:"Negociado bajo la presidencia de <strong>Carlos Salinas de Gortari</strong>, el <strong>Tratado de Libre Comercio de América del Norte</strong> (TLCAN, <em>NAFTA</em> en inglés) entra en vigor el <strong>1 de enero de 1994</strong>, suprimiendo progresivamente la práctica totalidad de los aranceles entre México, Estados Unidos y Canadá. Presentado por el gobierno mexicano como la llave hacia el desarrollo y la entrada en el «Primer Mundo», el acuerdo ve paradójicamente, el mismo día de su entrada en vigor, desencadenarse en Chiapas el <strong>levantamiento zapatista</strong>, que denuncia un modelo económico juzgado nefasto para los campesinos y los pueblos indígenas."} },
+          { t:"encadre", icon:"📊", c:"var(--a2)",
+            titre:{fr:"Un bilan contrasté", es:"Un balance contrastado"},
+            c2:{fr:"L'ALENA multiplie par plusieurs fois le commerce trilatéral et consolide l'essor manufacturier du nord du Mexique, mais ses effets sur l'agriculture paysanne sont sévères : l'ouverture aux importations de maïs américain subventionné fragilise des millions de petits producteurs, nourrissant à la fois l'exode rural et l'émigration vers les États-Unis — un paradoxe souvent souligné par les critiques du libre-échange.",
+                es:"El TLCAN multiplica varias veces el comercio trilateral y consolida el auge manufacturero del norte de México, pero sus efectos sobre la agricultura campesina son severos: la apertura a las importaciones de maíz estadounidense subvencionado fragiliza a millones de pequeños productores, alimentando a la vez el éxodo rural y la emigración hacia Estados Unidos —una paradoja a menudo señalada por los críticos del libre comercio."} },
+          { t:"faits", items:[
+            { l:{fr:"Entrée en vigueur",es:"Entrada en vigor"}, v:{fr:"1er janvier 1994",es:"1 de enero de 1994"} },
+            { l:{fr:"Négociateur mexicain",es:"Negociador mexicano"}, v:{fr:"Carlos Salinas de Gortari",es:"Carlos Salinas de Gortari"} }
+          ]}
+        ]
+      },
+      {
+        titre:{fr:"Le 11-Septembre et la sécurisation de la frontière",
+               es:"El 11-S y la securización de la frontera"},
+        blocs:[
+          { t:"p", c:{
+            fr:"Les attentats du <strong>11 septembre 2001</strong> transforment radicalement le régime de la frontière : la logique de libre circulation économique portée par l'ALENA cohabite désormais avec une logique de <strong>sécurité nationale</strong>. Le <em>Secure Fence Act</em> de 2006 autorise la construction de plusieurs centaines de kilomètres de clôtures, tandis que les effectifs de la <em>Border Patrol</em> sont considérablement renforcés. La frontière devient l'une des plus surveillées au monde, équipée de capteurs, drones et caméras, sans pour autant enrayer les flux migratoires ni le trafic de drogue, qui empruntent des routes de plus en plus dangereuses.",
+            es:"Los atentados del <strong>11 de septiembre de 2001</strong> transforman radicalmente el régimen de la frontera: la lógica de libre circulación económica impulsada por el TLCAN convive desde entonces con una lógica de <strong>seguridad nacional</strong>. La <em>Secure Fence Act</em> de 2006 autoriza la construcción de varios cientos de kilómetros de vallas, mientras los efectivos de la <em>Border Patrol</em> se refuerzan considerablemente. La frontera se convierte en una de las más vigiladas del mundo, equipada con sensores, drones y cámaras, sin por ello frenar los flujos migratorios ni el narcotráfico, que recurren a rutas cada vez más peligrosas."} }
+        ]
+      },
+      {
+        titre:{fr:"De l'ALENA au T-MEC : la renégociation trumpienne (2017-2020)",
+               es:"Del TLCAN al T-MEC: la renegociación trumpista (2017-2020)"},
+        blocs:[
+          { t:"p", c:{
+            fr:"Élu en 2016 sur une critique frontale de l'ALENA, accusé d'avoir délocalisé l'industrie américaine vers le Mexique, <strong>Donald Trump</strong> obtient l'ouverture de négociations trilatérales dès 2017, doublées de la menace récurrente de construire un <strong>mur frontalier</strong> intégral. Après plus d'un an de tractations, le nouvel accord — <strong>USMCA</strong> pour les Américains, <strong>T-MEC</strong> (<em>Tratado entre México, Estados Unidos y Canadá</em>) pour les Mexicains — est signé le 30 novembre 2018 par Trump, le président sortant <strong>Enrique Peña Nieto</strong> et le premier ministre canadien Justin Trudeau. Il durcit les <strong>règles d'origine automobile</strong> (exigeant un contenu régional accru et une part de main-d'œuvre payée au moins 16 dollars de l'heure), introduit des clauses sociales et environnementales contraignantes, et prévoit une <strong>clause de révision</strong> obligatoire tous les six ans. Après ratification, le T-MEC entre en vigueur le <strong>1er juillet 2020</strong>.",
+            es:"Elegido en 2016 con una crítica frontal al TLCAN, acusado de haber deslocalizado la industria estadounidense hacia México, <strong>Donald Trump</strong> obtiene la apertura de negociaciones trilaterales desde 2017, acompañada de la amenaza recurrente de construir un <strong>muro fronterizo</strong> integral. Tras más de un año de negociaciones, el nuevo acuerdo —<strong>USMCA</strong> para los estadounidenses, <strong>T-MEC</strong> (<em>Tratado entre México, Estados Unidos y Canadá</em>) para los mexicanos— se firma el 30 de noviembre de 2018 por Trump, el presidente saliente <strong>Enrique Peña Nieto</strong> y el primer ministro canadiense Justin Trudeau. Endurece las <strong>reglas de origen automotriz</strong> (exigiendo mayor contenido regional y una parte de mano de obra pagada al menos a 16 dólares la hora), introduce cláusulas laborales y ambientales vinculantes, y prevé una <strong>cláusula de revisión</strong> obligatoria cada seis años. Tras su ratificación, el T-MEC entra en vigor el <strong>1 de julio de 2020</strong>."} },
+          { t:"citation", c:{fr:"Le T-MEC n'est pas un simple lifting de l'ALENA : c'est un accord pensé pour rapatrier des emplois industriels aux États-Unis.", es:"El T-MEC no es un simple lifting del TLCAN: es un acuerdo pensado para repatriar empleos industriales a Estados Unidos."},
+            src:{fr:"Argument constant de l'administration Trump lors de la renégociation", es:"Argumento constante de la administración Trump durante la renegociación"} },
+          { t:"encadre", icon:"⚠️", c:"var(--a4)",
+            titre:{fr:"Erreur fréquente en dissertation", es:"Un error frecuente en el ensayo"},
+            c2:{fr:"Confondre ALENA et T-MEC comme s'il s'agissait du même texte est une erreur : si l'architecture de libre-échange trilatéral est préservée, le T-MEC introduit des mécanismes de protection plus contraignants (règles d'origine automobile, clauses de travail, mécanisme de règlement des différends spécifique pour les droits syndicaux) qui traduisent une inflexion protectionniste assumée par Washington.",
+                es:"Confundir el TLCAN y el T-MEC como si fueran el mismo texto es un error: si bien se conserva la arquitectura de libre comercio trilateral, el T-MEC introduce mecanismos de protección más estrictos (reglas de origen automotriz, cláusulas laborales, mecanismo de resolución de disputas específico para derechos sindicales) que traducen una inflexión proteccionista asumida por Washington."} }
+        ]
+      }
+    ]
+  },
+  {
+    num:"III",
+    kicker:{fr:"Une frontière sous tension",es:"Una frontera bajo tensión"},
+    titre:{fr:"Migration, sécurité et bras de fer tarifaire (2019-2026)",
+           es:"Migración, seguridad y pulso arancelario (2019-2026)"},
+    couleur:"var(--a4)",
+    sections:[
+      {
+        titre:{fr:"Externalisation du contrôle migratoire : Remain in Mexico, Titre 42, Garde nationale",
+               es:"Externalización del control migratorio: Remain in Mexico, Título 42, Guardia Nacional"},
+        blocs:[
+          { t:"p", c:{
+            fr:"À partir de 2019, Washington transfère une part croissante du contrôle migratoire vers le Mexique. La politique <em>Migrant Protection Protocols</em>, dite <strong>« Remain in Mexico »</strong>, contraint des dizaines de milliers de demandeurs d'asile à attendre l'examen de leur dossier sur le sol mexicain, dans des villes frontalières souvent dangereuses. En mai 2019, Trump menace d'imposer des <strong>droits de douane croissants</strong> sur l'ensemble des produits mexicains si Mexico ne freine pas les flux migratoires transitant par son territoire ; le président <strong>Andrés Manuel López Obrador</strong> (AMLO) répond en déployant la <strong>Garde nationale</strong> mexicaine, créée l'année précédente, aux frontières nord et sud du pays, désamorçant la crise. Durant la pandémie, le <strong>Titre 42</strong> permet l'expulsion sommaire de plus de deux millions de migrants au nom de la santé publique, jusqu'à sa levée en mai 2023.",
+            es:"A partir de 2019, Washington transfiere una parte creciente del control migratorio a México. La política <em>Migrant Protection Protocols</em>, llamada <strong>«Remain in Mexico»</strong>, obliga a decenas de miles de solicitantes de asilo a esperar el examen de su expediente en suelo mexicano, en ciudades fronterizas a menudo peligrosas. En mayo de 2019, Trump amenaza con imponer <strong>aranceles crecientes</strong> sobre el conjunto de los productos mexicanos si México no frena los flujos migratorios que transitan por su territorio; el presidente <strong>Andrés Manuel López Obrador</strong> (AMLO) responde desplegando la <strong>Guardia Nacional</strong> mexicana, creada el año anterior, en las fronteras norte y sur del país, desactivando la crisis. Durante la pandemia, el <strong>Título 42</strong> permite la expulsión sumaria de más de dos millones de migrantes en nombre de la salud pública, hasta su levantamiento en mayo de 2023."} },
+          { t:"faits", items:[
+            { l:{fr:"Remain in Mexico",es:"Remain in Mexico"}, v:{fr:"Lancé en 2019, suspendu puis réactivé selon les administrations",es:"Lanzado en 2019, suspendido y luego reactivado según las administraciones"} },
+            { l:{fr:"Titre 42",es:"Título 42"}, v:{fr:"En vigueur de mars 2020 à mai 2023",es:"Vigente de marzo de 2020 a mayo de 2023"} }
+          ]}
+        ]
+      },
+      {
+        titre:{fr:"Le nearshoring : le Mexique, atelier de proximité de l'Amérique du Nord",
+               es:"El nearshoring: México, taller de proximidad de América del Norte"},
+        blocs:[
+          { t:"p", c:{
+            fr:"Les tensions commerciales sino-américaines et les ruptures d'approvisionnement révélées par la pandémie de Covid-19 accélèrent depuis 2020-2021 un mouvement de <strong>nearshoring</strong> (relocalisation de proximité) : de nombreuses entreprises, notamment automobiles et électroniques, déplacent une partie de leur production de Chine vers le Mexique, pour profiter à la fois de coûts de main-d'œuvre compétitifs, de la proximité du marché américain et des avantages tarifaires du T-MEC. Cette dynamique explique en grande partie le basculement de 2023, année où le Mexique dépasse la Chine comme <strong>premier partenaire commercial</strong> des États-Unis, porté par des investissements massifs dans les États du nord (Nuevo León, Chihuahua, Coahuila).",
+            es:"Las tensiones comerciales sino-estadounidenses y las rupturas de suministro reveladas por la pandemia de covid-19 aceleran desde 2020-2021 un movimiento de <strong>nearshoring</strong> (relocalización de proximidad): numerosas empresas, en particular automotrices y electrónicas, trasladan parte de su producción de China a México, para aprovechar a la vez costes laborales competitivos, la proximidad del mercado estadounidense y las ventajas arancelarias del T-MEC. Esta dinámica explica en gran parte el vuelco de 2023, año en que México supera a China como <strong>primer socio comercial</strong> de Estados Unidos, impulsado por inversiones masivas en los estados del norte (Nuevo León, Chihuahua, Coahuila)."} },
+          { t:"encadre", icon:"🏭", c:"var(--a3)",
+            titre:{fr:"Notion clé — le nearshoring", es:"Concepto clave — el nearshoring"},
+            c2:{fr:"Le <em>nearshoring</em> désigne la relocalisation d'une chaîne de production vers un pays géographiquement proche du marché final, par opposition à l'<em>offshoring</em> vers des pays lointains à bas coût. Pour le Mexique, il représente une opportunité industrielle majeure, mais suscite aussi des inquiétudes sur la saturation des infrastructures (eau, électricité, logistique) dans le nord du pays.",
+                es:"El <em>nearshoring</em> designa la relocalización de una cadena de producción hacia un país geográficamente cercano al mercado final, en contraposición al <em>offshoring</em> hacia países lejanos de bajo coste. Para México, representa una oportunidad industrial mayor, pero también suscita inquietudes sobre la saturación de infraestructuras (agua, electricidad, logística) en el norte del país."} }
+        ]
+      },
+      {
+        titre:{fr:"Fentanyl, tarifs douaniers et révision du T-MEC : la relation sous pression (2025-2026)",
+               es:"Fentanilo, aranceles y revisión del T-MEC: la relación bajo presión (2025-2026)"},
+        blocs:[
+          { t:"p", c:{
+            fr:"De retour au pouvoir en janvier 2025, Donald Trump fait de la lutte contre le <strong>trafic de fentanyl</strong> et l'immigration irrégulière la justification de nouvelles menaces tarifaires contre le Mexique, invoquant des pouvoirs d'urgence économique inédits pour ce type de mesure commerciale. La présidente <strong>Claudia Sheinbaum</strong>, entrée en fonction en octobre 2024, négocie en février et mars 2025 des sursis et des exemptions partielles, tout en renforçant la coopération sécuritaire (extraditions de chefs de cartels, saisies de précurseurs chimiques) pour éviter une application intégrale des droits de douane. Ce bras de fer s'inscrit dans un contexte plus large : le T-MEC prévoit une <strong>clause de révision conjointe</strong> six ans après son entrée en vigueur, soit en <strong>2026</strong>, ouvrant une période de négociations où Washington pourrait chercher à durcir encore les règles d'origine, en particulier pour limiter les investissements chinois transitant par le Mexique.",
+            es:"De vuelta en el poder en enero de 2025, Donald Trump convierte la lucha contra el <strong>tráfico de fentanilo</strong> y la inmigración irregular en la justificación de nuevas amenazas arancelarias contra México, invocando poderes de emergencia económica inéditos para este tipo de medida comercial. La presidenta <strong>Claudia Sheinbaum</strong>, en funciones desde octubre de 2024, negocia en febrero y marzo de 2025 prórrogas y exenciones parciales, reforzando a la vez la cooperación en seguridad (extradiciones de líderes de cárteles, decomisos de precursores químicos) para evitar una aplicación íntegra de los aranceles. Este pulso se inscribe en un contexto más amplio: el T-MEC prevé una <strong>cláusula de revisión conjunta</strong> seis años después de su entrada en vigor, es decir en <strong>2026</strong>, abriendo un período de negociaciones en el que Washington podría buscar endurecer aún más las reglas de origen, en particular para limitar las inversiones chinas que transitan por México."} },
+          { t:"liste", items:{
+            fr:[
+              "<strong>2025</strong> — Menaces et application partielle de droits de douane américains sur l'acier, l'aluminium et certains produits mexicains.",
+              "<strong>2025</strong> — Intensification de la coopération sécuritaire mexicaine contre les cartels producteurs de fentanyl.",
+              "<strong>2026</strong> — Ouverture de la révision conjointe du T-MEC, dont l'issue conditionnera l'avenir du modèle nord-américain d'intégration."
+            ],
+            es:[
+              "<strong>2025</strong> — Amenazas y aplicación parcial de aranceles estadounidenses sobre el acero, el aluminio y ciertos productos mexicanos.",
+              "<strong>2025</strong> — Intensificación de la cooperación en seguridad mexicana contra los cárteles productores de fentanilo.",
+              "<strong>2026</strong> — Apertura de la revisión conjunta del T-MEC, cuyo resultado condicionará el futuro del modelo norteamericano de integración."
+            ]
+          }}
+        ]
+      }
+    ]
+  }
+  ],
+
+  /* ─── 5. ACTEURS CLÉS ─────────────────────────────────────────────── */
+  acteurs: [
+    { nom:"Carlos Salinas de Gortari", c:"var(--a2)", role:{fr:"Président du Mexique (1988-1994)",es:"Presidente de México (1988-1994)"},
+      d:{fr:"Négociateur et artisan principal de l'ALENA côté mexicain, présenté comme le passeport du pays vers la modernité économique.",
+         es:"Negociador y artífice principal del TLCAN por el lado mexicano, presentado como el pasaporte del país hacia la modernidad económica."} },
+    { nom:"Enrique Peña Nieto", c:"var(--a1)", role:{fr:"Président du Mexique (2012-2018)",es:"Presidente de México (2012-2018)"},
+      d:{fr:"Signataire, aux côtés de Trump et Trudeau, du nouvel accord USMCA/T-MEC en novembre 2018.",
+         es:"Firmante, junto a Trump y Trudeau, del nuevo acuerdo USMCA/T-MEC en noviembre de 2018."} },
+    { nom:"Donald Trump", c:"var(--a4)", role:{fr:"Président des États-Unis (2017-2021, depuis 2025)",es:"Presidente de Estados Unidos (2017-2021, desde 2025)"},
+      d:{fr:"Artisan de la renégociation de l'ALENA en T-MEC, promoteur du mur frontalier et des menaces tarifaires récurrentes contre le Mexique.",
+         es:"Artífice de la renegociación del TLCAN en T-MEC, impulsor del muro fronterizo y de las amenazas arancelarias recurrentes contra México."} },
+    { nom:"Andrés Manuel López Obrador", c:"var(--a3)", role:{fr:"Président du Mexique (2018-2024)",es:"Presidente de México (2018-2024)"},
+      d:{fr:"Gère la crise tarifaire de 2019 en déployant la Garde nationale à la frontière sud pour contenir la migration de transit.",
+         es:"Gestiona la crisis arancelaria de 2019 desplegando la Guardia Nacional en la frontera sur para contener la migración de tránsito."} },
+    { nom:"Claudia Sheinbaum", c:"var(--a2)", role:{fr:"Présidente du Mexique (depuis 2024)",es:"Presidenta de México (desde 2024)"},
+      d:{fr:"Négocie depuis 2025 les menaces tarifaires de la nouvelle administration Trump, entre coopération sécuritaire et défense des intérêts commerciaux mexicains.",
+         es:"Negocia desde 2025 las amenazas arancelarias de la nueva administración Trump, entre cooperación en seguridad y defensa de los intereses comerciales mexicanos."} }
+  ],
+
+  /* ─── 6. CONTROVERSE ─────────────────────────────────────────────── */
+  debat: {
+    question: {fr:"L'intégration nord-américaine (ALENA puis T-MEC) a-t-elle bénéficié au Mexique ou approfondi sa dépendance vis-à-vis des États-Unis ?",
+               es:"¿La integración norteamericana (TLCAN y luego T-MEC) benefició a México o profundizó su dependencia respecto a Estados Unidos?"},
+    oui: {
+      titre:{fr:"Pour un bilan globalement positif", es:"A favor de un balance globalmente positivo"},
+      items:{
+        fr:[
+          "L'intégration a fait du Mexique une <strong>puissance manufacturière</strong> mondiale, notamment dans l'automobile et l'électronique, et lui a permis de devenir en 2023 le premier partenaire commercial des États-Unis.",
+          "Le <em>nearshoring</em> post-2020 attire des investissements industriels massifs vers le nord du pays, créant des emplois qualifiés et modernisant des filières entières.",
+          "Le T-MEC, en durcissant les clauses sociales et environnementales par rapport à l'ALENA, offre un cadre juridique plus protecteur pour les travailleurs mexicains, notamment dans l'automobile."
+        ],
+        es:[
+          "La integración convirtió a México en una <strong>potencia manufacturera</strong> mundial, en particular en el sector automotriz y electrónico, y le permitió convertirse en 2023 en el primer socio comercial de Estados Unidos.",
+          "El <em>nearshoring</em> posterior a 2020 atrae inversiones industriales masivas hacia el norte del país, creando empleos calificados y modernizando cadenas enteras.",
+          "El T-MEC, al endurecer las cláusulas laborales y ambientales respecto al TLCAN, ofrece un marco jurídico más protector para los trabajadores mexicanos, en particular en el sector automotriz."
+        ]
+      }
+    },
+    non: {
+      titre:{fr:"Contre un bilan globalement positif", es:"En contra de un balance globalmente positivo"},
+      items:{
+        fr:[
+          "Près de <strong>80 % des exportations mexicaines</strong> dépendent d'un seul marché, exposant l'économie nationale aux décisions unilatérales de Washington — menaces tarifaires de 2019 et 2025 à l'appui.",
+          "L'ouverture agricole de l'ALENA a fragilisé des millions de petits producteurs de maïs, nourrissant l'exode rural et l'émigration, sans compensation sociale suffisante.",
+          "La subordination croissante de la politique migratoire mexicaine aux exigences américaines (Garde nationale, Remain in Mexico) illustre une <strong>perte d'autonomie diplomatique</strong> plus qu'un partenariat équilibré."
+        ],
+        es:[
+          "Cerca del <strong>80 % de las exportaciones mexicanas</strong> dependen de un solo mercado, exponiendo a la economía nacional a decisiones unilaterales de Washington —amenazas arancelarias de 2019 y 2025 como prueba.",
+          "La apertura agrícola del TLCAN fragilizó a millones de pequeños productores de maíz, alimentando el éxodo rural y la emigración, sin compensación social suficiente.",
+          "La subordinación creciente de la política migratoria mexicana a las exigencias estadounidenses (Guardia Nacional, Remain in Mexico) ilustra una <strong>pérdida de autonomía diplomática</strong> más que una asociación equilibrada."
+        ]
+      }
+    },
+    synthese: {fr:"Le débat oppose une lecture économique, qui souligne les gains réels de compétitivité et d'investissement liés à l'intégration nord-américaine, à une lecture politique, qui pointe une dépendance structurelle rendant le Mexique vulnérable aux chocs de politique intérieure américaine — qu'il s'agisse de tarifs douaniers ou d'exigences migratoires — sans réel pouvoir de rééquilibrage face à un partenaire dix fois plus riche.",
+               es:"El debate enfrenta una lectura económica, que subraya las ganancias reales de competitividad e inversión ligadas a la integración norteamericana, con una lectura política, que señala una dependencia estructural que vuelve a México vulnerable a los vaivenes de la política interior estadounidense —ya se trate de aranceles o de exigencias migratorias— sin un poder real de reequilibrio frente a un socio diez veces más rico."}
+  },
+
+  /* ─── 7. LEXIQUE BILINGUE ─────────────────────────────────────────── */
+  lexique: [
+    { es:"T-MEC", fr:"Tratado entre México, Estados Unidos y Canadá — nom mexicain de l'accord commercial nord-américain entré en vigueur en 2020 (USMCA en anglais)." },
+    { es:"TLCAN", fr:"Tratado de Libre Comercio de América del Norte — nom espagnol de l'ALENA, en vigueur de 1994 à 2020." },
+    { es:"Maquiladora", fr:"Usine d'assemblage frontalière important des composants sans droits de douane pour réexporter le produit fini." },
+    { es:"Bracero", fr:"Travailleur agricole mexicain recruté temporairement aux États-Unis dans le cadre du programme du même nom (1942-1964)." },
+    { es:"Nearshoring", fr:"Relocalisation d'une chaîne de production vers un pays proche du marché final, ici le Mexique pour les États-Unis." },
+    { es:"Remesas", fr:"Envois d'argent des migrants mexicains à leur famille restée au pays, source majeure de devises pour le Mexique." },
+    { es:"Aranceles", fr:"Droits de douane, au cœur des menaces commerciales répétées de l'administration Trump contre le Mexique." },
+    { es:"Fentanilo", fr:"Opioïde de synthèse dont le trafic transfrontalier justifie les pressions tarifaires et sécuritaires américaines récentes." },
+    { es:"Guardia Nacional", fr:"Garde nationale mexicaine, créée en 2019, déployée aux frontières pour contenir la migration de transit." },
+    { es:"Título 42", fr:"Disposition sanitaire américaine ayant permis l'expulsion sommaire de migrants entre 2020 et 2023." },
+    { es:"Muro fronterizo", fr:"Mur frontalier, projet emblématique de Donald Trump, partiellement construit sur certains tronçons de la frontière." },
+    { es:"Regla de origen", fr:"Règle d'origine : critère déterminant la part de contenu régional nécessaire pour bénéficier des avantages tarifaires du T-MEC." },
+    { es:"Cadena de suministro", fr:"Chaîne d'approvisionnement, réorganisée depuis 2020 au profit du Mexique dans la logique du nearshoring." },
+    { es:"Frontera", fr:"Frontière — ligne de 3 145 km entre le Mexique et les États-Unis, la plus fréquemment franchie au monde." }
+  ],
+
+  /* ─── 8. SUJETS POSSIBLES ─────────────────────────────────────────── */
+  sujets: [
+    { q:{fr:"La frontière Mexique-États-Unis : ligne de séparation ou espace d'intégration ?",
+         es:"¿La frontera México-Estados Unidos: línea de separación o espacio de integración?"},
+      h:{fr:"Articuler la sécurisation post-2001 et le mur avec l'intégration économique croissante portée par les maquiladoras et le T-MEC.",
+         es:"Articular la securización posterior a 2001 y el muro con la integración económica creciente impulsada por las maquiladoras y el T-MEC."} },
+    { q:{fr:"En quoi le T-MEC diffère-t-il fondamentalement de l'ALENA qu'il remplace ?",
+         es:"¿En qué difiere fundamentalmente el T-MEC del TLCAN al que sustituye?"},
+      h:{fr:"Comparer règles d'origine, clauses sociales et environnementales, et mécanisme de révision périodique.",
+         es:"Comparar reglas de origen, cláusulas laborales y ambientales, y mecanismo de revisión periódica."} },
+    { q:{fr:"Le Mexique peut-il échapper à sa dépendance commerciale vis-à-vis des États-Unis ?",
+         es:"¿Puede México escapar de su dependencia comercial respecto a Estados Unidos?"},
+      h:{fr:"Discuter la diversification des partenaires commerciaux face au poids de 80 % d'exportations vers un seul marché.",
+         es:"Discutir la diversificación de socios comerciales frente al peso del 80 % de exportaciones hacia un solo mercado."} },
+    { q:{fr:"Comment la question migratoire est-elle devenue un instrument de pression commerciale entre les deux pays ?",
+         es:"¿Cómo se convirtió la cuestión migratoria en un instrumento de presión comercial entre ambos países?"},
+      h:{fr:"Étudier la crise tarifaire de 2019 et le déploiement de la Garde nationale mexicaine comme réponse.",
+         es:"Estudiar la crisis arancelaria de 2019 y el despliegue de la Guardia Nacional mexicana como respuesta."} }
+  ],
+
+  /* ─── 9. À RETENIR ───────────────────────────────────────────────── */
+  retenir: {
+    fr:[
+      "La frontière actuelle résulte de la défaite mexicaine de 1848 (traité de <strong>Guadalupe Hidalgo</strong>) et de l'achat Gadsden de 1853.",
+      "Le programme <strong>Bracero</strong> (1942-1964) puis les <strong>maquiladoras</strong> (dès 1965) organisent une intégration économique et migratoire précoce, avant tout accord commercial formel.",
+      "L'<strong>ALENA</strong> (1994) puis le <strong>T-MEC</strong> (2020) scellent une intégration nord-américaine si poussée que le Mexique devient en 2023 le premier partenaire commercial des États-Unis.",
+      "Depuis 2001, la frontière conjugue paradoxalement <strong>ouverture économique</strong> et <strong>sécurisation renforcée</strong> (mur, drones, Border Patrol).",
+      "La politique migratoire mexicaine s'est de plus en plus alignée sur les exigences américaines (<strong>Remain in Mexico</strong>, déploiement de la Garde nationale en 2019).",
+      "Le <strong>nearshoring</strong> post-2020 fait du Mexique un atelier de proximité nord-américain, alternative à la Chine pour de nombreuses entreprises.",
+      "Depuis 2025, les <strong>menaces tarifaires</strong> de l'administration Trump, justifiées par le fentanyl et la migration, fragilisent une relation pourtant hautement interdépendante.",
+      "La <strong>révision conjointe du T-MEC en 2026</strong> ouvre une période d'incertitude déterminante pour l'avenir du modèle d'intégration nord-américain."
+    ],
+    es:[
+      "La frontera actual resulta de la derrota mexicana de 1848 (tratado de <strong>Guadalupe Hidalgo</strong>) y de la compra de Gadsden de 1853.",
+      "El programa <strong>Bracero</strong> (1942-1964) y luego las <strong>maquiladoras</strong> (desde 1965) organizan una integración económica y migratoria precoz, antes de cualquier acuerdo comercial formal.",
+      "El <strong>TLCAN</strong> (1994) y luego el <strong>T-MEC</strong> (2020) sellan una integración norteamericana tan profunda que México se convierte en 2023 en el primer socio comercial de Estados Unidos.",
+      "Desde 2001, la frontera conjuga paradójicamente <strong>apertura económica</strong> y <strong>securización reforzada</strong> (muro, drones, Border Patrol).",
+      "La política migratoria mexicana se ha alineado cada vez más con las exigencias estadounidenses (<strong>Remain in Mexico</strong>, despliegue de la Guardia Nacional en 2019).",
+      "El <strong>nearshoring</strong> posterior a 2020 convierte a México en un taller de proximidad norteamericano, alternativa a China para numerosas empresas.",
+      "Desde 2025, las <strong>amenazas arancelarias</strong> de la administración Trump, justificadas por el fentanilo y la migración, fragilizan una relación sin embargo altamente interdependiente.",
+      "La <strong>revisión conjunta del T-MEC en 2026</strong> abre un período de incertidumbre determinante para el futuro del modelo de integración norteamericano."
+    ]
+  }
+};
+</script>
+<!-- ══════════════════════════════════════════════════════════════════
+     ⬆⬆⬆  FIN DES DONNÉES — NE RIEN MODIFIER EN DESSOUS  ⬆⬆⬆
+     ══════════════════════════════════════════════════════════════════ -->
+
+
+<script>
+/* ─── Utilitaires ─── */
+const $ = (s,r=document)=>r.querySelector(s);
+let LANG = 'fr';
+/* T() : renvoie la version dans la langue courante, ou la valeur telle quelle */
+const T = v => (v && typeof v==='object' && !Array.isArray(v) && ('fr' in v||'es' in v)) ? (v[LANG] ?? v.fr) : v;
+
+/* ─── Libellés d'interface ─── */
+const UI = {
+  fr:{ chrono:"Chronologie",
+       essentiel:"L'essentiel", reperes:"Repères", quiEstQui:"Qui est qui", acteurs:"Acteurs clés",
+       controverse:"Controverse", vocab:"Vocabulaire", lexique:"Lexique bilingue",
+       filtrer:"Filtrer le lexique…", terme:"Terme", trad:"Traduction / usage",
+       entrainement:"Entraînement", sujets:"Sujets possibles", memoriser:"Mémoriser",
+       retenir:"À retenir", synthese:"Synthèse", chapitre:"Chapitre" },
+  es:{ chrono:"Cronología",
+       essentiel:"Lo esencial", reperes:"Hitos", quiEstQui:"Quién es quién", acteurs:"Actores clave",
+       controverse:"Controversia", vocab:"Vocabulario", lexique:"Glosario bilingüe",
+       filtrer:"Filtrar el glosario…", terme:"Término", trad:"Traducción / uso",
+       entrainement:"Entrenamiento", sujets:"Posibles temas", memoriser:"Memorizar",
+       retenir:"Para recordar", synthese:"Síntesis", chapitre:"Capítulo" }
+};
+const t = k => UI[LANG][k];
+
+/* ─── Rendu des blocs de contenu ─── */
+function bloc(b){
+  switch(b.t){
+    case 'p':      return `<p class="prose">${T(b.c)}</p>`;
+    case 'liste':  return `<ul class="liste">${T(b.items).map(i=>`<li>${i}</li>`).join('')}</ul>`;
+    case 'faits':  return `<div class="faits">${T(b.items).map(i=>
+                     `<div class="fait"><div class="fait-l">${T(i.l)}</div><div class="fait-v">${T(i.v)}</div></div>`).join('')}</div>`;
+    case 'stats':  return `<div class="stats">${b.items.map(i=>
+                     `<div class="stat" style="--c:${i.c||'var(--a1)'}"><span class="stat-n">${T(i.n)}</span><span class="stat-d">${T(i.d)}</span></div>`).join('')}</div>`;
+    case 'citation':return `<blockquote class="citation"><p>« ${T(b.c)} »</p><cite>${T(b.src)}</cite></blockquote>`;
+    case 'encadre':return `<div class="encadre" style="--c:${b.c||'var(--a2)'}"><div class="encadre-ic">${b.icon||'💡'}</div>
+                     <div><div class="encadre-t">${T(b.titre)}</div><div class="encadre-c">${T(b.c2)}</div></div></div>`;
+    case 'def':    return `<div class="def"><div class="def-mot">${T(b.mot)}</div><div class="def-c">${T(b.c)}</div></div>`;
+    case 'tableau':return `<div class="tbl-wrap"><table><thead><tr>${T(b.head).map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+                     <tbody>${T(b.rows).map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    case 'tl':     return `<div class="tl">${T(b.items).map(i=>
+                     `<div class="tl-item"><div class="tl-d">${T(i.d)}</div><div class="tl-c">${T(i.c)}</div></div>`).join('')}</div>`;
+    default:       return '';
+  }
+}
+
+/* ─── En-tête ─── */
+function rendreHero(){
+  const m = COURS.meta;
+  document.documentElement.dataset.theme = m.theme;
+  document.documentElement.lang = LANG;
+  document.title = T(m.titre) + ' — Civilisation';
+  $('#bc-titre').textContent = m.titre.fr ?? m.titre;   // la nav reste en français
+  $('#ft').textContent = `${t('chapitre')} ${m.chapitre}${LANG==='fr'?' : ':': '}${T(m.titre)}`;
+  $('#hero').innerHTML = `
+    <span class="hero-flag">${m.drapeau}</span>
+    <div class="hero-label">${T(m.label)}</div>
+    <h1>${T(m.titre)}</h1>
+    <p class="hero-sub">${T(m.sousTitre)}</p>`;
+}
+
+/* ─── Corps du cours ─── */
+function rendreCours(){
+  const c = COURS, out = [];
+
+  out.push(`<section class="bloc rev" id="s-essentiel">
+    <div class="essentiel"><div class="essentiel-label">${t('essentiel')}</div><p>${T(c.essentiel)}</p></div>
+    <div class="stats">${c.chiffres.map((x,i)=>
+      `<div class="stat" style="--c:var(--a${(i%4)+1})"><span class="stat-n">${T(x.n)}</span><span class="stat-d">${T(x.d)}</span></div>`).join('')}</div>
+  </section>`);
+
+  if(c.chronologie?.length){
+    out.push(`<section class="bloc rev chrono-mobile" id="s-chrono">
+      <div class="bloc-head"><span class="bloc-kicker">${t('reperes')}</span><h2 class="bloc-title">${t('chrono')}</h2></div>
+      ${bloc({t:'tl',items:c.chronologie})}</section>`);
+  }
+
+  c.parties.forEach((p,pi)=>{
+    let html = `<section class="partie rev" id="p-${pi}" style="--p:${p.couleur}">
+      <div class="partie-head"><div class="partie-num">${p.num}</div>
+      <div><div class="partie-kicker">${T(p.kicker)}</div><h2 class="partie-title">${T(p.titre)}</h2></div></div>`;
+    p.sections.forEach((s,si)=>{
+      html += `<div class="section" id="p-${pi}-${si}"><h3 class="section-title"><span class="section-num">${si+1}.</span> ${T(s.titre)}</h3>
+        ${s.blocs.map(bloc).join('')}</div>`;
+    });
+    out.push(html+`</section>`);
+  });
+
+  if(c.acteurs?.length){
+    out.push(`<section class="bloc rev" id="s-acteurs">
+      <div class="bloc-head"><span class="bloc-kicker">${t('quiEstQui')}</span><h2 class="bloc-title">${t('acteurs')}</h2></div>
+      <div class="acteurs">${c.acteurs.map(a=>
+        `<div class="acteur" style="--c:${a.c}"><div class="acteur-nom">${a.nom}</div>
+         <div class="acteur-role">${T(a.role)}</div><div class="acteur-c">${T(a.d)}</div></div>`).join('')}</div></section>`);
+  }
+
+  if(c.debat){
+    out.push(`<section class="bloc rev" id="s-debat">
+      <div class="bloc-head"><span class="bloc-kicker" style="--k:var(--a4)">${t('controverse')}</span>
+      <h2 class="bloc-title">${T(c.debat.question)}</h2></div>
+      <div class="debat">
+        <div class="debat-col oui"><div class="debat-t">${T(c.debat.oui.titre)}</div>
+          <ul>${T(c.debat.oui.items).map(i=>`<li>${i}</li>`).join('')}</ul></div>
+        <div class="debat-col non"><div class="debat-t">${T(c.debat.non.titre)}</div>
+          <ul>${T(c.debat.non.items).map(i=>`<li>${i}</li>`).join('')}</ul></div>
+      </div>
+      ${c.debat.synthese?`<div class="encadre" style="--c:var(--a1);margin-top:14px">
+        <div class="encadre-ic">⚖️</div><div><div class="encadre-t">${t('synthese')}</div>
+        <div class="encadre-c">${T(c.debat.synthese)}</div></div></div>`:''}
+    </section>`);
+  }
+
+  if(c.lexique?.length){
+    out.push(`<section class="bloc rev" id="s-lexique">
+      <div class="bloc-head"><span class="bloc-kicker" style="--k:var(--a2)">${t('vocab')}</span>
+      <h2 class="bloc-title">${t('lexique')}</h2></div>
+      <input class="lex-search" id="lex-search" placeholder="${t('filtrer')}" aria-label="${t('filtrer')}">
+      <div class="tbl-wrap"><table class="lex"><thead><tr><th>${t('terme')}</th><th>${t('trad')}</th></tr></thead>
+      <tbody id="lex-body">${c.lexique.map(l=>`<tr><td>${l.es}</td><td>${l.fr}</td></tr>`).join('')}</tbody></table></div>
+    </section>`);
+  }
+
+  if(c.sujets?.length){
+    out.push(`<section class="bloc rev" id="s-sujets">
+      <div class="bloc-head"><span class="bloc-kicker" style="--k:var(--a4)">${t('entrainement')}</span>
+      <h2 class="bloc-title">${t('sujets')}</h2></div>
+      ${c.sujets.map((s,i)=>`<div class="sujet"><div class="sujet-n">${String(i+1).padStart(2,'0')}</div>
+        <div><div class="sujet-q">${T(s.q)}</div><div class="sujet-h">${T(s.h)}</div></div></div>`).join('')}</section>`);
+  }
+
+  if(c.retenir?.length){
+    out.push(`<section class="bloc rev" id="s-retenir">
+      <div class="bloc-head"><span class="bloc-kicker">${t('memoriser')}</span><h2 class="bloc-title">${t('retenir')}</h2></div>
+      <div class="retenir"><ul>${T(c.retenir).map(r=>`<li>${r}</li>`).join('')}</ul></div></section>`);
+  }
+
+  $('#cours').innerHTML = out.join('');
+}
+
+/* ─── Colonne chronologie ─── */
+function rendreRail(){
+  if(!COURS.chronologie?.length){ $('#rail')?.remove(); return; }
+  $('#rail').innerHTML = `<div class="rail-title">${t('chrono')}</div>${bloc({t:'tl',items:COURS.chronologie})}`;
+}
+
+/* ─── Recherche dans le lexique ─── */
+function brancherLexique(){
+  const ls = $('#lex-search'); if(!ls) return;
+  ls.addEventListener('input', ()=>{
+    const q = ls.value.toLowerCase().trim();
+    $('#lex-body').querySelectorAll('tr').forEach(tr=>{
+      tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+  });
+}
+
+/* ─── Changement de langue ─── */
+function setLang(lang){
+  LANG = lang;
+  $('#ap-btn-fr').classList.toggle('active', lang==='fr');
+  $('#ap-btn-es').classList.toggle('active', lang==='es');
+  rendreHero(); rendreCours(); rendreRail();
+  document.querySelectorAll('.rev').forEach(el=>el.classList.add('vu'));
+  brancherLexique();
+}
+
+/* ─── Démarrage ─── */
+function demarrer(){
+  rendreHero(); rendreCours(); rendreRail(); brancherLexique();
+
+  const maj = ()=>{
+    const h = document.body.scrollHeight - innerHeight;
+    $('#progress').style.width = (h>0 ? (scrollY/h)*100 : 0) + '%';
+  };
+  addEventListener('scroll', maj, {passive:true}); maj();
+
+  if(!('IntersectionObserver' in window)){
+    document.querySelectorAll('.rev').forEach(el=>el.classList.add('vu'));
+    return;
+  }
+  const io = new IntersectionObserver(es=>es.forEach(x=>{
+    if(x.isIntersecting){ x.target.classList.add('vu'); io.unobserve(x.target); }
+  }), {threshold:.06});
+  document.querySelectorAll('.rev').forEach(el=>io.observe(el));
+}
+
+demarrer();
+</script>
+</body>
+</html>

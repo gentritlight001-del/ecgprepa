@@ -83,7 +83,6 @@
   .actu-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.68rem; font-weight: 500; font-family: 'DM Mono', monospace; letter-spacing: 0.05em; }
   .actu-badge.domaine { background: rgba(200,169,110,0.15); color: #d4b87a; }
   .actu-badge.theme { background: var(--surface2); color: var(--text-dim); }
-  .actu-badge.serie { background: rgba(124,158,201,0.15); color: #7c9ec9; }
   .actu-card-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--text); line-height: 1.35; margin-bottom: 12px; }
   .actu-card.title-only { padding: 20px 22px; }
   .actu-card.title-only .actu-card-meta { margin-bottom: 10px; }
@@ -183,10 +182,6 @@
       <div class="cg-filter-btn domain-btn" onclick="filterCG('entreprise', event)"><div class="cg-filter-dot" style="background:#d68f5a"></div>Entreprise</div>
       <div class="cg-filter-btn domain-btn" onclick="filterCG('lieux', event)"><div class="cg-filter-dot" style="background:#59a5c7"></div>Lieux</div>
       <div class="cg-filter-btn domain-btn" onclick="filterCG('pays', event)"><div class="cg-filter-dot" style="background:#d4a017"></div>Pays</div>
-    </div>
-    <div class="cg-sidebar-section" id="cg-serie-section" style="display:none;">
-      <div class="cg-sidebar-label">Séries</div>
-      <div id="cg-serie-list"></div>
     </div>
   </div>
 
@@ -653,9 +648,6 @@ const CG_DATA = [
     titre: 'Amazon : la logistique comme arme stratégique',
     theme: 'Entreprise',
     domain: 'entreprise',
-    serie: 'gafam',
-    serieLabel: 'GAFAM',
-    serieOrdre: 1,
     image: 'Culture-Generale/images/amazon.jpg',
     externalUrl: 'Culture-Generale/amazon.html',
     month: 9, year: 2025
@@ -670,6 +662,36 @@ const CG_DATA = [
     externalUrl: 'Culture-Generale/nicaragua.html',
     month: 9, year: 2025
   },
+  {
+    id: 'brics',
+    jour: 30,
+    titre: 'Les BRICS : le Sud global à la recherche d\'un ordre multipolaire',
+    theme: 'Organisations',
+    domain: 'organisations',
+    image: 'Culture-Generale/images/brics.jpg',
+    externalUrl: 'Culture-Generale/brics.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'mao-zedong',
+    jour: 31,
+    titre: 'Mao Zedong : le fondateur de la Chine nouvelle et son bilan controversé',
+    theme: 'Histoire',
+    domain: 'histoire',
+    image: 'Culture-Generale/images/mao-zedong.jpg',
+    externalUrl: 'Culture-Generale/mao-zedong.html',
+    month: 9, year: 2025
+  },
+  {
+    id: 'cryptomonnaie',
+    jour: 32,
+    titre: 'La cryptomonnaie : de l\'utopie anti-banques à la classe d\'actifs régulée',
+    theme: 'Économie',
+    domain: 'economie',
+    image: 'Culture-Generale/images/cryptomonnaie.jpg',
+    externalUrl: 'Culture-Generale/cryptomonnaie.html',
+    month: 9, year: 2025
+  },
   // Ajoutez vos fiches ici en suivant ce modèle :
   // {
   //   id: 'identifiant-unique',
@@ -679,17 +701,11 @@ const CG_DATA = [
   //   domain: 'philosophie',       // philosophie | politique | economie | societe | histoire | geopolitique | culture | sciences
   //   image: 'images/nom-image.jpg',   // ou null
   //   externalUrl: 'Culture-Generale/nom-fichier.html',
-  //   month: 9, year: 2025,
-  //
-  //   // -- Optionnel : pour regrouper plusieurs fiches en une "série" (ex: 7 Merveilles du monde) --
-  //   serie: 'sept-merveilles',                    // identifiant commun à toutes les fiches de la série
-  //   serieLabel: '7 Merveilles du monde antique',  // nom affiché dans la sidebar et le badge
-  //   serieOrdre: 1,                                // ordre de lecture au sein de la série (1, 2, 3...)
+  //   month: 9, year: 2025
   // },
 ];
 
 let currentDomain = 'tous';
-let currentSerie = null;
 let currentQuery = '';
 
 function normalize(str) {
@@ -714,53 +730,16 @@ function clearSearch() {
 
 function filterCG(domain, e) {
   document.querySelectorAll('.domain-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.serie-btn').forEach(b => b.classList.remove('active'));
   if (e && e.currentTarget) e.currentTarget.classList.add('active');
   currentDomain = domain;
-  currentSerie = null;
   buildGrid();
-}
-
-function filterSerie(serieId, e) {
-  document.querySelectorAll('.domain-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.serie-btn').forEach(b => b.classList.remove('active'));
-  if (e && e.currentTarget) e.currentTarget.classList.add('active');
-  currentSerie = serieId;
-  buildGrid();
-}
-
-function buildSerieSidebar() {
-  const series = {};
-  CG_DATA.forEach(d => {
-    if (d.serie) {
-      if (!series[d.serie]) series[d.serie] = { label: d.serieLabel || d.serie, count: 0 };
-      series[d.serie].count++;
-    }
-  });
-
-  const ids = Object.keys(series);
-  const section = document.getElementById('cg-serie-section');
-  const list = document.getElementById('cg-serie-list');
-  if (!ids.length) {
-    section.style.display = 'none';
-    return;
-  }
-
-  section.style.display = 'block';
-  list.innerHTML = ids.map(id => `
-    <div class="cg-filter-btn serie-btn" onclick="filterSerie('${id}', event)">
-      <div class="cg-filter-dot" style="background:#7c9ec9"></div>${series[id].label} (${series[id].count})
-    </div>
-  `).join('');
 }
 
 function buildGrid() {
   const grid = document.getElementById('cg-grid');
   let data = [...CG_DATA];
 
-  if (currentSerie) {
-    data = data.filter(d => d.serie === currentSerie);
-  } else if (currentDomain !== 'tous') {
+  if (currentDomain !== 'tous') {
     data = data.filter(d => d.domain === currentDomain);
   }
 
@@ -794,14 +773,9 @@ function buildGrid() {
     }
   }
 
-  if (currentSerie) {
-    // Dans une série, on respecte l'ordre de lecture plutôt que la date.
-    data.sort((a, b) => (a.serieOrdre || 0) - (b.serieOrdre || 0));
-  } else {
-    // Les nouvelles fiches sont ajoutées à la fin du tableau CG_DATA :
-    // on inverse donc l'ordre pour que la dernière ajoutée apparaisse en premier.
-    data = data.reverse();
-  }
+  // Les nouvelles fiches sont ajoutées à la fin du tableau CG_DATA :
+  // on inverse donc l'ordre pour que la dernière ajoutée apparaisse en premier.
+  data = data.reverse();
 
   const themeColors = {
     'Philosophie':    '#c8a96e',
@@ -842,7 +816,6 @@ function buildGrid() {
   });
 }
 
-buildSerieSidebar();
 buildGrid();
 </script>
 </body>

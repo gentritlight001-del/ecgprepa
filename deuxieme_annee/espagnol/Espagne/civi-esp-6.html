@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="espagnol3">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les Communautés autonomes — Civilisation Hispanophone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     TEMPLATE UNIVERSEL DE COURS DE CIVILISATION — v1
+     Pour créer un nouveau cours : dupliquer ce fichier, ne modifier QUE
+     le bloc de données (id="donnees") tout en bas. Rien d'autre à toucher.
+     ══════════════════════════════════════════════════════════════════════ -->
+
+<style>
+  /* ─── PALETTE DE BASE (identique au site) ─── */
+  :root{
+    --bg:#0d0d0f; --surface:#16161a; --surface2:#1e1e24; --border:#2a2a35;
+    --text:#e8e6e0; --text-dim:#8a8880; --text-faint:#4a4845;
+    --radius:14px;
+  }
+  /* ─── THÈMES PAR LANGUE — change data-theme sur <html> ─── */
+  html[data-theme="anglais"] { --a1:#c8a96e; --a2:#7c9ec9; --a3:#9ecba0; --a4:#c97c9e; --hero:#16233d; }
+  html[data-theme="anglais2"] { --a1:#c9633f; --a2:#5b8f6f; --a3:#6c8fc7; --a4:#a06bb0; --hero:#16241b; }
+  html[data-theme="espagnol"]{ --a1:#e0a93e; --a2:#c8553d; --a3:#7fae7a; --a4:#b06fa8; --hero:#3a1a18; }
+  html[data-theme="espagnol3"]{ --a1:#c9a24a; --a2:#4d7ea8; --a3:#5aa88f; --a4:#a85a6b; --hero:#101c2c; }
+  html[data-theme="espagnol4"]{ --a1:#a98ac9; --a2:#6fa89b; --a3:#cf8f5e; --a4:#c26a8e; --hero:#221a2c; }
+  html[data-theme="espagnol5"]{ --a1:#4fae94; --a2:#c98a4b; --a3:#8f9ec9; --a4:#c0566f; --hero:#10251f; }
+  html[data-theme="espagnol6"]{ --a1:#5b9bd5; --a2:#d9a441; --a3:#7bb37a; --a4:#b0566e; --hero:#132436; }
+  html[data-theme="allemand"]{ --a1:#d8b44a; --a2:#8fa4bd; --a3:#84b58e; --a4:#c06060; --hero:#241f1a; }
+  html[data-theme="italien"] { --a1:#d5a94e; --a2:#6fae8f; --a3:#a8c07a; --a4:#c4695e; --hero:#152a24; }
+  html[data-theme="chinois"] { --a1:#d9a441; --a2:#c05a4a; --a3:#83a98f; --a4:#a97fb0; --hero:#2c1618; }
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden}
+
+  /* ─── FOND ─── */
+  .bg-orb{position:fixed;border-radius:50%;filter:blur(140px);pointer-events:none;opacity:.08;z-index:0}
+  .orb1{width:700px;height:700px;background:var(--a1);top:-300px;right:-250px}
+  .orb2{width:600px;height:600px;background:var(--a2);bottom:-250px;left:-250px}
+
+  /* ─── BARRE DE PROGRESSION ─── */
+  #progress{position:fixed;top:0;left:0;height:2px;width:0;z-index:200;
+    background:linear-gradient(90deg,var(--a1),var(--a2),var(--a4));transition:width .1s linear}
+
+  /* ─── NAV ─── */
+  nav{display:flex;align-items:center;justify-content:space-between;gap:20px;
+    padding:16px 40px;border-bottom:1px solid var(--border);
+    background:rgba(13,13,15,.9);backdrop-filter:blur(16px);position:sticky;top:0;z-index:100}
+  .nav-logo{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--a1);cursor:pointer}
+  .breadcrumb{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--text-dim);flex-wrap:wrap}
+  .breadcrumb span{cursor:pointer;transition:color .2s}
+  .breadcrumb span:hover{color:var(--a1)}
+  .breadcrumb .sep{color:var(--text-faint);cursor:default}
+  .breadcrumb .current{color:var(--text);cursor:default}
+  .nav-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+  .ap-lang-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);
+    color:rgba(255,255,255,.6);font-family:'DM Mono',monospace;font-size:10px;font-weight:700;
+    letter-spacing:.12em;padding:5px 14px;border-radius:4px;cursor:pointer;transition:all .2s;text-transform:uppercase}
+  .ap-lang-btn.active{background:var(--a1);border-color:var(--a1);color:#12100c}
+  .ap-lang-btn:hover:not(.active){background:rgba(255,255,255,.15);color:#fff}
+
+  /* ─── HERO ─── */
+  .hero{position:relative;z-index:1;padding:76px 40px 56px;text-align:center;overflow:hidden;
+    background:linear-gradient(160deg,var(--hero),#0d0d0f 85%);border-bottom:1px solid var(--border)}
+  .hero::after{content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);
+    width:80px;height:2px;background:var(--a1)}
+  .hero-flag{font-size:2.6rem;line-height:1;margin-bottom:18px;display:block}
+  .hero-label{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.3em;
+    text-transform:uppercase;color:var(--a1);margin-bottom:18px}
+  .hero h1{font-family:'Playfair Display',serif;font-weight:900;line-height:1.05;
+    font-size:clamp(2.4rem,6vw,4.6rem);max-width:900px;margin:0 auto 18px}
+  .hero-sub{font-size:1rem;color:var(--text-dim);max-width:640px;margin:0 auto;line-height:1.6}
+
+  /* ─── LAYOUT ─── */
+  .layout{display:flex;gap:48px;max-width:1320px;margin:0 auto;padding:48px 40px 100px;position:relative;z-index:1}
+  main{flex:1;min-width:0;max-width:840px}
+
+  /* ─── COLONNE CHRONOLOGIE ─── */
+  .rail{width:262px;flex-shrink:0;position:sticky;top:88px;align-self:flex-start;
+    max-height:calc(100vh - 118px);overflow-y:auto;padding-right:8px}
+  .rail-title{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--a1);margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+  .rail .tl{padding-left:20px;margin:0 0 0 4px}
+  .rail .tl-item{padding-bottom:16px}
+  .rail .tl-item::before{left:-26px;top:4px;width:7px;height:7px}
+  .rail .tl-d{font-size:.66rem;letter-spacing:.08em}
+  .rail .tl-c{font-size:.79rem;line-height:1.5}
+  .rail::-webkit-scrollbar{width:3px}
+  .rail::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  .chrono-mobile{display:none}
+
+  /* ─── BLOC GÉNÉRIQUE ─── */
+  .bloc{margin-bottom:64px;scroll-margin-top:88px}
+  .bloc-head{display:flex;align-items:baseline;gap:14px;margin-bottom:24px;
+    padding-bottom:12px;border-bottom:1px solid var(--border)}
+  .bloc-kicker{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.28em;
+    text-transform:uppercase;color:var(--k,var(--a1))}
+  .bloc-title{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--text)}
+
+  /* ─── L'ESSENTIEL ─── */
+  .essentiel{background:linear-gradient(135deg,rgba(255,255,255,.045),rgba(255,255,255,.015));
+    border:1px solid var(--border);border-left:3px solid var(--a1);border-radius:var(--radius);
+    padding:28px 30px;margin-bottom:36px}
+  .essentiel-label{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.28em;
+    text-transform:uppercase;color:var(--a1);margin-bottom:14px}
+  .essentiel p{font-size:.98rem;line-height:1.75;color:var(--text);margin-bottom:0}
+  .essentiel p strong{color:var(--a1);font-weight:500}
+
+  /* ─── STATS ─── */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:22px 0}
+  .stat{border-radius:10px;padding:18px 16px;text-align:center;border:1px solid rgba(255,255,255,.08);
+    background:linear-gradient(135deg,color-mix(in srgb,var(--c,var(--a1)) 26%,#101014),
+    color-mix(in srgb,var(--c,var(--a1)) 8%,#101014))}
+  .stat-n{font-family:'DM Mono',monospace;font-size:1.5rem;font-weight:500;color:var(--text);display:block;line-height:1.1}
+  .stat-d{font-size:.7rem;color:var(--text-dim);margin-top:7px;display:block;line-height:1.45}
+
+  /* ─── PARTIES ─── */
+  .partie{margin-bottom:78px;scroll-margin-top:88px}
+  .partie-head{display:flex;align-items:center;gap:22px;margin-bottom:34px;
+    padding-bottom:18px;border-bottom:2px solid var(--p)}
+  .partie-num{font-family:'Playfair Display',serif;font-size:3.4rem;font-weight:900;
+    color:var(--p);opacity:.35;line-height:.9;flex-shrink:0}
+  .partie-title{font-family:'Playfair Display',serif;font-size:clamp(1.35rem,3vw,1.95rem);
+    font-weight:700;line-height:1.2}
+  .partie-kicker{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--p);margin-bottom:6px}
+
+  .section{margin-bottom:44px;scroll-margin-top:88px}
+  .section-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;
+    color:var(--text);margin-bottom:18px;padding-left:16px;border-left:3px solid var(--p)}
+  .section-num{color:var(--p);font-weight:900}
+
+  /* ─── TEXTE ─── */
+  .prose{font-size:.96rem;line-height:1.8;color:rgba(232,230,224,.78);margin-bottom:16px}
+  .prose strong{color:var(--text);font-weight:500}
+  .prose em{color:var(--p,var(--a1));font-style:normal;font-weight:500}
+  .es{font-family:'DM Mono',monospace;font-size:.86em;color:var(--a2)}
+
+  /* ─── LISTE ─── */
+  .liste{list-style:none;margin:14px 0 20px}
+  .liste li{font-size:.93rem;line-height:1.65;color:rgba(232,230,224,.75);
+    padding:9px 0 9px 22px;position:relative;border-bottom:1px solid rgba(255,255,255,.05)}
+  .liste li:last-child{border-bottom:none}
+  .liste li::before{content:'';position:absolute;left:0;top:17px;width:6px;height:6px;
+    border-radius:50%;background:var(--p,var(--a1))}
+  .liste li strong{color:var(--text);font-weight:500}
+
+  /* ─── FAITS CLÉS ─── */
+  .faits{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:9px;margin:20px 0}
+  .fait{background:rgba(255,255,255,.03);border:1px solid var(--border);
+    border-left:3px solid var(--p,var(--a1));border-radius:8px;padding:13px 15px}
+  .fait-l{font-family:'DM Mono',monospace;font-size:.6rem;color:var(--text-faint);
+    text-transform:uppercase;letter-spacing:.14em;margin-bottom:5px}
+  .fait-v{font-size:.86rem;font-weight:500;color:var(--text);line-height:1.4}
+
+  /* ─── CITATION ─── */
+  .citation{background:linear-gradient(135deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+    border:1px solid var(--border);border-left:3px solid var(--a1);border-radius:0 10px 10px 0;
+    padding:20px 24px;margin:22px 0}
+  .citation p{font-family:'Playfair Display',serif;font-style:italic;font-size:1.02rem;
+    line-height:1.6;color:var(--text);margin-bottom:9px}
+  .citation cite{font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.08em;
+    color:var(--a1);font-style:normal}
+
+  /* ─── ENCADRÉ ─── */
+  .encadre{display:flex;gap:15px;align-items:flex-start;border-radius:10px;padding:17px 20px;margin:20px 0;
+    background:color-mix(in srgb,var(--c,var(--a2)) 7%,transparent);
+    border:1px solid color-mix(in srgb,var(--c,var(--a2)) 26%,transparent)}
+  .encadre-ic{font-size:1.5rem;flex-shrink:0;line-height:1.2}
+  .encadre-t{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--c,var(--a2));margin-bottom:7px;font-weight:500}
+  .encadre-c{font-size:.89rem;line-height:1.7;color:rgba(232,230,224,.75)}
+  .encadre-c strong{color:var(--text);font-weight:500}
+
+  /* ─── DÉFINITION ─── */
+  .def{border:1px dashed var(--border);border-radius:10px;padding:15px 18px;margin:18px 0;
+    background:rgba(255,255,255,.02)}
+  .def-mot{font-family:'Playfair Display',serif;font-weight:700;font-size:1rem;color:var(--a3);margin-bottom:6px}
+  .def-c{font-size:.88rem;line-height:1.7;color:rgba(232,230,224,.72)}
+
+  /* ─── TABLEAU ─── */
+  .tbl-wrap{overflow-x:auto;margin:20px 0;border:1px solid var(--border);border-radius:10px}
+  table{width:100%;border-collapse:collapse;font-size:.83rem}
+  thead{background:rgba(255,255,255,.04)}
+  thead th{padding:11px 15px;text-align:left;font-family:'DM Mono',monospace;font-size:.6rem;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--text-dim);white-space:nowrap}
+  tbody tr{border-top:1px solid var(--border)}
+  tbody tr:nth-child(even){background:rgba(255,255,255,.015)}
+  tbody td{padding:11px 15px;color:rgba(232,230,224,.75);line-height:1.5}
+  tbody td:first-child{color:var(--text);font-weight:500}
+
+  /* ─── CHRONOLOGIE ─── */
+  .tl{border-left:2px solid var(--border);padding-left:26px;margin:8px 0 8px 6px}
+  .tl-item{position:relative;padding-bottom:22px}
+  .tl-item:last-child{padding-bottom:0}
+  .tl-item::before{content:'';position:absolute;left:-33px;top:5px;width:9px;height:9px;border-radius:50%;
+    background:var(--c,var(--a1));box-shadow:0 0 0 3px rgba(13,13,15,1),0 0 0 5px color-mix(in srgb,var(--c,var(--a1)) 35%,transparent)}
+  .tl-d{font-family:'DM Mono',monospace;font-size:.72rem;font-weight:500;letter-spacing:.1em;
+    color:var(--c,var(--a1));margin-bottom:4px}
+  .tl-c{font-size:.9rem;line-height:1.6;color:rgba(232,230,224,.75)}
+  .tl-c strong{color:var(--text);font-weight:500}
+
+  /* ─── ACTEURS ─── */
+  .acteurs{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+  .acteur{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;
+    transition:all .25s;position:relative;overflow:hidden}
+  .acteur:hover{border-color:var(--c,var(--a1));transform:translateY(-3px);background:var(--surface2)}
+  .acteur-nom{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;margin-bottom:3px}
+  .acteur-role{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--c,var(--a1));margin-bottom:10px}
+  .acteur-c{font-size:.82rem;line-height:1.6;color:var(--text-dim)}
+
+  /* ─── DÉBAT ─── */
+  .debat{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .debat-col{border:1px solid var(--border);border-radius:12px;padding:20px 22px;background:rgba(255,255,255,.02)}
+  .debat-col.oui{border-top:3px solid var(--a3)}
+  .debat-col.non{border-top:3px solid var(--a4)}
+  .debat-t{font-family:'DM Mono',monospace;font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:14px}
+  .debat-col.oui .debat-t{color:var(--a3)}
+  .debat-col.non .debat-t{color:var(--a4)}
+  .debat-col li{font-size:.87rem;line-height:1.6;color:rgba(232,230,224,.75);
+    padding:9px 0 9px 18px;position:relative;list-style:none;border-bottom:1px solid rgba(255,255,255,.05)}
+  .debat-col li:last-child{border-bottom:none}
+  .debat-col li::before{content:'';position:absolute;left:0;top:16px;width:5px;height:5px;border-radius:50%}
+  .debat-col.oui li::before{background:var(--a3)}
+  .debat-col.non li::before{background:var(--a4)}
+  .debat-col li strong{color:var(--text);font-weight:500}
+
+  /* ─── LEXIQUE ─── */
+  .lex-search{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;
+    color:var(--text);font-family:'DM Sans',sans-serif;font-size:.88rem;padding:11px 15px;margin-bottom:14px}
+  .lex-search:focus{outline:none;border-color:var(--a1)}
+  .lex-search::placeholder{color:var(--text-faint)}
+  .lex td:first-child{font-family:'DM Mono',monospace;color:var(--a2);font-weight:500}
+
+  /* ─── SUJETS ─── */
+  .sujet{border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:10px;
+    background:var(--surface);display:flex;gap:16px;align-items:flex-start;transition:all .2s}
+  .sujet:hover{border-color:var(--a4);transform:translateX(4px)}
+  .sujet-n{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:var(--text-faint);line-height:1;flex-shrink:0}
+  .sujet-q{font-size:.94rem;line-height:1.6;color:var(--text);margin-bottom:5px;font-weight:400}
+  .sujet-h{font-size:.79rem;color:var(--text-dim);line-height:1.55}
+
+  /* ─── À RETENIR ─── */
+  .retenir{background:linear-gradient(135deg,color-mix(in srgb,var(--a1) 12%,transparent),rgba(255,255,255,.02));
+    border:1px solid color-mix(in srgb,var(--a1) 30%,transparent);border-radius:var(--radius);padding:28px 30px}
+  .retenir li{font-size:.93rem;line-height:1.65;color:rgba(232,230,224,.82);
+    padding:10px 0 10px 26px;position:relative;list-style:none;border-bottom:1px solid rgba(255,255,255,.06)}
+  .retenir li:last-child{border-bottom:none}
+  .retenir li::before{content:'✓';position:absolute;left:0;top:9px;color:var(--a1);font-size:.85rem}
+  .retenir li strong{color:var(--text);font-weight:500}
+
+  /* ─── PIED DE PAGE ─── */
+  footer{text-align:center;padding:36px 40px;border-top:1px solid var(--border);
+    font-family:'DM Mono',monospace;font-size:.7rem;color:var(--text-dim);letter-spacing:.14em;
+    text-transform:uppercase}
+
+  /* ─── ANIMATION ─── */
+  .rev{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+  .rev.vu{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.rev{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}}
+  :focus-visible{outline:2px solid var(--a1);outline-offset:3px}
+
+  /* ─── RESPONSIVE ─── */
+  @media(max-width:1080px){
+    .rail{display:none}
+    .layout{padding:32px 22px 70px}
+    .chrono-mobile{display:block}
+  }
+  @media(max-width:680px){
+    nav{padding:12px 18px;flex-wrap:wrap}
+    .breadcrumb{font-size:.7rem;order:3;width:100%}
+    .hero{padding:52px 20px 40px}
+    .debat{grid-template-columns:1fr}
+    .partie-head{gap:14px}
+    .partie-num{font-size:2.4rem}
+  }
+  /* ─── IMPRESSION ─── */
+  @media print{
+    body{background:#fff;color:#111}
+    nav,.rail,#progress,.bg-orb,.nav-right{display:none!important}
+    .hero{background:none;border-bottom:2px solid #111;padding:0 0 22px}
+    .hero h1,.prose,.liste li,.bloc-title{color:#111}
+    .layout{display:block;padding:0}
+    .partie,.bloc{break-inside:avoid;page-break-inside:avoid}
+    .rev{opacity:1;transform:none}
+    .chrono-mobile{display:block!important}
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+
+<nav>
+  <div class="nav-logo" onclick="location.href='../../../index.html'">ECG Prépa</div>
+  <div class="breadcrumb">
+    <span onclick="location.href='../../../index.html'">Accueil</span>
+    <span class="sep">/</span>
+    <span onclick="location.href='../../index.html'">2ème Année</span>
+    <span class="sep">/</span>
+    <span onclick="location.href='../index.html'">Civilisation</span>
+    <span class="sep">/</span>
+    <span class="current" id="bc-titre">—</span>
+  </div>
+  <div class="nav-right">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-es" class="ap-lang-btn" onclick="setLang('es')">🇪🇸 ES</button>
+  </div>
+</nav>
+
+<header class="hero" id="hero"></header>
+
+<div class="layout">
+  <aside class="rail" id="rail"></aside>
+  <main id="cours"></main>
+</div>
+
+<footer id="ft"></footer>
+
+
+<!-- ══════════════════════════════════════════════════════════════════
+     ⬇⬇⬇  SEULE PARTIE À MODIFIER POUR UN NOUVEAU COURS  ⬇⬇⬇
+     ══════════════════════════════════════════════════════════════════ -->
+<script id="donnees">
+const COURS = {
+
+  /* ─── 1. IDENTITÉ DU COURS ───────────────────────────────────────── */
+  meta: {
+    theme:     "espagnol6",
+    drapeau:   "🗺️",
+    chapitre:  "6",
+    label:     { fr:"Espagne · Chapitre 06", es:"España · Capítulo 06" },
+    titre:     { fr:"Les Communautés autonomes", es:"Las Comunidades autónomas" },
+    sousTitre: { fr:"Ni État fédéral, ni État unitaire : comment la Constitution de 1978 a inventé un modèle territorial à dix-sept vitesses.",
+                 es:"Ni Estado federal ni Estado unitario: cómo la Constitución de 1978 inventó un modelo territorial a diecisiete velocidades." }
+  },
+
+  /* ─── 2. L'ESSENTIEL + CHIFFRES CLÉS ─────────────────────────────── */
+  essentiel: {
+    fr:"L'<strong>État des autonomies</strong> (<span class='es'>Estado de las Autonomías</span>) est le nom donné à l'organisation territoriale de l'Espagne démocratique : un État unitaire fortement décentralisé, composé de <strong>17 communautés autonomes</strong> et de deux villes autonomes (Ceuta, Melilla). La Constitution de 1978 ne dessine pas cette carte à l'avance — elle ouvre un <em>droit à l'autonomie</em> pour les « nationalités et régions » et laisse le processus se dérouler par la négociation, ce qui aboutit à un système <strong>asymétrique</strong> : deux régimes fiscaux coexistent, le <em>régimen foral</em> du Pays basque et de la Navarre, qui lèvent et gèrent presque tous leurs impôts, et le <em>régimen común</em> des quinze autres, financées par un système redistributif piloté par l'État. Cette asymétrie, loin de s'être stabilisée, s'est encore creusée depuis 2024 avec la <strong>financiación singular</strong> négociée pour la Catalogne, qui rapproche son statut du régime foral sans y accéder pleinement — déclenchant en <strong>septembre 2026</strong> le rejet de treize communautés sur quinze au Conseil de politique fiscale et financière. Le modèle autonomique espagnol reste ainsi un chantier permanent, où la question du <em>combien</em> (financement) est devenue aussi disputée que celle du <em>qui</em> (identité nationale).",
+    es:"El <strong>Estado de las Autonomías</strong> es el nombre dado a la organización territorial de la España democrática: un Estado unitario fuertemente descentralizado, compuesto por <strong>17 comunidades autónomas</strong> y dos ciudades autónomas (Ceuta, Melilla). La Constitución de 1978 no dibuja de antemano ese mapa — abre un <em>derecho a la autonomía</em> para las «nacionalidades y regiones» y deja que el proceso se desarrolle mediante la negociación, lo que desemboca en un sistema <strong>asimétrico</strong>: coexisten dos regímenes fiscales, el <em>régimen foral</em> del País Vasco y Navarra, que recaudan y gestionan casi todos sus impuestos, y el <em>régimen común</em> de las otras quince, financiadas por un sistema redistributivo pilotado por el Estado. Esa asimetría, lejos de haberse estabilizado, se ha profundizado desde 2024 con la <strong>financiación singular</strong> negociada para Cataluña, que acerca su estatuto al régimen foral sin acceder plenamente a él — desencadenando en <strong>septiembre de 2026</strong> el rechazo de trece comunidades de quince en el Consejo de Política Fiscal y Financiera. El modelo autonómico español sigue siendo así una obra permanente, donde la cuestión del <em>cuánto</em> (financiación) se ha vuelto tan disputada como la del <em>quién</em> (identidad nacional)."
+  },
+  chiffres: [
+    { n:"17 + 2", d:{ fr:"communautés autonomes et villes autonomes (Ceuta, Melilla)", es:"comunidades autónomas y ciudades autónomas (Ceuta, Melilla)" } },
+    { n:"1983", d:{ fr:"achèvement de la carte autonomique avec les statuts de Madrid, Castille-León et Estrémadure", es:"culminación del mapa autonómico con los estatutos de Madrid, Castilla y León y Extremadura" } },
+    { n:"2", d:{ fr:"régimes fiscaux : foral (Pays basque, Navarre) et commun (les quinze autres)", es:"regímenes fiscales: foral (País Vasco, Navarra) y común (las otras quince)" } },
+    { n:"2/15", d:{ fr:"communautés ayant approuvé la financiación singular catalane au CPFF de septembre 2026", es:"comunidades que aprobaron la financiación singular catalana en el CPFF de septiembre de 2026" } }
+  ],
+
+  /* ─── 3. CHRONOLOGIE ─────────────────────────────────────────────── */
+  chronologie: [
+    { d:{fr:"29 septembre 1977",es:"29 de septiembre de 1977"}, c:{fr:"Rétablissement provisoire de la <strong>Generalitat de Catalogne</strong>, avant même la Constitution : premier geste de décentralisation.", es:"Restablecimiento provisional de la <strong>Generalitat de Catalunya</strong>, incluso antes de la Constitución: primer gesto de descentralización."} },
+    { d:{fr:"27 décembre 1978",es:"27 de diciembre de 1978"}, c:{fr:"La <strong>Constitution</strong> (titre VIII) ouvre le « droit à l'autonomie » des nationalités et régions, sans fixer de carte préétablie.", es:"La <strong>Constitución</strong> (título VIII) abre el «derecho a la autonomía» de las nacionalidades y regiones, sin fijar un mapa preestablecido."} },
+    { d:{fr:"1979",es:"1979"}, c:{fr:"Statuts d'autonomie du <strong>Pays basque</strong> et de la <strong>Catalogne</strong> : premières « nationalités historiques » dotées de la voie rapide de l'article 151.", es:"Estatutos de autonomía del <strong>País Vasco</strong> y de <strong>Cataluña</strong>: primeras «nacionalidades históricas» con la vía rápida del artículo 151."} },
+    { d:{fr:"25 février 1981",es:"25 de febrero de 1981"}, c:{fr:"Signature des <strong>Pactes autonomiques</strong> entre UCD et PSOE, au lendemain du 23-F, pour ralentir et encadrer le processus.", es:"Firma de los <strong>Pactos autonómicos</strong> entre UCD y PSOE, tras el 23-F, para frenar y encauzar el proceso."} },
+    { d:{fr:"1983",es:"1983"}, c:{fr:"Statuts de <strong>Madrid, Castille-León et Estrémadure</strong> : les 17 communautés autonomes sont toutes constituées.", es:"Estatutos de <strong>Madrid, Castilla y León y Extremadura</strong>: las 17 comunidades autónomas quedan todas constituidas."} },
+    { d:{fr:"1996",es:"1996"}, c:{fr:"Réforme de la LOFCA sous Aznar : <strong>cession de l'IRPF</strong> aux communautés, première étape vers une coresponsabilité fiscale.", es:"Reforma de la LOFCA bajo Aznar: <strong>cesión del IRPF</strong> a las comunidades, primer paso hacia la corresponsabilidad fiscal."} },
+    { d:{fr:"2002",es:"2002"}, c:{fr:"Nouveau système de financement : cession élargie de la TVA et des accises aux communautés de régime commun.", es:"Nuevo sistema de financiación: cesión ampliada del IVA y de los impuestos especiales a las comunidades de régimen común."} },
+    { d:{fr:"2006",es:"2006"}, c:{fr:"Nouveau <strong>statut d'autonomie de Catalogne</strong>, dont la mention de « nation » sera censurée par le Tribunal constitutionnel en 2010.", es:"Nuevo <strong>Estatut de Catalunya</strong>, cuya mención de «nación» será censurada por el Tribunal Constitucional en 2010."} },
+    { d:{fr:"2009",es:"2009"}, c:{fr:"Système de financement actuel (loi 22/2009), censé être révisé tous les cinq ans — révision jamais menée à terme depuis.", es:"Sistema de financiación actual (ley 22/2009), que debía revisarse cada cinco años — revisión nunca culminada desde entonces."} },
+    { d:{fr:"2015",es:"2015"}, c:{fr:"Réforme du <strong>Concierto Económico</strong> basque : reconduction du cadre fiscal singulier pour cinq ans.", es:"Reforma del <strong>Concierto Económico</strong> vasco: renovación del marco fiscal singular por cinco años."} },
+    { d:{fr:"Août 2024",es:"Agosto de 2024"}, c:{fr:"Accord d'investiture PSC-ERC pour <strong>Salvador Illa</strong> : engagement d'une « financiación singular » pour la Catalogne.", es:"Acuerdo de investidura PSC-ERC para <strong>Salvador Illa</strong>: compromiso de una «financiación singular» para Cataluña."} },
+    { d:{fr:"Juillet 2025",es:"Julio de 2025"}, c:{fr:"Accord Gouvernement-Generalitat sur la cession de la <strong>gestion de l'IRPF</strong> à la Catalogne, première étape du nouveau modèle.", es:"Acuerdo Gobierno-Generalitat sobre la cesión de la <strong>gestión del IRPF</strong> a Cataluña, primer paso del nuevo modelo."} },
+    { d:{fr:"5 septembre 2026",es:"5 de septiembre de 2026"}, c:{fr:"Le <strong>Conseil de politique fiscale et financière (CPFF)</strong> approuve le nouveau modèle avec les seuls votes de la Catalogne et des Canaries.", es:"El <strong>Consejo de Política Fiscal y Financiera (CPFF)</strong> aprueba el nuevo modelo con los únicos votos de Cataluña y Canarias."} },
+    { d:{fr:"Septembre 2026",es:"Septiembre de 2026"}, c:{fr:"<strong>Junts</strong> réclame un concierto économique complet pour la Catalogne et menace de déposer un amendement de rejet total au Congrès.", es:"<strong>Junts</strong> reclama un concierto económico pleno para Cataluña y amenaza con presentar una enmienda a la totalidad en el Congreso."} }
+  ],
+
+  /* ─── 4. LE COURS : PARTIES > SECTIONS > BLOCS ───────────────────── */
+  parties: [
+  {
+    num:"I",
+    kicker:{fr:"Les origines",es:"Los orígenes"},
+    titre:{fr:"Un État inventé par la négociation : du « café pour tous » à la carte des 17 (1978-1983)",
+           es:"Un Estado inventado por la negociación: del «café para todos» al mapa de las 17 (1978-1983)"},
+    couleur:"var(--a2)",
+    sections:[
+      {
+        titre:{fr:"Le titre VIII de la Constitution : un cadre ouvert, pas une carte",
+               es:"El título VIII de la Constitución: un marco abierto, no un mapa"},
+        blocs:[
+          { t:"p", c:{
+            fr:"À la différence des fédérations classiques, la Constitution de 1978 ne définit <strong>aucune liste de régions</strong>. Son article 2 affirme l'« unité indissoluble de la Nation espagnole » tout en reconnaissant « le droit à l'autonomie des nationalités et des régions qui la composent » — une formule volontairement ambiguë, fruit d'un compromis entre centralistes et autonomistes, qui évite le mot « fédéral » sans l'interdire dans les faits. Le <strong>titre VIII</strong> (articles 137 à 158) ouvre seulement une <em>procédure</em> : les provinces limitrophes, les territoires insulaires ou les provinces dotées d'une entité régionale historique peuvent <strong>demander</strong> leur autonomie.",
+            es:"A diferencia de las federaciones clásicas, la Constitución de 1978 no define <strong>ninguna lista de regiones</strong>. Su artículo 2 afirma la «unidad indisoluble de la Nación española» reconociendo a la vez «el derecho a la autonomía de las nacionalidades y regiones que la integran» — una fórmula deliberadamente ambigua, fruto de un compromiso entre centralistas y autonomistas, que evita la palabra «federal» sin prohibirla en la práctica. El <strong>título VIII</strong> (artículos 137 a 158) abre solamente un <em>procedimiento</em>: las provincias limítrofes, los territorios insulares o las provincias con entidad regional histórica pueden <strong>solicitar</strong> su autonomía."} },
+          { t:"p", c:{
+            fr:"Deux voies d'accès sont prévues, de vitesse différente. La <strong>voie rapide</strong> de l'article 151, réservée en principe aux territoires ayant plébiscité un statut d'autonomie sous la IIe République (Catalogne, Pays basque, Galice), permet d'accéder immédiatement à des compétences élargies. La <strong>voie lente</strong> de l'article 143 impose un délai de cinq ans avant toute extension de compétences. Cette asymétrie initiale devait rester l'exception ; elle est devenue, par la pression politique, la règle presque générale.",
+            es:"Se prevén dos vías de acceso, de velocidad distinta. La <strong>vía rápida</strong> del artículo 151, reservada en principio a los territorios que habían plebiscitado un estatuto de autonomía durante la II República (Cataluña, País Vasco, Galicia), permite acceder de inmediato a competencias ampliadas. La <strong>vía lenta</strong> del artículo 143 impone un plazo de cinco años antes de cualquier ampliación de competencias. Esa asimetría inicial debía seguir siendo la excepción; se convirtió, por la presión política, en la norma casi general."} },
+          { t:"encadre", icon:"☕", c:"var(--a2)",
+            titre:{fr:"Notion clé — le café para todos", es:"Concepto clave — el café para todos"},
+            c2:{fr:"Formule attribuée au ministre <strong>Manuel Clavero Arévalo</strong> pour désigner l'extension de l'autonomie à l'ensemble des régions espagnoles, et non aux seules « nationalités historiques ». Plutôt que de réserver un statut singulier à la Catalogne, au Pays basque et à la Galice, le gouvernement de l'UCD choisit d'ouvrir la voie à toutes les régions — y compris celles sans revendication identitaire préalable, comme la Rioja ou la Cantabrie. Ce choix évite la stigmatisation d'un statut « à deux vitesses » visible, mais il diluera aussi la spécificité des nationalités historiques, qui continueront de la revendiquer par d'autres moyens : statuts renforcés, financement singulier, compétences exclusives.",
+                es:"Fórmula atribuida al ministro <strong>Manuel Clavero Arévalo</strong> para designar la extensión de la autonomía al conjunto de las regiones españolas, y no solo a las «nacionalidades históricas». En lugar de reservar un estatuto singular a Cataluña, el País Vasco y Galicia, el gobierno de la UCD opta por abrir la vía a todas las regiones —incluidas las que carecían de reivindicación identitaria previa, como La Rioja o Cantabria—. Esta opción evita la estigmatización de un estatuto «de dos velocidades» visible, pero también diluirá la especificidad de las nacionalidades históricas, que seguirán reivindicándola por otros medios: estatutos reforzados, financiación singular, competencias exclusivas."} }
+        ]
+      },
+      {
+        titre:{fr:"Les Pactes autonomiques de 1981 : ralentir après le 23-F",
+               es:"Los Pactos autonómicos de 1981: frenar tras el 23-F"},
+        blocs:[
+          { t:"p", c:{
+            fr:"Le processus initial, engagé dès 1977 avec le rétablissement provisoire de la Generalitat catalane, inquiète une partie de l'armée et des secteurs centralistes, qui y voient une menace pour l'« unité de la patrie » — l'un des griefs invoqués par les putschistes du <strong>23-F</strong> de 1981. Trois semaines après le coup d'État manqué, l'UCD et le PSOE signent les <strong>Pactes autonomiques</strong> du 25 février 1981 : ils généralisent la voie lente de l'article 143 à la plupart des régions, fixent un calendrier resserré et posent les bases d'un modèle où la quasi-totalité du territoire accède à l'autonomie, mais à un rythme et avec des compétences homogénéisées.",
+            es:"El proceso inicial, iniciado ya en 1977 con el restablecimiento provisional de la Generalitat catalana, inquieta a parte del ejército y de los sectores centralistas, que ven en él una amenaza para la «unidad de la patria» —uno de los agravios invocados por los golpistas del <strong>23-F</strong> de 1981—. Tres semanas después del golpe fallido, la UCD y el PSOE firman los <strong>Pactos autonómicos</strong> del 25 de febrero de 1981: generalizan la vía lenta del artículo 143 a la mayoría de las regiones, fijan un calendario más ajustado y sientan las bases de un modelo en el que casi todo el territorio accede a la autonomía, pero a un ritmo y con unas competencias homogeneizadas."} },
+          { t:"liste", items:{
+            fr:[
+              "<strong>1979</strong> — Statuts du Pays basque et de la Catalogne : accès immédiat par la voie rapide de l'article 151.",
+              "<strong>1981</strong> — Statut de la Galice, troisième « nationalité historique », puis premiers statuts de voie lente (Andalousie obtient la voie rapide par référendum).",
+              "<strong>1982-1983</strong> — Généralisation à l'ensemble du territoire : Asturies, Cantabrie, Rioja, Murcie, Aragon, Castille-La Manche, Canaries, Navarre, Baléares…",
+              "<strong>1983</strong> — Derniers statuts : Madrid, Castille-León, Estrémadure. La carte des 17 communautés est achevée en cinq ans à peine."
+            ],
+            es:[
+              "<strong>1979</strong> — Estatutos del País Vasco y Cataluña: acceso inmediato por la vía rápida del artículo 151.",
+              "<strong>1981</strong> — Estatuto de Galicia, tercera «nacionalidad histórica», y primeros estatutos de vía lenta (Andalucía obtiene la vía rápida por referéndum).",
+              "<strong>1982-1983</strong> — Generalización a todo el territorio: Asturias, Cantabria, La Rioja, Murcia, Aragón, Castilla-La Mancha, Canarias, Navarra, Baleares…",
+              "<strong>1983</strong> — Últimos estatutos: Madrid, Castilla y León, Extremadura. El mapa de las 17 comunidades queda completado en apenas cinco años."
+            ]
+          }},
+          { t:"faits", items:[
+            { l:{fr:"Voie rapide (art. 151)",es:"Vía rápida (art. 151)"}, v:{fr:"Catalogne, Pays basque, Galice, Andalousie",es:"Cataluña, País Vasco, Galicia, Andalucía"} },
+            { l:{fr:"Villes autonomes",es:"Ciudades autónomas"}, v:{fr:"Ceuta et Melilla, statut spécifique depuis 1995",es:"Ceuta y Melilla, estatuto específico desde 1995"} },
+            { l:{fr:"Durée du processus",es:"Duración del proceso"}, v:{fr:"1977-1983 : six ans pour constituer les 17 communautés",es:"1977-1983: seis años para constituir las 17 comunidades"} }
+          ]}
+        ]
+      }
+    ]
+  },
+  {
+    num:"II",
+    kicker:{fr:"L'architecture",es:"La arquitectura"},
+    titre:{fr:"Compétences et financement : l'asymétrie structurelle entre régime foral et régime commun",
+           es:"Competencias y financiación: la asimetría estructural entre régimen foral y régimen común"},
+    couleur:"var(--a4)",
+    sections:[
+      {
+        titre:{fr:"Qui fait quoi : la répartition des compétences",
+               es:"Quién hace qué: el reparto de competencias"},
+        blocs:[
+          { t:"p", c:{
+            fr:"Les compétences se répartissent selon une logique de <strong>listes croisées</strong> : l'article 149 énumère les domaines réservés à l'État (affaires étrangères, défense, monnaie, législation pénale et civile de base, nationalité), tandis que chaque <strong>statut d'autonomie</strong> — véritable « constitution régionale » approuvée comme loi organique — détaille les compétences assumées par la communauté. En pratique, l'<strong>éducation</strong>, la <strong>santé</strong> et une large part de l'<strong>action sociale</strong> sont gérées au niveau autonomique depuis les années 1980-2000, ce qui fait de l'Espagne l'un des États les plus décentralisés d'Europe en dépense publique.",
+            es:"Las competencias se reparten según una lógica de <strong>listas cruzadas</strong>: el artículo 149 enumera los ámbitos reservados al Estado (asuntos exteriores, defensa, moneda, legislación penal y civil básica, nacionalidad), mientras que cada <strong>estatuto de autonomía</strong> —verdadera «constitución regional» aprobada como ley orgánica— detalla las competencias asumidas por la comunidad. En la práctica, la <strong>educación</strong>, la <strong>sanidad</strong> y buena parte de la <strong>acción social</strong> se gestionan a nivel autonómico desde los años 1980-2000, lo que convierte a España en uno de los Estados más descentralizados de Europa en gasto público."} },
+          { t:"p", c:{
+            fr:"Certaines compétences restent propres à quelques communautés seulement : <strong>police autonome</strong> (Mossos d'Esquadra en Catalogne, Ertzaintza au Pays basque), <strong>droit civil propre</strong> (Catalogne, Pays basque, Navarre, Aragon, Galice, Baléares), <strong>langue cooficielle</strong> (catalan, basque, galicien, valencien). Ces compétences différenciées, souvent qualifiées de « faits différentiels » (<span class='es'>hechos diferenciales</span>), sont au cœur des revendications des nationalismes périphériques, qui y voient la reconnaissance d'une identité nationale propre plutôt qu'une simple délégation administrative.",
+            es:"Algunas competencias siguen siendo propias de pocas comunidades: <strong>policía autonómica</strong> (Mossos d'Esquadra en Cataluña, Ertzaintza en el País Vasco), <strong>derecho civil propio</strong> (Cataluña, País Vasco, Navarra, Aragón, Galicia, Baleares), <strong>lengua cooficial</strong> (catalán, euskera, gallego, valenciano). Estas competencias diferenciadas, a menudo calificadas de «hechos diferenciales», están en el centro de las reivindicaciones de los nacionalismos periféricos, que ven en ellas el reconocimiento de una identidad nacional propia más que una simple delegación administrativa."} }
+        ]
+      },
+      {
+        titre:{fr:"Le régime foral : Pays basque et Navarre, un statut à part",
+               es:"El régimen foral: País Vasco y Navarra, un estatuto aparte"},
+        blocs:[
+          { t:"p", c:{
+            fr:"La <strong>première disposition additionnelle</strong> de la Constitution « ampare et respecte les droits historiques des territoires foraux » — une formule qui protège, sans les créer, les <em>fueros</em> médiévaux du Pays basque et de la Navarre. En pratique, le <strong>Concierto Económico</strong> basque et le <strong>Convenio</strong> navarrais donnent à ces territoires une souveraineté fiscale quasi complète : ce sont les <strong>Diputaciones forales</strong> qui lèvent et gèrent la quasi-totalité des impôts, avant de reverser à l'État un montant négocié (le <em>cupo</em>) correspondant aux services non transférés — défense, affaires étrangères, une partie de la sécurité sociale.",
+            es:"La <strong>disposición adicional primera</strong> de la Constitución «ampara y respeta los derechos históricos de los territorios forales» — una fórmula que protege, sin crearlos, los <em>fueros</em> medievales del País Vasco y Navarra. En la práctica, el <strong>Concierto Económico</strong> vasco y el <strong>Convenio</strong> navarro otorgan a esos territorios una soberanía fiscal casi completa: son las <strong>Diputaciones forales</strong> las que recaudan y gestionan casi todos los impuestos, para después transferir al Estado una cantidad negociada (el <em>cupo</em>) correspondiente a los servicios no transferidos —defensa, asuntos exteriores, parte de la seguridad social—."} },
+          { t:"p", c:{
+            fr:"Ce système inverse la logique du reste du pays : au lieu de recevoir des fonds de l'État, le Pays basque et la Navarre lui en <strong>versent</strong>. Il repose sur une légitimité historique — l'antériorité des <em>fueros</em> à la Constitution elle-même — qui le rend juridiquement difficile à étendre à d'autres territoires sans une réforme constitutionnelle. C'est précisément cette différence de nature qui alimente, côté catalan, la revendication d'un « concierto económico » comparable.",
+            es:"Este sistema invierte la lógica del resto del país: en vez de recibir fondos del Estado, el País Vasco y Navarra le <strong>transfieren</strong> dinero. Se apoya en una legitimidad histórica —la anterioridad de los <em>fueros</em> a la propia Constitución— que lo hace jurídicamente difícil de extender a otros territorios sin una reforma constitucional. Es precisamente esa diferencia de naturaleza la que alimenta, en el lado catalán, la reivindicación de un «concierto económico» comparable."} },
+          { t:"def", mot:{fr:"Concierto económico / Cupo",es:"Concierto económico / Cupo"},
+            c:{fr:"Le <em>concierto</em> est l'accord fiscal bilatéral entre l'État et le Pays basque ; le <em>cupo</em> est la somme que celui-ci verse à l'État en contrepartie des compétences non assumées. Renégocié périodiquement (dernière réforme en 2015 pour cinq ans), ce mécanisme est régulièrement critiqué pour son mode de calcul jugé avantageux pour le Pays basque, l'une des régions les plus riches d'Espagne.",
+               es:"El <em>concierto</em> es el acuerdo fiscal bilateral entre el Estado y el País Vasco; el <em>cupo</em> es la cantidad que este transfiere al Estado a cambio de las competencias no asumidas. Renegociado periódicamente (última reforma en 2015 por cinco años), este mecanismo es criticado con regularidad por su método de cálculo, considerado ventajoso para el País Vasco, una de las regiones más ricas de España."} }
+        ]
+      },
+      {
+        titre:{fr:"Le régime commun : un système redistributif sous tension permanente",
+               es:"El régimen común: un sistema redistributivo bajo tensión permanente"},
+        blocs:[
+          { t:"p", c:{
+            fr:"Les quinze autres communautés relèvent du <strong>régimen común</strong>, régi par la <strong>LOFCA</strong> (loi organique de financement des communautés autonomes, 1980) : l'État perçoit l'essentiel des grands impôts (IRPF, TVA, accises) puis les redistribue selon une formule combinant population, superficie, dispersion géographique et vieillissement, complétée par un <strong>Fondo de Garantía</strong> censé assurer un service public équivalent partout, quel que soit le niveau de richesse régional. Le système actuel, issu de la <strong>loi 22/2009</strong>, devait être révisé tous les cinq ans ; il ne l'a jamais été intégralement, faute de majorité politique suffisante entre communautés aux intérêts divergents.",
+            es:"Las otras quince comunidades se rigen por el <strong>régimen común</strong>, regulado por la <strong>LOFCA</strong> (ley orgánica de financiación de las comunidades autónomas, 1980): el Estado recauda la mayor parte de los grandes impuestos (IRPF, IVA, impuestos especiales) y luego los redistribuye según una fórmula que combina población, superficie, dispersión geográfica y envejecimiento, completada por un <strong>Fondo de Garantía</strong> destinado a asegurar un servicio público equivalente en todas partes, sea cual sea el nivel de riqueza regional. El sistema actual, surgido de la <strong>ley 22/2009</strong>, debía revisarse cada cinco años; nunca se ha revisado íntegramente, a falta de una mayoría política suficiente entre comunidades con intereses divergentes."} },
+          { t:"encadre", icon:"⚠️", c:"var(--a4)",
+            titre:{fr:"Erreur fréquente en dissertation", es:"Un error frecuente en el ensayo"},
+            c2:{fr:"Ne pas confondre le <em>régimen foral</em> (Pays basque, Navarre — deux communautés) et le <em>régimen común</em> (les quinze autres, dont la Catalogne). Même après la « financiación singular » de 2026, la Catalogne reste juridiquement dans le régime commun : ce qui change, c'est le <strong>niveau de ressources</strong> et de <strong>gestion fiscale</strong> qui lui est accordé à l'intérieur de ce régime, pas son statut constitutionnel, très différent de celui d'un territoire foral.",
+                es:"No confundir el <em>régimen foral</em> (País Vasco, Navarra — dos comunidades) con el <em>régimen común</em> (las otras quince, incluida Cataluña). Incluso tras la «financiación singular» de 2026, Cataluña sigue estando jurídicamente en el régimen común: lo que cambia es el <strong>nivel de recursos</strong> y de <strong>gestión fiscal</strong> que se le concede dentro de ese régimen, no su estatuto constitucional, muy distinto del de un territorio foral."} },
+          { t:"tableau",
+            head:{ fr:["Critère","Régime foral","Régime commun"], es:["Criterio","Régimen foral","Régimen común"] },
+            rows:{
+              fr:[
+                ["Territoires","Pays basque, Navarre","Les 15 autres communautés"],
+                ["Qui perçoit les impôts","Les Diputaciones forales","L'État, puis redistribution"],
+                ["Flux financier","Versement d'un cupo à l'État","Réception de fonds de l'État"],
+                ["Fondement juridique","1<sup>re</sup> disposition additionnelle (droits historiques)","LOFCA (1980), loi 22/2009"],
+                ["Révision","Négociation bilatérale périodique","En théorie tous les 5 ans, en pratique bloquée"]
+              ],
+              es:[
+                ["Territorios","País Vasco, Navarra","Las otras 15 comunidades"],
+                ["Quién recauda los impuestos","Las Diputaciones forales","El Estado, y luego redistribución"],
+                ["Flujo financiero","Aportación de un cupo al Estado","Recepción de fondos del Estado"],
+                ["Fundamento jurídico","Disposición adicional 1.ª (derechos históricos)","LOFCA (1980), ley 22/2009"],
+                ["Revisión","Negociación bilateral periódica","En teoría cada 5 años, en la práctica bloqueada"]
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    num:"III",
+    kicker:{fr:"Le temps présent",es:"El tiempo presente"},
+    titre:{fr:"La financiación singular catalane et la crise du régime commun (2024-2026)",
+           es:"La financiación singular catalana y la crisis del régimen común (2024-2026)"},
+    couleur:"var(--a3)",
+    sections:[
+      {
+        titre:{fr:"Un accord d'investiture devenu réforme structurelle",
+               es:"Un acuerdo de investidura convertido en reforma estructural"},
+        blocs:[
+          { t:"p", c:{
+            fr:"En <strong>août 2024</strong>, pour obtenir le soutien d'ERC à l'investiture du socialiste <strong>Salvador Illa</strong> à la présidence de la Generalitat, le PSC s'engage sur une <strong>« financiación singular »</strong> pour la Catalogne : une Hacienda propre, capable à terme de collecter la totalité de l'IRPF puis des autres impôts, la Catalogne reversant à l'État une contribution pour les services non transférés et une « quota de solidarité » envers les régions plus pauvres. L'objectif affiché est de rapprocher, sans le nommer, le statut fiscal catalan de celui du Pays basque — tout en <strong>restant formellement dans le régime commun</strong>, condition posée par le PSOE pour ne pas ouvrir une brèche generalisée.",
+            es:"En <strong>agosto de 2024</strong>, para obtener el apoyo de ERC a la investidura del socialista <strong>Salvador Illa</strong> como president de la Generalitat, el PSC se compromete con una <strong>«financiación singular»</strong> para Cataluña: una Hacienda propia, capaz a medio plazo de recaudar la totalidad del IRPF y después el resto de impuestos, aportando Cataluña al Estado una contribución por los servicios no transferidos y una «cuota de solidaridad» hacia las regiones más pobres. El objetivo declarado es acercar, sin nombrarlo, el estatuto fiscal catalán al del País Vasco — permaneciendo <strong>formalmente dentro del régimen común</strong>, condición impuesta por el PSOE para no abrir una brecha generalizada."} },
+          { t:"p", c:{
+            fr:"En <strong>juillet 2025</strong>, un premier accord technique transfère à la Catalogne la <strong>gestion de l'IRPF</strong>, puis en <strong>septembre 2026</strong> le ministère des Finances présente au <strong>Conseil de politique fiscale et financière (CPFF)</strong> le modèle définitif : outre la fiscalité, il prévoit une cession additionnelle d'un pourcentage de la <strong>TVA</strong> pour financer des compétences propres à la Catalogne (Mossos d'Esquadra, système pénitentiaire) qui n'existent pas dans les autres communautés, ainsi qu'un « fonds de statu quo » de 400 millions d'euros destiné à limiter les pertes des régions les moins favorisées par la réforme.",
+            es:"En <strong>julio de 2025</strong>, un primer acuerdo técnico transfiere a Cataluña la <strong>gestión del IRPF</strong>, y en <strong>septiembre de 2026</strong> el Ministerio de Hacienda presenta al <strong>Consejo de Política Fiscal y Financiera (CPFF)</strong> el modelo definitivo: además de la fiscalidad, prevé una cesión adicional de un porcentaje del <strong>IVA</strong> para financiar competencias propias de Cataluña (Mossos d'Esquadra, sistema penitenciario) que no existen en las demás comunidades, así como un «fondo de statu quo» de 400 millones de euros destinado a limitar las pérdidas de las regiones menos favorecidas por la reforma."} }
+        ]
+      },
+      {
+        titre:{fr:"Le rejet du CPFF : la Catalogne isolée, Junts insatisfait",
+               es:"El rechazo del CPFF: Cataluña aislada, Junts insatisfecho"},
+        blocs:[
+          { t:"p", c:{
+            fr:"Le <strong>5 septembre 2026</strong>, le CPFF — organe qui réunit l'État et les communautés autonomes pour coordonner la politique fiscale — approuve formellement le nouveau modèle, mais avec les <strong>seuls votes favorables de la Catalogne et des Canaries</strong> : les treize autres communautés de régime commun, y compris deux dirigées par le PSOE, votent contre, tandis que la Communauté de Madrid choisit de <strong>boycotter la séance</strong>. Le ministre des Finances fait néanmoins adopter le texte, le vote du CPFF n'étant que consultatif — une situation qui affaiblit politiquement la réforme avant même son passage au Parlement.",
+            es:"El <strong>5 de septiembre de 2026</strong>, el CPFF —órgano que reúne al Estado y a las comunidades autónomas para coordinar la política fiscal— aprueba formalmente el nuevo modelo, pero con los <strong>únicos votos favorables de Cataluña y Canarias</strong>: las otras trece comunidades de régimen común, incluidas dos gobernadas por el PSOE, votan en contra, mientras la Comunidad de Madrid opta por <strong>boicotear la sesión</strong>. El ministro de Hacienda logra no obstante que se apruebe el texto, ya que el voto del CPFF es solo consultivo — una situación que debilita políticamente la reforma incluso antes de su paso por el Parlamento."} },
+          { t:"p", c:{
+            fr:"Paradoxalement, le modèle ne satisfait pas non plus <strong>Junts</strong>, partenaire parlementaire indépendantiste du gouvernement Sánchez : le parti de Carles Puigdemont réclame un <strong>concierto económico complet</strong>, comparable à celui du Pays basque, et non une simple amélioration à l'intérieur du régime commun. Il annonce une <strong>enmienda a la totalidad</strong> (motion de rejet global) lors de l'examen parlementaire du texte, et accuse le PSC de privilégier la loyauté envers le PSOE plutôt que les intérêts catalans. La réforme se retrouve ainsi prise en étau entre le rejet des autres communautés et l'insatisfaction des indépendantistes catalans eux-mêmes.",
+            es:"Paradójicamente, el modelo tampoco satisface a <strong>Junts</strong>, socio parlamentario independentista del gobierno Sánchez: el partido de Carles Puigdemont reclama un <strong>concierto económico completo</strong>, comparable al del País Vasco, y no una simple mejora dentro del régimen común. Anuncia una <strong>enmienda a la totalidad</strong> en la tramitación parlamentaria del texto, y acusa al PSC de priorizar la lealtad hacia el PSOE frente a los intereses catalanes. La reforma queda así atrapada entre el rechazo de las demás comunidades y la insatisfacción de los propios independentistas catalanes."} },
+          { t:"faits", items:[
+            { l:{fr:"Votes favorables au CPFF",es:"Votos favorables en el CPFF"}, v:{fr:"2 sur 15 : Catalogne et Canaries",es:"2 de 15: Cataluña y Canarias"} },
+            { l:{fr:"Communautés bénéficiaires du nouveau calcul",es:"Comunidades beneficiadas por el nuevo cálculo"}, v:{fr:"Valence, Catalogne, Murcie, Andalousie, Madrid, Canaries",es:"Valencia, Cataluña, Murcia, Andalucía, Madrid, Canarias"} },
+            { l:{fr:"Communautés perdant du poids relatif",es:"Comunidades que pierden peso relativo"}, v:{fr:"Aragon, Asturies, Castille-La Manche, Estrémadure, Rioja, Cantabrie",es:"Aragón, Asturias, Castilla-La Mancha, Extremadura, La Rioja, Cantabria"} }
+          ]}
+        ]
+      },
+      {
+        titre:{fr:"Le principe d'ordinalité et la question de la solidarité interterritoriale",
+               es:"El principio de ordinalidad y la cuestión de la solidaridad interterritorial"},
+        blocs:[
+          { t:"p", c:{
+            fr:"Au cœur du débat se trouve le principe d'<strong>ordinalité</strong> : l'idée qu'une communauté qui contribue davantage au système ne devrait jamais, après redistribution, se retrouver classée derrière une communauté moins contributrice en termes de ressources par habitant. Les régions les plus riches — Catalogne, Madrid, Baléares — dénoncent de longue date des changements de classement qu'elles jugent démotivants ; les régions moins peuplées ou vieillissantes — Estrémadure, Castille-La Manche, Asturies — répondent que la solidarité territoriale est un <strong>principe constitutionnel</strong> (art. 138 et 158), destiné à garantir un niveau de services équivalent partout, quelle que soit la richesse relative de chaque territoire.",
+            es:"En el centro del debate se encuentra el principio de <strong>ordinalidad</strong>: la idea de que una comunidad que contribuye más al sistema nunca debería, tras la redistribución, quedar clasificada por debajo de una comunidad que contribuye menos en términos de recursos por habitante. Las regiones más ricas —Cataluña, Madrid, Baleares— denuncian desde hace tiempo cambios de clasificación que consideran desmotivadores; las regiones menos pobladas o envejecidas —Extremadura, Castilla-La Mancha, Asturias— responden que la solidaridad territorial es un <strong>principio constitucional</strong> (arts. 138 y 158), destinado a garantizar un nivel de servicios equivalente en todas partes, sea cual sea la riqueza relativa de cada territorio."} },
+          { t:"p", c:{
+            fr:"Le nouveau modèle de 2026 tente de répondre à cette tension en garantissant des « chiffres carrés » (<span class='es'>números cuadrados</span>) pour 2027 — une formule de transition censée neutraliser les effets les plus brutaux du changement — mais il ne résout pas le désaccord de fond : peut-on offrir à une seule communauté un régime de gestion fiscale renforcé sans que cela devienne, de fait, une nouvelle forme de <em>café para todos</em> réclamée ensuite par les autres ? Le Gouvernement répond que le modèle est « singulier pour la Catalogne, multilatéral pour le reste », ce qui laisse ouverte la porte à des négociations bilatérales similaires — une ambiguïté volontaire qui inquiète les communautés gouvernées par le PP autant que certaines dirigées par le PSOE.",
+            es:"El nuevo modelo de 2026 intenta responder a esta tensión garantizando «números cuadrados» para 2027 —una fórmula de transición destinada a neutralizar los efectos más bruscos del cambio— pero no resuelve el desacuerdo de fondo: ¿se puede ofrecer a una sola comunidad un régimen de gestión fiscal reforzado sin que ello se convierta, de hecho, en una nueva forma de <em>café para todos</em> reclamada después por las demás? El Gobierno responde que el modelo es «singular para Cataluña, multilateral para el resto», lo que deja abierta la puerta a negociaciones bilaterales similares — una ambigüedad deliberada que inquieta tanto a las comunidades gobernadas por el PP como a algunas dirigidas por el PSOE."} },
+          { t:"p", c:{
+            fr:"Ce nouvel épisode illustre une constante du modèle autonomique espagnol depuis 1978 : chaque tentative de <strong>rationaliser</strong> le système — carte homogène en 1983, LOFCA en 1980, réformes de 1996, 2002, 2009 — a fini par générer de nouvelles demandes d'asymétrie, sous la pression des nationalismes périphériques ou des besoins de majorités parlementaires fragiles. L'État des autonomies n'est donc pas un équilibre stabilisé une fois pour toutes, mais un <strong>processus continu de renégociation</strong>, dont la financiación singular catalane constitue, en 2026, le dernier chapitre.",
+            es:"Este nuevo episodio ilustra una constante del modelo autonómico español desde 1978: cada intento de <strong>racionalizar</strong> el sistema —mapa homogéneo en 1983, LOFCA en 1980, reformas de 1996, 2002, 2009— ha terminado generando nuevas demandas de asimetría, bajo la presión de los nacionalismos periféricos o de la necesidad de mayorías parlamentarias frágiles. El Estado de las Autonomías no es, por tanto, un equilibrio estabilizado de una vez para siempre, sino un <strong>proceso continuo de renegociación</strong>, del que la financiación singular catalana constituye, en 2026, el último capítulo."} }
+        ]
+      }
+    ]
+  }
+  ],
+
+  /* ─── 5. ACTEURS CLÉS ─────────────────────────────────────────────── */
+  acteurs: [
+    { nom:"Manuel Clavero Arévalo", c:"var(--a2)", role:{fr:"Ministre des Régions (1979-1980)",es:"Ministro para las Regiones (1979-1980)"},
+      d:{fr:"Inspirateur de la formule du « café para todos », qui généralise l'accès à l'autonomie à l'ensemble des régions espagnoles.",
+         es:"Inspirador de la fórmula del «café para todos», que generaliza el acceso a la autonomía al conjunto de las regiones españolas."} },
+    { nom:"Salvador Illa", c:"var(--a3)", role:{fr:"Président de la Generalitat (depuis 2024)",es:"President de la Generalitat (desde 2024)"},
+      d:{fr:"Socialiste dont l'investiture repose sur l'engagement d'une financiación singular pour la Catalogne, négociée avec ERC.",
+         es:"Socialista cuya investidura descansa en el compromiso de una financiación singular para Cataluña, negociada con ERC."} },
+    { nom:"Arcadi España", c:"var(--a4)", role:{fr:"Ministre des Finances",es:"Ministro de Hacienda"},
+      d:{fr:"Porte au CPFF de septembre 2026 le nouveau modèle de financement, adopté malgré le rejet de treize communautés sur quinze.",
+         es:"Lleva al CPFF de septiembre de 2026 el nuevo modelo de financiación, aprobado pese al rechazo de trece comunidades de quince."} },
+    { nom:"Carles Puigdemont / Junts", c:"var(--a1)", role:{fr:"Parti indépendantiste catalan",es:"Partido independentista catalán"},
+      d:{fr:"Juge la financiación singular insuffisante et réclame un concierto económico complet, comparable au régime foral basque.",
+         es:"Considera insuficiente la financiación singular y reclama un concierto económico completo, comparable al régimen foral vasco."} },
+    { nom:"Isabel Díaz Ayuso", c:"var(--a4)", role:{fr:"Présidente de la Communauté de Madrid",es:"Presidenta de la Comunidad de Madrid"},
+      d:{fr:"Boycotte le CPFF de septembre 2026, dénonçant un traitement fiscal jugé privilégié pour la Catalogne au détriment des autres régions.",
+         es:"Boicotea el CPFF de septiembre de 2026, denunciando un trato fiscal que considera privilegiado para Cataluña en detrimento de las demás regiones."} },
+    { nom:"Diputaciones forales", c:"var(--a2)", role:{fr:"Institutions fiscales basques",es:"Instituciones fiscales vascas"},
+      d:{fr:"Collectent et gèrent la quasi-totalité des impôts au Pays basque dans le cadre du Concierto Económico, modèle souvent cité en référence.",
+         es:"Recaudan y gestionan casi todos los impuestos en el País Vasco en el marco del Concierto Económico, modelo citado con frecuencia como referencia."} }
+  ],
+
+  /* ─── 6. CONTROVERSE ─────────────────────────────────────────────── */
+  debat: {
+    question: {fr:"La financiación singular catalane menace-t-elle l'égalité entre les communautés autonomes ?",
+               es:"¿Amenaza la financiación singular catalana la igualdad entre las comunidades autónomas?"},
+    oui: {
+      titre:{fr:"Oui : une brèche dans le régime commun", es:"Sí: una brecha en el régimen común"},
+      items:{
+        fr:[
+          "Treize communautés de régime commun sur quinze ont voté <strong>contre</strong> le modèle au CPFF, dont deux dirigées par le PSOE lui-même.",
+          "Le principe d'un régime <strong>« singulier pour un seul territoire »</strong> contredit l'esprit du système commun, censé traiter les régions selon des règles homogènes.",
+          "L'octroi de compétences fiscales élargies à la Catalogne crée un <strong>précédent</strong> que d'autres communautés riches (Madrid, Baléares) pourraient invoquer à leur tour."
+        ],
+        es:[
+          "Trece comunidades de régimen común de quince votaron <strong>en contra</strong> del modelo en el CPFF, incluidas dos gobernadas por el propio PSOE.",
+          "El principio de un régimen <strong>«singular para un solo territorio»</strong> contradice el espíritu del sistema común, pensado para tratar a las regiones con reglas homogéneas.",
+          "La concesión de competencias fiscales ampliadas a Cataluña crea un <strong>precedente</strong> que otras comunidades ricas (Madrid, Baleares) podrían invocar a su vez."
+        ]
+      }
+    },
+    non: {
+      titre:{fr:"Non : une correction nécessaire", es:"No: una corrección necesaria"},
+      items:{
+        fr:[
+          "La Catalogne reste <strong>dans le régime commun</strong> : elle ne bénéficie pas d'un statut constitutionnel distinct comparable au régime foral.",
+          "Le modèle vise à corriger des <strong>anomalies de classement</strong> (principe d'ordinalité) que la Catalogne dénonce depuis des décennies, sans remettre en cause la solidarité de base.",
+          "Le Gouvernement présente le dispositif comme <strong>extensible</strong> à d'autres communautés qui négocieraient des accords bilatéraux similaires, ce qui limiterait l'asymétrie à terme."
+        ],
+        es:[
+          "Cataluña sigue estando <strong>dentro del régimen común</strong>: no goza de un estatuto constitucional distinto comparable al régimen foral.",
+          "El modelo busca corregir <strong>anomalías de clasificación</strong> (principio de ordinalidad) que Cataluña denuncia desde hace décadas, sin cuestionar la solidaridad de base.",
+          "El Gobierno presenta el dispositivo como <strong>extensible</strong> a otras comunidades que negocien acuerdos bilaterales similares, lo que limitaría la asimetría a largo plazo."
+        ]
+      }
+    },
+    synthese: {fr:"Le débat oppose une lecture <em>égalitariste</em>, pour qui toute différenciation fiscale menace la cohésion du régime commun, à une lecture <em>différentialiste</em>, qui considère l'asymétrie comme une caractéristique constitutive de l'État des autonomies depuis 1978, déjà présente dans le régime foral. La difficulté du dossier de 2026 tient à son <strong>ambiguïté assumée</strong> : ni concierto économique complet, ni simple ajustement technique, le modèle catalan ne satisfait pleinement ni les partisans de l'uniformité ni les indépendantistes eux-mêmes — signe que la question du financement territorial reste, en Espagne, structurellement irrésolue.",
+               es:"El debate enfrenta una lectura <em>igualitarista</em>, para la que cualquier diferenciación fiscal amenaza la cohesión del régimen común, con una lectura <em>diferencialista</em>, que considera la asimetría un rasgo constitutivo del Estado de las Autonomías desde 1978, ya presente en el régimen foral. La dificultad del expediente de 2026 radica en su <strong>ambigüedad asumida</strong>: ni concierto económico completo ni simple ajuste técnico, el modelo catalán no satisface plenamente ni a los partidarios de la uniformidad ni a los propios independentistas — señal de que la cuestión de la financiación territorial sigue siendo, en España, estructuralmente irresuelta."}
+  },
+
+  /* ─── 7. LEXIQUE BILINGUE ─────────────────────────────────────────── */
+  lexique: [
+    { es:"Estado de las Autonomías", fr:"Modèle territorial espagnol : État unitaire décentralisé en 17 communautés et 2 villes autonomes." },
+    { es:"Comunidad autónoma", fr:"Entité territoriale dotée d'un statut d'autonomie, de compétences propres et d'institutions élues." },
+    { es:"Estatuto de autonomía", fr:"Loi organique fondamentale de chaque communauté, approuvée par les Cortes ; sa « constitution régionale »." },
+    { es:"Café para todos", fr:"Formule désignant l'extension de l'autonomie à toutes les régions espagnoles, et non aux seules nationalités historiques." },
+    { es:"Nacionalidades históricas", fr:"Catalogne, Pays basque et Galice, dotées d'une voie d'accès rapide à l'autonomie (article 151)." },
+    { es:"Régimen foral", fr:"Statut fiscal du Pays basque et de la Navarre, fondé sur les droits historiques et une gestion autonome des impôts." },
+    { es:"Régimen común", fr:"Statut fiscal des quinze autres communautés, financées par un système redistributif géré par l'État." },
+    { es:"LOFCA", fr:"Loi organique de financement des communautés autonomes (1980), cadre juridique du régime commun." },
+    { es:"Concierto económico", fr:"Accord fiscal bilatéral entre l'État et le Pays basque, régissant la collecte des impôts et le cupo." },
+    { es:"Cupo", fr:"Montant versé par le Pays basque à l'État en contrepartie des compétences non assumées par la région." },
+    { es:"Financiación singular", fr:"Modèle de financement renforcé négocié pour la Catalogne à partir de 2024, sans sortie du régime commun." },
+    { es:"Ordinalidad", fr:"Principe selon lequel une région plus contributrice ne devrait pas être reclassée derrière une région moins contributrice après redistribution." },
+    { es:"CPFF", fr:"Conseil de politique fiscale et financière, organe consultatif réunissant l'État et les communautés autonomes." },
+    { es:"Hecho diferencial", fr:"Compétence ou trait propre à certaines communautés (langue, droit civil, police), fondement des revendications identitaires." },
+    { es:"Balanza fiscal", fr:"Solde entre ce qu'une région verse à l'État et ce qu'elle en reçoit ; indicateur central du débat sur la solidarité territoriale." }
+  ],
+
+  /* ─── 8. SUJETS POSSIBLES ─────────────────────────────────────────── */
+  sujets: [
+    { q:{fr:"L'État des autonomies espagnol est-il un modèle fédéral qui s'ignore ?",
+         es:"¿Es el Estado de las Autonomías español un modelo federal que se ignora a sí mismo?"},
+      h:{fr:"Comparer les compétences réellement exercées par les communautés à celles d'un État fédéral classique, en s'appuyant sur le titre VIII.",
+         es:"Comparar las competencias realmente ejercidas por las comunidades con las de un Estado federal clásico, apoyándose en el título VIII."} },
+    { q:{fr:"Dans quelle mesure l'asymétrie territoriale est-elle constitutive du modèle autonomique espagnol ?",
+         es:"¿En qué medida es la asimetría territorial constitutiva del modelo autonómico español?"},
+      h:{fr:"Mobiliser la distinction régime foral / régime commun et l'épisode de la financiación singular catalane de 2024-2026.",
+         es:"Recurrir a la distinción régimen foral / régimen común y al episodio de la financiación singular catalana de 2024-2026."} },
+    { q:{fr:"Le système de financement autonomique espagnol est-il encore soutenable politiquement ?",
+         es:"¿Sigue siendo sostenible políticamente el sistema de financiación autonómica español?"},
+      h:{fr:"S'appuyer sur le blocage de la révision quinquennale de la LOFCA depuis 2009 et le rejet du CPFF de septembre 2026.",
+         es:"Apoyarse en el bloqueo de la revisión quinquenal de la LOFCA desde 2009 y en el rechazo del CPFF de septiembre de 2026."} },
+    { q:{fr:"Solidarité territoriale et autonomie fiscale sont-elles conciliables en Espagne ?",
+         es:"¿Son conciliables la solidaridad territorial y la autonomía fiscal en España?"},
+      h:{fr:"Analyser le principe d'ordinalité, le Fondo de Garantía et les arguments opposés des régions riches et des régions moins peuplées.",
+         es:"Analizar el principio de ordinalidad, el Fondo de Garantía y los argumentos opuestos de las regiones ricas y las menos pobladas."} }
+  ],
+
+  /* ─── 9. À RETENIR ───────────────────────────────────────────────── */
+  retenir: {
+    fr:[
+      "La Constitution de 1978 ne fixe <strong>aucune carte</strong> régionale : elle ouvre un droit à l'autonomie que la négociation politique a transformé en 17 communautés.",
+      "Le <strong>« café para todos »</strong> généralise l'autonomie à toutes les régions, diluant la spécificité initiale des trois nationalités historiques.",
+      "Les <strong>Pactes autonomiques de 1981</strong>, signés après le 23-F, ralentissent et encadrent un processus jugé menaçant par les secteurs les plus centralistes.",
+      "Deux régimes fiscaux coexistent : le <strong>régime foral</strong> (Pays basque, Navarre), qui gère lui-même ses impôts, et le <strong>régime commun</strong> (les 15 autres), financé par l'État.",
+      "La <strong>LOFCA</strong> de 1980 et la loi de 2009 organisent le régime commun, dont la révision quinquennale prévue n'a jamais été intégralement menée.",
+      "Depuis 2024, la <strong>financiación singular</strong> catalane, négociée avec ERC puis Junts, rapproche le statut de la Catalogne du régime foral sans l'y faire basculer.",
+      "En <strong>septembre 2026</strong>, le nouveau modèle n'est approuvé que par la Catalogne et les Canaries au CPFF, signe d'un isolement politique persistant.",
+      "Le débat oppose une lecture <strong>égalitariste</strong>, hostile à toute asymétrie, à une lecture <strong>différentialiste</strong>, qui y voit une constante historique du modèle autonomique."
+    ],
+    es:[
+      "La Constitución de 1978 no fija <strong>ningún mapa</strong> regional: abre un derecho a la autonomía que la negociación política transformó en 17 comunidades.",
+      "El <strong>«café para todos»</strong> generaliza la autonomía a todas las regiones, diluyendo la especificidad inicial de las tres nacionalidades históricas.",
+      "Los <strong>Pactos autonómicos de 1981</strong>, firmados tras el 23-F, frenan y encauzan un proceso considerado amenazante por los sectores más centralistas.",
+      "Coexisten dos regímenes fiscales: el <strong>régimen foral</strong> (País Vasco, Navarra), que gestiona sus propios impuestos, y el <strong>régimen común</strong> (las otras 15), financiado por el Estado.",
+      "La <strong>LOFCA</strong> de 1980 y la ley de 2009 organizan el régimen común, cuya revisión quinquenal prevista nunca se ha llevado a cabo íntegramente.",
+      "Desde 2024, la <strong>financiación singular</strong> catalana, negociada con ERC y después con Junts, acerca el estatuto de Cataluña al régimen foral sin hacerla pasar a él.",
+      "En <strong>septiembre de 2026</strong>, el nuevo modelo solo es aprobado por Cataluña y Canarias en el CPFF, señal de un aislamiento político persistente.",
+      "El debate enfrenta una lectura <strong>igualitarista</strong>, hostil a cualquier asimetría, con una lectura <strong>diferencialista</strong>, que ve en ella una constante histórica del modelo autonómico."
+    ]
+  }
+};
+</script>
+<!-- ══════════════════════════════════════════════════════════════════
+     ⬆⬆⬆  FIN DES DONNÉES — NE RIEN MODIFIER EN DESSOUS  ⬆⬆⬆
+     ══════════════════════════════════════════════════════════════════ -->
+
+
+<script>
+/* ─── Utilitaires ─── */
+const $ = (s,r=document)=>r.querySelector(s);
+let LANG = 'fr';
+/* T() : renvoie la version dans la langue courante, ou la valeur telle quelle */
+const T = v => (v && typeof v==='object' && !Array.isArray(v) && ('fr' in v||'es' in v)) ? (v[LANG] ?? v.fr) : v;
+
+/* ─── Libellés d'interface ─── */
+const UI = {
+  fr:{ chrono:"Chronologie",
+       essentiel:"L'essentiel", reperes:"Repères", quiEstQui:"Qui est qui", acteurs:"Acteurs clés",
+       controverse:"Controverse", vocab:"Vocabulaire", lexique:"Lexique bilingue",
+       filtrer:"Filtrer le lexique…", terme:"Terme", trad:"Traduction / usage",
+       entrainement:"Entraînement", sujets:"Sujets possibles", memoriser:"Mémoriser",
+       retenir:"À retenir", synthese:"Synthèse", chapitre:"Chapitre" },
+  es:{ chrono:"Cronología",
+       essentiel:"Lo esencial", reperes:"Hitos", quiEstQui:"Quién es quién", acteurs:"Actores clave",
+       controverse:"Controversia", vocab:"Vocabulario", lexique:"Glosario bilingüe",
+       filtrer:"Filtrar el glosario…", terme:"Término", trad:"Traducción / uso",
+       entrainement:"Entrenamiento", sujets:"Posibles temas", memoriser:"Memorizar",
+       retenir:"Para recordar", synthese:"Síntesis", chapitre:"Capítulo" }
+};
+const t = k => UI[LANG][k];
+
+/* ─── Rendu des blocs de contenu ─── */
+function bloc(b){
+  switch(b.t){
+    case 'p':      return `<p class="prose">${T(b.c)}</p>`;
+    case 'liste':  return `<ul class="liste">${T(b.items).map(i=>`<li>${i}</li>`).join('')}</ul>`;
+    case 'faits':  return `<div class="faits">${T(b.items).map(i=>
+                     `<div class="fait"><div class="fait-l">${T(i.l)}</div><div class="fait-v">${T(i.v)}</div></div>`).join('')}</div>`;
+    case 'stats':  return `<div class="stats">${b.items.map(i=>
+                     `<div class="stat" style="--c:${i.c||'var(--a1)'}"><span class="stat-n">${T(i.n)}</span><span class="stat-d">${T(i.d)}</span></div>`).join('')}</div>`;
+    case 'citation':return `<blockquote class="citation"><p>« ${T(b.c)} »</p><cite>${T(b.src)}</cite></blockquote>`;
+    case 'encadre':return `<div class="encadre" style="--c:${b.c||'var(--a2)'}"><div class="encadre-ic">${b.icon||'💡'}</div>
+                     <div><div class="encadre-t">${T(b.titre)}</div><div class="encadre-c">${T(b.c2)}</div></div></div>`;
+    case 'def':    return `<div class="def"><div class="def-mot">${T(b.mot)}</div><div class="def-c">${T(b.c)}</div></div>`;
+    case 'tableau':return `<div class="tbl-wrap"><table><thead><tr>${T(b.head).map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+                     <tbody>${T(b.rows).map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    case 'tl':     return `<div class="tl">${T(b.items).map(i=>
+                     `<div class="tl-item"><div class="tl-d">${T(i.d)}</div><div class="tl-c">${T(i.c)}</div></div>`).join('')}</div>`;
+    default:       return '';
+  }
+}
+
+/* ─── En-tête ─── */
+function rendreHero(){
+  const m = COURS.meta;
+  document.documentElement.dataset.theme = m.theme;
+  document.documentElement.lang = LANG;
+  document.title = T(m.titre) + ' — Civilisation';
+  $('#bc-titre').textContent = m.titre.fr ?? m.titre;   // la nav reste en français
+  $('#ft').textContent = `${t('chapitre')} ${m.chapitre}${LANG==='fr'?' : ':': '}${T(m.titre)}`;
+  $('#hero').innerHTML = `
+    <span class="hero-flag">${m.drapeau}</span>
+    <div class="hero-label">${T(m.label)}</div>
+    <h1>${T(m.titre)}</h1>
+    <p class="hero-sub">${T(m.sousTitre)}</p>`;
+}
+
+/* ─── Corps du cours ─── */
+function rendreCours(){
+  const c = COURS, out = [];
+
+  out.push(`<section class="bloc rev" id="s-essentiel">
+    <div class="essentiel"><div class="essentiel-label">${t('essentiel')}</div><p>${T(c.essentiel)}</p></div>
+    <div class="stats">${c.chiffres.map((x,i)=>
+      `<div class="stat" style="--c:var(--a${(i%4)+1})"><span class="stat-n">${T(x.n)}</span><span class="stat-d">${T(x.d)}</span></div>`).join('')}</div>
+  </section>`);
+
+  if(c.chronologie?.length){
+    out.push(`<section class="bloc rev chrono-mobile" id="s-chrono">
+      <div class="bloc-head"><span class="bloc-kicker">${t('reperes')}</span><h2 class="bloc-title">${t('chrono')}</h2></div>
+      ${bloc({t:'tl',items:c.chronologie})}</section>`);
+  }
+
+  c.parties.forEach((p,pi)=>{
+    let html = `<section class="partie rev" id="p-${pi}" style="--p:${p.couleur}">
+      <div class="partie-head"><div class="partie-num">${p.num}</div>
+      <div><div class="partie-kicker">${T(p.kicker)}</div><h2 class="partie-title">${T(p.titre)}</h2></div></div>`;
+    p.sections.forEach((s,si)=>{
+      html += `<div class="section" id="p-${pi}-${si}"><h3 class="section-title"><span class="section-num">${si+1}.</span> ${T(s.titre)}</h3>
+        ${s.blocs.map(bloc).join('')}</div>`;
+    });
+    out.push(html+`</section>`);
+  });
+
+  if(c.acteurs?.length){
+    out.push(`<section class="bloc rev" id="s-acteurs">
+      <div class="bloc-head"><span class="bloc-kicker">${t('quiEstQui')}</span><h2 class="bloc-title">${t('acteurs')}</h2></div>
+      <div class="acteurs">${c.acteurs.map(a=>
+        `<div class="acteur" style="--c:${a.c}"><div class="acteur-nom">${a.nom}</div>
+         <div class="acteur-role">${T(a.role)}</div><div class="acteur-c">${T(a.d)}</div></div>`).join('')}</div></section>`);
+  }
+
+  if(c.debat){
+    out.push(`<section class="bloc rev" id="s-debat">
+      <div class="bloc-head"><span class="bloc-kicker" style="--k:var(--a4)">${t('controverse')}</span>
+      <h2 class="bloc-title">${T(c.debat.question)}</h2></div>
+      <div class="debat">
+        <div class="debat-col oui"><div class="debat-t">${T(c.debat.oui.titre)}</div>
+          <ul>${T(c.debat.oui.items).map(i=>`<li>${i}</li>`).join('')}</ul></div>
+        <div class="debat-col non"><div class="debat-t">${T(c.debat.non.titre)}</div>
+          <ul>${T(c.debat.non.items).map(i=>`<li>${i}</li>`).join('')}</ul></div>
+      </div>
+      ${c.debat.synthese?`<div class="encadre" style="--c:var(--a1);margin-top:14px">
+        <div class="encadre-ic">⚖️</div><div><div class="encadre-t">${t('synthese')}</div>
+        <div class="encadre-c">${T(c.debat.synthese)}</div></div></div>`:''}
+    </section>`);
+  }
+
+  if(c.lexique?.length){
+    out.push(`<section class="bloc rev" id="s-lexique">
+      <div class="bloc-head"><span class="bloc-kicker" style="--k:var(--a2)">${t('vocab')}</span>
+      <h2 class="bloc-title">${t('lexique')}</h2></div>
+      <input class="lex-search" id="lex-search" placeholder="${t('filtrer')}" aria-label="${t('filtrer')}">
+      <div class="tbl-wrap"><table class="lex"><thead><tr><th>${t('terme')}</th><th>${t('trad')}</th></tr></thead>
+      <tbody id="lex-body">${c.lexique.map(l=>`<tr><td>${l.es}</td><td>${l.fr}</td></tr>`).join('')}</tbody></table></div>
+    </section>`);
+  }
+
+  if(c.sujets?.length){
+    out.push(`<section class="bloc rev" id="s-sujets">
+      <div class="bloc-head"><span class="bloc-kicker" style="--k:var(--a4)">${t('entrainement')}</span>
+      <h2 class="bloc-title">${t('sujets')}</h2></div>
+      ${c.sujets.map((s,i)=>`<div class="sujet"><div class="sujet-n">${String(i+1).padStart(2,'0')}</div>
+        <div><div class="sujet-q">${T(s.q)}</div><div class="sujet-h">${T(s.h)}</div></div></div>`).join('')}</section>`);
+  }
+
+  if(c.retenir?.length){
+    out.push(`<section class="bloc rev" id="s-retenir">
+      <div class="bloc-head"><span class="bloc-kicker">${t('memoriser')}</span><h2 class="bloc-title">${t('retenir')}</h2></div>
+      <div class="retenir"><ul>${T(c.retenir).map(r=>`<li>${r}</li>`).join('')}</ul></div></section>`);
+  }
+
+  $('#cours').innerHTML = out.join('');
+}
+
+/* ─── Colonne chronologie ─── */
+function rendreRail(){
+  if(!COURS.chronologie?.length){ $('#rail')?.remove(); return; }
+  $('#rail').innerHTML = `<div class="rail-title">${t('chrono')}</div>${bloc({t:'tl',items:COURS.chronologie})}`;
+}
+
+/* ─── Recherche dans le lexique ─── */
+function brancherLexique(){
+  const ls = $('#lex-search'); if(!ls) return;
+  ls.addEventListener('input', ()=>{
+    const q = ls.value.toLowerCase().trim();
+    $('#lex-body').querySelectorAll('tr').forEach(tr=>{
+      tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+  });
+}
+
+/* ─── Changement de langue ─── */
+function setLang(lang){
+  LANG = lang;
+  $('#ap-btn-fr').classList.toggle('active', lang==='fr');
+  $('#ap-btn-es').classList.toggle('active', lang==='es');
+  rendreHero(); rendreCours(); rendreRail();
+  document.querySelectorAll('.rev').forEach(el=>el.classList.add('vu'));
+  brancherLexique();
+}
+
+/* ─── Démarrage ─── */
+function demarrer(){
+  rendreHero(); rendreCours(); rendreRail(); brancherLexique();
+
+  const maj = ()=>{
+    const h = document.body.scrollHeight - innerHeight;
+    $('#progress').style.width = (h>0 ? (scrollY/h)*100 : 0) + '%';
+  };
+  addEventListener('scroll', maj, {passive:true}); maj();
+
+  if(!('IntersectionObserver' in window)){
+    document.querySelectorAll('.rev').forEach(el=>el.classList.add('vu'));
+    return;
+  }
+  const io = new IntersectionObserver(es=>es.forEach(x=>{
+    if(x.isIntersecting){ x.target.classList.add('vu'); io.unobserve(x.target); }
+  }), {threshold:.06});
+  document.querySelectorAll('.rev').forEach(el=>io.observe(el));
+}
+
+demarrer();
+</script>
+</body>
+</html>
