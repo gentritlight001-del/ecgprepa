@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Canada, premier membre associé de l'UE</title>
+<link rel="stylesheet" href="../../../fonts/fonts.css">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #c0392b;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #c0392b; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #d40000; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #c0392b; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #c0392b; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #c0392b; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#c0392b; border-color:#c0392b; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  /* Article styles */
+  .ap-band { background: #d40000; text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(20,0,0,0.95); padding:12px 60px; border-bottom: 1px solid rgba(192,57,43,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#e8c84a; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(192,57,43,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(181,19,31,0.2);  color:#f08080; border:1px solid rgba(181,19,31,0.35); }
+  .ap-tag-navy   { background:rgba(0,48,135,0.4);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #e8c84a; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(192,57,43,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(232,200,74,0.7); }
+
+  /* Rich components */
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#e8c84a; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(232,200,74,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#071422,#0d2540); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #e8c84a; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(192,57,43,0.06),rgba(192,57,43,0.02)); border-left:3px solid #e8c84a; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(232,200,74,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(232,200,74,0.7); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(0,15,40,0.9),rgba(0,8,24,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(192,57,43,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#e8c84a; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(192,57,43,0.06); border:1px solid rgba(192,57,43,0.15); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(232,200,74,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#e8c84a; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(232,200,74,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#e8c84a; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(0,15,40,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-en-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.25s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-en.html">Anglais</a>
+    <span class="sep">/</span>
+    <span class="current">Canada — membre associé UE</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-en" class="ap-lang-btn" onclick="setLang('en')">🇨🇦 EN</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇨🇦 Canada — Membre associé de l'UE</div>
+<div class="ap-back-bar">
+  <a href="../tous-en.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+    <div class="ap-hero-img-wrap">
+      <img class="ap-hero-img" src="../images/canada-membre-associe-ue-2026.jpg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'">
+    </div>
+
+    <!-- ══ SECTION FR ══ -->
+    <div class="ap-fr-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-red">🇨🇦 Canada</span>
+          <span class="ap-tag ap-tag-navy">🇪🇺 Union européenne</span>
+          <span class="ap-tag ap-tag-blue">🇺🇸 États-Unis</span>
+          <span class="ap-tag ap-tag-gold">Géopolitique</span>
+          <span class="ap-tag ap-tag-green">Commerce</span>
+        </div>
+        <div class="ap-date">15 – 17 septembre 2026 — ECG Prépa · Canada</div>
+        <h1 class="ap-title">Mark Carney défend et embrasse la proposition de devenir le premier « membre associé » de l'UE</h1>
+        <p class="ap-intro">Le 17 septembre 2026, devant le Parlement européen à Strasbourg, le Premier ministre canadien a accueilli avec enthousiasme l'idée, lancée la veille par Ursula von der Leyen, de faire du Canada le premier « membre associé » de l'Union européenne — un statut qui n'existe pas dans les traités. Il l'a fait au lendemain des menaces de Donald Trump, qui a évoqué un possible « acte hostile » et de lourds droits de douane contre l'Europe.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat"><span class="ap-stat-num">≈ 70 %</span><span class="ap-stat-desc">Part des exportations canadiennes<br>destinées aux États-Unis (2025)</span></div>
+          <div class="ap-stat red"><span class="ap-stat-num">150 Md €</span><span class="ap-stat-desc">Programme européen SAFE,<br>dont le Canada est déjà membre</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">81 %</span><span class="ap-stat-desc">Canadiens favorables à une intégration<br>plus étroite avec l'UE (Abacus)</span></div>
+          <div class="ap-stat green"><span class="ap-stat-num">29–30 oct.</span><span class="ap-stat-desc">Sommet UE-Canada<br>à Montréal</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Une offre inédite lancée depuis Strasbourg</div>
+            <p>Le 16 septembre 2026, lors de son discours annuel sur l'état de l'Union devant le Parlement européen, la présidente de la Commission Ursula von der Leyen a déclaré vouloir « ouvrir la porte » à un Canada premier « membre associé » de l'UE. Mark Carney, premier chef de gouvernement étranger invité à assister à cet exercice, était au premier rang ; il s'est levé pour la serrer dans ses bras sous les applaudissements des eurodéputés. Elle a plaidé pour dépasser l'accord de libre-échange CETA et bâtir une « Alliance pour l'avenir », un « espace de prospérité commune et de sécurité économique ».</p>
+            <p>La proposition s'inscrit dans un contexte de forte tension avec Washington. Le Canada envoie environ 70 % de ses exportations aux États-Unis et subit la guerre commerciale de Donald Trump, qui multiplie aussi les propos sur un Canada devenu « 51e État ». L'Europe a pour sa part choisi une autre voie : renoncer aux représailles et accepter des droits de douane américains allant jusqu'à 15 % sur la plupart de ses exportations.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Proposition européenne</div><div class="ap-fact-val">16 sept. 2026, discours sur l'état de l'Union</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Réponse de Carney</div><div class="ap-fact-val">17 sept. 2026, Parlement européen (Strasbourg)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Statut juridique</div><div class="ap-fact-val">Absent des traités de l'UE — à créer</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Prochaine étape</div><div class="ap-fact-val">Sommet UE-Canada à Montréal, 29-30 octobre</div></div>
+            </div>
+
+            <div class="ap-sub">Chronologie d'un rapprochement</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">Janvier 2026</div><p class="ap-tl-text">À Davos, Carney appelle les « puissances moyennes » à s'unir plutôt que de négocier seules face à une puissance dominante. Donald Trump le rabroue dès le lendemain.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Mai 2026</div><p class="ap-tl-text">Carney devient le premier dirigeant non européen à participer à un sommet de la Communauté politique européenne.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Depuis fin août 2026</div><p class="ap-tl-text">Les négociations commerciales entre Ottawa et Washington échouent. Les États-Unis annoncent des droits de douane pouvant atteindre 50 % sur des produits canadiens ; le Canada riposte sur environ 20 milliards de dollars de produits américains.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">13 septembre 2026</div><p class="ap-tl-text">Au festival de Toronto, Carney affirme que le Canada ne cherche pas à devenir membre de l'UE mais à ouvrir des discussions sur une « alliance unique ».</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">16 septembre 2026</div><p class="ap-tl-text">Von der Leyen propose le statut de « membre associé ». Dans la soirée, depuis Charlotte (Caroline du Nord), Donald Trump menace l'UE de « très lourds » droits de douane si l'initiative relève d'un « acte hostile ».</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">17 septembre 2026</div><p class="ap-tl-text">Carney s'adresse au Parlement européen, salue l'« ambition » de Bruxelles et précise, en conférence de presse, que le Canada ne vise pas l'adhésion pleine et entière.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">29–30 octobre 2026</div><p class="ap-tl-text">Carney reçoit les dirigeants européens à Montréal pour un sommet censé détailler la nouvelle relation.</p></div>
+            </div>
+
+            <div class="ap-sub">Un statut qui n'existe pas encore</div>
+            <p>Les traités européens ne prévoient aucun statut de « membre associé ». Ursula von der Leyen n'a pas détaillé les droits et obligations qui en découleraient, et la proposition devra recevoir l'aval des États membres. Selon Euronews, l'article 217 du traité, qui permet à l'Union de conclure des accords d'association avec des pays tiers et sert de base à l'Espace économique européen, pourrait offrir une voie juridique sans aller jusqu'à l'adhésion.</p>
+            <p>L'idée d'un « membre associé » avait été avancée cette année par le chancelier allemand Friedrich Merz à propos de l'Ukraine, mais elle avait reçu un accueil froid à Kiev, qui réclame l'adhésion pleine. Parmi les modèles existants, la Suisse est associée à l'UE par une série de traités bilatéraux qui lui ouvrent le marché unique et l'espace Schengen.</p>
+          </div>
+
+          <div>
+            <div class="ap-sub">« Plus forts ensemble » : le plaidoyer de Carney</div>
+            <p>Le 17 septembre, Carney a commencé son discours en français et déclaré que le Canada « accueille favorablement » l'ambition de Bruxelles, évoquant une « alliance pour l'avenir » à définir ensemble. Il a proposé une coopération approfondie sur les minéraux critiques, la capacité industrielle de défense, l'IA et le calcul, la sécurité énergétique, l'espace et les paiements, ainsi qu'un commerce numérique fluide et un marché intégré des services financiers. Il a aussi plaidé pour que les jeunes puissent vivre, travailler et étudier des deux côtés de l'Atlantique, avec une participation canadienne à Erasmus+ et au prochain programme Horizon. Côté canadien, il a mis en avant plus de 34 minéraux critiques, ainsi que du GNL et de l'hydrogène à grande échelle.</p>
+            <p>Sans nommer Donald Trump, il a dénoncé un monde où l'intégration économique est « instrumentalisée » et où les droits de douane servent de moyen de pression. Il a toutefois assuré ne pas proposer un « troisième bloc » rival des grandes puissances. En conférence de presse aux côtés de Roberta Metsola, il a précisé que le Canada ne cherchait pas l'adhésion pleine, que la « nomenclature » revenait à l'Europe, que seule comptait la substance, et que le résultat final serait soumis à un vote du Parlement canadien. Il a ajouté que l'alliance n'était pas une « réaction » aux menaces américaines et ferait du Canada « un meilleur partenaire des États-Unis ».</p>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">🛡️</div>
+              <div class="ap-info-text"><strong>Le Canada est déjà le premier pays non européen à participer à SAFE</strong>, le programme européen de 150 milliards d'euros destiné à financer des achats conjoints de défense. Le CETA, conclu en 2016, a de son côté supprimé l'essentiel des droits de douane entre les deux rives de l'Atlantique.</div>
+            </div>
+
+            <div class="ap-sub">Trump menace, Bruxelles et Paris répondent</div>
+            <p>Depuis Charlotte, le 16 septembre, Donald Trump a déclaré que si l'Europe agissait avec de « mauvaises intentions », elle s'exposerait à de « très lourds » droits de douane, allant jusqu'à un arrêt des échanges « sur de nombreux produits ». Il a qualifié le Canada de « terrible partenaire commercial ». Le porte-parole de la Commission, Olof Gill, a répondu que le renforcement du partenariat n'était « pas contre quiconque ». La présidente du Parlement européen, Roberta Metsola, a estimé que Washington n'avait aucune raison de riposter et suggéré que l'Australie et la Nouvelle-Zélande pourraient suivre.</p>
+            <p>Interrogé sur les propos de Trump, Carney a répondu que les Canadiens étaient unis pour refuser que quiconque leur dicte leur langue, leur culture ou les partenaires avec lesquels ils concluent des accords. À Ottawa, le chef conservateur Pierre Poilievre accuse le Premier ministre de se contredire entre ses déclarations du 13 septembre et celles de Strasbourg, et rejette toute imposition de « taxes », de « lois » ou de politiques d'immigration européennes. Un sondage Abacus Data (1 479 adultes, 4-9 septembre) montre toutefois 81 % de Canadiens favorables à une intégration plus étroite avec l'UE, contre 10 % d'opposés.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Acteur</th><th>Position, 16-17 septembre 2026</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Mark Carney</td><td>Accueille l'« ambition » ; exclut l'adhésion pleine ; vote final au Parlement</td></tr>
+                <tr><td class="ap-cell-bold">Ursula von der Leyen</td><td>Propose d'« ouvrir la porte » au statut de membre associé</td></tr>
+                <tr><td class="ap-cell-bold">Roberta Metsola</td><td>Soutient ; « pas contre quiconque » ; l'Australie et la N.-Zélande pourraient suivre</td></tr>
+                <tr><td class="ap-cell-bold">Irlande, Espagne</td><td>Soutien explicite (Helen McEntee, Pedro Sánchez)</td></tr>
+                <tr><td class="ap-cell-bold">France</td><td>Statut à examiner ; liens plus étroits avec le Canada souhaités (J.-N. Barrot)</td></tr>
+                <tr><td class="ap-cell-bold">Donald Trump</td><td>Menace de droits de douane « très lourds » si « acte hostile »</td></tr>
+                <tr><td class="ap-cell-bold">Pierre Poilievre</td><td>Dénonce des messages contradictoires et un risque pour la souveraineté</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-quote">
+              <p>« Je ne propose pas un troisième bloc pour devenir un rival de grande puissance — simplement avec de meilleures manières. »</p>
+              <cite>— Mark Carney, Parlement européen, 17 septembre 2026 (traduction)</cite>
+            </div>
+
+            <div class="ap-quote">
+              <p>« Il s'agit d'un partenariat non pas contre quelqu'un d'autre, mais pour notre force commune. »</p>
+              <cite>— Ursula von der Leyen, discours sur l'état de l'Union, 16 septembre 2026 (traduction)</cite>
+            </div>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Ottawa mise sur l'Europe, mais le chemin reste long</div>
+              <p>Au-delà de l'étiquette, tout reste à écrire : le statut de « membre associé » n'existe pas, ses contours n'ont pas été précisés et il faudra convaincre les États membres. Carney a lui-même laissé à Bruxelles le soin de trancher la « nomenclature » et promis un vote final à Ottawa, tandis que l'opposition conservatrice y voit un risque pour la souveraineté. Reste l'équation économique : avec environ 70 % de ses exportations tournées vers les États-Unis, le Canada ne peut pas pivoter rapidement vers l'Europe, même s'il a déjà rejoint SAFE et engagé des discussions sur Erasmus+. Le sommet de Montréal des 29 et 30 octobre dira si l'« Alliance pour l'avenir » prend une forme concrète, et comment Bruxelles gérera la menace de représailles de Washington.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-fr-section -->
+
+    <!-- ══ SECTION EN ══ -->
+    <div class="ap-en-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-red">🇨🇦 Canada</span>
+          <span class="ap-tag ap-tag-navy">🇪🇺 European Union</span>
+          <span class="ap-tag ap-tag-blue">🇺🇸 United States</span>
+          <span class="ap-tag ap-tag-gold">Geopolitics</span>
+          <span class="ap-tag ap-tag-green">Trade</span>
+        </div>
+        <div class="ap-date">September 15–17, 2026 — ECG Prépa · Canada</div>
+        <h1 class="ap-title">Mark Carney Defends and Embraces Proposal to Become the EU's First "Associate Member"</h1>
+        <p class="ap-intro">On 17 September 2026, addressing the European Parliament in Strasbourg, the Canadian prime minister welcomed the idea, floated the day before by Ursula von der Leyen, of making Canada the European Union's first "associate member" — a status that does not exist in the EU treaties. He did so a day after Donald Trump suggested the move could be a "hostile act" and threatened heavy tariffs on Europe.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat"><span class="ap-stat-num">≈ 70%</span><span class="ap-stat-desc">Share of Canadian exports<br>going to the US (2025)</span></div>
+          <div class="ap-stat red"><span class="ap-stat-num">€150bn</span><span class="ap-stat-desc">EU SAFE programme,<br>which Canada has already joined</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">81%</span><span class="ap-stat-desc">Canadians backing closer<br>integration with the EU (Abacus)</span></div>
+          <div class="ap-stat green"><span class="ap-stat-num">Oct. 29–30</span><span class="ap-stat-desc">EU-Canada summit<br>in Montreal</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">An unprecedented offer from Strasbourg</div>
+            <p>On 16 September 2026, in her annual State of the Union address to the European Parliament, Commission President Ursula von der Leyen said she wanted to work on "opening the door for Canada to be the first associate member of the EU." Mark Carney, the first foreign head of government to attend the speech, sat in the front row; he rose to embrace her as lawmakers applauded. She called for moving beyond the CETA free trade agreement toward an "Alliance for the Future," a "common prosperity and economic security space."</p>
+            <p>The proposal comes amid deep tension with Washington. Canada sends roughly 70% of its exports to the United States and is caught in Donald Trump's trade war, while Trump keeps floating the idea of Canada as the "51st state." Europe took a different path: it shelved retaliation and accepted US tariffs of up to 15% on most of its exports.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">EU proposal</div><div class="ap-fact-val">Sept. 16, 2026, State of the Union speech</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Carney's response</div><div class="ap-fact-val">Sept. 17, 2026, European Parliament (Strasbourg)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Legal status</div><div class="ap-fact-val">Absent from EU treaties — would have to be created</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Next step</div><div class="ap-fact-val">EU-Canada summit in Montreal, Oct. 29–30</div></div>
+            </div>
+
+            <div class="ap-sub">Timeline of a rapprochement</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">January 2026</div><p class="ap-tl-text">In Davos, Carney urges "middle powers" to join forces rather than negotiate alone against a dominant power. Donald Trump rebukes him the next day.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">May 2026</div><p class="ap-tl-text">Carney becomes the first non-European leader to attend a summit of the European Political Community.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Since late Aug. 2026</div><p class="ap-tl-text">Trade talks between Ottawa and Washington collapse. The US announces tariffs of up to 50% on Canadian products; Canada retaliates on roughly $20 billion worth of US goods.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Sept. 13, 2026</div><p class="ap-tl-text">At the Toronto film festival, Carney says Canada is not looking to become a member of the EU, but to start discussions on a "unique alliance."</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Sept. 16, 2026</div><p class="ap-tl-text">Von der Leyen proposes "associate member" status. Later that day, in Charlotte, North Carolina, Donald Trump threatens "very heavy tariffs" on the EU if the move is a "hostile act."</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Sept. 17, 2026</div><p class="ap-tl-text">Carney addresses the European Parliament, welcomes Brussels' "ambition," and tells reporters Canada is not seeking full membership.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Oct. 29–30, 2026</div><p class="ap-tl-text">Carney is to host EU leaders in Montreal for a summit meant to detail the new relationship.</p></div>
+            </div>
+
+            <div class="ap-sub">A status that does not yet exist</div>
+            <p>EU treaties make no provision for "associate membership." Ursula von der Leyen did not spell out the rights and obligations involved, and the proposal would need the backing of member states. According to Euronews, Article 217 of the treaties, which lets the Union conclude association agreements with third countries and underpins the European Economic Area, could offer a legal route short of full membership.</p>
+            <p>The "associate member" idea was first floated this year by German Chancellor Friedrich Merz regarding Ukraine, but it met a cold reception in Kyiv, which is pushing for full membership. Among existing models, Switzerland is tied to the EU through a series of bilateral treaties that give it access to the single market and the Schengen area.</p>
+          </div>
+
+          <div>
+            <div class="ap-sub">"Stronger together": Carney's case</div>
+            <p>On 17 September, Carney opened his speech in French and said Canada "welcomes" Brussels' ambition, describing an "alliance for the future" to be defined together. He proposed deep cooperation on critical minerals, defence industrial capacity, AI and compute, energy security, space and payments, along with seamless digital trade and an integrated market for financial services. He also called for young people to live, work and study on both sides of the Atlantic, with Canadian participation in Erasmus+ and the next Horizon programme. On Canada's side, he pointed to more than 34 critical minerals, plus LNG and hydrogen at large scale.</p>
+            <p>Without naming Donald Trump, he denounced a world in which economic integration is being "weaponised" and tariffs used as a means of pressure. He insisted, however, that he was not proposing a "third bloc" to rival the great powers. At a press conference alongside Roberta Metsola, he clarified that Canada was not seeking full membership, that the "nomenclature" was for Europe to settle, that only the substance mattered, and that the final structure would be put to a vote in Canada's Parliament. He added that the alliance was not a "reaction" to US threats and would make Canada "a better partner with the United States."</p>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">🛡️</div>
+              <div class="ap-info-text"><strong>Canada is already the first non-European country to take part in SAFE</strong>, the EU's €150 billion programme for joint defence procurement. CETA, concluded in 2016, has in turn removed most tariffs between the two sides of the Atlantic.</div>
+            </div>
+
+            <div class="ap-sub">Trump threatens, Brussels and Paris respond</div>
+            <p>Speaking in Charlotte on 16 September, Donald Trump said that if Europe acted with "bad intentions," it would face "very heavy tariffs," even a halt to trade "on many things." He called Canada a "terrible trade partner." Commission spokesperson Olof Gill replied that the closer partnership was "not against anyone else." European Parliament President Roberta Metsola said Washington had no grounds for retaliation and suggested Australia and New Zealand could follow Canada.</p>
+            <p>Asked about Trump's remarks, Carney said Canadians were united in refusing to let anyone dictate their language, culture, or with whom they strike international agreements. In Ottawa, Conservative leader Pierre Poilievre accuses the prime minister of contradicting himself between his 13 September remarks and those in Strasbourg, and rejects any "EU taxes," "EU laws" or EU immigration policies. An Abacus Data poll (1,479 adults, September 4–9) nonetheless shows 81% of Canadians supporting closer integration with the EU, versus 10% opposed.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Actor</th><th>Position, Sept. 16–17, 2026</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Mark Carney</td><td>Welcomes the "ambition"; rules out full membership; final vote in Parliament</td></tr>
+                <tr><td class="ap-cell-bold">Ursula von der Leyen</td><td>Proposes "opening the door" to associate member status</td></tr>
+                <tr><td class="ap-cell-bold">Roberta Metsola</td><td>Supportive; "not against anyone"; Australia and NZ could follow</td></tr>
+                <tr><td class="ap-cell-bold">Ireland, Spain</td><td>Explicit support (Helen McEntee, Pedro Sánchez)</td></tr>
+                <tr><td class="ap-cell-bold">France</td><td>Status to be examined; wants closer ties with Canada (J.-N. Barrot)</td></tr>
+                <tr><td class="ap-cell-bold">Donald Trump</td><td>Threatens "very heavy tariffs" if a "hostile act"</td></tr>
+                <tr><td class="ap-cell-bold">Pierre Poilievre</td><td>Denounces mixed messages and a risk to sovereignty</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-quote">
+              <p>"I am not proposing a third bloc in order to become a great-power rival – only with better manners."</p>
+              <cite>— Mark Carney, European Parliament, September 17, 2026</cite>
+            </div>
+
+            <div class="ap-quote">
+              <p>"This is a partnership not against anyone else, but for our common strength."</p>
+              <cite>— Ursula von der Leyen, State of the Union address, September 16, 2026</cite>
+            </div>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Ottawa Bets on Europe, but the Road Is Long</div>
+              <p>Beyond the label, almost everything remains to be written: "associate member" status does not exist, its contours have not been set, and member states still need to be convinced. Carney himself left the "nomenclature" for Brussels to settle and promised a final vote in Ottawa, while the Conservative opposition sees a risk to sovereignty. Then there is the economic equation: with roughly 70% of its exports going to the United States, Canada cannot pivot quickly toward Europe, even though it has already joined SAFE and opened talks on Erasmus+. The Montreal summit on 29–30 October will show whether the "Alliance for the Future" takes concrete shape, and how Brussels handles the threat of retaliation from Washington.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-en-section -->
+
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — Canada — Septembre 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-en').classList.toggle('active', lang === 'en');
+  const isEn = lang === 'en';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEn ? 'none' : 'block');
+  document.querySelectorAll('.ap-en-section').forEach(el => el.style.display = isEn ? 'block' : 'none');
+
+  const band = document.getElementById('ap-band');
+  if (band) band.textContent = isEn
+    ? '🇨🇦 Canada — EU Associate Member'
+    : '🇨🇦 Canada — Membre associé de l\'UE';
+}
+setLang('fr');
+</script>
+</body>
+</html>

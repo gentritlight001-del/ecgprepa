@@ -21,7 +21,11 @@
      ce sont les règles RLS de supabase-schema.sql qui protègent les données.
      ⚠ Ne mets JAMAIS ici une clé « sb_secret_… » ou « service_role ». */
 
-  var CDN = 'https://esm.sh/@supabase/supabase-js@2';
+  /* Client Supabase servi depuis le site lui-même (vendor/supabase.js,
+     version 2.116.0 figée) : plus d'aller-retour vers un CDN externe à
+     chaque page. Pour mettre à jour : remplacer ce fichier par
+     node_modules/@supabase/supabase-js/dist/umd/supabase.js. */
+  var SUPABASE_LIB = 'vendor/supabase.js';
 
   /* ─── Chemin de base du site (déduit de l'URL de ce script) ─── */
   var BASE = '';
@@ -51,9 +55,75 @@
     }
   } catch (e) {}
 
+  /* ─── Navigation rapide entre les pages ──────────────────────
+     1. Transition en fondu entre deux pages (Chrome, Edge, Safari
+        récents ; ignoré ailleurs, sans rien casser).
+     2. Préchargement : dès que la souris survole un lien (ou qu'un
+        doigt le touche), la page visée est téléchargée en avance et
+        rangée par le service worker. Au clic, elle s'affiche
+        instantanément. Marche aussi pour les cartes cliquables en
+        onclick="location.href='…'". */
+  (function navRapide() {
+    try {
+      var st = document.createElement('style');
+      st.textContent =
+        '@view-transition{navigation:auto}' +
+        '::view-transition-old(root),::view-transition-new(root){animation-duration:.16s}' +
+        '@media (prefers-reduced-motion:reduce){@view-transition{navigation:none}}';
+      (document.head || document.documentElement).appendChild(st);
+    } catch (e) {}
+
+    var eco = navigator.connection && (navigator.connection.saveData ||
+      /2g/.test(navigator.connection.effectiveType || ''));
+    if (eco || !window.fetch || location.protocol.indexOf('http') !== 0) return;
+
+    var deja = {}, n = 0, MAX = 40, minuteur = null;
+    var RE_ONCLICK = /location\.href\s*=\s*['"]([^'"]+)['"]/;
+
+    function cible(el) {
+      if (!el || !el.closest) return null;
+      var lien = el.closest('a[href],[onclick]');
+      if (!lien) return null;
+      if (lien.tagName === 'A') {
+        if (lien.target === '_blank' || lien.hasAttribute('download')) return null;
+        return lien.getAttribute('href');
+      }
+      var m = RE_ONCLICK.exec(lien.getAttribute('onclick') || '');
+      return m ? m[1] : null;
+    }
+
+    function precharger(href) {
+      if (!href || n >= MAX) return;
+      var u;
+      try { u = new URL(href, location.href); } catch (e) { return; }
+      if (u.origin !== location.origin) return;
+      u.hash = '';
+      if (u.href === location.href.split('#')[0]) return;
+      if (!/(\.html?|\/)$/i.test(u.pathname)) return;
+      if (deja[u.href]) return;
+      deja[u.href] = 1; n++;
+      fetch(u.href, { credentials: 'same-origin', headers: { 'Accept': 'text/html' } })
+        .catch(function () { delete deja[u.href]; });
+    }
+
+    document.addEventListener('mouseover', function (e) {
+      var href = cible(e.target);
+      clearTimeout(minuteur);
+      if (href) minuteur = setTimeout(function () { precharger(href); }, 65);
+    }, { passive: true });
+    document.addEventListener('mouseout', function () { clearTimeout(minuteur); }, { passive: true });
+    document.addEventListener('touchstart', function (e) { precharger(cible(e.target)); }, { passive: true });
+    document.addEventListener('focusin', function (e) { precharger(cible(e.target)); });
+  })();
+
   var K_PROFIL = 'ecg_profil';   // miroir local, pour un accès synchrone
   var K_NL_ATTENTE = 'ecg_newsletter_attente'; // choix fait à l'inscription
   var K_SID    = 'ecg_sid';      // identifiant de la session ouverte
+  var K_VERIF  = 'ecg_verif_t';  // date de la dernière vérification réussie
+  /* Si la session a été vérifiée il y a moins de VERIF_OK_MS, la page
+     s'affiche tout de suite ; la vérification continue en arrière-plan
+     et renvoie vers la connexion si elle échoue. */
+  var VERIF_OK_MS = 10 * 60 * 1000;
   var EN_LIGNE_MS = 5 * 60 * 1000;
 
   /* ─── Les six rubriques de la lettre d'information ───────────
@@ -93,7 +163,8 @@
     try { return JSON.parse(lire(K_PROFIL) || 'null'); } catch (e) { return null; }
   }
   function memoriser(p) {
-    if (p) ecrire(K_PROFIL, JSON.stringify(p)); else effacer(K_PROFIL);
+    if (p) { ecrire(K_PROFIL, JSON.stringify(p)); ecrire(K_VERIF, String(Date.now())); }
+    else { effacer(K_PROFIL); effacer(K_VERIF); }
   }
 
   /* ─── Voile anti-clignotement sur les pages protégées ─── */
@@ -111,7 +182,15 @@
     if (voile && voile.parentNode) voile.parentNode.removeChild(voile);
     voile = null;
   }
-  poserVoile();
+  /* Affichage immédiat si le compte a été vérifié récemment.
+     Les pages réservées à l'admin gardent toujours le voile. */
+  var verifRecente = (function () {
+    if (pagePublique || pageReserveeAdmin) return false;
+    var p = profilLocal();
+    var t = +lire(K_VERIF) || 0;
+    return !!(p && p.email && Date.now() - t < VERIF_OK_MS);
+  })();
+  if (!verifRecente) poserVoile();
 
   function alerteReseau(texte) {
     leverVoile();
@@ -130,9 +209,24 @@
 
   /* ─── Chargement du client Supabase (une seule fois) ─── */
   var _sb = null;
+  function chargerLib() {
+    if (window.supabase && window.supabase.createClient) return Promise.resolve(window.supabase);
+    return new Promise(function (ok, ko) {
+      var s = document.createElement('script');
+      s.src = BASE + SUPABASE_LIB;
+      s.async = true;
+      s.onload = function () {
+        if (window.supabase && window.supabase.createClient) ok(window.supabase);
+        else ko(new Error('supabase.js chargé mais inutilisable'));
+      };
+      s.onerror = function () { ko(new Error('supabase.js introuvable')); };
+      (document.head || document.documentElement).appendChild(s);
+    });
+  }
+
   function sb() {
     if (_sb) return _sb;
-    _sb = import(CDN).then(function (m) {
+    _sb = chargerLib().then(function (m) {
       return m.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
         auth: {
           persistSession: true,
@@ -783,6 +877,10 @@
      Pages protégées : vérification, puis badge utilisateur
      ══════════════════════════════════════════════════════════════ */
   var client = null;
+
+  /* Mode rapide : on monte tout de suite le badge avec le profil en
+     cache ; la vérification ci-dessous tourne en arrière-plan. */
+  if (verifRecente) demarrerBadge(profilLocal());
 
   sb()
     .then(function (c) { client = c; return c.auth.getSession(); })

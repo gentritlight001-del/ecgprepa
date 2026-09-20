@@ -8,13 +8,14 @@
      - « Socle » précaché à l'installation : de quoi afficher au moins
        la vitrine, la connexion et une page de secours hors-ligne,
        même à la toute première visite sans réseau ensuite.
-     - Pages HTML du site : réseau en priorité (toujours le contenu
-       à jour si la connexion est bonne), et on garde une copie dans
-       le cache à chaque visite ; si le réseau échoue, on ressert la
-       dernière copie connue, puis à défaut la page « Hors ligne ».
-       Cela permet de relire une fiche déjà consultée sans réseau
-       (dans le métro, par exemple), sans jamais bloquer une mise à
-       jour quand la connexion est là.
+     - Pages HTML, scripts, polices du site : « stale-while-revalidate ».
+       Si la page est déjà en cache (visitée ou préchargée au survol
+       d'un lien), elle s'affiche immédiatement, et une copie fraîche
+       est téléchargée en arrière-plan pour la fois suivante. Sinon,
+       réseau, puis page « Hors ligne » en dernier recours.
+       Conséquence : après une mise à jour du site, un visiteur peut
+       voir l'ancienne version d'une page UNE fois. Pour forcer tout
+       le monde d'un coup, change VERSION ci-dessous.
      - Images et icônes du site : cache en priorité (elles changent
        rarement), avec une requête réseau en secours.
      - Tout ce qui n'est pas sur ce domaine (Supabase, Google Fonts,
@@ -25,7 +26,7 @@
 
 /* Change ce numéro à chaque évolution notable du site : ça force le
    renouvellement du cache chez les visiteurs (voir « activate »). */
-var VERSION = 'v1';
+var VERSION = 'v2';
 var CACHE_SOCLE   = 'ecg-prepa-socle-'   + VERSION;
 var CACHE_PAGES   = 'ecg-prepa-pages-'   + VERSION;
 var CACHE_IMAGES  = 'ecg-prepa-images-'  + VERSION;
@@ -37,6 +38,9 @@ var PAGE_HORS_LIGNE = 'hors-ligne.html';
 var SOCLE = [
   'accueil.html',
   'login.html',
+  'auth.js',
+  'vendor/supabase.js',
+  'fonts/fonts.css',
   PAGE_HORS_LIGNE,
   'site.webmanifest',
   'favicon.svg',
@@ -84,37 +88,56 @@ function memeOrigine(url) {
 }
 
 /* ─── Interception des requêtes ────────────────────────────────── */
+
+/* Sert la copie en cache tout de suite si elle existe, et la met à
+   jour en arrière-plan. Sans copie : réseau, puis secours. */
+function staleWhileRevalidate(evenement, nomCache, secours) {
+  var requete = evenement.request;
+  var cleCache = new Request(requete.url.split('#')[0]);
+  return caches.open(nomCache).then(function (cache) {
+    return cache.match(cleCache, { ignoreVary: true, ignoreSearch: false }).then(function (enCache) {
+      var reseau = fetch(requete).then(function (reponse) {
+        if (reponse && reponse.ok && reponse.type === 'basic' && !reponse.redirected) {
+          cache.put(cleCache, reponse.clone());
+        }
+        return reponse;
+      });
+      if (enCache) {
+        evenement.waitUntil(reseau.catch(function () {}));
+        return enCache;
+      }
+      return reseau.catch(function () {
+        return caches.match(cleCache, { ignoreVary: true }).then(function (r) {
+          return r || (secours ? secours() : Response.error());
+        });
+      });
+    });
+  });
+}
+
 self.addEventListener('fetch', function (evenement) {
   var requete = evenement.request;
 
   /* On ne touche qu'aux requêtes GET, sur ce domaine. Tout le reste
-     (Supabase, polices Google, CDN esm.sh, requêtes POST…) part
-     directement au réseau, sans passer par le cache. */
+     (Supabase, requêtes POST…) part directement au réseau. */
   if (requete.method !== 'GET') return;
 
   var url = new URL(requete.url);
   if (!memeOrigine(url)) return;
 
-  /* Pages HTML (navigation dans le site) : réseau d'abord, cache
-     en secours, page « Hors ligne » en dernier recours. */
-  if (requete.mode === 'navigate' || (requete.headers.get('accept') || '').indexOf('text/html') !== -1) {
-    evenement.respondWith(
-      fetch(requete).then(function (reponse) {
-        var copie = reponse.clone();
-        caches.open(CACHE_PAGES).then(function (cache) { cache.put(requete, copie); });
-        return reponse;
-      }).catch(function () {
-        return caches.match(requete).then(function (correspondance) {
-          return correspondance || caches.match(PAGE_HORS_LIGNE);
-        });
-      })
-    );
+  /* Pages HTML (navigation ou préchargement au survol). */
+  var html = requete.mode === 'navigate' ||
+    (requete.headers.get('accept') || '').indexOf('text/html') !== -1;
+  if (html) {
+    evenement.respondWith(staleWhileRevalidate(evenement, CACHE_PAGES, function () {
+      return caches.match(PAGE_HORS_LIGNE);
+    }));
     return;
   }
 
-  /* Images et icônes : cache d'abord (elles changent rarement),
-     réseau en secours, et on alimente le cache au passage. */
-  if (estImage(url)) {
+  /* Images, icônes et polices : cache d'abord (elles changent
+     rarement), réseau en secours. */
+  if (estImage(url) || /\.woff2?$/i.test(url.pathname)) {
     evenement.respondWith(
       caches.match(requete).then(function (correspondance) {
         if (correspondance) return correspondance;
@@ -125,8 +148,6 @@ self.addEventListener('fetch', function (evenement) {
           }
           return reponse;
         }).catch(function () {
-          /* Pas d'image de secours générique : on laisse l'échec
-             normal (icône cassée) plutôt que d'inventer un visuel. */
           return new Response('', { status: 504, statusText: 'Hors ligne' });
         });
       })
@@ -134,11 +155,7 @@ self.addEventListener('fetch', function (evenement) {
     return;
   }
 
-  /* Tout le reste sur ce domaine (auth.js, favoris.js…) : réseau
-     d'abord, avec le cache en secours si hors ligne. */
-  evenement.respondWith(
-    fetch(requete).catch(function () {
-      return caches.match(requete);
-    })
-  );
+  /* Le reste (auth.js, favoris.js, fonts.css, vendor/…) :
+     même stratégie que les pages. */
+  evenement.respondWith(staleWhileRevalidate(evenement, CACHE_PAGES));
 });
