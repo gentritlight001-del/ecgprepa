@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Mexique : Simulacre national</title>
+<link rel="stylesheet" href="../../../fonts/fonts.css">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #c8860a;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #c8860a; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #006847; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #c8860a; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #c8860a; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #c8860a; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#c8860a; border-color:#c8860a; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  .ap-band { background: #a01010; text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(13,8,5,0.95); padding:12px 60px; border-bottom: 1px solid rgba(200,134,10,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#c8860a; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(200,134,10,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(181,19,31,0.2);  color:#f08080; border:1px solid rgba(181,19,31,0.35); }
+  .ap-tag-navy   { background:rgba(13,27,42,0.6);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(200,134,10,0.2); color:#f5b042; border:1px solid rgba(245,176,66,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #c8860a; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(200,134,10,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(200,134,10,0.8); }
+
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#c8860a; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(200,134,10,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#1a0e00,#2a1a00); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #c8860a; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(200,134,10,0.06),rgba(200,134,10,0.02)); border-left:3px solid #c8860a; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(200,134,10,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(200,134,10,0.8); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(30,14,0,0.9),rgba(18,8,0,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(200,134,10,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#c8860a; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(200,134,10,0.06); border:1px solid rgba(200,134,10,0.18); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(200,134,10,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#c8860a; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(200,134,10,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#c8860a; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(30,14,0,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-es-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.25s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-es.html">Espagnol</a>
+    <span class="sep">/</span>
+    <a href="../mexique.html">Mexique</a>
+    <span class="sep">/</span>
+    <span class="current">Simulacre national</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-es" class="ap-lang-btn" onclick="setLang('es')">🇲🇽 ES</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇲🇽 Mexique — Simulacre national</div>
+<div class="ap-back-bar">
+  <a href="../tous-es.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+    <div class="ap-hero-img-wrap"><img class="ap-hero-img" src="../images/mexique-simulacre-national.webp" alt="Simulacre national de séisme au Mexique, 19 septembre 2026" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+
+    <!-- ══ SECTION FR ══ -->
+    <div class="ap-fr-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-orange">🇲🇽 Mexique</span>
+          <span class="ap-tag ap-tag-gold">Protection civile</span>
+          <span class="ap-tag ap-tag-navy">Histoire</span>
+          <span class="ap-tag ap-tag-red">Séismes</span>
+        </div>
+        <div class="ap-date">Septembre 2026 — ECG Prépa · Mexique</div>
+        <h1 class="ap-title">Simulacre national : le Mexique répète le grand séisme devant 33 millions de participants</h1>
+        <p class="ap-intro">Le samedi 19 septembre 2026, à midi (heure de Mexico), les haut-parleurs d'alerte sismique ont retenti et les téléphones portables ont sonné dans tout le pays : le Mexique a mené son deuxième « Simulacro Nacional » de l'année, 41 ans après le séisme de 1985 et 9 ans après celui de 2017, tous deux survenus un 19 septembre. Selon le Secrétariat à la Sécurité et à la Protection citoyenne (SSPC), 33 millions de personnes y ont pris part. Cette édition innove à deux titres : c'est la première fois que l'exercice se tient un samedi, afin d'inciter les familles à répéter l'évacuation depuis leur domicile, et la première fois qu'il repose sur cinq scénarios régionaux au lieu d'un séisme unique pour tout le territoire.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat gold"><span class="ap-stat-num">33 M</span><span class="ap-stat-desc">Participants<br>selon la SSPC</span></div>
+          <div class="ap-stat red"><span class="ap-stat-num">96,5 %</span><span class="ap-stat-desc">Des antennes ont<br>émis l'alerte mobile</span></div>
+          <div class="ap-stat"><span class="ap-stat-num">5</span><span class="ap-stat-desc">Scénarios sismiques<br>régionaux</span></div>
+          <div class="ap-stat green"><span class="ap-stat-num">1ʳᵉ fois</span><span class="ap-stat-desc">Exercice organisé<br>un samedi</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+
+            <div class="ap-sub">Pourquoi le 19 septembre : deux séismes, une même date</div>
+            <p>Le rendez-vous annuel de la mi-septembre commémore le séisme du 19 septembre 1985 : de magnitude 8,1, il a frappé au petit matin au large des côtes du Michoacán, à environ 400 kilomètres de la capitale. Il s'agit d'un séisme de subduction, lié à l'interaction entre les plaques de Cocos et nord-américaine, dont les ondes ont été amplifiées par le sol lacustre de Mexico. Le bilan officiel avoisine 6 000 morts, mais les estimations divergent fortement : les autorités reconnaissaient initialement entre 6 000 et 7 000 décès, tandis que la CEPALC en comptait 26 000 et des organisations de sinistrés jusqu'à 35 000. Une réplique de magnitude 7,6, le 20 septembre, a provoqué l'effondrement de certaines structures déjà endommagées.</p>
+            <p>Trente-deux ans plus tard, le 19 septembre 2017 à 13 h 14, un séisme de magnitude 7,1 a eu pour épicentre une zone située à 12 kilomètres au sud-est d'Axochiapan (Morelos), à la limite de l'État de Puebla. Cette fois, il s'agissait d'un séisme intraplaque, survenu à faible distance de la capitale, ce qui a réduit le temps d'alerte. Il a fait 369 morts (228 à Mexico, 74 dans le Morelos, 45 à Puebla, 15 dans l'État de Mexico, 6 dans le Guerrero et 1 à Oaxaca), quelques heures après les exercices organisés en mémoire de 1985. Les experts rappellent que cette coïncidence de date ne permet en rien de prédire les séismes.</p>
+
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">19 sept. 1985</div><p class="ap-tl-text">Séisme de magnitude 8,1 au large du Michoacán ; environ 6 000 morts selon le bilan officiel, des estimations bien supérieures selon d'autres sources.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">20 sept. 1985</div><p class="ap-tl-text">Une réplique de magnitude 7,6 aggrave les dégâts dans la capitale.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">19 sept. 2017</div><p class="ap-tl-text">Séisme de magnitude 7,1 près d'Axochiapan (Morelos) : 369 morts, dont 228 à Mexico.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">6 mai 2026</div><p class="ap-tl-text">Premier Simulacro Nacional de l'année : plus de 37 millions de participants dans 2 421 municipalités.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">19 sept. 2026</div><p class="ap-tl-text">Second Simulacro Nacional, à midi, pour la première fois un samedi et avec cinq scénarios régionaux.</p></div>
+            </div>
+
+            <div class="ap-sub">Un pays qui s'entraîne deux fois dans l'année</div>
+            <p>Le premier exercice de 2026 s'était tenu le 6 mai, avec plus de 37 millions de participants dans 2 421 municipalités, dont 8 610 519 personnes à Mexico. Le second, en septembre, a réuni 33 millions de personnes selon la SSPC. Les exercices précédents avaient surtout lieu en semaine et en journée de travail, si bien que de nombreux salariés savent déjà réagir sur leur lieu d'activité ; le choix du samedi visait à combler un angle mort, les protocoles à la maison, avec un « plan familial » qui tienne compte des enfants, des personnes handicapées, des personnes âgées et même des animaux de compagnie.</p>
+
+          </div>
+
+          <div>
+
+            <div class="ap-sub">Le scénario 2026 : cinq séismes hypothétiques</div>
+            <p>À la différence des éditions précédentes, la Coordination nationale de protection civile (CNPC), dirigée par Laura Velázquez Alzúa, n'a pas retenu un séisme unique. Elle a défini cinq hypothèses régionales, calquées sur les risques de chaque zone. Le scénario principal concerne le Centre : un séisme de magnitude 7,7 à environ 15 kilomètres au sud-sud-ouest de Tehuacán (Puebla), à 67 kilomètres de profondeur, impliquant 14 entités dont Mexico. Les autorités le présentent comme physiquement possible en raison de l'interaction de la plaque de Cocos, et comme l'un des scénarios les plus préoccupants pour la capitale, du fait de l'amplification des ondes sur sol mou et d'un temps d'alerte réduit. Ces magnitudes et épicentres sont de simples hypothèses de travail, et non une prévision.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Région</th><th>Magnitude</th><th>Épicentre fictif</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Centre</td><td>7,7</td><td>Tehuacán (Puebla)</td></tr>
+                <tr><td class="ap-cell-bold">Nord-Ouest</td><td>7,1</td><td>Mexicali (Basse-Californie)</td></tr>
+                <tr><td class="ap-cell-bold">Nord-Est</td><td>5,2</td><td>Ciudad Allende (Nuevo León)</td></tr>
+                <tr><td class="ap-cell-bold">Péninsule du Yucatán</td><td>7,0</td><td>Cabo Catoche (Quintana Roo)</td></tr>
+                <tr><td class="ap-cell-bold">Golfe de Tehuantepec</td><td>7,6</td><td>Tonalá (Chiapas)</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-sub">Une alerte sur plus de 80 millions de téléphones</div>
+            <p>À 12 heures précises, environ 23 000 haut-parleurs d'alerte sismique, installés surtout dans les États du littoral pacifique et du centre du pays, se sont déclenchés, tandis qu'un message d'alerte était diffusé sur les téléphones portables compatibles, annoncés à plus de 80 millions. Le Mexique se présente comme le troisième pays du continent américain doté d'un tel système de diffusion par téléphonie mobile. La présidente Claudia Sheinbaum a refusé de modifier le son de l'alerte pour préciser qu'il s'agissait d'un exercice : après consultation d'experts, le choix a été fait de reproduire à l'identique la sonnerie réelle, afin que la population s'y habitue. À l'issue de l'exercice, l'Agence de transformation numérique et des télécommunications (ATDT) a indiqué que le signal avait été émis par 96,5 % des antennes du territoire, selon les rapports des opérateurs.</p>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">📱</div>
+              <div class="ap-info-text"><strong>Un dispositif gratuit, mais conditionnel :</strong> l'alerte sur mobile ne nécessitait ni crédit, ni données, ni connexion internet, mais dépendait de la compatibilité de l'appareil et de la couverture réseau. La présidente a par ailleurs annoncé que l'alerte destinée aux tsunamis serait présentée début octobre.</div>
+            </div>
+
+            <div class="ap-sub">Une réponse d'État testée en temps réel</div>
+            <p>Le matin même, à 7 h 19, Claudia Sheinbaum avait présidé au Zócalo la cérémonie de mise en berne du drapeau en mémoire des victimes de 1985 et de 2017 ; elle a ensuite suivi l'exercice depuis Chihuahua, où elle se trouvait en déplacement. Quelques minutes après l'alerte, le Comité national d'urgence s'est réuni au siège de la SSPC sous la direction d'Omar García Harfuch, avec 21 gouverneurs connectés à distance. La SSPC a évalué la réponse d'une force d'intervention de 2 589 889 personnes, 63 575 véhicules, 371 aéronefs, 40 691 unités médicales et 200 883 lits disponibles.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Quarante ans après, la mémoire des séismes devenue politique publique</div>
+              <p>Du drapeau en berne au Zócalo aux sonneries qui retentissent simultanément sur des dizaines de millions de téléphones, le Simulacro Nacional montre comment un traumatisme fondateur s'est transformé en réflexe institutionnel et collectif. Les autorités affirment que le pays est mieux préparé qu'en 1985, quarante ans après la création du Système national de protection civile, et l'exercice de 2026 déplace désormais l'attention vers l'espace domestique. Reste que la simulation ne remplace pas l'épreuve du réel : c'est à la prochaine secousse, et non lors d'un samedi de répétition, que se mesurera la solidité de ce dispositif.</p>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-fr-section -->
+
+    <!-- ══ SECTION ES ══ -->
+    <div class="ap-es-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-orange">🇲🇽 México</span>
+          <span class="ap-tag ap-tag-gold">Protección civil</span>
+          <span class="ap-tag ap-tag-navy">Historia</span>
+          <span class="ap-tag ap-tag-red">Sismos</span>
+        </div>
+        <div class="ap-date">Septiembre 2026 — ECG Prépa · México</div>
+        <h1 class="ap-title">Simulacro Nacional: México ensaya el gran sismo con 33 millones de participantes</h1>
+        <p class="ap-intro">El sábado 19 de septiembre de 2026, a las 12:00 horas (tiempo del centro de México), sonaron los altavoces de la alerta sísmica y los teléfonos celulares en todo el país: México realizó su segundo Simulacro Nacional del año, a 41 años del sismo de 1985 y a 9 del de 2017, ambos ocurridos un 19 de septiembre. Según la Secretaría de Seguridad y Protección Ciudadana (SSPC), participaron 33 millones de personas. La edición de este año innova en dos aspectos: es la primera vez que el ejercicio se realiza en sábado, para que las familias practiquen la evacuación desde sus hogares, y la primera vez que se basa en cinco escenarios regionales en lugar de un solo sismo para todo el territorio.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat gold"><span class="ap-stat-num">33 M</span><span class="ap-stat-desc">Participantes<br>según la SSPC</span></div>
+          <div class="ap-stat red"><span class="ap-stat-num">96.5 %</span><span class="ap-stat-desc">De las antenas emitió<br>la alerta móvil</span></div>
+          <div class="ap-stat"><span class="ap-stat-num">5</span><span class="ap-stat-desc">Escenarios sísmicos<br>regionales</span></div>
+          <div class="ap-stat green"><span class="ap-stat-num">1.ª vez</span><span class="ap-stat-desc">Ejercicio realizado<br>en sábado</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+
+            <div class="ap-sub">Por qué el 19 de septiembre: dos sismos, una misma fecha</div>
+            <p>La cita anual de mediados de septiembre conmemora el sismo del 19 de septiembre de 1985: de magnitud 8.1, sacudió por la mañana la costa de Michoacán, a unos 400 kilómetros de la capital. Fue un sismo de subducción, vinculado a la interacción entre las placas de Cocos y Norteamericana, cuyas ondas fueron amplificadas por el suelo lacustre de la Ciudad de México. El balance oficial ronda las 6 mil personas fallecidas, aunque las estimaciones difieren mucho: el Gobierno reconoció inicialmente entre 6 y 7 mil muertes, mientras que la CEPAL contabilizó 26 mil y organizaciones de damnificados hasta 35 mil. Una réplica de magnitud 7.6, el 20 de septiembre, provocó el colapso de estructuras ya dañadas.</p>
+            <p>Treinta y dos años después, el 19 de septiembre de 2017 a las 13:14 horas, un sismo de magnitud 7.1 tuvo su epicentro a 12 kilómetros al sureste de Axochiapan, Morelos, en el límite con Puebla. En esta ocasión se trató de un sismo intraplaca, ocurrido mucho más cerca de la capital, lo que redujo el tiempo de aviso. Dejó 369 fallecidos (228 en la Ciudad de México, 74 en Morelos, 45 en Puebla, 15 en el Estado de México, 6 en Guerrero y 1 en Oaxaca), pocas horas después de los simulacros en memoria de 1985. Los expertos recuerdan que la coincidencia de fecha no permite predecir sismos.</p>
+
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">19 sept. 1985</div><p class="ap-tl-text">Sismo de magnitud 8.1 frente a las costas de Michoacán; unos 6 mil muertos según el balance oficial, con estimaciones muy superiores según otras fuentes.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">20 sept. 1985</div><p class="ap-tl-text">Una réplica de magnitud 7.6 agrava los daños en la capital.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">19 sept. 2017</div><p class="ap-tl-text">Sismo de magnitud 7.1 cerca de Axochiapan (Morelos): 369 muertos, 228 de ellos en la Ciudad de México.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">6 mayo 2026</div><p class="ap-tl-text">Primer Simulacro Nacional del año: más de 37 millones de participantes en 2 421 municipios.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">19 sept. 2026</div><p class="ap-tl-text">Segundo Simulacro Nacional, al mediodía, por primera vez en sábado y con cinco escenarios regionales.</p></div>
+            </div>
+
+            <div class="ap-sub">Un país que se entrena dos veces al año</div>
+            <p>El primer ejercicio de 2026 se realizó el 6 de mayo, con más de 37 millones de participantes en 2 421 municipios, entre ellos 8 610 519 personas en la Ciudad de México. El segundo, en septiembre, reunió a 33 millones de personas según la SSPC. Los simulacros anteriores se hacían sobre todo en días y horarios laborales, por lo que muchos trabajadores ya saben cómo actuar en su centro de trabajo; la elección del sábado buscaba cubrir un punto ciego, los protocolos en casa, con un «plan familiar» que considere a niñas y niños, personas con discapacidad, adultos mayores e incluso mascotas.</p>
+
+          </div>
+
+          <div>
+
+            <div class="ap-sub">El escenario 2026: cinco sismos hipotéticos</div>
+            <p>A diferencia de ediciones anteriores, la Coordinación Nacional de Protección Civil (CNPC), encabezada por Laura Velázquez Alzúa, no planteó un único sismo. Definió cinco hipótesis regionales, ajustadas a los riesgos de cada zona. El escenario principal corresponde a la región Centro: un sismo de magnitud 7.7 a unos 15 kilómetros al sur-suroeste de Tehuacán (Puebla), a 67 kilómetros de profundidad, que involucró a 14 entidades, entre ellas la Ciudad de México. Las autoridades lo presentan como físicamente posible por la interacción de la placa de Cocos, y como uno de los escenarios que más preocupan a la capital, por la amplificación de las ondas en suelo blando y el menor tiempo de anticipación de la alerta. Estas magnitudes y epicentros son simples hipótesis de trabajo, no un pronóstico.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Región</th><th>Magnitud</th><th>Epicentro ficticio</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Centro</td><td>7.7</td><td>Tehuacán (Puebla)</td></tr>
+                <tr><td class="ap-cell-bold">Noroeste</td><td>7.1</td><td>Mexicali (Baja California)</td></tr>
+                <tr><td class="ap-cell-bold">Noreste</td><td>5.2</td><td>Ciudad Allende (Nuevo León)</td></tr>
+                <tr><td class="ap-cell-bold">Península de Yucatán</td><td>7.0</td><td>Cabo Catoche (Quintana Roo)</td></tr>
+                <tr><td class="ap-cell-bold">Golfo de Tehuantepec</td><td>7.6</td><td>Tonalá (Chiapas)</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-sub">Una alerta en más de 80 millones de celulares</div>
+            <p>A las 12:00 en punto se activaron unos 23 mil altavoces de alerta sísmica, instalados sobre todo en los estados del litoral del Pacífico y del centro del país, mientras un mensaje de alerta llegaba a los teléfonos móviles compatibles, anunciados en más de 80 millones. México se presenta como el tercer país del continente americano con un sistema de alertamiento por telefonía celular. La presidenta Claudia Sheinbaum rechazó modificar el audio de la alerta para precisar que se trataba de un simulacro: tras consultar con expertos, se decidió reproducir el mismo sonido real para que la población se acostumbre. Al concluir el ejercicio, la Agencia de Transformación Digital y Telecomunicaciones (ATDT) informó que la señal se emitió en el 96.5 % de las antenas del territorio, según los reportes de las operadoras.</p>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">📱</div>
+              <div class="ap-info-text"><strong>Un dispositivo gratuito, pero condicionado:</strong> la alerta en el celular no requería saldo, datos ni conexión a internet, pero dependía de que el equipo fuera compatible y tuviera señal. La presidenta anunció que a principios de octubre se dará a conocer el alertamiento para tsunamis.</div>
+            </div>
+
+            <div class="ap-sub">Una respuesta de Estado puesta a prueba</div>
+            <p>Esa misma mañana, a las 7:19 horas, Claudia Sheinbaum encabezó en el Zócalo el izamiento de la Bandera Nacional a media asta en memoria de las víctimas de 1985 y 2017; después siguió el ejercicio desde Chihuahua, donde se encontraba de visita. Minutos después de la alerta se instaló el Comité Nacional de Emergencias en la sede de la SSPC, bajo la dirección de Omar García Harfuch, con 21 gobernadores conectados de manera virtual. La SSPC evaluó la respuesta de una fuerza de tarea de 2 millones 589 mil 889 personas, 63 mil 575 vehículos, 371 aeronaves, 40 mil 691 unidades médicas y 200 mil 883 camas disponibles.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Cuarenta años después, la memoria de los sismos convertida en política pública</div>
+              <p>Del izamiento de la bandera en el Zócalo a las alertas que suenan al mismo tiempo en decenas de millones de teléfonos, el Simulacro Nacional muestra cómo un trauma fundacional se convirtió en reflejo institucional y colectivo. Las autoridades sostienen que el país está mejor preparado que en 1985, a cuarenta años de la creación del Sistema Nacional de Protección Civil, y el ejercicio de 2026 desplaza la atención hacia el espacio doméstico. Sin embargo, un simulacro no sustituye la prueba de la realidad: será en el próximo temblor, y no en un sábado de ensayo, cuando se mida la solidez de este dispositivo.</p>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-es-section -->
+
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — Mexique — Septembre 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-es').classList.toggle('active', lang === 'es');
+  const isEs = lang === 'es';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEs ? 'none' : 'block');
+  document.querySelectorAll('.ap-es-section').forEach(el => el.style.display = isEs ? 'block' : 'none');
+}
+setLang('fr');
+</script>
+</body>
+</html>
