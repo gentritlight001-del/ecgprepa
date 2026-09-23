@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Rodríguez–Trump à l'ONU</title>
+<link rel="stylesheet" href="../../../fonts/fonts.css">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #c62828;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #c62828; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #ffd600; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #1565c0; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #c62828; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #c62828; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#c62828; border-color:#c62828; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  /* Article styles */
+  .ap-band { background: #c62828; text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(13,27,42,0.95); padding:12px 60px; border-bottom: 1px solid rgba(198,40,40,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#ffd600; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(198,40,40,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(181,19,31,0.2);  color:#f08080; border:1px solid rgba(181,19,31,0.35); }
+  .ap-tag-navy   { background:rgba(13,27,42,0.6);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #ffd600; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(198,40,40,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(255,214,0,0.7); }
+
+  /* Rich article components */
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#ffd600; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(255,214,0,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#1a0a0a,#2d1010); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat.blue   { background:linear-gradient(135deg,#0a1e42,#1a3a7a); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #ffd600; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(255,214,0,0.06),rgba(255,214,0,0.02)); border-left:3px solid #ffd600; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(255,214,0,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,214,0,0.7); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(13,27,42,0.9),rgba(7,16,28,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(198,40,40,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#ffd600; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(198,40,40,0.06); border:1px solid rgba(198,40,40,0.18); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(255,214,0,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#ffd600; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(255,214,0,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#ffd600; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(13,27,42,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-es-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.25s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-es.html">Espagnol</a>
+    <span class="sep">/</span>
+    <a href="../venezuela.html">Venezuela</a>
+    <span class="sep">/</span>
+    <span class="current">Rodríguez–Trump à l'ONU</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-es" class="ap-lang-btn" onclick="setLang('es')">🇻🇪 ES</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇻🇪 Rodríguez – Trump à l'ONU</div>
+<div class="ap-back-bar">
+  <a href="../venezuela.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+    <div class="ap-hero-img-wrap"><img class="ap-hero-img" src="../images/delcy-rodriguez-trump-onu-new-york.webp" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+    <!-- ══ SECTION FR ══ -->
+    <div class="ap-fr-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-red">🇻🇪 Venezuela</span>
+          <span class="ap-tag ap-tag-blue">🇺🇸 États-Unis</span>
+          <span class="ap-tag ap-tag-gold">ONU</span>
+          <span class="ap-tag ap-tag-navy">Diplomatie</span>
+          <span class="ap-tag ap-tag-purple">Géopolitique</span>
+        </div>
+        <div class="ap-date">Septembre 2026 — ECG Prépa · Venezuela</div>
+        <h1 class="ap-title">Venezuela – Assemblée générale de l'ONU : Delcy Rodríguez rencontre Donald Trump à New York</h1>
+        <p class="ap-intro">Près de neuf mois après la capture de Nicolás Maduro par l'armée américaine, Delcy Rodríguez a rencontré Donald Trump en marge de l'Assemblée générale de l'ONU, à New York. Ce tête-à-tête à huis clos, le mardi 22 septembre, est leur premier en personne depuis qu'elle assure l'intérim de la présidence vénézuélienne. Selon Caracas et Washington, il a porté sur la coopération énergétique, minière et sécuritaire ainsi que sur la restructuration de la dette du pays, tandis que l'opposition, elle, reste à distance de la scène.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red"><span class="ap-stat-num">1re</span><span class="ap-stat-desc">Rencontre en personne<br>Trump–Rodríguez</span></div>
+          <div class="ap-stat"><span class="ap-stat-num">60 Mds $</span><span class="ap-stat-desc">D'obligations<br>en défaut</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">+150 Mds $</span><span class="ap-stat-desc">Passif total estimé<br>par les analystes</span></div>
+          <div class="ap-stat blue"><span class="ap-stat-num">2018</span><span class="ap-stat-desc">Dernier discours vénézuélien<br>à l'Assemblée générale</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Le contexte : un face-à-face attendu depuis la chute de Maduro</div>
+            <p>Le 3 janvier 2026, une opération militaire américaine à Caracas aboutit à la capture de Nicolás Maduro et de son épouse Cilia Flores, transférés à New York pour y être jugés. Delcy Rodríguez, alors vice-présidente, prête serment comme <strong>présidente par intérim</strong> le 5 janvier : elle est la première femme à exercer le pouvoir présidentiel au Venezuela. Depuis, l'administration Trump a soutenu ce gouvernement de transition et rétabli les relations diplomatiques rompues en 2019. En août, les deux capitales ont conclu l'accord pétrolier présenté par Donald Trump comme « historique ».</p>
+            <p>L'Assemblée générale offre à Mme Rodríguez une scène que le Venezuela n'avait plus occupée depuis 2018, année du dernier discours de Nicolás Maduro à la tribune onusienne. Arrivée à New York le lundi 21 septembre, la présidente par intérim y a enchaîné les rendez-vous — <strong>António Guterres</strong>, FMI, Banque mondiale, BID — avant de retrouver Donald Trump.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Lieu</div><div class="ap-fact-val">Lotte New York Palace, Manhattan</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Format</div><div class="ap-fact-val">Aparté à huis clos, sans presse</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Côté américain</div><div class="ap-fact-val">Rubio, Bessent, Wiles, Miller</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Dernier précédent</div><div class="ap-fact-val">Obama–Maduro, Panama, 2015</div></div>
+            </div>
+
+            <div class="ap-sub">La rencontre : un aparté à huis clos en marge de la réception de Trump</div>
+            <p>Le mardi 22 septembre au matin, Donald Trump prononce son discours devant l'Assemblée générale. Il y qualifie Maduro de « dictateur hors-la-loi », affirme que des centaines de prisonniers politiques ont été libérés depuis sa capture et présente l'opération comme la preuve que les États-Unis useront de leur « puissance militaire inégalée » pour protéger leurs intérêts dans l'hémisphère occidental. Évoquant l'accord pétrolier d'août, il déclare : « Au vainqueur reviennent les richesses ».</p>
+            <p>Le soir même, vers 19h40 (heure de New York), il reçoit Delcy Rodríguez à l'hôtel <strong>Lotte New York Palace</strong>, lors d'une réception offerte aux dirigeants étrangers pour la semaine de haut niveau de l'ONU. La Maison-Blanche a confirmé cet aparté sans en détailler le contenu ; ce sont Mme Rodríguez, sur X, puis Marco Rubio, le lendemain, qui en ont dévoilé les grandes lignes. Étaient présents le secrétaire d'État, le secrétaire au Trésor Scott Bessent, la cheffe de cabinet Susie Wiles et son adjoint Stephen Miller.</p>
+            <p>Delcy Rodríguez parle d'une « réunion historique » consacrée au renforcement de la relation bilatérale et à une coopération dans des domaines stratégiques : énergie, mines, sécurité. Elle a aussi remercié Donald Trump pour son soutien à la réintégration du Venezuela dans les espaces multilatéraux et pour l'aide de la Maison-Blanche après le séisme du 24 juin. Marco Rubio a, lui, jugé la rencontre « courte mais importante ».</p>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">⚖️</div>
+              <div class="ap-info-text"><strong>Maduro, à quelques kilomètres :</strong> l'ex-président et son épouse restent détenus à New York et ont plaidé non coupables. Le 22 septembre, le juge Alvin Hellerstein a pris une ordonnance de protection encadrant la communication des preuves à la défense ; le procès est attendu à partir du 1er juin 2027. Début septembre, ses avocats ont demandé l'abandon des poursuites en invoquant l'immunité d'un chef d'État de facto.</div>
+            </div>
+
+            <div class="ap-sub">Chronologie : une semaine diplomatique à New York</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">3-5 janv. 2026</div><p class="ap-tl-text">Capture de Nicolás Maduro à Caracas. Delcy Rodríguez prête serment comme présidente par intérim.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Août 2026</div><p class="ap-tl-text">Signature de l'accord pétrolier entre Caracas et Washington.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">21 sept.</div><p class="ap-tl-text">Arrivée de Mme Rodríguez à New York, accueillie par John Barrett, plus haut diplomate américain au Venezuela. Rencontres avec la BID, António Guterres, le FMI et la Banque mondiale.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">22 sept. (matin)</div><p class="ap-tl-text">Ouverture de la 81e session de l'Assemblée générale. Discours de Donald Trump ; Delcy Rodríguez salue Pedro Sánchez et lui demande de maintenir ouvert le dialogue sur l'avenir du Venezuela, selon le gouvernement espagnol.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">22 sept. (soir)</div><p class="ap-tl-text">Aparté Trump–Rodríguez à l'hôtel Lotte New York Palace.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">23 sept.</div><p class="ap-tl-text">Marco Rubio détaille les sujets abordés. Le discours de Mme Rodríguez à l'ONU, initialement prévu jeudi, est avancé à mercredi, 17h30 (heure de New York).</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">Au menu : la dette, l'énergie et la transition politique</div>
+            <p>Selon Marco Rubio, la restructuration de la dette souveraine du Venezuela a été un sujet central. Il décrit la dette de Caracas comme probablement la plus lourde au monde à restructurer et affirme que Washington veut aider, à condition que le processus soit mené correctement. Le secrétaire d'État a aussi indiqué que les deux dirigeants avaient évoqué les réformes économiques et le processus de transition politique, qu'il dit engagé.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Indicateur</th><th>Montant</th><th>Source</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Obligations en défaut (État + PDVSA)</td><td class="ap-cell-bold">~60 Mds $</td><td>Reuters</td></tr>
+                <tr><td class="ap-cell-bold">Passif total (intérêts, arbitrages)</td><td class="ap-cell-bold">&gt; 150 Mds $</td><td>Analystes, via Reuters</td></tr>
+                <tr><td class="ap-cell-bold">Dette fin 2024</td><td class="ap-cell-bold">~164 Mds $</td><td>Transparencia Venezuela</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">⚠️</div>
+              <div class="ap-info-text"><strong>Un niveau de dette discuté :</strong> le Venezuela avait rompu avec le FMI en 2019 et n'a renoué que récemment ; les données macroéconomiques reconnues par les institutions internationales restent donc provisoires. Caracas a annoncé en mai l'ouverture de la restructuration de sa dette, mais son analyse de soutenabilité n'a pas encore été présentée.</div>
+            </div>
+
+            <div class="ap-quote">
+              <p>« Nous avons eu une réunion historique avec le président des États-Unis, Donald Trump. »</p>
+              <cite>— Delcy Rodríguez, sur X, après la rencontre</cite>
+            </div>
+            <div class="ap-quote">
+              <p>« La restructuration de la dette en est une clé. »</p>
+              <cite>— Marco Rubio, à New York, 23 septembre 2026</cite>
+            </div>
+
+            <div class="ap-sub">Les voix dissonantes : Machado, Lula et la question électorale</div>
+            <p>Face à l'image d'un rapprochement, l'opposition reste en retrait. Le prix Nobel de la paix 2025, <strong>María Corina Machado</strong>, a quitté le Venezuela en décembre 2025 et se trouve au Panama. Son équipe affirme qu'elle a tenté à trois reprises, par voie maritime et aérienne, de rentrer pendant le séjour de Mme Rodríguez à New York — au moins sept tentatives en tout — sans y parvenir. Les autorités panaméennes ne se sont pas exprimées. Aucune rencontre n'est prévue entre Donald Trump et elle ; leur dernier échange connu remonte à la mi-janvier.</p>
+            <p>Le président brésilien Lula a, dans un entretien à CNN, jugé que la manière dont Washington traite Delcy Rodríguez donne l'impression qu'il lui donne des ordres : « Si j'étais Delcy, je convoquerais des élections au plus vite. » Aucune date d'élection présidentielle n'est fixée à ce stade ; un dialogue entre chavisme et opposition se poursuit à Caracas, sans participation directe de Machado ni d'Edmundo González. Le 21 septembre, l'ONU a par ailleurs réclamé la fin de la censure et du blocage de médias au Venezuela.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Une image de normalisation, une transition encore en suspens</div>
+              <p>Pour Caracas, la rencontre de New York est un jalon : après des années d'isolement, Delcy Rodríguez retrouve la tribune onusienne et un dialogue direct avec la Maison-Blanche, alors que les priorités affichées — énergie, mines, sécurité, dette — sont avant tout économiques et stratégiques. Pour Washington, le partenariat avec le gouvernement de transition sert ses intérêts énergétiques et financiers, comme Donald Trump l'a rappelé à la tribune de l'ONU. Reste la question que soulèvent Lula, l'ONU et l'opposition : quand le Venezuela retrouvera-t-il un calendrier électoral, et avec quelle marge d'autonomie face à son puissant partenaire ? Le discours de Mme Rodríguez à l'Assemblée générale, attendu mercredi 23 septembre, puis le procès de Maduro, prévu en juin 2027, seront deux nouveaux moments de vérité.</p>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-fr-section -->
+
+    <!-- ══ SECTION ES ══ -->
+    <div class="ap-es-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-red">🇻🇪 Venezuela</span>
+          <span class="ap-tag ap-tag-blue">🇺🇸 Estados Unidos</span>
+          <span class="ap-tag ap-tag-gold">ONU</span>
+          <span class="ap-tag ap-tag-navy">Diplomacia</span>
+          <span class="ap-tag ap-tag-purple">Geopolítica</span>
+        </div>
+        <div class="ap-date">Septiembre 2026 — ECG Prépa · Venezuela</div>
+        <h1 class="ap-title">Venezuela – Asamblea General de la ONU: Delcy Rodríguez se reúne con Donald Trump en Nueva York</h1>
+        <p class="ap-intro">Casi nueve meses después de la captura de Nicolás Maduro por el ejército estadounidense, Delcy Rodríguez se reunió con Donald Trump al margen de la Asamblea General de la ONU, en Nueva York. Este encuentro a puerta cerrada, el martes 22 de septiembre, es el primero en persona desde que ella ejerce la presidencia interina de Venezuela. Según Caracas y Washington, se abordó la cooperación energética, minera y de seguridad, así como la reestructuración de la deuda del país, mientras la oposición permanece al margen de la escena.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat red"><span class="ap-stat-num">1.ª</span><span class="ap-stat-desc">Reunión en persona<br>Trump–Rodríguez</span></div>
+          <div class="ap-stat"><span class="ap-stat-num">60 000 M $</span><span class="ap-stat-desc">En bonos<br>en impago</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">+150 000 M $</span><span class="ap-stat-desc">Pasivo total estimado<br>por los analistas</span></div>
+          <div class="ap-stat blue"><span class="ap-stat-num">2018</span><span class="ap-stat-desc">Último discurso venezolano<br>en la Asamblea General</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">El contexto: un cara a cara esperado desde la caída de Maduro</div>
+            <p>El 3 de enero de 2026, una operación militar estadounidense en Caracas culmina con la captura de Nicolás Maduro y de su esposa Cilia Flores, trasladados a Nueva York para ser juzgados. Delcy Rodríguez, entonces vicepresidenta, jura el cargo como <strong>presidenta interina</strong> el 5 de enero: es la primera mujer que ejerce el poder presidencial en Venezuela. Desde entonces, la administración Trump ha respaldado a este gobierno de transición y ha restablecido las relaciones diplomáticas rotas en 2019. En agosto, ambas capitales concluyeron el acuerdo petrolero presentado por Donald Trump como «histórico».</p>
+            <p>La Asamblea General ofrece a la señora Rodríguez un escenario que Venezuela no ocupaba desde 2018, año del último discurso de Nicolás Maduro en la tribuna de la ONU. Llegada a Nueva York el lunes 21 de septiembre, la presidenta interina encadenó reuniones —<strong>António Guterres</strong>, FMI, Banco Mundial, BID— antes de reencontrarse con Donald Trump.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Lugar</div><div class="ap-fact-val">Lotte New York Palace, Manhattan</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Formato</div><div class="ap-fact-val">Aparte a puerta cerrada, sin prensa</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Lado estadounidense</div><div class="ap-fact-val">Rubio, Bessent, Wiles, Miller</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Último precedente</div><div class="ap-fact-val">Obama–Maduro, Panamá, 2015</div></div>
+            </div>
+
+            <div class="ap-sub">La reunión: un aparte a puerta cerrada al margen de la recepción de Trump</div>
+            <p>El martes 22 de septiembre por la mañana, Donald Trump pronuncia su discurso ante la Asamblea General. Califica a Maduro de «dictador fuera de la ley», afirma que cientos de presos políticos han sido liberados desde su captura y presenta la operación como prueba de que Estados Unidos usará su «poder militar sin igual» para proteger sus intereses en el hemisferio occidental. Al referirse al acuerdo petrolero de agosto, declara: «Al vencedor le pertenecen las riquezas».</p>
+            <p>Esa misma noche, hacia las 19:40 (hora de Nueva York), recibe a Delcy Rodríguez en el hotel <strong>Lotte New York Palace</strong>, durante una recepción ofrecida a los líderes extranjeros con motivo de la Semana de Alto Nivel de la ONU. La Casa Blanca confirmó este aparte sin detallar su contenido; fueron la señora Rodríguez, en X, y luego Marco Rubio, al día siguiente, quienes revelaron sus líneas generales. Estaban presentes el secretario de Estado, el secretario del Tesoro Scott Bessent, la jefa de gabinete Susie Wiles y su adjunto Stephen Miller.</p>
+            <p>Delcy Rodríguez habla de una «histórica reunión» dedicada al fortalecimiento de la relación bilateral y a la cooperación en áreas estratégicas: energía, minería, seguridad. También agradeció a Donald Trump su apoyo al proceso de reintegración de Venezuela en los espacios multilaterales y la ayuda de la Casa Blanca tras el terremoto del 24 de junio. Marco Rubio, por su parte, calificó el encuentro de «breve pero importante».</p>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">⚖️</div>
+              <div class="ap-info-text"><strong>Maduro, a pocos kilómetros:</strong> el expresidente y su esposa siguen detenidos en Nueva York y se declararon no culpables. El 22 de septiembre, el juez Alvin Hellerstein dictó una orden de protección que regula la entrega de pruebas a la defensa; se espera que el juicio comience el 1 de junio de 2027. A principios de septiembre, sus abogados pidieron el sobreseimiento de la causa alegando la inmunidad de un jefe de Estado de facto.</div>
+            </div>
+
+            <div class="ap-sub">Cronología: una semana diplomática en Nueva York</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">3-5 ene. 2026</div><p class="ap-tl-text">Captura de Nicolás Maduro en Caracas. Delcy Rodríguez jura el cargo como presidenta interina.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Ago. 2026</div><p class="ap-tl-text">Firma del acuerdo petrolero entre Caracas y Washington.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">21 sept.</div><p class="ap-tl-text">Llegada de la señora Rodríguez a Nueva York, recibida por John Barrett, el mayor diplomático estadounidense en Venezuela. Reuniones con el BID, António Guterres, el FMI y el Banco Mundial.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">22 sept. (mañana)</div><p class="ap-tl-text">Apertura del 81.º período de sesiones de la Asamblea General. Discurso de Donald Trump; Delcy Rodríguez saluda a Pedro Sánchez y le pide mantener abierto el diálogo sobre el futuro de Venezuela, según el Gobierno español.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">22 sept. (noche)</div><p class="ap-tl-text">Aparte Trump–Rodríguez en el hotel Lotte New York Palace.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">23 sept.</div><p class="ap-tl-text">Marco Rubio detalla los temas tratados. El discurso de la señora Rodríguez ante la ONU, previsto inicialmente para el jueves, se adelanta al miércoles a las 17:30 (hora de Nueva York).</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">En la agenda: la deuda, la energía y la transición política</div>
+            <p>Según Marco Rubio, la reestructuración de la deuda soberana de Venezuela fue un tema central. Describe la deuda de Caracas como probablemente la más abultada del mundo por reestructurar y afirma que Washington quiere ayudar, siempre que el proceso se haga correctamente. El secretario de Estado indicó además que ambos mandatarios hablaron de las reformas económicas y del proceso de transición política, que asegura en marcha.</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Indicador</th><th>Monto</th><th>Fuente</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Bonos en impago (Estado + PDVSA)</td><td class="ap-cell-bold">~60.000 M $</td><td>Reuters</td></tr>
+                <tr><td class="ap-cell-bold">Pasivo total (intereses, laudos)</td><td class="ap-cell-bold">&gt; 150.000 M $</td><td>Analistas, vía Reuters</td></tr>
+                <tr><td class="ap-cell-bold">Deuda a finales de 2024</td><td class="ap-cell-bold">~164.000 M $</td><td>Transparencia Venezuela</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">⚠️</div>
+              <div class="ap-info-text"><strong>Un nivel de deuda discutido:</strong> Venezuela rompió relaciones con el FMI en 2019 y solo las retomó recientemente; los datos macroeconómicos aceptados por las instituciones internacionales siguen siendo, por tanto, provisionales. Caracas anunció en mayo el inicio de la reestructuración de su deuda, pero aún no ha presentado su análisis de sostenibilidad.</div>
+            </div>
+
+            <div class="ap-quote">
+              <p>« Sostuvimos una histórica reunión con el presidente de los Estados Unidos, Donald Trump. »</p>
+              <cite>— Delcy Rodríguez, en X, tras el encuentro</cite>
+            </div>
+            <div class="ap-quote">
+              <p>« La reestructuración de la deuda es clave para ello. »</p>
+              <cite>— Marco Rubio, en Nueva York, 23 de septiembre de 2026</cite>
+            </div>
+
+            <div class="ap-sub">Las voces discordantes: Machado, Lula y la cuestión electoral</div>
+            <p>Frente a la imagen de acercamiento, la oposición sigue al margen. La premio Nobel de la Paz 2025, <strong>María Corina Machado</strong>, salió de Venezuela en diciembre de 2025 y se encuentra en Panamá. Su equipo afirma que intentó tres veces, por vía marítima y aérea, regresar durante la estancia de la señora Rodríguez en Nueva York —al menos siete intentos en total— sin conseguirlo. Las autoridades panameñas no se han pronunciado. No está prevista ninguna reunión entre Donald Trump y ella; su último encuentro conocido se remonta a mediados de enero.</p>
+            <p>El presidente brasileño Lula, en una entrevista con CNN, opinó que la forma en que Washington trata a Delcy Rodríguez da la impresión de que le da órdenes: «Si yo fuera Delcy, convocaría a elecciones lo antes posible». No hay fecha fijada para unas presidenciales; prosigue en Caracas un diálogo entre chavismo y oposición, sin participación directa de Machado ni de Edmundo González. El 21 de septiembre, la ONU reclamó además el fin de la censura y del bloqueo de medios en Venezuela.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Una imagen de normalización, una transición todavía en suspenso</div>
+              <p>Para Caracas, la reunión de Nueva York es un hito: tras años de aislamiento, Delcy Rodríguez recupera la tribuna de la ONU y un diálogo directo con la Casa Blanca, mientras que las prioridades declaradas —energía, minería, seguridad, deuda— son ante todo económicas y estratégicas. Para Washington, la alianza con el gobierno de transición sirve a sus intereses energéticos y financieros, como recordó Donald Trump desde la tribuna de la ONU. Queda la pregunta que plantean Lula, la ONU y la oposición: ¿cuándo recuperará Venezuela un calendario electoral, y con qué margen de autonomía frente a su poderoso socio? El discurso de la señora Rodríguez ante la Asamblea General, previsto para el miércoles 23 de septiembre, y después el juicio a Maduro, previsto para junio de 2027, serán dos nuevos momentos de verdad.</p>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-es-section -->
+
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — Venezuela — Septembre 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-es').classList.toggle('active', lang === 'es');
+  const isEs = lang === 'es';
+  document.getElementById('ap-band').textContent = isEs ? '🇻🇪 Rodríguez – Trump en la ONU' : '🇻🇪 Rodríguez – Trump à l\'ONU';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEs ? 'none' : 'block');
+  document.querySelectorAll('.ap-es-section').forEach(el => el.style.display = isEs ? 'block' : 'none');
+}
+setLang('fr');
+</script>
+</body>
+</html>

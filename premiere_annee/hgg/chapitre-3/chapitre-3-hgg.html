@@ -392,6 +392,702 @@
     .alliance-fact { font-size: 7.5pt !important; }
     .alliance-timeline { padding: 0.6rem 0.8rem !important; }
   }
+
+:root {
+  --hla: var(--amber); --hla-dark: var(--amber-dark); --hla-mid: var(--amber-mid);
+  --hla-light: var(--amber-light); --hla-border: var(--amber-border); --hla-gold: #E84040;
+}
+/* ═══════════════════════════════════════════════════════════
+   SYSTÈME DE SURLIGNAGE
+   ═══════════════════════════════════════════════════════════ */
+:root {
+  --hl-y: 255 208 0;     /* jaune  */
+  --hl-g: 52 199 89;     /* vert   */
+  --hl-p: 255 92 162;    /* rose   */
+  --hl-b: 52 152 255;    /* bleu   */
+  --hl-o: 255 136 34;    /* orange */
+}
+/* les teintes par catégorie sont injectées par le script (<style id="hl-palette">) */
+[data-c] { --c: 150 150 150; }
+
+/* le surlignage lui-même */
+mark.hl {
+  --a: .42;
+  background: rgb(var(--c) / var(--a));
+  color: inherit;
+  padding: .04em .06em; margin: 0 -.06em;
+  border-radius: .22em;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+  cursor: pointer;
+  transition: background-color .15s, box-shadow .15s;
+}
+mark.hl.hl-hover { --a: .68; }
+mark.hl.hl-active { box-shadow: 0 0 0 2px rgb(var(--c) / .9); }
+mark.hl.hl-flash { animation: hl-flash 1.3s ease-out; }
+@keyframes hl-flash {
+  0%   { box-shadow: 0 0 0 0 rgb(var(--c) / .95); --a: .9; }
+  100% { box-shadow: 0 0 0 14px rgb(var(--c) / 0); }
+}
+/* sur fonds sombres (texte clair) : on baisse l'opacité pour rester lisible */
+:is(.hgg-concept, .hgg-author, .big-quote, .synth-conclusion) mark.hl { --a: .5; }
+:is(.hgg-concept, .hgg-author, .big-quote, .synth-conclusion) mark.hl.hl-hover { --a: .72; }
+/* ─── éléments d'interface ─── */
+.hl-ui, .hl-ui * { box-sizing: border-box; }
+.hl-ui {
+  font-family: 'DM Sans', sans-serif; -webkit-user-select: none; user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.hl-ui [hidden] { display: none !important; }
+:where(.hl-ui) button { font: inherit; cursor: pointer; border: 0; background: none; color: inherit; }
+.hl-ui button:focus-visible, .hl-ui textarea:focus-visible { outline: 2px solid var(--hla-gold); outline-offset: 2px; }
+
+.hl-dot {
+  width: 24px; height: 24px; border-radius: 50%; padding: 0;
+  background: rgb(var(--c)); border: 2px solid rgba(255,255,255,.92) !important;
+  transition: transform .12s;
+}
+.hl-dot:hover { transform: scale(1.15); }
+.hl-dot.on { outline: 2px solid var(--hla-gold); outline-offset: 2px; }
+
+.hl-toolbar {
+  position: absolute; z-index: 600; display: none; align-items: center; gap: 6px;
+  padding: 7px 10px; border-radius: 999px;
+  background: var(--hla-dark); color: var(--cream);
+  border: 1px solid rgba(232,64,64,.4);
+  box-shadow: 0 12px 32px -8px rgba(26,4,0,.65);
+}
+.hl-toolbar.show { display: flex; animation: hl-pop .14s ease-out; }
+@keyframes hl-pop { from { opacity: 0; transform: translateY(4px) scale(.96); } }
+.hl-sep { width: 1px; height: 20px; background: rgba(253,245,240,.22); margin: 0 4px; }
+.hl-btn {
+  width: 30px; height: 30px; border-radius: 50%;
+  display: grid; place-items: center; color: var(--cream);
+}
+.hl-btn:hover { background: rgba(253,245,240,.14); }
+.hl-btn svg { width: 16px; height: 16px; }
+
+/* popover d'un surlignage existant */
+.hl-pop {
+  position: absolute; z-index: 600; display: none; width: 260px; padding: 10px;
+  background: #fff; color: var(--dark);
+  border: 1px solid var(--hla-border); border-radius: 10px;
+  box-shadow: 0 16px 40px -12px rgba(26,4,0,.45);
+}
+.hl-pop.show { display: block; animation: hl-pop .14s ease-out; }
+.hl-pop-row { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.hl-pop-row .hl-dot { border-color: #fff !important; box-shadow: 0 0 0 1px rgba(107,0,0,.18); }
+.hl-pop-row .grow { flex: 1; }
+.hl-pop .hl-btn { color: var(--muted); }
+.hl-pop .hl-btn:hover { background: var(--hla-light); color: var(--hla-dark); }
+.hl-pop .hl-btn.danger:hover { background: #FDE4E4; color: #B42318; }
+.hl-pop textarea {
+  width: 100%; min-height: 64px; resize: vertical; padding: 8px 10px;
+  font: 400 .84rem/1.5 'DM Sans', sans-serif; color: var(--dark);
+  background: var(--cream); border: 1px solid var(--hla-border); border-radius: 6px;
+  -webkit-user-select: text; user-select: text;
+}
+.hl-pop-label { font: 500 .6rem 'DM Mono', monospace; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
+
+/* bouton flottant + panneau */
+.hl-fab {
+  position: fixed; left: 1.5rem; bottom: 2rem; z-index: 300;
+  width: 46px; height: 46px; border-radius: 50%;
+  display: grid !important; place-items: center;
+  background: var(--hla-dark); color: var(--hla-gold);
+  border: 1px solid rgba(232,64,64,.35) !important;
+  box-shadow: 0 6px 18px rgba(26,4,0,.35);
+  transition: transform .15s, background .15s;
+}
+.hl-fab:hover { transform: translateY(-2px); background: var(--hla); }
+.hl-fab svg { width: 20px; height: 20px; }
+.hl-fab .badge {
+  position: absolute; top: 1px; right: 1px; width: 11px; height: 11px; padding: 0; overflow: hidden;
+  border-radius: 50%; background: rgb(var(--hl-y)); border: 2px solid var(--hla-dark); box-sizing: content-box;
+  font-size: 0; text-indent: -99px;
+}
+.hl-fab.auto::after {
+  content: ""; position: absolute; inset: -5px; border-radius: 50%;
+  border: 2px solid rgb(var(--c)); animation: hl-ring 1.8s ease-in-out infinite;
+}
+@keyframes hl-ring { 50% { opacity: .35; transform: scale(1.08); } }
+
+.hl-panel {
+  position: fixed; top: 0; right: 0; z-index: 700; height: 100%; width: min(390px, 100vw);
+  display: flex; flex-direction: column;
+  background: var(--cream); border-left: 1px solid var(--hla-border);
+  box-shadow: -18px 0 50px -20px rgba(26,4,0,.5);
+  transform: translateX(105%); transition: transform .28s cubic-bezier(.2,.8,.2,1);
+  visibility: hidden;
+}
+.hl-panel.open { transform: none; visibility: visible; }
+.hl-panel-head {
+  display: flex; align-items: center; gap: 10px; padding: 16px 18px;
+  background: var(--hla-dark); color: var(--cream);
+}
+.hl-panel-head h2 { flex: 1; font: 700 1.05rem 'Playfair Display', serif; color: var(--hla-gold); }
+.hl-panel-head .hl-btn:hover { background: rgba(253,245,240,.14); }
+.hl-tools { padding: 14px 18px; border-bottom: 1px solid var(--hla-light); display: grid; gap: 12px; }
+.hl-tools-label { font: 500 .6rem 'DM Mono', monospace; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.hl-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.hl-chip {
+  display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 6px;
+  border-radius: 999px; font-size: .74rem; color: var(--hla-dark);
+  background: #fff; border: 1px solid var(--hla-border) !important;
+}
+.hl-chip i { width: 14px; height: 14px; border-radius: 50%; background: rgb(var(--c)); flex-shrink: 0; }
+.hl-chip i.all { background: conic-gradient(rgb(var(--hl-y)), rgb(var(--hl-g)), rgb(var(--hl-b)), rgb(var(--hl-p)), rgb(var(--hl-o)), rgb(var(--hl-y))); }
+.hl-chip b { font: 500 .64rem 'DM Mono', monospace; opacity: .6; }
+.hl-chip.on { background: var(--hla-dark); color: #fff; border-color: var(--hla-dark) !important; }
+.hl-switch { display: flex; align-items: center; gap: 10px; font-size: .82rem; color: var(--hla-dark); }
+.hl-switch .track { position: relative; width: 36px; height: 20px; border-radius: 999px; background: var(--hla-border); transition: background .2s; flex-shrink: 0; }
+.hl-switch .track::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform .2s; }
+.hl-switch.on .track { background: var(--hla); }
+.hl-switch.on .track::after { transform: translateX(16px); }
+.hl-switch small { display: block; color: var(--muted); font-size: .7rem; }
+
+.hl-list { list-style: none; flex: 1; overflow-y: auto; padding: 10px 14px 18px; }
+.hl-sec { font: 500 .6rem 'DM Mono', monospace; letter-spacing: .16em; text-transform: uppercase; color: var(--hla); margin: 14px 4px 6px; }
+.hl-item {
+  display: flex; align-items: stretch; gap: 10px; margin-bottom: 6px; padding: 9px 8px 9px 0;
+  background: #fff; border: 1px solid var(--hla-light); border-radius: 6px; cursor: pointer;
+  transition: border-color .15s, box-shadow .15s;
+}
+.hl-item:hover { border-color: var(--hla-border); box-shadow: 0 3px 10px -4px rgba(184,20,0,.3); }
+.hl-item-bar { width: 5px; border-radius: 0 4px 4px 0; background: rgb(var(--c)); flex-shrink: 0; }
+.hl-item-main { flex: 1; min-width: 0; }
+.hl-item-q { font-size: .82rem; line-height: 1.5; color: #260A07; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.hl-item-n { margin-top: 5px; font-size: .76rem; font-style: italic; color: var(--muted); white-space: pre-wrap; }
+.hl-item.orphan { opacity: .65; border-style: dashed; cursor: default; }
+.hl-item.orphan .hl-item-q::before { content: "Introuvable dans la page · "; font-style: italic; color: #B42318; }
+.hl-item-del { align-self: flex-start; width: 26px; height: 26px; border-radius: 50%; color: var(--muted); font-size: 1.1rem; line-height: 1; }
+.hl-item-del:hover { background: #FDE4E4; color: #B42318; }
+.hl-empty { padding: 2.2rem 1.2rem; text-align: center; font-size: .85rem; color: var(--muted); line-height: 1.7; }
+.hl-empty b { color: var(--hla-dark); }
+.hl-panel-foot { display: flex; gap: 8px; padding: 12px 18px; border-top: 1px solid var(--hla-light); background: #FCECE6; }
+.hl-foot-btn {
+  flex: 1; padding: 8px 10px; border-radius: 6px; font-size: .78rem; font-weight: 500;
+  background: #fff; color: var(--hla-dark); border: 1px solid var(--hla-border) !important;
+}
+.hl-foot-btn:hover:not(:disabled) { background: var(--hla-light); }
+.hl-foot-btn:disabled { opacity: .4; cursor: default; }
+.hl-foot-btn.danger { color: #B42318; }
+
+.hl-toast {
+  position: fixed; left: 50%; bottom: 2rem; z-index: 800; transform: translate(-50%, 20px);
+  display: flex; align-items: center; gap: 14px; padding: 10px 16px; border-radius: 8px;
+  background: var(--hla-dark); color: var(--cream); font-size: .84rem;
+  box-shadow: 0 12px 30px -8px rgba(26,4,0,.6); opacity: 0; pointer-events: none;
+  transition: opacity .2s, transform .2s;
+}
+.hl-toast.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+.hl-toast button { color: var(--hla-gold); font-weight: 700; }
+
+@media (max-width: 720px) {
+  .hl-fab { left: 1rem; bottom: 1.2rem; }
+  .hl-toast { bottom: 5rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hl-ui, .hl-ui *, mark.hl { animation: none !important; transition: none !important; }
+}
+@media print {
+  .hl-ui:not(.hl-fiche) { display: none !important; }
+  mark.hl {
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    --a: .5 !important; box-shadow: none !important; animation: none !important;
+  }
+  mark.hl.hl-note.hl-last::after { display: none; }
+}
+
+/* ─── bouton « fiche » dans le panneau ─── */
+.hl-primary {
+  display: flex !important; align-items: center; gap: 12px; width: 100%; padding: 11px 14px; text-align: left;
+  border-radius: 8px; background: var(--hla-dark); color: var(--cream); font-size: .88rem; font-weight: 500;
+  transition: background .15s;
+}
+.hl-primary:hover { background: var(--hla); }
+.hl-primary svg { width: 22px; height: 22px; color: var(--hla-gold); flex-shrink: 0; }
+.hl-primary small { display: block; font-weight: 300; font-size: .72rem; opacity: .7; }
+
+/* ─── fiche de révision ─── */
+.hl-fiche { position: fixed; inset: 0; z-index: 900; display: none; flex-direction: column; background: #FBE6E1; }
+.hl-fiche.open { display: flex; }
+body.hl-fiche-open { overflow: hidden; }
+.hl-fiche-bar {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 10px 12px; padding: 10px 18px;
+  background: var(--hla-dark); color: var(--cream); border-bottom: 1px solid rgba(232,64,64,.3);
+}
+.hl-fiche-bar .grow { flex: 1; }
+.hl-fiche-bar .hl-chips { gap: 5px; }
+.hl-fiche-bar .hl-chip { background: transparent; color: rgba(253,245,240,.7); border-color: rgba(253,245,240,.28) !important; }
+.hl-fiche-bar .hl-chip.on { background: rgba(253,245,240,.14); color: #fff; border-color: rgba(253,245,240,.5) !important; }
+.hl-seg { display: inline-flex; border: 1px solid rgba(253,245,240,.3); border-radius: 7px; overflow: hidden; }
+.hl-seg button { padding: 6px 12px; font-size: .78rem; color: rgba(253,245,240,.75); }
+.hl-seg button.on { background: var(--cream); color: var(--hla-dark); font-weight: 600; }
+.hl-fbtn { padding: 7px 13px; border-radius: 7px; font-size: .78rem; font-weight: 500; color: var(--cream); border: 1px solid rgba(253,245,240,.3) !important; }
+.hl-fbtn:hover { background: rgba(253,245,240,.12); }
+.hl-fbtn.on { background: rgba(253,245,240,.14); }
+.hl-fbtn.primary { background: var(--hla-gold); color: var(--hla-dark); border-color: var(--hla-gold) !important; font-weight: 700; }
+.hl-fbtn.primary:hover { background: #EF7979; }
+.hl-fiche-scroll { flex: 1; overflow: auto; padding: 0 12px; }
+
+.hl-sheet {
+  max-width: 820px; margin: 26px auto 60px; padding: 46px 54px 50px;
+  background: #fff; color: #260A07; border-radius: 4px;
+  box-shadow: 0 18px 50px -20px rgba(26,4,0,.5);
+  -webkit-user-select: text; user-select: text;
+}
+.hl-sheet-kicker { font: 500 .66rem 'DM Mono', monospace; letter-spacing: .26em; text-transform: uppercase; color: var(--hla); }
+.hl-sheet h1 { font: 900 1.75rem/1.15 'Playfair Display', serif; color: var(--hla-dark); margin: .45rem 0 .55rem; }
+.hl-sheet-meta { font: .72rem 'DM Mono', monospace; color: var(--muted); }
+.hl-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 16px 0 6px; padding-bottom: 16px; border-bottom: 2px solid var(--hla); }
+.hl-leg { display: inline-flex; align-items: center; gap: 6px; font-size: .74rem; color: #260A07; }
+.hl-leg i, .hl-colhead i { width: 12px; height: 12px; border-radius: 3px; background: rgb(var(--c)); display: inline-block; }
+.hl-part { font: 700 1.08rem/1.3 'Playfair Display', serif; color: var(--hla-dark); margin: 28px 0 4px; padding-bottom: 6px; border-bottom: 1px solid var(--hla-border); break-after: avoid; }
+.hl-colhead { display: flex; align-items: center; gap: 9px; }
+.hl-colhead small { margin-left: auto; font: 500 .68rem 'DM Mono', monospace; color: var(--muted); }
+.hl-sec2 { font: 500 .66rem 'DM Mono', monospace; letter-spacing: .17em; text-transform: uppercase; color: var(--hla); margin: 18px 0 8px; break-after: avoid; }
+.hl-fi { padding: 6px 8px 6px 14px; margin-bottom: 7px; border-left: 4px solid rgb(var(--c)); break-inside: avoid; cursor: pointer; border-radius: 0 4px 4px 0; transition: background .15s; }
+.hl-fi:hover { background: #FDF5F0; }
+.hl-fq {
+  font: 400 .93rem/1.85 'DM Sans', sans-serif; background: rgb(var(--c) / .38); padding: .08em .18em; border-radius: .2em;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+.hl-fn { margin-top: 5px; font: italic 400 .82rem/1.55 'DM Sans', sans-serif; color: var(--muted); white-space: pre-wrap; }
+.hl-fn::before { content: "✎ "; font-style: normal; }
+.hl-fref { margin-top: 3px; font: .62rem 'DM Mono', monospace; letter-spacing: .06em; color: var(--muted); }
+.hl-sheet-empty { margin: 34px 0 10px; text-align: center; color: var(--muted); font-size: .9rem; line-height: 1.7; }
+
+@media (max-width: 720px) {
+  .hl-sheet { padding: 28px 20px 34px; margin: 12px auto 40px; }
+  .hl-fiche-bar { padding: 8px 12px; }
+}
+@media print {
+  body.hl-fiche-open > *:not(.hl-fiche) { display: none !important; }
+  body.hl-fiche-open { overflow: visible !important; height: auto !important; background: #fff !important; }
+  .hl-fiche { position: static !important; display: block !important; background: #fff !important; }
+  .hl-fiche-bar { display: none !important; }
+  .hl-fiche-scroll { overflow: visible !important; padding: 0 !important; }
+  .hl-sheet { max-width: none !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; border-radius: 0 !important; }
+  .hl-sheet h1 { font-size: 20pt; }
+  .hl-fq { font-size: 9.5pt; line-height: 1.7; }
+  .hl-fn { font-size: 8.5pt; }
+  .hl-fi:hover { background: none; }
+  .hl-sheet, .hl-sheet * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+/* ─── personnalisation des couleurs ─── */
+.hl-tools { max-height: 58vh; overflow-y: auto; }
+.hl-dot.hl-add {
+  background: transparent; border: 2px dashed rgba(253,245,240,.65) !important; color: var(--cream);
+  display: grid; place-items: center; font-size: 15px; line-height: 1; font-weight: 500;
+}
+.hl-dot.hl-add:hover { background: rgba(253,245,240,.14); }
+.hl-details summary {
+  cursor: pointer; list-style: none; font: 500 .6rem 'DM Mono', monospace; letter-spacing: .2em; text-transform: uppercase; color: var(--muted);
+  display: flex; align-items: center; gap: 6px;
+}
+.hl-details summary::-webkit-details-marker { display: none; }
+.hl-details summary::before { content: "▸"; transition: transform .15s; }
+.hl-details[open] summary::before { transform: rotate(90deg); }
+.hl-details summary:hover { color: var(--hla-dark); }
+.hl-cats { display: grid; gap: 6px; margin-top: 10px; }
+.hl-cat { display: flex; align-items: center; gap: 8px; }
+.hl-swatch {
+  position: relative; width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; overflow: hidden; cursor: pointer;
+  background: rgb(var(--c)); box-shadow: 0 0 0 2px #fff, 0 0 0 3px var(--hla-border);
+}
+.hl-swatch input { position: absolute; inset: -8px; width: 44px; height: 44px; opacity: 0; cursor: pointer; border: 0; padding: 0; }
+.hl-cat-name {
+  flex: 1; min-width: 0; padding: 6px 9px; font: 400 .82rem 'DM Sans', sans-serif; color: var(--dark);
+  background: #fff; border: 1px solid var(--hla-border); border-radius: 6px; -webkit-user-select: text; user-select: text;
+}
+.hl-cat-n { min-width: 16px; text-align: right; font: 500 .64rem 'DM Mono', monospace; color: var(--muted); }
+.hl-cat-del { width: 26px; height: 26px; border-radius: 50%; color: var(--muted); font-size: 1.1rem; line-height: 1; }
+.hl-cat-del:hover:not(:disabled) { background: #FDE4E4; color: #B42318; }
+.hl-cat-del:disabled { opacity: .3; cursor: default; }
+.hl-cats-foot { display: flex; gap: 8px; margin-top: 4px; }
+
+/* notes dans la fiche */
+.hl-fnw { margin-top: 4px; }
+.hl-fn { cursor: text; border-radius: 3px; padding: 1px 3px; margin-left: -3px; }
+.hl-fn:hover { background: var(--hla-light); }
+.hl-fadd { font: 400 .72rem 'DM Sans', sans-serif; color: var(--muted); opacity: .55; padding: 2px 0; }
+.hl-fi:hover .hl-fadd, .hl-fadd:focus-visible { opacity: 1; color: var(--hla); text-decoration: underline; }
+.hl-fnedit {
+  width: 100%; display: block; resize: none; padding: 7px 9px; font: 400 .84rem/1.5 'DM Sans', sans-serif; color: var(--dark);
+  background: var(--cream); border: 1px solid var(--hla-mid); border-radius: 6px; -webkit-user-select: text; user-select: text;
+}
+@media print { .hl-fadd { display: none !important; } .hl-fnw:empty { display: none; } .hl-fn { padding: 0; margin-left: 0; } }
+
+/* ═════════ v3 : styles, statuts, cache-cache, panneau à onglets, fiche, flashcards ═════════ */
+
+/* styles de surlignage : fond (défaut), souligné, encadré, barré */
+:is(mark.hl, .hl-fq)[data-s="ul"] {
+  background: none !important; border-radius: 0;
+  text-decoration: underline; text-decoration-color: rgb(var(--c)); text-decoration-thickness: 3px;
+  text-underline-offset: .2em; text-decoration-skip-ink: none;
+}
+mark.hl[data-s="ul"].hl-hover { text-decoration-thickness: 5px; }
+:is(mark.hl, .hl-fq)[data-s="box"] { background: rgb(var(--c) / .1) !important; box-shadow: inset 0 0 0 2px rgb(var(--c)); border-radius: .3em; }
+mark.hl[data-s="box"].hl-hover { background: rgb(var(--c) / .24) !important; }
+:is(mark.hl, .hl-fq)[data-s="strike"] {
+  background: rgb(var(--c) / .14) !important; text-decoration: line-through;
+  text-decoration-color: rgb(var(--c)); text-decoration-thickness: 2px;
+}
+mark.hl[data-s="strike"].hl-hover { background: rgb(var(--c) / .3) !important; }
+
+/* repères : note ✎ et « à revoir » ⚑ (sur le dernier morceau du passage) */
+mark.hl.hl-last.hl-note::after {
+  font-size: .62em; vertical-align: super; margin-left: .2em; opacity: .85;
+  font-family: 'DM Sans', sans-serif; font-style: normal; display: inline-block;
+}
+mark.hl.hl-last.hl-note::after { content: "✎"; }
+
+/* pastille de style dans les ronds de couleur */
+.hl-dot[data-s]:not([data-s="bg"])::after { content: "A"; display: block; font: 700 11px/1 'DM Sans', sans-serif; color: #fff; text-shadow: 0 0 2px rgba(0,0,0,.55); }
+.hl-dot[data-s="ul"]::after { text-decoration: underline; }
+.hl-dot[data-s="strike"]::after { text-decoration: line-through; }
+.hl-dot[data-s="box"]::after { outline: 1px solid #fff; padding: 0 2px; }
+
+/* mode cache-cache dans le cours */
+body.hl-hidemode mark.hl:not(.hl-revealed) {
+  color: transparent !important; text-decoration: none !important; box-shadow: none !important; text-shadow: none;
+  background: rgb(var(--c) / .92) !important; border-radius: .3em; cursor: pointer;
+  -webkit-user-select: none; user-select: none;
+}
+body.hl-hidemode mark.hl:not(.hl-revealed)::after { display: none !important; }
+body.hl-hidemode mark.hl:not(.hl-revealed):hover { background: rgb(var(--c) / .7) !important; }
+.hl-testbar {
+  position: fixed; top: 74px; left: 50%; z-index: 350; transform: translate(-50%, -14px); opacity: 0; pointer-events: none;
+  display: flex; align-items: center; gap: 12px; padding: 8px 14px; border-radius: 999px;
+  background: var(--hla-dark); color: var(--cream); font-size: .8rem; box-shadow: 0 10px 28px -8px rgba(26,4,0,.6);
+  border: 1px solid rgba(232,64,64,.4); transition: opacity .2s, transform .2s; max-width: calc(100vw - 20px); flex-wrap: wrap; justify-content: center;
+}
+.hl-testbar.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+.hl-testbar button { color: var(--hla-gold); font-weight: 600; font-size: .78rem; }
+.hl-testbar button:hover { text-decoration: underline; }
+
+/* popover : statut + étiquettes */
+.hl-pop { width: 290px; }
+.hl-tagbox { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-top: 8px; padding: 4px 6px; background: var(--cream); border: 1px solid var(--hla-border); border-radius: 6px; }
+.hl-tagchips { display: contents; }
+.hl-tagchip { display: inline-flex; align-items: center; gap: 3px; padding: 1px 4px 1px 7px; border-radius: 999px; background: var(--hla-light); color: var(--hla-dark); font: 500 .7rem 'DM Mono', monospace; }
+.hl-tagchip button { width: 15px; height: 15px; border-radius: 50%; font-size: .85rem; line-height: 1; color: var(--muted); }
+.hl-tagchip button:hover { background: #FDE4E4; color: #B42318; }
+.hl-taginput { flex: 1; min-width: 80px; border: 0; background: transparent; font: 400 .78rem 'DM Sans', sans-serif; color: var(--dark); padding: 3px 2px; -webkit-user-select: text; user-select: text; }
+.hl-taginput:focus { outline: none; }
+
+/* panneau à onglets */
+.hl-panel { width: min(420px, 100vw); }
+.hl-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 12px 14px 4px; }
+.hl-act {
+  display: flex !important; flex-direction: column; align-items: center; gap: 4px; padding: 10px 6px; border-radius: 9px;
+  background: var(--hla-dark); color: var(--cream); font-size: .72rem; font-weight: 500; transition: background .15s;
+}
+.hl-act:hover:not(:disabled) { background: var(--hla); }
+.hl-act:disabled { opacity: .4; cursor: default; }
+.hl-act svg { width: 20px; height: 20px; color: var(--hla-gold); }
+.hl-act.on { background: var(--hla-gold); color: var(--hla-dark); }
+.hl-act.on svg { color: var(--hla-dark); }
+.hl-tabs { display: flex; gap: 2px; padding: 10px 14px 0; border-bottom: 1px solid var(--hla-light); }
+.hl-tab { padding: 8px 12px; font-size: .8rem; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.hl-tab:hover { color: var(--hla-dark); }
+.hl-tab.on { color: var(--hla-dark); font-weight: 600; border-bottom-color: var(--hla); }
+.hl-pane { display: none; flex: 1; min-height: 0; overflow-y: auto; }
+.hl-pane.on { display: block; }
+.hl-tools { max-height: none; overflow: visible; }
+.hl-tools .hl-chips[hidden] { display: none; }
+.hl-search {
+  width: 100%; padding: 8px 12px; font: 400 .84rem 'DM Sans', sans-serif; color: var(--dark);
+  background: #fff; border: 1px solid var(--hla-border); border-radius: 8px; -webkit-user-select: text; user-select: text;
+}
+.hl-tchip { font-family: 'DM Mono', monospace; font-size: .7rem; padding-left: 9px; }
+.hl-list { overflow: visible; flex: none; }
+.hl-item-side { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.hl-item-tags, .hl-ftags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+.hl-ftag { padding: 1px 7px; border-radius: 999px; background: var(--hla-light); color: var(--hla-dark); font: 500 .66rem 'DM Mono', monospace; }
+.hl-set { display: grid; gap: 18px; padding: 16px 18px 24px; }
+.hl-hint { margin-top: 8px; font-size: .74rem; line-height: 1.5; color: var(--muted); }
+.hl-pane[data-pane="prog"] .hl-sec { margin: 14px 18px 6px; }
+.hl-prog-row { display: grid; grid-template-columns: 1fr; gap: 4px; width: calc(100% - 28px); margin: 0 14px 4px; padding: 8px 10px; text-align: left; border-radius: 7px; background: #fff; border: 1px solid var(--hla-light) !important; }
+.hl-prog-row:hover { border-color: var(--hla-border) !important; }
+.hl-prog-name { font-size: .8rem; line-height: 1.35; color: var(--dark); }
+.hl-prog-bar { display: block; height: 6px; border-radius: 999px; background: var(--hla-light); overflow: hidden; }
+.hl-prog-bar i { display: block; height: 100%; background: var(--hla); border-radius: 999px; }
+.hl-prog-meta { font: 500 .62rem 'DM Mono', monospace; letter-spacing: .04em; color: var(--muted); }
+.hl-prog-row.empty { background: #FFFAF0; border-color: #FDE1B5 !important; }
+.hl-prog-row.empty .hl-prog-meta { color: #9A3412; }
+.hl-cat-st { padding: 5px 4px; font: 400 .72rem 'DM Sans', sans-serif; color: var(--dark); background: #fff; border: 1px solid var(--hla-border); border-radius: 6px; max-width: 92px; }
+.hl-foot-btn.primary { background: var(--hla-dark); color: #fff; border-color: var(--hla-dark) !important; }
+.hl-foot-btn.primary:hover:not(:disabled) { background: var(--hla); }
+
+/* fiche : barre à deux rangées, menu, options */
+.hl-fiche-bar { display: block; padding: 10px 18px 12px; }
+.hl-fiche-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 10px; }
+.hl-fiche-row2 { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(253,245,240,.14); }
+.hl-fbtn.on { background: var(--cream); color: var(--hla-dark); border-color: var(--cream) !important; }
+.hl-seg-sm button { padding: 5px 10px; font-size: .74rem; }
+.hl-fsel { padding: 6px 8px; border-radius: 7px; font: 400 .76rem 'DM Sans', sans-serif; color: var(--cream); background: transparent; border: 1px solid rgba(253,245,240,.3); max-width: 190px; }
+.hl-fsel option { color: var(--dark); }
+.hl-menuwrap { position: relative; }
+.hl-menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 20; min-width: 190px; padding: 5px; border-radius: 9px; background: #fff; border: 1px solid var(--hla-border); box-shadow: 0 16px 36px -12px rgba(26,4,0,.5); }
+.hl-menu button { display: block; width: 100%; padding: 8px 12px; text-align: left; font-size: .8rem; color: var(--dark); border-radius: 6px; }
+.hl-menu button:hover { background: var(--hla-light); }
+.hl-fq[data-s="ul"], .hl-fq[data-s="box"], .hl-fq[data-s="strike"] { padding: .08em .18em; }
+.hl-fctx { font: 400 .93rem/1.85 'DM Sans', sans-serif; color: #8E5858; }
+.hl-fbody { display: block; }
+.hl-fq.hl-mask { color: transparent !important; background: rgb(var(--c) / .9) !important; text-decoration: none !important; box-shadow: none !important; cursor: pointer; -webkit-user-select: none; user-select: none; }
+.hl-fq.hl-mask:hover { background: rgb(var(--c) / .7) !important; }
+.hl-fdate { font: 700 .74rem 'DM Mono', monospace; color: var(--hla); margin-bottom: 2px; }
+.hl-fdate small { font-weight: 400; color: var(--muted); }
+.hl-sheet[data-view="time"] .hl-fi { position: relative; margin-left: 12px; border-left-width: 3px; }
+.hl-sheet[data-view="time"] .hl-fi::before { content: ""; position: absolute; left: -10px; top: 12px; width: 11px; height: 11px; border-radius: 50%; background: rgb(var(--c)); box-shadow: 0 0 0 3px #fff; }
+.hl-fnodate { margin: 20px 0 0; font: italic .78rem 'DM Sans', sans-serif; color: var(--muted); }
+.hl-ffoot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 5px; }
+.hl-fst { padding: 1px 8px; border-radius: 999px; font: 500 .66rem 'DM Mono', monospace; letter-spacing: .03em; border: 1px solid var(--hla-border) !important; color: var(--muted); background: #fff; }
+.hl-fst.todo { background: #FFEDD5; color: #9A3412; border-color: #FB923C !important; }
+.hl-fst.ok { background: #DCFCE7; color: #166534; border-color: #4ADE80 !important; }
+.hl-fst.none { opacity: .5; } .hl-fi:hover .hl-fst.none { opacity: 1; }
+.hl-fi { position: relative; }
+.hl-fctl { position: absolute; top: 4px; right: 4px; display: flex; align-items: center; gap: 2px; opacity: 0; transition: opacity .15s; }
+.hl-fi:hover .hl-fctl, .hl-fb:hover .hl-fctl, .hl-fctl:focus-within { opacity: 1; }
+.hl-fctl button { width: 24px; height: 24px; border-radius: 6px; font-size: .9rem; color: var(--muted); background: #fff; border: 1px solid var(--hla-light) !important; }
+.hl-fctl button:hover { background: var(--hla-light); color: var(--hla-dark); }
+.hl-fctl button.danger:hover { background: #FDE4E4; color: #B42318; }
+.hl-fdrag { cursor: grab; width: 22px; text-align: center; color: var(--muted); font-size: 1.05rem; line-height: 24px; }
+.hl-fdrag:active { cursor: grabbing; }
+.hl-dragging { opacity: .4; }
+.hl-drop-before { box-shadow: 0 -3px 0 0 var(--hla-mid); }
+.hl-drop-after { box-shadow: 0 3px 0 0 var(--hla-mid); }
+.hl-fadds { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 14px 0 4px; }
+.hl-fadds span { font-size: .74rem; color: var(--muted); }
+.hl-fadds .hl-foot-btn { flex: none; }
+.hl-fb { position: relative; padding: 6px 90px 6px 0; margin: 4px 0; border-radius: 4px; }
+.hl-fb-h .hl-fbtext { font: 700 1.08rem/1.3 'Playfair Display', serif; color: var(--hla-dark); margin: 14px 0 0; padding-bottom: 6px; border-bottom: 1px solid var(--hla-border); cursor: text; }
+.hl-fb-t .hl-fbtext { font: 400 .93rem/1.7 'DM Sans', sans-serif; color: #260A07; margin: 0; white-space: pre-wrap; cursor: text; }
+.hl-fbtext:hover { background: var(--hla-light); }
+
+/* flashcards */
+.hl-cards { position: fixed; inset: 0; z-index: 950; display: none; flex-direction: column; background: #FBE6E1; }
+.hl-cards.open { display: flex; }
+.hl-cards-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; padding: 10px 18px; background: var(--hla-dark); color: var(--cream); }
+.hl-cards-bar strong { font: 700 1.05rem 'Playfair Display', serif; color: var(--hla-gold); }
+.hl-cards-bar select { padding: 6px 8px; border-radius: 7px; font: 400 .78rem 'DM Sans', sans-serif; color: var(--cream); background: transparent; border: 1px solid rgba(253,245,240,.3); }
+.hl-cards-bar select option { color: var(--dark); }
+.hl-cards-bar .grow { flex: 1; }
+.hl-check { display: inline-flex; align-items: center; gap: 6px; font-size: .78rem; cursor: pointer; }
+.hl-cards-count { font: 500 .78rem 'DM Mono', monospace; opacity: .8; }
+.hl-cards-prog { height: 4px; background: rgba(184,20,0,.2); }
+.hl-cards-prog i { display: block; height: 100%; width: 0; background: var(--hla-mid); transition: width .3s; }
+.hl-cards-stage { flex: 1; overflow: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 24px 14px 40px; }
+.hl-card {
+  width: min(680px, 100%); min-height: 260px; padding: 28px 34px; background: #fff; border-radius: 16px; cursor: pointer;
+  box-shadow: 0 22px 50px -24px rgba(26,4,0,.55); border-top: 6px solid rgb(var(--c)); display: flex; flex-direction: column; gap: 14px;
+  -webkit-user-select: text; user-select: text;
+}
+.hl-card.flipped { background: #FEFCFB; }
+.hl-card-top { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; }
+.hl-card-text { font: 400 1.12rem/1.85 'DM Sans', sans-serif; color: #260A07; margin: auto 0; }
+.hl-card-text .hl-fq { font-size: inherit; line-height: inherit; }
+.hl-blank { display: inline-block; padding: 0 .55em; border-radius: .35em; background: rgb(var(--c) / .35); color: var(--hla-dark); font-weight: 700; letter-spacing: .1em; }
+.hl-card-ask { font: italic .86rem 'DM Sans', sans-serif; color: var(--muted); }
+.hl-card { --c: 212 58 10; }
+.hl-card-q { font: italic .88rem/1.5 'DM Sans', sans-serif; color: var(--muted); }
+.hl-card-a p { font: 400 1.05rem/1.7 'DM Sans', sans-serif; color: #260A07; margin: 0 0 6px; }
+.hl-card-hint { font-size: .74rem; color: var(--muted); }
+.hl-cards-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.hl-cards-actions .hl-foot-btn { flex: none; padding: 11px 26px; font-size: .88rem; }
+.hl-cbtn { padding: 11px 26px; border-radius: 8px; font-size: .88rem; font-weight: 600; border: 1px solid transparent !important; }
+.hl-cbtn.todo { background: #FFEDD5; color: #9A3412; border-color: #FB923C !important; }
+.hl-cbtn.ok { background: #DCFCE7; color: #166534; border-color: #4ADE80 !important; }
+.hl-cbtn:hover { filter: brightness(.96); }
+.hl-cards-end { text-align: center; padding: 30px 10px; }
+.hl-cards-end h2 { font: 700 1.5rem 'Playfair Display', serif; color: var(--hla-dark); margin-bottom: 8px; }
+.hl-cards-end p { color: var(--muted); font-size: .9rem; }
+
+/* fenêtre de choix */
+.hl-modal-back { position: fixed; inset: 0; z-index: 1000; display: none; place-items: center; background: rgba(26,4,0,.55); padding: 16px; }
+.hl-modal-back.open { display: grid; }
+.hl-modal { width: min(420px, 100%); padding: 22px 24px; border-radius: 12px; background: #fff; box-shadow: 0 24px 60px -20px rgba(26,4,0,.7); }
+.hl-modal h3 { font: 700 1.1rem 'Playfair Display', serif; color: var(--hla-dark); margin-bottom: 8px; }
+.hl-modal p { font-size: .85rem; line-height: 1.6; color: #260A07; }
+.hl-modal-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; justify-content: center; }
+.hl-modal-btns .hl-foot-btn { flex: none; padding: 9px 18px; }
+
+@media (max-width: 720px) {
+  .hl-testbar { top: 66px; font-size: .74rem; border-radius: 14px; }
+  .hl-fb { padding-right: 0; padding-top: 30px; }
+  .hl-fctl { opacity: 1; }
+  .hl-card { padding: 22px 20px; }
+  .hl-cat { flex-wrap: wrap; }
+}
+@media print {
+  mark.hl.hl-last::after { display: none !important; }
+  .hl-fdrag, .hl-fctl, .hl-fadds, .hl-fst.none, .hl-fadd, .hl-menu { display: none !important; }
+  .hl-fb { padding: 0 !important; }
+  .hl-fst { background: none !important; padding: 0 6px; }
+  .hl-fi { break-inside: avoid; }
+  .hl-fctx { font-size: 9.5pt; line-height: 1.7; color: #7A3A3A; }
+  .hl-fdate { font-size: 8pt; }
+  .hl-sheet[data-view="time"] .hl-fi::before { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .hl-fbtext { background: none !important; }
+  .hl-fb-h .hl-fbtext { font-size: 12pt; } .hl-fb-t .hl-fbtext { font-size: 9.5pt; }
+}
+
+.hl-switch { text-align: left; }
+
+.hl-card-tools { display: flex; gap: 14px; margin-top: auto; }
+.hl-card-tools button { font-size: .74rem; color: var(--muted); text-decoration: underline; }
+.hl-card-tools button:hover { color: var(--hla-dark); }
+.hl-cform { width: min(520px, 100%); }
+.hl-cform-l { display: block; margin-top: 12px; font: 500 .62rem 'DM Mono', monospace; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.hl-cform-t { display: block; width: 100%; margin-top: 5px; padding: 9px 11px; font: 400 .9rem/1.5 'DM Sans', sans-serif; letter-spacing: 0; text-transform: none; color: var(--dark); background: #fff; border: 1px solid var(--hla-border); border-radius: 8px; resize: vertical; -webkit-user-select: text; user-select: text; }
+
+/* frise du chapitre */
+.hl-frise { position: fixed; inset: 0; z-index: 950; display: none; flex-direction: column; background: #FBE6E1; }
+.hl-frise.open { display: flex; }
+.hl-frise .hl-chip i[data-p="I"], .hl-ev[data-p="I"] { --p: 122 58 58; }
+.hl-frise .hl-chip i[data-p="II"], .hl-ev[data-p="II"] { --p: 212 58 10; }
+.hl-frise .hl-chip i[data-p="III"], .hl-ev[data-p="III"] { --p: 14 159 142; }
+.hl-frise .hl-chip i[data-p] { background: rgb(var(--p)); }
+.hl-frise .hl-cards-bar .hl-chips { gap: 5px; }
+.hl-frise .hl-chip { background: transparent; color: rgba(253,245,240,.7); border-color: rgba(253,245,240,.28) !important; }
+.hl-frise .hl-chip.on { background: rgba(253,245,240,.14); color: #fff; border-color: rgba(253,245,240,.5) !important; }
+.hl-tl { max-width: 760px; margin: 0 auto; padding: 26px 18px 80px; position: relative; }
+.hl-tl::before { content: ""; position: absolute; left: calc(18px + 150px + 7px); top: 20px; bottom: 60px; width: 2px; background: var(--hla-border); opacity: .6; }
+.hl-tl-year { position: relative; margin: 26px 0 8px; font: 900 2rem 'Playfair Display', serif; color: rgba(107,0,0,.22); }
+.hl-ev { position: relative; display: grid; grid-template-columns: 150px 16px 1fr; gap: 0 14px; align-items: start; margin-bottom: 10px; }
+.hl-ev-date { text-align: right; padding-top: 12px; font: 700 .76rem/1.3 'DM Mono', monospace; color: var(--hla); }
+.hl-ev-dot { width: 14px; height: 14px; margin: 15px 0 0 -1px; border-radius: 50%; background: rgb(var(--p)); box-shadow: 0 0 0 4px #FBE6E1; z-index: 1; }
+.hl-ev-card { padding: 11px 15px; background: #fff; border-radius: 10px; border-left: 4px solid rgb(var(--p)); box-shadow: 0 6px 18px -12px rgba(26,4,0,.5); }
+.hl-ev-title { font: 700 .92rem/1.35 'DM Sans', sans-serif; color: #260A07; }
+.hl-ev-detail { margin-top: 3px; font: 400 .82rem/1.5 'DM Sans', sans-serif; color: #7A3A3A; }
+.hl-ev-go { margin-top: 6px; font: 500 .72rem 'DM Sans', sans-serif; color: var(--hla); }
+.hl-ev-go:hover { text-decoration: underline; }
+.hl-ev-date.mask, .hl-ev-card.mask { cursor: pointer; }
+.hl-ev-date.mask { color: transparent; background: rgb(var(--p) / .55); border-radius: 6px; height: 26px; margin-top: 8px; padding: 0; -webkit-user-select: none; user-select: none; }
+.hl-ev-card.mask > * { visibility: hidden; }
+.hl-ev-card.mask { background: rgb(var(--p) / .35); min-height: 56px; }
+.hl-ev-card.mask:hover, .hl-ev-date.mask:hover { filter: brightness(.95); }
+@media (max-width: 720px) {
+  .hl-ev { grid-template-columns: 1fr; padding-left: 26px; }
+  .hl-ev-date { text-align: left; padding-top: 0; }
+  .hl-ev-dot { position: absolute; left: 0; top: 2px; margin: 0; }
+  .hl-tl::before { left: calc(18px + 6px); }
+  .hl-ev-date.mask { max-width: 110px; }
+}
+.hl-flash-el { animation: hlflashel 2.2s ease-out; border-radius: 4px; }
+@keyframes hlflashel { 0%, 55% { background-color: rgba(255,208,0,.5); box-shadow: 0 0 0 6px rgba(255,208,0,.5); } 100% { background-color: transparent; box-shadow: 0 0 0 6px transparent; } }
+
+/* boutons du panneau : 3 par ligne */
+.hl-actions { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.hl-act { padding: 10px 4px; }
+
+/* cours annoté */
+.hl-pnote { display: none; }
+@media print {
+  body.hl-annot .hl-pnote {
+    display: block; break-inside: avoid; margin: 4pt 0 6pt; padding: 3pt 8pt; border-left: 3pt solid rgb(var(--c, 122 58 58));
+    background: rgb(var(--c, 122 58 58) / .12); font: italic 7.5pt/1.4 'DM Sans', sans-serif; color: #7A3A3A; -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  body.hl-annot .hl-pnote-q { font-style: normal; font-weight: 600; color: #260A07; }
+  body.hl-annot .hl-pnote-t { font-family: 'DM Mono', monospace; font-style: normal; }
+  body.hl-annot .hl-plegend { border-left-color: #6B0000; background: #FDF1EE; font-style: normal; margin-bottom: 8pt; }
+  body.hl-annot .hl-plegend strong { display: block; margin-bottom: 3pt; color: #6B0000; }
+  body.hl-annot .hl-pleg { display: inline-block; margin-right: 10pt; }
+  body.hl-annot .hl-pleg i { display: inline-block; width: 8pt; height: 8pt; margin-right: 3pt; border-radius: 2pt; background: rgb(var(--c)); vertical-align: -1pt; }
+}
+
+/* coin des sujets */
+.hl-suj { position: fixed; inset: 0; z-index: 950; display: none; flex-direction: column; background: #FBE6E1; }
+.hl-suj.open { display: flex; }
+.hl-suj-q { width: 220px; padding: 7px 12px; }
+.hl-sj-wrap { max-width: 800px; margin: 0 auto; padding: 22px 16px 70px; }
+.hl-sj-chips { margin-bottom: 14px; gap: 6px; }
+.hl-sj-chips[hidden] { display: none; }
+.hl-sj-list { display: grid; gap: 12px; }
+.hl-hk { padding: 16px 20px 14px; background: #fff; border-radius: 12px; border-left: 5px solid var(--hla-mid); box-shadow: 0 8px 22px -16px rgba(26,4,0,.55); }
+.hl-hk[data-t="Citation"] { border-left-color: #F59E0B; } .hl-hk[data-t="Chiffre"] { border-left-color: #10B981; }
+.hl-hk[data-t="Événement"] { border-left-color: #3B82F6; } .hl-hk[data-t="Concept"] { border-left-color: #A855F7; }
+.hl-hk-top { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 10px; margin-bottom: 8px; }
+.hl-hk-top strong { font: 700 .95rem 'DM Sans', sans-serif; color: var(--hla-dark); }
+.hl-hk-badge { padding: 2px 9px; border-radius: 999px; background: var(--hla-light); color: var(--hla-dark); font: 500 .62rem 'DM Mono', monospace; letter-spacing: .1em; text-transform: uppercase; flex: none; }
+.hl-hk-badge.alt { background: #FCEBE7; color: var(--hla); }
+.hl-hk-text { margin: 0 0 6px; font: 400 1rem/1.7 'Playfair Display', Georgia, serif; color: #260A07; }
+.hl-hk-src { font: 500 .7rem 'DM Mono', monospace; color: var(--muted); }
+.hl-hk-then { margin-top: 8px; padding: 7px 11px; background: var(--cream); border-radius: 8px; font-size: .8rem; line-height: 1.5; color: #7A3A3A; }
+.hl-hk-foot { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 8px; margin-top: 10px; }
+.hl-hk-foot .hl-foot-btn { flex: none; padding: 5px 12px; }
+.hl-hk-rel { font-size: .72rem; color: var(--muted); }
+.hl-sj-chip { padding: 3px 10px; border-radius: 999px; background: var(--hla-light); color: var(--hla-dark); font-size: .72rem; }
+.hl-sj-chip:hover { background: var(--hla-border); }
+.hl-sj-chip.h { background: #FFF4D6; color: #7A4B00; } .hl-sj-chip.h:hover { background: #FFE9A8; }
+.hl-sj { background: #fff; border-radius: 12px; border-left: 5px solid var(--hla); box-shadow: 0 8px 22px -16px rgba(26,4,0,.55); }
+.hl-sj > summary { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; padding: 15px 20px; cursor: pointer; list-style: none; }
+.hl-sj > summary::-webkit-details-marker { display: none; }
+.hl-sj > summary::after { content: "＋"; margin-left: auto; color: var(--hla); font-size: 1.1rem; }
+.hl-sj[open] > summary::after { content: "−"; }
+.hl-sj > summary strong { flex: 1 1 60%; font: 700 1rem/1.4 'Playfair Display', serif; color: var(--hla-dark); }
+.hl-sj-body { padding: 0 20px 18px; }
+.hl-sj-sec { margin-top: 14px; }
+.hl-sj-lab { margin-bottom: 5px; font: 500 .62rem 'DM Mono', monospace; letter-spacing: .14em; text-transform: uppercase; color: var(--hla); }
+.hl-sj-p { margin: 0; font-size: .92rem; line-height: 1.6; color: #260A07; }
+.hl-sj-defs, .hl-sj-hooks { display: flex; flex-wrap: wrap; gap: 6px; }
+.hl-sj-plan, .hl-sj-use { margin: 0; padding-left: 20px; font-size: .88rem; line-height: 1.65; color: #260A07; }
+.hl-sj-plan li { margin-bottom: 3px; } .hl-sj-plan li::marker { font-weight: 700; color: var(--hla); }
+.hl-sj-use { color: #7A3A3A; font-size: .84rem; }
+.hl-sj-note { margin: 22px 4px 0; font-size: .76rem; line-height: 1.5; color: var(--muted); }
+@media (max-width: 720px) { .hl-suj-q { width: 100%; order: 5; } }
+.hl-sj-plan { list-style: upper-roman; padding-left: 26px; }
+
+/* corrigé complet */
+.hl-sj-list.es { display: block; }
+.hl-es-title { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-bottom: 8px; }
+.hl-es-title h2 { flex: 1 1 100%; margin: 0; font: 700 1.6rem/1.3 'Playfair Display', serif; color: var(--hla-dark); }
+.hl-es-nav { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 16px; position: sticky; top: 0; z-index: 3; padding: 8px 0; background: #FBE6E1; }
+.hl-es { margin-bottom: 16px; padding: 20px 24px 22px; background: #fff; border-radius: 12px; box-shadow: 0 8px 22px -16px rgba(26,4,0,.55); scroll-margin-top: 60px; }
+.hl-es-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.hl-es-head h3 { flex: 1; margin: 0; font: 700 1.15rem 'Playfair Display', serif; color: var(--hla-dark); }
+.hl-es-head .hl-foot-btn { flex: none; padding: 4px 12px; }
+.hl-es-row { margin-top: 12px; }
+.hl-es-lab { margin-bottom: 4px; font: 500 .62rem 'DM Mono', monospace; letter-spacing: .14em; text-transform: uppercase; color: var(--hla); }
+.hl-es-row p, .hl-es-seg p { margin: 0; font-size: .92rem; line-height: 1.65; color: #260A07; }
+.hl-es-row ul { margin: 0; padding-left: 20px; font-size: .9rem; line-height: 1.6; color: #260A07; }
+.hl-es-prob { margin: 4px 0 0; padding: 12px 16px; background: var(--cream); border-left: 4px solid var(--hla); border-radius: 0 8px 8px 0; font: 700 1.02rem/1.55 'Playfair Display', serif; color: var(--hla-dark); }
+.hl-es-part { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--hla-light); }
+.hl-es-part:first-of-type { margin-top: 8px; border-top: 0; padding-top: 0; }
+.hl-es-part-h { display: flex; align-items: baseline; gap: 10px; }
+.hl-es-part-h h4 { margin: 0; font: 700 1.05rem/1.4 'Playfair Display', serif; color: var(--hla-dark); }
+.hl-es-roman { font: 900 1.25rem 'Playfair Display', serif; color: var(--hla); min-width: 1.8em; }
+.hl-es-idea { margin: 4px 0 0; font: italic .86rem/1.55 'DM Sans', sans-serif; color: #7A3A3A; }
+.hl-es-sub { margin: 12px 0 0 14px; padding: 10px 14px 12px; background: #FEFAF8; border-left: 3px solid var(--hla-mid); border-radius: 0 8px 8px 0; }
+.hl-es-sub-h { display: flex; align-items: baseline; gap: 8px; }
+.hl-es-sub-h h5 { margin: 0; font: 700 .95rem/1.4 'DM Sans', sans-serif; color: #260A07; }
+.hl-es-letter { font: 700 .9rem 'DM Mono', monospace; color: var(--hla); }
+.hl-es-pts { margin: 6px 0 0; padding-left: 20px; font-size: .86rem; line-height: 1.62; color: #260A07; }
+.hl-es-pts li { margin-bottom: 5px; }
+.hl-es-trans { margin: 12px 0 0 14px; font: italic .84rem 'DM Sans', sans-serif; color: var(--hla); }
+.hl-es-seg { display: grid; grid-template-columns: 130px 1fr; gap: 4px 14px; margin-top: 10px; align-items: start; }
+.hl-es-tag { padding: 2px 8px; border-radius: 999px; background: var(--hla-light); color: var(--hla-dark); font: 500 .6rem 'DM Mono', monospace; letter-spacing: .08em; text-transform: uppercase; justify-self: start; }
+.hl-es-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 26px; }
+@media (max-width: 720px) { .hl-es-seg { grid-template-columns: 1fr; } .hl-es-cols { grid-template-columns: 1fr; } .hl-es { padding: 16px 16px 18px; } .hl-es-sub { margin-left: 4px; } }
+@media print {
+  body.hl-fiche-open > .hl-suj.open { display: block !important; position: static !important; background: #fff !important; }
+  .hl-suj .hl-cards-bar, .hl-suj .hl-es-nav, .hl-suj .hl-sj-chips, .hl-suj .hl-es-head .hl-foot-btn, .hl-suj .hl-sj-note { display: none !important; }
+  .hl-suj .hl-fiche-scroll { overflow: visible !important; padding: 0 !important; }
+  .hl-suj .hl-sj-wrap { padding: 0; max-width: none; }
+  .hl-es { box-shadow: none !important; padding: 0 0 8pt !important; break-inside: auto; }
+  .hl-es-sub, .hl-es-seg { break-inside: avoid; }
+  .hl-es-sub, .hl-es-prob { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .hl-es-pts { font-size: 9pt !important; } .hl-es-row p, .hl-es-seg p { font-size: 9.5pt !important; }
+}
+
+.hl-es-group { margin-top: 16px; }
+.hl-es-group:first-of-type { margin-top: 6px; }
+.hl-es-group-h { margin: 0 0 2px; font: 700 .98rem 'Playfair Display', serif; color: var(--hla-dark); padding-bottom: 4px; border-bottom: 1px solid var(--hla-light); }
+.hl-es-seg.notag { grid-template-columns: 1fr; }
+.hl-sj-note:empty { display: none; }
+
 </style>
 </head>
 <body>
@@ -1273,6 +1969,1859 @@
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(equalizeThinkerCards, 150);
   });
+</script>
+<script>
+/* ═══════════════════════════════════════════════════════════
+   SYSTÈME DE SURLIGNAGE
+   - sélection → barre flottante (5 couleurs, note, gomme)
+   - clic sur un surlignage → changer la couleur / note / supprimer
+   - panneau « Mes surlignages » (filtre, export, mode surligneur auto)
+   - sauvegarde locale (localStorage), annulation Ctrl/Cmd+Z
+   Couleurs et catégories personnalisables depuis le panneau
+   (renommer, choisir la teinte, ajouter, supprimer).
+   ═══════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+  const root = document.querySelector('.content');
+  if (!root) return;
+
+  // Catégories par défaut. L'utilisateur peut les renommer, les recolorer, en ajouter / supprimer
+  // depuis le panneau (« Personnaliser les couleurs ») ; c'est mémorisé dans le navigateur.
+  const DEFAULTS = [
+    { id: 'y', label: 'À retenir', hex: '#FFD000', st: 'bg' },
+    { id: 'g', label: 'Exemple', hex: '#34C759', st: 'bg' },
+    { id: 'p', label: 'Difficile / à revoir', hex: '#FF5CA2', st: 'bg' },
+    { id: 'b', label: 'Définition', hex: '#3498FF', st: 'bg' },
+    { id: 'o', label: 'Date / chiffre', hex: '#FF8822', st: 'bg' }
+  ];
+  const STYLES = { bg: 'Fond', ul: 'Souligné', box: 'Encadré', strike: 'Barré' };
+  const MAX_CATS = 10;
+  let COLORS = DEFAULTS.map(c => Object.assign({}, c));
+  let catsDirty = false;
+  const KEY = 'ecg-hl:v1:' + location.pathname;
+  const PREF_KEY = 'ecg-hl:prefs';
+  const EXCLUDE = 'svg,script,style,noscript,.hl-pnote';
+
+  const ICON = {
+    pen: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg>',
+    note: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
+    eraser: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3a1 1 0 0 1 0-1.4l9.6-9.6a1 1 0 0 1 1.4 0l5.6 5.6a1 1 0 0 1 0 1.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>',
+    trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
+    sheet: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h5"/></svg>',
+    cards: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="14" height="14" rx="2"/><path d="M7 6V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-2"/></svg>',
+    clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18"/><circle cx="7" cy="12" r="2.2" fill="currentColor"/><circle cx="14" cy="12" r="2.2" fill="currentColor"/><path d="M7 6v4M14 14v4"/></svg>',
+    printer: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>',
+    bulb: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.7A7 7 0 0 0 12 2Z"/></svg>',
+    eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>',
+    close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>'
+  };
+
+  /* ───────── état ───────── */
+  let hls = [];            // [{id,s,e,c,n,t,q,p,x,o?}]  s/e = offsets dans le texte du chapitre
+  let hist = [];           // pile d'annulation
+  let nodes = [], starts = [], nodeIdx = new Map(), full = '';
+  let prefs = { color: 'y', auto: false };
+  let pending = null;      // sélection en attente (barre flottante affichée)
+  let popId = null;        // surlignage ouvert dans le popover
+  let filter = null;       // filtre de couleur du panneau
+  let sheet = { order: [], blocks: [], cards: [] };   // fiche « Mon ordre » : ordre + blocs de texte perso
+  let revealed = new Set(), hideMode = false;   // mode cache-cache
+
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const bySort = (a, b) => a.s - b.s;
+  const isTouch = () => window.matchMedia('(pointer: coarse)').matches;
+  const colorOf = id => COLORS.find(c => c.id === id) || { id, label: 'Autre', hex: '#969696', st: 'bg' };
+  const escH = s => String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+  const hexRgb = hx => { const n = parseInt(hx.slice(1), 16); return ((n >> 16) & 255) + ' ' + ((n >> 8) & 255) + ' ' + (n & 255); };
+  const validCats = a => Array.isArray(a) && a.length >= 1 && a.length <= MAX_CATS &&
+    a.every(c => c && /^[\w-]+$/.test(c.id) && typeof c.label === 'string' && /^#[0-9a-f]{6}$/i.test(c.hex) && (c.st === undefined || STYLES[c.st])) &&
+    new Set(a.map(c => c.id)).size === a.length;
+  const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+  const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const flat = s => s.replace(/\s+/g, ' ').trim();
+
+  /* ───────── stockage ───────── */
+  function readStore(key) {
+    try { const d = JSON.parse(localStorage.getItem(key || KEY) || 'null'); if (d && Array.isArray(d.hls)) return d; } catch (e) {}
+    return { hls: [], sheet: null };
+  }
+  function save() {
+    try {
+      const clean = hls.map(h => { const c = Object.assign({}, h); delete c.o; return c; });
+      localStorage.setItem(KEY, JSON.stringify({ v: 2, hls: clean, sheet }));
+    } catch (e) { console.warn('[surlignage] sauvegarde impossible', e); }
+  }
+  function loadPrefs() {
+    try { Object.assign(prefs, JSON.parse(localStorage.getItem(PREF_KEY) || '{}')); } catch (e) {}
+    COLORS = validCats(prefs.cats) ? prefs.cats.map(c => ({ id: c.id, label: c.label, hex: c.hex, st: STYLES[c.st] ? c.st : 'bg' })) : DEFAULTS.map(c => Object.assign({}, c));
+    if (!COLORS.some(c => c.id === prefs.color)) prefs.color = COLORS[0].id;
+  }
+  function savePrefs() { try { prefs.cats = COLORS; localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); } catch (e) {} }
+
+  /* ───────── indexation du texte (les offsets ne dépendent que du texte, pas des <mark>) ───────── */
+  function index() {
+    nodes = []; starts = []; nodeIdx = new Map();
+    let pos = 0;
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode(n) {
+        const p = n.parentElement;
+        return p && p.closest(EXCLUDE) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    let n;
+    while ((n = w.nextNode())) { nodeIdx.set(n, nodes.length); nodes.push(n); starts.push(pos); pos += n.data.length; }
+    return pos;
+  }
+
+  const BLOCK = 'p,li,div,td,th,h1,h2,h3,h4,h5,h6,blockquote,cite,figcaption,dd,dt';
+  function quoteText(h) {              // texte du surlignage, en séparant proprement les paragraphes
+    if (h.o) return flat(h.q);
+    let out = '', prev = null;
+    for (let i = 0; i < nodes.length; i++) {
+      const a = starts[i], b = a + nodes[i].data.length;
+      if (b <= h.s) continue; if (a >= h.e) break;
+      const piece = nodes[i].data.slice(Math.max(h.s, a) - a, Math.min(h.e, b) - a);
+      const blk = nodes[i].parentElement.closest(BLOCK);
+      if (prev && blk !== prev) out += ' ';
+      out += piece; prev = blk;
+    }
+    return flat(out);
+  }
+
+  /* ───────── utilitaires : texte, étiquettes, données sûres ───────── */
+  const norm = s => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const cleanTag = s => String(s).trim().replace(/^#+/, '').replace(/\s+/g, ' ').trim().slice(0, 30);
+  const allTags = () => [...new Set(hls.flatMap(h => h.tags || []))].sort((a, b) => a.localeCompare(b, 'fr'));
+  const slug = s => norm(s).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'fiche';
+
+  function cleanHl(h) {                  // valide / nettoie un surlignage venant du stockage ou d'un fichier importé
+    if (!h || typeof h !== 'object') return null;
+    const s = Math.floor(+h.s), e = Math.floor(+h.e);
+    if (!Number.isFinite(s) || !Number.isFinite(e) || s < 0 || e <= s) return null;
+    if (typeof h.c !== 'string' || !/^[\w-]{1,24}$/.test(h.c)) return null;
+    const o = {
+      id: typeof h.id === 'string' && /^[\w-]{1,40}$/.test(h.id) ? h.id : uid(), s, e, c: h.c,
+      q: String(h.q || '').slice(0, 20000), p: String(h.p || '').slice(0, 64), x: String(h.x || '').slice(0, 64), t: +h.t || Date.now()
+    };
+    if (typeof h.n === 'string' && h.n.trim()) o.n = h.n.slice(0, 4000);
+    if (Array.isArray(h.tags)) {
+      const t = [...new Set(h.tags.filter(x => typeof x === 'string').map(cleanTag).filter(Boolean))].slice(0, 12);
+      if (t.length) o.tags = t;
+    }
+    return o;
+  }
+  function cleanSheet(s) {
+    const o = { order: [], blocks: [], cards: [] };
+    if (!s || typeof s !== 'object') return o;
+    if (Array.isArray(s.blocks)) {
+      o.blocks = s.blocks.filter(b => b && typeof b.id === 'string' && /^[\w-]{1,40}$/.test(b.id) && (b.type === 'h' || b.type === 't') && typeof b.text === 'string')
+        .map(b => ({ id: b.id, type: b.type, text: b.text.slice(0, 4000) })).slice(0, 200);
+    }
+    if (Array.isArray(s.cards)) {
+      o.cards = s.cards.filter(c => c && typeof c.id === 'string' && /^[\w-]{1,40}$/.test(c.id) && typeof c.q === 'string' && typeof c.a === 'string' && c.q.trim() && c.a.trim())
+        .map(c => ({ id: c.id, q: c.q.slice(0, 1000), a: c.a.slice(0, 3000) })).slice(0, 300);
+    }
+    if (Array.isArray(s.order)) o.order = s.order.filter(x => typeof x === 'string').slice(0, 2000);
+    return o;
+  }
+
+  /* ───────── contexte : la phrase autour d'un passage ───────── */
+  const ABBR = /(?:^|[\s(\-])(?:av|apr|J|C|M|Mme|Mlle|MM|Mr|Dr|St|Ste|Pr|Prof|etc|env|vol|p|pp|art|cf|fig|no|ex|éd|dir|sq|resp)\.$/i;
+  function blockRange(b) {
+    let lo = -1, hi = -1;
+    for (let i = 0; i < nodes.length; i++) {
+      if (b.contains(nodes[i])) { if (lo < 0) lo = starts[i]; hi = starts[i] + nodes[i].data.length; }
+      else if (lo >= 0) break;
+    }
+    return lo < 0 ? [0, full.length] : [lo, hi];
+  }
+  function sentStart(lo, pos) {
+    const seg = full.slice(lo, pos), re = /[.!?…][)»”"]*\s+(?=[«“"(]?[A-ZÀ-ÖØ-Þ0-9]|$)/g;
+    let m, cut = 0;
+    while ((m = re.exec(seg))) { if (!ABBR.test(seg.slice(0, m.index + 1))) cut = m.index + m[0].length; }
+    return seg.slice(cut);
+  }
+  function sentEnd(pos, hi) {
+    const seg = full.slice(pos, hi), re = /[.!?…][)»”"]*(?=\s|$)/g;
+    let m;
+    while ((m = re.exec(seg))) { if (!ABBR.test(full.slice(Math.max(0, pos - 12), pos + m.index + 1))) return seg.slice(0, m.index + m[0].length); }
+    return seg;
+  }
+  const clipStart = s => s.length <= 260 ? s : '… ' + s.slice(s.indexOf(' ', s.length - 260) + 1);
+  const clipEnd = s => s.length <= 260 ? s : s.slice(0, s.lastIndexOf(' ', 260)) + ' …';
+  function contextOf(h) {
+    if (h.o) return null;
+    let i0 = -1, i1 = -1;
+    for (let i = 0; i < nodes.length; i++) { const a = starts[i], b = a + nodes[i].data.length; if (b > h.s && a < h.e) { if (i0 < 0) i0 = i; i1 = i; } }
+    if (i0 < 0) return null;
+    const b0 = nodes[i0].parentElement.closest(BLOCK), b1 = nodes[i1].parentElement.closest(BLOCK);
+    const lo = b0 ? blockRange(b0)[0] : 0, hi = b1 ? blockRange(b1)[1] : full.length;
+    const own = full.slice(h.s, h.e), endsSentence = /[.!?…][)»”"]*$/.test(own) && !ABBR.test(own);
+    const rb = sentStart(lo, h.s), ra = endsSentence ? '' : sentEnd(h.e, hi);
+    const before = clipStart(flat(rb)), after = clipEnd(flat(ra));
+    if (!before && !after) return null;
+    return { before, after, sb: /\s$/.test(rb), sa: /^\s/.test(ra) };
+  }
+
+  /* ───────── dates (pour la frise) ───────── */
+  const MONTHS = 'janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout|septembre|octobre|novembre|décembre|decembre';
+  const MONTH_N = { janvier: 1, 'février': 2, fevrier: 2, mars: 3, avril: 4, mai: 5, juin: 6, juillet: 7, 'août': 8, aout: 8, septembre: 9, octobre: 10, novembre: 11, 'décembre': 12, decembre: 12 };
+  const NOT_YEAR = /^\s*(?:soldats?|morts?|km|kilom|habitants?|tonnes?|personnes?|millions?|milliards?|euros?|francs?|dollars?|hommes?|victimes?|%|mètres?|kg|exemplaires|emplois|chars|avions|navires|bombes|prisonniers|réfugiés|civils)/i;
+  function findDates(text) {
+    const re = new RegExp('(?:(?:(1er|\\d{1,2})\\s+)?(' + MONTHS + ')\\s+)?((?:1[0-9]|20)\\d{2})(?:\\s*[-–—]\\s*((?:1[0-9]|20)\\d{2}))?', 'gi');
+    const out = []; let m;
+    while ((m = re.exec(text))) {
+      const prev = text[m.index - 1], after = text.slice(m.index + m[0].length);
+      if (prev && /\d/.test(prev)) continue;
+      if (/\d[.,]$/.test(text.slice(Math.max(0, m.index - 2), m.index))) continue;
+      if (NOT_YEAR.test(after) || /^[.,]\d/.test(after)) continue;
+      const year = +m[3], month = m[2] ? MONTH_N[m[2].toLowerCase()] : 0, day = m[1] ? (m[1].toLowerCase() === '1er' ? 1 : +m[1]) : 0;
+      let label = flat(m[0]);
+      if (m[4] && +m[4] <= year) label = flat(m[0].replace(/\s*[-–—]\s*\d{4}$/, ''));
+      out.push({ key: year * 10000 + month * 100 + day, year, label });
+    }
+    return out;
+  }
+
+  function offsetOf(c, o) {
+    if (c.nodeType === 3 && nodeIdx.has(c)) return starts[nodeIdx.get(c)] + o;
+    const r = document.createRange();
+    r.setStart(root, 0);
+    try { r.setEnd(c, o); } catch (e) { return 0; }
+    let t = 0;
+    for (let i = 0; i < nodes.length; i++) {
+      if (r.comparePoint(nodes[i], nodes[i].data.length) <= 0) t = starts[i] + nodes[i].data.length;
+      else break;
+    }
+    return t;
+  }
+
+  function readSelection() {
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return null;
+    const r = sel.getRangeAt(0);
+    if (!root.contains(r.startContainer) || !root.contains(r.endContainer)) return null;
+    let s = offsetOf(r.startContainer, r.startOffset), e = offsetOf(r.endContainer, r.endOffset);
+    while (s < e && /\s/.test(full[s])) s++;
+    while (e > s && /\s/.test(full[e - 1])) e--;
+    if (e <= s) return null;
+    const rects = Array.from(r.getClientRects()).filter(x => x.width > 1 && x.height > 1);
+    if (!rects.length) return null;
+    return { s, e, first: rects[0], last: rects[rects.length - 1] };
+  }
+
+  /* ───────── modèle ───────── */
+  function anchor(h) {
+    h.q = full.slice(h.s, h.e);
+    h.p = full.slice(Math.max(0, h.s - 32), h.s);
+    h.x = full.slice(h.e, h.e + 32);
+    return h;
+  }
+  const byId = id => hls.find(h => h.id === id);
+  const live = () => hls.filter(h => !h.o);
+  const overlaps = (s, e) => live().some(h => h.s < e && h.e > s);
+
+  function cut(h, s, e) {               // ce qui reste de h une fois [s,e) retiré
+    const out = [], left = h.s < s, right = h.e > e;
+    const mk = (a, b, keep) => { const p = Object.assign({}, h, { s: a, e: b, id: keep ? h.id : uid() }); if (!keep) delete p.n; if (p.tags) p.tags = p.tags.slice(); return anchor(p); };
+    if (left) out.push(mk(h.s, Math.min(h.e, s), true));
+    if (right) out.push(mk(Math.max(h.s, e), h.e, !left));
+    return out.filter(p => full.slice(p.s, p.e).trim());
+  }
+
+  function _add(s, e, c, extra, idHint) {
+    const ex = typeof extra === 'string' ? { n: extra } : (extra || {});
+    let lo = s, hi = e, n = ex.n || '';
+    const tags = (ex.tags || []).slice(), absorbed = [];
+    for (let again = true; again;) {   // fusionne les surlignages de même couleur qui se touchent
+      again = false;
+      for (const h of hls) {
+        if (h.o || h.c !== c || absorbed.includes(h.id)) continue;
+        if (h.s <= hi && h.e >= lo) {
+          lo = Math.min(lo, h.s); hi = Math.max(hi, h.e);
+          absorbed.push(h.id); if (h.n && !n.includes(h.n)) n = n ? n + '\n' + h.n : h.n;
+          (h.tags || []).forEach(t => { if (!tags.includes(t)) tags.push(t); });
+          again = true;
+        }
+      }
+    }
+    const id = absorbed[0] || idHint || uid();
+    const next = [];
+    for (const h of hls) {
+      if (absorbed.includes(h.id)) continue;
+      if (h.o || h.e <= lo || h.s >= hi) next.push(h);
+      else next.push(...cut(h, lo, hi));      // une autre couleur : elle est recouverte
+    }
+    const nh = anchor({ id, s: lo, e: hi, c, t: Date.now() });
+    if (n) nh.n = n;
+    if (tags.length) nh.tags = tags.slice(0, 12);
+    next.push(nh);
+    hls = next;
+    return id;
+  }
+  function _erase(s, e) {
+    const next = [];
+    for (const h of hls) { if (h.o || h.e <= s || h.s >= e) next.push(h); else next.push(...cut(h, s, e)); }
+    hls = next;
+  }
+
+  function snap() { hist.push(JSON.stringify({ h: hls, c: COLORS })); if (hist.length > 60) hist.shift(); }
+  function mutate(fn) { snap(); fn(); hls.sort(bySort); commit(); }
+  function commit() { if (catsDirty) { catsDirty = false; persistCats(true); } save(); render(); refreshPanel(); if (fiche.classList.contains('open')) renderFiche(); }
+  function undo() {
+    if (!hist.length) return false;
+    const d = JSON.parse(hist.pop());
+    hls = d.h; if (JSON.stringify(d.c) !== JSON.stringify(COLORS)) { COLORS = d.c; catsDirty = true; }
+    if (!COLORS.some(c => c.id === prefs.color)) prefs.color = COLORS[0].id;
+    closePop(true); commit(); return true;
+  }
+
+  /* ───────── retrouver les ancres au chargement ───────── */
+  function resolve(h) {
+    if (full.slice(h.s, h.e) === h.q && h.q) return [h.s, h.e];
+    const cand = [];
+    let i = -1;
+    while (h.q && (i = full.indexOf(h.q, i + 1)) !== -1) cand.push([i, i + h.q.length]);
+    if (!cand.length && h.q && h.q.trim()) {          // texte réindenté / espaces modifiés
+      const re = new RegExp(h.q.trim().split(/\s+/).map(esc).join('\\s+'), 'g');
+      let m; while ((m = re.exec(full))) cand.push([m.index, m.index + m[0].length]);
+    }
+    if (!cand.length) return null;
+    const score = ([a, b]) => {
+      let sc = 0;
+      const pre = full.slice(Math.max(0, a - h.p.length), a), suf = full.slice(b, b + h.x.length);
+      for (let k = 1; k <= Math.min(pre.length, h.p.length) && pre[pre.length - k] === h.p[h.p.length - k]; k++) sc++;
+      for (let k = 0; k < Math.min(suf.length, h.x.length) && suf[k] === h.x[k]; k++) sc++;
+      return sc * 1e6 - Math.abs(a - h.s);
+    };
+    return cand.sort((A, B) => score(B) - score(A))[0];
+  }
+  function sanitize() {
+    hls.sort(bySort);
+    let end = 0; const out = [];
+    for (const h of hls) {
+      if (h.o) { out.push(h); continue; }
+      if (h.s < end) { h.s = end; anchor(h); }
+      if (h.e > h.s && full.slice(h.s, h.e).trim()) { out.push(h); end = h.e; }
+    }
+    hls = out;
+  }
+  function loadModel() {
+    const d0 = readStore();
+    hls = d0.hls.map(cleanHl).filter(Boolean);
+    sheet = cleanSheet(d0.sheet);
+    let moved = false;
+    hls.forEach(h => {
+      const r = resolve(h);
+      if (!r) { h.o = true; return; }
+      delete h.o;
+      if (r[0] !== h.s || r[1] !== h.e) { h.s = r[0]; h.e = r[1]; anchor(h); moved = true; }
+    });
+    sanitize();
+    if (moved) save();
+  }
+
+  /* ───────── rendu : réinjecte les <mark> à partir du modèle ───────── */
+  function unwrap() {
+    root.querySelectorAll('mark.hl').forEach(m => {
+      const p = m.parentNode;
+      while (m.firstChild) p.insertBefore(m.firstChild, m);
+      p.removeChild(m);
+    });
+    root.normalize();
+  }
+  function inlineCtx(node) {           // un blanc isolé doit-il être surligné ? (entre deux mots oui, entre deux blocs non)
+    const p = node.parentElement;
+    if (!p || /flex|grid|table/.test(getComputedStyle(p).display)) return false;
+    const ok = x => x && (x.nodeType === 3 || (x.nodeType === 1 && /^inline/.test(getComputedStyle(x).display)));
+    return ok(node.previousSibling) && ok(node.nextSibling);
+  }
+  function wrapSegs(node, segs) {
+    const wsOnly = node.data.trim() === '';
+    let cur = node, consumed = 0;
+    for (const sg of segs) {
+      if (!cur) break;
+      const local = sg.a - consumed;
+      const chunk = cur.data.slice(local, local + (sg.b - sg.a));
+      if (!chunk.trim() && !(wsOnly && inlineCtx(cur))) continue;
+      const target = local > 0 ? cur.splitText(local) : cur;
+      const len = sg.b - sg.a;
+      const after = len < target.data.length ? target.splitText(len) : null;
+      const m = document.createElement('mark');
+      m.className = 'hl'; m.dataset.id = sg.h.id; m.dataset.c = sg.h.c; m.dataset.s = colorOf(sg.h.c).st || 'bg';
+      target.parentNode.insertBefore(m, target); m.appendChild(target);
+      cur = after; consumed = sg.b;
+    }
+  }
+  function render() {
+    unwrap(); index();
+    const L = live();
+    for (let i = 0; i < nodes.length; i++) {
+      const node = nodes[i], ns = starts[i], ne = ns + node.data.length, segs = [];
+      for (const h of L) if (h.s < ne && h.e > ns) segs.push({ a: Math.max(h.s, ns) - ns, b: Math.min(h.e, ne) - ns, h });
+      if (segs.length) wrapSegs(node, segs.sort((x, y) => x.a - y.a));
+    }
+    index(); decorate();
+    if (popId) { const ms = marksOf(popId); ms.forEach(m => m.classList.add('hl-active')); }
+    updateFab();
+  }
+  const marksOf = id => Array.from(root.querySelectorAll('mark.hl')).filter(m => m.dataset.id === id);
+  function decorate() {
+    const seen = {};
+    root.querySelectorAll('mark.hl').forEach(m => {
+      const h = byId(m.dataset.id);
+      m.classList.toggle('hl-note', !!(h && h.n));
+      m.classList.toggle('hl-revealed', revealed.has(m.dataset.id));
+      m.classList.remove('hl-last');
+      seen[m.dataset.id] = m;
+    });
+    Object.keys(seen).forEach(id => seen[id].classList.add('hl-last'));
+    updateTestbar();
+  }
+  function restyle() { root.querySelectorAll('mark.hl').forEach(m => { m.dataset.s = colorOf(m.dataset.c).st || 'bg'; }); }
+
+  /* ───────── UI : barre flottante ───────── */
+  const tb = el('div', 'hl-ui hl-toolbar');
+  tb.setAttribute('role', 'toolbar'); tb.setAttribute('aria-label', 'Surligner la sélection');
+  function buildToolbar() {
+    tb.innerHTML = COLORS.map((c, i) => `<button type="button" class="hl-dot" data-c="${escH(c.id)}" data-s="${escH(c.st || 'bg')}" title="${escH(c.label)}" aria-label="Surligner : ${escH(c.label)}"></button>`).join('') +
+      (COLORS.length < MAX_CATS ? `<button type="button" class="hl-dot hl-add" data-act="addcat" title="Nouvelle couleur" aria-label="Créer une nouvelle couleur">+</button>` : '') +
+      `<span class="hl-sep"></span>` +
+      `<button type="button" class="hl-btn" data-act="note" title="Surligner et ajouter une note" aria-label="Surligner et ajouter une note">${ICON.note}</button>` +
+      `<button type="button" class="hl-btn" data-act="erase" title="Effacer le surlignage" aria-label="Effacer le surlignage">${ICON.eraser}</button>`;
+    tb.querySelectorAll('.hl-dot').forEach(d => d.classList.toggle('on', d.dataset.c === prefs.color));
+  }
+  buildToolbar();
+  document.body.appendChild(tb);
+  ['pointerdown', 'mousedown'].forEach(ev => tb.addEventListener(ev, e => e.preventDefault()));
+
+  function place(box, first, last, forceBelow) {
+    box.style.visibility = 'hidden';
+    const bw = box.offsetWidth, bh = box.offsetHeight, vw = document.documentElement.clientWidth;
+    const nav = document.querySelector('nav'), navH = nav ? nav.offsetHeight : 0;
+    let top;
+    if (!forceBelow && first.top - bh - 10 > navH + 6) top = first.top - bh - 10;
+    else top = last.bottom + (isTouch() ? 22 : 10);
+    top = Math.max(navH + 6, Math.min(top, window.innerHeight - bh - 8));
+    const cx = forceBelow ? last.left + last.width / 2 : first.left + first.width / 2;
+    const left = Math.max(8, Math.min(cx - bw / 2, vw - bw - 8));
+    box.style.top = (top + window.scrollY) + 'px';
+    box.style.left = (left + window.scrollX) + 'px';
+    box.style.visibility = '';
+  }
+  function showToolbar(sel) {
+    pending = { s: sel.s, e: sel.e };
+    tb.querySelectorAll('.hl-dot').forEach(d => d.classList.toggle('on', d.dataset.c === prefs.color));
+    tb.querySelector('[data-act="erase"]').hidden = !overlaps(sel.s, sel.e);
+    tb.classList.add('show');
+    place(tb, sel.first, sel.last, isTouch());
+  }
+  function hideToolbar() { pending = null; tb.classList.remove('show'); }
+  function finishSel() { hideToolbar(); const s = window.getSelection(); if (s) s.removeAllRanges(); }
+
+  tb.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b || !pending) return;
+    const { s, e: en } = pending;
+    if (b.dataset.c) { prefs.color = b.dataset.c; savePrefs(); mutate(() => _add(s, en, b.dataset.c)); finishSel(); }
+    else if (b.dataset.act === 'erase') { mutate(() => _erase(s, en)); finishSel(); }
+    else if (b.dataset.act === 'addcat') {
+      let id; mutate(() => { id = addCatRaw(); _add(s, en, id); prefs.color = id; savePrefs(); }); finishSel();
+      toast('Nouvelle couleur créée', 'Modifier', () => editCat(id));
+    }
+    else if (b.dataset.act === 'note') { let id; mutate(() => { id = _add(s, en, prefs.color); }); finishSel(); openPop(id, true); }
+  });
+
+  /* ───────── UI : popover d'un surlignage existant ───────── */
+  const pop = el('div', 'hl-ui hl-pop');
+  pop.innerHTML = `<div class="hl-pop-row"></div>` +
+    `<textarea rows="3" placeholder="Ajouter une note…" aria-label="Note"></textarea>` +
+    `<div class="hl-tagbox"><span class="hl-tagchips"></span><input type="text" class="hl-taginput" placeholder="+ étiquette" maxlength="30" list="hl-taglist" aria-label="Ajouter une étiquette"></div>` +
+    `<datalist id="hl-taglist"></datalist><div class="hl-pop-label"></div>`;
+  document.body.appendChild(pop);
+  const popRow = pop.querySelector('.hl-pop-row'), tagChips = pop.querySelector('.hl-tagchips'), tagInput = pop.querySelector('.hl-taginput');
+  const ta = pop.querySelector('textarea'), popLabel = pop.querySelector('.hl-pop-label');
+  let noteTimer = null;
+
+  function buildPop() {
+    popRow.innerHTML = COLORS.map(c => `<button type="button" class="hl-dot" data-c="${escH(c.id)}" data-s="${escH(c.st || 'bg')}" title="${escH(c.label)}" aria-label="${escH(c.label)}"></button>`).join('') +
+      `<span class="grow"></span><button type="button" class="hl-btn danger" data-act="del" title="Supprimer" aria-label="Supprimer ce surlignage">${ICON.trash}</button>`;
+    syncPop();
+  }
+  function syncPop() {                 // reflète l'état du surlignage ouvert
+    const h = popId && byId(popId); if (!h) return;
+    popRow.querySelectorAll('.hl-dot').forEach(d => d.classList.toggle('on', d.dataset.c === h.c));
+    popLabel.textContent = colorOf(h.c).label;
+    tagChips.textContent = '';
+    (h.tags || []).forEach(t => {
+      const c = el('span', 'hl-tagchip', '#' + t);
+      const x = el('button', '', '×'); x.type = 'button'; x.dataset.rm = t; x.setAttribute('aria-label', 'Retirer l\'étiquette ' + t); c.appendChild(x); tagChips.appendChild(c);
+    });
+    const dl = pop.querySelector('#hl-taglist'); dl.textContent = '';
+    allTags().forEach(t => { const o = document.createElement('option'); o.value = t; dl.appendChild(o); });
+  }
+  function addTag(id, raw) {
+    const h = byId(id); if (!h) return;
+    String(raw).split(',').forEach(x => { const t = cleanTag(x); if (t && !(h.tags || []).includes(t) && (h.tags || []).length < 12) (h.tags = h.tags || []).push(t); });
+    save(); refreshPanel(); syncPop();
+  }
+  function removeTag(id, t) {
+    const h = byId(id); if (!h || !h.tags) return;
+    h.tags = h.tags.filter(x => x !== t); if (!h.tags.length) delete h.tags;
+    save(); refreshPanel(); syncPop();
+  }
+  buildPop();
+
+  function flushNote() {
+    clearTimeout(noteTimer);
+    const h = popId && byId(popId); if (!h) return;
+    const v = ta.value.trim();
+    if ((h.n || '') === v) return;
+    if (v) h.n = v; else delete h.n;
+    save(); decorate(); refreshPanel();
+  }
+  function openPop(id, focus, anchorEl) {
+    const h = byId(id); if (!h) return;
+    if (popId && popId !== id) closePop();
+    popId = id;
+    marksOf(id).forEach(m => m.classList.add('hl-active'));
+    ta.value = h.n || ''; tagInput.value = '';
+    syncPop();
+    pop.classList.add('show');
+    const ms = marksOf(id), a = anchorEl && anchorEl.isConnected ? anchorEl : ms[0];
+    if (a) { const r = a.getBoundingClientRect(); place(pop, r, r, true); }
+    if (focus) setTimeout(() => ta.focus(), 30);
+  }
+  function closePop(skipFlush) {
+    if (!popId) return;
+    if (!skipFlush) { flushNote(); if (tagInput.value.trim()) addTag(popId, tagInput.value); }
+    marksOf(popId).forEach(m => m.classList.remove('hl-active'));
+    popId = null; pop.classList.remove('show'); tagInput.value = '';
+  }
+  ta.addEventListener('input', () => { clearTimeout(noteTimer); noteTimer = setTimeout(flushNote, 450); });
+  ta.addEventListener('blur', flushNote);
+  tagInput.addEventListener('keydown', e => {
+    e.stopPropagation();
+    if ((e.key === 'Enter' || e.key === ',') && tagInput.value.trim()) { e.preventDefault(); addTag(popId, tagInput.value); tagInput.value = ''; }
+    else if (e.key === 'Backspace' && !tagInput.value) { const h = byId(popId); if (h && h.tags) removeTag(popId, h.tags[h.tags.length - 1]); }
+  });
+  tagInput.addEventListener('change', () => { if (popId && tagInput.value.trim()) { addTag(popId, tagInput.value); tagInput.value = ''; } });
+  pop.addEventListener('mousedown', e => { if (e.target !== ta && e.target !== tagInput) e.preventDefault(); });
+  pop.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b || !popId) return;
+    if (b.dataset.rm) { removeTag(popId, b.dataset.rm); return; }
+    flushNote();
+    const id = popId, h = byId(id);
+    if (b.dataset.c && h.c !== b.dataset.c) {
+      prefs.color = b.dataset.c; savePrefs();
+      mutate(() => { const cur = byId(id); hls = hls.filter(x => x !== cur); _add(cur.s, cur.e, b.dataset.c, { n: cur.n, tags: cur.tags }, id); });
+      const nid = (hls.find(x => x.s <= h.s && x.e >= h.e) || {}).id || id;
+      popId = null; openPop(nid, false);
+    } else if (b.dataset.act === 'del') { closePop(true); removeById(id); }
+  });
+
+  function removeById(id) {
+    mutate(() => { hls = hls.filter(h => h.id !== id); });
+    toast('Surlignage supprimé', 'Annuler', undo);
+  }
+
+  /* clic / survol sur un surlignage */
+  root.addEventListener('click', e => {
+    const m = e.target.closest('mark.hl'); if (!m) return;
+    const s = window.getSelection(); if (s && !s.isCollapsed) return;
+    if (hideMode) { toggleReveal(m.dataset.id); return; }
+    hideToolbar(); openPop(m.dataset.id, false, m);
+  });
+  const hover = (e, on) => {
+    const m = e.target.closest && e.target.closest('mark.hl'); if (!m) return;
+    marksOf(m.dataset.id).forEach(x => x.classList.toggle('hl-hover', on));
+  };
+  root.addEventListener('mouseover', e => hover(e, true));
+  root.addEventListener('mouseout', e => hover(e, false));
+
+  /* ───────── détection de la sélection ───────── */
+  function checkSelection(fromMouse) {
+    const sel = readSelection();
+    if (!sel) { hideToolbar(); return; }
+    closePop();
+    if (prefs.auto && fromMouse && !isTouch()) {
+      mutate(() => _add(sel.s, sel.e, prefs.color));
+      const s = window.getSelection(); if (s) s.removeAllRanges();
+      hideToolbar(); return;
+    }
+    showToolbar(sel);
+  }
+  document.addEventListener('mouseup', e => {
+    if (e.target.closest && e.target.closest('.hl-ui')) return;
+    setTimeout(() => checkSelection(true), 10);
+  });
+  document.addEventListener('keyup', e => {
+    if (e.key === 'Shift' || e.key.startsWith('Arrow')) checkSelection(false);
+  });
+  let selTimer;
+  document.addEventListener('selectionchange', () => {
+    clearTimeout(selTimer);
+    selTimer = setTimeout(() => {
+      const s = window.getSelection();
+      if (!s || s.isCollapsed) hideToolbar();
+      else if (isTouch()) checkSelection(false);
+    }, isTouch() ? 250 : 60);
+  });
+  document.addEventListener('mousedown', e => {
+    if (popId && !e.target.closest('.hl-pop') && !e.target.closest('mark.hl')) closePop();
+    if (panel.classList.contains('open') && !e.target.closest('.hl-panel') && !e.target.closest('.hl-fab') && !e.target.closest('.hl-toast')) togglePanel(false);
+  });
+  document.addEventListener('keydown', e => {
+    const inField = /^(TEXTAREA|INPUT)$/.test((e.target || {}).tagName || '');
+    if (e.key === 'Escape') { if (closeTopOverlay()) return; hideToolbar(); closePop(); togglePanel(false); return; }
+    if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z' && !inField) { if (undo()) e.preventDefault(); return; }
+    if (pending && !inField && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      const i = parseInt(e.key, 10) - 1;
+      if (COLORS[i]) { e.preventDefault(); prefs.color = COLORS[i].id; savePrefs(); const { s, e: en } = pending; mutate(() => _add(s, en, COLORS[i].id)); finishSel(); }
+    }
+  });
+
+  /* ───────── panneau « Mes révisions » ───────── */
+  const fab = el('button', 'hl-ui hl-fab');
+  fab.type = 'button'; fab.title = 'Mes révisions'; fab.setAttribute('aria-label', 'Ouvrir mes révisions');
+  fab.innerHTML = ICON.pen + '<span class="badge" hidden></span>';
+  document.body.appendChild(fab);
+
+  let tab = 'list', pTag = null, pQuery = '';
+  const panel = el('aside', 'hl-ui hl-panel');
+  panel.setAttribute('aria-label', 'Mes révisions');
+  panel.innerHTML =
+    `<div class="hl-panel-head"><h2>Mes révisions</h2><button type="button" class="hl-btn" data-act="close" aria-label="Fermer">${ICON.close}</button></div>` +
+    `<div class="hl-actions">` +
+      `<button type="button" class="hl-act" data-act="fiche">${ICON.sheet}<span>Ma fiche</span></button>` +
+      `<button type="button" class="hl-act" data-act="cards">${ICON.cards}<span>Flashcards</span></button>` +
+      `<button type="button" class="hl-act" data-act="frise">${ICON.clock}<span>Frise</span></button>` +
+      `<button type="button" class="hl-act" data-act="hide" aria-pressed="false">${ICON.eye}<span>Cache-cache</span></button>` +
+      `<button type="button" class="hl-act" data-act="suj">${ICON.bulb}<span>Sujets</span></button>` +
+      `<button type="button" class="hl-act" data-act="annot">${ICON.printer}<span>Cours annoté</span></button>` +
+    `</div>` +
+    `<div class="hl-tabs" role="tablist">` +
+      `<button type="button" class="hl-tab on" role="tab" data-tab="list">Surlignages</button>` +
+      `<button type="button" class="hl-tab" role="tab" data-tab="prog">Progression</button>` +
+      `<button type="button" class="hl-tab" role="tab" data-tab="set">Réglages</button>` +
+    `</div>` +
+    `<div class="hl-pane on" data-pane="list">` +
+      `<div class="hl-tools">` +
+        `<input type="search" class="hl-search" data-role="search" placeholder="Rechercher un passage, une note, une étiquette…" aria-label="Rechercher">` +
+        `<div class="hl-chips" data-role="chips"></div>` +
+        `<div class="hl-chips" data-role="tchips"></div>` +
+      `</div>` +
+      `<ul class="hl-list" data-role="list"></ul>` +
+    `</div>` +
+    `<div class="hl-pane" data-pane="prog" data-role="prog"></div>` +
+    `<div class="hl-pane" data-pane="set"><div class="hl-set">` +
+      `<button type="button" class="hl-switch" data-act="auto" aria-pressed="false"><span class="track"></span><span>Mode surligneur<small>Chaque sélection est surlignée d'un coup (souris)</small></span></button>` +
+      `<div><div class="hl-tools-label">Couleur active</div><div class="hl-chips" data-role="active"></div></div>` +
+      `<div><div class="hl-tools-label">Couleurs, noms et styles</div><div class="hl-cats" data-role="editor"></div></div>` +
+    `</div></div>` +
+    `<div class="hl-panel-foot">` +
+      `<button type="button" class="hl-foot-btn" data-act="undo">↶ Annuler</button>` +
+      `<button type="button" class="hl-foot-btn" data-act="copy">Copier (texte)</button>` +
+      `<button type="button" class="hl-foot-btn danger" data-act="clear">Tout effacer</button>` +
+    `</div>`;
+  document.body.appendChild(panel);
+  const $ = r => panel.querySelector(`[data-role="${r}"]`);
+  const searchBox = $('search');
+  searchBox.addEventListener('input', () => { pQuery = norm(searchBox.value.trim()); refreshPanel(); });
+
+  function setTab(t) {
+    tab = t;
+    panel.querySelectorAll('.hl-tab').forEach(b => { b.classList.toggle('on', b.dataset.tab === t); b.setAttribute('aria-selected', String(b.dataset.tab === t)); });
+    panel.querySelectorAll('.hl-pane').forEach(p => p.classList.toggle('on', p.dataset.pane === t));
+    refreshPanel();
+  }
+  function togglePanel(open) {
+    panel.classList.toggle('open', open == null ? !panel.classList.contains('open') : open);
+    if (panel.classList.contains('open')) { closePop(); hideToolbar(); refreshPanel(); }
+  }
+  fab.addEventListener('click', () => togglePanel());
+
+  function updateFab() {
+    const n = live().length, b = fab.querySelector('.badge');
+    b.hidden = !n; b.textContent = '';
+    fab.classList.toggle('auto', prefs.auto);
+    fab.dataset.c = prefs.color;
+  }
+
+  function headings() { return Array.from(root.querySelectorAll('.hgg-part-title, .hgg-section-title')); }
+  function sectionOf(h, heads) {
+    const m = marksOf(h.id)[0]; if (!m) return '';
+    let cur = '';
+    for (const hd of heads) { if (hd.compareDocumentPosition(m) & Node.DOCUMENT_POSITION_FOLLOWING) cur = flat(hd.textContent); else break; }
+    return cur;
+  }
+
+  const ST_GLYPH = { todo: '⚑', ok: '✓', none: '○' };
+  const ST_LABEL = { todo: 'À revoir', ok: 'Su', none: 'Non classé' };
+  function passes(h) {
+    if (filter && h.c !== filter) return false;
+    if (pTag && !(h.tags || []).includes(pTag)) return false;
+    if (pQuery) {
+      const hay = norm(quoteText(h) + ' ' + (h.n || '') + ' ' + (h.tags || []).join(' ') + ' ' + colorOf(h.c).label);
+      if (!pQuery.split(/\s+/).every(w => hay.includes(w))) return false;
+    }
+    return true;
+  }
+  function refreshPanel() {
+    const chips = $('chips'), tchips = $('tchips'), active = $('active'), list = $('list');
+    chips.textContent = ''; tchips.textContent = ''; active.textContent = ''; list.textContent = '';
+    const mk = (id, label, n) => {
+      const b = el('button', 'hl-chip'); b.type = 'button';
+      const i = el('i', id ? '' : 'all'); if (id) i.dataset.c = id;
+      b.append(i, document.createTextNode(label));
+      if (n != null) b.append(el('b', '', n));
+      return b;
+    };
+    const all = mk('', 'Toutes', hls.length); all.dataset.f = ''; all.classList.toggle('on', !filter); chips.appendChild(all);
+    COLORS.forEach(c => { const b = mk(c.id, c.label, hls.filter(h => h.c === c.id).length); b.dataset.f = c.id; b.classList.toggle('on', filter === c.id); chips.appendChild(b); });
+    COLORS.forEach(c => { const b = mk(c.id, c.label); b.dataset.a = c.id; b.classList.toggle('on', prefs.color === c.id); active.appendChild(b); });
+    allTags().forEach(t => { const b = el('button', 'hl-chip hl-tchip' + (pTag === t ? ' on' : ''), '#' + t); b.type = 'button'; b.dataset.tf = t; tchips.appendChild(b); });
+    tchips.hidden = !tchips.children.length;
+    if (pTag && !allTags().includes(pTag)) pTag = null;
+
+    const sw = panel.querySelector('[data-act="auto"]');
+    sw.classList.toggle('on', prefs.auto); sw.setAttribute('aria-pressed', String(prefs.auto));
+    panel.querySelector('[data-act="hide"]').classList.toggle('on', hideMode);
+    panel.querySelector('[data-act="hide"]').setAttribute('aria-pressed', String(hideMode));
+    panel.querySelector('[data-act="undo"]').disabled = !hist.length;
+    panel.querySelector('[data-act="clear"]').disabled = !hls.length;
+    panel.querySelector('[data-act="copy"]').disabled = !hls.length;
+    panel.querySelector('[data-act="fiche"]').disabled = false;
+
+    const items = hls.filter(passes);
+    if (!items.length) {
+      const li = el('li', 'hl-empty');
+      li.innerHTML = hls.length ? 'Aucun passage ne correspond à ces filtres.' : '<b>Rien de surligné pour l\'instant.</b><br>Sélectionne du texte dans le cours pour le surligner.<br>Clique ensuite sur un surlignage pour ajouter une note, une étiquette ou un statut.';
+      list.appendChild(li);
+    } else {
+      const heads = headings(); let lastSec = null;
+      items.forEach(h => {
+        const sec = h.o ? 'Introuvables' : (sectionOf(h, heads) || 'Début du chapitre');
+        if (sec !== lastSec) { list.appendChild(el('li', 'hl-sec', sec)); lastSec = sec; }
+        const li = el('li', 'hl-item' + (h.o ? ' orphan' : '')); li.dataset.id = h.id; li.dataset.c = h.c;
+        const main = el('div', 'hl-item-main');
+        main.appendChild(el('div', 'hl-item-q', quoteText(h)));
+        if (h.n) main.appendChild(el('div', 'hl-item-n', '✎ ' + h.n));
+        if (h.tags && h.tags.length) { const t = el('div', 'hl-item-tags'); h.tags.forEach(x => t.appendChild(el('span', 'hl-ftag', '#' + x))); main.appendChild(t); }
+        const side = el('div', 'hl-item-side');
+        const del = el('button', 'hl-item-del', '×'); del.type = 'button'; del.setAttribute('aria-label', 'Supprimer'); del.dataset.act = 'del';
+        side.append(del);
+        li.append(el('span', 'hl-item-bar'), main, side);
+        list.appendChild(li);
+      });
+    }
+    panel.querySelectorAll('.hl-cat').forEach(r => { const s = r.querySelector('.hl-cat-n'); if (s) { const n = hls.filter(h => h.c === r.dataset.id).length; s.textContent = n ? String(n) : ''; } });
+    if (tab === 'prog') renderProgress();
+  }
+
+  /* progression : couverture du cours par section + statut des passages */
+  function progressData() {
+    const heads = headings(), n = heads.length; if (!n) return null;
+    const offs = heads.map(hd => offsetOf(hd, 0)), L = live();
+    const rows = []; let part = '';
+    heads.forEach((hd, i) => {
+      const a = offs[i], b = i + 1 < n ? offs[i + 1] : full.length, isPart = hd.classList.contains('hgg-part-title');
+      const label = flat(hd.textContent);
+      if (isPart) { const num = hd.parentElement && hd.parentElement.querySelector('.hgg-part-num'); part = (num ? flat(num.textContent) + ' · ' : '') + label; }
+      const total = full.slice(a, b).replace(/\s+/g, '').length;
+      let hl = 0, cnt = 0;
+      L.forEach(h => {
+        if (h.s < b && h.e > a) hl += full.slice(Math.max(a, h.s), Math.min(b, h.e)).replace(/\s+/g, '').length;
+        if (h.s >= a && h.s < b) cnt++;
+      });
+      if (isPart && !cnt) return;                 // l'en-tête de partie sans passage propre n'est pas une ligne
+      rows.push({ idx: i, part, label: isPart ? 'Introduction' : label, pct: total ? Math.min(100, Math.round(hl / total * 100)) : 0, cnt });
+    });
+    return { rows, tot: L.length };
+  }
+  function renderProgress() {
+    const box = $('prog'); box.textContent = '';
+    const d = progressData();
+    if (!d || !d.tot) { box.appendChild(el('div', 'hl-empty', 'La progression apparaîtra dès que tu auras surligné quelques passages.')); return; }
+    let last = null;
+    d.rows.forEach(r => {
+      if (r.part !== last) { box.appendChild(el('div', 'hl-sec', r.part || 'Chapitre')); last = r.part; }
+      const row = el('button', 'hl-prog-row' + (r.cnt ? '' : ' empty')); row.type = 'button'; row.dataset.hd = r.idx;
+      row.appendChild(el('span', 'hl-prog-name', r.label));
+      const b = el('span', 'hl-prog-bar'); const f = el('i'); f.style.width = Math.max(r.pct, r.cnt ? 3 : 0) + '%'; b.appendChild(f); row.appendChild(b);
+      row.appendChild(el('span', 'hl-prog-meta', r.cnt ? r.pct + ' % couvert · ' + r.cnt + ' passage' + (r.cnt > 1 ? 's' : '') : 'Rien surligné'));
+      box.appendChild(row);
+    });
+  }
+  $('prog').addEventListener('click', e => {
+    const r = e.target.closest('.hl-prog-row'); if (!r) return;
+    const hd = headings()[+r.dataset.hd]; if (!hd) return;
+    hd.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (window.innerWidth < 720) togglePanel(false);
+  });
+
+  function goTo(id) {
+    const ms = marksOf(id); if (!ms.length) return;
+    ms[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    ms.forEach(m => { m.classList.remove('hl-flash'); void m.offsetWidth; m.classList.add('hl-flash'); setTimeout(() => m.classList.remove('hl-flash'), 1400); });
+    if (window.innerWidth < 720) togglePanel(false);
+  }
+
+  function markdown() {
+    const heads = headings();
+    let out = '# ' + (document.title || 'Surlignages') + '\n', last = null;
+    live().forEach(h => {
+      const sec = sectionOf(h, heads);
+      if (sec !== last) { out += '\n## ' + (sec || 'Début') + '\n\n'; last = sec; }
+      out += '- ' + '**[' + colorOf(h.c).label + ']** ' + quoteText(h) + (h.n ? '\n  - ✎ ' + h.n.replace(/\n/g, ' ') : '') + ((h.tags || []).length ? '\n  - ' + h.tags.map(t => '#' + t).join(' ') : '') + '\n';
+    });
+    return out;
+  }
+  async function copyText(t) {
+    try { await navigator.clipboard.writeText(t); return true; }
+    catch (e) {
+      const x = document.createElement('textarea'); x.value = t; x.style.cssText = 'position:fixed;opacity:0';
+      document.body.appendChild(x); x.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (_) {}
+      x.remove(); return ok;
+    }
+  }
+
+  panel.addEventListener('click', async e => {
+    const tb2 = e.target.closest('.hl-tab'); if (tb2) { setTab(tb2.dataset.tab); return; }
+    const chip = e.target.closest('.hl-chip');
+    if (chip) {
+      if (chip.dataset.a) { prefs.color = chip.dataset.a; savePrefs(); updateFab(); refreshPanel(); }
+      else if (chip.dataset.tf) { pTag = pTag === chip.dataset.tf ? null : chip.dataset.tf; refreshPanel(); }
+      else if (chip.dataset.f !== undefined) { filter = chip.dataset.f || null; refreshPanel(); }
+      return;
+    }
+    const act = e.target.closest('[data-act]');
+    if (act) {
+      const a = act.dataset.act;
+      if (a === 'close') togglePanel(false);
+      else if (a === 'fiche') openFiche();
+      else if (a === 'cards') openCards();
+      else if (a === 'suj') openSuj();
+      else if (a === 'annot') printAnnotated();
+      else if (a === 'frise') openFrise();
+      else if (a === 'hide') setHide(!hideMode);
+      else if (a === 'auto') { prefs.auto = !prefs.auto; savePrefs(); updateFab(); refreshPanel(); toast(prefs.auto ? 'Mode surligneur activé' : 'Mode surligneur désactivé'); }
+      else if (a === 'undo') { undo(); }
+      else if (a === 'copy') { toast(await copyText(markdown()) ? 'Copié dans le presse-papiers' : 'Copie impossible'); }
+      else if (a === 'clear') { if (confirm('Effacer tous les surlignages de ce chapitre ?')) { closePop(true); mutate(() => { hls = []; }); toast('Tout a été effacé', 'Annuler', undo); } }
+      else if (a === 'del') { const li = act.closest('.hl-item'); if (li) { closePop(true); removeById(li.dataset.id); } }
+      return;
+    }
+    const li = e.target.closest('.hl-item');
+    if (li && !li.classList.contains('orphan')) goTo(li.dataset.id);
+  });
+
+  /* ───────── mode cache-cache (dans le cours) ───────── */
+  const testbar = el('div', 'hl-ui hl-testbar');
+  testbar.innerHTML = `<span>Mode cache-cache : clique un passage pour le révéler</span><button type="button" data-tb="show">Tout révéler</button><button type="button" data-tb="hide">Tout masquer</button><button type="button" data-tb="quit">Quitter</button>`;
+  document.body.appendChild(testbar);
+  testbar.addEventListener('click', e => {
+    const b = e.target.closest('[data-tb]'); if (!b) return;
+    if (b.dataset.tb === 'show') { live().forEach(h => revealed.add(h.id)); decorate(); }
+    else if (b.dataset.tb === 'hide') { revealed.clear(); decorate(); }
+    else setHide(false);
+  });
+  function updateTestbar() { testbar.classList.toggle('show', hideMode); }
+  function toggleReveal(id) { revealed.has(id) ? revealed.delete(id) : revealed.add(id); decorate(); }
+  function setHide(on) {
+    hideMode = on; revealed.clear();
+    document.body.classList.toggle('hl-hidemode', on);
+    closePop(true); hideToolbar(); if (on) togglePanel(false);
+    decorate(); refreshPanel();
+    if (on) toast('Mode cache-cache activé');
+  }
+
+  /* ───────── fiche de révision (aperçu, impression, exports) ───────── */
+  const fState = { view: 'section', notes: true, ctx: false, cloze: false, tag: null, off: new Set(), reveal: new Set() };
+  const fiche = el('div', 'hl-ui hl-fiche');
+  fiche.setAttribute('role', 'dialog'); fiche.setAttribute('aria-label', 'Ma fiche de révision');
+  fiche.innerHTML =
+    `<div class="hl-fiche-bar">` +
+      `<div class="hl-fiche-row">` +
+        `<div class="hl-seg" role="group" aria-label="Organisation">` +
+          `<button type="button" data-g="section">Par section</button><button type="button" data-g="color">Par couleur</button>` +
+          `<button type="button" data-g="time">Chronologique</button><button type="button" data-g="custom">Mon ordre</button>` +
+        `</div>` +
+        `<span class="grow"></span>` +
+        `<div class="hl-menuwrap">` +
+          `<button type="button" class="hl-fbtn" data-fa="menu" aria-haspopup="true" aria-expanded="false">Exporter ▾</button>` +
+          `<div class="hl-menu" data-role="menu" hidden>` +
+            `<button type="button" data-fa="doc">Word (.doc)</button><button type="button" data-fa="md">Markdown (.md)</button>` +
+            `<button type="button" data-fa="anki">Anki (.txt)</button><button type="button" data-fa="copy">Copier le texte</button>` +
+          `</div>` +
+        `</div>` +
+        `<button type="button" class="hl-fbtn primary" data-fa="print">Imprimer / PDF</button>` +
+        `<button type="button" class="hl-btn" data-fa="close" aria-label="Fermer la fiche">${ICON.close}</button>` +
+      `</div>` +
+      `<div class="hl-fiche-row hl-fiche-row2">` +
+        `<button type="button" class="hl-fbtn" data-fa="notes" aria-pressed="true">✎ Notes</button>` +
+        `<button type="button" class="hl-fbtn" data-fa="ctx" aria-pressed="false" title="Affiche la phrase entière autour de chaque passage">Contexte</button>` +
+        `<button type="button" class="hl-fbtn" data-fa="cloze" aria-pressed="false" title="Masque les passages surlignés : clique pour révéler">À trous</button>` +
+        `<select class="hl-fsel" data-role="tagsel" aria-label="Filtrer par étiquette"></select>` +
+        `<div class="hl-chips" data-role="fchips"></div>` +
+      `</div>` +
+    `</div>` +
+    `<div class="hl-fiche-scroll"><article class="hl-sheet" data-role="sheet"></article></div>`;
+  document.body.appendChild(fiche);
+  const $f = r => fiche.querySelector(`[data-role="${r}"]`);
+  const sheetEl = $f('sheet'), menu = $f('menu');
+  function menuOpen(on) { menu.hidden = !on; fiche.querySelector('[data-fa="menu"]').setAttribute('aria-expanded', String(on)); }
+
+  function locate(h, heads) {
+    const m = marksOf(h.id)[0]; let part = '', sec = '';
+    if (!m) return { part, sec };
+    for (const hd of heads) {
+      if (!(hd.compareDocumentPosition(m) & Node.DOCUMENT_POSITION_FOLLOWING)) break;
+      if (hd.classList.contains('hgg-part-title')) {
+        const num = hd.parentElement && hd.parentElement.querySelector('.hgg-part-num');
+        part = (num ? flat(num.textContent) + ' · ' : '') + flat(hd.textContent); sec = '';
+      } else sec = flat(hd.textContent);
+    }
+    return { part, sec };
+  }
+  function chapterTitle() {
+    const h1 = document.querySelector('.ch-hero h1');
+    if (!h1) return document.title;
+    const c = h1.cloneNode(true); c.querySelectorAll('br').forEach(b => b.replaceWith(' '));
+    return flat(c.textContent);
+  }
+  const kicker = () => { const lab = document.querySelector('.ch-hero .chap-label'); return (lab ? flat(lab.textContent) + ' · ' : '') + 'Fiche de révision'; };
+  const today = () => new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+  /* ordre personnalisé */
+  function resolveOrder() {
+    const L = live().map(h => h.id), ids = new Set(L), bl = new Set(sheet.blocks.map(b => b.id));
+    const ord = sheet.order.filter((k, i, a) => (ids.has(k) || bl.has(k)) && a.indexOf(k) === i);
+    const seen = new Set(ord);
+    return ord.concat(L.filter(k => !seen.has(k)), sheet.blocks.map(b => b.id).filter(k => !seen.has(k)));
+  }
+  function moveKey(key, target, after) {
+    const ord = resolveOrder().filter(k => k !== key);
+    let i = ord.indexOf(target); if (i < 0) i = ord.length;
+    ord.splice(after ? i + 1 : i, 0, key);
+    sheet.order = ord; save();
+  }
+  function moveStep(key, dir) {
+    const keys = Array.from(sheetEl.querySelectorAll('[data-key]')).map(x => x.dataset.key);
+    const i = keys.indexOf(key), j = i + dir; if (i < 0 || j < 0 || j >= keys.length) return;
+    moveKey(key, keys[j], dir > 0); renderFiche();
+    const n = sheetEl.querySelector(`[data-key="${key}"]`); if (n) n.scrollIntoView({ block: 'nearest' });
+  }
+  function addBlock(type) {
+    const b = { id: 'b' + uid(), type, text: type === 'h' ? 'Nouveau titre' : 'Écris ici…' };
+    sheet.blocks.push(b); sheet.order = resolveOrder(); save(); renderFiche();
+    const d = sheetEl.querySelector(`[data-bid="${b.id}"]`);
+    if (d) { d.scrollIntoView({ block: 'center' }); editBlock(d); }
+  }
+  function removeBlock(id) { sheet.blocks = sheet.blocks.filter(b => b.id !== id); sheet.order = sheet.order.filter(k => k !== id); save(); }
+
+  /* notes et blocs éditables sur place */
+  function noteBlock(h) {
+    const wrap = el('div', 'hl-fnw');
+    if (h.n) { const n = el('div', 'hl-fn', h.n); n.dataset.edit = '1'; n.title = 'Cliquer pour modifier la note'; wrap.appendChild(n); }
+    else { const b = el('button', 'hl-fadd', '+ Ajouter une note'); b.type = 'button'; b.dataset.edit = '1'; wrap.appendChild(b); }
+    return wrap;
+  }
+  function inlineEditor(value, placeholder, rows, onDone) {
+    const t = document.createElement('textarea'); t.className = 'hl-fnedit'; t.rows = rows; t.value = value; t.placeholder = placeholder;
+    let cancelled = false, done = false;
+    const fit = () => { t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight + 2, 240) + 'px'; };
+    t.addEventListener('input', fit);
+    t.addEventListener('keydown', e => {
+      e.stopPropagation();
+      if (e.key === 'Escape') { cancelled = true; t.blur(); }
+      else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey || rows === 1)) { e.preventDefault(); t.blur(); }
+    });
+    t.addEventListener('blur', () => { if (done) return; done = true; onDone(cancelled ? null : t.value.trim()); });
+    return { t, fit };
+  }
+  function editNote(item) {
+    const h = byId(item.dataset.id); const wrap = item.querySelector('.hl-fnw'); if (!h || !wrap) return;
+    const { t, fit } = inlineEditor(h.n || '', 'Ta note… (Ctrl+Entrée pour valider, Échap pour annuler)', 2, v => {
+      if (v !== null && v !== (h.n || '')) { if (v) h.n = v; else delete h.n; save(); decorate(); refreshPanel(); }
+      wrap.replaceWith(noteBlock(h));
+    });
+    wrap.textContent = ''; wrap.appendChild(t); t.focus(); fit();
+  }
+  function editBlock(d) {
+    const b = sheet.blocks.find(x => x.id === d.dataset.bid); const old = d.querySelector('[data-bedit]'); if (!b || !old) return;
+    const { t, fit } = inlineEditor(b.text, b.type === 'h' ? 'Titre' : 'Texte (Ctrl+Entrée pour valider)', b.type === 'h' ? 1 : 3, v => {
+      if (v === null) { t.replaceWith(blockText(b)); return; }
+      if (!v) { removeBlock(b.id); d.remove(); return; }
+      b.text = v; save(); t.replaceWith(blockText(b));
+    });
+    old.replaceWith(t); t.focus(); t.select(); fit();
+  }
+  function blockText(b) { const n = el(b.type === 'h' ? 'h2' : 'p', 'hl-fbtext', b.text); n.dataset.bedit = '1'; n.title = 'Cliquer pour modifier'; return n; }
+
+  /* ───────── modèle de la fiche (partagé par l'écran, Word, Markdown) ───────── */
+  const ficheHls = () => live().filter(h => !fState.off.has(h.c) && (!fState.tag || (h.tags || []).includes(fState.tag)));
+  function buildModel() {
+    const items = ficheHls(), heads = headings();
+    const located = items.map(h => ({ h, loc: locate(h, heads) }));
+    const withCtx = en => { if (fState.ctx) en.ctx = contextOf(en.h); return en; };
+    const E = []; let nodate = 0;
+    if (fState.view === 'color') {
+      COLORS.forEach(c => {
+        const g = located.filter(x => x.h.c === c.id); if (!g.length) return;
+        E.push({ k: 'col', c: c.id, n: g.length, text: c.label });
+        g.forEach(x => E.push(withCtx({ k: 'item', h: x.h, loc: x.loc, ref: true })));
+      });
+    } else if (fState.view === 'time') {
+      const ev = [];
+      located.forEach(x => {
+        const ctx = fState.ctx ? contextOf(x.h) : null;
+        const ds = findDates(quoteText(x.h) + (ctx ? ' ' + ctx.before + ' ' + ctx.after : ''));
+        if (!ds.length) { nodate++; return; }
+        const main = ds.slice().sort((a, b) => a.key - b.key)[0];
+        ev.push({ x, main, also: [...new Set(ds.filter(d => d.year !== main.year).map(d => d.label))].slice(0, 3) });
+      });
+      ev.sort((a, b) => a.main.key - b.main.key || a.x.h.s - b.x.h.s);
+      ev.forEach(v => E.push(withCtx({ k: 'item', h: v.x.h, loc: v.x.loc, ref: true, date: v.main.label, also: v.also })));
+      if (nodate) E.push({ k: 'note', text: nodate + ' passage' + (nodate > 1 ? 's' : '') + ' sans date ne figure' + (nodate > 1 ? 'nt' : '') + ' pas dans la frise.' });
+    } else if (fState.view === 'custom') {
+      const map = new Map(located.map(x => [x.h.id, x])), bl = new Map(sheet.blocks.map(b => [b.id, b]));
+      resolveOrder().forEach(k => {
+        if (bl.has(k)) E.push({ k: 'block', b: bl.get(k) });
+        else if (map.has(k)) { const x = map.get(k); E.push(withCtx({ k: 'item', h: x.h, loc: x.loc, ref: true })); }
+      });
+    } else {
+      let lp = null, ls = null;
+      located.forEach(({ h, loc }) => {
+        if (loc.part !== lp) { E.push({ k: 'part', text: loc.part || 'Introduction' }); lp = loc.part; ls = null; }
+        if (loc.sec !== ls) { if (loc.sec) E.push({ k: 'sec', text: loc.sec }); ls = loc.sec; }
+        E.push(withCtx({ k: 'item', h, loc, ref: false }));
+      });
+    }
+    return { items, entries: E, nodate };
+  }
+
+  /* ───────── rendu à l'écran ───────── */
+  function ctxSpan(text) { return el('span', 'hl-fctx', text); }
+  function fItem(en) {
+    const h = en.h, d = el('div', 'hl-fi'); d.dataset.c = h.c; d.dataset.id = h.id; d.title = 'Voir dans le cours';
+    if (fState.view === 'custom') {
+      d.dataset.key = h.id;
+      const c = el('div', 'hl-fctl');
+      const dr = el('span', 'hl-fdrag', '⠿'); dr.title = 'Glisser pour déplacer';
+      const up = el('button', '', '↑'); up.type = 'button'; up.dataset.mv = '-1'; up.title = 'Monter'; up.setAttribute('aria-label', 'Monter');
+      const dn = el('button', '', '↓'); dn.type = 'button'; dn.dataset.mv = '1'; dn.title = 'Descendre'; dn.setAttribute('aria-label', 'Descendre');
+      c.append(dr, up, dn); d.appendChild(c);
+    }
+    if (en.date) { const dt = el('div', 'hl-fdate', en.date); if (en.also && en.also.length) dt.appendChild(el('small', '', ' · aussi ' + en.also.join(', '))); d.appendChild(dt); }
+    const body = el('div', 'hl-fbody');
+    if (en.ctx && en.ctx.before) body.appendChild(ctxSpan(en.ctx.before + (en.ctx.sb ? ' ' : '')));
+    const q = el('span', 'hl-fq', quoteText(h)); q.dataset.s = colorOf(h.c).st || 'bg';
+    if (fState.cloze && !fState.reveal.has(h.id)) q.classList.add('hl-mask');
+    body.appendChild(q);
+    if (en.ctx && en.ctx.after) body.appendChild(ctxSpan((en.ctx.sa ? ' ' : '') + en.ctx.after));
+    d.appendChild(body);
+    if (fState.notes) d.appendChild(noteBlock(h));
+    if (h.tags && h.tags.length) { const t = el('div', 'hl-ftags'); h.tags.forEach(x => t.appendChild(el('span', 'hl-ftag', '#' + x))); d.appendChild(t); }
+    const foot = el('div', 'hl-ffoot');
+    if (en.ref && (en.loc.sec || en.loc.part)) foot.appendChild(el('span', 'hl-fref', en.loc.sec || en.loc.part));
+    d.appendChild(foot);
+    return d;
+  }
+  function fBlock(b) {
+    const d = el('div', 'hl-fb ' + (b.type === 'h' ? 'hl-fb-h' : 'hl-fb-t')); d.dataset.key = b.id; d.dataset.bid = b.id;
+    const c = el('div', 'hl-fctl');
+    const dr = el('span', 'hl-fdrag', '⠿'); dr.title = 'Glisser pour déplacer';
+    const up = el('button', '', '↑'); up.type = 'button'; up.dataset.mv = '-1'; up.setAttribute('aria-label', 'Monter');
+    const dn = el('button', '', '↓'); dn.type = 'button'; dn.dataset.mv = '1'; dn.setAttribute('aria-label', 'Descendre');
+    const del = el('button', 'danger', '×'); del.type = 'button'; del.dataset.bdel = '1'; del.title = 'Supprimer ce bloc'; del.setAttribute('aria-label', 'Supprimer ce bloc');
+    c.append(dr, up, dn, del); d.append(c, blockText(b));
+    return d;
+  }
+
+  function renderFiche() {
+    fiche.querySelectorAll('[data-g]').forEach(b => b.classList.toggle('on', b.dataset.g === fState.view));
+    ['notes', 'ctx', 'cloze'].forEach(k => { const b = fiche.querySelector(`[data-fa="${k}"]`); b.classList.toggle('on', fState[k]); b.setAttribute('aria-pressed', String(fState[k])); });
+    const sel = $f('tagsel'), tags = allTags();
+    if (fState.tag && !tags.includes(fState.tag)) fState.tag = null;
+    sel.hidden = !tags.length; sel.textContent = '';
+    const o0 = document.createElement('option'); o0.value = ''; o0.textContent = 'Toutes les étiquettes'; sel.appendChild(o0);
+    tags.forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = '#' + t; sel.appendChild(o); });
+    sel.value = fState.tag || '';
+    const chips = $f('fchips'); chips.textContent = '';
+    COLORS.forEach(c => {
+      const n = live().filter(h => h.c === c.id).length; if (!n) return;
+      const b = el('button', 'hl-chip' + (fState.off.has(c.id) ? '' : ' on')); b.type = 'button'; b.dataset.fc = c.id;
+      const i = el('i'); i.dataset.c = c.id; b.append(i, document.createTextNode(c.label), el('b', '', n)); chips.appendChild(b);
+    });
+
+    const m = buildModel(), n = m.items.length;
+    sheetEl.textContent = ''; sheetEl.dataset.view = fState.view; sheetEl.classList.toggle('cloze', fState.cloze);
+    const head = el('header', 'hl-sheet-head');
+    head.appendChild(el('div', 'hl-sheet-kicker', kicker()));
+    head.appendChild(el('h1', '', chapterTitle()));
+    head.appendChild(el('div', 'hl-sheet-meta', n + ' passage' + (n > 1 ? 's' : '') + ' · ' + today()));
+    const leg = el('div', 'hl-legend');
+    COLORS.filter(c => m.items.some(h => h.c === c.id)).forEach(c => { const s = el('span', 'hl-leg'); const i = el('i'); i.dataset.c = c.id; i.dataset.s = c.st || 'bg'; s.append(i, document.createTextNode(c.label)); leg.appendChild(s); });
+    head.appendChild(leg); sheetEl.appendChild(head);
+
+    if (fState.view === 'custom') {
+      const bar = el('div', 'hl-fadds');
+      const bh = el('button', 'hl-foot-btn', '+ Titre'); bh.type = 'button'; bh.dataset.fa = 'addh';
+      const bt = el('button', 'hl-foot-btn', '+ Texte'); bt.type = 'button'; bt.dataset.fa = 'addt';
+      bar.append(bh, bt, el('span', '', 'Glisse ⠿ (ou utilise ↑ ↓) pour réorganiser ta fiche.'));
+      sheetEl.appendChild(bar);
+    }
+    if (!m.entries.length) {
+      sheetEl.appendChild(el('p', 'hl-sheet-empty', live().length ? 'Aucun passage ne correspond à ces filtres.' : 'Tu n\'as encore rien surligné. Ferme la fiche, sélectionne des passages dans le cours, puis reviens ici.'));
+      return;
+    }
+    m.entries.forEach(en => {
+      if (en.k === 'part') sheetEl.appendChild(el('h2', 'hl-part', en.text));
+      else if (en.k === 'sec') sheetEl.appendChild(el('h3', 'hl-sec2', en.text));
+      else if (en.k === 'col') { const t = el('h2', 'hl-part hl-colhead'); const i = el('i'); i.dataset.c = en.c; t.append(i, document.createTextNode(en.text), el('small', '', en.n)); sheetEl.appendChild(t); }
+      else if (en.k === 'note') sheetEl.appendChild(el('p', 'hl-fnodate', en.text));
+      else if (en.k === 'block') sheetEl.appendChild(fBlock(en.b));
+      else sheetEl.appendChild(fItem(en));
+    });
+  }
+
+  function openFiche() {
+    togglePanel(false); closePop(true); hideToolbar();
+    renderFiche();
+    fiche.classList.add('open'); document.body.classList.add('hl-fiche-open');
+    fiche.querySelector('.hl-fiche-scroll').scrollTop = 0;
+  }
+  function closeFiche() { menuOpen(false); fiche.classList.remove('open'); document.body.classList.remove('hl-fiche-open'); }
+
+  /* ───────── exports : Markdown, Word, Anki ───────── */
+  function download(name, text, mime) {
+    const blob = new Blob([text], { type: mime + ';charset=utf-8' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  }
+  const ctxJoin = (en, wrap) => {
+    const q = wrap(quoteText(en.h)); if (!en.ctx) return q;
+    return (en.ctx.before ? en.ctx.before + (en.ctx.sb ? ' ' : '') : '') + q + (en.ctx.after ? (en.ctx.sa ? ' ' : '') + en.ctx.after : '');
+  };
+  function modelMarkdown(m) {
+    let out = '# ' + chapterTitle() + '\n\n*' + kicker() + ' · ' + today() + '*\n\n';
+    m.entries.forEach(en => {
+      if (en.k === 'part' || en.k === 'col') out += '\n## ' + en.text + '\n';
+      else if (en.k === 'sec') out += '\n### ' + en.text + '\n\n';
+      else if (en.k === 'note') out += '\n> ' + en.text + '\n';
+      else if (en.k === 'block') out += en.b.type === 'h' ? '\n## ' + en.b.text + '\n\n' : '\n' + en.b.text + '\n\n';
+      else {
+        const h = en.h;
+        out += '- ' + (en.date ? '**' + en.date + '** — ' : '') + (fState.view === 'color' ? '' : '[' + colorOf(h.c).label + '] ') + ctxJoin(en, q => en.ctx ? '**' + q + '**' : q) + '\n';
+        if (fState.notes && h.n) out += '  - ✎ ' + h.n.replace(/\n/g, ' ') + '\n';
+        if (h.tags && h.tags.length) out += '  - ' + h.tags.map(t => '#' + t).join(' ') + '\n';
+      }
+    });
+    return out;
+  }
+  const blend = (hex, a) => { const n = parseInt(hex.slice(1), 16); return '#' + [(n >> 16) & 255, (n >> 8) & 255, n & 255].map(v => Math.round(255 - (255 - v) * a).toString(16).padStart(2, '0')).join(''); };
+  function docHtml(m) {
+    const H = escH; let body = '';
+    body += `<p style="font:9pt Consolas,monospace;letter-spacing:2pt;color:#B81400;margin:0">${H(kicker().toUpperCase())}</p>`;
+    body += `<h1 style="font:bold 22pt Georgia,serif;color:#6B0000;margin:4pt 0">${H(chapterTitle())}</h1>`;
+    body += `<p style="font:9pt Calibri,Arial;color:#7A3A3A;margin:0 0 12pt">${m.items.length} passage${m.items.length > 1 ? 's' : ''} · ${H(today())}</p><hr>`;
+    m.entries.forEach(en => {
+      if (en.k === 'part' || en.k === 'col') body += `<h2 style="font:bold 14pt Georgia,serif;color:#6B0000;border-bottom:1pt solid #D47A6A;margin:18pt 0 4pt">${H(en.text)}</h2>`;
+      else if (en.k === 'sec') body += `<h3 style="font:bold 9pt Consolas,monospace;letter-spacing:1pt;color:#B81400;margin:12pt 0 4pt">${H(en.text.toUpperCase())}</h3>`;
+      else if (en.k === 'note') body += `<p style="font:italic 9pt Calibri;color:#7A3A3A">${H(en.text)}</p>`;
+      else if (en.k === 'block') body += en.b.type === 'h' ? `<h2 style="font:bold 14pt Georgia,serif;color:#6B0000;margin:18pt 0 4pt">${H(en.b.text)}</h2>` : `<p style="font:11pt Calibri;margin:4pt 0">${H(en.b.text).replace(/\n/g, '<br>')}</p>`;
+      else {
+        const h = en.h, cat = colorOf(h.c), hex = /^#[0-9a-f]{6}$/i.test(cat.hex) ? cat.hex : '#969696', st = cat.st || 'bg';
+        let qs = `background:${blend(hex, st === 'bg' ? .42 : .2)}`;
+        if (st === 'ul') qs += ';text-decoration:underline'; else if (st === 'strike') qs += ';text-decoration:line-through'; else if (st === 'box') qs += `;border:1pt solid ${hex}`;
+        const qtxt = fState.cloze && !fState.reveal.has(h.id) ? '[ ………… ]' : quoteText(h);
+        const inner = (en.ctx && en.ctx.before ? H(en.ctx.before) + (en.ctx.sb ? ' ' : '') : '') + `<span style="${qs}">${H(qtxt)}</span>` + (en.ctx && en.ctx.after ? (en.ctx.sa ? ' ' : '') + H(en.ctx.after) : '');
+        body += `<p style="font:11pt Calibri,Arial;line-height:1.5;margin:0 0 7pt;padding-left:7pt;border-left:3pt solid ${hex}">`;
+        if (en.date) body += `<b style="color:#B81400">${H(en.date)}</b> — `;
+        body += inner;
+        if (fState.notes && h.n) body += `<br><i style="font-size:10pt;color:#7A3A3A">✎ ${H(h.n).replace(/\n/g, '<br>')}</i>`;
+        if (h.tags && h.tags.length) body += `<br><span style="font-size:9pt;color:#7A3A3A">${h.tags.map(t => '#' + H(t)).join(' ')}</span>`;
+        body += '</p>';
+      }
+    });
+    return '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>' + H(chapterTitle()) +
+      '</title><!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]--><style>@page{margin:2cm}body{font-family:Calibri,Arial,sans-serif}</style></head><body>' + body + '</body></html>';
+  }
+  function ankiText(list) {
+    const heads = headings(), q = s => '"' + String(s).replace(/"/g, '""') + '"', tagify = s => s.trim().replace(/\s+/g, '_').replace(/["'<>]/g, '');
+    let out = '#separator:tab\n#html:true\n#notetype:Cloze\n#deck:ECG Prépa::' + chapterTitle().replace(/[:"]/g, ' ') + '\n#tags column:3\n';
+    list.forEach(h => {
+      const ctx = contextOf(h), loc = locate(h, heads), H = escH;
+      const text = (ctx && ctx.before ? H(ctx.before) + (ctx.sb ? ' ' : '') : '') + '{{c1::' + H(quoteText(h)) + '}}' + (ctx && ctx.after ? (ctx.sa ? ' ' : '') + H(ctx.after) : '');
+      const extra = (h.n ? H(h.n).replace(/\n/g, '<br>') + '<br>' : '') + '<i>' + H(loc.sec || loc.part || chapterTitle()) + '</i>';
+      const seenT = new Set(), tags = [colorOf(h.c).label].concat(h.tags || []).map(tagify).filter(x => x && !seenT.has(x.toLowerCase()) && seenT.add(x.toLowerCase())).join(' ');
+      out += q(text) + '\t' + q(extra) + '\t' + q(tags) + '\n';
+    });
+    return out;
+  }
+
+  /* ───────── interactions de la fiche ───────── */
+  fiche.addEventListener('click', async e => {
+    if (!e.target.closest('.hl-menuwrap')) menuOpen(false);
+    const g = e.target.closest('[data-g]'); if (g) { fState.view = g.dataset.g; renderFiche(); return; }
+    const fc = e.target.closest('[data-fc]'); if (fc) { const id = fc.dataset.fc; fState.off.has(id) ? fState.off.delete(id) : fState.off.add(id); renderFiche(); return; }
+    const fa = e.target.closest('[data-fa]');
+    if (fa) {
+      const a = fa.dataset.fa, base = slug(chapterTitle());
+      if (a === 'close') closeFiche();
+      else if (a === 'menu') menuOpen(menu.hidden);
+      else if (a === 'notes') { fState.notes = !fState.notes; renderFiche(); }
+      else if (a === 'ctx') { fState.ctx = !fState.ctx; renderFiche(); }
+      else if (a === 'cloze') { fState.cloze = !fState.cloze; fState.reveal.clear(); if (fState.cloze) fState.ctx = true; renderFiche(); }
+      else if (a === 'print') window.print();
+      else if (a === 'addh') addBlock('h');
+      else if (a === 'addt') addBlock('t');
+      else if (a === 'copy') { menuOpen(false); toast(await copyText(modelMarkdown(buildModel())) ? 'Copié dans le presse-papiers' : 'Copie impossible'); }
+      else if (a === 'md') { menuOpen(false); download(base + '.md', modelMarkdown(buildModel()), 'text/markdown'); }
+      else if (a === 'doc') { menuOpen(false); download(base + '.doc', '\ufeff' + docHtml(buildModel()), 'application/msword'); toast('Fichier Word créé (s\'ouvre dans Word, Pages ou LibreOffice)'); }
+      else if (a === 'anki') { menuOpen(false); const l = ficheHls(); if (!l.length) toast('Rien à exporter'); else { download(base + '-anki.txt', ankiText(l), 'text/plain'); toast('Fichier Anki créé : Fichier › Importer dans Anki'); } }
+      return;
+    }
+    if (e.target.closest('.hl-fnedit')) return;
+    const mv = e.target.closest('[data-mv]'); if (mv) { moveStep(mv.closest('[data-key]').dataset.key, +mv.dataset.mv); return; }
+    const bd = e.target.closest('[data-bdel]'); if (bd) { removeBlock(bd.closest('[data-bid]').dataset.bid); renderFiche(); return; }
+    const be = e.target.closest('[data-bedit]'); if (be) { editBlock(be.closest('[data-bid]')); return; }
+    const ed = e.target.closest('[data-edit]'); if (ed) { editNote(ed.closest('.hl-fi')); return; }
+    const q = e.target.closest('.hl-fq');
+    if (q && fState.cloze) { const id = q.closest('.hl-fi').dataset.id; fState.reveal.has(id) ? fState.reveal.delete(id) : fState.reveal.add(id); q.classList.toggle('hl-mask', !fState.reveal.has(id)); return; }
+    if (e.target.closest('.hl-fctl') || e.target.closest('.hl-fb')) return;
+    const it = e.target.closest('.hl-fi');
+    if (it) { const id = it.dataset.id; closeFiche(); setTimeout(() => goTo(id), 60); }
+  });
+  $f('tagsel').addEventListener('change', e => { fState.tag = e.target.value || null; renderFiche(); });
+
+  /* glisser-déposer (souris) ; ↑ ↓ pour le tactile et le clavier */
+  let dragKey = null, dropAt = null;
+  const clearDrop = () => sheetEl.querySelectorAll('.hl-drop-before,.hl-drop-after,.hl-dragging').forEach(x => x.classList.remove('hl-drop-before', 'hl-drop-after', 'hl-dragging'));
+  function endDrag() { clearDrop(); sheetEl.querySelectorAll('[draggable]').forEach(x => x.removeAttribute('draggable')); dragKey = null; dropAt = null; }
+  sheetEl.addEventListener('mousedown', e => { const h = e.target.closest('.hl-fdrag'); if (h) h.closest('[data-key]').setAttribute('draggable', 'true'); });
+  sheetEl.addEventListener('dragstart', e => {
+    const it = e.target.closest && e.target.closest('[data-key]'); if (!it || it.getAttribute('draggable') !== 'true') return;
+    dragKey = it.dataset.key; e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', dragKey); } catch (_) {}
+    it.classList.add('hl-dragging');
+  });
+  sheetEl.addEventListener('dragover', e => {
+    if (!dragKey) return;
+    const t = e.target.closest('[data-key]'); if (!t || t.dataset.key === dragKey) return;
+    e.preventDefault();
+    const r = t.getBoundingClientRect(), after = e.clientY > r.top + r.height / 2;
+    sheetEl.querySelectorAll('.hl-drop-before,.hl-drop-after').forEach(x => x.classList.remove('hl-drop-before', 'hl-drop-after'));
+    t.classList.add(after ? 'hl-drop-after' : 'hl-drop-before'); dropAt = { key: t.dataset.key, after };
+  });
+  sheetEl.addEventListener('drop', e => { e.preventDefault(); if (dragKey && dropAt) { moveKey(dragKey, dropAt.key, dropAt.after); endDrag(); renderFiche(); } else endDrag(); });
+  sheetEl.addEventListener('dragend', endDrag);
+
+  /* ───────── flashcards prêtes à l'emploi (identiques pour tout le monde) ───────── */
+  const PARTS = {"I": "I · Un monde recomposé mais divisé", "II": "II · Un monde déstabilisé par la crise de 29", "III": "III · Un monde agressé, déjà en guerre"};
+  const DECK = [["I", "Paix des vainqueurs", "Qui compose le Conseil des Quatre et quels sont leurs objectifs ?", "Wilson (Quatorze Points, SDN, droit international) ; Clemenceau (réparations, sécurité, Alsace-Moselle) ; Orlando (terres irrédentes) ; Lloyd George (équilibre, ne pas trop humilier l'Allemagne ni renforcer la France)."], ["I", "Paix des vainqueurs", "Pourquoi parle-t-on d'une « paix des vainqueurs » ?", "Les vaincus sont absents des négociations et leurs propositions rejetées. La France devient la première puissance militaire du continent, le Royaume-Uni reste la première puissance maritime."], ["I", "Paix des vainqueurs", "Comment est partagé l'Empire ottoman ?", "Accords Sykes-Picot (1916) puis traité de Sèvres (1920) : mandats français sur la Syrie et le Liban, britanniques sur la Palestine, l'Irak et la Transjordanie."], ["I", "Diktat", "Où et quand le traité de Versailles est-il signé, et que dit l'article 231 ?", "Le 28 juin 1919, dans la galerie des Glaces (là où l'Empire allemand avait été proclamé en 1871). L'article 231 fait de l'Allemagne la seule responsable de la guerre."], ["I", "Diktat", "Quelles sont les clauses du traité de Versailles ?", "Financières : 130 milliards de marks-or de réparations.\nMilitaires : armée de 100 000 hommes, service militaire interdit, pas d'avions ni de sous-marins.\nTerritoriales : 1/7 du territoire perdu, Alsace-Moselle rendue, Rhénanie démilitarisée, colonies perdues, pas d'union avec l'Autriche."], ["I", "Diktat", "Qu'est-ce que la thèse du « coup de poignard dans le dos » ?", "La défaite de 1918 serait due aux civils et à la gauche (le SPD, accusé d'avoir signé la paix) et non à l'armée. Cette légende nationaliste sert de terreau au nazisme."], ["I", "Weimar", "Que se passe-t-il en Allemagne en 1922-1923 ?", "1922 : suspension du paiement des réparations. 1923 : la France occupe la Ruhr ; résistance passive des ouvriers ; hyperinflation (prix multipliés par 1 000 milliards par rapport à 1914)."], ["I", "Turquie", "Comment naît la Turquie moderne ?", "Contre le traité de Sèvres (Arménie, Kurdistan), Mustapha Kemal reprend les armes. Le traité de Lausanne (1923) reconnaît la Turquie dans ses frontières actuelles : république laïque et nationaliste, fin du califat, vote des femmes."], ["I", "Italie", "Pourquoi parle-t-on de « victoire mutilée » en Italie ?", "Les Alliés refusent Fiume et la côte dalmate (cédées à la Yougoslavie) ; Orlando quitte la conférence. S'y ajoutent inflation, chômage, occupations d'usines et peur du bolchevisme."], ["I", "Italie", "Comment Mussolini arrive-t-il au pouvoir ?", "1921 : fondation du Parti national fasciste, terreur des Chemises noires. 28 octobre 1922 : marche sur Rome ; le roi refuse l'état de siège. 30 octobre 1922 : Mussolini devient président du Conseil."], ["I", "Moyen-Orient", "Pourquoi les Arabes sont-ils déçus après 1918 ?", "Le système des mandats contredit la promesse britannique d'un royaume arabe unifié faite au chérif Hussein. Révoltes en Syrie, Égypte et Irak dans les années 1920, réprimées. Naissance du panarabisme."], ["I", "Moyen-Orient", "Qu'est-ce que le sionisme et la déclaration Balfour ?", "Mouvement fondé par Theodor Herzl (marqué par l'affaire Dreyfus) : les Juifs doivent avoir leur État en Palestine. La déclaration Balfour (1917) promet un foyer national juif ; la Grande Révolte arabe éclate en 1936."], ["I", "URSS", "Qu'est-ce que le Komintern ?", "Structure fondée par Lénine en 1919 pour créer des partis communistes dans le monde et coordonner leur action en vue d'une révolution mondiale."], ["I", "URSS", "Qu'est-ce que le « cordon sanitaire » ?", "Politique occidentale d'isolement de la Russie bolchevique, par peur du communisme (révolution spartakiste à Berlin en 1919)."], ["I", "URSS", "Qu'est-ce que le traité de Rapallo (1922) ?", "Accord germano-soviétique avec une clause secrète de coopération militaire permettant à l'Allemagne de se réarmer en contournant Versailles. La même année naît l'URSS."], ["I", "SDN", "Qu'est-ce que la SDN et sur quel principe repose-t-elle ?", "Créée en 1919 à l'initiative de Wilson (14 points), elle repose sur la sécurité collective : toute agression contre un membre menace tous les autres."], ["I", "SDN", "Quels sont les succès du multilatéralisme dans les années 1920 ?", "Locarno (1925) : garantie des frontières France–Allemagne–Belgique. 1926 : l'Allemagne entre à la SDN. Pacte Briand-Kellogg (1928) : renonciation à la guerre. 1929 : discours de Briand pour une union européenne."], ["I", "SDN", "Quelles sont les faiblesses de la SDN ?", "Manque d'universalité : pas d'États-Unis (le Sénat refuse Versailles, « America First » de Harding), URSS absente avant 1934.\nManque de moyens : pas d'armée, unanimité, pas de moyens économiques."], ["I", "SDN", "Qu'est-ce que la diplomatie du dollar (plan Dawes, 1924) ?", "Les États-Unis prêtent à l'Allemagne (jusqu'à 2,5 milliards de dollars), qui paie ses réparations à la France et au Royaume-Uni, qui remboursent leurs dettes aux États-Unis. Le circuit fonctionne jusqu'en 1929."], ["II", "Après-guerre", "Quel est le bilan humain et matériel de la Grande Guerre ?", "~10 millions de soldats tués, 17 millions de blessés (dont 6 millions de mutilés) ; 3,5 % de la population française tuée ; 40 % des capacités industrielles européennes détruites ; grippe espagnole : 20 à 50 millions de morts."], ["II", "Après-guerre", "Que décrit Stefan Zweig dans Le Monde d'hier ?", "L'Europe d'avant 1914 comme un « âge d'or de la sécurité », stable et confiante dans le progrès, effondré par les guerres. D'autres parlent de déclin de l'Occident (Spengler) ou de l'Europe (Demangeon)."], ["II", "Après-guerre", "Qu'est-ce que le Gold Exchange Standard ?", "Système monétaire adopté à la conférence de Gênes (1922), fondé sur l'or et les monnaies convertibles de premier rang, surtout le dollar."], ["II", "Années 1920", "Quelles trajectoires suivent le Royaume-Uni, l'Allemagne et la France ?", "Royaume-Uni : parité-or de 1925, déflation, part industrielle mondiale de 14 à 9 %.\nAllemagne : rentenmark (1924), dépendance aux capitaux américains à court terme.\nFrance : stabilisation Poincaré (1926), croissance de 5,8 %/an."], ["II", "Roaring Twenties", "Sur quoi repose la prospérité américaine des années 1920, et pourquoi est-elle fragile ?", "Marché intérieur, consommation de masse, crédit ; 2/3 du pétrole et plus de 50 % de l'acier mondial. Mais croissance inégalitaire et spéculation à partir de 1927 (achats d'actions financés à 90 % à crédit)."], ["II", "Crise de 1929", "Décris les étapes de la crise de 1929.", "Krach du 24 octobre 1929 (indice de 469 à 42 points en 1931) ; crise bancaire (1/3 des banques en faillite) ; crise industrielle (production –50 % entre 1929 et 1932) ; crise sociale (chômage : 32 % aux États-Unis, 45 % en Allemagne)."], ["II", "Crise de 1929", "Quelles sont les deux lectures de la crise ?", "Conjoncturelle (Keynes) : crise de sous-consommation, insuffisance de la demande ; l'État doit relancer.\nStructurelle (Kondratieff, Schumpeter) : phase descendante d'un cycle long d'environ 50 ans."], ["II", "Crise de 1929", "Qu'est-ce que le New Deal et le Front populaire ?", "New Deal (1933, Roosevelt) : grands travaux, Social Security Act (1935).\nFront populaire (1936, Blum) : nationalisations (SNCF), accords de Matignon (hausse des salaires, 40 heures, deux semaines de congés payés)."], ["II", "Fragmentation", "Comment l'économie mondiale se fragmente-t-elle ?", "1932 : 21 pays relèvent leurs droits de douane, même le Royaume-Uni. Commerce mondial –1/4 en volume entre 1929 et 1934. Autarcie des régimes autoritaires. Échec de la conférence de Londres (1933) ; zones sterling, franc, dollar."], ["II", "Fragmentation", "Qu'est-ce que le Grand Tournant soviétique ?", "Lancé par Staline en 1929 : industrialisation forcée, planification, collectivisation (kolkhozes, sovkhozes), dékoulakisation et famine en Ukraine (1932-1933)."], ["II", "Fascismes", "Comment Hitler s'empare-t-il du pouvoir ?", "1932 : NSDAP en tête au Reichstag. Janvier 1933 : chancelier. 27 février 1933 : incendie du Reichstag, KPD interdit. Mars : Dachau. Juillet : parti unique. 2 août 1934 : Führer."], ["II", "Fascismes", "Quels sont les buts d'Hitler et comment réarme-t-il ?", "Lebensraum, idéologie pangermaniste et raciale, rupture avec Versailles. Retrait de la SDN (octobre 1933), service militaire rétabli, Wehrmacht, accord naval avec Londres (1935)."], ["II", "Fascismes", "Quel jeu joue Mussolini dans les années 1930 ?", "Arbitre de l'Europe : Pacte à Quatre (1932), front de Stresa (avril 1935) contre Hitler, puis invasion de l'Éthiopie (octobre 1935)."], ["II", "Fascismes", "Comment s'exprime l'expansionnisme japonais ?", "Invasion de la Mandchourie le 18 septembre 1931, transformée en Mandchoukouo (1932) ; le Japon quitte la SDN en 1933."], ["II", "Démocraties", "Pourquoi les démocraties sont-elles affaiblies ?", "États-Unis : lois de neutralité (1935-1937), Cash and Carry.\nFrance : instabilité, 6 février 1934.\nRoyaume-Uni : appeasement de Chamberlain, pas de réarmement avant 1935."], ["II", "Démocraties", "Définis l'appeasement (Paul Kennedy).", "Règlement des querelles internationales par l'admission et la satisfaction des États, par la négociation et le compromis, pour éviter un conflit armé coûteux et dangereux."], ["III", "Asie", "Que se passe-t-il en Chine en 1937 ?", "7 juillet 1937 : incident du pont Marco-Polo, début de la guerre sino-japonaise contre la Chine de Tchang Kaï-chek. Décembre 1937 : massacres de Nankin (150 000 à 200 000 morts)."], ["III", "Marche à la guerre", "Quelles sont les étapes de l'expansion allemande de 1936 à 1939 ?", "1936 : Rhénanie remilitarisée, pacte anti-Komintern. 1938 : Anschluss, Munich (Sudètes). Mars 1939 : Bohême-Moravie. Mai 1939 : pacte d'Acier. 23 août 1939 : pacte germano-soviétique."], ["III", "Marche à la guerre", "Quel est le rôle de la guerre d'Espagne ?", "1936-1939 : Franco, aidé par l'Italie et l'Allemagne (~80 000 soldats), contre les Républicains. Hitler teste ses armes (Guernica, 1937) ; les démocraties choisissent la non-intervention. ~400 000 morts."], ["III", "Marche à la guerre", "Que prévoit le pacte germano-soviétique ?", "23 août 1939 : l'URSS gagne du temps après les purges, l'Allemagne évite deux fronts. Une clause secrète partage la Pologne."], ["III", "Démocraties", "Que dit Churchill des accords de Munich ?", "« Le gouvernement avait le choix entre le déshonneur et la guerre ; il a choisi le déshonneur, et il aura la guerre. »"], ["III", "Démocraties", "Comment les États-Unis sortent-ils de l'isolationnisme ?", "Loi Prêt-Bail (mars 1941) : armement fourni aux pays en guerre contre les fascismes. Charte de l'Atlantique (14 août 1941) : annonce d'une future organisation de paix."], ["III", "Synthèse", "Que veut dire Churchill avec la « seconde guerre de Trente Ans » ?", "1914-1945 forme un seul conflit européen séparé par une trêve fragile : Versailles n'a été qu'une pause armée, les causes profondes restant intactes."]].map((c, i) => ({ id: 'f' + String(i + 1).padStart(2, '0'), p: c[0], s: c[1], q: c[2], a: c[3] }));
+
+  /* ───────── flashcards (paquet du chapitre) ───────── */
+  const FC_KEY = 'ecg-fc:v1:' + location.pathname;
+  let fcProg = {};
+  const fcLoad = () => { try { const d = JSON.parse(localStorage.getItem(FC_KEY) || '{}'); fcProg = d && typeof d === 'object' ? d : {}; } catch (e) { fcProg = {}; } };
+  const fcSave = () => { try { localStorage.setItem(FC_KEY, JSON.stringify(fcProg)); } catch (e) {} };
+  const cs = { deck: [], i: 0, flipped: false, again: new Set(), got: 0, redo: 0 };
+  const cards = el('div', 'hl-ui hl-cards');
+  cards.setAttribute('role', 'dialog'); cards.setAttribute('aria-label', 'Flashcards');
+  cards.innerHTML =
+    `<div class="hl-cards-bar">` +
+      `<strong>Flashcards</strong>` +
+      `<select data-role="csrc" aria-label="Quelles cartes"><option value="all">Cours + mes cartes</option><option value="course">Cartes du cours</option><option value="mine">Mes cartes uniquement</option></select>` +
+      `<select data-role="cdeck" aria-label="Paquet"></select>` +
+      `<select data-role="cpart" aria-label="Partie"><option value="">Tout le chapitre</option>${Object.keys(PARTS).map(k => `<option value="${k}">Partie ${escH(PARTS[k])}</option>`).join('')}</select>` +
+      `<label class="hl-check"><input type="checkbox" data-role="cshuf" checked> Mélanger</label>` +
+      `<span class="grow"></span>` +
+      `<span class="hl-cards-count" data-role="ccount"></span>` +
+      `<button type="button" class="hl-fbtn primary" data-ca="new" title="Créer ta propre flashcard">+ Ma carte</button>` +
+      `<button type="button" class="hl-fbtn" data-ca="anki" title="Exporter ce paquet pour Anki">Anki (.txt)</button>` +
+      `<button type="button" class="hl-btn" data-ca="close" aria-label="Fermer">${ICON.close}</button>` +
+    `</div>` +
+    `<div class="hl-cards-prog"><i data-role="cbar"></i></div>` +
+    `<div class="hl-cards-stage" data-role="cstage"></div>`;
+  document.body.appendChild(cards);
+  const allCards = () => DECK.concat(sheet.cards.map(c => ({ id: c.id, p: 'M', s: 'Ma carte', q: c.q, a: c.a, mine: true })));
+  const FC_SRC = 'ecg-fc:src';
+  function poolCards() {
+    const src = $c('csrc').value, part = $c('cpart').value;
+    return allCards().filter(c => src === 'mine' ? c.mine : src === 'course' ? (!c.mine && (!part || c.p === part)) : (c.mine ? !part : (!part || c.p === part)));
+  }
+  const $c = r => cards.querySelector(`[data-role="${r}"]`);
+
+  function fillDeckSelect() {
+    const sel = $c('cdeck'), cur = sel.value || 'unknown';
+    const pool = poolCards();
+    const n = { unknown: pool.filter(c => fcProg[c.id] !== 'ok').length, todo: pool.filter(c => fcProg[c.id] === 'todo').length, all: pool.length };
+    sel.textContent = '';
+    [['unknown', 'Non sus'], ['todo', 'À revoir'], ['all', 'Toutes les cartes']].forEach(([v, l]) => { const o = document.createElement('option'); o.value = v; o.textContent = l + ' (' + n[v] + ')'; sel.appendChild(o); });
+    sel.value = cur;
+  }
+  function deckIds() {
+    const mode = $c('cdeck').value;
+    let L = poolCards();
+    if (mode === 'todo') L = L.filter(c => fcProg[c.id] === 'todo'); else if (mode === 'unknown') L = L.filter(c => fcProg[c.id] !== 'ok');
+    const ids = L.map(c => c.id);
+    if ($c('cshuf').checked) for (let i = ids.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [ids[i], ids[j]] = [ids[j], ids[i]]; }
+    return ids;
+  }
+  function syncSrc() { $c('cpart').disabled = $c('csrc').value === 'mine'; }
+  function startCards() {
+    syncSrc();
+    fillDeckSelect();
+    cs.deck = deckIds(); cs.i = 0; cs.flipped = false; cs.again = new Set(); cs.got = 0; cs.redo = 0;
+    renderCard();
+  }
+  function openCards() {
+    togglePanel(false); closePop(true); hideToolbar(); fcLoad();
+    try { const s = localStorage.getItem(FC_SRC); if (s) $c('csrc').value = s; } catch (e) {}
+    if (!$c('csrc').value) $c('csrc').value = 'all';
+    if (!sheet.cards.length && $c('csrc').value === 'mine') $c('csrc').value = 'all';
+    syncSrc();
+    $c('cdeck').value = DECK.some(c => fcProg[c.id] !== 'ok') ? 'unknown' : 'all';
+    cards.classList.add('open'); document.body.classList.add('hl-fiche-open');
+    startCards();
+  }
+  function closeCards() { cards.classList.remove('open'); if (!fiche.classList.contains('open')) document.body.classList.remove('hl-fiche-open'); }
+
+  function renderCard() {
+    const stage = $c('cstage'); stage.textContent = '';
+    const total = cs.deck.length;
+    $c('cbar').style.width = (total ? Math.min(100, cs.i / total * 100) : 0) + '%';
+    $c('ccount').textContent = total ? Math.min(cs.i + 1, total) + ' / ' + total : '';
+    if (!total) {
+      const b = el('div', 'hl-cards-end');
+      b.append(el('h2', '', 'Aucune carte dans ce paquet'), el('p', '', 'Change de paquet en haut (par exemple « Toutes les cartes »).'));
+      stage.appendChild(b); return;
+    }
+    if (cs.i >= total) {
+      const b = el('div', 'hl-cards-end');
+      b.append(el('h2', '', 'Paquet terminé 🎉'), el('p', '', cs.got + ' su' + (cs.got > 1 ? 's' : '') + ' · ' + cs.redo + ' à revoir'));
+      const row = el('div', 'hl-modal-btns');
+      const again = el('button', 'hl-foot-btn primary', 'Recommencer'); again.type = 'button'; again.dataset.ca = 'restart';
+      const close = el('button', 'hl-foot-btn', 'Fermer'); close.type = 'button'; close.dataset.ca = 'close';
+      row.append(again, close); b.appendChild(row); stage.appendChild(b); return;
+    }
+    const c = allCards().find(x => x.id === cs.deck[cs.i]); if (!c) { cs.i++; renderCard(); return; }
+    const card = el('div', 'hl-card' + (cs.flipped ? ' flipped' : '')); card.dataset.flip = '1';
+    const top = el('div', 'hl-card-top');
+    top.appendChild(el('span', 'hl-ftag', c.mine ? 'Ma carte' : 'Partie ' + c.p));
+    if (!c.mine) top.appendChild(el('span', 'hl-fref', c.s));
+    if (fcProg[c.id]) top.appendChild(el('span', 'hl-fst ' + fcProg[c.id], ST_GLYPH[fcProg[c.id]] + ' ' + ST_LABEL[fcProg[c.id]]));
+    card.appendChild(top);
+    if (!cs.flipped) card.appendChild(el('p', 'hl-card-text', c.q));
+    else {
+      card.appendChild(el('p', 'hl-card-q', c.q));
+      const a = el('div', 'hl-card-a'); c.a.split('\n').forEach(l => a.appendChild(el('p', '', l))); card.appendChild(a);
+    }
+    stage.appendChild(card);
+    if (c.mine) {
+      const tools = el('div', 'hl-card-tools');
+      const e1 = el('button', '', '✎ Modifier'); e1.type = 'button'; e1.dataset.ca = 'edit'; e1.dataset.id = c.id;
+      const d1 = el('button', '', 'Supprimer'); d1.type = 'button'; d1.dataset.ca = 'delcard'; d1.dataset.id = c.id;
+      tools.append(e1, d1); card.appendChild(tools);
+    }
+    const row = el('div', 'hl-cards-actions');
+    if (!cs.flipped) {
+      const f = el('button', 'hl-foot-btn primary', 'Retourner  (Espace)'); f.type = 'button'; f.dataset.ca = 'flip'; row.appendChild(f);
+    } else {
+      const a = el('button', 'hl-cbtn todo', '⚑ À revoir  (←)'); a.type = 'button'; a.dataset.ca = 'todo';
+      const k = el('button', 'hl-cbtn ok', '✓ Je sais  (→)'); k.type = 'button'; k.dataset.ca = 'ok';
+      row.append(a, k);
+    }
+    stage.appendChild(row);
+  }
+  function flipCard() { if (cs.i < cs.deck.length) { cs.flipped = !cs.flipped; renderCard(); } }
+  function answerCard(r) {
+    if (!cs.flipped || cs.i >= cs.deck.length) return;
+    const id = cs.deck[cs.i]; fcProg[id] = r === 'ok' ? 'ok' : 'todo'; fcSave();
+    if (r === 'ok') cs.got++;
+    if (r === 'todo') { cs.redo++; if (!cs.again.has(id)) { cs.again.add(id); cs.deck.push(id); } }
+    cs.i++; cs.flipped = false; renderCard(); fillDeckSelect();
+  }
+  function deckAnki(list) {
+    const q = s => '"' + String(s).replace(/"/g, '""') + '"', H = escH;
+    let out = '#separator:tab\n#html:true\n#notetype:Basic\n#deck:ECG Prépa::' + chapterTitle().replace(/[:"]/g, ' ') + '\n#tags column:3\n';
+    list.forEach(c => { out += q(H(c.q)) + '\t' + q(H(c.a).replace(/\n/g, '<br>')) + '\t' + q(c.mine ? 'Mes_cartes' : 'Partie_' + c.p + ' ' + c.s.replace(/\s+/g, '_')) + '\n'; });
+    return out;
+  }
+  /* cartes perso : créer, modifier, supprimer */
+  function cardForm(card, again) {
+    return new Promise(res => {
+      if (askResolve) closeModal(null);
+      askResolve = res; modalBack.textContent = '';
+      const m = el('div', 'hl-modal hl-cform'); m.setAttribute('role', 'dialog');
+      m.appendChild(el('h3', '', card ? 'Modifier ma flashcard' : 'Nouvelle flashcard'));
+      const mk = (lab, val, ph, rows) => { const l = el('label', 'hl-cform-l', lab); const t = document.createElement('textarea'); t.rows = rows; t.value = val; t.placeholder = ph; t.maxLength = 3000; t.className = 'hl-cform-t'; l.appendChild(t); m.appendChild(l); return t; };
+      const q = mk('Question (recto)', card ? card.q : '', "Ex : Quelles sont les clauses militaires du traité de Versailles ?", 2);
+      const a = mk('Réponse (verso)', card ? card.a : '', 'Une ligne par idée si tu veux une liste', 4);
+      const row = el('div', 'hl-modal-btns');
+      const btn = (label, id, cls) => { const x = el('button', 'hl-foot-btn' + (cls ? ' ' + cls : ''), label); x.type = 'button'; x.onclick = () => { if (id === 'save' || id === 'more') { if (!q.value.trim()) { q.focus(); return; } if (!a.value.trim()) { a.focus(); return; } } closeModal({ act: id, q: q.value.trim(), a: a.value.trim() }); }; row.appendChild(x); };
+      btn('Enregistrer', 'save', 'primary'); if (!card) btn('Enregistrer et une autre', 'more'); btn('Annuler', 'cancel');
+      m.appendChild(row); modalBack.appendChild(m); modalBack.classList.add('open');
+      [q, a].forEach(t => t.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Escape') closeModal(null); else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); row.firstChild.click(); } }));
+      q.focus();
+    });
+  }
+  async function newCard() {
+    for (;;) {
+      const r = await cardForm(null);
+      if (!r || r.act === 'cancel') return;
+      const c = { id: 'm' + uid(), q: r.q, a: r.a };
+      sheet.cards.push(c); save();
+      if (cards.classList.contains('open') && $c('csrc').value === 'course') { $c('csrc').value = 'all'; syncSrc(); }
+      if (cards.classList.contains('open')) { fillDeckSelect(); if (cs.i >= cs.deck.length) { cs.deck.push(c.id); } else cs.deck.push(c.id); renderCard(); }
+      toast('Flashcard ajoutée');
+      if (r.act !== 'more') return;
+    }
+  }
+  async function editCard(id) {
+    const c = sheet.cards.find(x => x.id === id); if (!c) return;
+    const r = await cardForm(c);
+    if (!r || r.act === 'cancel') return;
+    c.q = r.q; c.a = r.a; save(); renderCard();
+  }
+  function removeCard(id) {
+    if (!confirm('Supprimer cette flashcard ?')) return;
+    sheet.cards = sheet.cards.filter(x => x.id !== id); delete fcProg[id]; fcSave(); save();
+    const pos = cs.deck.indexOf(id); cs.deck = cs.deck.filter(x => x !== id); if (pos >= 0 && pos < cs.i) cs.i--;
+    fillDeckSelect(); renderCard();
+  }
+  cards.addEventListener('click', e => {
+    const b = e.target.closest('[data-ca]');
+    if (b) {
+      const a = b.dataset.ca;
+      if (a === 'close') closeCards();
+      else if (a === 'flip') flipCard();
+      else if (a === 'ok' || a === 'todo') answerCard(a);
+      else if (a === 'restart') startCards();
+      else if (a === 'new') newCard();
+      else if (a === 'edit') editCard(b.dataset.id);
+      else if (a === 'delcard') removeCard(b.dataset.id);
+      else if (a === 'anki') { download(slug(chapterTitle()) + '-flashcards-anki.txt', deckAnki(poolCards()), 'text/plain'); toast('Fichier Anki créé : Fichier › Importer dans Anki'); }
+      return;
+    }
+    if (e.target.closest('[data-flip]')) flipCard();
+  });
+  $c('csrc').addEventListener('change', () => { try { localStorage.setItem(FC_SRC, $c('csrc').value); } catch (e) {} startCards(); });
+  $c('cdeck').addEventListener('change', startCards);
+  $c('cpart').addEventListener('change', startCards);
+  $c('cshuf').addEventListener('change', startCards);
+  document.addEventListener('keydown', e => {
+    if (!cards.classList.contains('open') || /^(TEXTAREA|INPUT|SELECT)$/.test((e.target || {}).tagName || '')) return;
+    if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flipCard(); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); answerCard('todo'); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); answerCard('ok'); }
+  });
+
+  /* ───────── frise chronologique du chapitre ───────── */
+  // [libellé, année, mois, jour, partie, titre, détail, extrait du cours (pour « Voir dans le cours »)]
+  const EVENTS = [["1916", 1916, 0, 0, "I", "Accords Sykes-Picot", "Partage anticipé du Moyen-Orient entre la France et le Royaume-Uni.", "préfigurées dès 1916 par les accords Sykes-Picot"], ["1917", 1917, 0, 0, "I", "Déclaration Balfour", "Promesse d'un foyer national juif en Palestine.", "1917 — Déclaration Balfour"], ["Octobre 1917", 1917, 10, 0, "I", "Révolution russe", "Les bolcheviks prennent le pouvoir sous la direction de Lénine.", "En octobre 1917, la Révolution russe"], ["Janvier 1919", 1919, 1, 0, "I", "Révolution spartakiste", "Les communistes allemands sont réprimés : rupture durable à gauche.", "En janvier 1919, la révolution spartakiste"], ["1919", 1919, 0, 1, "I", "Création du Komintern et de la SDN", "Lénine fonde le Komintern ; Wilson inspire la SDN.", "En 1919, Lénine fonde le Komintern"], ["28 juin 1919", 1919, 6, 28, "I", "Signature du traité de Versailles", "Dans la galerie des Glaces ; l'article 231 accable l'Allemagne.", "Le traité est signé le 28 juin 1919"], ["1920", 1920, 0, 0, "I", "Traité de Sèvres", "Démantèlement de l'Empire ottoman, mandats franco-britanniques.", "partagé par le traité de Sèvres (1920)"], ["1921", 1921, 0, 0, "I", "Fondation du Parti national fasciste", "Nationaliste, autoritaire et militariste ; terreur des Chemises noires.", "Fondation du Parti National Fasciste"], ["1922", 1922, 0, 0, "I", "Naissance de l'URSS et traité de Rapallo", "Clause secrète de coopération militaire germano-soviétique.", "La Russie devient l'Union des Républiques"], ["1922", 1922, 0, 1, "II", "Conférence de Gênes", "Adoption du Gold Exchange Standard.", "Conférence de Gênes (1922)"], ["28 octobre 1922", 1922, 10, 28, "I", "Marche sur Rome", "Mussolini fait pression sur le pouvoir ; il est nommé président du Conseil le 30 octobre.", "Mussolini organise la marche sur Rome"], ["1923", 1923, 0, 0, "I", "Occupation de la Ruhr et hyperinflation", "La France se rembourse directement ; l'économie allemande s'effondre.", "La France occupe la Ruhr"], ["1923", 1923, 0, 1, "I", "Traité de Lausanne", "Naissance de la Turquie moderne d'Atatürk.", "Traité de Lausanne"], ["1924", 1924, 0, 0, "I", "Plan Dawes", "Début de la diplomatie du dollar.", "Le Plan Dawes (1924)"], ["1925", 1925, 0, 0, "I", "Accords de Locarno", "Garantie des frontières entre France, Allemagne et Belgique.", "1925 — Accords de Locarno"], ["1926", 1926, 0, 0, "I", "L'Allemagne entre à la SDN", "Retour progressif à la stabilité européenne.", "L'Allemagne est admise au sein de la SDN"], ["1928", 1928, 0, 0, "I", "Pacte Briand-Kellogg", "Renonciation à la guerre comme moyen de règlement des différends.", "1928 — Pacte Briand-Kellogg"], ["1929", 1929, 0, 0, "II", "Grand Tournant soviétique", "Industrialisation forcée et collectivisation.", "Grand Tournant (1929)"], ["24 octobre 1929", 1929, 10, 24, "II", "Jeudi noir à Wall Street", "Début du krach boursier et de la crise mondiale.", "Le 24 octobre 1929"], ["18 septembre 1931", 1931, 9, 18, "II", "Invasion japonaise de la Mandchourie", "Transformée en Mandchoukouo en 1932.", "Le 18 septembre 1931"], ["Janvier 1933", 1933, 1, 0, "II", "Hitler chancelier", "Début de la mise en place du régime nazi.", "Hitler devient chancelier"], ["27 février 1933", 1933, 2, 27, "II", "Incendie du Reichstag", "Le parti communiste est interdit, la terreur s'installe.", "Incendie du Reichstag"], ["1933", 1933, 3, 0, "II", "New Deal de Roosevelt", "Grands travaux et début de la protection sociale.", "1933 — New Deal (Roosevelt)"], ["6 février 1934", 1934, 2, 6, "II", "Émeutes du 6 février 1934", "Les ligues d'extrême droite manifestent violemment à Paris.", "La crise politique du 6 février 1934"], ["2 août 1934", 1934, 8, 2, "II", "Hitler devient Führer", "Il cumule les fonctions de chancelier et de président.", "À la mort du président Hindenburg"], ["Avril 1935", 1935, 4, 0, "II", "Front de Stresa", "Italie, France et Royaume-Uni face aux ambitions allemandes.", "Avril 1935 — Front de Stresa"], ["Octobre 1935", 1935, 10, 0, "II", "Invasion de l'Éthiopie", "Mussolini concrétise son projet impérial.", "Mussolini envahit l'Éthiopie"], ["1936", 1936, 3, 0, "III", "Remilitarisation de la Rhénanie", "Pas de réaction française ni britannique.", "Hitler franchit une première étape majeure"], ["1936", 1936, 6, 0, "II", "Front populaire", "Accords de Matignon : 40 heures et congés payés.", "1936 — Front Populaire (Léon Blum)"], ["1936–1939", 1936, 7, 0, "III", "Guerre d'Espagne", "Franco aidé par l'Italie et l'Allemagne ; non-intervention des démocraties.", "Guerre civile opposant Républicains"], ["7 juillet 1937", 1937, 7, 7, "III", "Incident du pont Marco-Polo", "Début de la guerre sino-japonaise.", "La guerre sino-japonaise éclate officiellement"], ["Décembre 1937", 1937, 12, 0, "III", "Massacres de Nankin", "150 000 à 200 000 morts.", "Décembre 1937 — Massacres de Nankin"], ["1938", 1938, 3, 0, "III", "Anschluss", "Annexion de l'Autriche.", "Hitler annexe l'Autriche"], ["29 septembre 1938", 1938, 9, 29, "III", "Accords de Munich", "Les démocraties cèdent les Sudètes à Hitler.", "29 septembre 1938 — Accords de Munich"], ["Mars 1939", 1939, 3, 0, "III", "Invasion de la Bohême-Moravie", "La France et le Royaume-Uni garantissent la Pologne.", "L'Allemagne envahit la Bohême-Moravie"], ["Mai 1939", 1939, 5, 0, "III", "Pacte d'Acier", "Alliance germano-italienne.", "Mai 1939 — Pacte d'Acier"], ["23 août 1939", 1939, 8, 23, "III", "Pacte germano-soviétique", "Clause secrète de partage de la Pologne.", "23 août 1939 — Pacte germano-soviétique"], ["Mars 1941", 1941, 3, 0, "III", "Loi Prêt-Bail", "Les États-Unis arment les adversaires des fascismes.", "Mars 1941 — Loi Prêt-Bail"], ["14 août 1941", 1941, 8, 14, "III", "Charte de l'Atlantique", "Roosevelt et Churchill annoncent la future ONU.", "14 août 1941 — Charte de l'Atlantique"]].map((e, i) => ({ id: 'e' + i, label: e[0], key: e[1] * 10000 + e[2] * 100 + e[3], year: e[1], part: e[4], title: e[5], detail: e[6], snip: e[7] }))
+    .sort((a, b) => a.key - b.key);
+
+  function goToText(snip) {                  // fait défiler le cours jusqu'à un extrait
+    const re = new RegExp(snip.trim().split(/\s+/).map(esc).join('\\s+')), m = re.exec(full);
+    if (!m) return false;
+    let i = 0; while (i < nodes.length && starts[i] + nodes[i].data.length <= m.index) i++;
+    const n = nodes[i]; if (!n || !n.parentElement) return false;
+    const t = n.parentElement.closest(BLOCK) || n.parentElement;
+    t.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    t.classList.remove('hl-flash-el'); void t.offsetWidth; t.classList.add('hl-flash-el');
+    setTimeout(() => t.classList.remove('hl-flash-el'), 2200);
+    return true;
+  }
+
+  const fr = { mode: 'all', off: new Set(), rev: new Set() };
+  const frise = el('div', 'hl-ui hl-frise');
+  frise.setAttribute('role', 'dialog'); frise.setAttribute('aria-label', 'Frise chronologique du chapitre');
+  frise.innerHTML =
+    `<div class="hl-cards-bar">` +
+      `<strong>Frise du chapitre</strong>` +
+      `<div class="hl-seg" role="group" aria-label="Mode">` +
+        `<button type="button" data-fm="all">Tout voir</button><button type="button" data-fm="date" title="Cache les dates : retrouve-les">Cacher les dates</button><button type="button" data-fm="title" title="Cache les événements : retrouve-les">Cacher les événements</button>` +
+      `</div>` +
+      `<div class="hl-chips" data-role="frchips"></div>` +
+      `<span class="grow"></span>` +
+      `<button type="button" class="hl-btn" data-fx="close" aria-label="Fermer la frise">${ICON.close}</button>` +
+    `</div>` +
+    `<div class="hl-fiche-scroll"><div class="hl-tl" data-role="tl"></div></div>`;
+  document.body.appendChild(frise);
+  const $r = r => frise.querySelector(`[data-role="${r}"]`);
+
+  function renderFrise() {
+    frise.querySelectorAll('[data-fm]').forEach(b => b.classList.toggle('on', b.dataset.fm === fr.mode));
+    const chips = $r('frchips'); chips.textContent = '';
+    Object.keys(PARTS).forEach(k => {
+      const b = el('button', 'hl-chip' + (fr.off.has(k) ? '' : ' on')); b.type = 'button'; b.dataset.fp = k;
+      const i = el('i'); i.dataset.p = k; b.append(i, document.createTextNode('Partie ' + k)); chips.appendChild(b);
+    });
+    const tl = $r('tl'); tl.textContent = ''; tl.dataset.mode = fr.mode;
+    EVENTS.filter(e => !fr.off.has(e.part)).forEach(e => {
+      const row = el('div', 'hl-ev'); row.dataset.p = e.part; row.dataset.id = e.id;
+      const revealed = fr.rev.has(e.id);
+      const d = el('div', 'hl-ev-date' + (fr.mode === 'date' && !revealed ? ' mask' : ''), e.label); d.dataset.rv = e.id;
+      const card = el('div', 'hl-ev-card' + (fr.mode === 'title' && !revealed ? ' mask' : ''));
+      card.dataset.rv = e.id;
+      card.append(el('div', 'hl-ev-title', e.title), el('div', 'hl-ev-detail', e.detail));
+      const go = el('button', 'hl-ev-go', 'Voir dans le cours ›'); go.type = 'button'; go.dataset.go = e.id; card.appendChild(go);
+      row.append(d, el('span', 'hl-ev-dot'), card); tl.appendChild(row);
+    });
+  }
+  function openFrise() { togglePanel(false); closePop(true); hideToolbar(); fr.rev.clear(); renderFrise(); frise.classList.add('open'); document.body.classList.add('hl-fiche-open'); frise.querySelector('.hl-fiche-scroll').scrollTop = 0; }
+  function closeFrise() { frise.classList.remove('open'); if (!fiche.classList.contains('open') && !cards.classList.contains('open')) document.body.classList.remove('hl-fiche-open'); }
+  frise.addEventListener('click', e => {
+    if (e.target.closest('[data-fx="close"]')) { closeFrise(); return; }
+    const m = e.target.closest('[data-fm]'); if (m) { fr.mode = m.dataset.fm; fr.rev.clear(); renderFrise(); return; }
+    const p = e.target.closest('[data-fp]'); if (p) { fr.off.has(p.dataset.fp) ? fr.off.delete(p.dataset.fp) : fr.off.add(p.dataset.fp); renderFrise(); return; }
+    const g = e.target.closest('[data-go]');
+    if (g) { const ev = EVENTS.find(x => x.id === g.dataset.go); closeFrise(); if (ev) setTimeout(() => { if (!goToText(ev.snip)) toast('Passage introuvable dans le cours'); }, 60); return; }
+    const r = e.target.closest('.mask[data-rv]');
+    if (r) { fr.rev.add(r.dataset.rv); renderFrise(); const sc = frise.querySelector('.hl-fiche-scroll'); return; }
+  });
+
+  const short2 = (s, n) => s.length > n ? s.slice(0, n - 1).trim() + "…" : s;
+  /* ───────── cours annoté à imprimer ───────── */
+  function doAnnotPrint(withNotes) {
+    const added = [], body = document.body, hadHide = body.classList.contains('hl-hidemode');
+    body.classList.add('hl-annot'); body.classList.remove('hl-hidemode');
+    const used = COLORS.filter(c => live().some(h => h.c === c.id));
+    const leg = el('div', 'hl-pnote hl-plegend');
+    leg.appendChild(el('strong', '', 'Mon cours annoté · ' + new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })));
+    used.forEach(c => { const s = el('span', 'hl-pleg'); const i = el('i'); i.dataset.c = c.id; i.dataset.s = c.st || 'bg'; s.append(i, document.createTextNode(c.label + ' ')); leg.appendChild(s); });
+    root.insertBefore(leg, root.firstChild); added.push(leg);
+    if (withNotes) live().forEach(h => {
+      if (!(h.n || (h.tags && h.tags.length))) return;
+      const ms = marksOf(h.id); if (!ms.length) return;
+      const last = ms[ms.length - 1], blk = last.closest(BLOCK) || last.parentElement;
+      const box = el('div', 'hl-pnote'); box.dataset.c = h.c;
+      box.appendChild(el('span', 'hl-pnote-q', short2(quoteText(h), 60)));
+      if (h.n) box.appendChild(el('span', '', ' ✎ ' + h.n.replace(/\n/g, ' ')));
+      if (h.tags && h.tags.length) box.appendChild(el('span', 'hl-pnote-t', ' ' + h.tags.map(t => '#' + t).join(' ')));
+      blk.appendChild(box); added.push(box);
+    });
+    let done = false;
+    const cleanup = () => { if (done) return; done = true; added.forEach(x => x.remove()); body.classList.remove('hl-annot'); if (hadHide) body.classList.add('hl-hidemode'); window.removeEventListener('afterprint', cleanup); };
+    window.addEventListener('afterprint', cleanup);
+    try { window.print(); } catch (e) { cleanup(); }
+    return cleanup;
+  }
+  async function printAnnotated() {
+    if (!live().length) { toast('Surligne d\'abord quelques passages'); return; }
+    togglePanel(false); closePop(true); hideToolbar();
+    const c = await ask('Imprimer le cours annoté',
+      'Le cours complet est imprimé avec tes surlignages ; tes notes, statuts et étiquettes apparaissent en encadrés sous les passages concernés. Dans la fenêtre d\'impression, choisis « Enregistrer au format PDF » pour obtenir un fichier.',
+      [{ id: 'notes', label: 'Avec mes notes', primary: true }, { id: 'plain', label: 'Surlignages seuls' }, { id: 'cancel', label: 'Annuler' }]);
+    if (!c || c === 'cancel') return;
+    doAnnotPrint(c === 'notes');
+  }
+
+  /* ───────── coin des sujets : accroches et sujets de dissertation ───────── */
+  const HOOKS = [{"id": "h1", "type": "Citation", "title": "Le déshonneur et la guerre", "text": "Après Munich, Churchill lance : « Le gouvernement avait le choix entre le déshonneur et la guerre ; il a choisi le déshonneur, et il aura la guerre. »", "src": "Winston Churchill, 1938 (cité dans le cours)", "then": "L'apaisement, censé sauver la paix, a précipité la guerre."}, {"id": "h2", "type": "Concept", "title": "La seconde guerre de Trente Ans", "text": "Pour Churchill, 1914-1945 forme un seul conflit, une « seconde guerre de Trente Ans » séparée par une trêve fragile.", "src": "Winston Churchill (cours, III.3)", "then": "La paix de 1919 n'aurait donc été qu'une pause armée."}, {"id": "h3", "type": "Citation", "title": "L'âge d'or de la sécurité", "text": "Dans Le Monde d'hier, Stefan Zweig décrit l'Europe d'avant 1914 comme un « âge d'or de la sécurité », anéanti par la guerre.", "src": "Stefan Zweig, Le Monde d'hier, 1943 (cours, II.1)", "then": "L'après-guerre s'ouvre ainsi sur un sentiment de déclin de l'Europe."}, {"id": "h4", "type": "Événement", "title": "La galerie des Glaces", "text": "Le 28 juin 1919, le traité de Versailles est signé dans la galerie des Glaces, là même où l'Empire allemand avait été proclamé en 1871.", "src": "Cours, I.2 — le diktat de Versailles", "then": "Cette humiliation délibérée nourrira pendant vingt ans le ressentiment allemand."}, {"id": "h5", "type": "Chiffre", "title": "Une hyperinflation vertigineuse", "text": "En 1923, les prix allemands sont multipliés par 1 000 milliards par rapport à 1914.", "src": "Cours, I.2 — la République de Weimar", "then": "La crise économique fragilise durablement la jeune démocratie allemande."}, {"id": "h6", "type": "Événement", "title": "Le Jeudi noir", "text": "Le 24 octobre 1929, la Bourse de New York s'effondre : l'indice passera de 469 à 42 points en 1931.", "src": "Cours, II.3 — la crise de 1929", "then": "La crise financière devient mondiale et politique."}, {"id": "h7", "type": "Chiffre", "title": "45 % de chômeurs en Allemagne", "text": "Au plus fort de la crise, le chômage atteint 32 % aux États-Unis et 45 % en Allemagne.", "src": "Cours, II.3 — crise sociale", "then": "La détresse sociale nourrit la montée du parti nazi."}, {"id": "h8", "type": "Événement", "title": "Nankin, décembre 1937", "text": "En décembre 1937, l'armée japonaise massacre entre 150 000 et 200 000 personnes à Nankin, capitale de la Chine nationaliste.", "src": "Cours, III.1 — la guerre en Asie", "then": "En 1939, la guerre est déjà une réalité en Asie."}, {"id": "h9", "type": "Citation", "title": "Migrant Mother", "text": "En 1936, la photographie Migrant Mother de Dorothea Lange devient l'icône de la misère américaine pendant la Grande Dépression.", "src": "Dorothea Lange, 1936 (cours, II.3)", "then": "Derrière les chiffres de la crise, ce sont des sociétés entières qui basculent."}, {"id": "h10", "type": "Concept", "title": "Le « coup de poignard dans le dos »", "text": "Pour les nationalistes allemands, l'armée n'a pas été vaincue en 1918 : elle aurait été trahie par les civils et la gauche.", "src": "Cours, I.2 — la thèse du coup de poignard", "then": "Cette légende sert de terreau au nazisme."}];
+  const ESSAY = {"analysis": [{"l": "« L'ordre de 1919 »", "t": "L'organisation du monde issue de la conférence de la paix : traités de Versailles, Sèvres, Lausanne, SDN et sécurité collective, système des mandats."}, {"l": "« S'effondre »", "t": "Le terme suppose un processus : il faut identifier les fragilités initiales, l'accélérateur (1929) et les étapes de la destruction (1931-1939)."}, {"l": "« 1939 »", "t": "Date de la guerre en Europe, mais la guerre existe déjà en Asie depuis 1937 (voire 1931) : le cadre doit être mondial."}, {"l": "Enjeu", "t": "Montrer que la guerre n'est ni un accident ni une fatalité : elle résulte de contradictions non résolues (Churchill parle d'une « seconde guerre de Trente Ans »)."}], "alts": ["L'entre-deux-guerres n'est-il qu'une trêve entre deux conflits mondiaux ?", "Dans quelle mesure la crise de 1929 transforme-t-elle un ordre fragile en marche à la guerre ?"], "parts": [{"t": "Un ordre de 1919 fragile dès l'origine", "idea": "La paix des vainqueurs crée plus de frustrations qu'elle n'en résout.", "subs": [{"t": "Une paix imposée", "idea": "Le Conseil des Quatre dicte la paix.", "pts": ["Versailles, signé le 28 juin 1919 : article 231, 130 milliards de marks-or, armée de 100 000 hommes, perte d'1/7 du territoire.", "Le diktat nourrit le ressentiment et la légende du « coup de poignard dans le dos » ; hyperinflation et Ruhr (1923)."]}, {"t": "Des frustrations en chaîne", "idea": "Vainqueurs déçus et peuples trahis.", "pts": ["Italie de la « victoire mutilée » : Mussolini au pouvoir (octobre 1922).", "Promesses arabes trahies par les mandats et Sykes-Picot ; déclaration Balfour ; URSS isolée par le cordon sanitaire."]}, {"t": "Un multilatéralisme sans moyens", "idea": "La SDN incarne l'espoir mais reste faible.", "pts": ["Succès des années 1920 : Locarno (1925), entrée de l'Allemagne à la SDN (1926), Briand-Kellogg (1928), plan Dawes.", "Mais ni États-Unis ni URSS, pas d'armée, règle de l'unanimité."]}], "transition": "Cet équilibre fragile ne résiste pas à la crise économique mondiale."}, {"t": "La crise de 1929 fait basculer le monde", "idea": "L'effondrement économique détruit la coopération et nourrit les régimes autoritaires.", "subs": [{"t": "Une crise majeure du capitalisme", "idea": "Des États-Unis au monde entier.", "pts": ["Krach du 24 octobre 1929, faillites bancaires, production industrielle –50 %, chômage massif (45 % en Allemagne).", "Lectures keynésienne et structurelle ; réponses différentes (New Deal, Front populaire, déflation)."]}, {"t": "La fin de la coopération internationale", "idea": "Chacun pour soi.", "pts": ["Protectionnisme, autarcie, zones monétaires ; échec de la conférence de Londres (1933), fin de la diplomatie du dollar.", "Grand Tournant soviétique : un modèle alternatif, au prix d'une famine en Ukraine."]}, {"t": "Le triomphe des régimes agressifs", "idea": "La crise porte les dictatures au pouvoir.", "pts": ["Hitler chancelier (janvier 1933), Führer (août 1934) ; retrait de la SDN et réarmement.", "Japon en Mandchourie (1931), Italie en Éthiopie (1935)."]}], "transition": "Face à ces régimes, les démocraties choisissent le recul, ce qui ouvre la voie à la guerre."}, {"t": "La marche à la guerre face à des démocraties impuissantes", "idea": "Chaque agression non sanctionnée prépare la suivante.", "subs": [{"t": "Des démocraties divisées et pacifistes", "idea": "Isolationnisme, instabilité et apaisement.", "pts": ["Lois de neutralité américaines (1935-1937), crise du 6 février 1934 en France, appeasement de Chamberlain.", "Non-intervention en Espagne malgré Guernica (1937)."]}, {"t": "L'escalade des coups de force", "idea": "L'ordre de Versailles est démantelé.", "pts": ["Rhénanie (1936), pacte anti-Komintern, Anschluss (1938), Munich (septembre 1938), Bohême-Moravie (mars 1939).", "Pacte germano-soviétique (23 août 1939) : la guerre devient possible."]}, {"t": "Une guerre déjà mondiale", "idea": "L'Asie est en guerre avant l'Europe.", "pts": ["Guerre sino-japonaise (1937), massacres de Nankin.", "Churchill : une « seconde guerre de Trente Ans » ; les États-Unis ne sortent de l'isolationnisme qu'en 1941 (Prêt-Bail, Charte de l'Atlantique)."]}], "transition": ""}], "intro": [{"l": "Accroche", "segs": [{"l": "Accroche", "t": "« Le gouvernement avait le choix entre le déshonneur et la guerre ; il a choisi le déshonneur, et il aura la guerre » : au lendemain de Munich, en 1938, Churchill résume l'échec de vingt ans de paix."}, {"l": "Lien avec le sujet", "t": "La formule invite à chercher pourquoi l'ordre construit en 1919 pour empêcher une nouvelle guerre a conduit, au contraire, à la reprise du conflit."}]}, {"l": "Problématisation", "segs": [{"l": "Définition des termes du sujet", "t": "L'ordre de 1919 désigne l'organisation internationale née de la conférence de la paix : les traités, la SDN et la sécurité collective. Son effondrement est un processus qui mène de la paix des vainqueurs à la guerre, en Asie dès 1937 et en Europe en 1939."}, {"l": "Contexte et cadrage", "t": "Au sortir de la Grande Guerre, l'Europe est ruinée et les États-Unis dominent l'économie mondiale. Les années 1920 laissent croire à la réconciliation, avant que la crise de 1929 ne bouleverse les équilibres. Nous étudierons le monde entier, de 1919 à 1939."}, {"l": "Problématique", "t": "Pourquoi l'ordre international construit en 1919 ne parvient-il pas à garantir la paix, au point que le monde est de nouveau en guerre vingt ans plus tard ?"}]}, {"l": "Annonce du plan", "segs": [{"l": "", "t": "Nous verrons d'abord que l'ordre de 1919 est fragile dès l'origine (I), puis que la crise de 1929 fait basculer le monde (II), avant de montrer comment les démocraties, impuissantes, laissent s'organiser la marche à la guerre (III)."}]}], "concl": [{"l": "Bilan et réponse", "t": "L'ordre de 1919 s'effondre parce qu'il était une paix des vainqueurs, porteuse de frustrations, adossée à une SDN sans moyens. La crise de 1929 détruit la coopération internationale et porte au pouvoir des régimes agressifs, face auxquels les démocraties divisées choisissent l'apaisement. En 1939, le monde n'est pas en guerre par accident, mais au terme de vingt ans de contradictions non résolues."}, {"l": "Ouverture", "t": "Tirant les leçons de cet échec, les vainqueurs de 1945 chercheront à bâtir un ordre plus solide, avec l'ONU et Bretton Woods : un ordre qui sera pourtant vite divisé par la Guerre froide."}], "kind": "Analyse", "title": "De la paix manquée à la guerre : pourquoi l'ordre de 1919 s'effondre-t-il en 1939 ?", "problem": "Pourquoi l'ordre international construit en 1919 ne parvient-il pas à garantir la paix, au point que le monde est de nouveau en guerre vingt ans plus tard ?"};
+  const nb = s => s.replace(/«\s/g, '«\u00a0').replace(/\s»/g, '\u00a0»');
+  HOOKS.forEach(h => { h.text = nb(h.text); h.src = nb(h.src); h.then = nb(h.then); });
+  const HTYPES = ['Citation', 'Chiffre', 'Événement', 'Concept'];
+  const ROM = ['I', 'II', 'III', 'IV'];
+  const sj = { tab: 'hooks', type: null, q: '' };
+  const suj = el('div', 'hl-ui hl-suj');
+  suj.setAttribute('role', 'dialog'); suj.setAttribute('aria-label', 'Accroches et sujet de dissertation');
+  suj.innerHTML =
+    `<div class="hl-cards-bar">` +
+      `<strong>Sujets</strong>` +
+      `<div class="hl-seg" role="group" aria-label="Rubrique"><button type="button" data-sk="hooks">Accroches</button><button type="button" data-sk="essays">Sujet de dissertation</button></div>` +
+      `<input type="search" class="hl-search hl-suj-q" data-role="sq" placeholder="Rechercher…" aria-label="Rechercher">` +
+      `<span class="grow"></span>` +
+      `<button type="button" class="hl-fbtn" data-sa="copyall">Tout copier</button>` +
+      `<button type="button" class="hl-fbtn primary" data-sa="print">Imprimer / PDF</button>` +
+      `<button type="button" class="hl-btn" data-sa="close" aria-label="Fermer">${ICON.close}</button>` +
+    `</div>` +
+    `<div class="hl-fiche-scroll"><div class="hl-sj-wrap"><div class="hl-chips hl-sj-chips" data-role="stypes"></div><div class="hl-sj-list" data-role="slist"></div><p class="hl-sj-note" data-role="snote"></p></div></div>`;
+  document.body.appendChild(suj);
+  const $s = r => suj.querySelector(`[data-role="${r}"]`);
+  const hookById = id => HOOKS.find(h => h.id === id);
+
+  function hookCard(h) {
+    const c = el('article', 'hl-hk'); c.dataset.id = h.id; c.dataset.t = h.type;
+    const top = el('div', 'hl-hk-top'); top.append(el('span', 'hl-hk-badge', h.type), el('strong', '', h.title)); c.appendChild(top);
+    c.appendChild(el('p', 'hl-hk-text', h.text));
+    c.appendChild(el('div', 'hl-hk-src', h.src));
+    const then = el('div', 'hl-hk-then'); then.append(el('b', '', 'Pour enchaîner : '), document.createTextNode(h.then)); c.appendChild(then);
+    return c;
+  }
+
+  /* corrigé complet du sujet */
+  const E_SECTIONS = [['analyse', 'Analyse du sujet'], ['problematique', 'Problématique'], ['intro', 'Introduction rédigée'], ['plan', 'Plan détaillé'], ['concl', 'Conclusion rédigée']];
+  function esCard(id, title, copyKey) {
+    const s = el('section', 'hl-es'); s.dataset.es = id;
+    const h = el('div', 'hl-es-head'); h.appendChild(el('h3', '', title));
+    s.appendChild(h); return s;
+  }
+  function renderEssay(list) {
+    const E = ESSAY;
+    const head = el('div', 'hl-es-title'); head.append(el('span', 'hl-hk-badge alt', E.kind), el('h2', '', E.title)); list.appendChild(head);
+    const nav = el('nav', 'hl-es-nav'); E_SECTIONS.forEach(([id, l]) => { const b = el('button', 'hl-sj-chip', l); b.type = 'button'; b.dataset.esgo = id; nav.appendChild(b); }); list.appendChild(nav);
+
+    let s = esCard('analyse', 'Analyse du sujet');
+    E.analysis.forEach(a => { const r = el('div', 'hl-es-row'); r.append(el('div', 'hl-es-lab', a.l), el('p', '', a.t)); s.appendChild(r); }); list.appendChild(s);
+
+    s = esCard('problematique', 'Problématique', 'problem');
+    s.appendChild(el('p', 'hl-es-prob', E.problem));
+    const alt = el('div', 'hl-es-row'); alt.appendChild(el('div', 'hl-es-lab', 'Autres formulations possibles')); const ul = el('ul'); E.alts.forEach(x => ul.appendChild(el('li', '', x))); alt.appendChild(ul); s.appendChild(alt); list.appendChild(s);
+
+    s = esCard('intro', 'Introduction rédigée', 'intro');
+    E.intro.forEach((gp, i) => {
+      const G = el('div', 'hl-es-group'); G.appendChild(el('h4', 'hl-es-group-h', (i + 1) + '. ' + gp.l));
+      gp.segs.forEach(x => { const r = el('div', 'hl-es-seg' + (x.l ? '' : ' notag')); if (x.l) r.appendChild(el('span', 'hl-es-tag', x.l)); r.appendChild(el('p', '', nb(x.t))); G.appendChild(r); });
+      s.appendChild(G);
+    }); list.appendChild(s);
+
+    s = esCard('plan', 'Plan détaillé', 'plan');
+    E.parts.forEach((p, i) => {
+      const P = el('div', 'hl-es-part'); const ph = el('div', 'hl-es-part-h'); ph.append(el('span', 'hl-es-roman', ROM[i] + '.'), el('h4', '', p.t)); P.appendChild(ph);
+      P.appendChild(el('p', 'hl-es-idea', p.idea));
+      p.subs.forEach((sb, j) => {
+        const S = el('div', 'hl-es-sub'); const sh = el('div', 'hl-es-sub-h'); sh.append(el('span', 'hl-es-letter', String.fromCharCode(65 + j) + '.'), el('h5', '', sb.t)); S.appendChild(sh);
+        S.appendChild(el('p', 'hl-es-idea', sb.idea));
+        const l = el('ul', 'hl-es-pts'); sb.pts.forEach(x => l.appendChild(el('li', '', x))); S.appendChild(l); P.appendChild(S);
+      });
+      if (p.transition) P.appendChild(el('p', 'hl-es-trans', 'Transition : ' + p.transition));
+      s.appendChild(P);
+    }); list.appendChild(s);
+
+    s = esCard('concl', 'Conclusion rédigée', 'concl');
+    E.concl.forEach(x => { const r = el('div', 'hl-es-seg'); r.append(el('span', 'hl-es-tag', x.l), el('p', '', nb(x.t))); s.appendChild(r); }); list.appendChild(s);
+
+  }
+  const essayParts = {
+    problem: () => ESSAY.problem,
+    plan: () => ESSAY.parts.map((p, i) => ROM[i] + '. ' + p.t + '\n' + p.subs.map((sb, j) => '   ' + String.fromCharCode(65 + j) + '. ' + sb.t + '\n' + sb.pts.map(x => '      - ' + x).join('\n')).join('\n') + (p.transition ? '\n   Transition : ' + p.transition : '')).join('\n\n'),
+    intro: () => ESSAY.intro.flatMap(g => g.segs.map(x => x.t)).join(' '),
+    concl: () => ESSAY.concl.map(x => x.t).join(' ')
+  };
+  function essayMarkdown() {
+    const E = ESSAY, P = essayParts;
+    return '# ' + E.title + '\n\n## Analyse du sujet\n\n' + E.analysis.map(a => '- **' + a.l + '** : ' + a.t).join('\n') +
+      '\n\n## Problématique\n\n' + E.problem + '\n\n## Plan détaillé\n\n' +
+      E.parts.map((p, i) => '### ' + ROM[i] + '. ' + p.t + '\n\n*' + p.idea + '*\n\n' + p.subs.map((sb, j) => '**' + String.fromCharCode(65 + j) + '. ' + sb.t + '**\n\n' + sb.pts.map(x => '- ' + x).join('\n')).join('\n\n') + (p.transition ? '\n\n> Transition : ' + p.transition : '')).join('\n\n') +
+      '\n\n## Introduction\n\n' + E.intro.map(g => '**' + g.l + '**\n\n' + g.segs.map(x => x.t).join('\n\n')).join('\n\n') + '\n\n## Conclusion\n\n' + E.concl.map(x => x.t).join('\n\n') + '\n';
+  }
+
+  function renderSuj() {
+    suj.querySelectorAll('[data-sk]').forEach(b => b.classList.toggle('on', b.dataset.sk === sj.tab));
+    const isH = sj.tab === 'hooks';
+    suj.querySelector('[data-role="sq"]').hidden = !isH; 
+    suj.querySelector('[data-sa="copyall"]').hidden = isH; suj.querySelector('[data-sa="print"]').hidden = isH;
+    const w = norm(sj.q.trim()).split(/\s+/).filter(Boolean), match = t => w.every(x => norm(t).includes(x));
+    const chips = $s('stypes'); chips.textContent = ''; chips.hidden = !isH;
+    if (isH) {
+      const all = el('button', 'hl-chip' + (sj.type ? '' : ' on'), 'Toutes'); all.type = 'button'; all.dataset.stype = ''; chips.appendChild(all);
+      HTYPES.forEach(t => { const b = el('button', 'hl-chip' + (sj.type === t ? ' on' : ''), t + 's'); b.type = 'button'; b.dataset.stype = t; chips.appendChild(b); });
+    }
+    const list = $s('slist'); list.textContent = ''; list.classList.toggle('es', !isH);
+    if (isH) {
+      let n = 0;
+      HOOKS.filter(h => (!sj.type || h.type === sj.type) && match(h.title + ' ' + h.text + ' ' + h.src + ' ' + h.type)).forEach(h => { list.appendChild(hookCard(h)); n++; });
+      if (!n) list.appendChild(el('p', 'hl-empty', 'Rien ne correspond à cette recherche.'));
+    } else renderEssay(list);
+    $s('snote').textContent = '';
+  }
+  function openSuj(tab) { togglePanel(false); closePop(true); hideToolbar(); if (tab) sj.tab = tab; renderSuj(); suj.classList.add('open'); document.body.classList.add('hl-fiche-open'); suj.querySelector('.hl-fiche-scroll').scrollTop = 0; }
+  function closeSuj() { suj.classList.remove('open'); if (!fiche.classList.contains('open') && !cards.classList.contains('open') && !frise.classList.contains('open')) document.body.classList.remove('hl-fiche-open'); }
+  function flashCard(node) { if (!node) return; node.scrollIntoView({ behavior: 'smooth', block: 'center' }); node.classList.remove('hl-flash-el'); void node.offsetWidth; node.classList.add('hl-flash-el'); setTimeout(() => node.classList.remove('hl-flash-el'), 2200); }
+  const hookText = h => h.text + '\n(' + h.src + ')';
+  suj.querySelector('[data-role="sq"]').addEventListener('input', e => { sj.q = e.target.value; renderSuj(); });
+  suj.addEventListener('click', async e => {
+    const sk = e.target.closest('[data-sk]'); if (sk) { sj.tab = sk.dataset.sk; sj.type = null; renderSuj(); suj.querySelector('.hl-fiche-scroll').scrollTop = 0; return; }
+    const st = e.target.closest('[data-stype]'); if (st) { sj.type = st.dataset.stype || null; renderSuj(); return; }
+    const go = e.target.closest('[data-esgo]'); if (go) { const t = $s('slist').querySelector(`[data-es="${go.dataset.esgo}"]`); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+    const sa = e.target.closest('[data-sa]'); if (!sa) return;
+    const a = sa.dataset.sa;
+    if (a === 'close') closeSuj();
+    else if (a === 'print') window.print();
+    else if (a === 'copyall') toast(await copyText(essayMarkdown()) ? 'Corrigé complet copié' : 'Copie impossible');
+  });
+
+  /* ───────── petite fenêtre de choix ───────── */
+  const modalBack = el('div', 'hl-ui hl-modal-back');
+  document.body.appendChild(modalBack);
+  let askResolve = null;
+  function closeModal(id) { modalBack.classList.remove('open'); if (askResolve) { const r = askResolve; askResolve = null; r(id || null); } }
+  modalBack.addEventListener('mousedown', e => { if (e.target === modalBack) closeModal(null); });
+  function ask(title, text, buttons) {
+    return new Promise(res => {
+      if (askResolve) closeModal(null);
+      askResolve = res; modalBack.textContent = '';
+      const m = el('div', 'hl-modal'); m.setAttribute('role', 'dialog');
+      m.append(el('h3', '', title), el('p', '', text));
+      const row = el('div', 'hl-modal-btns');
+      buttons.forEach(b => { const x = el('button', 'hl-foot-btn' + (b.primary ? ' primary' : ''), b.label); x.type = 'button'; x.onclick = () => closeModal(b.id); row.appendChild(x); });
+      m.appendChild(row); modalBack.appendChild(m); modalBack.classList.add('open');
+      const f = row.querySelector('button'); if (f) f.focus();
+    });
+  }
+  function closeTopOverlay() {
+    if (modalBack.classList.contains('open')) { closeModal(null); return true; }
+    if (suj.classList.contains('open')) { closeSuj(); return true; }
+    if (frise.classList.contains('open')) { closeFrise(); return true; }
+    if (cards.classList.contains('open')) { closeCards(); return true; }
+    if (!menu.hidden) { menuOpen(false); return true; }
+    if (fiche.classList.contains('open')) { closeFiche(); return true; }
+    return false;
+  }
+
+  /* ───────── sauvegarde / import (tous les chapitres d'un coup) ───────── */
+  const PAGE_PREFIX = 'ecg-hl:v1:';
+  function collectAll() {
+    save();
+    const pages = {};
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.indexOf(PAGE_PREFIX) === 0) { try { pages[k.slice(PAGE_PREFIX.length)] = JSON.parse(localStorage.getItem(k)); } catch (e) {} }
+      }
+    } catch (e) {}
+    return { app: 'ecg-hl', v: 2, exportedAt: new Date().toISOString(), cats: COLORS, pages };
+  }
+  function parseBackup(obj) {
+    if (!obj || obj.app !== 'ecg-hl' || !obj.pages || typeof obj.pages !== 'object') return null;
+    const pages = {}; let n = 0;
+    Object.keys(obj.pages).slice(0, 200).forEach(p => {
+      const d = obj.pages[p]; if (p.length > 300 || !d || !Array.isArray(d.hls)) return;
+      const hl = d.hls.slice(0, 5000).map(cleanHl).filter(Boolean);
+      pages[p] = { hls: hl, sheet: cleanSheet(d.sheet) }; n += hl.length;
+    });
+    const cats = validCats(obj.cats) ? obj.cats.map(c => ({ id: c.id, label: c.label.slice(0, 32), hex: c.hex, st: STYLES[c.st] ? c.st : 'bg' })) : null;
+    return { pages, n, cats, at: obj.exportedAt };
+  }
+  const store = (key, obj) => { try { localStorage.setItem(key, JSON.stringify(obj)); } catch (e) { console.warn('[surlignage] écriture impossible', e); } };
+  function applyImport(p, mode) {
+    save(); let added = 0, skipped = 0;
+    Object.keys(p.pages).forEach(path => {
+      const key = PAGE_PREFIX + path, inc = p.pages[path];
+      if (mode === 'replace') { store(key, { v: 2, hls: inc.hls, sheet: inc.sheet }); added += inc.hls.length; return; }
+      const cur = readStore(key), out = cur.hls.map(cleanHl).filter(Boolean), curS = cleanSheet(cur.sheet), ids = new Set(out.map(h => h.id));
+      inc.hls.forEach(h => { if (ids.has(h.id) || out.some(x => x.s < h.e && x.e > h.s)) { skipped++; return; } out.push(h); ids.add(h.id); added++; });
+      const bIds = new Set(curS.blocks.map(b => b.id));
+      out.sort(bySort);
+      store(key, { v: 2, hls: out, sheet: { cards: curS.cards.concat(inc.sheet.cards.filter(c => !curS.cards.some(x => x.id === c.id))), blocks: curS.blocks.concat(inc.sheet.blocks.filter(b => !bIds.has(b.id))), order: curS.order.concat(inc.sheet.order.filter(k => !curS.order.includes(k))) } });
+    });
+    if (p.cats) {
+      if (mode === 'replace') COLORS = p.cats.map(c => Object.assign({}, c));
+      else p.cats.forEach(c => { if (!COLORS.some(x => x.id === c.id) && COLORS.length < MAX_CATS) COLORS.push(Object.assign({}, c)); });
+    }
+    Object.keys(p.pages).forEach(path => p.pages[path].hls.forEach(h => {     // une couleur inconnue ne doit pas rester grise
+      if (!COLORS.some(c => c.id === h.c) && COLORS.length < MAX_CATS) COLORS.push({ id: h.c, label: 'Couleur importée', hex: '#969696', st: 'bg' });
+    }));
+    savePrefs(); loadPrefs(); persistCats(true);
+    hist = []; closePop(true); loadModel(); render(); refreshPanel(); if (fiche.classList.contains('open')) renderFiche();
+    return { added, skipped };
+  }
+
+  /* ───────── catégories : renommer, recolorer, ajouter, supprimer ───────── */
+  function applyPalette() {
+    let st = document.getElementById('hl-palette');
+    if (!st) { st = document.createElement('style'); st.id = 'hl-palette'; document.head.appendChild(st); }
+    st.textContent = '[data-c]{--c:150 150 150}' + COLORS.map(c => `[data-c="${c.id}"]{--c:${hexRgb(c.hex)}}`).join('');
+  }
+  function persistCats(rebuildEditor) {
+    savePrefs(); applyPalette(); buildToolbar(); buildPop(); restyle();
+    if (filter && !COLORS.some(c => c.id === filter)) filter = null;
+    fState.off.forEach(id => { if (!COLORS.some(c => c.id === id)) fState.off.delete(id); });
+    if (rebuildEditor) buildEditor();
+  }
+  function addCatRaw() {
+    const used = COLORS.map(c => c.hex.toLowerCase());
+    const pal = ['#A78BFA', '#22D3EE', '#F87171', '#A3E635', '#FBBF24', '#2DD4BF', '#F472B6', '#94A3B8', '#FB923C', '#60A5FA'];
+    const hex = pal.find(x => !used.includes(x.toLowerCase())) || '#A78BFA';
+    const c = { id: 'c' + uid(), label: 'Couleur ' + (COLORS.length + 1), hex, st: 'bg' };
+    COLORS.push(c); catsDirty = true; return c.id;
+  }
+  function deleteCat(id) {
+    if (COLORS.length <= 1) return;
+    const n = hls.filter(h => h.c === id).length;
+    if (n && !confirm(n + ' surlignage' + (n > 1 ? 's utilisent' : ' utilise') + ' cette couleur et ' + (n > 1 ? 'seront supprimés' : 'sera supprimé') + '. Continuer ?')) return;
+    closePop(true);
+    mutate(() => { hls = hls.filter(h => h.c !== id); COLORS = COLORS.filter(c => c.id !== id); catsDirty = true; if (prefs.color === id) prefs.color = COLORS[0].id; });
+    toast('Couleur supprimée', 'Annuler', undo);
+  }
+  function editCat(id) {
+    togglePanel(true);
+    setTab('set');
+    setTimeout(() => { const inp = panel.querySelector(`.hl-cat[data-id="${id}"] .hl-cat-name`); if (inp) { inp.focus(); inp.select(); } }, 320);
+  }
+  function buildEditor() {
+    const box = $('editor'); if (!box) return;
+    box.textContent = '';
+    COLORS.forEach(c => {
+      const row = el('div', 'hl-cat'); row.dataset.id = c.id;
+      const sw = el('label', 'hl-swatch'); sw.title = 'Choisir la couleur'; sw.dataset.c = c.id;
+      const ci = document.createElement('input'); ci.type = 'color'; ci.value = c.hex; ci.setAttribute('aria-label', 'Couleur de ' + c.label);
+      sw.appendChild(ci);
+      const nm = document.createElement('input'); nm.type = 'text'; nm.className = 'hl-cat-name'; nm.value = c.label; nm.maxLength = 32; nm.placeholder = 'Nom de la catégorie'; nm.setAttribute('aria-label', 'Nom de la catégorie');
+      const sl = document.createElement('select'); sl.className = 'hl-cat-st'; sl.setAttribute('aria-label', 'Style de ' + c.label);
+      Object.keys(STYLES).forEach(k => { const o = document.createElement('option'); o.value = k; o.textContent = STYLES[k]; sl.appendChild(o); });
+      sl.value = c.st || 'bg';
+      sl.addEventListener('change', () => { c.st = sl.value; persistCats(true); refreshPanel(); });
+      const n = hls.filter(h => h.c === c.id).length;
+      const cnt = el('span', 'hl-cat-n', n ? String(n) : '');
+      const del = el('button', 'hl-cat-del', '×'); del.type = 'button'; del.title = 'Supprimer cette couleur'; del.setAttribute('aria-label', 'Supprimer ' + c.label); del.disabled = COLORS.length <= 1;
+      ci.addEventListener('input', () => { c.hex = ci.value; persistCats(false); refreshPanel(); updateFab(); if (fiche.classList.contains('open')) renderFiche(); });
+      nm.addEventListener('input', () => { c.label = nm.value; persistCats(false); refreshPanel(); });
+      nm.addEventListener('change', () => { if (!nm.value.trim()) { nm.value = c.label = 'Sans nom'; persistCats(false); refreshPanel(); } });
+      del.addEventListener('click', () => deleteCat(c.id));
+      row.append(sw, nm, sl, cnt, del); box.appendChild(row);
+    });
+    const foot = el('div', 'hl-cats-foot');
+    const add = el('button', 'hl-foot-btn', '+ Ajouter une couleur'); add.type = 'button'; add.disabled = COLORS.length >= MAX_CATS;
+    add.addEventListener('click', () => { let id; mutate(() => { id = addCatRaw(); }); editCat(id); });
+    const rs = el('button', 'hl-foot-btn', 'Couleurs d\'origine'); rs.type = 'button';
+    rs.addEventListener('click', () => {
+      DEFAULTS.forEach(d => { const c = COLORS.find(x => x.id === d.id); if (c) { c.label = d.label; c.hex = d.hex; c.st = d.st; } else if (COLORS.length < MAX_CATS) COLORS.push(Object.assign({}, d)); });
+      persistCats(true); refreshPanel(); updateFab();
+    });
+    foot.append(add, rs); box.appendChild(foot);
+  }
+
+  /* ───────── toast ───────── */
+  const toastEl = el('div', 'hl-ui hl-toast'); toastEl.setAttribute('role', 'status');
+  document.body.appendChild(toastEl);
+  let toastTimer;
+  function toast(msg, label, fn) {
+    toastEl.textContent = msg;
+    if (label) { const b = el('button', '', label); b.type = 'button'; b.onclick = () => { fn(); toastEl.classList.remove('show'); }; toastEl.appendChild(b); }
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => toastEl.classList.remove('show'), label ? 6000 : 2200);
+  }
+
+  /* synchro entre onglets */
+  window.addEventListener('storage', e => {
+    if (e.key === KEY) { closePop(true); loadModel(); render(); refreshPanel(); }
+    else if (e.key === PREF_KEY) { loadPrefs(); persistCats(true); render(); refreshPanel(); updateFab(); }
+  });
+
+  /* ───────── init ───────── */
+  loadPrefs();
+  persistCats(true);
+  index();
+  full = nodes.map(n => n.data).join('');
+  loadModel();
+  render();
+  refreshPanel();
+
+  // petite API pour les tests / la console
+  window.ecgHL = {
+    highlights: () => hls.map(h => Object.assign({}, h)),
+    add: (s, e, c) => mutate(() => _add(s, e, c || prefs.color)),
+    erase: (s, e) => mutate(() => _erase(s, e)),
+    readSelection, undo, text: () => full,
+    _t: { findDates, contextOf, buildModel, fState, getSheet: () => sheet, resolveOrder, moveKey, addBlock, removeBlock, ankiText, docHtml, modelMarkdown,
+          collectAll, parseBackup, applyImport, setHide, revealed: () => revealed, progressData, startCards, cs, answerCard, flipCard, HOOKS, ESSAY, essayMarkdown, essayParts, openSuj, renderSuj, sj, EVENTS, doAnnotPrint, goToText, fr, renderFrise, openFrise, addTag, removeTag,
+          renderFiche, openFiche, quoteText, passes, setQuery: q => { pQuery = norm(q); }, cats: () => COLORS }
+  };
+})();
 </script>
 </body>
 </html>
