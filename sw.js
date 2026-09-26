@@ -26,7 +26,7 @@
 
 /* Change ce numéro à chaque évolution notable du site : ça force le
    renouvellement du cache chez les visiteurs (voir « activate »). */
-var VERSION = 'v2';
+var VERSION = 'v3';
 var CACHE_SOCLE   = 'ecg-prepa-socle-'   + VERSION;
 var CACHE_PAGES   = 'ecg-prepa-pages-'   + VERSION;
 var CACHE_IMAGES  = 'ecg-prepa-images-'  + VERSION;
