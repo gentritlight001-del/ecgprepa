@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leçon 27 — L'Hypothèse | Anglais ECG</title>
+<link rel="stylesheet" href="../../../fonts/fonts.css">
+<style>
+  :root {
+    --bg: #0c0506;
+    --surface: #140809;
+    --surface2: #1c0d0f;
+    --border: #3a161a;
+    --accent: #b3283f;
+    --accent2: #d65f74;
+    --accent3: #eeb4bf;
+    --accent4: #7c1d2e;
+    --accent5: #fdf0f1;
+    --text: #f0e4e6;
+    --text-dim: #a08085;
+    --text-faint: #3a161a;
+    /* column colors */
+    --col-aff: #b3283f;
+    --col-neg: #7c1d2e;
+    --col-int: #e8646f;
+    --col-pp: #c9a227;
+    --col-modal: #9b3a5b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  /* ─── BACKGROUND ─── */
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(180px); pointer-events: none; z-index: 0; }
+  .orb1 { width: 800px; height: 800px; background: rgba(179,40,63,0.08); top: -300px; right: -200px; }
+  .orb2 { width: 600px; height: 600px; background: rgba(155,58,91,0.05); bottom: -200px; left: -200px; }
+  .orb3 { width: 500px; height: 500px; background: rgba(201,162,39,0.035); top: 50%; left: 50%; transform: translate(-50%,-50%); }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(12,5,6,0.92); backdrop-filter: blur(20px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: var(--accent); cursor: pointer; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: var(--text-dim); flex-wrap: wrap; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb span:hover { color: var(--accent); }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); cursor: default; }
+
+  /* ─── CHAPTER HERO ─── */
+  .chapter-hero {
+    position: relative; overflow: hidden;
+    padding: 80px 64px 64px;
+    background: linear-gradient(135deg, #0c0506 0%, #2a0d12 50%, #0c0506 100%);
+    border-bottom: 1px solid rgba(179,40,63,0.14);
+    z-index: 1;
+    text-align: center; display: flex; flex-direction: column; align-items: center;
+  }
+  .chapter-hero::after {
+    content: '27';
+    position: absolute; right: -10px; bottom: -40px;
+    font-family: 'Playfair Display', serif; font-size: 22rem; font-weight: 900;
+    color: rgba(179,40,63,0.05); line-height: 1; pointer-events: none;
+    letter-spacing: -0.05em;
+  }
+  .ch-eyebrow {
+    font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px; justify-content: center;
+  }
+  .ch-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--accent); }
+  .ch-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 6vw, 5.5rem); font-weight: 900;
+    line-height: 1.0; margin-bottom: 20px; color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .ch-title span { color: var(--accent); }
+  .ch-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .ch-tag {
+    padding: 5px 14px; border-radius: 20px; font-family: 'DM Mono', monospace;
+    font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em;
+    border: 1px solid;
+  }
+  .ch-tag.indigo  { color: var(--col-aff);   border-color: rgba(179,40,63,0.35); background: rgba(179,40,63,0.08); }
+  .ch-tag.red     { color: var(--col-neg);   border-color: rgba(124,29,46,0.4);  background: rgba(124,29,46,0.1); }
+  .ch-tag.green   { color: var(--col-int);   border-color: rgba(232,100,111,0.35); background: rgba(232,100,111,0.08); }
+  .ch-tag.yellow  { color: var(--col-pp);    border-color: rgba(201,162,39,0.35); background: rgba(201,162,39,0.08); }
+  .ch-tag.purple  { color: var(--col-modal); border-color: rgba(155,58,91,0.35); background: rgba(155,58,91,0.08); }
+
+  /* ─── LAYOUT ─── */
+  .page-body { display: block; min-height: calc(100vh - 300px); position: relative; z-index: 1; }
+  .main-content { width: 100%; padding: 48px 80px 100px; max-width: 1100px; margin: 0 auto; box-sizing: border-box; }
+
+  /* ─── SECTION ─── */
+  .section { margin-bottom: 72px; scroll-margin-top: 80px; }
+  .section-header {
+    display: flex; align-items: flex-start; gap: 20px; margin-bottom: 32px;
+    padding-bottom: 20px; border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 900;
+    color: var(--text-faint); line-height: 1; flex-shrink: 0; min-width: 48px;
+  }
+  .section-info {}
+  .section-tag { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--text); line-height: 1.2; }
+
+  /* ─── PROSE ─── */
+  .prose { font-size: 0.95rem; color: var(--text-dim); line-height: 1.85; font-weight: 300; }
+  .prose p { margin-bottom: 14px; }
+  .prose strong { color: var(--text); font-weight: 500; }
+  .prose em { color: var(--accent); font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.9rem; }
+
+  /* ─── DEFINITION BOX ─── */
+  .def-box {
+    background: linear-gradient(135deg, rgba(179,40,63,0.07) 0%, rgba(179,40,63,0.02) 100%);
+    border: 1px solid rgba(179,40,63,0.22); border-left: 3px solid var(--accent);
+    border-radius: 0 12px 12px 0; padding: 24px 28px; margin: 24px 0;
+  }
+  .def-box .def-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .def-box p { font-size: 0.92rem; color: var(--text-dim); line-height: 1.7; font-style: italic; }
+  .def-box strong { color: var(--text); font-style: normal; }
+
+  /* ─── HIGHLIGHT BOX ─── */
+  .hl-box {
+    border-radius: 12px; padding: 20px 24px; margin: 20px 0;
+    border: 1px solid; display: flex; gap: 16px; align-items: flex-start;
+  }
+  .hl-box.warning { background: rgba(179,40,63,0.06); border-color: rgba(179,40,63,0.22); }
+  .hl-box.tip     { background: rgba(232,100,111,0.06);  border-color: rgba(232,100,111,0.22); }
+  .hl-box.info    { background: rgba(201,162,39,0.06);  border-color: rgba(201,162,39,0.22); }
+  .hl-box.danger  { background: rgba(220,38,38,0.06); border-color: rgba(220,38,38,0.25); }
+  .hl-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 1px; }
+  .hl-body { font-size: 0.88rem; color: var(--text-dim); line-height: 1.7; }
+  .hl-body strong { color: var(--text); font-weight: 500; }
+
+  /* ─── FORMULA GRID ─── */
+  .formula-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 24px 0; }
+  .formula-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px 22px;
+  }
+  .formula-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 14px; }
+  .formula-label.aff { color: var(--col-aff); }
+  .formula-label.neg { color: var(--col-neg); }
+  .formula-label.int { color: var(--col-int); }
+  .formula-label.yel { color: var(--col-pp); }
+  .formula-label.pur { color: var(--col-modal); }
+
+  .formula-expr {
+    font-family: 'DM Mono', monospace; font-size: 0.9rem; font-weight: 500;
+    display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-bottom: 16px;
+    line-height: 1.6;
+  }
+  .f-subj  { color: var(--col-aff);   background: rgba(179,40,63,0.1); padding: 2px 8px; border-radius: 4px; }
+  .f-verb  { color: var(--col-pp);    background: rgba(201,162,39,0.1);  padding: 2px 8px; border-radius: 4px; }
+  .f-obj   { color: var(--col-int);   background: rgba(232,100,111,0.1);  padding: 2px 8px; border-radius: 4px; }
+  .f-aux   { color: var(--col-neg);   background: rgba(124,29,46,0.12); padding: 2px 8px; border-radius: 4px; }
+  .f-mod   { color: var(--col-modal); background: rgba(155,58,91,0.13);padding: 2px 8px; border-radius: 4px; }
+  .f-neg   { color: var(--col-neg);   background: rgba(124,29,46,0.14);padding: 2px 8px; border-radius: 4px; }
+  .f-q     { color: var(--col-aff);   background: rgba(179,40,63,0.12);padding: 2px 8px; border-radius: 4px; }
+  .f-sep   { color: var(--text-faint); font-size: 0.7rem; }
+
+  .formula-example { font-size: 0.82rem; color: var(--text-dim); line-height: 1.7; }
+  .formula-example span { font-family: 'DM Mono', monospace; }
+  .formula-example .e-aff { color: var(--col-aff); }
+  .formula-example .e-neg { color: var(--col-neg); }
+  .formula-example .e-int { color: var(--col-int); }
+  .formula-example .e-yel { color: var(--col-pp); }
+  .formula-example .e-mod { color: var(--col-modal); }
+
+  /* ─── OVERVIEW GRID ─── */
+  .modal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin: 28px 0; }
+  .modal-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 22px 20px; transition: all 0.2s;
+  }
+  .modal-card:hover { border-color: rgba(179,40,63,0.35); background: var(--surface2); }
+  .modal-word {
+    font-family: 'DM Mono', monospace; font-size: 1.2rem; font-weight: 500;
+    color: var(--accent); margin-bottom: 6px;
+  }
+  .modal-neg {
+    font-family: 'DM Mono', monospace; font-size: 0.72rem;
+    color: var(--col-neg); margin-bottom: 10px;
+  }
+  .modal-meaning { font-family: 'Playfair Display', serif; font-size: 0.95rem; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+  .modal-ex { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text-dim); background: rgba(179,40,63,0.06); border-left: 2px solid rgba(179,40,63,0.35); padding: 7px 10px; border-radius: 0 5px 5px 0; line-height: 1.5; }
+
+  /* ─── USAGE CARDS ─── */
+  .usage-grid { display: grid; grid-template-columns: 1fr; gap: 14px; margin: 24px 0; }
+  .usage-card {
+    display: grid; grid-template-columns: auto 1fr 1.6fr; align-items: center; gap: 24px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px 24px; transition: border-color 0.2s;
+  }
+  .usage-card:hover { border-color: rgba(179,40,63,0.35); background: var(--surface2); }
+  .usage-icon { font-size: 1.6rem; }
+  .usage-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .usage-desc { font-size: 0.82rem; color: var(--text-dim); line-height: 1.65; font-weight: 300; }
+  .usage-example {
+    font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--accent);
+    background: rgba(179,40,63,0.07); border-left: 2px solid var(--accent);
+    padding: 8px 12px; border-radius: 0 6px 6px 0;
+  }
+  .usage-example .trans { display: block; color: var(--text-faint); font-size: 0.72rem; margin-top: 4px; font-style: italic; }
+
+  /* ─── COMPARISON TABLE ─── */
+  .cmp-table {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; overflow: hidden; margin: 24px 0;
+  }
+  .cmp-head {
+    display: grid; padding: 12px 20px; background: var(--surface2); border-bottom: 1px solid var(--border);
+  }
+  .cmp-head .th { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; }
+  .cmp-row {
+    display: grid; padding: 11px 20px; border-bottom: 1px solid rgba(58,22,26,0.8); align-items: start;
+  }
+  .cmp-row:last-child { border-bottom: none; }
+  .cmp-row:hover { background: rgba(179,40,63,0.04); }
+  .cmp-label { font-size: 0.82rem; color: var(--text-dim); font-weight: 300; line-height: 1.5; }
+  .cmp-c0 { font-family: 'DM Mono', monospace; font-size: 0.76rem; color: var(--col-aff); line-height: 1.55; }
+  .cmp-c1 { font-family: 'DM Mono', monospace; font-size: 0.76rem; color: var(--col-neg); line-height: 1.55; }
+  .cmp-c2 { font-family: 'DM Mono', monospace; font-size: 0.76rem; color: var(--col-modal); line-height: 1.55; }
+
+  /* ─── CONNECTORS / PILLS ─── */
+  .adv-grid { display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 0; }
+  .adv-pill {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 10px 16px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; transition: all 0.2s; cursor: default;
+  }
+  .adv-pill:hover { border-color: rgba(179,40,63,0.35); background: var(--surface2); }
+  .adv-en  { font-family: 'DM Mono', monospace; font-size: 0.82rem; color: var(--col-aff); font-weight: 500; }
+  .adv-fr  { font-size: 0.72rem; color: var(--text-dim); margin-top: 2px; }
+
+  /* ─── EXERCISE BLOCK ─── */
+  .exercise-block {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 14px; padding: 28px 32px; margin: 28px 0;
+  }
+  .ex-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .ex-badge {
+    font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em;
+    text-transform: uppercase; padding: 4px 10px; border-radius: 6px;
+    background: rgba(179,40,63,0.1); color: var(--accent); border: 1px solid rgba(179,40,63,0.28);
+  }
+  .ex-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--text); }
+  .ex-items { display: flex; flex-direction: column; gap: 12px; }
+  .ex-item { display: flex; gap: 14px; align-items: flex-start; font-size: 0.88rem; }
+  .ex-num { font-family: 'DM Mono', monospace; color: var(--text-faint); font-size: 0.75rem; min-width: 20px; margin-top: 2px; }
+  .ex-q { color: var(--text-dim); line-height: 1.6; }
+  .ex-q strong { color: var(--text); }
+  .ex-answer { display: none; margin-top: 4px; font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--accent); }
+  .ex-item.revealed .ex-answer { display: block; }
+  .show-answers-btn {
+    margin-top: 20px; padding: 9px 20px;
+    background: rgba(179,40,63,0.1); border: 1px solid rgba(179,40,63,0.28);
+    border-radius: 8px; color: var(--accent); font-family: 'DM Mono', monospace;
+    font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .show-answers-btn:hover { background: rgba(179,40,63,0.18); }
+
+  /* ─── SCROLL ─── */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-up { animation: fadeUp 0.25s ease forwards; opacity: 0; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .usage-card { grid-template-columns: 1fr; gap: 12px; padding: 18px 20px; }
+    .main-content { padding: 32px 24px 80px; }
+    .chapter-hero { padding: 48px 24px 48px; }
+    nav { padding: 14px 20px; }
+    .formula-grid { grid-template-columns: 1fr; }
+    .usage-card { grid-template-columns: auto 1fr; }
+    .usage-example { display: none; }
+    .modal-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div>
+  <div class="breadcrumb">
+    <span onclick="window.location.href='../../../index.html'">Accueil</span>
+    <span class="sep">/</span>
+    <span onclick="window.location.href='../../index.html'">1ère Année</span>
+    <span class="sep">/</span>
+    <span onclick="window.location.href='../index.html'">Langues</span>
+      <span class="sep">/</span>
+      <span onclick="window.location.href='index.html'">Anglais</span>
+    <span class="sep">/</span>
+    <span class="current">Leçon 27 · L'Hypothèse</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="chapter-hero">
+  <div class="ch-eyebrow">Leçon 27 — Grammaire fondamentale</div>
+  <div class="ch-title">L'<span>Hypothèse</span></div>
+  <div class="ch-tags" style="margin-top: 20px;">
+    <span class="ch-tag green">Réel</span>
+    <span class="ch-tag indigo">Probable</span>
+    <span class="ch-tag purple">Irréel présent</span>
+    <span class="ch-tag red">Irréel passé</span>
+    <span class="ch-tag yellow">Mixte</span>
+  </div>
+</div>
+
+<div class="page-body">
+  <main class="main-content">
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 1 : INTRODUCTION                      -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="introduction">
+      <div class="section-header">
+        <div class="section-num">1</div>
+        <div class="section-info">
+          <div class="section-tag">Fondamentaux</div>
+          <div class="section-title">Qu'est-ce qu'une hypothèse ?</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>Une <strong>hypothèse</strong> (conditional sentence / if-clause) permet d'exprimer une <strong>condition</strong> et sa <strong>conséquence</strong>. Elle se compose de deux propositions : la proposition subordonnée introduite par <em>if</em> (la condition) et la proposition principale (le résultat). Le temps employé dans chaque proposition ne détermine pas un moment littéral, mais le <strong>degré de réalité</strong> de l'hypothèse : réelle, probable, irréelle au présent ou irréelle au passé.</p>
+        <p>Contrairement au français, l'anglais n'emploie <strong>jamais will ou would après if</strong> lorsque <em>if</em> introduit la condition — sauf pour formuler une requête polie (<em>If you would just sign here…</em>).</p>
+      </div>
+
+      <div class="def-box">
+        <div class="def-label">Règles générales des phrases hypothétiques</div>
+        <p>
+          <strong>1.</strong> Deux propositions : <strong>if + condition</strong>, <strong>proposition principale + résultat</strong>.<br><br>
+          <strong>2.</strong> L'ordre est libre : <em>If + condition, résultat.</em> ou <em>Résultat if + condition.</em> (pas de virgule dans ce second cas).<br><br>
+          <strong>3.</strong> <strong>Jamais de will/would</strong> dans la proposition en <em>if</em> (sauf politesse).<br><br>
+          <strong>4.</strong> Le temps de la subordonnée indique le <strong>degré de réalité</strong>, pas le sens temporel littéral.<br><br>
+          <strong>5.</strong> <strong>Unless = if… not</strong> (sauf si / à moins que).
+        </p>
+      </div>
+
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 2 : TYPE 0 — LE RÉEL                  -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="type-zero">
+      <div class="section-header">
+        <div class="section-num">2</div>
+        <div class="section-info">
+          <div class="section-tag">Vérité générale</div>
+          <div class="section-title">Type 0 — Le Réel (Zero Conditional)</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>Le <em>zero conditional</em> exprime une <strong>vérité générale</strong>, un <strong>fait scientifique</strong>, une <strong>règle</strong> ou une <strong>habitude systématique</strong>. La condition est toujours vraie, donc le résultat l'est également — aucune incertitude n'est exprimée.</p>
+      </div>
+
+      <div class="formula-grid">
+        <div class="formula-card">
+          <div class="formula-label int">✦ If — Vérité générale</div>
+          <div class="formula-expr">
+            <span class="f-q">If</span>
+            <span class="f-sep">+</span>
+            <span class="f-subj">present simple</span>
+            <span class="f-sep">,</span>
+            <span class="f-verb">present simple</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-int">If you raise interest rates, demand falls.</span><br>
+            <span class="e-int">If the market opens, prices fluctuate immediately.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label aff">✦ When — Équivalent systématique</div>
+          <div class="formula-expr">
+            <span class="f-q">When</span>
+            <span class="f-sep">+</span>
+            <span class="f-subj">present simple</span>
+            <span class="f-sep">,</span>
+            <span class="f-verb">present simple</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-aff">When inflation rises, purchasing power falls.</span><br>
+            <span class="e-aff">When a bond matures, the principal is repaid.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="usage-grid">
+        <div class="usage-card">
+          <div class="usage-icon">🔬</div>
+          <div>
+            <div class="usage-title">Loi scientifique ou économique</div>
+            <div class="usage-desc">Exprimer une relation de cause à effet toujours vraie.</div>
+          </div>
+          <div class="usage-example">
+            If supply exceeds demand, prices drop.<br>
+            <span class="trans">Si l'offre dépasse la demande, les prix baissent.</span>
+          </div>
+        </div>
+        <div class="usage-card">
+          <div class="usage-icon">📋</div>
+          <div>
+            <div class="usage-title">Règle ou instruction</div>
+            <div class="usage-desc">Donner une règle fixe, un règlement d'entreprise ou une procédure.</div>
+          </div>
+          <div class="usage-example">
+            If an employee resigns, they must give one month's notice.<br>
+            <span class="trans">Si un employé démissionne, il doit donner un préavis d'un mois.</span>
+          </div>
+        </div>
+        <div class="usage-card">
+          <div class="usage-icon">🔁</div>
+          <div>
+            <div class="usage-title">Habitude systématique</div>
+            <div class="usage-desc">Décrire une réaction automatique et répétée, y compris algorithmique.</div>
+          </div>
+          <div class="usage-example">
+            If the stock falls below the threshold, the algorithm sells automatically.<br>
+            <span class="trans">Si l'action passe sous le seuil, l'algorithme vend automatiquement.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hl-box tip">
+        <div class="hl-icon">💡</div>
+        <div class="hl-body">
+          <strong>If vs When :</strong> Dans le zero conditional, <em>if</em> et <em>when</em> sont souvent interchangeables car la condition est systématiquement vraie.<br>
+          <em>If water freezes</em> ≈ <em>When water freezes</em> — dans les deux cas, le résultat est certain.
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 3 : TYPE 1 — HYPOTHÈSE PROBABLE       -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="type-one">
+      <div class="section-header">
+        <div class="section-num">3</div>
+        <div class="section-info">
+          <div class="section-tag">Futur probable</div>
+          <div class="section-title">Type 1 — L'Hypothèse Probable (First Conditional)</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>Le <em>first conditional</em> exprime une hypothèse <strong>réaliste et probable</strong> dans le futur. La condition est présentée comme plausible : si elle se réalise, une conséquence précise en découlera.</p>
+      </div>
+
+      <div class="formula-grid">
+        <div class="formula-card">
+          <div class="formula-label aff">✦ If — Conséquence certaine</div>
+          <div class="formula-expr">
+            <span class="f-q">If</span>
+            <span class="f-sep">+</span>
+            <span class="f-subj">present simple</span>
+            <span class="f-sep">,</span>
+            <span class="f-mod">will</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">base verbale</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-aff">If the board approves the budget, we will launch the project in March.</span><br>
+            <span class="e-aff">If rates rise again, the bank will tighten lending.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label yel">✦ If — Conséquence modulée</div>
+          <div class="formula-expr">
+            <span class="f-q">If</span>
+            <span class="f-sep">+</span>
+            <span class="f-subj">present simple</span>
+            <span class="f-sep">,</span>
+            <span class="f-mod">can / may / should</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">base verbale</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-yel">If you finish the report early, you can leave at 4pm.</span><br>
+            <span class="e-yel">If sales keep growing, the company may open a second office.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label pur">✦ Unless — Condition négative</div>
+          <div class="formula-expr">
+            <span class="f-mod">Unless</span>
+            <span class="f-sep">+</span>
+            <span class="f-subj">present simple</span>
+            <span class="f-sep">,</span>
+            <span class="f-mod">will</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">base verbale</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-mod">Unless the client confirms today, we will cancel the contract.</span><br>
+            <span class="e-mod">Unless costs fall, margins will keep shrinking.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hl-box warning">
+        <div class="hl-icon">⚠️</div>
+        <div class="hl-body">
+          <strong>Erreur fréquente :</strong> ne jamais utiliser <em>will</em> dans la proposition en <em>if</em>.<br>
+          ❌ <em>If it will rain, we will postpone the meeting.</em><br>
+          ✔ <em>If it rains, we will postpone the meeting.</em>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 4 : TYPE 2 — IRRÉEL AU PRÉSENT        -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="type-two">
+      <div class="section-header">
+        <div class="section-num">4</div>
+        <div class="section-info">
+          <div class="section-tag">Irréel présent / futur proche</div>
+          <div class="section-title">Type 2 — L'Hypothèse Irréelle au Présent (Second Conditional)</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>Le <em>second conditional</em> exprime une hypothèse <strong>irréelle, imaginaire ou peu probable</strong>, au présent ou dans un futur proche. La condition est présentée comme contraire à la situation actuelle.</p>
+      </div>
+
+      <div class="formula-grid">
+        <div class="formula-card">
+          <div class="formula-label aff">✦ If — Hypothèse irréelle</div>
+          <div class="formula-expr">
+            <span class="f-q">If</span>
+            <span class="f-sep">+</span>
+            <span class="f-subj">past simple</span>
+            <span class="f-sep">,</span>
+            <span class="f-mod">would</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">base verbale</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-aff">If the company cut prices, it would gain market share.</span><br>
+            <span class="e-aff">If I were the CEO, I would restructure the department.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label neg">✦ If — Résultat négatif</div>
+          <div class="formula-expr">
+            <span class="f-q">If</span>
+            <span class="f-sep">+</span>
+            <span class="f-subj">past simple</span>
+            <span class="f-sep">,</span>
+            <span class="f-neg">wouldn't</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">base verbale</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-neg">If we lost this client, we wouldn't survive the quarter.</span><br>
+            <span class="e-neg">If the currency fell further, exports wouldn't recover.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label pur">✦ If — Possibilité irréelle</div>
+          <div class="formula-expr">
+            <span class="f-q">If</span>
+            <span class="f-sep">+</span>
+            <span class="f-subj">past simple</span>
+            <span class="f-sep">,</span>
+            <span class="f-mod">could / might</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">base verbale</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-mod">If we invested more in R&amp;D, we could develop new products.</span><br>
+            <span class="e-mod">If the deal fell through, we might reconsider the whole strategy.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hl-box info">
+        <div class="hl-icon">✒️</div>
+        <div class="hl-body">
+          <strong>Were pour toutes les personnes :</strong> dans un registre soutenu, on emploie <em>were</em> (et non <em>was</em>) à toutes les personnes après <em>if</em>, notamment dans l'expression figée <em>if I were you</em>.<br>
+          <em>If I were you, I would negotiate a better deal.</em>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 5 : TYPE 3 — IRRÉEL AU PASSÉ          -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="type-three">
+      <div class="section-header">
+        <div class="section-num">5</div>
+        <div class="section-info">
+          <div class="section-tag">Irréel passé / regret</div>
+          <div class="section-title">Type 3 — L'Hypothèse Irréelle au Passé (Third Conditional)</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>Le <em>third conditional</em> exprime une hypothèse irréelle concernant le <strong>passé</strong> : un fait qui ne s'est pas produit et sa conséquence imaginaire. Il sert très souvent à exprimer un <strong>regret</strong> ou un <strong>reproche</strong> — fréquent dans les études de cas économiques.</p>
+      </div>
+
+      <div class="formula-grid">
+        <div class="formula-card">
+          <div class="formula-label aff">✦ If — Regret / reproche</div>
+          <div class="formula-expr">
+            <span class="f-q">If</span>
+            <span class="f-sep">+</span>
+            <span class="f-subj">past perfect</span>
+            <span class="f-sep">,</span>
+            <span class="f-mod">would have</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">participe passé</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-aff">If the firm had diversified earlier, it would have avoided the crisis.</span><br>
+            <span class="e-aff">If she had signed the deal, the merger would have succeeded.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label neg">✦ If — Résultat négatif évité</div>
+          <div class="formula-expr">
+            <span class="f-q">If</span>
+            <span class="f-sep">+</span>
+            <span class="f-subj">past perfect</span>
+            <span class="f-sep">,</span>
+            <span class="f-neg">wouldn't have</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">participe passé</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-neg">If they hadn't ignored the warning signs, they wouldn't have lost the contract.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label pur">✦ If — Possibilité passée manquée</div>
+          <div class="formula-expr">
+            <span class="f-q">If</span>
+            <span class="f-sep">+</span>
+            <span class="f-subj">past perfect</span>
+            <span class="f-sep">,</span>
+            <span class="f-mod">could / might have</span>
+            <span class="f-sep">+</span>
+            <span class="f-verb">participe passé</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-mod">If we had negotiated better terms, we could have saved millions.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hl-box danger">
+        <div class="hl-icon">🚨</div>
+        <div class="hl-body">
+          <strong>Piège fréquent :</strong> ne jamais utiliser <em>would have</em> dans la proposition en <em>if</em>.<br>
+          ❌ <em>If they would have known about the risk…</em><br>
+          ✔ <em>If they had known about the risk, they would have acted differently.</em>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 6 : CONDITIONNELS MIXTES              -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="mixtes">
+      <div class="section-header">
+        <div class="section-num">6</div>
+        <div class="section-info">
+          <div class="section-tag">Combinaisons temporelles</div>
+          <div class="section-title">Les Conditionnels Mixtes (Mixed Conditionals)</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>Les <strong>conditionnels mixtes</strong> combinent deux périodes temporelles différentes : une condition passée avec une conséquence présente, ou une condition présente/permanente avec une conséquence passée. Ils permettent d'analyser des <strong>situations réelles et complexes</strong> — très fréquents en anglais économique.</p>
+      </div>
+
+      <div class="cmp-table">
+        <div class="cmp-head" style="grid-template-columns: 1.6fr 1.4fr 2fr;">
+          <div class="th" style="color:var(--col-modal);">Structure</div>
+          <div class="th" style="color:var(--col-pp);">Sens</div>
+          <div class="th" style="color:var(--text-dim);">Exemple</div>
+        </div>
+        <div class="cmp-row" style="grid-template-columns: 1.6fr 1.4fr 2fr;">
+          <div class="cmp-c2">If + past perfect, would + BV</div>
+          <div class="cmp-c0">Condition passée → conséquence présente</div>
+          <div class="cmp-label">If the company had invested in tech, it would be more competitive today.</div>
+        </div>
+        <div class="cmp-row" style="grid-template-columns: 1.6fr 1.4fr 2fr;">
+          <div class="cmp-c2">If + past simple, would have + PP</div>
+          <div class="cmp-c0">Condition permanente → conséquence passée</div>
+          <div class="cmp-label">If she weren't so risk-averse, she would have accepted the offer.</div>
+        </div>
+        <div class="cmp-row" style="grid-template-columns: 1.6fr 1.4fr 2fr;">
+          <div class="cmp-c2">If + past perfect, would have + PP</div>
+          <div class="cmp-c0">Rappel — condition et conséquence passées (type 3)</div>
+          <div class="cmp-label">If they had merged earlier, they would have dominated the market.</div>
+        </div>
+      </div>
+
+      <div class="hl-box warning">
+        <div class="hl-icon">🔍</div>
+        <div class="hl-body">
+          <strong>Comment identifier le mélange :</strong> repérez le marqueur temporel implicite dans chaque proposition (<em>today, now, at that time</em>) pour déterminer si la condition et la conséquence appartiennent à la même période ou non.
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 7 : AUTRES EXPRESSIONS DE L'HYPOTHÈSE -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="autres-expressions">
+      <div class="section-header">
+        <div class="section-num">7</div>
+        <div class="section-info">
+          <div class="section-tag">Nuances &amp; connecteurs</div>
+          <div class="section-title">Autres Expressions de l'Hypothèse</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>Au-delà de <em>if</em>, plusieurs connecteurs et expressions permettent de nuancer une hypothèse : condition restrictive, précaution, souhait irréalisable ou préférence.</p>
+      </div>
+
+      <div class="adv-grid">
+        <div class="adv-pill"><span class="adv-en">unless</span><span class="adv-fr">à moins que</span></div>
+        <div class="adv-pill"><span class="adv-en">provided that</span><span class="adv-fr">à condition que</span></div>
+        <div class="adv-pill"><span class="adv-en">as long as</span><span class="adv-fr">tant que</span></div>
+        <div class="adv-pill"><span class="adv-en">on condition that</span><span class="adv-fr">à la condition que</span></div>
+        <div class="adv-pill"><span class="adv-en">in case</span><span class="adv-fr">au cas où</span></div>
+        <div class="adv-pill"><span class="adv-en">otherwise</span><span class="adv-fr">sinon</span></div>
+        <div class="adv-pill"><span class="adv-en">even if</span><span class="adv-fr">même si</span></div>
+        <div class="adv-pill"><span class="adv-en">supposing</span><span class="adv-fr">à supposer que</span></div>
+      </div>
+
+      <div class="usage-grid">
+        <div class="usage-card">
+          <div class="usage-icon">🌙</div>
+          <div>
+            <div class="usage-title">Souhait irréalisable (wish / if only)</div>
+            <div class="usage-desc"><em>Wish/if only</em> + past simple (présent) ou + past perfect (passé) pour exprimer un regret ou un souhait.</div>
+          </div>
+          <div class="usage-example">
+            I wish we had more time before the deadline.<br>
+            <span class="trans">Nous aurions aimé avoir plus de temps avant l'échéance.</span>
+          </div>
+        </div>
+        <div class="usage-card">
+          <div class="usage-icon">⚖️</div>
+          <div>
+            <div class="usage-title">Préférence (would rather)</div>
+            <div class="usage-desc"><em>Would rather</em> + past simple exprime une préférence concernant l'action d'une autre personne.</div>
+          </div>
+          <div class="usage-example">
+            I'd rather you didn't share these figures yet.<br>
+            <span class="trans">Je préférerais que vous ne partagiez pas encore ces chiffres.</span>
+          </div>
+        </div>
+        <div class="usage-card">
+          <div class="usage-icon">☂️</div>
+          <div>
+            <div class="usage-title">Précaution (in case)</div>
+            <div class="usage-desc"><em>In case</em> + present simple anticipe un événement possible, par précaution — à ne pas confondre avec <em>if</em>.</div>
+          </div>
+          <div class="usage-example">
+            Take a backup file in case the server crashes.<br>
+            <span class="trans">Prenez une copie de sauvegarde au cas où le serveur planterait.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="def-box">
+        <div class="def-label">Unless ≠ toujours if… not</div>
+        <p>
+          <strong>Unless the deadline is extended, we will miss the target.</strong> (= <em>If the deadline isn't extended…</em>)<br><br>
+          Mais <em>unless</em> ne s'utilise pas pour exprimer un regret ou une hypothèse négative complexe — on privilégie alors <strong>if… not</strong> : <em>If they hadn't reacted, the company wouldn't have survived.</em>
+        </p>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 8 : EXERCICES                         -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="exercices">
+      <div class="section-header">
+        <div class="section-num">8</div>
+        <div class="section-info">
+          <div class="section-tag">Pratique</div>
+          <div class="section-title">Exercices</div>
+        </div>
+      </div>
+
+      <!-- Exercice 1 -->
+      <div class="exercise-block">
+        <div class="ex-header">
+          <span class="ex-badge">Exercice 1</span>
+          <span class="ex-title">Identifiez le type d'hypothèse et choisissez la forme correcte</span>
+        </div>
+        <div class="ex-items" id="ex1items">
+          <div class="ex-item">
+            <div class="ex-num">01.</div>
+            <div class="ex-q">If the merger <strong>(goes / will go)</strong> through, shareholders will benefit significantly.</div>
+            <div class="ex-answer">→ goes (type 1 — présent simple après if)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">02.</div>
+            <div class="ex-q">If I <strong>(was / were)</strong> in your position, I would renegotiate the contract.</div>
+            <div class="ex-answer">→ were (type 2 — registre soutenu, toutes personnes)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">03.</div>
+            <div class="ex-q">If the team <strong>(had met / met)</strong> the deadline, the client wouldn't have cancelled.</div>
+            <div class="ex-answer">→ had met (type 3 — past perfect après if)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">04.</div>
+            <div class="ex-q">Unless profits <strong>(improve / will improve)</strong>, the board will vote to close the branch.</div>
+            <div class="ex-answer">→ improve (unless = if… not, présent simple)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">05.</div>
+            <div class="ex-q">If water <strong>(boils / boiled)</strong> at 100°C, it turns to steam.</div>
+            <div class="ex-answer">→ boils (type 0 — vérité générale)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">06.</div>
+            <div class="ex-q">If they <strong>(had / would have)</strong> more capital, they could expand internationally.</div>
+            <div class="ex-answer">→ had (type 2 — past simple après if)</div>
+          </div>
+        </div>
+        <button class="show-answers-btn" onclick="showAnswers('ex1items')">Afficher les réponses</button>
+      </div>
+
+      <!-- Exercice 2 -->
+      <div class="exercise-block">
+        <div class="ex-header">
+          <span class="ex-badge">Exercice 2</span>
+          <span class="ex-title">Transformez chaque situation en phrase hypothétique</span>
+        </div>
+        <div class="ex-items" id="ex2items">
+          <div class="ex-item">
+            <div class="ex-num">01.</div>
+            <div class="ex-q">The company lost the deal because it didn't lower its price. (type 3)</div>
+            <div class="ex-answer">→ If the company had lowered its price, it wouldn't have lost the deal.</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">02.</div>
+            <div class="ex-q">I don't have enough time, so I can't finish the report today. (type 2)</div>
+            <div class="ex-answer">→ If I had enough time, I could finish the report today.</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">03.</div>
+            <div class="ex-q">The board doesn't know the real figures, so they aren't worried. (type 2)</div>
+            <div class="ex-answer">→ If the board knew the real figures, they would be worried.</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">04.</div>
+            <div class="ex-q">Interest rates are rising rapidly, so the market may crash. (type 1)</div>
+            <div class="ex-answer">→ If interest rates continue to rise rapidly, the market may crash.</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">05.</div>
+            <div class="ex-q">She didn't check the contract carefully, so she missed the clause. (type 3)</div>
+            <div class="ex-answer">→ If she had checked the contract carefully, she wouldn't have missed the clause.</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">06.</div>
+            <div class="ex-q">We don't invest in training, so productivity stays low. (type 2)</div>
+            <div class="ex-answer">→ If we invested in training, productivity wouldn't stay low.</div>
+          </div>
+        </div>
+        <button class="show-answers-btn" onclick="showAnswers('ex2items')">Afficher les réponses</button>
+      </div>
+
+      <!-- Exercice 3 -->
+      <div class="exercise-block">
+        <div class="ex-header">
+          <span class="ex-badge">Exercice 3</span>
+          <span class="ex-title">Reformulez les phrases avec le connecteur indiqué</span>
+        </div>
+        <div class="ex-items" id="ex3items">
+          <div class="ex-item">
+            <div class="ex-num">01.</div>
+            <div class="ex-q">If you don't submit the form by Friday, your application will be rejected. → (unless)</div>
+            <div class="ex-answer">→ Unless you submit the form by Friday, your application will be rejected.</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">02.</div>
+            <div class="ex-q">I regret that we didn't hire a consultant earlier. → (wish)</div>
+            <div class="ex-answer">→ I wish we had hired a consultant earlier.</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">03.</div>
+            <div class="ex-q">You can attend the meeting only if you confirm in advance. → (provided that)</div>
+            <div class="ex-answer">→ You can attend the meeting provided that you confirm in advance.</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">04.</div>
+            <div class="ex-q">Bring a printed copy — the projector might fail. → (in case)</div>
+            <div class="ex-answer">→ Bring a printed copy in case the projector fails.</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">05.</div>
+            <div class="ex-q">I would prefer if you didn't mention this to the client yet. → (would rather)</div>
+            <div class="ex-answer">→ I'd rather you didn't mention this to the client yet.</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">06.</div>
+            <div class="ex-q">The strategy needs to work, or we will need a plan B. → (otherwise)</div>
+            <div class="ex-answer">→ The strategy needs to work; otherwise, we will need a plan B.</div>
+          </div>
+        </div>
+        <button class="show-answers-btn" onclick="showAnswers('ex3items')">Afficher les réponses</button>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // Show/hide answers
+  function showAnswers(id) {
+    const items = document.querySelectorAll('#' + id + ' .ex-item');
+    const btn = document.querySelector('#' + id).closest('.exercise-block').querySelector('.show-answers-btn');
+    const allRevealed = [...items].every(i => i.classList.contains('revealed'));
+    items.forEach(item => item.classList.toggle('revealed', !allRevealed));
+    btn.textContent = allRevealed ? 'Afficher les réponses' : 'Masquer les réponses';
+  }
+
+  // Fade-up animation on scroll
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('fade-up'); obs.unobserve(e.target); } });
+  }, { threshold: 0.05 });
+  document.querySelectorAll('.section').forEach(s => obs.observe(s));
+</script>
+</body>
+</html>

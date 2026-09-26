@@ -237,6 +237,20 @@
       '</div>' +
 
       '<div class="bloc">' +
+        '<h3>Abonnés<small id="ab-maj"></small></h3>' +
+        '<p class="aide">La liste des membres actifs abonnés à la lettre d\'information, ' +
+        'rubrique par rubrique. Un membre abonné à plusieurs rubriques n\'apparaît qu\'une ' +
+        'fois quand « Toutes les rubriques » est sélectionné.</p>' +
+        '<div class="toolbar" style="margin-bottom:14px">' +
+          '<select id="ab-filtre"><option value="">Toutes les rubriques</option></select>' +
+        '</div>' +
+        '<div class="card scroll">' +
+          '<table><thead><tr><th>Membre</th><th>E-mail</th></tr></thead><tbody id="ab-tbody"></tbody></table>' +
+          '<div class="empty" id="ab-vide" style="display:none">Aucun abonné pour cette sélection.</div>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="bloc">' +
         '<h3>2. La lettre</h3>' +
         '<p class="aide">Un ou plusieurs PDF — par exemple l\'édition française et ' +
         'l\'édition en langue originale. Tous partent dans le même courriel, et tous ' +
@@ -297,11 +311,13 @@
 
     brancher();
     rendreRubriques();
+    remplirFiltreAbonnes();
     $('#nl-objet').value = OBJET_DEFAUT;
     $('#nl-corps').value = CORPS_DEFAUT;
     rafraichirApercu();
     rafraichirEffectifs();
     rafraichirHistorique();
+    rafraichirAbonnes();
   }
 
   /* ─── Écouteurs ───────────────────────────────────────────── */
@@ -363,6 +379,8 @@
     $('#nl-joindre').addEventListener('change', rafraichirApercu);
     $('#nl-envoyer').addEventListener('click', function () { envoyer(false); });
     $('#nl-test').addEventListener('click', function () { envoyer(true); });
+
+    $('#ab-filtre').addEventListener('change', rafraichirAbonnes);
   }
 
   /* ─── Rubriques ───────────────────────────────────────────── */
@@ -375,6 +393,40 @@
                '<span>' + esc(r.detail) + '</span>' +
              '</button>';
     }).join('');
+  }
+
+  /* ─── Abonnés ─────────────────────────────────────────────── */
+  function remplirFiltreAbonnes() {
+    var sel = $('#ab-filtre'); if (!sel) return;
+    var courant = sel.value;
+    sel.innerHTML = '<option value="">Toutes les rubriques</option>' +
+      A.newsletter.rubriques().map(function (r) {
+        return '<option value="' + esc(r.id) + '">' + esc(r.titre) + '</option>';
+      }).join('');
+    sel.value = courant;
+  }
+
+  function rafraichirAbonnes() {
+    var sel = $('#ab-filtre'); if (!sel) return;
+    var corps = $('#ab-tbody'), vide = $('#ab-vide'), maj = document.getElementById('ab-maj');
+    if (maj) maj.textContent = 'chargement…';
+    var cible = sel.value ? [sel.value] : A.newsletter.rubriques().map(function (r) { return r.id; });
+
+    return Ad.destinatairesNewsletter(cible).then(function (liste) {
+      liste = liste || [];
+      corps.innerHTML = liste.map(function (u) {
+        var nom = ((u.prenom || '') + ' ' + (u.nom || '')).trim() || '—';
+        return '<tr><td>' + esc(nom) + '</td><td class="mono">' + esc(u.email || '—') + '</td></tr>';
+      }).join('');
+      vide.textContent = 'Aucun abonné pour cette sélection.';
+      vide.style.display = liste.length ? 'none' : 'block';
+      if (maj) maj.textContent = liste.length + ' abonné' + (liste.length > 1 ? 's' : '');
+    }).catch(function (err) {
+      corps.innerHTML = '';
+      vide.style.display = 'block';
+      vide.textContent = 'Impossible de charger les abonnés : ' + String(err.message || err);
+      if (maj) maj.textContent = '';
+    });
   }
 
   function rafraichirEffectifs() {
@@ -708,6 +760,6 @@
   }, 1500);
 
   window.ECGNewsletter = {
-    rafraichir: function () { rafraichirEffectifs(); rafraichirHistorique(); }
+    rafraichir: function () { rafraichirEffectifs(); rafraichirHistorique(); rafraichirAbonnes(); }
   };
 })();

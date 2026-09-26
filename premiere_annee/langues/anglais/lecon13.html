@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leçon 13 — Quantifiers | Anglais ECG</title>
+<link rel="stylesheet" href="../../../fonts/fonts.css">
+<style>
+  :root {
+    --bg: #0a0a0c;
+    --surface: #141417;
+    --surface2: #1b1b1f;
+    --border: #26262b;
+    --accent: #a1a1aa;
+    --accent2: #d4d4d8;
+    --accent3: #f4f4f5;
+    --accent4: #52525b;
+    --accent5: #fafafa;
+    --text: #e4e4e7;
+    --text-dim: #8b8b93;
+    --text-faint: #26262b;
+    /* quantifiers colors */
+    --col-count:   #d4d4d8;
+    --col-uncount: #94a3b8;
+    --col-tense:   #a8a29e;
+    --col-error:   #f43f5e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  /* ─── BACKGROUND ─── */
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(180px); pointer-events: none; z-index: 0; }
+  .orb1 { width: 800px; height: 800px; background: rgba(161,161,170,0.06); top: -300px; right: -200px; }
+  .orb2 { width: 600px; height: 600px; background: rgba(148,163,184,0.05); bottom: -200px; left: -200px; }
+  .orb3 { width: 500px; height: 500px; background: rgba(168,162,158,0.04); top: 50%; left: 50%; transform: translate(-50%,-50%); }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(10,10,12,0.92); backdrop-filter: blur(20px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: var(--accent); cursor: pointer; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: var(--text-dim); flex-wrap: wrap; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb span:hover { color: var(--accent); }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); cursor: default; }
+
+  /* ─── CHAPTER HERO ─── */
+  .chapter-hero {
+    position: relative; overflow: hidden;
+    padding: 80px 64px 64px;
+    background: linear-gradient(135deg, #0a0a0c 0%, #1c1c20 50%, #0a0a0c 100%);
+    border-bottom: 1px solid rgba(161,161,170,0.14);
+    z-index: 1;
+    text-align: center; display: flex; flex-direction: column; align-items: center;
+  }
+  .chapter-hero::after {
+    content: '13';
+    position: absolute; right: -10px; bottom: -40px;
+    font-family: 'Playfair Display', serif; font-size: 22rem; font-weight: 900;
+    color: rgba(161,161,170,0.05); line-height: 1; pointer-events: none;
+    letter-spacing: -0.05em;
+  }
+  .ch-eyebrow {
+    font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px; justify-content: center;
+  }
+  .ch-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--accent); }
+  .ch-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 6vw, 5.5rem); font-weight: 900;
+    line-height: 1.0; margin-bottom: 20px; color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .ch-title span { color: var(--accent); }
+  .ch-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .ch-tag {
+    padding: 5px 14px; border-radius: 20px; font-family: 'DM Mono', monospace;
+    font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em;
+    border: 1px solid;
+  }
+  .ch-tag.light  { color: var(--col-count);   border-color: rgba(212,212,216,0.3);  background: rgba(212,212,216,0.08); }
+  .ch-tag.slate  { color: var(--col-uncount); border-color: rgba(148,163,184,0.3);  background: rgba(148,163,184,0.08); }
+  .ch-tag.stone  { color: var(--col-tense);   border-color: rgba(168,162,158,0.3);  background: rgba(168,162,158,0.08); }
+  .ch-tag.rose   { color: var(--col-error);   border-color: rgba(244,63,94,0.3);    background: rgba(244,63,94,0.08); }
+
+  /* ─── LAYOUT ─── */
+  .page-body { display: block; min-height: calc(100vh - 300px); position: relative; z-index: 1; }
+  .main-content { width: 100%; padding: 48px 80px 100px; max-width: 1100px; margin: 0 auto; box-sizing: border-box; }
+
+  /* ─── SECTION ─── */
+  .section { margin-bottom: 72px; scroll-margin-top: 80px; }
+  .section-header {
+    display: flex; align-items: flex-start; gap: 20px; margin-bottom: 32px;
+    padding-bottom: 20px; border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 900;
+    color: var(--text-faint); line-height: 1; flex-shrink: 0; min-width: 48px;
+  }
+  .section-info {}
+  .section-tag { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--text); line-height: 1.2; }
+
+  /* ─── PROSE ─── */
+  .prose { font-size: 0.95rem; color: var(--text-dim); line-height: 1.85; font-weight: 300; }
+  .prose p { margin-bottom: 14px; }
+  .prose strong { color: var(--text); font-weight: 500; }
+  .prose em { color: var(--accent); font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.9rem; }
+
+  /* ─── DEFINITION BOX ─── */
+  .def-box {
+    background: linear-gradient(135deg, rgba(161,161,170,0.07) 0%, rgba(161,161,170,0.02) 100%);
+    border: 1px solid rgba(161,161,170,0.22); border-left: 3px solid var(--accent);
+    border-radius: 0 12px 12px 0; padding: 24px 28px; margin: 24px 0;
+  }
+  .def-box .def-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .def-box p { font-size: 0.92rem; color: var(--text-dim); line-height: 1.7; font-style: italic; }
+  .def-box strong { color: var(--text); font-style: normal; }
+
+  /* ─── HIGHLIGHT BOX ─── */
+  .hl-box {
+    border-radius: 12px; padding: 20px 24px; margin: 20px 0;
+    border: 1px solid; display: flex; gap: 16px; align-items: flex-start;
+  }
+  .hl-box.warning { background: rgba(148,163,184,0.06); border-color: rgba(148,163,184,0.22); }
+  .hl-box.tip     { background: rgba(161,161,170,0.06); border-color: rgba(161,161,170,0.22); }
+  .hl-box.info    { background: rgba(168,162,158,0.06); border-color: rgba(168,162,158,0.22); }
+  .hl-box.danger  { background: rgba(244,63,94,0.05);   border-color: rgba(244,63,94,0.2); }
+  .hl-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 1px; }
+  .hl-body { font-size: 0.88rem; color: var(--text-dim); line-height: 1.7; }
+  .hl-body strong { color: var(--text); font-weight: 500; }
+
+  /* ─── OVERVIEW CARDS ─── */
+  .overview-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 28px 0; }
+  .ov-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 28px 24px; transition: all 0.2s;
+    border-top: 3px solid;
+  }
+  .ov-card.count-card   { border-top-color: var(--col-count); }
+  .ov-card.uncount-card { border-top-color: var(--col-uncount); }
+  .ov-card:hover { background: var(--surface2); transform: translateY(-3px); }
+  .ov-keyword {
+    font-family: 'DM Mono', monospace; font-size: 2rem; font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .ov-keyword.count-kw   { color: var(--col-count); }
+  .ov-keyword.uncount-kw { color: var(--col-uncount); }
+  .ov-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+  .ov-desc  { font-size: 0.82rem; color: var(--text-dim); line-height: 1.6; }
+  .ov-example {
+    margin-top: 14px; font-family: 'DM Mono', monospace; font-size: 0.78rem;
+    padding: 8px 12px; border-radius: 0 6px 6px 0;
+  }
+  .ov-example.ex-count   { color: var(--col-count);   background: rgba(212,212,216,0.07); border-left: 2px solid var(--col-count); }
+  .ov-example.ex-uncount { color: var(--col-uncount); background: rgba(148,163,184,0.07); border-left: 2px solid var(--col-uncount); }
+  .ov-example .trans { display: block; color: var(--text-faint); font-size: 0.72rem; margin-top: 4px; font-style: italic; }
+
+  /* ─── FORMULA GRID ─── */
+  .formula-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 24px 0; }
+  .formula-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px 22px;
+  }
+  .formula-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 14px; }
+  .formula-label.col-count   { color: var(--col-count); }
+  .formula-label.col-uncount { color: var(--col-uncount); }
+  .formula-label.col-tense   { color: var(--col-tense); }
+  .formula-label.col-error   { color: var(--col-error); }
+
+  .formula-expr {
+    font-family: 'DM Mono', monospace; font-size: 0.88rem; font-weight: 500;
+    display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-bottom: 14px;
+    line-height: 1.6;
+  }
+  .f-count   { color: var(--col-count);   background: rgba(212,212,216,0.12); padding: 2px 8px; border-radius: 4px; }
+  .f-uncount { color: var(--col-uncount); background: rgba(148,163,184,0.12); padding: 2px 8px; border-radius: 4px; }
+  .f-tense   { color: var(--col-tense);   background: rgba(168,162,158,0.12); padding: 2px 8px; border-radius: 4px; }
+  .f-noun    { color: var(--text);        background: rgba(228,228,231,0.07); padding: 2px 8px; border-radius: 4px; }
+  .f-sep     { color: var(--text-faint); font-size: 0.7rem; }
+
+  .formula-example { font-size: 0.82rem; color: var(--text-dim); line-height: 1.7; }
+  .formula-example span { font-family: 'DM Mono', monospace; }
+  .e-count   { color: var(--col-count); }
+  .e-uncount { color: var(--col-uncount); }
+  .e-tense   { color: var(--col-tense); }
+
+  /* ─── TENSE TABLE (ici : table des quantifieurs) ─── */
+  .tense-table {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; overflow: hidden; margin: 24px 0;
+  }
+  .tense-head {
+    display: grid; padding: 12px 20px; background: var(--surface2); border-bottom: 1px solid var(--border);
+  }
+  .tense-head .th { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim); }
+  .tense-row {
+    display: grid; padding: 13px 20px; border-bottom: 1px solid rgba(38,38,43,0.8); align-items: start;
+  }
+  .tense-row:last-child { border-bottom: none; }
+  .tense-row:hover { background: rgba(161,161,170,0.03); }
+  .t-label   { font-size: 0.82rem; color: var(--text-dim); font-weight: 300; line-height: 1.5; }
+  .t-since   { font-family: 'DM Mono', monospace; font-size: 0.76rem; color: var(--col-count);   line-height: 1.55; }
+  .t-for     { font-family: 'DM Mono', monospace; font-size: 0.76rem; color: var(--col-uncount); line-height: 1.55; }
+  .t-note    { font-size: 0.74rem; color: var(--text-faint); font-style: italic; line-height: 1.5; }
+
+  /* ─── USAGE CARDS ─── */
+  .usage-grid { display: grid; grid-template-columns: 1fr; gap: 14px; margin: 24px 0; }
+  .usage-card {
+    display: grid; grid-template-columns: auto 1fr 1.6fr; align-items: center; gap: 24px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px 24px; transition: border-color 0.2s;
+  }
+  .usage-card:hover { background: var(--surface2); }
+  .usage-card.u-count:hover   { border-color: rgba(212,212,216,0.35); }
+  .usage-card.u-uncount:hover { border-color: rgba(148,163,184,0.35); }
+  .usage-icon { font-size: 1.6rem; flex-shrink: 0; }
+  .usage-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .usage-desc { font-size: 0.82rem; color: var(--text-dim); line-height: 1.65; font-weight: 300; }
+  .usage-example {
+    font-family: 'DM Mono', monospace; font-size: 0.78rem;
+    padding: 8px 12px; border-radius: 0 6px 6px 0;
+  }
+  .usage-example.ex-count   { color: var(--col-count);   background: rgba(212,212,216,0.07); border-left: 2px solid var(--col-count); }
+  .usage-example.ex-uncount { color: var(--col-uncount); background: rgba(148,163,184,0.07); border-left: 2px solid var(--col-uncount); }
+  .usage-example .trans { display: block; color: var(--text-faint); font-size: 0.72rem; margin-top: 4px; font-style: italic; }
+
+  /* ─── EXERCISE BLOCK ─── */
+  .exercise-block {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 14px; padding: 28px 32px; margin: 28px 0;
+  }
+  .ex-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .ex-badge {
+    font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em;
+    text-transform: uppercase; padding: 4px 10px; border-radius: 6px;
+    background: rgba(161,161,170,0.12); color: var(--accent); border: 1px solid rgba(161,161,170,0.28);
+  }
+  .ex-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--text); }
+  .ex-items { display: flex; flex-direction: column; gap: 12px; }
+  .ex-item { display: flex; gap: 14px; align-items: flex-start; font-size: 0.88rem; }
+  .ex-num { font-family: 'DM Mono', monospace; color: var(--text-faint); font-size: 0.75rem; min-width: 20px; margin-top: 2px; }
+  .ex-q { color: var(--text-dim); line-height: 1.6; }
+  .ex-q strong { color: var(--text); }
+  .ex-answer { display: none; margin-top: 4px; font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--accent); }
+  .ex-item.revealed .ex-answer { display: block; }
+  .show-answers-btn {
+    margin-top: 20px; padding: 9px 20px;
+    background: rgba(161,161,170,0.1); border: 1px solid rgba(161,161,170,0.28);
+    border-radius: 8px; color: var(--accent); font-family: 'DM Mono', monospace;
+    font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .show-answers-btn:hover { background: rgba(161,161,170,0.18); }
+
+  /* ─── SCROLL ─── */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-up { animation: fadeUp 0.25s ease forwards; opacity: 0; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .usage-card { grid-template-columns: 1fr; gap: 12px; padding: 18px 20px; }
+    .main-content { padding: 32px 24px 80px; }
+    .chapter-hero { padding: 48px 24px 48px; }
+    nav { padding: 14px 20px; }
+    .overview-grid { grid-template-columns: 1fr; }
+    .formula-grid { grid-template-columns: 1fr; }
+    .usage-card { grid-template-columns: auto 1fr; }
+    .usage-example { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div>
+  <div class="breadcrumb">
+    <span onclick="window.location.href='../../../index.html'">Accueil</span>
+    <span class="sep">/</span>
+    <span onclick="window.location.href='../../index.html'">1ère Année</span>
+    <span class="sep">/</span>
+    <span onclick="window.location.href='../index.html'">Langues</span>
+      <span class="sep">/</span>
+      <span onclick="window.location.href='index.html'">Anglais</span>
+    <span class="sep">/</span>
+    <span class="current">Leçon 13 · Quantifiers</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="chapter-hero">
+  <div class="ch-eyebrow">Leçon 13 — Grammaire fondamentale</div>
+  <div class="ch-title">Les <span>Quantifieurs</span></div>
+  <div class="ch-tags" style="margin-top: 20px;">
+    <span class="ch-tag light">countable — many / few</span>
+    <span class="ch-tag slate">uncountable — much / little</span>
+    <span class="ch-tag stone">some / any</span>
+  </div>
+</div>
+
+<div class="page-body">
+  <main class="main-content">
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 1 : VUE D'ENSEMBLE                    -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="vue-ensemble">
+      <div class="section-header">
+        <div class="section-num">1</div>
+        <div class="section-info">
+          <div class="section-tag">Fondamentaux</div>
+          <div class="section-title">Dénombrables et indénombrables : le principe de base</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>Les <strong>quantifieurs</strong> (<em>quantifiers</em>) sont des mots qui précisent une quantité : <em>much</em>, <em>many</em>, <em>little</em>, <em>few</em>, <em>some</em>, <em>any</em>, <em>a lot of</em>… Le choix du quantifieur correct dépend d'abord d'une distinction essentielle en anglais : le nom qui suit est-il <strong>dénombrable</strong> (countable) ou <strong>indénombrable</strong> (uncountable) ?</p>
+        <p>Un nom <strong>dénombrable</strong> peut être précédé d'un nombre et se mettre au pluriel (<em>one book, two books</em>). Un nom <strong>indénombrable</strong> désigne une matière, une notion abstraite ou un ensemble non individualisé : il n'a pas de pluriel et ne peut pas être précédé directement d'un nombre (<em>information</em>, <em>advice</em>, <em>water</em>, <em>furniture</em>).</p>
+      </div>
+
+      <div class="overview-grid">
+        <div class="ov-card count-card">
+          <div class="ov-keyword count-kw">countable</div>
+          <div class="ov-title">Noms dénombrables</div>
+          <div class="ov-desc">Désignent des unités que l'on peut compter individuellement. Ont un singulier et un pluriel. S'utilisent avec <strong>many</strong>, <strong>few</strong>, <strong>a few</strong>.</div>
+          <div class="ov-example ex-count">
+            How <span style="color:var(--col-count)">many</span> employees does the firm have?<br>
+            <span class="trans">Combien d'employés l'entreprise a-t-elle ?</span>
+          </div>
+        </div>
+        <div class="ov-card uncount-card">
+          <div class="ov-keyword uncount-kw">uncountable</div>
+          <div class="ov-title">Noms indénombrables</div>
+          <div class="ov-desc">Désignent une matière, une notion globale ou abstraite. Pas de pluriel. S'utilisent avec <strong>much</strong>, <strong>little</strong>, <strong>a little</strong>.</div>
+          <div class="ov-example ex-uncount">
+            How <span style="color:var(--col-uncount)">much</span> information do we have?<br>
+            <span class="trans">Combien d'informations avons-nous ?</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="def-box">
+        <div class="def-label">Règle de diagnostic — le test du pluriel et du nombre</div>
+        <p>
+          <strong>Posez-vous la question :</strong><br><br>
+          → peut-on dire « <em>one ___, two ___s</em> » ? → oui → nom <strong>dénombrable</strong> → many / few / a few<br>
+          → peut-on mettre un nombre directement devant ? → non (on dit « a piece of », « a bit of »…) → nom <strong>indénombrable</strong> → much / little / a little
+        </p>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 2 : SOME ET ANY                       -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="some-any">
+      <div class="section-header">
+        <div class="section-num">2</div>
+        <div class="section-info">
+          <div class="section-tag">Les quantifieurs les plus courants</div>
+          <div class="section-title">Some et any — emplois et constructions</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p><em>Some</em> et <em>any</em> s'utilisent tous deux avec des noms <strong>dénombrables pluriels</strong> ou <strong>indénombrables</strong> — ils sont neutres quant à cette distinction. Leur choix dépend en revanche de la <strong>nature de la phrase</strong> : affirmative, négative ou interrogative.</p>
+        <p>La règle générale est simple : <em>some</em> dans les phrases <strong>affirmatives</strong>, <em>any</em> dans les phrases <strong>négatives et interrogatives</strong>. Mais certains emplois échappent à cette règle, notamment lorsqu'il s'agit d'offres, de requêtes ou de généralités.</p>
+      </div>
+
+      <div class="formula-grid">
+        <div class="formula-card">
+          <div class="formula-label col-count">✦ Some — phrase affirmative</div>
+          <div class="formula-expr">
+            <span class="f-tense">affirmative</span>
+            <span class="f-sep">+</span>
+            <span class="f-count">some</span>
+            <span class="f-noun">nom pluriel / indénombrable</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-count">There are some documents on your desk.</span><br>
+            <span class="e-count">We have some time before the meeting.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label col-uncount">✦ Any — phrase négative</div>
+          <div class="formula-expr">
+            <span class="f-tense">négative</span>
+            <span class="f-sep">+</span>
+            <span class="f-uncount">any</span>
+            <span class="f-noun">nom pluriel / indénombrable</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-uncount">We don't have any evidence yet.</span><br>
+            <span class="e-uncount">There aren't any seats left.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label col-uncount">✦ Any — question ordinaire</div>
+          <div class="formula-expr">
+            <span class="f-tense">interrogative</span>
+            <span class="f-sep">+</span>
+            <span class="f-uncount">any</span>
+            <span class="f-noun">nom pluriel / indénombrable</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-uncount">Do you have any questions?</span><br>
+            <span class="e-uncount">Is there any progress on the project?</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label col-count">✦ Some — offre, requête polie</div>
+          <div class="formula-expr">
+            <span class="f-tense">question</span>
+            <span class="f-sep">(</span><span class="f-noun">offre / demande</span><span class="f-sep">)</span>
+            <span class="f-sep">+</span>
+            <span class="f-count">some</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-count">Would you like some coffee?</span><br>
+            <span class="e-count">Could I have some information, please?</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="usage-grid">
+        <div class="usage-card u-count">
+          <div class="usage-icon">☕</div>
+          <div>
+            <div class="usage-title">Some dans une offre</div>
+            <div class="usage-desc">Lorsqu'une question est en réalité une offre, on s'attend à une réponse positive : on utilise donc <em>some</em>, même dans une question.</div>
+          </div>
+          <div class="usage-example ex-count">
+            Would you like some help with that?<br>
+            <span class="trans">Voulez-vous un peu d'aide pour ça ?</span>
+          </div>
+        </div>
+        <div class="usage-card u-uncount">
+          <div class="usage-icon">🌀</div>
+          <div>
+            <div class="usage-title">Any dans une condition</div>
+            <div class="usage-desc">Dans une proposition en <em>if</em>, on emploie généralement <em>any</em>, car l'hypothèse a une valeur proche de la négation ou de l'incertitude.</div>
+          </div>
+          <div class="usage-example ex-uncount">
+            If you have any doubts, contact us.<br>
+            <span class="trans">Si vous avez le moindre doute, contactez-nous.</span>
+          </div>
+        </div>
+        <div class="usage-card u-uncount">
+          <div class="usage-icon">🌍</div>
+          <div>
+            <div class="usage-title">Any à valeur de généralité</div>
+            <div class="usage-desc">Dans une phrase affirmative, <em>any</em> peut signifier « n'importe lequel », une valeur bien distincte de la négation.</div>
+          </div>
+          <div class="usage-example ex-uncount">
+            You can call me any time.<br>
+            <span class="trans">Vous pouvez m'appeler à n'importe quel moment.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hl-box tip">
+        <div class="hl-icon">💡</div>
+        <div class="hl-body">
+          <strong>Composés de some / any :</strong><br>
+          Les mêmes règles s'appliquent aux composés <em>someone / anyone</em>, <em>something / anything</em>, <em>somewhere / anywhere</em> :<br>
+          <em style="color:var(--col-count)">Someone left a message for you.</em> (affirmative)<br>
+          <em style="color:var(--col-uncount)">I couldn't find anyone in the office.</em> (négative)
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 3 : MUCH / MANY / LITTLE / FEW        -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="much-many-little-few">
+      <div class="section-header">
+        <div class="section-num">3</div>
+        <div class="section-info">
+          <div class="section-tag">Quantité précise</div>
+          <div class="section-title">Much / many / little / few — emplois et constructions</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p><em>Much</em> et <em>many</em> expriment une <strong>grande quantité</strong> ; <em>little</em> et <em>few</em> expriment une <strong>petite quantité</strong>. Le choix entre les deux paires dépend uniquement du caractère dénombrable ou non du nom qui suit — jamais du sens.</p>
+        <p>Une nuance importante distingue <em>little/few</em> de <em>a little/a few</em> : sans article, ils ont une connotation <strong>négative</strong> (« presque pas de »), tandis qu'avec l'article <em>a</em>, ils ont une connotation <strong>positive</strong> (« un peu de, quelques-uns, mais suffisamment »).</p>
+      </div>
+
+      <div class="formula-grid">
+        <div class="formula-card">
+          <div class="formula-label col-uncount">✦ Much + indénombrable</div>
+          <div class="formula-expr">
+            <span class="f-uncount">much</span>
+            <span class="f-noun">nom indénombrable</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-uncount">There isn't much time left.</span><br>
+            <span class="e-uncount">How much money did they raise?</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label col-count">✦ Many + dénombrable pluriel</div>
+          <div class="formula-expr">
+            <span class="f-count">many</span>
+            <span class="f-noun">nom pluriel</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-count">Many companies have relocated.</span><br>
+            <span class="e-count">How many candidates applied?</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label col-uncount">✦ Little / a little + indénombrable</div>
+          <div class="formula-expr">
+            <span class="f-uncount">(a) little</span>
+            <span class="f-noun">nom indénombrable</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-uncount">We have little time. (presque pas)</span><br>
+            <span class="e-uncount">We have a little time. (un peu, c'est suffisant)</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label col-count">✦ Few / a few + dénombrable pluriel</div>
+          <div class="formula-expr">
+            <span class="f-count">(a) few</span>
+            <span class="f-noun">nom pluriel</span>
+          </div>
+          <div class="formula-example">
+            <span class="e-count">Few candidates were selected. (très peu)</span><br>
+            <span class="e-count">A few candidates were selected. (quelques-uns)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hl-box warning">
+        <div class="hl-icon">⚠️</div>
+        <div class="hl-body">
+          <strong>Little ≠ a little, few ≠ a few :</strong><br>
+          La présence ou l'absence de l'article <em>a</em> inverse presque le sens :<br>
+          <em style="color:var(--col-error)">He has few friends.</em> → il a très peu d'amis (connotation négative, presque aucun)<br>
+          <em style="color:var(--col-count)">He has a few friends.</em> → il a quelques amis (connotation neutre/positive, un nombre suffisant)<br><br>
+          À l'oral et en contexte formel, <em>much</em> et <em>many</em> seuls (hors phrases négatives/interrogatives) sont plus rares : on leur préfère souvent <em>a lot of</em> dans les phrases affirmatives.
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 4 : QUANTIFIEURS COMMUNS AUX DEUX     -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="quantifieurs-communs">
+      <div class="section-header">
+        <div class="section-num">4</div>
+        <div class="section-info">
+          <div class="section-tag">Grammaire associée</div>
+          <div class="section-title">Les quantifieurs communs aux deux catégories</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>Certains quantifieurs s'utilisent indifféremment avec des noms dénombrables et indénombrables. Ce sont souvent les formes les plus employées à l'oral comme à l'écrit, car elles évitent d'avoir à trancher entre <em>much/many</em> ou <em>little/few</em>.</p>
+      </div>
+
+      <div class="tense-table">
+        <div class="tense-head" style="grid-template-columns: 1.8fr 2.2fr 2.2fr 1.5fr;">
+          <div class="th">Quantifieur</div>
+          <div class="th" style="color:var(--col-count);">Avec dénombrable</div>
+          <div class="th" style="color:var(--col-uncount);">Avec indénombrable</div>
+          <div class="th">Registre</div>
+        </div>
+        <div class="tense-row" style="grid-template-columns: 1.8fr 2.2fr 2.2fr 1.5fr;">
+          <div class="t-label">a lot of / lots of</div>
+          <div class="t-since">We have a lot of clients.</div>
+          <div class="t-for">We have a lot of work.</div>
+          <div class="t-note">Neutre, courant</div>
+        </div>
+        <div class="tense-row" style="grid-template-columns: 1.8fr 2.2fr 2.2fr 1.5fr;">
+          <div class="t-label">plenty of</div>
+          <div class="t-since">There are plenty of options.</div>
+          <div class="t-for">There is plenty of room.</div>
+          <div class="t-note">Insiste : « largement assez »</div>
+        </div>
+        <div class="tense-row" style="grid-template-columns: 1.8fr 2.2fr 2.2fr 1.5fr;">
+          <div class="t-label">no</div>
+          <div class="t-since">There are no vacancies.</div>
+          <div class="t-for">There is no evidence.</div>
+          <div class="t-note">= not any, plus catégorique</div>
+        </div>
+        <div class="tense-row" style="grid-template-columns: 1.8fr 2.2fr 2.2fr 1.5fr;">
+          <div class="t-label">all / most / some</div>
+          <div class="t-since">Most employees agree.</div>
+          <div class="t-for">Most information is public.</div>
+          <div class="t-note">Proportion globale</div>
+        </div>
+        <div class="tense-row" style="grid-template-columns: 1.8fr 2.2fr 2.2fr 1.5fr;">
+          <div class="t-label">enough</div>
+          <div class="t-since">We don't have enough staff.</div>
+          <div class="t-for">We don't have enough funding.</div>
+          <div class="t-note">Suffisance</div>
+        </div>
+      </div>
+
+      <div class="hl-box info">
+        <div class="hl-icon">🎯</div>
+        <div class="hl-body">
+          <strong>None of vs no :</strong><br>
+          — <em style="color:var(--col-uncount)">No + nom</em> se place directement devant le nom, sans <em>of</em> : <em style="color:var(--col-uncount)">No decision has been made.</em><br>
+          — <em style="color:var(--col-tense)">None of + the/my/these… + nom</em> s'utilise quand le nom est déterminé : <em style="color:var(--col-tense)">None of the candidates were qualified.</em><br><br>
+          Attention à l'accord : après <em>none of + pluriel</em>, le verbe peut se mettre au singulier (registre soutenu) ou au pluriel (registre courant) :<br>
+          <em style="color:var(--col-tense)">None of the reports has / have been published yet.</em>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 5 : ERREURS FRÉQUENTES                -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="erreurs">
+      <div class="section-header">
+        <div class="section-num">5</div>
+        <div class="section-info">
+          <div class="section-tag">Pièges à éviter</div>
+          <div class="section-title">Erreurs fréquentes</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>La plupart des erreurs viennent d'une mauvaise identification du caractère dénombrable ou non d'un nom, ou de la confusion entre <em>less</em> et <em>fewer</em>. Voici les cas les plus fréquents à mémoriser.</p>
+      </div>
+
+      <div class="formula-grid">
+        <div class="formula-card">
+          <div class="formula-label col-error">✗ Much + nom dénombrable pluriel</div>
+          <div class="formula-expr">
+            <span class="f-uncount">much</span>
+            <span class="f-noun">nom pluriel</span>
+            <span class="f-sep">← ✗</span>
+          </div>
+          <div class="formula-example">
+            <span style="color:var(--col-error)">✗ There are much problems.</span><br>
+            <span class="e-count">✓ There are many problems.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label col-error">✗ Many + nom indénombrable</div>
+          <div class="formula-expr">
+            <span class="f-count">many</span>
+            <span class="f-noun">nom indénombrable</span>
+            <span class="f-sep">← ✗</span>
+          </div>
+          <div class="formula-example">
+            <span style="color:var(--col-error)">✗ We don't have many information.</span><br>
+            <span class="e-uncount">✓ We don't have much information.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label col-error">✗ Less + nom dénombrable pluriel</div>
+          <div class="formula-expr">
+            <span class="f-noun">less</span>
+            <span class="f-noun">nom pluriel</span>
+            <span class="f-sep">← ✗ (registre soutenu)</span>
+          </div>
+          <div class="formula-example">
+            <span style="color:var(--col-error)">✗ There are less candidates this year.</span><br>
+            <span class="e-count">✓ There are fewer candidates this year.</span>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-label col-error">✗ A few / few confondus avec a little / little</div>
+          <div class="formula-expr">
+            <span class="f-count">a few</span>
+            <span class="f-sep">↔</span>
+            <span class="f-uncount">a little</span>
+            <span class="f-sep">← ne pas permuter</span>
+          </div>
+          <div class="formula-example">
+            <span style="color:var(--col-error)">✗ I have a little friends here.</span><br>
+            <span class="e-count">✓ I have a few friends here.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hl-box danger">
+        <div class="hl-icon">🚫</div>
+        <div class="hl-body">
+          <strong>Cas particulier — les faux amis dénombrables :</strong><br>
+          Certains noms sont indénombrables en anglais alors que leur équivalent français est dénombrable, et inversement :<br>
+          → <em style="color:var(--col-uncount)">information, advice, furniture, news, luggage</em> sont <strong>indénombrables</strong> en anglais (contrairement à « des informations », « des conseils », « des meubles »)<br>
+          → on ne dit donc jamais <em style="color:var(--col-error)">✗ an information / ✗ some advices</em>, mais <em style="color:var(--col-uncount)">a piece of information / some advice</em>.
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 6 : CAS SPÉCIAUX                      -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="cas-speciaux">
+      <div class="section-header">
+        <div class="section-num">6</div>
+        <div class="section-info">
+          <div class="section-tag">Nuances avancées</div>
+          <div class="section-title">Cas particuliers et constructions avancées</div>
+        </div>
+      </div>
+
+      <div class="usage-grid">
+        <div class="usage-card u-count">
+          <div class="usage-icon">📊</div>
+          <div>
+            <div class="usage-title">Less vs fewer à l'oral</div>
+            <div class="usage-desc"><em>Fewer</em> est la forme correcte devant un dénombrable pluriel, mais <em>less</em> tend à le remplacer à l'oral familier — à éviter en rédaction ECG.</div>
+          </div>
+          <div class="usage-example ex-count">
+            fewer jobs (soutenu) vs less jobs (familier, à éviter)<br>
+            <span class="trans">moins d'emplois</span>
+          </div>
+        </div>
+        <div class="usage-card u-uncount">
+          <div class="usage-icon">🔢</div>
+          <div>
+            <div class="usage-title">Amount of vs number of</div>
+            <div class="usage-desc"><em>Amount of</em> s'emploie avec un indénombrable, <em>number of</em> avec un dénombrable pluriel — miroir de much/many.</div>
+          </div>
+          <div class="usage-example ex-uncount">
+            a large amount of data / a large number of firms<br>
+            <span class="trans">une grande quantité de données / un grand nombre d'entreprises</span>
+          </div>
+        </div>
+        <div class="usage-card u-count">
+          <div class="usage-icon">🧩</div>
+          <div>
+            <div class="usage-title">A number of + verbe au pluriel</div>
+            <div class="usage-desc">Bien que <em>number</em> soit singulier, l'expression <em>a number of</em> (= plusieurs) s'accorde avec un verbe au <strong>pluriel</strong>.</div>
+          </div>
+          <div class="usage-example ex-count">
+            A number of employees have resigned.<br>
+            <span class="trans">Un certain nombre d'employés ont démissionné.</span>
+          </div>
+        </div>
+        <div class="usage-card u-uncount">
+          <div class="usage-icon">🔀</div>
+          <div>
+            <div class="usage-title">Noms à double statut</div>
+            <div class="usage-desc">Certains noms changent de sens selon qu'ils sont dénombrables ou indénombrables (<em>paper, business, experience, work</em>).</div>
+          </div>
+          <div class="usage-example ex-uncount">
+            some experience (de l'expérience) / many experiences (de nombreuses expériences vécues)<br>
+            <span class="trans">indénombrable = notion globale / dénombrable = occurrences individuelles</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hl-box tip">
+        <div class="hl-icon">💡</div>
+        <div class="hl-body">
+          <strong>Every / each vs all :</strong><br>
+          <em>Every</em> et <em>each</em> sont suivis d'un nom <strong>singulier</strong> même s'ils expriment une idée de totalité, contrairement à <em>all</em> qui exige le pluriel (ou l'indénombrable) :<br>
+          <em style="color:var(--col-count)">Every employee has received the memo.</em> (singulier)<br>
+          <em style="color:var(--col-tense)">All employees have received the memo.</em> (pluriel)<br><br>
+          <em>Each</em> insiste sur l'individu pris séparément ; <em>every</em> sur la généralité du groupe.
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION 7 : EXERCICES                         -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="section" id="exercices">
+      <div class="section-header">
+        <div class="section-num">7</div>
+        <div class="section-info">
+          <div class="section-tag">Pratique</div>
+          <div class="section-title">Exercices</div>
+        </div>
+      </div>
+
+      <!-- Exercice 1 -->
+      <div class="exercise-block">
+        <div class="ex-header">
+          <span class="ex-badge">Exercice 1</span>
+          <span class="ex-title">Choisissez entre much et many</span>
+        </div>
+        <div class="ex-items" id="ex1items">
+          <div class="ex-item">
+            <div class="ex-num">01.</div>
+            <div class="ex-q">How ___ money did the company lose last quarter?</div>
+            <div class="ex-answer">→ much (money est indénombrable)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">02.</div>
+            <div class="ex-q">There aren't ___ vacancies left in the department.</div>
+            <div class="ex-answer">→ many (vacancies est dénombrable pluriel)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">03.</div>
+            <div class="ex-q">We don't have ___ time before the deadline.</div>
+            <div class="ex-answer">→ much (time est indénombrable)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">04.</div>
+            <div class="ex-q">How ___ applicants were interviewed this week?</div>
+            <div class="ex-answer">→ many (applicants est dénombrable pluriel)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">05.</div>
+            <div class="ex-q">There isn't ___ evidence to support that claim.</div>
+            <div class="ex-answer">→ much (evidence est indénombrable)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">06.</div>
+            <div class="ex-q">Not ___ countries have adopted this policy yet.</div>
+            <div class="ex-answer">→ many (countries est dénombrable pluriel)</div>
+          </div>
+        </div>
+        <button class="show-answers-btn" onclick="showAnswers('ex1items')">Afficher les réponses</button>
+      </div>
+
+      <!-- Exercice 2 -->
+      <div class="exercise-block">
+        <div class="ex-header">
+          <span class="ex-badge">Exercice 2</span>
+          <span class="ex-title">Choisissez entre some et any</span>
+        </div>
+        <div class="ex-items" id="ex2items">
+          <div class="ex-item">
+            <div class="ex-num">01.</div>
+            <div class="ex-q">Would you like ___ coffee before the meeting?</div>
+            <div class="ex-answer">→ some (offre polie, réponse positive attendue)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">02.</div>
+            <div class="ex-q">We haven't received ___ replies to our proposal.</div>
+            <div class="ex-answer">→ any (phrase négative)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">03.</div>
+            <div class="ex-q">Is there ___ update on the merger?</div>
+            <div class="ex-answer">→ any (question ordinaire)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">04.</div>
+            <div class="ex-q">There are ___ documents you need to sign.</div>
+            <div class="ex-answer">→ some (phrase affirmative)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">05.</div>
+            <div class="ex-q">If you have ___ concerns, raise them now.</div>
+            <div class="ex-answer">→ any (proposition en if)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">06.</div>
+            <div class="ex-q">You can reach the manager at ___ time.</div>
+            <div class="ex-answer">→ any (valeur de généralité : n'importe quel moment)</div>
+          </div>
+        </div>
+        <button class="show-answers-btn" onclick="showAnswers('ex2items')">Afficher les réponses</button>
+      </div>
+
+      <!-- Exercice 3 -->
+      <div class="exercise-block">
+        <div class="ex-header">
+          <span class="ex-badge">Exercice 3</span>
+          <span class="ex-title">Corrigez les erreurs dans ces phrases</span>
+        </div>
+        <div class="ex-items" id="ex3items">
+          <div class="ex-item">
+            <div class="ex-num">01.</div>
+            <div class="ex-q">There are much problems with the new system.</div>
+            <div class="ex-answer">→ There are many problems with the new system. (problems est dénombrable pluriel → many)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">02.</div>
+            <div class="ex-q">We don't have many information about the client.</div>
+            <div class="ex-answer">→ We don't have much information about the client. (information est indénombrable → much)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">03.</div>
+            <div class="ex-q">She gave me an advice about the negotiation.</div>
+            <div class="ex-answer">→ She gave me some advice about the negotiation. (advice est indénombrable, pas d'article "an")</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">04.</div>
+            <div class="ex-q">There are less opportunities than last year.</div>
+            <div class="ex-answer">→ There are fewer opportunities than last year. (opportunities dénombrable pluriel → fewer)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">05.</div>
+            <div class="ex-q">I have a little friends in this city.</div>
+            <div class="ex-answer">→ I have a few friends in this city. (friends est dénombrable → a few, pas a little)</div>
+          </div>
+          <div class="ex-item">
+            <div class="ex-num">06.</div>
+            <div class="ex-q">Every employees must attend the training.</div>
+            <div class="ex-answer">→ Every employee must attend the training. (every est toujours suivi du singulier)</div>
+          </div>
+        </div>
+        <button class="show-answers-btn" onclick="showAnswers('ex3items')">Afficher les réponses</button>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+<script>
+  function showAnswers(id) {
+    const items = document.querySelectorAll('#' + id + ' .ex-item');
+    const btn = document.querySelector('#' + id).closest('.exercise-block').querySelector('.show-answers-btn');
+    const allRevealed = [...items].every(i => i.classList.contains('revealed'));
+    items.forEach(item => item.classList.toggle('revealed', !allRevealed));
+    btn.textContent = allRevealed ? 'Afficher les réponses' : 'Masquer les réponses';
+  }
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('fade-up'); obs.unobserve(e.target); } });
+  }, { threshold: 0.05 });
+  document.querySelectorAll('.section').forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
