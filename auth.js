@@ -377,16 +377,19 @@
     var btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'ecg-bouton-verrou';
-    btn.textContent = verrouille ? '🔓 Déverrouiller' : '🔒 Verrouiller';
-    btn.style.cssText = 'position:absolute;bottom:10px;right:10px;z-index:5;border:0;border-radius:20px;' +
-      'padding:4px 10px;font:600 .62rem "DM Mono",monospace;letter-spacing:.03em;cursor:pointer;pointer-events:auto;' +
-      'opacity:.94;color:#12120f;background:' + (verrouille ? '#9ecba0' : '#e08a8a');
+    btn.textContent = verrouille ? '🔓' : '🔒';
+    btn.title = verrouille ? 'Déverrouiller' : 'Verrouiller';
+    btn.setAttribute('aria-label', btn.title);
+    btn.style.cssText = 'position:absolute;bottom:10px;right:10px;z-index:5;border:0;border-radius:50%;' +
+      'width:28px;height:28px;display:flex;align-items:center;justify-content:center;' +
+      'font-size:.85rem;line-height:1;cursor:pointer;pointer-events:auto;' +
+      'opacity:.94;background:' + (verrouille ? '#9ecba0' : '#e08a8a');
     btn.addEventListener('click', function (e) {
       e.preventDefault(); e.stopPropagation();
       btn.disabled = true; btn.textContent = '…';
       Auth.admin.verrouillerRubrique(id, !verrouille)
         .then(function () { location.reload(); })
-        .catch(function () { btn.disabled = false; btn.textContent = verrouille ? '🔓 Déverrouiller' : '🔒 Verrouiller'; });
+        .catch(function () { btn.disabled = false; btn.textContent = verrouille ? '🔓' : '🔒'; btn.title = verrouille ? 'Déverrouiller' : 'Verrouiller'; });
     });
     el.appendChild(btn);
   }
