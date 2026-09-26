@@ -170,7 +170,6 @@
     <button class="tab" data-p="sessions">Sessions<em id="c-sessions">0</em></button>
     <button class="tab" data-p="journal">Journal<em id="c-journal">0</em></button>
     <button class="tab" data-p="newsletter">Newsletter<em id="c-newsletter">0</em></button>
-    <button class="tab" data-p="rubriques">Rubriques<em id="c-rubriques">0</em></button>
     <button class="tab" data-p="reglages">Réglages</button>
   </div>
 
@@ -237,18 +236,6 @@
 
   <!-- Contenu construit par newsletter.js -->
   <section class="panel" id="p-newsletter"></section>
-
-  <section class="panel" id="p-rubriques">
-    <div class="notice">
-      <b>Verrouillage manuel</b>
-      Verrouille n'importe quelle rubrique du site pour la masquer temporairement aux membres : elle
-      apparaît grisée avec un cadenas là où elle est proposée, et son accès direct (même par lien) est
-      bloqué. Verrouiller une grande section ou une année verrouille automatiquement tout ce qu'elle
-      contient. Toi seul, en tant qu'administrateur, continues d'y avoir accès pour la préparer — un
-      bandeau te le rappelle sur place.
-    </div>
-    <div id="rub-corps"></div>
-  </section>
 
   <section class="panel" id="p-reglages">
     <div class="notice">
@@ -359,17 +346,16 @@
   }
   function enLigne(vu){ return vu && (Date.now() - new Date(vu).getTime()) < A.enLigneMs; }
 
-  var D = { users:[], sessions:[], journal:[], config:{}, affiches:[], rubriques:[] };
+  var D = { users:[], sessions:[], journal:[], config:{}, affiches:[] };
   var occupe = false;
 
   function charger(){
     if (occupe) return Promise.resolve();
     occupe = true;
-    return Promise.all([Ad.utilisateurs(), Ad.sessions(), Ad.journal(300), Ad.config(), Ad.rubriques()])
+    return Promise.all([Ad.utilisateurs(), Ad.sessions(), Ad.journal(300), Ad.config()])
       .then(function(r){
         D.users = r[0] || []; D.sessions = r[1] || [];
         D.journal = r[2] || []; D.config = r[3] || {};
-        D.rubriques = r[4] || [];
         rendre();
         $('#maj').textContent = 'à jour · ' + new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
       })
@@ -390,7 +376,7 @@
     $('#c-comptes').textContent  = D.users.length;
     $('#c-sessions').textContent = D.sessions.length;
     $('#c-journal').textContent  = D.journal.length;
-    rendreComptes(); rendreSessions(); rendreJournal(); rendreReglages(); rendreRubriques();
+    rendreComptes(); rendreSessions(); rendreJournal(); rendreReglages();
   }
 
   function rendreComptes(){
@@ -492,42 +478,6 @@
     $('#sw-inscriptions').classList.toggle('on', !!D.config.inscriptions);
   }
 
-  function rendreRubriques(){
-    var etat = {};
-    D.rubriques.forEach(function(r){ etat[r.id] = !!r.verrouille; });
-
-    var metas = Ad.listeRubriques();
-    var ordreGroupes = ['Page d\u2019accueil', 'Cours ECG', '1ère année', '2ème année'];
-    var parGroupe = {};
-    ordreGroupes.forEach(function(g){ parGroupe[g] = []; });
-    metas.forEach(function(m){ (parGroupe[m.groupe] = parGroupe[m.groupe] || []).push(m); });
-
-    function ligne(m){
-      var on = !!etat[m.id];
-      return '<div class="setting">' +
-        '<div><h3>'+esc(m.nom)+'</h3></div>' +
-        '<button class="sw'+(on?' on':'')+'" data-a="rub" data-i="'+esc(m.id)+'" aria-label="Verrouiller '+esc(m.nom)+'"></button>' +
-      '</div>';
-    }
-    var descriptions = {
-      'Page d\u2019accueil': 'Verrouille une grande section entière (et tout ce qu\'elle contient) directement depuis la page d\'accueil.',
-      'Cours ECG': 'Verrouille une année entière (et toutes ses matières) sans toucher à l\'autre année.',
-      '1ère année': 'Verrouille une matière précise, sans toucher aux autres.',
-      '2ème année': 'Verrouille une matière précise, sans toucher aux autres.'
-    };
-    function bloc(groupe){
-      if (!parGroupe[groupe] || !parGroupe[groupe].length) return '';
-      return '<div class="card" style="margin-bottom:18px">' +
-        '<div class="setting"><div><h3 style="color:var(--accent)">'+esc(groupe)+'</h3>' +
-        '<p>'+(descriptions[groupe]||'')+'</p></div></div>' +
-        parGroupe[groupe].map(ligne).join('') +
-      '</div>';
-    }
-
-    $('#rub-corps').innerHTML = ordreGroupes.map(bloc).join('');
-    $('#c-rubriques').textContent = metas.filter(function(m){ return etat[m.id]; }).length;
-  }
-
   /* ─── Actions ─── */
   function agir(promesse, message){
     return promesse
@@ -589,16 +539,6 @@
   $('#btn-clear-log').addEventListener('click', function(){
     if (!confirm('Vider tout l\'historique des événements ?')) return;
     agir(Ad.viderJournal(), 'Journal vidé.');
-  });
-
-  $('#rub-corps').addEventListener('click', function(ev){
-    var b = ev.target.closest('button[data-a="rub"]'); if (!b) return;
-    var id = b.dataset.i;
-    var meta = Ad.listeRubriques().filter(function(m){ return m.id === id; })[0];
-    var nom = meta ? meta.nom + (meta.niveau === 3 ? ' (' + meta.groupe + ')' : '') : id;
-    var verrouille = !b.classList.contains('on');
-    agir(Ad.verrouillerRubrique(id, verrouille),
-         nom + (verrouille ? ' verrouillée.' : ' déverrouillée.'));
   });
 
   $('#sw-approbation').addEventListener('click', function(){
