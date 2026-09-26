@@ -139,6 +139,84 @@
     { id: 'nouveautes', titre: 'Nouveautés du site',    detail: 'Être au courant des nouveautés du site.' }
   ];
 
+  /* ─── Toutes les rubriques verrouillables du site ──────────────
+     Trois niveaux, imbriqués : verrouiller une grande section (ex.
+     Culture Générale) verrouille tout ce qu'elle contient ; une
+     matière peut aussi être verrouillée seule, sans toucher au
+     reste de son année.
+       niveau 1 → les 4 sections de la page d'accueil
+       niveau 2 → les 2 années, à l'intérieur de Cours ECG
+       niveau 3 → les 5 matières de chaque année
+     « motifs » repère automatiquement toute page qui vit sous l'un
+     de ces chemins, pour bloquer l'accès direct (pas seulement
+     griser la carte). « retour » est la page proposée quand un
+     membre est arrêté. Ne pas changer les id une fois en ligne : ce
+     sont eux qui sont stockés dans la table « rubriques_verrouillage »
+     côté Supabase. */
+  var RUBRIQUES_SITE = [
+    /* Niveau 1 — page d'accueil */
+    { id: 'cours-ecg',        niveau: 1, nom: 'Cours ECG',         groupe: 'Page d\u2019accueil', motifs: ['cours-ecg.html', 'premiere_annee/', 'deuxieme_annee/'], retour: 'index.html' },
+    { id: 'culture-generale', niveau: 1, nom: 'Culture Générale',  groupe: 'Page d\u2019accueil', motifs: ['culture-generale.html', 'culture-generale/'], retour: 'index.html' },
+    { id: 'humanite',         niveau: 1, nom: 'Humanité',          groupe: 'Page d\u2019accueil', motifs: ['humanite.html', 'humanite/'], retour: 'index.html' },
+    { id: 'actualites',       niveau: 1, nom: 'Actualités',        groupe: 'Page d\u2019accueil', motifs: ['actualites/'], retour: 'index.html' },
+
+    /* Niveau 2 — les deux années, dans Cours ECG */
+    { id: 'premiere-annee',   niveau: 2, nom: 'Première année',    groupe: 'Cours ECG', motifs: ['premiere_annee/'], retour: 'cours-ecg.html' },
+    { id: 'deuxieme-annee',   niveau: 2, nom: 'Deuxième année',    groupe: 'Cours ECG', motifs: ['deuxieme_annee/'], retour: 'cours-ecg.html' },
+
+    /* Niveau 3 — les matières, dans chaque année */
+    { id: 'p1-mathematiques', niveau: 3, nom: 'Mathématiques', groupe: '1ère année', motifs: ['premiere_annee/mathematiques/'], retour: 'premiere_annee/index.html' },
+    { id: 'p1-esh',           niveau: 3, nom: 'ESH',            groupe: '1ère année', motifs: ['premiere_annee/esh/'], retour: 'premiere_annee/index.html' },
+    { id: 'p1-hgg',           niveau: 3, nom: 'HGG',            groupe: '1ère année', motifs: ['premiere_annee/hgg/'], retour: 'premiere_annee/index.html' },
+    { id: 'p1-philosophie',   niveau: 3, nom: 'Philosophie',    groupe: '1ère année', motifs: ['premiere_annee/philosophie/'], retour: 'premiere_annee/index.html' },
+    { id: 'p1-langues',       niveau: 3, nom: 'Langues',        groupe: '1ère année', motifs: ['premiere_annee/langues/'], retour: 'premiere_annee/index.html' },
+    { id: 'p2-mathematiques', niveau: 3, nom: 'Mathématiques', groupe: '2ème année', motifs: ['deuxieme_annee/maths/'], retour: 'deuxieme_annee/index.html' },
+    { id: 'p2-esh',           niveau: 3, nom: 'ESH',            groupe: '2ème année', motifs: ['deuxieme_annee/esh/'], retour: 'deuxieme_annee/index.html' },
+    { id: 'p2-hgg',           niveau: 3, nom: 'HGG',            groupe: '2ème année', motifs: ['deuxieme_annee/hgg/'], retour: 'deuxieme_annee/index.html' },
+    { id: 'p2-philosophie',   niveau: 3, nom: 'Philosophie',    groupe: '2ème année', motifs: ['deuxieme_annee/philosophie/'], retour: 'deuxieme_annee/index.html' },
+    { id: 'p2-langues',       niveau: 3, nom: 'Langues',        groupe: '2ème année', motifs: ['deuxieme_annee/langues/'], retour: 'deuxieme_annee/index.html' }
+  ];
+
+  /* Repère TOUTES les rubriques (le cas échéant, plusieurs niveaux
+     à la fois) sous lesquelles vit la page actuelle, à partir de son
+     chemin dans l'URL. Une page de chapitre de maths 1ère année
+     répond par ex. à la fois à « p1-mathematiques », « premiere-annee »
+     et « cours-ecg » : verrouiller n'importe lequel des trois suffit
+     à la bloquer. Fonctionne quelle que soit la profondeur de la
+     page et quel que soit le sous-dossier d'hébergement du site. */
+  function detecterRubriques() {
+    var chemin = '';
+    try { chemin = decodeURIComponent(location.pathname).toLowerCase(); } catch (e) { chemin = location.pathname.toLowerCase(); }
+    var trouve = [];
+    RUBRIQUES_SITE.forEach(function (r) {
+      for (var i = 0; i < r.motifs.length; i++) {
+        if (chemin.indexOf('/' + r.motifs[i].toLowerCase()) !== -1) { trouve.push(r); return; }
+      }
+    });
+    return trouve;
+  }
+  var rubriquesActuelles = detecterRubriques();
+
+  /* Résout n'importe quelle URL (absolue ou relative à la page en
+     cours) en un chemin relatif à la racine du site — utilisé pour
+     reconnaître automatiquement, à partir de son lien, N'IMPORTE
+     QUELLE carte cliquable du site (chapitre, leçon, fiche…), sans
+     avoir à poser data-rubrique à la main sur chacune. */
+  function cheminRelatifAuSite(urlAbsolue) {
+    try {
+      var basePath = decodeURIComponent(new URL(BASE).pathname).toLowerCase();
+      var p = decodeURIComponent(urlAbsolue.pathname).toLowerCase();
+      if (p.indexOf(basePath) === 0) return p.slice(basePath.length);
+      return p.replace(/^\//, '');
+    } catch (e) { return null; }
+  }
+  /* Le chemin de la page actuelle elle-même (pas celui d'un lien) :
+     permet de verrouiller une page précise (un chapitre, une leçon…)
+     individuellement, sans qu'elle corresponde à aucun motif de
+     RUBRIQUES_SITE ci-dessus. */
+  var cheminActuel = (function () { try { return cheminRelatifAuSite(new URL(location.href)); } catch (e) { return null; } })();
+
+
   /* Pages consultables sans compte (vitrine publique, référencement).
      Toutes les autres pages exigent une session valide. */
   var PAGES_PUBLIQUES = ['login.html', 'accueil.html', 'contact.html', 'mentions-legales.html', 'cgu.html', 'confidentialite.html', '404.html', 'desinscription.html', 'hors-ligne.html'];
@@ -237,6 +315,103 @@
       });
     });
     return _sb;
+  }
+
+  /* ─── Verrouillage universel de TOUTES les cartes cliquables ────
+     Repère automatiquement, sur n'importe quelle page, chaque carte
+     qui mène quelque part : celles marquées data-rubrique="…" (les
+     16 grandes rubriques), et TOUTES les autres (.chapter-item,
+     .choice-card, .home-card) — chapitres, leçons de langue,
+     sous-choix — en déduisant leur identifiant depuis leur propre
+     lien. Aucune modification de page n'est donc nécessaire pour
+     qu'un nouveau chapitre ajouté plus tard soit lui aussi
+     verrouillable : ça marche tout seul.
+     Pour un membre : carte grisée, cadenas, clic neutralisé.
+     Pour un administrateur : pas de grisage (il garde l'accès), mais
+     un petit bouton apparaît directement sur la carte pour
+     verrouiller/déverrouiller en un clic, sans passer par l'admin. */
+  function resoudreDestination(el) {
+    var href = (el.tagName === 'A') ? el.getAttribute('href') : null;
+    if (!href) {
+      var m = /location\.href\s*=\s*['"]([^'"]+)['"]/.exec(el.getAttribute('onclick') || '');
+      if (m) href = m[1];
+    }
+    if (!href) return null;
+    try { return cheminRelatifAuSite(new URL(href, location.href)); } catch (e) { return null; }
+  }
+
+  function collecterNoeudsVerrouillables() {
+    var noeuds = [];
+    document.querySelectorAll('[data-rubrique], .chapter-item, .choice-card, .home-card').forEach(function (el) {
+      var id = el.getAttribute('data-rubrique') || resoudreDestination(el);
+      if (!id) return; /* carte décorative ou déjà figée « à venir » : on n'y touche pas */
+      noeuds.push({ el: el, id: id });
+    });
+    return noeuds;
+  }
+
+  function ajouterCadenas(el) {
+    if (el.querySelector('.ecg-cadenas')) return;
+    if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+    var b = document.createElement('span');
+    b.className = 'ecg-cadenas';
+    b.textContent = '🔒';
+    b.style.cssText = 'position:absolute;top:10px;right:12px;font-size:.95rem;line-height:1;z-index:3;pointer-events:none';
+    el.appendChild(b);
+  }
+
+  function griserPourMembre(el) {
+    el.style.opacity = '0.45';
+    el.style.pointerEvents = 'none';
+    el.style.cursor = 'default';
+    ajouterCadenas(el);
+  }
+
+  /* Bouton discret, toujours présent sur une carte reconnue, pour
+     qu'un administrateur bascule son état sans quitter la page. */
+  function ajouterBoutonAdmin(el, id, verrouille) {
+    if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+    if (verrouille) ajouterCadenas(el);
+    var ancien = el.querySelector('.ecg-bouton-verrou');
+    if (ancien) ancien.parentNode.removeChild(ancien);
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'ecg-bouton-verrou';
+    btn.textContent = verrouille ? '🔓 Déverrouiller' : '🔒 Verrouiller';
+    btn.style.cssText = 'position:absolute;bottom:10px;right:10px;z-index:5;border:0;border-radius:20px;' +
+      'padding:4px 10px;font:600 .62rem "DM Mono",monospace;letter-spacing:.03em;cursor:pointer;pointer-events:auto;' +
+      'opacity:.94;color:#12120f;background:' + (verrouille ? '#9ecba0' : '#e08a8a');
+    btn.addEventListener('click', function (e) {
+      e.preventDefault(); e.stopPropagation();
+      btn.disabled = true; btn.textContent = '…';
+      Auth.admin.verrouillerRubrique(id, !verrouille)
+        .then(function () { location.reload(); })
+        .catch(function () { btn.disabled = false; btn.textContent = verrouille ? '🔓 Déverrouiller' : '🔒 Verrouiller'; });
+    });
+    el.appendChild(btn);
+  }
+
+  function appliquerVerrouillageCartes() {
+    var noeuds = collecterNoeudsVerrouillables();
+    if (!noeuds.length) return;
+    var admin = (function () { var p = profilLocal(); return !!p && p.role === 'admin'; })();
+    sb().then(function (c) {
+      return c.from('rubriques_verrouillage').select('id,verrouille');
+    }).then(function (r) {
+      if (!r || r.error) return;
+      var etat = {};
+      (r.data || []).forEach(function (x) { etat[x.id] = !!x.verrouille; });
+      noeuds.forEach(function (n) {
+        var v = !!etat[n.id];
+        if (admin) ajouterBoutonAdmin(n.el, n.id, v);
+        else if (v) griserPourMembre(n.el);
+      });
+    }).catch(function () { /* silencieux : les cartes gardent leur état par défaut (déverrouillé) */ });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', appliquerVerrouillageCartes);
+  } else {
+    appliquerVerrouillageCartes();
   }
 
   function agent() { return (navigator.userAgent || '').slice(0, 400); }
@@ -530,6 +705,38 @@
           return noter(statut === 'bloque' ? 'blocage' : 'validation', email,
                        'par ' + (profilLocal() || {}).email);
         });
+      });
+    },
+
+    /* ─── Verrouillage des rubriques (site entier) ──────────────
+       Métadonnées fixes (nom, niveau, groupe d'affichage) : ne
+       viennent pas de la base, juste de la liste ci-dessus. */
+    listeRubriques: function () {
+      return RUBRIQUES_SITE.map(function (r) {
+        return { id: r.id, nom: r.nom, niveau: r.niveau, groupe: r.groupe };
+      });
+    },
+
+    /* État réel (verrouillé ou non) stocké dans Supabase. Renvoie
+       toujours un tableau, y compris avant que la table existe :
+       une erreur ici ne doit jamais casser tout le tableau de bord. */
+    rubriques: function () {
+      return sb().then(function (c) {
+        return c.from('rubriques_verrouillage').select('*');
+      }).then(function (r) {
+        return (r && !r.error && r.data) ? r.data : [];
+      }).catch(function () { return []; });
+    },
+
+    verrouillerRubrique: function (id, verrouille) {
+      return sb().then(function (c) {
+        return T(c.from('rubriques_verrouillage')
+          .upsert({ id: id, verrouille: !!verrouille, maj_le: new Date().toISOString() }))
+          .then(function () {
+            var meta = RUBRIQUES_SITE.filter(function (r) { return r.id === id; })[0];
+            var libelle = meta ? meta.nom + (meta.niveau === 3 ? ' (' + meta.groupe + ')' : '') : id;
+            return noter('reglage', (profilLocal() || {}).email, libelle + (verrouille ? ' verrouillée' : ' déverrouillée'));
+          });
       });
     },
 
@@ -919,10 +1126,53 @@
       memoriser(profil);
       appliquerNewsletterEnAttente();
       if (pageReserveeAdmin && profil.role !== 'admin') { refuserAcces(profil); return; }
-      leverVoile();
-      demarrerBadge(profil);
-      battreRegulierement();
-      document.dispatchEvent(new CustomEvent('ecg:pret', { detail: profil }));
+
+      function terminer() {
+        leverVoile();
+        demarrerBadge(profil);
+        battreRegulierement();
+        document.dispatchEvent(new CustomEvent('ecg:pret', { detail: profil }));
+      }
+
+      /* Cette page peut être concernée à trois niveaux à la fois :
+         une ou plusieurs grandes rubriques imbriquées (motifs de
+         RUBRIQUES_SITE, ex. une matière ET son année ET sa section),
+         et/ou son propre chemin verrouillé individuellement (un
+         chapitre ou une leçon précise, verrouillée depuis sa carte).
+         Un administrateur passe toujours, mais voit un bandeau de
+         rappel si l'une d'elles est fermée. */
+      if (rubriquesActuelles.length || cheminActuel) {
+        return client.from('rubriques_verrouillage').select('id,verrouille')
+          .then(function (r) {
+            var etat = {};
+            (r && r.data || []).forEach(function (x) { etat[x.id] = !!x.verrouille; });
+
+            /* Le chemin exact de la page est le cas le plus précis
+               possible : une leçon verrouillée individuellement ne
+               correspond à aucun motif de RUBRIQUES_SITE. */
+            if (cheminActuel && etat[cheminActuel]) {
+              var fin = { id: cheminActuel, niveau: 4, nom: null, groupe: null,
+                          retour: cheminActuel.replace(/[^/]*$/, 'index.html') };
+              if (profil.role !== 'admin') { refuserRubrique(fin); return; }
+              terminer();
+              bandeauRubriqueAdmin(fin);
+              return;
+            }
+
+            var verrouillees = rubriquesActuelles.filter(function (rb) { return !!etat[rb.id]; });
+            if (!verrouillees.length) { terminer(); return; }
+            /* La plus précise d'abord (matière > année > section),
+               pour un message le plus utile possible. */
+            verrouillees.sort(function (a, b) { return b.niveau - a.niveau; });
+            var laPlusPrecise = verrouillees[0];
+            if (profil.role !== 'admin') { refuserRubrique(laPlusPrecise); return; }
+            terminer();
+            bandeauRubriqueAdmin(laPlusPrecise);
+          })
+          .catch(function () { terminer(); /* table absente ou réseau capricieux : on n'empêche pas l'accès */ });
+      }
+
+      terminer();
     })
     .catch(function (e) {
       if (e === 'redirige') return;
@@ -941,7 +1191,9 @@
      Le contenu reste masqué : on remplace l'affichage par un écran
      d'explication, sans jamais lever le voile.
      ══════════════════════════════════════════════════════════════ */
-  function refuserAcces(profil) {
+  /* Écran plein cadre générique : accès admin refusé, ou rubrique
+     verrouillée, partagent la même présentation. */
+  function ecranRefus(titre, texte, sousTexte, urlRetour, libelleBouton) {
     var css = document.createElement('style');
     css.textContent =
       'html{visibility:hidden!important}' +
@@ -965,11 +1217,52 @@
       d.innerHTML =
         '<div class="boite">' +
         '<div class="cle">&#128274;</div>' +
-        '<h1>Accès réservé</h1>' +
-        '<p>Cette page est réservée aux administrateurs du site.</p>' +
-        '<div class="qui">' + ((profil && profil.email) || 'session non identifiée') + '</div>' +
-        '<button type="button">Retour à l\'accueil</button></div>';
-      d.querySelector('button').addEventListener('click', function () { location.replace(HOME_URL); });
+        '<h1>' + titre + '</h1>' +
+        '<p>' + texte + '</p>' +
+        (sousTexte ? '<div class="qui">' + sousTexte + '</div>' : '') +
+        '<button type="button">' + libelleBouton + '</button></div>';
+      d.querySelector('button').addEventListener('click', function () { location.replace(urlRetour); });
+      document.body.appendChild(d);
+    };
+    if (document.body) poser();
+    else document.addEventListener('DOMContentLoaded', poser);
+  }
+
+  function refuserAcces(profil) {
+    ecranRefus('Accès réservé', 'Cette page est réservée aux administrateurs du site.',
+      (profil && profil.email) || 'session non identifiée', HOME_URL, 'Retour à l\'accueil');
+  }
+
+  /* Rubrique verrouillée par un administrateur : le membre est
+     arrêté ici, sans jamais voir le contenu. « rub.nom » est absent
+     quand c'est une page précise (chapitre, leçon…) qui a été
+     verrouillée individuellement depuis sa carte, plutôt qu'une des
+     16 grandes rubriques : le message reste alors générique. */
+  function refuserRubrique(rub) {
+    var urlRetour = BASE + rub.retour;
+    if (!rub.nom) {
+      ecranRefus('Contenu verrouillé', 'Ce contenu n\'est pas encore disponible.',
+        'Un administrateur peut le déverrouiller depuis cette carte.', urlRetour, 'Retour');
+      return;
+    }
+    var suffixe = rub.niveau === 3 ? ' (' + rub.groupe + ')' : '';
+    ecranRefus('Rubrique verrouillée',
+      'La rubrique « ' + rub.nom + suffixe + ' » n\'est pas encore disponible.',
+      'Un administrateur peut la déverrouiller depuis l\'espace admin.', urlRetour, 'Retour');
+  }
+
+  /* Bandeau discret pour un administrateur qui consulte une
+     rubrique verrouillée : lui seul continue d'y avoir accès, mais
+     autant qu'il n'oublie pas qu'elle est fermée aux membres. */
+  function bandeauRubriqueAdmin(rub) {
+    if (document.getElementById('ecg-verrou-admin')) return;
+    var quoi = rub.nom ? ('« ' + rub.nom + (rub.niveau === 3 ? ' (' + rub.groupe + ')' : '') + ' »') : 'Cette page';
+    var poser = function () {
+      var d = document.createElement('div');
+      d.id = 'ecg-verrou-admin';
+      d.textContent = '🔒 ' + quoi + ' est verrouillée pour les membres — visible uniquement parce que tu es administrateur.';
+      d.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:2147483646;background:#2a2416;color:#c8a96e;' +
+        'font:500 .8rem/1.5 "DM Sans",system-ui,sans-serif;padding:10px 18px;text-align:center';
       document.body.appendChild(d);
     };
     if (document.body) poser();
