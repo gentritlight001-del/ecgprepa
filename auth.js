@@ -391,25 +391,13 @@
     el.appendChild(btn);
   }
 
-  function afficherDebugTemp(texte) {
-    var d = document.createElement('div');
-    d.style.cssText = 'position:fixed;bottom:10px;left:10px;right:10px;z-index:99999;background:#000;color:#0f0;font:11px monospace;padding:12px;border-radius:8px;white-space:pre-wrap;max-height:40vh;overflow:auto;border:2px solid #0f0';
-    d.textContent = texte;
-    document.body.appendChild(d);
-  }
-
   function appliquerVerrouillageCartes() {
     var noeuds = collecterNoeudsVerrouillables();
-    var dbg = 'DEBUG VERROUS\nnoeuds trouvés: ' + noeuds.length + '\n' + noeuds.map(function(n){ return '- ' + n.id; }).join('\n');
-    if (!noeuds.length) { afficherDebugTemp(dbg + '\n=> ARRET: aucun noeud détecté'); return; }
+    if (!noeuds.length) return;
     var admin = (function () { var p = profilLocal(); return !!p && p.role === 'admin'; })();
-    dbg += '\nprofilLocal: ' + JSON.stringify(profilLocal());
-    dbg += '\nadmin détecté: ' + admin;
     sb().then(function (c) {
       return c.from('rubriques_verrouillage').select('id,verrouille');
     }).then(function (r) {
-      dbg += '\nrequête rubriques_verrouillage: ' + JSON.stringify(r && r.error ? {error: r.error} : {data: r && r.data});
-      afficherDebugTemp(dbg);
       if (!r || r.error) return;
       var etat = {};
       (r.data || []).forEach(function (x) { etat[x.id] = !!x.verrouille; });
@@ -418,7 +406,7 @@
         if (admin) ajouterBoutonAdmin(n.el, n.id, v);
         else if (v) griserPourMembre(n.el);
       });
-    }).catch(function (e) { afficherDebugTemp(dbg + '\nERREUR CATCH: ' + (e && e.message || e)); });
+    }).catch(function () { /* silencieux : les cartes gardent leur état par défaut (déverrouillé) */ });
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', appliquerVerrouillageCartes);
