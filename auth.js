@@ -49,7 +49,7 @@
       window.addEventListener('load', function () {
         navigator.serviceWorker.register(BASE + 'sw.js', { updateViaCache: 'none' }).then(function (reg) {
           /* Vérifie tout de suite s'il existe une version plus récente. */
-          try { reg.update(); } catch (e) {}
+          try { reg.update().catch(function () {}); } catch (e) {}
         }).catch(function () {
           /* Échec silencieux : pas de mode hors-ligne, mais le site
              continue de fonctionner normalement en ligne. */
