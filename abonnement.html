@@ -214,18 +214,48 @@
   function brancherCode() {
     var form = $('form-code'), champ = $('saisie-code'), btn = $('valider-code'), msg = $('code-msg');
     if (location.hash === '#code') { champ.focus(); }
+
+    /* Le message doit toujours être visible, même sur un petit écran. */
+    function dire(texte, ok) {
+      msg.className = ok ? 'ok' : '';
+      msg.textContent = texte;
+      try { msg.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {}
+    }
+    function relacher() { btn.disabled = false; btn.textContent = 'Valider'; }
+
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-      msg.className = ''; msg.textContent = '';
-      if (!champ.value.trim()) { msg.textContent = 'Saisis ton code.'; return; }
+      dire('');
+      if (!champ.value.trim()) { dire('Saisis ton code.'); return; }
       btn.disabled = true; btn.textContent = 'Vérification…';
-      A.premium.utiliserCode(champ.value).then(function () {
-        msg.className = 'ok';
-        msg.textContent = 'Code accepté : bienvenue !';
+
+      /* Filet : sans réponse du serveur au bout de 15 s, on le dit
+         au lieu de laisser le bouton bloqué. */
+      var fini = false;
+      var minuteur = setTimeout(function () {
+        if (fini) return;
+        fini = true;
+        dire('Le serveur ne répond pas. Vérifie ta connexion et réessaie.');
+        relacher();
+      }, 15000);
+
+      var essai;
+      try {
+        essai = A.premium.utiliserCode(champ.value);
+      } catch (err) {
+        essai = Promise.reject(err);
+      }
+      essai.then(function () {
+        if (fini) return;
+        fini = true; clearTimeout(minuteur);
+        dire('Code accepté : bienvenue !', true);
         return A.premium.statut(true).then(function (st) { setTimeout(function () { afficher(st); }, 900); });
       }).catch(function (err) {
-        msg.textContent = String((err && err.message) || err);
-        btn.disabled = false; btn.textContent = 'Valider';
+        if (console && console.error) console.error('Code d\'accès :', err);
+        if (fini) return;
+        fini = true; clearTimeout(minuteur);
+        dire(String((err && err.message) || err || 'Erreur inconnue.'));
+        relacher();
       });
     });
   }
