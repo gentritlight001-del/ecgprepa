@@ -1482,7 +1482,7 @@
       ? 'La rubrique « ' + rub.nom + (rub.niveau === 3 ? ' (' + rub.groupe + ')' : '') + ' »'
       : 'Ce contenu';
     ecranRefus('Contenu Premium',
-      quoi + ' est réservé aux membres Premium.',
+      quoi + (rub.nom ? ' est réservée' : ' est réservé') + ' aux membres Premium.',
       'Tu es déjà abonné·e ? Recharge la page dans un instant.',
       TARIFS_URL + '?depuis=' + encodeURIComponent(location.pathname), 'Découvrir Premium',
       { libelle: 'Retour', url: BASE + rub.retour });
@@ -1670,7 +1670,7 @@
         var i = document.createElement('i');
         i.className = 'premium';
         i.textContent = '✦ Premium';
-        i.style.cssText = 'color:#c8a96e;background:rgba(200,169,110,.14);margin-left:6px';
+        i.style.cssText = 'color:#c8a96e;background:rgba(200,169,110,.14)' + (qui.querySelector('i') ? ';margin-left:6px' : '');
         qui.appendChild(i);
       } else if ((!st || !st.premium) && deja) {
         deja.parentNode.removeChild(deja);
