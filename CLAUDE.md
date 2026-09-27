@@ -21,6 +21,9 @@ au format PDF. Tout se joue dans `newsletter/`.
 3. Lancer :
    `python newsletter/generer-pdf.py newsletter/build/<fichier>.html "newsletter/out/<NOM DU PDF>.pdf"`
 4. Relire la capture PNG produite à côté du PDF avant de livrer.
+5. Les PDF ne sont **jamais** versionnés ni publiés sur le site (`build/` et `out/` sont
+   ignorés par git). Ils se rangent dans la page admin « Mes newsletters »
+   (`mes-newsletters.html`), stockés dans le bucket privé Supabase `newsletters`.
 
 ## Sources du contenu
 
@@ -43,17 +46,24 @@ au format PDF. Tout se joue dans `newsletter/`.
 - **Le chiffre** : un fait **actuel** lié à la une (cours, indice, bilan du jour),
   vérifié avec WebSearch. Ni une donnée du bandeau de chiffres, ni une donnée déjà
   citée dans l'article.
-- **Encadré bas de colonne** : vocabulaire de 12 entrées (aucune sur deux lignes)
+- **Encadré bas de colonne** : vocabulaire d'au moins 12 entrées (aucune sur deux lignes)
   pour les éditions de langue ; « Le mot du numéro » pour la mondiale et la culture
   générale.
 - **Les 3 titres du bas** doivent tenir sur 2 lignes chacun, pour que les paragraphes
   démarrent à la même ligne.
+- **Aucun blanc** : les colonnes doivent être remplies jusqu'en bas.
+  - La une : le lien « Lire l'article complet sur le site » doit tomber tout en bas de
+    la 2e colonne du texte, à la même hauteur que la fin de la 1re colonne (ajuster la
+    longueur des paragraphes).
+  - Colonne de droite : le vocabulaire commence à 12 entrées et on en ajoute (courtes,
+    tirées des articles du numéro) jusqu'à ce qu'il arrive au niveau du bas de la une.
+  - Brèves du bas : chaque texte doit descendre jusqu'à la ligne « pays / Lire → ».
 
 ## En cas de débordement
 
 Raccourcir la rédaction, en commençant par la colonne la plus haute
 (`.col-side` ou `.col-lead`). **Ne jamais** toucher aux tailles de police, à la hauteur
-des images, aux marges ni au nombre de lignes du vocabulaire.
+des images ni aux marges. Le vocabulaire garde au moins 12 entrées.
 
 ## Nom des fichiers
 
