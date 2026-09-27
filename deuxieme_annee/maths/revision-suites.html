@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Révisions d'analyse : les suites</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false}]});"></script>
+<style>
+  :root {
+    --cream: #F2F5FA;
+    --dark: #0E1A2B;
+    --terra: #2F5D9B;
+    --terra-dark: #0F2340;
+    --terra-mid: #4F7FC0;
+    --terra-light: #DCE7F5;
+    --terra-border: #9DB6D9;
+    --glow: #A9C8F0;
+    --muted: #4F6680;
+    --accent: #2F5D9B;
+    --accent-soft: #2F5D9B22;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--dark); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid rgba(47,93,155,0.25);
+    background: var(--terra-dark); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--glow); cursor: pointer; letter-spacing: 0.02em; }
+  .nav-logo a { color: inherit; text-decoration: none; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(242,245,250,0.5); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: inherit; text-decoration: none; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb a:hover span, .breadcrumb span:hover { color: var(--glow); }
+  .breadcrumb .sep { color: rgba(242,245,250,0.25); }
+  .breadcrumb .current { color: #F2F5FA; cursor: default; }
+
+  /* ─── HERO ─── */
+  .ch-hero {
+    background: radial-gradient(120% 140% at 15% 0%, #1D3E6E 0%, var(--terra-dark) 55%, #08152A 100%);
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ch-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234F7FC0' fill-opacity='0.18'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--glow); margin-bottom: 1.5rem; opacity: 0.9; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 4rem); color: var(--cream); font-weight: 900; max-width: 900px; margin: 0 auto 1.5rem; line-height: 1.1; position: relative; z-index: 1; }
+  .ch-hero p { color: rgba(242,245,250,0.5); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  /* ─── TOC ─── */
+  .toc-bar { background: #E3ECF7; padding: 2rem; border-bottom: 1px solid var(--terra-border); }
+  .toc-inner { max-width: 960px; margin: 0 auto; }
+  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
+  .toc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.4rem; list-style: none; }
+  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: #14233A; font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
+  .toc-list a:hover { border-color: var(--terra-border); background: white; color: #000; }
+  .toc-num { font-family: "DM Mono", monospace; font-size: 0.65rem; color: var(--terra); flex-shrink: 0; margin-top: 0.15rem; }
+
+  /* ─── CONTENT ─── */
+  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 3rem; }
+
+  /* PART */
+  .math-part { margin-bottom: 5rem; }
+  .math-part:last-of-type { margin-bottom: 0; }
+  .math-part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--terra); }
+  .math-part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: var(--terra-border); line-height: 1; flex-shrink: 0; }
+  .math-part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--dark); line-height: 1.25; }
+
+  /* SECTION */
+  .math-section { margin-bottom: 3.5rem; }
+  .math-section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--terra-dark); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--terra); scroll-margin-top: 2rem; }
+  .math-subsection-title { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--terra); margin: 2rem 0 0.75rem; }
+
+  /* TEXT */
+  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: #16263D; line-height: 1.85; font-weight: 300; }
+  .content strong { color: var(--dark); font-weight: 600; }
+
+  /* DÉFINITION CARD */
+  .def-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(47,93,155,0.10), 0 0 0 1px rgba(47,93,155,0.14);
+    display: flex;
+    margin: 1.4rem 0;
+  }
+  .def-accent-bar {
+    width: 5px;
+    background: linear-gradient(180deg, #5B8FD0 0%, #0F2340 100%);
+    flex-shrink: 0;
+    border-radius: 10px 0 0 10px;
+  }
+  .def-body { padding: 1.2rem 1.5rem; flex: 1; min-width: 0; }
+  @media screen { .def-body { overflow-x: auto; } }
+  .def-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.65rem; }
+  .def-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--terra); font-weight: 500; }
+  .def-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--terra-dark); }
+  .def-body p { margin-bottom: 0.5rem; font-size: 0.93rem; line-height: 1.75; }
+  .def-body p:last-child { margin-bottom: 0; }
+
+  /* PROPRIÉTÉ CARD */
+  .prop-card {
+    background: var(--terra-light);
+    border-radius: 8px;
+    border: 1px solid var(--terra-border);
+    border-left: 4px solid var(--terra);
+    padding: 1.2rem 1.5rem;
+    margin: 1.4rem 0;
+  }
+  .prop-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--terra-dark); font-weight: 700; margin-bottom: 0.6rem; }
+  .prop-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--terra-dark); margin-bottom: 0.7rem; }
+  .prop-card p { margin-bottom: 0.5rem; font-size: 0.93rem; color: var(--terra-dark); line-height: 1.75; }
+  .prop-card p:last-child { margin-bottom: 0; }
+  .prop-card ol { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .prop-card ol li { font-size: 0.93rem; color: var(--terra-dark); line-height: 1.8; margin-bottom: 0.35rem; }
+  .prop-card ul { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .prop-card ul li { font-size: 0.93rem; color: var(--terra-dark); line-height: 1.8; margin-bottom: 0.35rem; }
+
+  /* THÉORÈME CARD */
+  .thm-card {
+    background: var(--terra-dark);
+    color: var(--cream);
+    border-radius: 8px;
+    padding: 1.5rem 1.75rem;
+    margin: 1.4rem 0;
+  }
+  .thm-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--glow); margin-bottom: 0.5rem; }
+  .thm-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--cream); margin-bottom: 0.75rem; }
+  .thm-card p { color: rgba(242,245,250,0.88); font-size: 0.93rem; margin-bottom: 0.5rem; line-height: 1.75; }
+  .thm-card p:last-child { margin-bottom: 0; }
+  .thm-card ul, .thm-card ol { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .thm-card li { font-size: 0.93rem; color: rgba(242,245,250,0.88); line-height: 1.8; margin-bottom: 0.35rem; }
+
+  /* MÉTHODE CARD */
+  .meth-card {
+    background: white;
+    border: 2px solid var(--terra);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.4rem 0;
+  }
+  .meth-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--terra); font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+  .meth-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--terra-dark); margin-bottom: 0.7rem; }
+  .meth-card p { font-size: 0.93rem; line-height: 1.75; margin-bottom: 0.5rem; }
+  .meth-card p:last-child { margin-bottom: 0; }
+  .meth-card ul, .meth-card ol { padding-left: 1.4rem; margin: 0.3rem 0 0.5rem; }
+  .meth-card li { font-size: 0.93rem; line-height: 1.8; margin-bottom: 0.3rem; }
+
+  /* REMARQUE */
+  .remark { background: white; border-left: 3px solid var(--terra-border); padding: 1rem 1.4rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; font-size: 0.9rem; color: #14233A; line-height: 1.7; font-style: italic; }
+  .remark::before { content: 'Remarque — '; font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--terra); display: block; margin-bottom: 0.3rem; }
+
+  /* FORMULE DISPLAY */
+  .formula-block {
+    background: white;
+    border: 1px solid var(--terra-border);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.2rem 0;
+    text-align: center;
+    overflow-x: auto;
+    color: var(--dark);
+  }
+  .formula-block .katex-display { margin: 0; }
+  .formula-block .katex { font-size: 1.05em; color: var(--dark); }
+
+  /* Cartes à fond blanc : toujours forcer le texte en noir/sombre,
+     même imbriquées dans un thm-card à fond sombre */
+  .def-card, .meth-card, .formula-block {
+    color: var(--dark);
+  }
+  .def-card *, .meth-card *, .formula-block * { color: inherit; }
+  .def-card .def-label, .meth-card .meth-label { color: var(--terra); }
+  .def-card .def-name, .meth-card .meth-title { color: var(--terra-dark); }
+
+  /* TABLE */
+  .math-table-wrap { overflow-x: auto; margin: 1.5rem 0; border-radius: 8px; border: 1px solid var(--terra-border); box-shadow: 0 2px 8px rgba(47,93,155,0.08); }
+  .math-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .math-table th { background: var(--terra-dark); color: var(--cream); font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.75rem 1rem; text-align: center; font-weight: 500; border: 1px solid rgba(255,255,255,0.1); }
+  .math-table td { padding: 0.65rem 1rem; text-align: center; border: 1px solid var(--terra-light); color: #16263D; vertical-align: middle; background: white; line-height: 1.6; }
+  .math-table tr:nth-child(even) td { background: #F2F5FA; }
+  .math-table tr:hover td { background: var(--terra-light); }
+  .math-table td.left { text-align: left; }
+  .math-table .katex { font-size: 0.95em; }
+
+  /* KEY FACT */
+  .math-key { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 0.6rem; padding: 0.85rem 1.1rem; background: white; border: 1px solid var(--terra-light); border-radius: 6px; }
+  .math-key-bullet { width: 6px; height: 6px; background: var(--terra); border-radius: 50%; flex-shrink: 0; margin-top: 0.55rem; }
+  .math-key > div { font-size: 0.91rem; color: #16263D; line-height: 1.75; font-weight: 300; }
+
+  /* INLINE MATH */
+  .katex { font-size: 1em; }
+  .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.2rem 0; }
+
+  /* DEUX COLONNES */
+  .two-col-formulas { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
+  .two-col-formulas .formula-block { margin: 0; }
+
+  /* TROIS COLONNES */
+  .three-col-formulas { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
+  .three-col-formulas .formula-block { margin: 0; }
+
+  /* HIGHLIGHT BOX */
+  .math-highlight { background: var(--terra-light); border-left: 4px solid var(--terra); padding: 1.25rem 1.75rem; margin: 1.5rem 0; color: var(--terra-dark); font-size: 0.93rem; line-height: 1.75; border-radius: 0 6px 6px 0; }
+
+  /* FOOTER */
+  .site-footer {
+    background: var(--terra-dark);
+    border-top: 1px solid rgba(47,93,155,0.35);
+    padding: 2.5rem 2rem;
+    text-align: center;
+  }
+  .site-footer .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--glow);
+    letter-spacing: 0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+  /* BACK TO TOP */
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--terra); color: var(--cream); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 4px 14px rgba(47,93,155,0.45); opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 200; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+  .back-to-top:hover { background: var(--terra-mid); }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--terra-border); border-radius: 3px; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .two-col-formulas { grid-template-columns: 1fr; }
+    .three-col-formulas { grid-template-columns: 1fr; }
+    .content { padding: 3rem 1rem 2rem; }
+    .formula-block { padding: 0.9rem 0.6rem; }
+    .formula-block .katex { font-size: 0.86em; }
+    .def-body, .prop-card, .thm-card { padding-left: 1rem; padding-right: 1rem; }
+  }
+
+  @media print {
+    @page { size: A4; margin: 15mm 14mm 15mm 14mm; }
+    nav, .back-to-top, .toc-bar, .site-footer { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    html, body { background: white !important; color: #000 !important; font-size: 10pt; width: 100% !important; }
+    .ch-hero { background: #0F2340 !important; padding: 0.9rem 1rem 0.7rem !important; }
+    .ch-hero::before { display: none !important; }
+    .ch-hero h1 { font-size: 16pt !important; color: #fff !important; margin-bottom: 0.3rem !important; }
+    .ch-hero .chap-label { font-size: 7pt !important; color: #A9C8F0 !important; margin-bottom: 0.4rem !important; }
+    .ch-hero p { font-size: 7pt !important; color: #A9C8F0 !important; margin: 0 !important; }
+    .content { max-width: 100% !important; padding: 0.6rem 0 !important; margin: 0 !important; }
+    .content p { font-size: 9pt !important; line-height: 1.5 !important; margin-bottom: 0.45rem !important; color: #000 !important; }
+    .math-part { margin-bottom: 0.8rem; page-break-inside: auto; }
+    .math-part-header { page-break-after: avoid; padding-bottom: 0.6rem !important; margin-bottom: 1rem !important; border-bottom: 2pt solid #2F5D9B !important; }
+    .math-part-num { font-size: 2rem !important; color: #9DB6D9 !important; }
+    .math-part-title { font-size: 13pt !important; }
+    .math-section { page-break-inside: auto; margin-bottom: 0.8rem; }
+    .math-section-title { page-break-after: avoid; font-size: 11pt !important; padding-left: 0.7rem !important; border-left: 2.5pt solid #2F5D9B !important; margin-bottom: 0.55rem !important; color: #0F2340 !important; }
+    .math-subsection-title { page-break-after: avoid; font-size: 7pt !important; margin: 0.65rem 0 0.35rem !important; color: #2F5D9B !important; }
+    .def-card { page-break-inside: avoid; box-shadow: none !important; border: 1pt solid #9DB6D9 !important; display: flex !important; border-radius: 0 !important; margin: 0.55rem 0 !important; }
+    .def-accent-bar { background: #2F5D9B !important; width: 4px !important; border-radius: 0 !important; }
+    .def-body { padding: 0.7rem 1rem !important; }
+    .def-body p { font-size: 8.5pt !important; line-height: 1.5 !important; color: #000 !important; }
+    .prop-card { page-break-inside: avoid; background: #DCE7F5 !important; border: 1pt solid #9DB6D9 !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .prop-card p, .prop-card li { font-size: 8.5pt !important; line-height: 1.5 !important; }
+    .thm-card { page-break-inside: avoid; background: #0F2340 !important; padding: 0.7rem 1rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .thm-label { font-size: 6pt !important; color: #A9C8F0 !important; }
+    .thm-title { font-size: 9.5pt !important; color: #fff !important; }
+    .thm-card p, .thm-card li { font-size: 8.5pt !important; line-height: 1.5 !important; color: #E6EEF8 !important; }
+    .meth-card { page-break-inside: avoid; border: 1.5pt solid #2F5D9B !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .meth-title { font-size: 9.5pt !important; }
+    .meth-card p, .meth-card li { font-size: 8.5pt !important; line-height: 1.5 !important; }
+    .remark { border-left: 2pt solid #9DB6D9 !important; padding: 0.5rem 0.8rem !important; margin: 0.5rem 0 !important; font-size: 8pt !important; border-radius: 0 !important; }
+    .formula-block { border: 1pt solid #9DB6D9 !important; padding: 0.55rem 0.8rem !important; margin: 0.5rem 0 !important; border-radius: 0 !important; }
+    .math-table-wrap { border: 1pt solid #9DB6D9 !important; border-radius: 0 !important; box-shadow: none !important; margin: 0.5rem 0 !important; }
+    .math-table th { background: #0F2340 !important; color: #A9C8F0 !important; font-size: 6.5pt !important; padding: 0.4rem 0.6rem !important; }
+    .math-table td { font-size: 8pt !important; padding: 0.4rem 0.6rem !important; border: 0.5pt solid #DCE7F5 !important; }
+    .two-col-formulas, .three-col-formulas { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 0.5rem !important; margin: 0.45rem 0 !important; }
+    .katex { font-size: 0.82em !important; }
+    .katex-display { margin: 0.15rem 0 !important; overflow: visible !important; }
+    .katex-html { white-space: normal !important; }
+    .katex .base { display: inline !important; white-space: nowrap !important; }
+    .def-body p, .prop-card p, .thm-card p, .remark, .math-key > div, .content p { overflow: visible !important; word-break: break-word !important; }
+    .formula-block { overflow: visible !important; height: auto !important; min-height: 0 !important; text-align: center !important; }
+    .formula-block .katex-display { overflow-x: visible !important; overflow-y: visible !important; text-align: center !important; }
+    .math-table td, .math-table th { overflow: visible !important; word-break: break-word !important; }
+    .katex *, .katex-html * { position: static !important; top: auto !important; bottom: auto !important; left: auto !important; right: auto !important; }
+    .math-table .katex { font-size: 0.75em !important; }
+  }
+
+  /* FIGURES */
+  .math-figure { background: white; border: 1px solid var(--terra-border); border-radius: 8px; padding: 1.2rem 1rem 0.9rem; margin: 1.4rem 0; text-align: center; }
+  .math-svg { width: 100%; max-width: 460px; height: auto; display: block; margin: 0 auto; }
+  .math-svg .ax { stroke: var(--muted); stroke-width: 1; }
+  .math-svg .axh { fill: var(--muted); }
+  .math-svg .tk { font-family: 'DM Mono', monospace; font-size: 11px; fill: var(--muted); }
+  .math-svg .lb { font-family: 'Newsreader', Georgia, serif; font-style: italic; font-size: 13px; fill: var(--terra-dark); }
+  .math-svg .cv { fill: none; stroke: var(--terra-dark); stroke-width: 2.4; stroke-linejoin: round; }
+  .math-svg .tg { fill: none; stroke: var(--terra); stroke-width: 1.4; stroke-dasharray: 6 5; }
+  .math-figure figcaption { font-size: 0.82rem; color: var(--muted); margin-top: 0.6rem; line-height: 1.6; }
+  @media print { .math-figure { page-break-inside: avoid; border: 1pt solid #9DB6D9 !important; padding: 0.5rem !important; margin: 0.5rem 0 !important; } .math-svg { max-width: 300px; } }
+  .math-svg .pt { fill: var(--terra-dark); }
+  .math-svg .pt2 { fill: white; stroke: var(--terra); stroke-width: 1.6; }
+  .math-svg .bis { stroke: var(--muted); stroke-width: 1; }
+  .math-svg .web { fill: none; stroke: var(--terra); stroke-width: 2; }
+  .math-svg .dot { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 2 3; }
+  .def-list { padding-left: 1.3rem; margin: 0.3rem 0 0; }
+  .def-list li { font-size: 0.93rem; line-height: 1.8; margin-bottom: 0.3rem; }
+  a.lien-interne { color: var(--terra); text-decoration: underline; text-underline-offset: 2px; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left"><div class="nav-logo"><a href="../../index.html">ECG Prépa</a></div></div>
+  <div class="breadcrumb">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">/</span>
+    <a href="../index.html"><span>2ème Année</span></a>
+    <span class="sep">/</span>
+    <a href="index.html"><span>Mathématiques</span></a>
+    <span class="sep">/</span>
+    <span class="current">Les suites</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="chap-label">&#x2015;&nbsp; Révisions d'analyse · Fiche 2 &nbsp;&#x2015;</div>
+  <h1>Les suites</h1>
+  <p>Représentations · Vocabulaire · Théorèmes de limites · Suites usuelles · Comparaison</p>
+</div>
+
+<!-- TOC -->
+<div class="toc-bar">
+  <div class="toc-inner">
+    <div class="toc-title">Table des matières</div>
+    <ul class="toc-list">
+      <li><a href="#part1"><span class="toc-num">I</span> Différents points de vue sur un même objet</a></li>
+      <li><a href="#part2"><span class="toc-num">II</span> Vocabulaire et opérations sur les suites</a></li>
+      <li><a href="#part3"><span class="toc-num">III</span> Propriétés et théorèmes relatifs aux limites</a></li>
+      <li><a href="#part4"><span class="toc-num">IV</span> Étude de suites particulières</a></li>
+      <li><a href="#part5"><span class="toc-num">V</span> Relations de comparaison entre les suites</a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════════
+     PARTIE I — POINTS DE VUE
+════════════════════════════════════════ -->
+<div class="math-part" id="part1">
+  <div class="math-part-header">
+    <div class="math-part-num">I</div>
+    <div class="math-part-title">Différents points de vue sur un même objet</div>
+  </div>
+
+  <div class="math-section" id="s1-1">
+    <div class="math-section-title">1 — Qu'est-ce qu'une suite ?</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span><span class="def-name">Suite réelle</span></div>
+        <p>Une suite \(u = (u_n)_{n\in\mathbb{N}} = (u_0, u_1, u_2, \dots)\) est, si l'on veut une définition précise, une application de \(\mathbb{N}\) dans \(\mathbb{R}\) :</p>
+        <div class="formula-block">\[u : \begin{array}{rcl} \mathbb{N} & \longrightarrow & \mathbb{R} \\ n & \longmapsto & u_n. \end{array}\]</div>
+        <p>On note \(\mathbb{R}^{\mathbb{N}}\) l'ensemble des suites réelles.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="math-section" id="s1-2">
+    <div class="math-section-title">2 — Se représenter une suite</div>
+    <p>Il est important de se forger, quand c'est possible, des images mentales des objets mathématiques manipulés. On peut imaginer une suite de plusieurs façons.</p>
+
+    <div class="math-subsection-title">Les termes sur un axe</div>
+    <p>Les termes \(u_n\) sont disposés sur un axe représentant l'ensemble \(\mathbb{R}\) des nombres réels :</p>
+    <figure class="math-figure"><svg class="math-svg" viewBox="0 0 460 90" role="img" aria-label="Termes d une suite placés sur un axe" xmlns="http://www.w3.org/2000/svg"><line x1="24" y1="51.0" x2="438" y2="51.0" class="ax"/><path d="M438 51.0 l-7 -4 v8 z" class="axh"/><line x1="47.9" y1="48.0" x2="47.9" y2="54.0" class="ax"/><text x="47.9" y="68.0" class="tk" text-anchor="middle">−4</text><line x1="82.6" y1="48.0" x2="82.6" y2="54.0" class="ax"/><text x="82.6" y="68.0" class="tk" text-anchor="middle">−3</text><line x1="117.3" y1="48.0" x2="117.3" y2="54.0" class="ax"/><text x="117.3" y="68.0" class="tk" text-anchor="middle">−2</text><line x1="151.9" y1="48.0" x2="151.9" y2="54.0" class="ax"/><text x="151.9" y="68.0" class="tk" text-anchor="middle">−1</text><line x1="221.3" y1="48.0" x2="221.3" y2="54.0" class="ax"/><text x="221.3" y="68.0" class="tk" text-anchor="middle">1</text><line x1="256.0" y1="48.0" x2="256.0" y2="54.0" class="ax"/><text x="256.0" y="68.0" class="tk" text-anchor="middle">2</text><line x1="290.7" y1="48.0" x2="290.7" y2="54.0" class="ax"/><text x="290.7" y="68.0" class="tk" text-anchor="middle">3</text><line x1="325.4" y1="48.0" x2="325.4" y2="54.0" class="ax"/><text x="325.4" y="68.0" class="tk" text-anchor="middle">4</text><line x1="360.1" y1="48.0" x2="360.1" y2="54.0" class="ax"/><text x="360.1" y="68.0" class="tk" text-anchor="middle">5</text><line x1="394.8" y1="48.0" x2="394.8" y2="54.0" class="ax"/><text x="394.8" y="68.0" class="tk" text-anchor="middle">6</text><circle cx="68.7" cy="51.0" r="3.4" class="pt"/><text x="68.7" y="40.0" class="lb" text-anchor="middle">u₃</text><circle cx="124.2" cy="51.0" r="3.4" class="pt"/><text x="124.2" y="40.0" class="lb" text-anchor="middle">u₀</text><circle cx="200.5" cy="51.0" r="3.4" class="pt"/><text x="200.5" y="40.0" class="lb" text-anchor="middle">u₂</text><circle cx="280.3" cy="51.0" r="3.4" class="pt"/><text x="280.3" y="40.0" class="lb" text-anchor="middle">u₅</text><circle cx="297.6" cy="51.0" r="3.4" class="pt"/><text x="297.6" y="40.0" class="lb" text-anchor="middle">u₆</text><circle cx="311.5" cy="51.0" r="3.4" class="pt"/><text x="311.5" y="40.0" class="lb" text-anchor="middle">u₄</text><circle cx="335.8" cy="51.0" r="3.4" class="pt"/><text x="335.8" y="40.0" class="lb" text-anchor="middle">u₁</text></svg><figcaption>Les premiers termes d'une suite placés sur la droite réelle.</figcaption></figure>
+
+    <div class="math-subsection-title">Les termes dans le plan</div>
+    <p>Dans le plan, on place les entiers \(n\) en abscisse et les réels \(u_n\) en ordonnée :</p>
+    <figure class="math-figure"><svg class="math-svg" viewBox="0 0 460 280" role="img" aria-label="Termes d une suite dans le plan" xmlns="http://www.w3.org/2000/svg"><line x1="24" y1="188.6" x2="438" y2="188.6" class="ax"/><path d="M438 188.6 l-7 -4 v8 z" class="axh"/><line x1="52.7" y1="256" x2="52.7" y2="22" class="ax"/><path d="M52.7 22 l-4 7 h8 z" class="axh"/><text x="430" y="180.6" class="lb" text-anchor="end">n</text><text x="60.7" y="32" class="lb">uₙ</text><line x1="83.8" y1="185.6" x2="83.8" y2="191.6" class="ax"/><text x="83.8" y="204.6" class="tk" text-anchor="middle">1</text><line x1="114.9" y1="185.6" x2="114.9" y2="191.6" class="ax"/><text x="114.9" y="204.6" class="tk" text-anchor="middle">2</text><line x1="146.0" y1="185.6" x2="146.0" y2="191.6" class="ax"/><text x="146.0" y="204.6" class="tk" text-anchor="middle">3</text><line x1="177.1" y1="185.6" x2="177.1" y2="191.6" class="ax"/><text x="177.1" y="204.6" class="tk" text-anchor="middle">4</text><line x1="208.2" y1="185.6" x2="208.2" y2="191.6" class="ax"/><text x="208.2" y="204.6" class="tk" text-anchor="middle">5</text><line x1="239.3" y1="185.6" x2="239.3" y2="191.6" class="ax"/><text x="239.3" y="204.6" class="tk" text-anchor="middle">6</text><line x1="270.4" y1="185.6" x2="270.4" y2="191.6" class="ax"/><text x="270.4" y="204.6" class="tk" text-anchor="middle">7</text><line x1="301.6" y1="185.6" x2="301.6" y2="191.6" class="ax"/><text x="301.6" y="204.6" class="tk" text-anchor="middle">8</text><line x1="332.7" y1="185.6" x2="332.7" y2="191.6" class="ax"/><text x="332.7" y="204.6" class="tk" text-anchor="middle">9</text><line x1="363.8" y1="185.6" x2="363.8" y2="191.6" class="ax"/><text x="363.8" y="204.6" class="tk" text-anchor="middle">10</text><line x1="394.9" y1="185.6" x2="394.9" y2="191.6" class="ax"/><text x="394.9" y="204.6" class="tk" text-anchor="middle">11</text><line x1="49.7" y1="51.7" x2="55.7" y2="51.7" class="ax"/><text x="44.7" y="55.7" class="lb" text-anchor="end">u₃</text><circle cx="52.7" cy="168.7" r="3.4" class="pt"/><circle cx="83.8" cy="135.6" r="3.4" class="pt"/><circle cx="114.9" cy="221.7" r="3.4" class="pt"/><circle cx="146.0" cy="51.7" r="3.4" class="pt"/><circle cx="177.1" cy="230.5" r="3.4" class="pt"/><circle cx="208.2" cy="106.9" r="3.4" class="pt"/><circle cx="239.3" cy="71.5" r="3.4" class="pt"/><circle cx="270.4" cy="80.4" r="3.4" class="pt"/><circle cx="301.6" cy="93.6" r="3.4" class="pt"/><circle cx="332.7" cy="78.2" r="3.4" class="pt"/><circle cx="363.8" cy="76.0" r="3.4" class="pt"/><circle cx="394.9" cy="89.2" r="3.4" class="pt"/></svg><figcaption>Les points de coordonnées \((n, u_n)\).</figcaption></figure>
+
+    <div class="math-subsection-title">Le cas d'une suite récurrente</div>
+    <p>Lorsque la suite \(u\) est définie par une relation de récurrence du type \(\forall n \in \mathbb{N},\ u_{n+1} = f(u_n)\), on peut représenter chacun des termes \(u_n\) alternativement en abscisse et en ordonnée, en s'appuyant sur la courbe de \(f\) et sur la première bissectrice, c'est-à-dire la droite d'équation \(y = x\) :</p>
+    <figure class="math-figure"><svg class="math-svg" viewBox="0 0 460 400" role="img" aria-label="Construction en escalier des termes d une suite récurrente" xmlns="http://www.w3.org/2000/svg"><line x1="24" y1="331.4" x2="438" y2="331.4" class="ax"/><path d="M438 331.4 l-7 -4 v8 z" class="axh"/><line x1="145.1" y1="376" x2="145.1" y2="22" class="ax"/><path d="M145.1 22 l-4 7 h8 z" class="axh"/><polyline points="112.4,309.8 113.4,310.1 114.3,310.3 115.3,310.5 116.2,310.8 117.2,311.0 118.1,311.2 119.1,311.4 120.1,311.6 121.0,311.8 122.0,312.0 122.9,312.1 123.9,312.3 124.9,312.5 125.8,312.6 126.8,312.8 127.7,312.9 128.7,313.0 129.6,313.2 130.6,313.3 131.6,313.4 132.5,313.5 133.5,313.6 134.4,313.7 135.4,313.7 136.4,313.8 137.3,313.9 138.3,313.9 139.2,314.0 140.2,314.0 141.1,314.1 142.1,314.1 143.1,314.1 144.0,314.1 145.0,314.1 145.9,314.1 146.9,314.1 147.9,314.1 148.8,314.1 149.8,314.0 150.7,314.0 151.7,313.9 152.6,313.9 153.6,313.8 154.6,313.8 155.5,313.7 156.5,313.6 157.4,313.5 158.4,313.4 159.4,313.3 160.3,313.2 161.3,313.1 162.2,312.9 163.2,312.8 164.1,312.7 165.1,312.5 166.1,312.3 167.0,312.2 168.0,312.0 168.9,311.8 169.9,311.6 170.9,311.4 171.8,311.2 172.8,311.0 173.7,310.8 174.7,310.6 175.6,310.3 176.6,310.1 177.6,309.8 178.5,309.6 179.5,309.3 180.4,309.1 181.4,308.8 182.4,308.5 183.3,308.2 184.3,307.9 185.2,307.6 186.2,307.3 187.1,307.0 188.1,306.6 189.1,306.3 190.0,305.9 191.0,305.6 191.9,305.2 192.9,304.9 193.8,304.5 194.8,304.1 195.8,303.7 196.7,303.3 197.7,302.9 198.6,302.5 199.6,302.1 200.6,301.7 201.5,301.2 202.5,300.8 203.4,300.3 204.4,299.9 205.3,299.4 206.3,298.9 207.3,298.5 208.2,298.0 209.2,297.5 210.1,297.0 211.1,296.5 212.1,295.9 213.0,295.4 214.0,294.9 214.9,294.4 215.9,293.8 216.8,293.3 217.8,292.7 218.8,292.1 219.7,291.5 220.7,291.0 221.6,290.4 222.6,289.8 223.6,289.2 224.5,288.6 225.5,287.9 226.4,287.3 227.4,286.7 228.3,286.0 229.3,285.4 230.3,284.7 231.2,284.1 232.2,283.4 233.1,282.7 234.1,282.0 235.1,281.3 236.0,280.6 237.0,279.9 237.9,279.2 238.9,278.5 239.8,277.7 240.8,277.0 241.8,276.2 242.7,275.5 243.7,274.7 244.6,274.0 245.6,273.2 246.6,272.4 247.5,271.6 248.5,270.8 249.4,270.0 250.4,269.2 251.3,268.4 252.3,267.5 253.3,266.7 254.2,265.9 255.2,265.0 256.1,264.2 257.1,263.3 258.0,262.4 259.0,261.5 260.0,260.6 260.9,259.7 261.9,258.8 262.8,257.9 263.8,257.0 264.8,256.1 265.7,255.2 266.7,254.2 267.6,253.3 268.6,252.3 269.5,251.4 270.5,250.4 271.5,249.4 272.4,248.4 273.4,247.4 274.3,246.4 275.3,245.4 276.3,244.4 277.2,243.4 278.2,242.4 279.1,241.3 280.1,240.3 281.0,239.2 282.0,238.2 283.0,237.1 283.9,236.0 284.9,234.9 285.8,233.8 286.8,232.8 287.8,231.6 288.7,230.5 289.7,229.4 290.6,228.3 291.6,227.2 292.5,226.0 293.5,224.9 294.5,223.7 295.4,222.5 296.4,221.4 297.3,220.2 298.3,219.0 299.3,217.8 300.2,216.6 301.2,215.4 302.1,214.2 303.1,213.0 304.0,211.7 305.0,210.5 306.0,209.3 306.9,208.0 307.9,206.7 308.8,205.5 309.8,204.2 310.8,202.9 311.7,201.6 312.7,200.3 313.6,199.0 314.6,197.7 315.5,196.4 316.5,195.1 317.5,193.7 318.4,192.4 319.4,191.0 320.3,189.7 321.3,188.3 322.3,186.9 323.2,185.6 324.2,184.2 325.1,182.8 326.1,181.4 327.0,180.0 328.0,178.6 329.0,177.1 329.9,175.7 330.9,174.3 331.8,172.8 332.8,171.4 333.7,169.9 334.7,168.4 335.7,167.0 336.6,165.5 337.6,164.0 338.5,162.5 339.5,161.0 340.5,159.5 341.4,157.9 342.4,156.4 343.3,154.9 344.3,153.3 345.2,151.8 346.2,150.2 347.2,148.7 348.1,147.1 349.1,145.5 350.0,143.9 351.0,142.3 352.0,140.7 352.9,139.1 353.9,137.5 354.8,135.9 355.8,134.2 356.7,132.6 357.7,131.0 358.7,129.3 359.6,127.6 360.6,126.0 361.5,124.3 362.5,122.6 363.5,120.9 364.4,119.2 365.4,117.5 366.3,115.8 367.3,114.1 368.2,112.3 369.2,110.6 370.2,108.9 371.1,107.1 372.1,105.4 373.0,103.6 374.0,101.8 375.0,100.0 375.9,98.2 376.9,96.5 377.8,94.6 378.8,92.8 379.7,91.0 380.7,89.2 381.7,87.4 382.6,85.5 383.6,83.7 384.5,81.8 385.5,80.0 386.5,78.1 387.4,76.2 388.4,74.3 389.3,72.4 390.3,70.5 391.2,68.6 392.2,66.7 393.2,64.8 394.1,62.9 395.1,60.9 396.0,59.0 397.0,57.0 398.0,55.1 398.9,53.1 399.9,51.1" class="cv"/><line x1="118.9" y1="359.1" x2="419.5" y2="40.9" class="bis"/><text x="360.7" y="85.9" class="lb" text-anchor="start">y = x</text><text x="377.0" y="130.8" class="lb" text-anchor="start">𝒞f</text><path d="M341.1 331.4 L341.1 158.5 L308.4 158.5 L308.4 206.1 L263.5 206.1 L263.5 257.3" class="web"/><line x1="341.1" y1="331.4" x2="341.1" y2="123.9" class="dot"/><text x="341.1" y="347.4" class="tk" text-anchor="middle">u₀</text><line x1="308.4" y1="331.4" x2="308.4" y2="158.5" class="dot"/><text x="308.4" y="347.4" class="tk" text-anchor="middle">u₁</text><line x1="263.5" y1="331.4" x2="263.5" y2="206.1" class="dot"/><text x="263.5" y="347.4" class="tk" text-anchor="middle">u₂</text><line x1="145.1" y1="123.9" x2="341.1" y2="123.9" class="dot"/><text x="139.1" y="127.9" class="tk" text-anchor="end">u₀</text><line x1="145.1" y1="158.5" x2="308.4" y2="158.5" class="dot"/><text x="139.1" y="162.5" class="tk" text-anchor="end">f(u₀) = u₁</text><line x1="145.1" y1="206.1" x2="263.5" y2="206.1" class="dot"/><text x="139.1" y="210.1" class="tk" text-anchor="end">f(u₁) = u₂</text><text x="162.6" y="347.4" class="tk" text-anchor="middle">c₁</text><text x="388.9" y="347.4" class="tk" text-anchor="middle">c₂</text></svg><figcaption>Construction « en escalier » des premiers termes de la suite définie par \(u_{n+1} = f(u_n)\).</figcaption></figure>
+
+    <div class="remark">Sur ce dessin, la fonction \(f\) est croissante sur l'intervalle \([c_1, c_2]\), qui est stable par \(f\), et pourtant la suite \(u\) est <strong>décroissante</strong>. En choisissant \(u_0\) strictement supérieur à \(c_2\), on obtiendrait une suite \(u\) croissante, divergente vers \(+\infty\).</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE II — VOCABULAIRE ET OPÉRATIONS
+════════════════════════════════════════ -->
+<div class="math-part" id="part2">
+  <div class="math-part-header">
+    <div class="math-part-num">II</div>
+    <div class="math-part-title">Vocabulaire et opérations sur les suites</div>
+  </div>
+
+  <div class="math-section" id="s2-1">
+    <div class="math-section-title">1 — Vocabulaire sur les suites</div>
+    <p>Si \(u\) et \(v\) sont deux suites et \(\ell\) un réel, il faut connaître avec précision les définitions suivantes.</p>
+
+    <div class="math-table-wrap">
+      <table class="math-table">
+        <thead><tr><th>La suite \(u\) est…</th><th>Définition</th></tr></thead>
+        <tbody>
+          <tr><td>majorée</td><td class="left">\(\exists M \in \mathbb{R},\ \forall n \in \mathbb{N},\ u_n \leqslant M\)</td></tr>
+          <tr><td>minorée</td><td class="left">\(\exists m \in \mathbb{R},\ \forall n \in \mathbb{N},\ u_n \geqslant m\)</td></tr>
+          <tr><td>bornée</td><td class="left">majorée et minorée, c'est-à-dire \(\exists A \geqslant 0,\ \forall n \in \mathbb{N},\ |u_n| \leqslant A\)</td></tr>
+          <tr><td>(strictement) croissante</td><td class="left">\(\forall n \in \mathbb{N},\ u_{n+1} \geqslant u_n\) \(\;(u_{n+1} > u_n)\)</td></tr>
+          <tr><td>(strictement) décroissante</td><td class="left">\(\forall n \in \mathbb{N},\ u_{n+1} \leqslant u_n\) \(\;(u_{n+1} \lt u_n)\)</td></tr>
+          <tr><td>(strictement) monotone</td><td class="left">(strictement) croissante ou (strictement) décroissante</td></tr>
+          <tr><td>convergente vers \(\ell\)</td><td class="left">voir la définition ci-dessous ; on note \(u_n \underset{n\to+\infty}{\longrightarrow} \ell\)</td></tr>
+          <tr><td>convergente</td><td class="left">il existe un réel \(\ell\) tel que \(u\) converge vers \(\ell\)</td></tr>
+          <tr><td>divergente</td><td class="left">elle n'est pas convergente</td></tr>
+          <tr><td>divergente vers \(+\infty\)</td><td class="left">\(\forall A \in \mathbb{R},\ \exists n_0 \in \mathbb{N},\ \forall n \geqslant n_0,\ u_n \geqslant A\)</td></tr>
+          <tr><td>divergente vers \(-\infty\)</td><td class="left">\(\forall A \in \mathbb{R},\ \exists n_0 \in \mathbb{N},\ \forall n \geqslant n_0,\ u_n \leqslant A\)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 2</span><span class="def-name">Suites adjacentes</span></div>
+        <p>Les suites \(u\) et \(v\) sont dites <strong>adjacentes</strong> si l'une est croissante, l'autre décroissante, et si \(\displaystyle\lim_{n\to+\infty} (u_n - v_n) = 0\).</p>
+      </div>
+    </div>
+
+    <div class="thm-card">
+      <div class="thm-label">Rappel indispensable</div>
+      <div class="thm-title">Convergence d'une suite vers un réel</div>
+      <p>On dit que la suite \((u_n)_{n\in\mathbb{N}}\) <strong>converge vers le réel \(\ell\)</strong> si :</p>
+      <div class="formula-block">\[\forall \varepsilon > 0,\ \exists n_0 \in \mathbb{N},\ \forall n \in \mathbb{N},\quad \big(n \geqslant n_0 \implies |u_n - \ell| \leqslant \varepsilon\big).\]</div>
+    </div>
+
+    <p>La figure ci-dessous illustre cette définition : pour \(\varepsilon > 0\) fixé, à partir d'un certain rang \(n_0\) (sur le dessin, tout entier supérieur ou égal à 6 convient), tous les réels \(u_n\) sont compris entre \(\ell - \varepsilon\) et \(\ell + \varepsilon\).</p>
+    <figure class="math-figure"><svg class="math-svg" viewBox="0 0 460 280" role="img" aria-label="Termes d une suite dans le plan" xmlns="http://www.w3.org/2000/svg"><line x1="24" y1="188.6" x2="438" y2="188.6" class="ax"/><path d="M438 188.6 l-7 -4 v8 z" class="axh"/><line x1="52.7" y1="256" x2="52.7" y2="22" class="ax"/><path d="M52.7 22 l-4 7 h8 z" class="axh"/><text x="430" y="180.6" class="lb" text-anchor="end">n</text><text x="60.7" y="32" class="lb">uₙ</text><line x1="83.8" y1="185.6" x2="83.8" y2="191.6" class="ax"/><text x="83.8" y="204.6" class="tk" text-anchor="middle">1</text><line x1="114.9" y1="185.6" x2="114.9" y2="191.6" class="ax"/><text x="114.9" y="204.6" class="tk" text-anchor="middle">2</text><line x1="146.0" y1="185.6" x2="146.0" y2="191.6" class="ax"/><text x="146.0" y="204.6" class="tk" text-anchor="middle">3</text><line x1="177.1" y1="185.6" x2="177.1" y2="191.6" class="ax"/><text x="177.1" y="204.6" class="tk" text-anchor="middle">4</text><line x1="208.2" y1="185.6" x2="208.2" y2="191.6" class="ax"/><text x="208.2" y="204.6" class="tk" text-anchor="middle">5</text><line x1="239.3" y1="185.6" x2="239.3" y2="191.6" class="ax"/><text x="239.3" y="204.6" class="tk" text-anchor="middle">6</text><line x1="270.4" y1="185.6" x2="270.4" y2="191.6" class="ax"/><text x="270.4" y="204.6" class="tk" text-anchor="middle">7</text><line x1="301.6" y1="185.6" x2="301.6" y2="191.6" class="ax"/><text x="301.6" y="204.6" class="tk" text-anchor="middle">8</text><line x1="332.7" y1="185.6" x2="332.7" y2="191.6" class="ax"/><text x="332.7" y="204.6" class="tk" text-anchor="middle">9</text><line x1="363.8" y1="185.6" x2="363.8" y2="191.6" class="ax"/><text x="363.8" y="204.6" class="tk" text-anchor="middle">10</text><line x1="394.9" y1="185.6" x2="394.9" y2="191.6" class="ax"/><text x="394.9" y="204.6" class="tk" text-anchor="middle">11</text><line x1="52.7" y1="66.2" x2="416.7" y2="66.2" class="tg"/><text x="44.7" y="70.2" class="lb" text-anchor="end">ℓ + ε</text><line x1="49.7" y1="84.8" x2="55.7" y2="84.8" class="ax"/><text x="44.7" y="88.8" class="lb" text-anchor="end">ℓ</text><line x1="52.7" y1="103.3" x2="416.7" y2="103.3" class="tg"/><text x="44.7" y="107.3" class="lb" text-anchor="end">ℓ − ε</text><circle cx="52.7" cy="168.7" r="3.4" class="pt"/><circle cx="83.8" cy="135.6" r="3.4" class="pt"/><circle cx="114.9" cy="221.7" r="3.4" class="pt"/><circle cx="146.0" cy="51.7" r="3.4" class="pt"/><circle cx="177.1" cy="230.5" r="3.4" class="pt"/><circle cx="208.2" cy="106.9" r="3.4" class="pt"/><circle cx="239.3" cy="71.5" r="3.4" class="pt"/><circle cx="270.4" cy="80.4" r="3.4" class="pt"/><circle cx="301.6" cy="93.6" r="3.4" class="pt"/><circle cx="332.7" cy="78.2" r="3.4" class="pt"/><circle cx="363.8" cy="76.0" r="3.4" class="pt"/><circle cx="394.9" cy="89.2" r="3.4" class="pt"/></svg><figcaption>À partir du rang 6, tous les termes restent dans la bande \([\ell - \varepsilon, \ell + \varepsilon]\).</figcaption></figure>
+  </div>
+
+  <div class="math-section" id="s2-2">
+    <div class="math-section-title">2 — Opérations sur les suites</div>
+    <p>On peut additionner deux suites. Si \(u\) et \(v\) sont deux suites, la suite \(w = u + v\) est, par définition, la suite dont le terme général \(w_n\) est la somme \(u_n + v_n\) des termes généraux des deux suites. Autrement dit, on additionne terme à terme :</p>
+    <div class="formula-block">\[(u_0, u_1, u_2, \dots) + (v_0, v_1, v_2, \dots) = (u_0 + v_0,\ u_1 + v_1,\ u_2 + v_2,\ \dots)\]</div>
+    <p>ou encore :</p>
+    <div class="formula-block">\[\forall n \in \mathbb{N}, \qquad (u+v)_n = u_n + v_n.\]</div>
+    <div class="remark">On note abusivement « \(+\) » dans l'expression \(u + v\) le symbole de l'addition entre deux suites, alors qu'il ne s'agit plus de l'addition entre deux réels ; cela ne pose cependant pas de problème dans la pratique.</div>
+    <p>De même, on peut multiplier une suite réelle \(u\) par un réel \(\lambda\) :</p>
+    <div class="formula-block">\[\lambda(u_0, u_1, u_2, \dots) = (\lambda u_0, \lambda u_1, \lambda u_2, \dots), \qquad \text{c'est-à-dire} \qquad \forall n \in \mathbb{N},\ (\lambda u)_n = \lambda u_n.\]</div>
+    <p>En algèbre linéaire, on dit que ces deux opérations, l'addition des suites et la multiplication d'une suite par un réel, confèrent à l'ensemble des suites \(\mathbb{R}^{\mathbb{N}}\) une structure d'<strong>espace vectoriel</strong>.</p>
+    <p>On définit aussi le produit \(uv\) de deux suites \(u\) et \(v\) en posant \(\forall n \in \mathbb{N},\ (uv)_n = u_n v_n\). Ces opérations satisfont les mêmes règles que les opérations sur les nombres réels. Par exemple, la multiplication dans \(\mathbb{R}^{\mathbb{N}}\) est distributive sur l'addition :</p>
+    <div class="formula-block">\[\forall (u, v, w) \in \big(\mathbb{R}^{\mathbb{N}}\big)^3, \qquad (u + v)w = uw + vw.\]</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE III — LIMITES
+════════════════════════════════════════ -->
+<div class="math-part" id="part3">
+  <div class="math-part-header">
+    <div class="math-part-num">III</div>
+    <div class="math-part-title">Propriétés et théorèmes relatifs aux limites des suites</div>
+  </div>
+
+  <div class="math-section" id="s3-1">
+    <div class="math-section-title">1 — Des propriétés intuitives</div>
+    <p>Les propriétés suivantes sont intuitives et donc faciles à mémoriser.</p>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <div class="prop-title">Opérations sur les limites</div>
+      <p>Soient \((\lambda, \mu, \ell, \ell') \in \mathbb{R}^4\) et \((u, v) \in \big(\mathbb{R}^{\mathbb{N}}\big)^2\). Alors :</p>
+      <div class="formula-block">\[\left\{\begin{array}{l} u_n \longrightarrow \ell \\ v_n \longrightarrow \ell' \end{array}\right. \implies \left\{\begin{array}{l} \lambda u_n + \mu v_n \longrightarrow \lambda\ell + \mu\ell' \\ u_n v_n \longrightarrow \ell\ell' \\ \text{si } \ell' \neq 0,\ \dfrac{u_n}{v_n} \longrightarrow \dfrac{\ell}{\ell'} \end{array}\right.\]</div>
+      <p>Le quotient \(\dfrac{u_n}{v_n}\) est bien défini au moins à partir d'un certain rang dès que le réel \(\ell'\) est non nul.</p>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 2</div>
+      <div class="prop-title">Extension aux limites infinies</div>
+      <div class="formula-block">\[\left\{\begin{array}{l} u_n \longrightarrow +\infty \\ (v_n)_{n\in\mathbb{N}} \text{ est bornée} \end{array}\right. \implies u_n + v_n \longrightarrow +\infty \qquad\qquad \left\{\begin{array}{l} u_n \longrightarrow +\infty \\ v_n \longrightarrow \ell > 0 \end{array}\right. \implies u_n v_n \longrightarrow +\infty\]</div>
+      <p>On complète par des propriétés analogues en changeant \(+\infty\) en \(-\infty\), ou bien \(\ell > 0\) en \(\ell \lt 0\).</p>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 3</div>
+      <div class="prop-title">Suites extraites</div>
+      <ul>
+        <li>Si une suite \(u\) converge vers un réel \(\ell\), alors chacune des suites extraites de \(u\), par exemple \((u_n)_{n\geqslant 8}\), \((u_{2n})_{n\in\mathbb{N}}\), \((u_{2n+1})_{n\in\mathbb{N}}\), \((u_{3n+2})_{n\in\mathbb{N}}\), converge vers \(\ell\).</li>
+        <li>Si les deux suites extraites \((u_{2n})_n\) et \((u_{2n+1})_n\) convergent vers une même limite \(\ell\), alors la suite \((u_n)_n\) converge, et elle converge vers \(\ell\) :</li>
+      </ul>
+      <div class="formula-block">\[\left\{\begin{array}{l} u_{2n} \longrightarrow \ell \\ u_{2n+1} \longrightarrow \ell \end{array}\right. \implies u_n \longrightarrow \ell.\]</div>
+    </div>
+    <div class="remark">La contraposée de la première propriété est très utile pour montrer qu'une suite diverge : il suffit d'en extraire deux sous-suites qui sont, par exemple, convergentes mais n'ont pas la même limite.</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 4</div>
+      <div class="prop-title">Passage à la limite dans une inégalité</div>
+      <p>Si l'on a \(u_n \leqslant v_n\) à partir d'un certain rang, et si \(u_n \longrightarrow \ell\) et \(v_n \longrightarrow \ell'\), alors \(\ell \leqslant \ell'\) :</p>
+      <div class="formula-block">\[\left.\begin{array}{l} \exists n_0,\ \forall n \geqslant n_0,\ u_n \leqslant v_n \\ u_n \longrightarrow \ell \\ v_n \longrightarrow \ell' \end{array}\right\} \implies \ell \leqslant \ell'.\]</div>
+    </div>
+
+    <div class="math-key"><div class="math-key-bullet"></div><div>Si une suite converge vers un réel <strong>strictement positif</strong>, alors, à partir d'un certain rang, tous ses termes sont strictement positifs.</div></div>
+
+    <div class="thm-card">
+      <div class="thm-label">Théorème 1</div>
+      <div class="thm-title">Théorème d'encadrement, ou théorème « des gendarmes »</div>
+      <p>Si l'on a, à partir d'un certain rang, \(u_n \leqslant v_n \leqslant w_n\), et si les suites \(u\) et \(w\) convergent vers un même réel \(\ell\), alors la suite \(v\) converge, et elle converge vers \(\ell\) :</p>
+      <div class="formula-block">\[\left.\begin{array}{l} \exists n_0,\ \forall n \geqslant n_0,\ u_n \leqslant v_n \leqslant w_n \\ u_n \longrightarrow \ell \\ w_n \longrightarrow \ell \end{array}\right\} \implies v_n \longrightarrow \ell.\]</div>
+      <p>De manière analogue :</p>
+      <div class="formula-block">\[\left.\begin{array}{l} \exists n_0,\ \forall n \geqslant n_0,\ u_n \leqslant v_n \\ u_n \longrightarrow +\infty \end{array}\right\} \implies v_n \longrightarrow +\infty.\]</div>
+    </div>
+
+    <div class="remark">Le théorème d'encadrement n'est pas une reformulation de la conservation des inégalités par passage à la limite : il permet de <strong>démontrer</strong> que la suite encadrée, ici \((v_n)\), est convergente.</div>
+
+    <div class="math-key"><div class="math-key-bullet"></div><div>Toute suite convergente est <strong>bornée</strong>.</div></div>
+  </div>
+
+  <div class="math-section" id="s3-2">
+    <div class="math-section-title">2 — Deux théorèmes d'existence de limite</div>
+    <p>Les propriétés qui suivent sont plus difficiles sur le plan théorique, mais intuitives, donc faciles à mémoriser.</p>
+
+    <div class="thm-card">
+      <div class="thm-label">Théorème 2</div>
+      <div class="thm-title">Théorème de la limite monotone</div>
+      <ul>
+        <li>Une suite croissante et majorée est convergente.</li>
+        <li>Une suite croissante non majorée tend vers \(+\infty\).</li>
+      </ul>
+      <p>De même, une suite décroissante et minorée est convergente ; une suite décroissante non minorée tend vers \(-\infty\).</p>
+    </div>
+
+    <p>Le théorème de la limite monotone est un <strong>résultat très important</strong>, admis dans le cours de première année (il provient de la structure même de l'ensemble \(\mathbb{R}\) des nombres réels). Il est très utile, puisqu'il permet dans certains cas d'établir la convergence d'une suite sans avoir la moindre idée de sa limite.</p>
+
+    <div class="thm-card">
+      <div class="thm-label">Théorème 3</div>
+      <div class="thm-title">Théorème des suites adjacentes</div>
+      <p>Deux suites adjacentes sont convergentes, et elles convergent vers la même limite. Ce résultat découle facilement du précédent.</p>
+    </div>
+
+    <figure class="math-figure"><svg class="math-svg" viewBox="0 0 460 300" role="img" aria-label="Deux suites adjacentes" xmlns="http://www.w3.org/2000/svg"><line x1="24" y1="214.4" x2="438" y2="214.4" class="ax"/><path d="M438 214.4 l-7 -4 v8 z" class="axh"/><line x1="52.7" y1="276" x2="52.7" y2="22" class="ax"/><path d="M52.7 22 l-4 7 h8 z" class="axh"/><text x="430" y="206.4" class="lb" text-anchor="end">n</text><line x1="83.8" y1="211.4" x2="83.8" y2="217.4" class="ax"/><text x="83.8" y="230.4" class="tk" text-anchor="middle">1</text><line x1="114.9" y1="211.4" x2="114.9" y2="217.4" class="ax"/><text x="114.9" y="230.4" class="tk" text-anchor="middle">2</text><line x1="146.0" y1="211.4" x2="146.0" y2="217.4" class="ax"/><text x="146.0" y="230.4" class="tk" text-anchor="middle">3</text><line x1="177.1" y1="211.4" x2="177.1" y2="217.4" class="ax"/><text x="177.1" y="230.4" class="tk" text-anchor="middle">4</text><line x1="208.2" y1="211.4" x2="208.2" y2="217.4" class="ax"/><text x="208.2" y="230.4" class="tk" text-anchor="middle">5</text><line x1="239.3" y1="211.4" x2="239.3" y2="217.4" class="ax"/><text x="239.3" y="230.4" class="tk" text-anchor="middle">6</text><line x1="270.4" y1="211.4" x2="270.4" y2="217.4" class="ax"/><text x="270.4" y="230.4" class="tk" text-anchor="middle">7</text><line x1="301.6" y1="211.4" x2="301.6" y2="217.4" class="ax"/><text x="301.6" y="230.4" class="tk" text-anchor="middle">8</text><line x1="332.7" y1="211.4" x2="332.7" y2="217.4" class="ax"/><text x="332.7" y="230.4" class="tk" text-anchor="middle">9</text><line x1="363.8" y1="211.4" x2="363.8" y2="217.4" class="ax"/><text x="363.8" y="230.4" class="tk" text-anchor="middle">10</text><line x1="394.9" y1="211.4" x2="394.9" y2="217.4" class="ax"/><text x="394.9" y="230.4" class="tk" text-anchor="middle">11</text><line x1="52.7" y1="111.3" x2="416.7" y2="111.3" class="tg"/><text x="44.7" y="115.3" class="lb" text-anchor="end">ℓ</text><circle cx="52.7" cy="51.2" r="3.4" class="pt"/><circle cx="52.7" cy="257.4" r="3.4" class="pt2"/><circle cx="83.8" cy="65.9" r="3.4" class="pt"/><circle cx="83.8" cy="225.3" r="3.4" class="pt2"/><circle cx="114.9" cy="78.0" r="3.4" class="pt"/><circle cx="114.9" cy="200.2" r="3.4" class="pt2"/><circle cx="146.0" cy="86.7" r="3.4" class="pt"/><circle cx="146.0" cy="180.7" r="3.4" class="pt2"/><circle cx="177.1" cy="93.0" r="3.4" class="pt"/><circle cx="177.1" cy="165.4" r="3.4" class="pt2"/><circle cx="208.2" cy="97.5" r="3.4" class="pt"/><circle cx="208.2" cy="153.5" r="3.4" class="pt2"/><circle cx="239.3" cy="100.8" r="3.4" class="pt"/><circle cx="239.3" cy="144.2" r="3.4" class="pt2"/><circle cx="270.4" cy="103.2" r="3.4" class="pt"/><circle cx="270.4" cy="137.0" r="3.4" class="pt2"/><circle cx="301.6" cy="104.8" r="3.4" class="pt"/><circle cx="301.6" cy="131.3" r="3.4" class="pt2"/><circle cx="332.7" cy="106.1" r="3.4" class="pt"/><circle cx="332.7" cy="126.9" r="3.4" class="pt2"/><circle cx="363.8" cy="106.9" r="3.4" class="pt"/><circle cx="363.8" cy="123.5" r="3.4" class="pt2"/><circle cx="394.9" cy="107.6" r="3.4" class="pt"/><circle cx="394.9" cy="120.8" r="3.4" class="pt2"/><text x="44.7" y="55.2" class="lb" text-anchor="end">u₀</text><text x="44.7" y="261.4" class="lb" text-anchor="end">v₀</text></svg><figcaption>Les premiers termes de deux suites adjacentes : \((u_n)\) décroît (points pleins), \((v_n)\) croît (points creux), et toutes deux convergent vers \(\ell\).</figcaption></figure>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE IV — SUITES PARTICULIÈRES
+════════════════════════════════════════ -->
+<div class="math-part" id="part4">
+  <div class="math-part-header">
+    <div class="math-part-num">IV</div>
+    <div class="math-part-title">Étude de suites particulières</div>
+  </div>
+
+  <div class="math-section" id="s4-1">
+    <div class="math-section-title">1 — Les suites dont on peut calculer le terme général</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 3</span><span class="def-name">Quatre suites usuelles</span></div>
+        <p>Une suite \(u\) est dite :</p>
+        <ul class="def-list">
+          <li><strong>arithmétique</strong> s'il existe un réel \(r\) (la <em>raison</em> de la suite) vérifiant \(\forall n \in \mathbb{N},\ u_{n+1} = u_n + r\) ;</li>
+          <li><strong>géométrique</strong> s'il existe un réel \(q\) (la <em>raison</em> de la suite) vérifiant \(\forall n \in \mathbb{N},\ u_{n+1} = q\,u_n\) ;</li>
+          <li><strong>arithmético-géométrique</strong> s'il existe deux réels \(a\) et \(b\) vérifiant \(\forall n \in \mathbb{N},\ u_{n+1} = a\,u_n + b\) ;</li>
+          <li><strong>récurrente linéaire d'ordre 2 à coefficients constants</strong> s'il existe deux réels \(a\) et \(b\) vérifiant \(\forall n \in \mathbb{N},\ u_{n+2} = a\,u_{n+1} + b\,u_n\).</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="meth-card">
+      <div class="meth-label">Rappel de méthode</div>
+      <div class="meth-title">Exprimer le terme général</div>
+      <ul>
+        <li><strong>Arithmétique :</strong> \(\forall n \in \mathbb{N},\ u_n = u_0 + n r\). <strong>Géométrique :</strong> \(\forall n \in \mathbb{N},\ u_n = u_0\, q^n\).</li>
+        <li><strong>Arithmético-géométrique</strong> (avec \(a \neq 1\)) : on cherche le réel \(c\) tel que \(c = ac + b\) ; la suite \((u_n - c)_n\) est alors géométrique de raison \(a\), d'où \(u_n = c + a^n(u_0 - c)\).</li>
+        <li><strong>Récurrente linéaire d'ordre 2</strong> : on résout l'équation caractéristique \(x^2 = ax + b\). S'il y a deux racines réelles distinctes \(r_1\) et \(r_2\), il existe deux réels \(\lambda\) et \(\mu\) tels que \(u_n = \lambda r_1^n + \mu r_2^n\) ; s'il y a une racine double \(r\), il existe deux réels \(\lambda\) et \(\mu\) tels que \(u_n = (\lambda + \mu n) r^n\). Les constantes se déterminent avec \(u_0\) et \(u_1\).</li>
+      </ul>
+    </div>
+
+    <p>La valeur de la somme des \(n+1\) premiers termes d'une suite géométrique de raison \(q \in \mathbb{R}\) et de premier terme 1 doit être parfaitement connue :</p>
+    <div class="prop-card">
+      <div class="prop-label">À connaître</div>
+      <div class="prop-title">Somme des termes d'une suite géométrique</div>
+      <div class="formula-block">\[1 + q + q^2 + \cdots + q^n = \sum_{k=0}^{n} q^k = \begin{cases} \dfrac{1 - q^{n+1}}{1 - q} & \text{si } q \neq 1 \\[8pt] n + 1 & \text{si } q = 1 \end{cases}\]</div>
+    </div>
+    <p>Si le premier terme de la somme n'est pas 1, on s'y ramène en factorisant par le premier terme. Par exemple, si \(q\) est un réel différent de 1 :</p>
+    <div class="formula-block">\[q^3 + q^4 + \cdots + q^n = q^3\big(1 + q + \cdots + q^{n-3}\big) = q^3\,\frac{1 - q^{n-2}}{1 - q} = \frac{q^3 - q^{n+1}}{1 - q}.\]</div>
+
+    <div class="prop-card">
+      <div class="prop-label">À retenir impérativement</div>
+      <div class="prop-title">Une limite de référence</div>
+      <div class="formula-block">\[\forall a \in \mathbb{R}, \qquad \left(1 + \frac{a}{n}\right)^n \underset{n\to+\infty}{\longrightarrow} e^a.\]</div>
+    </div>
+  </div>
+
+  <div class="math-section" id="s4-2">
+    <div class="math-section-title">2 — Les suites récurrentes</div>
+    <p>Soient \(I\) un intervalle de \(\mathbb{R}\), \(f : I \to \mathbb{R}\) une fonction et \(u_0\) un élément de \(I\). Si l'intervalle \(I\) est <strong>stable</strong> par \(f\), c'est-à-dire s'il vérifie l'inclusion \(f(I) \subset I\), alors on définit correctement une suite \(u\) de la façon suivante :</p>
+    <div class="formula-block">\[\forall n \in \mathbb{N}, \qquad u_{n+1} = f(u_n).\]</div>
+    <p>La suite \(u\) est dite <strong>récurrente</strong> : chaque terme, sauf le premier, est connu en fonction du précédent. La difficulté de ce type de suite tient au fait qu'il est généralement difficile, voire impossible, sauf dans des cas particuliers (comme celui des suites arithmético-géométriques), d'en calculer explicitement le terme général \(u_n\).</p>
+    <p>Plus généralement, une suite est dite récurrente si chacun des termes \(u_{n+1}\), avec \(n \in \mathbb{N}\), est défini en fonction des termes précédents \(u_0, \dots, u_n\) et de l'entier \(n\).</p>
+    <p>Pour les représenter, on utilise la construction en escalier vue <a href="#s1-2" class="lien-interne">plus haut</a>.</p>
+  </div>
+
+  <div class="math-section" id="s4-3">
+    <div class="math-section-title">3 — Les suites définies implicitement</div>
+    <p>Imaginons que l'on dispose d'une suite \((f_n)_{n\in\mathbb{N}}\) de fonctions définies sur un intervalle \(I\) de \(\mathbb{R}\) et à valeurs réelles, telles que, pour tout \(n \in \mathbb{N}\), il existe un unique réel \(u_n\) vérifiant \(f_n(u_n) = 0\). On définit de cette manière une suite \((u_n)_{n\in\mathbb{N}}\).</p>
+    <figure class="math-figure"><svg class="math-svg" viewBox="0 0 440 300" role="img" aria-label="Trois premiers termes d une suite définie implicitement" xmlns="http://www.w3.org/2000/svg"><line x1="24" y1="195.4" x2="418" y2="195.4" class="ax"/><path d="M418 195.4 l-7 -4 v8 z" class="axh"/><line x1="55.1" y1="276" x2="55.1" y2="22" class="ax"/><path d="M55.1 22 l-4 7 h8 z" class="axh"/><polyline points="48.0,246.9 49.2,247.1 50.4,247.3 51.5,247.5 52.7,247.6 53.9,247.8 55.1,248.0 56.2,248.1 57.4,248.3 58.6,248.4 59.7,248.6 60.9,248.7 62.1,248.9 63.2,249.0 64.4,249.1 65.6,249.2 66.8,249.4 67.9,249.5 69.1,249.6 70.3,249.7 71.4,249.8 72.6,249.9 73.8,250.0 74.9,250.1 76.1,250.1 77.3,250.2 78.5,250.3 79.6,250.4 80.8,250.4 82.0,250.5 83.1,250.5 84.3,250.6 85.5,250.6 86.6,250.7 87.8,250.7 89.0,250.8 90.2,250.8 91.3,250.8 92.5,250.8 93.7,250.8 94.8,250.9 96.0,250.9 97.2,250.9 98.3,250.9 99.5,250.9 100.7,250.8 101.8,250.8 103.0,250.8 104.2,250.8 105.4,250.8 106.5,250.7 107.7,250.7 108.9,250.6 110.0,250.6 111.2,250.5 112.4,250.5 113.5,250.4 114.7,250.4 115.9,250.3 117.1,250.2 118.2,250.1 119.4,250.1 120.6,250.0 121.7,249.9 122.9,249.8 124.1,249.7 125.2,249.6 126.4,249.5 127.6,249.4 128.8,249.2 129.9,249.1 131.1,249.0 132.3,248.9 133.4,248.7 134.6,248.6 135.8,248.4 136.9,248.3 138.1,248.1 139.3,248.0 140.5,247.8 141.6,247.6 142.8,247.5 144.0,247.3 145.1,247.1 146.3,246.9 147.5,246.7 148.6,246.5 149.8,246.3 151.0,246.1 152.2,245.9 153.3,245.7 154.5,245.5 155.7,245.3 156.8,245.0 158.0,244.8 159.2,244.6 160.3,244.3 161.5,244.1 162.7,243.8 163.8,243.6 165.0,243.3 166.2,243.1 167.4,242.8 168.5,242.5 169.7,242.3 170.9,242.0 172.0,241.7 173.2,241.4 174.4,241.1 175.5,240.8 176.7,240.5 177.9,240.2 179.1,239.9 180.2,239.6 181.4,239.2 182.6,238.9 183.7,238.6 184.9,238.3 186.1,237.9 187.2,237.6 188.4,237.2 189.6,236.9 190.8,236.5 191.9,236.2 193.1,235.8 194.3,235.4 195.4,235.1 196.6,234.7 197.8,234.3 198.9,233.9 200.1,233.5 201.3,233.1 202.5,232.7 203.6,232.3 204.8,231.9 206.0,231.5 207.1,231.1 208.3,230.6 209.5,230.2 210.6,229.8 211.8,229.3 213.0,228.9 214.2,228.5 215.3,228.0 216.5,227.5 217.7,227.1 218.8,226.6 220.0,226.2 221.2,225.7 222.3,225.2 223.5,224.7 224.7,224.2 225.8,223.7 227.0,223.3 228.2,222.8 229.4,222.2 230.5,221.7 231.7,221.2 232.9,220.7 234.0,220.2 235.2,219.7 236.4,219.1 237.5,218.6 238.7,218.1 239.9,217.5 241.1,217.0 242.2,216.4 243.4,215.8 244.6,215.3 245.7,214.7 246.9,214.1 248.1,213.6 249.2,213.0 250.4,212.4 251.6,211.8 252.8,211.2 253.9,210.6 255.1,210.0 256.3,209.4 257.4,208.8 258.6,208.2 259.8,207.6 260.9,206.9 262.1,206.3 263.3,205.7 264.5,205.0 265.6,204.4 266.8,203.7 268.0,203.1 269.1,202.4 270.3,201.8 271.5,201.1 272.6,200.4 273.8,199.8 275.0,199.1 276.2,198.4 277.3,197.7 278.5,197.0 279.7,196.3 280.8,195.6 282.0,194.9 283.2,194.2 284.3,193.5 285.5,192.8 286.7,192.0 287.8,191.3 289.0,190.6 290.2,189.8 291.4,189.1 292.5,188.4 293.7,187.6 294.9,186.8 296.0,186.1 297.2,185.3 298.4,184.6 299.5,183.8 300.7,183.0 301.9,182.2 303.1,181.4 304.2,180.6 305.4,179.8 306.6,179.0 307.7,178.2 308.9,177.4 310.1,176.6 311.2,175.8 312.4,175.0 313.6,174.2 314.8,173.3 315.9,172.5 317.1,171.6 318.3,170.8 319.4,169.9 320.6,169.1 321.8,168.2 322.9,167.4 324.1,166.5 325.3,165.6 326.5,164.8 327.6,163.9 328.8,163.0 330.0,162.1 331.1,161.2 332.3,160.3 333.5,159.4 334.6,158.5 335.8,157.6 337.0,156.7 338.2,155.7 339.3,154.8 340.5,153.9 341.7,153.0 342.8,152.0 344.0,151.1 345.2,150.1 346.3,149.2 347.5,148.2 348.7,147.3 349.8,146.3 351.0,145.3 352.2,144.3 353.4,143.4 354.5,142.4 355.7,141.4 356.9,140.4 358.0,139.4 359.2,138.4 360.4,137.4 361.5,136.4 362.7,135.4 363.9,134.3 365.1,133.3 366.2,132.3 367.4,131.3 368.6,130.2 369.7,129.2 370.9,128.1 372.1,127.1 373.2,126.0 374.4,125.0 375.6,123.9 376.8,122.8 377.9,121.8 379.1,120.7 380.3,119.6 381.4,118.5 382.6,117.4 383.8,116.3 384.9,115.2 386.1,114.1 387.3,113.0 388.5,111.9 389.6,110.8 390.8,109.6 392.0,108.5 393.1,107.4 394.3,106.3 395.5,105.1 396.6,104.0 397.8,102.8 399.0,101.7" class="cv"/><text x="281.2" y="186.4" class="tk" text-anchor="middle">u₀</text><text x="380.9" y="119.2" class="lb" text-anchor="end">𝒞f₀</text><polyline points="48.0,250.2 49.2,250.1 50.4,250.0 51.5,249.9 52.7,249.8 53.9,249.7 55.1,249.6 56.2,249.5 57.4,249.4 58.6,249.3 59.7,249.2 60.9,249.1 62.1,248.9 63.2,248.8 64.4,248.7 65.6,248.5 66.8,248.4 67.9,248.2 69.1,248.1 70.3,247.9 71.4,247.7 72.6,247.6 73.8,247.4 74.9,247.2 76.1,247.0 77.3,246.8 78.5,246.6 79.6,246.5 80.8,246.2 82.0,246.0 83.1,245.8 84.3,245.6 85.5,245.4 86.6,245.2 87.8,244.9 89.0,244.7 90.2,244.5 91.3,244.2 92.5,244.0 93.7,243.7 94.8,243.5 96.0,243.2 97.2,243.0 98.3,242.7 99.5,242.4 100.7,242.1 101.8,241.9 103.0,241.6 104.2,241.3 105.4,241.0 106.5,240.7 107.7,240.4 108.9,240.1 110.0,239.8 111.2,239.4 112.4,239.1 113.5,238.8 114.7,238.5 115.9,238.1 117.1,237.8 118.2,237.4 119.4,237.1 120.6,236.7 121.7,236.4 122.9,236.0 124.1,235.7 125.2,235.3 126.4,234.9 127.6,234.5 128.8,234.1 129.9,233.7 131.1,233.4 132.3,233.0 133.4,232.6 134.6,232.1 135.8,231.7 136.9,231.3 138.1,230.9 139.3,230.5 140.5,230.0 141.6,229.6 142.8,229.2 144.0,228.7 145.1,228.3 146.3,227.8 147.5,227.4 148.6,226.9 149.8,226.4 151.0,226.0 152.2,225.5 153.3,225.0 154.5,224.5 155.7,224.0 156.8,223.5 158.0,223.1 159.2,222.6 160.3,222.0 161.5,221.5 162.7,221.0 163.8,220.5 165.0,220.0 166.2,219.4 167.4,218.9 168.5,218.4 169.7,217.8 170.9,217.3 172.0,216.7 173.2,216.2 174.4,215.6 175.5,215.1 176.7,214.5 177.9,213.9 179.1,213.3 180.2,212.8 181.4,212.2 182.6,211.6 183.7,211.0 184.9,210.4 186.1,209.8 187.2,209.2 188.4,208.6 189.6,207.9 190.8,207.3 191.9,206.7 193.1,206.1 194.3,205.4 195.4,204.8 196.6,204.1 197.8,203.5 198.9,202.8 200.1,202.2 201.3,201.5 202.5,200.8 203.6,200.2 204.8,199.5 206.0,198.8 207.1,198.1 208.3,197.4 209.5,196.7 210.6,196.0 211.8,195.3 213.0,194.6 214.2,193.9 215.3,193.2 216.5,192.5 217.7,191.8 218.8,191.0 220.0,190.3 221.2,189.5 222.3,188.8 223.5,188.1 224.7,187.3 225.8,186.5 227.0,185.8 228.2,185.0 229.4,184.2 230.5,183.5 231.7,182.7 232.9,181.9 234.0,181.1 235.2,180.3 236.4,179.5 237.5,178.7 238.7,177.9 239.9,177.1 241.1,176.3 242.2,175.5 243.4,174.6 244.6,173.8 245.7,173.0 246.9,172.1 248.1,171.3 249.2,170.5 250.4,169.6 251.6,168.8 252.8,167.9 253.9,167.0 255.1,166.2 256.3,165.3 257.4,164.4 258.6,163.5 259.8,162.6 260.9,161.7 262.1,160.8 263.3,159.9 264.5,159.0 265.6,158.1 266.8,157.2 268.0,156.3 269.1,155.4 270.3,154.5 271.5,153.5 272.6,152.6 273.8,151.6 275.0,150.7 276.2,149.7 277.3,148.8 278.5,147.8 279.7,146.9 280.8,145.9 282.0,144.9 283.2,144.0 284.3,143.0 285.5,142.0 286.7,141.0 287.8,140.0 289.0,139.0 290.2,138.0 291.4,137.0 292.5,136.0 293.7,135.0 294.9,133.9 296.0,132.9 297.2,131.9 298.4,130.8 299.5,129.8 300.7,128.8 301.9,127.7 303.1,126.7 304.2,125.6 305.4,124.5 306.6,123.5 307.7,122.4 308.9,121.3 310.1,120.2 311.2,119.2 312.4,118.1 313.6,117.0 314.8,115.9 315.9,114.8 317.1,113.7 318.3,112.6 319.4,111.4 320.6,110.3 321.8,109.2 322.9,108.1 324.1,106.9 325.3,105.8 326.5,104.7 327.6,103.5 328.8,102.4 330.0,101.2 331.1,100.0 332.3,98.9 333.5,97.7 334.6,96.5 335.8,95.4 337.0,94.2 338.2,93.0 339.3,91.8 340.5,90.6 341.7,89.4 342.8,88.2 344.0,87.0 345.2,85.8 346.3,84.5 347.5,83.3 348.7,82.1 349.8,80.9 351.0,79.6 352.2,78.4 353.4,77.1 354.5,75.9 355.7,74.6 356.9,73.4 358.0,72.1 359.2,70.8 360.4,69.6 361.5,68.3 362.7,67.0 363.9,65.7 365.1,64.4 366.2,63.1 367.4,61.8 368.6,60.5 369.7,59.2 370.9,57.9 372.1,56.6 373.2,55.3 374.4,53.9 375.6,52.6 376.8,51.3 377.9,49.9 379.1,48.6 380.3,47.2 381.4,45.9 382.6,44.5 383.8,43.2 384.9,41.8 386.1,40.4 387.3,39.1 388.5,37.7 389.6,36.3 390.8,34.9 392.0,33.5 393.1,32.1 394.3,30.7 395.5,29.3" class="cv"/><text x="211.7" y="186.4" class="tk" text-anchor="middle">u₁</text><text x="379.0" y="48.1" class="lb" text-anchor="end">𝒞f₁</text><polyline points="48.0,241.1 49.2,240.8 50.4,240.5 51.5,240.2 52.7,239.9 53.9,239.6 55.1,239.2 56.2,238.9 57.4,238.6 58.6,238.3 59.7,237.9 60.9,237.6 62.1,237.2 63.2,236.9 64.4,236.5 65.6,236.2 66.8,235.8 67.9,235.4 69.1,235.1 70.3,234.7 71.4,234.3 72.6,233.9 73.8,233.5 74.9,233.1 76.1,232.7 77.3,232.3 78.5,231.9 79.6,231.5 80.8,231.1 82.0,230.6 83.1,230.2 84.3,229.8 85.5,229.3 86.6,228.9 87.8,228.5 89.0,228.0 90.2,227.5 91.3,227.1 92.5,226.6 93.7,226.2 94.8,225.7 96.0,225.2 97.2,224.7 98.3,224.2 99.5,223.7 100.7,223.3 101.8,222.8 103.0,222.2 104.2,221.7 105.4,221.2 106.5,220.7 107.7,220.2 108.9,219.7 110.0,219.1 111.2,218.6 112.4,218.1 113.5,217.5 114.7,217.0 115.9,216.4 117.1,215.8 118.2,215.3 119.4,214.7 120.6,214.1 121.7,213.6 122.9,213.0 124.1,212.4 125.2,211.8 126.4,211.2 127.6,210.6 128.8,210.0 129.9,209.4 131.1,208.8 132.3,208.2 133.4,207.6 134.6,206.9 135.8,206.3 136.9,205.7 138.1,205.0 139.3,204.4 140.5,203.7 141.6,203.1 142.8,202.4 144.0,201.8 145.1,201.1 146.3,200.4 147.5,199.8 148.6,199.1 149.8,198.4 151.0,197.7 152.2,197.0 153.3,196.3 154.5,195.6 155.7,194.9 156.8,194.2 158.0,193.5 159.2,192.8 160.3,192.0 161.5,191.3 162.7,190.6 163.8,189.8 165.0,189.1 166.2,188.4 167.4,187.6 168.5,186.8 169.7,186.1 170.9,185.3 172.0,184.6 173.2,183.8 174.4,183.0 175.5,182.2 176.7,181.4 177.9,180.6 179.1,179.8 180.2,179.0 181.4,178.2 182.6,177.4 183.7,176.6 184.9,175.8 186.1,175.0 187.2,174.2 188.4,173.3 189.6,172.5 190.8,171.6 191.9,170.8 193.1,169.9 194.3,169.1 195.4,168.2 196.6,167.4 197.8,166.5 198.9,165.6 200.1,164.8 201.3,163.9 202.5,163.0 203.6,162.1 204.8,161.2 206.0,160.3 207.1,159.4 208.3,158.5 209.5,157.6 210.6,156.7 211.8,155.7 213.0,154.8 214.2,153.9 215.3,153.0 216.5,152.0 217.7,151.1 218.8,150.1 220.0,149.2 221.2,148.2 222.3,147.3 223.5,146.3 224.7,145.3 225.8,144.3 227.0,143.4 228.2,142.4 229.4,141.4 230.5,140.4 231.7,139.4 232.9,138.4 234.0,137.4 235.2,136.4 236.4,135.4 237.5,134.3 238.7,133.3 239.9,132.3 241.1,131.3 242.2,130.2 243.4,129.2 244.6,128.1 245.7,127.1 246.9,126.0 248.1,125.0 249.2,123.9 250.4,122.8 251.6,121.8 252.8,120.7 253.9,119.6 255.1,118.5 256.3,117.4 257.4,116.3 258.6,115.2 259.8,114.1 260.9,113.0 262.1,111.9 263.3,110.8 264.5,109.6 265.6,108.5 266.8,107.4 268.0,106.3 269.1,105.1 270.3,104.0 271.5,102.8 272.6,101.7 273.8,100.5 275.0,99.3 276.2,98.2 277.3,97.0 278.5,95.8 279.7,94.6 280.8,93.5 282.0,92.3 283.2,91.1 284.3,89.9 285.5,88.7 286.7,87.5 287.8,86.2 289.0,85.0 290.2,83.8 291.4,82.6 292.5,81.4 293.7,80.1 294.9,78.9 296.0,77.6 297.2,76.4 298.4,75.1 299.5,73.9 300.7,72.6 301.9,71.3 303.1,70.1 304.2,68.8 305.4,67.5 306.6,66.2 307.7,64.9 308.9,63.7 310.1,62.4 311.2,61.1 312.4,59.7 313.6,58.4 314.8,57.1 315.9,55.8 317.1,54.5 318.3,53.1 319.4,51.8 320.6,50.5 321.8,49.1 322.9,47.8 324.1,46.4 325.3,45.1 326.5,43.7 327.6,42.3 328.8,41.0 330.0,39.6 331.1,38.2 332.3,36.8 333.5,35.5 334.6,34.1 335.8,32.7 337.0,31.3 338.2,29.9" class="cv"/><text x="154.9" y="186.4" class="tk" text-anchor="middle">u₂</text><text x="322.1" y="48.1" class="lb" text-anchor="end">𝒞f₂</text></svg><figcaption>Les trois premiers termes d'une suite définie implicitement : \(u_n\) est l'abscisse du point où la courbe de \(f_n\) coupe l'axe des abscisses.</figcaption></figure>
+    <p>Dans la plupart des cas étudiés, il est impossible d'exprimer le terme général \(u_n\) d'une telle suite en fonction de \(n\). Il s'agit donc d'exploiter les informations sur les fonctions \(f_n\) pour en déduire l'éventuelle monotonie ou convergence de la suite \((u_n)_{n\in\mathbb{N}}\). Aucun résultat théorique n'est à connaître : tout repose sur la méthode, que l'on travaille sur des cas pratiques.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE V — COMPARAISON
+════════════════════════════════════════ -->
+<div class="math-part" id="part5">
+  <div class="math-part-header">
+    <div class="math-part-num">V</div>
+    <div class="math-part-title">Relations de comparaison entre les suites</div>
+  </div>
+
+  <div class="math-section" id="s5-1">
+    <div class="math-section-title">1 — Négligeabilité</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 4</span><span class="def-name">Suite négligeable devant une autre</span></div>
+        <p>Soient \(u\) et \(v\) deux suites, \(v\) ne s'annulant pas à partir d'un certain rang. On dit que la suite \(u\) est <strong>négligeable</strong> devant la suite \(v\) si</p>
+        <div class="formula-block">\[\frac{u_n}{v_n} \underset{n\to+\infty}{\longrightarrow} 0, \qquad \text{et on note} \qquad u_n = \underset{n\to+\infty}{o}(v_n).\]</div>
+        <p>On dit aussi que la suite \(u\) est dominée par la suite \(v\), ou que la suite \(v\) est prépondérante sur la suite \(u\) : ces trois assertions synonymes se notent \(u_n = o(v_n)\).</p>
+      </div>
+    </div>
+
+    <div class="meth-card">
+      <div class="meth-label">⚠ Attention</div>
+      <p>« \(u_n = o(v_n)\) » est seulement une <strong>notation</strong>. Par exemple, \(u_n = o(w_n)\) et \(v_n = o(w_n)\) n'impliquent PAS \(u_n = v_n\).</p>
+    </div>
+  </div>
+
+  <div class="math-section" id="s5-2">
+    <div class="math-section-title">2 — Suites équivalentes</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 5</span><span class="def-name">Suites équivalentes</span></div>
+        <p>Soient \(u\) et \(v\) deux suites, \(v\) ne s'annulant pas à partir d'un certain rang. On dit que les suites \(u\) et \(v\) sont <strong>équivalentes</strong> si</p>
+        <div class="formula-block">\[\frac{u_n}{v_n} \underset{n\to+\infty}{\longrightarrow} 1, \qquad \text{et on note} \qquad u_n \underset{n\to+\infty}{\sim} v_n.\]</div>
+        <p>De manière équivalente : \(u_n \sim v_n \iff u_n = v_n + o(v_n)\).</p>
+      </div>
+    </div>
+
+    <p>Dans la pratique, pour montrer que deux suites \(u\) et \(v\) sont équivalentes, on essaie d'écrire \(u_n\) sous la forme \(u_n = v_n + o(v_n)\) ; on peut aussi essayer d'encadrer \(u_n\) entre deux termes généraux équivalents l'un et l'autre à \(v_n\).</p>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 5</div>
+      <div class="prop-title">Compatibilité de l'équivalent avec la multiplication et la division</div>
+      <div class="two-col-formulas">
+        <div class="formula-block">\[\left.\begin{array}{l} u_n \sim v_n \\ a_n \sim b_n \end{array}\right\} \implies a_n u_n \sim b_n v_n\]</div>
+        <div class="formula-block">\[\left.\begin{array}{l} u_n \sim v_n \\ a_n \sim b_n \end{array}\right\} \implies \frac{u_n}{a_n} \sim \frac{v_n}{b_n}\]</div>
+      </div>
+      <p>Pour la division, on suppose que les \(a_n\) et les \(b_n\) sont tous non nuls à partir d'un certain rang.</p>
+    </div>
+
+    <div class="meth-card">
+      <div class="meth-label">⚠ Attention</div>
+      <div class="meth-title">L'équivalent n'est pas compatible avec l'addition</div>
+      <p>Si \(a\) est un réel, \(u_n \sim v_n\) n'implique PAS \(u_n + a \sim v_n + a\), donc a fortiori \(u_n \sim v_n\) et \(a_n \sim b_n\) n'impliquent PAS \(u_n + a_n \sim v_n + b_n\).</p>
+      <p>Ainsi, lorsqu'on cherche un équivalent d'une somme \(u_n + a_n\), il est souvent préférable d'effectuer des <a href="revision-developpements-limites.html" class="lien-interne">développements limités</a>, qui présentent l'avantage de quantifier les termes négligés.</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- fin .content -->
+
+<footer class="site-footer">
+  <div class="footer-logo">Révisions d'analyse : les suites</div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut de page">↑</button>
+
+<script>
+  document.querySelectorAll('.toc-list a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
+
+</body>
+</html>
