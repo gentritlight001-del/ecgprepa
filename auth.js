@@ -47,7 +47,10 @@
   try {
     if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register(BASE + 'sw.js').catch(function () {
+        navigator.serviceWorker.register(BASE + 'sw.js', { updateViaCache: 'none' }).then(function (reg) {
+          /* Vérifie tout de suite s'il existe une version plus récente. */
+          try { reg.update(); } catch (e) {}
+        }).catch(function () {
           /* Échec silencieux : pas de mode hors-ligne, mais le site
              continue de fonctionner normalement en ligne. */
         });
