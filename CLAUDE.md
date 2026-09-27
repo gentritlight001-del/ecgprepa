@@ -49,6 +49,8 @@ au format PDF. Tout se joue dans `newsletter/`.
 - **Encadré bas de colonne** : vocabulaire d'au moins 12 entrées (aucune sur deux lignes)
   pour les éditions de langue ; « Le mot du numéro » pour la mondiale et la culture
   générale.
+- **Version étrangère** : tout est traduit, y compris l'étiquette fixe « Le chiffre » du
+  gabarit (The figure / La cifra / Die Zahl) ; le vocabulaire reste langue → français.
 - **Les 3 titres du bas** doivent tenir sur 2 lignes chacun, pour que les paragraphes
   démarrent à la même ligne.
 - **Aucun blanc** : les colonnes doivent être remplies jusqu'en bas.
