@@ -4,32 +4,38 @@
    Ce fichier doit rester à la RACINE du site : un service worker ne
    peut contrôler que les pages situées à son niveau ou en dessous.
 
-   Stratégie, volontairement simple :
+   Stratégie : « le réseau d'abord ».
+     - Toutes les ressources du site (pages, scripts, styles, images,
+       polices) sont demandées au réseau à chaque visite, pour que
+       chacun voie TOUJOURS la dernière version publiée, sans avoir à
+       forcer le rafraîchissement (Ctrl+Maj+R). Grâce aux en-têtes du
+       fichier _headers, le navigateur ne retélécharge un fichier que
+       s'il a changé : c'est donc rapide.
+     - Chaque réponse est recopiée dans le cache, qui ne sert plus
+       qu'en secours : hors connexion, on affiche la dernière copie
+       connue, et à défaut la page « Hors ligne ».
+     - Exception : une page préchargée au survol d'un lien (voir
+       auth.js) il y a moins de PRECHARGE_MS est servie directement
+       depuis le cache au clic. Elle vient d'être téléchargée, elle
+       est donc à jour, et l'affichage reste instantané.
      - « Socle » précaché à l'installation : de quoi afficher au moins
-       la vitrine, la connexion et une page de secours hors-ligne,
-       même à la toute première visite sans réseau ensuite.
-     - Pages HTML, scripts, polices du site : « stale-while-revalidate ».
-       Si la page est déjà en cache (visitée ou préchargée au survol
-       d'un lien), elle s'affiche immédiatement, et une copie fraîche
-       est téléchargée en arrière-plan pour la fois suivante. Sinon,
-       réseau, puis page « Hors ligne » en dernier recours.
-       Conséquence : après une mise à jour du site, un visiteur peut
-       voir l'ancienne version d'une page UNE fois. Pour forcer tout
-       le monde d'un coup, change VERSION ci-dessous.
-     - Images et icônes du site : cache en priorité (elles changent
-       rarement), avec une requête réseau en secours.
+       la vitrine, la connexion et la page de secours hors-ligne.
      - Tout ce qui n'est pas sur ce domaine (Supabase, Google Fonts,
-       CDN esm.sh…) n'est jamais mis en cache ici : on laisse le
-       navigateur gérer ça normalement, pour ne jamais servir une
-       session ou des données périmées.
+       CDN esm.sh…) n'est jamais mis en cache ici.
    ══════════════════════════════════════════════════════════════════ */
 
-/* Change ce numéro à chaque évolution notable du site : ça force le
-   renouvellement du cache chez les visiteurs (voir « activate »). */
-var VERSION = 'v8';
+/* Changer ce numéro vide les caches chez tous les visiteurs (voir
+   « activate »). Avec la stratégie « réseau d'abord », ce n'est plus
+   nécessaire pour publier une mise à jour du contenu. */
+var VERSION = 'v9';
 var CACHE_SOCLE   = 'ecg-prepa-socle-'   + VERSION;
 var CACHE_PAGES   = 'ecg-prepa-pages-'   + VERSION;
 var CACHE_IMAGES  = 'ecg-prepa-images-'  + VERSION;
+
+/* Durée pendant laquelle une page préchargée au survol est jugée
+   assez fraîche pour être servie directement au clic. */
+var PRECHARGE_MS = 60 * 1000;
+var precharges = {};
 
 var PAGE_HORS_LIGNE = 'hors-ligne.html';
 
@@ -80,41 +86,39 @@ self.addEventListener('activate', function (evenement) {
 
 /* ─── Utilitaires ──────────────────────────────────────────────── */
 function estImage(url) {
-  return /\.(png|jpe?g|gif|webp|svg|ico)$/i.test(url.pathname);
+  return /\.(png|jpe?g|gif|webp|svg|ico|woff2?)$/i.test(url.pathname);
 }
 
 function memeOrigine(url) {
   return url.origin === self.location.origin;
 }
 
-/* ─── Interception des requêtes ────────────────────────────────── */
+function cleDe(requete) {
+  return new Request(requete.url.split('#')[0]);
+}
 
-/* Sert la copie en cache tout de suite si elle existe, et la met à
-   jour en arrière-plan. Sans copie : réseau, puis secours. */
-function staleWhileRevalidate(evenement, nomCache, secours) {
-  var requete = evenement.request;
-  var cleCache = new Request(requete.url.split('#')[0]);
-  return caches.open(nomCache).then(function (cache) {
-    return cache.match(cleCache, { ignoreVary: true, ignoreSearch: false }).then(function (enCache) {
-      var reseau = fetch(requete).then(function (reponse) {
-        if (reponse && reponse.ok && reponse.type === 'basic' && !reponse.redirected) {
-          cache.put(cleCache, reponse.clone());
-        }
-        return reponse;
-      });
-      if (enCache) {
-        evenement.waitUntil(reseau.catch(function () {}));
-        return enCache;
-      }
-      return reseau.catch(function () {
-        return caches.match(cleCache, { ignoreVary: true }).then(function (r) {
-          return r || (secours ? secours() : Response.error());
-        });
-      });
+/* Télécharge la ressource et en range une copie dans le cache. */
+function telechargerEtRanger(requete, nomCache) {
+  return fetch(requete).then(function (reponse) {
+    if (reponse && reponse.ok && reponse.type === 'basic' && !reponse.redirected) {
+      var copie = reponse.clone();
+      caches.open(nomCache).then(function (cache) { cache.put(cleDe(requete), copie); });
+    }
+    return reponse;
+  });
+}
+
+/* Réseau d'abord ; en cas d'échec (hors connexion), dernière copie
+   connue, puis la page de secours s'il y en a une. */
+function reseauDabord(requete, nomCache, secours) {
+  return telechargerEtRanger(requete, nomCache).catch(function () {
+    return caches.match(cleDe(requete), { ignoreVary: true }).then(function (r) {
+      return r || (secours ? secours() : Response.error());
     });
   });
 }
 
+/* ─── Interception des requêtes ────────────────────────────────── */
 self.addEventListener('fetch', function (evenement) {
   var requete = evenement.request;
 
@@ -125,37 +129,43 @@ self.addEventListener('fetch', function (evenement) {
   var url = new URL(requete.url);
   if (!memeOrigine(url)) return;
 
-  /* Pages HTML (navigation ou préchargement au survol). */
-  var html = requete.mode === 'navigate' ||
-    (requete.headers.get('accept') || '').indexOf('text/html') !== -1;
+  var cle = requete.url.split('#')[0];
+
+  /* Pages HTML. */
+  var navigation = requete.mode === 'navigate';
+  var html = navigation || (requete.headers.get('accept') || '').indexOf('text/html') !== -1;
   if (html) {
-    evenement.respondWith(staleWhileRevalidate(evenement, CACHE_PAGES, function () {
-      return caches.match(PAGE_HORS_LIGNE);
-    }));
+    var secoursHtml = function () { return caches.match(PAGE_HORS_LIGNE); };
+
+    /* Préchargement au survol : on télécharge et on note l'heure. */
+    if (!navigation) {
+      evenement.respondWith(telechargerEtRanger(requete, CACHE_PAGES).then(function (reponse) {
+        if (reponse && reponse.ok) precharges[cle] = Date.now();
+        return reponse;
+      }));
+      return;
+    }
+
+    /* Clic sur une page tout juste préchargée : affichage immédiat. */
+    var t = precharges[cle];
+    if (t && Date.now() - t < PRECHARGE_MS) {
+      delete precharges[cle];
+      evenement.respondWith(caches.match(cleDe(requete), { ignoreVary: true }).then(function (r) {
+        return r || reseauDabord(requete, CACHE_PAGES, secoursHtml);
+      }));
+      return;
+    }
+
+    evenement.respondWith(reseauDabord(requete, CACHE_PAGES, secoursHtml));
     return;
   }
 
-  /* Images, icônes et polices : cache d'abord (elles changent
-     rarement), réseau en secours. */
-  if (estImage(url) || /\.woff2?$/i.test(url.pathname)) {
-    evenement.respondWith(
-      caches.match(requete).then(function (correspondance) {
-        if (correspondance) return correspondance;
-        return fetch(requete).then(function (reponse) {
-          if (reponse && reponse.ok) {
-            var copie = reponse.clone();
-            caches.open(CACHE_IMAGES).then(function (cache) { cache.put(requete, copie); });
-          }
-          return reponse;
-        }).catch(function () {
-          return new Response('', { status: 504, statusText: 'Hors ligne' });
-        });
-      })
-    );
+  /* Images, icônes et polices. */
+  if (estImage(url)) {
+    evenement.respondWith(reseauDabord(requete, CACHE_IMAGES));
     return;
   }
 
-  /* Le reste (auth.js, favoris.js, fonts.css, vendor/…) :
-     même stratégie que les pages. */
-  evenement.respondWith(staleWhileRevalidate(evenement, CACHE_PAGES));
+  /* Le reste (auth.js, favoris.js, fonts.css, vendor/…). */
+  evenement.respondWith(reseauDabord(requete, CACHE_PAGES));
 });
