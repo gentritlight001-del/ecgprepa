@@ -110,6 +110,26 @@ page pays ou région :
   `deuxieme_annee/maths/chapitre1.html` : palette sarcelle, titre du héros sur
   **2 lignes maximum** sur ordinateur.
 
+### Figures des chapitres d'HGG (photos, graphiques, schémas)
+
+- Même système que les chapitres 2 et 4 de 1re année et le chapitre 1 de 2e année
+  (`<figure class="hgg-fig …">`, CSS « kit figures » déjà présent dans ces pages).
+- **Photos toujours en paysage**, jamais verticales : source en paysage et cadre `r32`,
+  `r43`, `r169` ou `r219` (jamais `r45` ni `r11`).
+- Photos **toujours en couleur**, sans effet de grisé ni de transition au survol.
+- Photos **stockées sur le site** en WebP dans le dossier `images/` du chapitre,
+  1600 px maximum, avec `data-commons="<nom du fichier Commons>"` en secours.
+- Téléchargement depuis Wikimedia : passer par les vignettes
+  `https://upload.wikimedia.org/wikipedia/commons/thumb/<h0>/<h0h1>/<nom>/1280px-<nom>`
+  (h = md5 du nom de fichier avec des `_`), en essayant aussi 960px. Les originaux et
+  `Special:FilePath` renvoient souvent l'erreur 429. Espacer les requêtes.
+- **Regarder chaque photo** avant de l'utiliser, et écrire la légende d'après ce qu'elle
+  montre vraiment.
+- Une photo fournie par le propriétaire (par exemple Tuca Vieira pour Paraisópolis)
+  passe avant toute photo Commons.
+- Graphiques et schémas : SVG en ligne dans `fig-frame fig-schema`, aux couleurs du
+  chapitre, avec des données vérifiées et leur source dans la légende.
+
 ### Colles de maths
 
 - Elles vivent à part, dans `deuxieme_annee/maths/colles/`, jamais dans la liste des
