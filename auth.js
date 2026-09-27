@@ -775,7 +775,10 @@
         return sb().then(function (c) {
           return c.rpc('utiliser_code_acces', { p_code: String(code || '') });
         }).then(function (r) {
-          if (r.error) throw new Error('Vérification impossible pour le moment. Réessaie dans un instant.');
+          if (r.error) {
+            /* Le détail technique aide à diagnostiquer (fonction absente, droits…). */
+            throw new Error('Vérification impossible pour le moment (' + (r.error.message || r.error.code || 'erreur serveur') + ').');
+          }
           var d = r.data || {};
           if (d.ok) { _premium = null; return true; }
           throw new Error({
