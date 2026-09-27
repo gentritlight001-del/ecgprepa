@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Maths Chapitre 1 : Réduction des endomorphismes et des matrices carrées</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false}],macros:{'\\Vect':'\\operatorname{Vect}','\\rg':'\\operatorname{rg}','\\Ker':'\\operatorname{Ker}','\\Img':'\\operatorname{Im}','\\Mat':'\\operatorname{Mat}','\\Card':'\\operatorname{Card}','\\GL':'\\operatorname{GL}','\\Id':'\\operatorname{Id}','\\LL':'\\mathscr{L}','\\MM':'\\mathscr{M}','\\BB':'\\mathscr{B}','\\Sp':'\\operatorname{Sp}','\\tr':'\\operatorname{tr}'}});"></script>
+<style>
+  :root {
+    --cream: #F1F8F8;
+    --dark: #06201F;
+    --terra: #177E89;
+    --terra-dark: #062A2E;
+    --terra-mid: #3FA3AC;
+    --terra-light: #D8EEF0;
+    --terra-border: #9CCDD2;
+    --glow: #A6E3E8;
+    --muted: #557578;
+    --accent: #177E89;
+    --accent-soft: #177E8922;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--dark); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid rgba(23,126,137,0.25);
+    background: var(--terra-dark); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--glow); cursor: pointer; letter-spacing: 0.02em; }
+  .nav-logo a { color: inherit; text-decoration: none; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(241,248,248,0.5); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: inherit; text-decoration: none; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb a:hover span, .breadcrumb span:hover { color: var(--glow); }
+  .breadcrumb .sep { color: rgba(241,248,248,0.25); }
+  .breadcrumb .current { color: #F1F8F8; cursor: default; }
+
+  /* ─── HERO ─── */
+  .ch-hero {
+    background: radial-gradient(120% 140% at 15% 0%, #0F4C52 0%, var(--terra-dark) 55%, #031416 100%);
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ch-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%233FA3AC' fill-opacity='0.18'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--glow); margin-bottom: 1.5rem; opacity: 0.9; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 4rem); color: var(--cream); font-weight: 900; max-width: 900px; margin: 0 auto 1.5rem; line-height: 1.1; position: relative; z-index: 1; }
+  .ch-hero p { color: rgba(241,248,248,0.5); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  /* ─── TOC ─── */
+  .toc-bar { background: #E0F1F2; padding: 2rem; border-bottom: 1px solid var(--terra-border); }
+  .toc-inner { max-width: 960px; margin: 0 auto; }
+  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
+  .toc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.4rem; list-style: none; }
+  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: #102A2C; font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
+  .toc-list a:hover { border-color: var(--terra-border); background: white; color: #000; }
+  .toc-num { font-family: "DM Mono", monospace; font-size: 0.65rem; color: var(--terra); flex-shrink: 0; margin-top: 0.15rem; }
+
+  /* ─── CONTENT ─── */
+  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 3rem; }
+
+  /* PART */
+  .math-part { margin-bottom: 5rem; }
+  .math-part:last-of-type { margin-bottom: 0; }
+  .math-part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--terra); }
+  .math-part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: var(--terra-border); line-height: 1; flex-shrink: 0; }
+  .math-part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--dark); line-height: 1.25; }
+
+  /* SECTION */
+  .math-section { margin-bottom: 3.5rem; }
+  .math-section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--terra-dark); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--terra); scroll-margin-top: 2rem; }
+  .math-subsection-title { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--terra); margin: 2rem 0 0.75rem; }
+
+  /* TEXT */
+  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: #122C2E; line-height: 1.85; font-weight: 300; }
+  .content strong { color: var(--dark); font-weight: 600; }
+
+  /* DÉFINITION CARD */
+  .def-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(23,126,137,0.10), 0 0 0 1px rgba(23,126,137,0.14);
+    display: flex;
+    margin: 1.4rem 0;
+  }
+  .def-accent-bar {
+    width: 5px;
+    background: linear-gradient(180deg, #4DB3BB 0%, #062A2E 100%);
+    flex-shrink: 0;
+    border-radius: 10px 0 0 10px;
+  }
+  .def-body { padding: 1.2rem 1.5rem; flex: 1; min-width: 0; }
+  @media screen { .def-body { overflow-x: auto; } }
+  .def-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.65rem; }
+  .def-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--terra); font-weight: 500; }
+  .def-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--terra-dark); }
+  .def-body p { margin-bottom: 0.5rem; font-size: 0.93rem; line-height: 1.75; }
+  .def-body p:last-child { margin-bottom: 0; }
+
+  /* PROPRIÉTÉ CARD */
+  .prop-card {
+    background: var(--terra-light);
+    border-radius: 8px;
+    border: 1px solid var(--terra-border);
+    border-left: 4px solid var(--terra);
+    padding: 1.2rem 1.5rem;
+    margin: 1.4rem 0;
+  }
+  .prop-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--terra-dark); font-weight: 700; margin-bottom: 0.6rem; }
+  .prop-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--terra-dark); margin-bottom: 0.7rem; }
+  .prop-card p { margin-bottom: 0.5rem; font-size: 0.93rem; color: var(--terra-dark); line-height: 1.75; }
+  .prop-card p:last-child { margin-bottom: 0; }
+  .prop-card ol { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .prop-card ol li { font-size: 0.93rem; color: var(--terra-dark); line-height: 1.8; margin-bottom: 0.35rem; }
+  .prop-card ul { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .prop-card ul li { font-size: 0.93rem; color: var(--terra-dark); line-height: 1.8; margin-bottom: 0.35rem; }
+
+  /* THÉORÈME CARD */
+  .thm-card {
+    background: var(--terra-dark);
+    color: var(--cream);
+    border-radius: 8px;
+    padding: 1.5rem 1.75rem;
+    margin: 1.4rem 0;
+  }
+  .thm-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--glow); margin-bottom: 0.5rem; }
+  .thm-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--cream); margin-bottom: 0.75rem; }
+  .thm-card p { color: rgba(241,248,248,0.88); font-size: 0.93rem; margin-bottom: 0.5rem; line-height: 1.75; }
+  .thm-card p:last-child { margin-bottom: 0; }
+  .thm-card ul, .thm-card ol { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .thm-card strong { color: var(--glow); font-weight: 600; }
+  .thm-card li { font-size: 0.93rem; color: rgba(241,248,248,0.88); line-height: 1.8; margin-bottom: 0.35rem; }
+
+  /* MÉTHODE CARD */
+  .meth-card {
+    background: white;
+    border: 2px solid var(--terra);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.4rem 0;
+  }
+  .meth-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--terra); font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+  .meth-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--terra-dark); margin-bottom: 0.7rem; }
+  .meth-card p { font-size: 0.93rem; line-height: 1.75; margin-bottom: 0.5rem; }
+  .meth-card p:last-child { margin-bottom: 0; }
+  .meth-card ul, .meth-card ol { padding-left: 1.4rem; margin: 0.3rem 0 0.5rem; }
+  .meth-card li { font-size: 0.93rem; line-height: 1.8; margin-bottom: 0.3rem; }
+
+  /* REMARQUE */
+  .remark { background: white; border-left: 3px solid var(--terra-border); padding: 1rem 1.4rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; font-size: 0.9rem; color: #102A2C; line-height: 1.7; font-style: italic; }
+  .remark::before { content: 'Remarque — '; font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--terra); display: block; margin-bottom: 0.3rem; }
+
+  /* FORMULE DISPLAY */
+  .formula-block {
+    background: white;
+    border: 1px solid var(--terra-border);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.2rem 0;
+    text-align: center;
+    overflow-x: auto;
+    color: var(--dark);
+  }
+  .formula-block .katex-display { margin: 0; }
+  .formula-block .katex { font-size: 1.05em; color: var(--dark); }
+
+  /* Cartes à fond blanc : toujours forcer le texte en noir/sombre,
+     même imbriquées dans un thm-card à fond sombre */
+  .def-card, .meth-card, .formula-block {
+    color: var(--dark);
+  }
+  .def-card *, .meth-card *, .formula-block * { color: inherit; }
+  .def-card .def-label, .meth-card .meth-label { color: var(--terra); }
+  .def-card .def-name, .meth-card .meth-title { color: var(--terra-dark); }
+
+  /* TABLE */
+  .math-table-wrap { overflow-x: auto; margin: 1.5rem 0; border-radius: 8px; border: 1px solid var(--terra-border); box-shadow: 0 2px 8px rgba(23,126,137,0.08); }
+  .math-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .math-table th { background: var(--terra-dark); color: var(--cream); font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.75rem 1rem; text-align: center; font-weight: 500; border: 1px solid rgba(255,255,255,0.1); }
+  .math-table td { padding: 0.65rem 1rem; text-align: center; border: 1px solid var(--terra-light); color: #122C2E; vertical-align: middle; background: white; line-height: 1.6; }
+  .math-table tr:nth-child(even) td { background: #F1F8F8; }
+  .math-table tr:hover td { background: var(--terra-light); }
+  .math-table td.left { text-align: left; }
+  .math-table .katex { font-size: 0.95em; }
+
+  /* KEY FACT */
+  .math-key { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 0.6rem; padding: 0.85rem 1.1rem; background: white; border: 1px solid var(--terra-light); border-radius: 6px; }
+  .math-key-bullet { width: 6px; height: 6px; background: var(--terra); border-radius: 50%; flex-shrink: 0; margin-top: 0.55rem; }
+  .math-key > div { font-size: 0.91rem; color: #122C2E; line-height: 1.75; font-weight: 300; }
+
+  /* INLINE MATH */
+  .katex { font-size: 1em; }
+  .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.2rem 0; }
+
+  /* DEUX COLONNES */
+  .two-col-formulas { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
+  .two-col-formulas .formula-block { margin: 0; }
+
+  /* TROIS COLONNES */
+  .three-col-formulas { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
+  .three-col-formulas .formula-block { margin: 0; }
+
+  /* HIGHLIGHT BOX */
+  .math-highlight { background: var(--terra-light); border-left: 4px solid var(--terra); padding: 1.25rem 1.75rem; margin: 1.5rem 0; color: var(--terra-dark); font-size: 0.93rem; line-height: 1.75; border-radius: 0 6px 6px 0; }
+
+  /* FOOTER */
+  .site-footer {
+    background: var(--terra-dark);
+    border-top: 1px solid rgba(23,126,137,0.35);
+    padding: 2.5rem 2rem;
+    text-align: center;
+  }
+  .site-footer .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--glow);
+    letter-spacing: 0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+  /* BACK TO TOP */
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--terra); color: var(--cream); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 4px 14px rgba(23,126,137,0.45); opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 200; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+  .back-to-top:hover { background: var(--terra-mid); }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--terra-border); border-radius: 3px; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .two-col-formulas { grid-template-columns: 1fr; }
+    .three-col-formulas { grid-template-columns: 1fr; }
+    .content p, .content li, .math-key > div, .remark, .math-highlight { overflow-x: auto; overflow-y: hidden; }
+    .content { padding: 3rem 1rem 2rem; }
+    .formula-block { padding: 0.9rem 0.6rem; }
+    .formula-block .katex { font-size: 0.86em; }
+    .def-body, .prop-card, .thm-card { padding-left: 1rem; padding-right: 1rem; }
+  }
+
+  @media print {
+    @page { size: A4; margin: 15mm 14mm 15mm 14mm; }
+    nav, .back-to-top, .toc-bar, .site-footer { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    html, body { background: white !important; color: #000 !important; font-size: 10pt; width: 100% !important; }
+    .ch-hero { background: #062A2E !important; padding: 0.9rem 1rem 0.7rem !important; }
+    .ch-hero::before { display: none !important; }
+    .ch-hero h1 { font-size: 16pt !important; color: #fff !important; margin-bottom: 0.3rem !important; }
+    .ch-hero .chap-label { font-size: 7pt !important; color: #A6E3E8 !important; margin-bottom: 0.4rem !important; }
+    .ch-hero p { font-size: 7pt !important; color: #A6E3E8 !important; margin: 0 !important; }
+    .content { max-width: 100% !important; padding: 0.6rem 0 !important; margin: 0 !important; }
+    .content p { font-size: 9pt !important; line-height: 1.5 !important; margin-bottom: 0.45rem !important; color: #000 !important; }
+    .math-part { margin-bottom: 0.8rem; page-break-inside: auto; }
+    .math-part-header { page-break-after: avoid; padding-bottom: 0.6rem !important; margin-bottom: 1rem !important; border-bottom: 2pt solid #177E89 !important; }
+    .math-part-num { font-size: 2rem !important; color: #9CCDD2 !important; }
+    .math-part-title { font-size: 13pt !important; }
+    .math-section { page-break-inside: auto; margin-bottom: 0.8rem; }
+    .math-section-title { page-break-after: avoid; font-size: 11pt !important; padding-left: 0.7rem !important; border-left: 2.5pt solid #177E89 !important; margin-bottom: 0.55rem !important; color: #062A2E !important; }
+    .math-subsection-title { page-break-after: avoid; font-size: 7pt !important; margin: 0.65rem 0 0.35rem !important; color: #177E89 !important; }
+    .def-card { page-break-inside: avoid; box-shadow: none !important; border: 1pt solid #9CCDD2 !important; display: flex !important; border-radius: 0 !important; margin: 0.55rem 0 !important; }
+    .def-accent-bar { background: #177E89 !important; width: 4px !important; border-radius: 0 !important; }
+    .def-body { padding: 0.7rem 1rem !important; }
+    .def-body p { font-size: 8.5pt !important; line-height: 1.5 !important; color: #000 !important; }
+    .prop-card { page-break-inside: avoid; background: #D8EEF0 !important; border: 1pt solid #9CCDD2 !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .prop-card p, .prop-card li { font-size: 8.5pt !important; line-height: 1.5 !important; }
+    .thm-card { page-break-inside: avoid; background: #062A2E !important; padding: 0.7rem 1rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .thm-label { font-size: 6pt !important; color: #A6E3E8 !important; }
+    .thm-title { font-size: 9.5pt !important; color: #fff !important; }
+    .thm-card p, .thm-card li { font-size: 8.5pt !important; line-height: 1.5 !important; color: #E3F2F3 !important; }
+    .meth-card { page-break-inside: avoid; border: 1.5pt solid #177E89 !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .meth-title { font-size: 9.5pt !important; }
+    .meth-card p, .meth-card li { font-size: 8.5pt !important; line-height: 1.5 !important; }
+    .remark { border-left: 2pt solid #9CCDD2 !important; padding: 0.5rem 0.8rem !important; margin: 0.5rem 0 !important; font-size: 8pt !important; border-radius: 0 !important; }
+    .formula-block { border: 1pt solid #9CCDD2 !important; padding: 0.55rem 0.8rem !important; margin: 0.5rem 0 !important; border-radius: 0 !important; }
+    .math-table-wrap { border: 1pt solid #9CCDD2 !important; border-radius: 0 !important; box-shadow: none !important; margin: 0.5rem 0 !important; }
+    .math-table th { background: #062A2E !important; color: #A6E3E8 !important; font-size: 6.5pt !important; padding: 0.4rem 0.6rem !important; }
+    .math-table td { font-size: 8pt !important; padding: 0.4rem 0.6rem !important; border: 0.5pt solid #D8EEF0 !important; }
+    .two-col-formulas, .three-col-formulas { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 0.5rem !important; margin: 0.45rem 0 !important; }
+    .katex { font-size: 0.82em !important; }
+    .katex-display { margin: 0.15rem 0 !important; overflow: visible !important; }
+    .katex-html { white-space: normal !important; }
+    .katex .base { display: inline !important; white-space: nowrap !important; }
+    .def-body p, .prop-card p, .thm-card p, .remark, .math-key > div, .content p { overflow: visible !important; word-break: break-word !important; }
+    .formula-block { overflow: visible !important; height: auto !important; min-height: 0 !important; text-align: center !important; }
+    .formula-block .katex-display { overflow-x: visible !important; overflow-y: visible !important; text-align: center !important; }
+    .math-table td, .math-table th { overflow: visible !important; word-break: break-word !important; }
+    .katex *, .katex-html * { position: static !important; top: auto !important; bottom: auto !important; left: auto !important; right: auto !important; }
+    .math-table .katex { font-size: 0.75em !important; }
+  }
+
+  /* FIGURES */
+  .math-figure { background: white; border: 1px solid var(--terra-border); border-radius: 8px; padding: 1.2rem 1rem 0.9rem; margin: 1.4rem 0; text-align: center; }
+  .math-svg { width: 100%; max-width: 460px; height: auto; display: block; margin: 0 auto; }
+  .math-svg .ax { stroke: var(--muted); stroke-width: 1; }
+  .math-svg .axh { fill: var(--muted); }
+  .math-svg .tk { font-family: 'DM Mono', monospace; font-size: 11px; fill: var(--muted); }
+  .math-svg .lb { font-family: 'Newsreader', Georgia, serif; font-style: italic; font-size: 13px; fill: var(--terra-dark); }
+  .math-svg .cv { fill: none; stroke: var(--terra-dark); stroke-width: 2.4; stroke-linejoin: round; }
+  .math-svg .tg { fill: none; stroke: var(--terra); stroke-width: 1.4; stroke-dasharray: 6 5; }
+  .math-figure figcaption { font-size: 0.82rem; color: var(--muted); margin-top: 0.6rem; line-height: 1.6; }
+  @media print { .math-figure { page-break-inside: avoid; border: 1pt solid #9CCDD2 !important; padding: 0.5rem !important; margin: 0.5rem 0 !important; } .math-svg { max-width: 300px; } }
+  .math-svg .vec { stroke: var(--terra-dark); stroke-width: 2; }
+  .math-svg .vec2 { stroke: var(--terra); stroke-width: 1.8; }
+  .math-svg .pte { fill: var(--terra-dark); }
+  .math-svg .dot { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 2 3; }
+  .math-svg .ligne { stroke: var(--muted); stroke-width: 1; }
+  .math-svg .lb { font-size: 14px; }
+  .def-list { padding-left: 1.4rem; margin: 0.3rem 0 1rem; }
+  .def-list li { font-size: 0.93rem; line-height: 1.8; margin-bottom: 0.35rem; }
+  .def-body .def-list { margin-bottom: 0.3rem; }
+  a.lien-interne { color: var(--terra); text-decoration: underline; text-underline-offset: 2px; }
+  .thm-card strong { color: var(--glow); font-weight: 600; }
+  .content > .math-highlight:first-child { margin-top: 0; margin-bottom: 3rem; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left"><div class="nav-logo"><a href="../../index.html">ECG Prépa</a></div></div>
+  <div class="breadcrumb">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">/</span>
+    <a href="../index.html"><span>2ème Année</span></a>
+    <span class="sep">/</span>
+    <a href="index.html"><span>Mathématiques</span></a>
+    <span class="sep">/</span>
+    <span class="current">Chapitre 1</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="chap-label">&#x2015;&nbsp; Chapitre 1 · Mathématiques · 2ème année &nbsp;&#x2015;</div>
+  <h1>Réduction des endomorphismes et des matrices carrées</h1>
+  <p>Somme directe · Changement de base · Trace · Éléments propres · Diagonalisation · Puissances</p>
+</div>
+
+<!-- TOC -->
+<div class="toc-bar">
+  <div class="toc-inner">
+    <div class="toc-title">Table des matières</div>
+    <ul class="toc-list">
+      <li><a href="#part1"><span class="toc-num">I</span> Somme de sous-espaces vectoriels, somme directe</a></li>
+      <li><a href="#part2"><span class="toc-num">II</span> Changement de base, matrices semblables</a></li>
+      <li><a href="#part3"><span class="toc-num">III</span> Trace d'une matrice carrée</a></li>
+      <li><a href="#part4"><span class="toc-num">IV</span> Éléments propres</a></li>
+      <li><a href="#part5"><span class="toc-num">V</span> Diagonalisation</a></li>
+      <li><a href="#part6"><span class="toc-num">VI</span> Calcul des puissances d'une matrice</a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="content">
+
+<div class="math-highlight">Ce chapitre prolonge les rappels d'algèbre linéaire : en cas de doute sur les sous-espaces supplémentaires, le noyau, l'image ou les polynômes d'endomorphismes, voir les fiches <a href="revision-algebre-lineaire.html" class="lien-interne">L'algèbre linéaire</a> et <a href="revision-projecteurs-symetries.html" class="lien-interne">Les projecteurs et les symétries</a>.</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE I
+════════════════════════════════════════ -->
+<div class="math-part" id="part1">
+  <div class="math-part-header">
+    <div class="math-part-num">I</div>
+    <div class="math-part-title">Somme de sous-espaces vectoriels, somme directe</div>
+  </div>
+
+  <div class="math-section" id="s1-1">
+    <div class="math-section-title">1 — Somme de sous-espaces vectoriels</div>
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span><span class="def-name">Somme de sous-espaces vectoriels</span></div>
+        <p>Soient \(E\) un espace vectoriel, \(p \in \mathbb{N}^*\), \(F_1, \dots, F_p\) des sous-espaces vectoriels de \(E\). On appelle <strong>somme</strong> des sous-espaces vectoriels \(F_1, \dots, F_p\), et on note \(F_1 + \cdots + F_p\) ou \(\displaystyle\sum_{i=1}^{p} F_i\), l'ensemble</p>
+        <div class="formula-block">\[F_1 + \cdots + F_p = \{x_1 + \cdots + x_p \,;\, (x_1, \dots, x_p) \in F_1 \times \cdots \times F_p\}\]</div>
+        <p>ou encore \(F_1 + \cdots + F_p = \{x \in E \mid \exists (x_1, \dots, x_p) \in F_1 \times \cdots \times F_p,\ x = x_1 + \cdots + x_p\}\).</p>
+      </div>
+    </div>
+    <p>Par définition, un vecteur \(x\) de \(E\) appartient à la somme \(F_1 + \cdots + F_p\) s'il peut s'écrire comme somme d'un vecteur de \(F_1\), d'un vecteur de \(F_2\), …, d'un vecteur de \(F_p\).</p>
+    <p><strong>Exemple.</strong> Si \(u, v, w\) sont trois vecteurs d'un espace vectoriel \(E\), alors \(\Vect(u) + \Vect(v) + \Vect(w) = \Vect(u, v) + \Vect(w) = \Vect(u, v, w)\).</p>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <div class="prop-title">Propriétés de la somme de sous-espaces vectoriels</div>
+      <p>Soient \(E\) un espace vectoriel, \(p \in \mathbb{N}^*\), \(F_1, \dots, F_p\) des sous-espaces vectoriels de \(E\).</p>
+      <ol>
+        <li>\(F_1 + \cdots + F_p\) est un sous-espace vectoriel de \(E\) contenant chacun des sous-espaces vectoriels \(F_1, \dots, F_p\).</li>
+        <li>\(F_1 + \cdots + F_p\) est le plus petit sous-espace vectoriel de \(E\) contenant chacun des sous-espaces \(F_1, \dots, F_p\).</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="math-section" id="s1-2">
+    <div class="math-section-title">2 — Somme directe de sous-espaces vectoriels</div>
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 2</span><span class="def-name">Somme directe de sous-espaces vectoriels</span></div>
+        <p>Soient \(E\) un espace vectoriel, \(p \in \mathbb{N}^*\), \(F_1, \dots, F_p\) des sous-espaces vectoriels de \(E\). On dit que la somme \(F_1 + \cdots + F_p\) est <strong>directe</strong> si tout vecteur du sous-espace vectoriel \(F_1 + \cdots + F_p\) peut s'écrire <strong>de façon unique</strong> comme somme d'un vecteur de \(F_1\), …, d'un vecteur de \(F_p\), autrement dit si :</p>
+        <div class="formula-block">\[\forall x \in F_1 + \cdots + F_p,\quad \exists!\,(x_1, \dots, x_p) \in F_1 \times \cdots \times F_p,\quad x = x_1 + \cdots + x_p.\]</div>
+        <p>Quand la somme \(F_1 + \cdots + F_p\) est directe, on la note \(F_1 \oplus \cdots \oplus F_p\), ou encore \(\displaystyle\bigoplus_{i=1}^{p} F_i\).</p>
+      </div>
+    </div>
+    <p><strong>Exemple.</strong> On a \(\mathbb{R}_3[x] = \Vect(X^3) \oplus \Vect(X^2) \oplus \Vect(X) \oplus \Vect(1)\).</p>
+
+    <div class="meth-card">
+      <div class="meth-label">⚠ Attention</div>
+      <p>Pour \(p \geqslant 3\), la notion de somme directe est plus délicate que celle rencontrée l'an dernier dans le cas \(p = 2\). En effet, il ne suffit <strong>pas</strong> d'avoir, pour tout couple \((i, j) \in \llbracket 1, p \rrbracket^2\) d'entiers distincts, \(F_i \cap F_j = \{0_E\}\) pour que les sous-espaces \(F_1, \dots, F_p\) soient en somme directe.</p>
+      <p>Il suffit de dessiner trois droites vectorielles \(F_1\), \(F_2\), \(F_3\) du plan, deux à deux distinctes : leurs intersections deux à deux sont réduites à \(\{0_E\}\), et pourtant la somme \(F_1 + F_2 + F_3\) n'est pas directe. Sur la figure, le vecteur \(u_1 + u_2\) de \(F_3\) s'écrit de deux façons différentes : \((u_1 + u_2) = 0 + 0 + (u_1 + u_2) = u_1 + u_2 + 0\), avec \(u_1 \in F_1\) et \(u_2 \in F_2\). D'ailleurs, trois droites ne peuvent pas être en somme directe dans un plan, qui est de dimension 2.</p>
+    </div>
+    <figure class="math-figure"><svg class="math-svg" viewBox="0 0 390 270" role="img" aria-label="Trois droites vectorielles du plan deux à deux distinctes" xmlns="http://www.w3.org/2000/svg"><defs><marker id="pointe" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="pte"/></marker></defs><line x1="85.0" y1="135.0" x2="295.0" y2="135.0" class="ligne"/><text x="309.0" y="140.0" class="lb" text-anchor="middle">F₁</text><line x1="190.0" y1="240.0" x2="190.0" y2="30.0" class="ligne"/><text x="190.0" y="21.0" class="lb" text-anchor="middle">F₂</text><line x1="115.8" y1="209.2" x2="264.2" y2="60.8" class="ligne"/><text x="274.1" y="55.9" class="lb" text-anchor="middle">F₃</text><line x1="248.0" y1="135.0" x2="248.0" y2="77.0" class="dot"/><line x1="190.0" y1="77.0" x2="248.0" y2="77.0" class="dot"/><line x1="190.0" y1="135.0" x2="248.0" y2="135.0" class="vec" marker-end="url(#pointe)"/><line x1="190.0" y1="135.0" x2="190.0" y2="77.0" class="vec" marker-end="url(#pointe)"/><line x1="190.0" y1="135.0" x2="248.0" y2="77.0" class="vec2" marker-end="url(#pointe)"/><text x="248.0" y="152.0" class="lb" text-anchor="middle">u₁</text><text x="182.0" y="81.0" class="lb" text-anchor="end">u₂</text><text x="256.0" y="79.0" class="lb" text-anchor="start">u₁ + u₂</text></svg><figcaption>Trois droites du plan deux à deux distinctes : \(F_i \cap F_j = \{0\}\) pour \(i \neq j\), mais la somme \(F_1 + F_2 + F_3\) n'est pas directe.</figcaption></figure>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 2</div>
+      <div class="prop-title">Somme directe et concaténation de familles libres</div>
+      <p>Soient \(E\) un espace vectoriel, \(p \in \mathbb{N}^*\), \(F_1, \dots, F_p\) des sous-espaces vectoriels de \(E\). Pour tout \(i \in \llbracket 1, p \rrbracket\), on suppose que \(\mathscr{L}_i\) est une famille de vecteurs de \(F_i\). Soit \(\mathscr{L}\) la famille obtenue en concaténant les familles \(\mathscr{L}_1, \dots, \mathscr{L}_p\). Alors :</p>
+      <div class="formula-block">\[\left.\begin{array}{l} \mathscr{L}_1, \dots, \mathscr{L}_p \text{ libres} \\ F_1, \dots, F_p \text{ en somme directe} \end{array}\right\} \implies \mathscr{L} \text{ libre}.\]</div>
+    </div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 3</div>
+      <div class="thm-title">Caractérisation d'une somme directe par concaténation de bases</div>
+      <p>Soient \(E\) un espace vectoriel, \(p \in \mathbb{N}^*\), \(F_1, \dots, F_p\) des sous-espaces vectoriels de \(E\). Pour tout \(i \in \llbracket 1, p \rrbracket\), on suppose \(F_i\) de dimension finie et on note \(\BB_i\) une base de \(F_i\) (si \(F_i = \{0_E\}\), on pose \(\BB_i = \varnothing\)). Soit \(\mathscr{F}\) la famille obtenue en concaténant \(\BB_1, \dots, \BB_p\). Alors :</p>
+      <div class="formula-block">\[\mathscr{F} \text{ base de } E \iff E = \bigoplus_{i=1}^{p} F_i.\]</div>
+    </div>
+
+    <p><strong>Exemple.</strong> La famille \((1 + X,\ X^2 - 1,\ 1 + X + X^2,\ X^3 - 1,\ X^3 + X^4)\) est libre (vérification facile), de cardinal 5 dans l'espace \(\mathbb{R}_4[x]\) de dimension 5, donc en constitue une base ; d'après la proposition précédente, on en déduit par exemple :</p>
+    <div class="formula-block">\[\mathbb{R}_4[x] = \Vect(1 + X, X^2 - 1) \oplus \Vect(1 + X + X^2) \oplus \Vect(X^4 + X^3, X^3 - 1).\]</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 4</div>
+      <div class="prop-title">Dimension d'une somme directe</div>
+      <p>Soient \(E\) un espace vectoriel, \(p \in \mathbb{N}^*\), \(F_1, \dots, F_p\) des sous-espaces vectoriels de \(E\) en somme directe. Si chacun des sous-espaces \(F_1, \dots, F_p\) est de dimension finie, alors la somme \(F_1 \oplus F_2 \oplus \cdots \oplus F_p\) est de dimension finie égale à :</p>
+      <div class="formula-block">\[\dim(F_1 \oplus F_2 \oplus \cdots \oplus F_p) = \dim F_1 + \dim F_2 + \cdots + \dim F_p.\]</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE II
+════════════════════════════════════════ -->
+<div class="math-part" id="part2">
+  <div class="math-part-header">
+    <div class="math-part-num">II</div>
+    <div class="math-part-title">Changement de base pour un endomorphisme, matrices semblables</div>
+  </div>
+
+  <div class="math-section" id="s2-1">
+    <div class="math-section-title">1 — Matrice de passage</div>
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 3</span><span class="def-name">Matrice de passage</span></div>
+        <p>Soient \(E\) un espace vectoriel de dimension finie \(n \geqslant 1\), \(\BB = (e_1, \dots, e_n)\) et \(\BB' = (e'_1, \dots, e'_n)\) deux bases de \(E\). On appelle <strong>matrice de passage</strong> de la base \(\BB\) à la base \(\BB'\) la matrice carrée d'ordre \(n\) dont les vecteurs colonnes sont les vecteurs de la base \(\BB'\) exprimés dans la base \(\BB\) :</p>
+        <div class="formula-block">\[P_{\BB,\BB'} = \Mat_{\BB}(\BB') = \Big(\ \Mat_{\BB}(e'_1)\ \Big|\ \cdots\ \Big|\ \Mat_{\BB}(e'_n)\ \Big).\]</div>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 5</div>
+      <div class="prop-title">Lien entre matrices de passage et matrices inversibles</div>
+      <p>Soit \(E\) un espace vectoriel de dimension finie non nulle.</p>
+      <ol>
+        <li>Soient \(\BB\) et \(\BB'\) deux bases de \(E\). Alors \(P_{\BB,\BB'}\) est la matrice de l'identité \(\Id_E\) de \(\BB'\) dans \(\BB\), i.e. \(P_{\BB,\BB'} = \Mat_{\BB,\BB'}(\Id_E)\) (la \(j\)-ème colonne contient les coordonnées de \(\Id_E(e'_j) = e'_j\) dans la base \(\BB\)). En particulier, \(P_{\BB,\BB'}\) est inversible, d'inverse \((P_{\BB,\BB'})^{-1} = P_{\BB',\BB}\).</li>
+        <li>Soient \(\BB\) une base de \(E\) et \(P\) une matrice de \(\MM_n(\mathbb{R})\) inversible. Alors : (i) il existe une base \(\BB'\) de \(E\) telle que \(P = P_{\BB,\BB'}\) ; (ii) il existe une base \(\BB''\) de \(E\) telle que \(P = P_{\BB'',\BB}\). En particulier, toute matrice inversible peut être vue comme une matrice de passage.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="math-section" id="s2-2">
+    <div class="math-section-title">2 — Formules de changement de base</div>
+    <div class="prop-card">
+      <div class="prop-label">Proposition 6</div>
+      <div class="prop-title">Formule de changement de base pour un vecteur</div>
+      <p>Soient \(E\) un espace vectoriel de dimension finie \(n \geqslant 1\), \(\BB\) et \(\BB'\) deux bases de \(E\), \(x \in E\), \(X = \Mat_{\BB}(x)\) et \(X' = \Mat_{\BB'}(x)\). Alors :</p>
+      <div class="formula-block">\[X = P_{\BB,\BB'}\,X'.\]</div>
+    </div>
+    <div class="thm-card">
+      <div class="thm-label">Proposition 7</div>
+      <div class="thm-title">Formule de changement de base pour un endomorphisme</div>
+      <p>Soient \(E\) un espace vectoriel de dimension finie non nulle, \(\BB\) et \(\BB'\) deux bases de \(E\), \(f \in \LL(E)\), \(A = \Mat_{\BB}(f)\) et \(A' = \Mat_{\BB'}(f)\). Posons \(P = P_{\BB,\BB'}\). Alors :</p>
+      <div class="formula-block">\[A' = P^{-1} A P.\]</div>
+    </div>
+  </div>
+
+  <div class="math-section" id="s2-3">
+    <div class="math-section-title">3 — Matrices semblables</div>
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 4</span><span class="def-name">Matrices semblables</span></div>
+        <p>Soient \(A\) et \(B\) deux matrices carrées de \(\MM_n(\mathbb{R})\). On dit que les matrices \(A\) et \(B\) sont <strong>semblables</strong> s'il existe une matrice \(P\) de \(\MM_n(\mathbb{R})\) inversible telle que \(B = P^{-1} A P\).</p>
+      </div>
+    </div>
+    <div class="math-subsection-title">Remarques</div>
+    <ol class="def-list">
+      <li>S'il existe une matrice \(P \in \GL_n(\mathbb{R})\) vérifiant \(B = P^{-1} A P\), alors il existe une matrice \(Q \in \GL_n(\mathbb{R})\) vérifiant \(A = Q^{-1} B Q\) (il suffit de poser \(Q = P^{-1}\)). Par conséquent, les matrices \(A\) et \(B\) jouent des rôles symétriques dans la définition ci-dessus. Ceci légitime la formulation « \(A\) et \(B\) sont semblables », qui accorde le même rôle aux matrices \(A\) et \(B\).</li>
+      <li>La seule matrice de \(\MM_n(\mathbb{R})\) semblable à la matrice nulle est la matrice nulle.</li>
+      <li>La seule matrice de \(\MM_n(\mathbb{R})\) semblable à la matrice identité \(I_n\) est la matrice identité \(I_n\).</li>
+    </ol>
+    <div class="thm-card">
+      <div class="thm-label">Proposition 8</div>
+      <div class="thm-title">Deux matrices sont semblables si et seulement si elles représentent un même endomorphisme</div>
+      <p>Soient \(E\) un espace vectoriel de dimension finie non nulle, \(\BB\) une base de \(E\), \(f \in \LL(E)\), \(A = \Mat_{\BB}(f)\) et \(B \in \MM_n(\mathbb{R})\). Alors :</p>
+      <div class="formula-block">\[\big[\text{il existe une base } \BB' \text{ de } E \text{ vérifiant } B = \Mat_{\BB'}(f)\big] \iff A \text{ et } B \text{ sont semblables}.\]</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE III
+════════════════════════════════════════ -->
+<div class="math-part" id="part3">
+  <div class="math-part-header">
+    <div class="math-part-num">III</div>
+    <div class="math-part-title">Trace d'une matrice carrée</div>
+  </div>
+
+  <div class="math-section" id="s3-1">
+    <div class="math-section-title">1 — La trace est une forme linéaire</div>
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 5</span><span class="def-name">Trace d'une matrice carrée</span></div>
+        <p>On appelle <strong>trace</strong> d'une matrice carrée \(A = (a_{i,j})_{1 \leqslant i,j \leqslant n}\), et on note \(\tr(A)\), la somme de ses éléments diagonaux :</p>
+        <div class="formula-block">\[\tr(A) = \sum_{i=1}^{n} a_{i,i}.\]</div>
+        <p>On définit ainsi une application, appelée <strong>trace</strong> et notée \(\tr\), de \(\MM_n(\mathbb{R})\) dans \(\mathbb{R}\) : \(\tr : A \in \MM_n(\mathbb{R}) \longmapsto \tr(A) \in \mathbb{R}\).</p>
+      </div>
+    </div>
+    <p>La proposition suivante est claire :</p>
+    <div class="prop-card">
+      <div class="prop-label">Proposition 9</div>
+      <div class="prop-title">Linéarité de la trace</div>
+      <p>La trace est une application linéaire de \(\MM_n(\mathbb{R})\) dans \(\mathbb{R}\), i.e. c'est une forme linéaire sur \(\MM_n(\mathbb{R})\).</p>
+    </div>
+  </div>
+
+  <div class="math-section" id="s3-2">
+    <div class="math-section-title">2 — Deux matrices semblables ont même trace</div>
+    <div class="thm-card">
+      <div class="thm-label">Proposition 10</div>
+      <div class="thm-title">Deux matrices semblables ont même trace</div>
+      <p>Pour tout couple \((A, B)\) de matrices de \(\MM_n(\mathbb{R})\), on a :</p>
+      <div class="formula-block">\[\tr(AB) = \tr(BA).\]</div>
+      <p><strong>Conséquence importante :</strong> deux matrices semblables ont même trace, c'est-à-dire</p>
+      <div class="formula-block">\[\forall (A, P) \in \MM_n(\mathbb{R}) \times \GL_n(\mathbb{R}), \qquad \tr(P^{-1} A P) = \tr(A).\]</div>
+    </div>
+    <p><strong>Exemple d'application.</strong> Les matrices \(\begin{pmatrix} 6 & 7 \\ -5 & -3 \end{pmatrix}\) et \(\begin{pmatrix} 1 & -1 \\ -5 & 3 \end{pmatrix}\) n'ont pas même trace (3 et 4), donc ne sont pas semblables.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE IV
+════════════════════════════════════════ -->
+<div class="math-part" id="part4">
+  <div class="math-part-header">
+    <div class="math-part-num">IV</div>
+    <div class="math-part-title">Éléments propres d'un endomorphisme, d'une matrice carrée</div>
+  </div>
+
+  <div class="math-section" id="s4-1">
+    <div class="math-section-title">1 — Éléments propres d'un endomorphisme, d'une matrice</div>
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 6</span><span class="def-name">Valeur propre, vecteur propre</span></div>
+        <p>Soient \(E\) un espace vectoriel (pas nécessairement de dimension finie) et \(f\) un endomorphisme de \(E\).</p>
+        <ol class="def-list">
+          <li>On appelle <strong>valeur propre</strong> de \(f\) tout réel \(\lambda\) tel qu'il existe un vecteur \(x\) <strong>non nul</strong> de \(E\) tel que \(f(x) = \lambda x\).</li>
+          <li>On appelle <strong>vecteur propre</strong> de \(f\) tout vecteur \(x\) <strong>non nul</strong> de \(E\) tel qu'il existe un réel \(\lambda\) tel que \(f(x) = \lambda x\).</li>
+        </ol>
+      </div>
+    </div>
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 7</span><span class="def-name">Spectre, sous-espace propre, éléments propres</span></div>
+        <ol class="def-list">
+          <li>On appelle <strong>spectre</strong> de \(f\), et on note \(\Sp(f)\), l'ensemble de toutes les valeurs propres de \(f\).</li>
+          <li>Si \(\lambda\) est une valeur propre de \(f\), on appelle <strong>sous-espace propre de \(f\) associé à la valeur propre \(\lambda\)</strong> le sous-espace vectoriel \(\Ker(f - \lambda\Id_E) = \{x \in E \,;\, f(x) = \lambda x\}\) de \(E\), constitué du vecteur nul et des vecteurs propres de \(f\) associés à \(\lambda\). On le note aussi \(E_\lambda(f)\).</li>
+          <li>Si \(\lambda\) est un réel et \(x\) un vecteur non nul de \(E\) tels que \(f(x) = \lambda x\), alors \(\lambda\) est une valeur propre de \(f\) et \(x\) un vecteur propre de \(f\), qui sont dits <strong>associés</strong> l'un à l'autre.</li>
+          <li>Déterminer les <strong>éléments propres</strong> d'un endomorphisme, c'est déterminer ses valeurs propres et ses vecteurs propres.</li>
+        </ol>
+      </div>
+    </div>
+    <div class="math-subsection-title">Remarques</div>
+    <ol class="def-list">
+      <li>Si \(x\) est un vecteur propre associé à une valeur propre \(\lambda\) de \(f\), alors le vecteur \(x\) ne peut pas être associé à une autre valeur propre de \(f\) (vérification immédiate).</li>
+      <li>Si \(x\) est un vecteur propre associé à la valeur propre \(\lambda\) et si \(\alpha\) est un réel non nul, alors \(\alpha x\) est encore un vecteur propre associé à \(\lambda\).</li>
+    </ol>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 8</span><span class="def-name">Valeur propre, vecteur propre d'une matrice</span></div>
+        <p>Soit \(A\) une matrice de \(\MM_n(\mathbb{R})\) (c'est donc une matrice carrée).</p>
+        <ol class="def-list">
+          <li>On dit qu'un réel \(\lambda\) est une <strong>valeur propre</strong> de \(A\) s'il existe une matrice colonne non nulle \(X\) de \(\MM_{n,1}(\mathbb{R})\) telle que \(AX = \lambda X\). On appelle <strong>spectre</strong> de \(A\) l'ensemble des valeurs propres de \(A\), et on le note \(\Sp(A)\).</li>
+          <li>On dit qu'une matrice \(X\) non nulle de \(\MM_{n,1}(\mathbb{R})\) est un <strong>vecteur propre</strong> de \(A\) s'il existe un réel \(\lambda\) tel que \(AX = \lambda X\).</li>
+          <li>Si \(\lambda\) est une valeur propre de \(A\), on appelle <strong>sous-espace propre de \(A\) associé à \(\lambda\)</strong> le sous-espace vectoriel \(\Ker(A - \lambda I_n)\) de \(\MM_{n,1}(\mathbb{R})\).</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 11</div>
+      <div class="prop-title">Lien entre les éléments propres d'une matrice et d'un endomorphisme qu'elle représente</div>
+      <p>Soit \(E\) un espace vectoriel de dimension finie \(n \geqslant 1\) muni d'une base \(\BB\), \(f \in \LL(E)\), \(A = \Mat_{\BB}(f)\), \(x \in E\) et \(X = \Mat_{\BB}(x)\). Alors :</p>
+      <ol>
+        <li>\(\Sp(f) = \Sp(A)\) ;</li>
+        <li>\(\forall \lambda \in \Sp(f) = \Sp(A),\quad x \in E_\lambda(f) \iff X \in E_\lambda(A)\) ;</li>
+        <li>si \(B\) est une matrice semblable à \(A\), alors \(\Sp(A) = \Sp(B)\) et, pour tout \(\lambda \in \Sp(A) = \Sp(B)\), on a \(\dim E_\lambda(A) = \dim E_\lambda(B)\).</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="math-section" id="s4-2">
+    <div class="math-section-title">2 — Caractériser les valeurs propres en dimension finie</div>
+    <p>La proposition suivante découle directement des propriétés étudiées en algèbre linéaire en première année :</p>
+    <div class="thm-card">
+      <div class="thm-label">Proposition 12</div>
+      <div class="thm-title">Diverses caractérisations de « \(\lambda\) est valeur propre de \(f\) »</div>
+      <p>Soient \(E\) un espace vectoriel de dimension finie \(n \in \mathbb{N}^*\), \(f\) un endomorphisme de \(E\) et \(\lambda\) un réel. Les assertions suivantes sont équivalentes :</p>
+      <ol>
+        <li>\(\lambda \in \Sp(f)\) ;</li>
+        <li>\(\Ker(f - \lambda\Id_E) \neq \{0_E\}\) ;</li>
+        <li>\(\dim \Ker(f - \lambda\Id_E) \geqslant 1\) ;</li>
+        <li>l'endomorphisme \(f - \lambda\Id_E\) n'est pas injectif ;</li>
+        <li>l'endomorphisme \(f - \lambda\Id_E\) n'est pas bijectif ;</li>
+        <li>l'endomorphisme \(f - \lambda\Id_E\) n'est pas surjectif ;</li>
+        <li>\(\rg(f - \lambda\Id_E) \lt n\).</li>
+      </ol>
+    </div>
+    <p>On peut traduire cette dernière proposition en termes matriciels :</p>
+    <div class="thm-card">
+      <div class="thm-label">Proposition 13</div>
+      <div class="thm-title">Diverses caractérisations de « \(\lambda\) est valeur propre de \(A\) »</div>
+      <p>Soient \(n \in \mathbb{N}^*\), \(A \in \MM_n(\mathbb{R})\) et \(\lambda \in \mathbb{R}\). Les assertions suivantes sont équivalentes :</p>
+      <ol>
+        <li>\(\lambda \in \Sp(A)\) ;</li>
+        <li>\(\Ker(A - \lambda I_n) \neq \{0_{\MM_{n,1}(\mathbb{R})}\}\) ;</li>
+        <li>\(\dim \Ker(A - \lambda I_n) \geqslant 1\) ;</li>
+        <li>\(A - \lambda I_n \notin \GL_n(\mathbb{R})\) ;</li>
+        <li>\(\rg(A - \lambda I_n) \lt n\).</li>
+      </ol>
+    </div>
+    <p><strong>Remarque.</strong> On observe en particulier les équivalences suivantes, dans le cas où \(f\) est un endomorphisme d'un espace vectoriel de dimension finie et \(A\) une matrice carrée :</p>
+    <div class="prop-card">
+      <div class="formula-block">\[0 \text{ valeur propre de } f \iff \Ker f \neq \{0_E\} \iff f \text{ non injectif} \iff f \text{ non bijectif}\]</div>
+      <div class="formula-block">\[0 \in \Sp(A) \iff \Ker(A) \neq \{0\} \iff \rg(A) \lt n.\]</div>
+    </div>
+  </div>
+
+  <div class="math-section" id="s4-3">
+    <div class="math-section-title">3 — Le cas des matrices triangulaires</div>
+    <div class="prop-card">
+      <div class="prop-label">Proposition 14</div>
+      <div class="prop-title">Spectre d'une matrice triangulaire</div>
+      <p>Les valeurs propres d'une matrice triangulaire sont exactement ses coefficients diagonaux. Conséquence : si une matrice carrée \(A\) est semblable à une matrice triangulaire \(T\), les coefficients diagonaux de \(T\) sont exactement les valeurs propres de \(A\).</p>
+    </div>
+    <p>Une matrice diagonale étant en particulier triangulaire, on en déduit aisément son spectre.</p>
+  </div>
+
+  <div class="math-section" id="s4-4">
+    <div class="math-section-title">4 — Éléments propres et polynômes d'endomorphismes</div>
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 9 (rappel)</span><span class="def-name">Polynôme d'endomorphisme, polynôme de matrice</span></div>
+        <p>Soient \(f\) un endomorphisme d'un espace vectoriel \(E\), \(A \in \MM_n(\mathbb{R})\) une matrice carrée, \(Q = \displaystyle\sum_{k=0}^{p} a_k X^k\) un polynôme. On rappelle que l'on note \(f^0 = \Id_E\) et, pour tout \(k \in \mathbb{N}^*\), \(f^k = \underbrace{f \circ \cdots \circ f}_{k \text{ fois}}\).</p>
+        <p>Par définition, \(Q(f)\) désigne l'endomorphisme \(Q(f) = \displaystyle\sum_{k=0}^{p} a_k f^k\). De même, \(Q(A)\) est, par définition, la matrice de \(\MM_n(\mathbb{R})\) définie par \(Q(A) = \displaystyle\sum_{k=0}^{p} a_k A^k\).</p>
+      </div>
+    </div>
+    <div class="remark">Un polynôme d'endomorphisme est donc un endomorphisme (et non un polynôme) ; un polynôme de matrice est une matrice (et non un polynôme).</div>
+
+    <p><strong>Observation.</strong> Si \(f\) est un endomorphisme d'un espace vectoriel \(E\), \(x\) un vecteur de \(E\) et \(\lambda\) un réel, alors</p>
+    <div class="formula-block">\[f(x) = \lambda x \implies f \circ f(x) = f(\lambda x) = \lambda f(x) = \lambda^2 x,\]</div>
+    <p>donc \(\lambda \in \Sp(f) \implies \lambda^2 \in \Sp(f^2)\) et \(x \in E_\lambda(f) \implies x \in E_{\lambda^2}(f^2)\). Ainsi, <strong>si \(\lambda\) est valeur propre de \(f\), alors \(\lambda^2\) est valeur propre de \(f^2\)</strong>, et <strong>si \(x\) est un vecteur propre de \(f\), alors c'est un vecteur propre de \(f^2\)</strong>. Par une récurrence immédiate, on montre, pour tout entier naturel non nul \(k\) :</p>
+    <div class="formula-block">\[f(x) = \lambda x \implies f^k(x) = \lambda^k x,\]</div>
+    <p>donc :</p>
+    <div class="formula-block">\[\lambda \in \Sp(f) \implies \lambda^k \in \Sp(f^k) \qquad \text{et} \qquad x \in E_\lambda(f) \implies x \in E_{\lambda^k}(f^k).\]</div>
+    <div class="meth-card">
+      <div class="meth-label">⚠ Attention</div>
+      <p>L'implication réciproque n'est pas toujours vérifiée ! Par exemple, si \(E\) est un espace vectoriel non réduit à \(\{0_E\}\) et \(f = -\Id_E\), alors \(f^2 = \Id_E\). Pour \(\lambda = 1\), on a \(\lambda^2 \in \Sp(f^2)\) mais \(\lambda \notin \Sp(f)\).</p>
+    </div>
+    <p>La proposition qui suit généralise l'observation qui vient d'être faite.</p>
+    <div class="prop-card">
+      <div class="prop-label">Proposition 15</div>
+      <div class="prop-title">Obtention de certains éléments propres d'un polynôme d'endomorphisme</div>
+      <p>Soient \(E\) un espace vectoriel, \(f\) un endomorphisme de \(E\) et \(Q\) un polynôme à coefficients réels. Soient \(x \in E\) et \(\lambda \in \mathbb{R}\). Alors :</p>
+      <div class="formula-block">\[f(x) = \lambda x \implies Q(f)(x) = Q(\lambda)\,x.\]</div>
+      <p>En particulier, si \(x\) est un vecteur propre de \(f\) associé à la valeur propre \(\lambda\), alors \(x\) est aussi un vecteur propre de l'endomorphisme \(Q(f)\) associé à la valeur propre \(Q(\lambda)\).</p>
+    </div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 10</span><span class="def-name">Polynôme annulateur d'un endomorphisme ou d'une matrice</span></div>
+        <p>Soient \(f\) un endomorphisme d'un espace vectoriel \(E\), \(A \in \MM_n(\mathbb{R})\) une matrice carrée et \(Q\) un polynôme. On dit que \(Q\) est un <strong>polynôme annulateur</strong> de \(f\) si \(Q(f) = 0_{\LL(E)}\). On dit que \(Q\) est un <strong>polynôme annulateur</strong> de \(A\) si \(Q(A) = 0\) (la matrice nulle de \(\MM_n(\mathbb{R})\)).</p>
+      </div>
+    </div>
+    <div class="prop-card">
+      <div class="prop-label">Proposition 16</div>
+      <div class="prop-title">Existence d'un polynôme annulateur non nul</div>
+      <p>Tout endomorphisme d'un espace vectoriel de dimension finie admet un polynôme annulateur non nul. Toute matrice de \(\MM_n(\mathbb{R})\) admet un polynôme annulateur non nul.</p>
+    </div>
+    <div class="thm-card">
+      <div class="thm-label">Proposition 17</div>
+      <div class="thm-title">Éléments propres et polynôme annulateur</div>
+      <p>Soient \(E\) un espace vectoriel, \(f\) un endomorphisme de \(E\) et \(Q\) un polynôme annulateur de \(f\). Alors toute valeur propre de \(f\) est racine de \(Q\). Autrement dit :</p>
+      <div class="formula-block">\[\Sp(f) \subset \{\text{racines de } Q\}.\]</div>
+      <p>Soient \(A\) une matrice carrée et \(Q\) un polynôme annulateur de \(A\). Alors toute valeur propre de \(A\) est racine de \(Q\) : \(\Sp(A) \subset \{\text{racines de } Q\}\).</p>
+    </div>
+    <div class="math-subsection-title">Remarques</div>
+    <ol class="def-list">
+      <li>On a déjà utilisé ce résultat dans un cas particulier : un projecteur \(p \in \LL(E)\) vérifie \(p^2 - p = 0_{\LL(E)}\), donc le polynôme \(Q = X^2 - X = X(X - 1)\) est annulateur de \(p\), d'où l'inclusion \(\Sp(p) \subset \{0, 1\}\).</li>
+      <li>Trouver un polynôme annulateur d'un endomorphisme est un moyen intéressant, dans la pratique, de s'épargner des calculs fastidieux de valeurs propres. Une fois trouvées les racines (si on parvient à les trouver !) du polynôme annulateur, il « suffit » de vérifier si chacune d'elles est ou non valeur propre de l'endomorphisme.</li>
+    </ol>
+    <div class="meth-card">
+      <div class="meth-label">⚠ Attention</div>
+      <p>La réciproque est fausse : si \(Q\) est un polynôme annulateur d'un endomorphisme \(f\) ou d'une matrice carrée \(A\), toute racine de \(Q\) n'est pas nécessairement une valeur propre de \(f\) ou de \(A\). Par exemple, si \(p\) est un projecteur, \(Q = X(X - 1)(X - 2)\) est un polynôme annulateur de \(p\) ; le réel 2 est racine de \(Q\) mais n'est pas valeur propre de \(p\).</p>
+    </div>
+  </div>
+
+  <div class="math-section" id="s4-5">
+    <div class="math-section-title">5 — Les sous-espaces propres sont en somme directe</div>
+    <div class="thm-card">
+      <div class="thm-label">Proposition 18</div>
+      <div class="thm-title">Les sous-espaces propres sont en somme directe</div>
+      <p>Soient \(E\) un espace vectoriel (pas nécessairement de dimension finie) et \(f \in \LL(E)\). On suppose que \(\lambda_1, \dots, \lambda_p\) sont des valeurs propres de \(f\) deux à deux distinctes. Alors les sous-espaces propres \(E_{\lambda_1}(f), \dots, E_{\lambda_p}(f)\) sont en somme directe :</p>
+      <div class="formula-block">\[E_{\lambda_1}(f) \oplus \cdots \oplus E_{\lambda_p}(f) \subset E.\]</div>
+      <p>Formulation équivalente : on suppose que \(\mathscr{L}_1, \dots, \mathscr{L}_p\) sont des familles libres de vecteurs appartenant respectivement aux sous-espaces propres \(E_{\lambda_1}(f), \dots, E_{\lambda_p}(f)\). Alors la famille \(\mathscr{L}\) de vecteurs obtenue en concaténant les familles \(\mathscr{L}_1, \dots, \mathscr{L}_p\) est libre.</p>
+      <p>Cas particulier où chaque famille \(\mathscr{L}_i\) est réduite à un unique vecteur non nul : <strong>une famille de vecteurs propres associés à des valeurs propres deux à deux distinctes est libre</strong>.</p>
+    </div>
+    <p><strong>Exemple d'application.</strong> Si les réels \(r_1, \dots, r_n\) sont deux à deux distincts, alors la famille \(\mathscr{F} = (f_{r_1}, \dots, f_{r_n})\) de fonctions de \(\mathbb{R}\) dans \(\mathbb{R}\) définies pour tout \(i \in \llbracket 1, n \rrbracket\) par \(f_{r_i} : x \mapsto e^{r_i x}\) est une famille libre. En effet, on peut remarquer que chacune des fonctions \(f_{r_i}\) est un vecteur propre de l'endomorphisme de dérivation \(D : f \in \mathscr{C}^\infty(\mathbb{R}, \mathbb{R}) \mapsto f' \in \mathscr{C}^\infty(\mathbb{R}, \mathbb{R})\), associé à la valeur propre \(r_i\).</p>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 19</div>
+      <div class="prop-title">Un premier corollaire</div>
+      <p>Soient \(E\) un espace vectoriel de dimension finie non nulle \(n\) et \(f\) un endomorphisme de \(E\). Alors :</p>
+      <div class="formula-block">\[\sum_{\lambda \in \Sp(f)} \dim E_\lambda(f) \leqslant n.\]</div>
+    </div>
+    <div class="remark">Un endomorphisme ou une matrice peut ne pas admettre de valeur propre, autrement dit son spectre peut être vide : c'est le cas de la matrice \(\begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix}\) (voir <a href="#s5-2" class="lien-interne">plus bas</a>). Dans ce cas, la convention \(\displaystyle\sum_{\lambda \in \varnothing} u_\lambda = 0\) permet de voir que l'inégalité ci-dessus est encore vérifiée.</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 20</div>
+      <div class="prop-title">Un deuxième corollaire : le cardinal du spectre est majoré par la dimension de l'espace</div>
+      <p>Si \(E\) est un espace vectoriel de dimension finie \(n \geqslant 1\), tout endomorphisme de \(E\) possède au plus \(n\) valeurs propres. Matriciellement : \(A \in \MM_n(\mathbb{R}) \implies \Card(\Sp(A)) \leqslant n\).</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE V
+════════════════════════════════════════ -->
+<div class="math-part" id="part5">
+  <div class="math-part-header">
+    <div class="math-part-num">V</div>
+    <div class="math-part-title">Diagonalisation des endomorphismes en dimension finie et des matrices carrées</div>
+  </div>
+
+  <div class="math-section" id="s5-1">
+    <div class="math-section-title">1 — Définitions</div>
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 11</span><span class="def-name">Endomorphisme diagonalisable</span></div>
+        <p>Soit \(E\) un espace vectoriel de dimension finie \(n\) non nulle. On dit que l'endomorphisme \(f\) est <strong>diagonalisable</strong> s'il existe une base \((e_1, \dots, e_n)\) de \(E\) dans laquelle la matrice de \(f\) est diagonale. Ainsi, l'endomorphisme \(f\) est diagonalisable si et seulement si \(E\) admet une base de vecteurs propres pour \(f\).</p>
+      </div>
+    </div>
+    <p>Si \(\BB = (e_1, \dots, e_n)\) est une base de vecteurs propres de \(f\) associés respectivement aux valeurs propres \(\lambda_1, \dots, \lambda_n\), la matrice de \(f\) dans la base \(\BB\) est diagonale :</p>
+    <div class="formula-block">\[\Mat_{\BB}(f) = \begin{pmatrix} \lambda_1 & & \\ & \ddots & \\ & & \lambda_n \end{pmatrix} \qquad (\text{la } j\text{-ème colonne contient les coordonnées de } f(e_j) = \lambda_j e_j).\]</div>
+    <p>Réciproquement, si la matrice de \(f\) dans une base \(\BB = (e_1, \dots, e_n)\) est diagonale, alors chacun des vecteurs \(e_1, \dots, e_n\) est vecteur propre de \(f\).</p>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 12</span><span class="def-name">Matrice diagonalisable</span></div>
+        <p>Soit \(A \in \MM_n(\mathbb{R})\). On dit que la matrice \(A\) est <strong>diagonalisable</strong> si elle est semblable à une matrice diagonale.</p>
+      </div>
+    </div>
+    <div class="prop-card">
+      <div class="prop-label">Proposition 21</div>
+      <div class="prop-title">Diagonalisabilité d'un endomorphisme et d'une matrice associée</div>
+      <p>Soient \(E\) un espace vectoriel de dimension finie non nulle \(n\), \(f \in \LL(E)\), \(\BB\) une base de \(E\) et \(A = \Mat_{\BB}(f)\). Alors :</p>
+      <div class="formula-block">\[f \text{ diagonalisable} \iff A \text{ diagonalisable}.\]</div>
+    </div>
+  </div>
+
+  <div class="math-section" id="s5-2">
+    <div class="math-section-title">2 — Exemples de matrices diagonalisables et non diagonalisables</div>
+    <p>Quelques exemples de référence, qui découlent directement des résultats de ce chapitre :</p>
+    <div class="math-key"><div class="math-key-bullet"></div><div><strong>Les matrices diagonales</strong> sont diagonalisables (elles sont semblables à elles-mêmes).</div></div>
+    <div class="math-key"><div class="math-key-bullet"></div><div><strong>Les projecteurs</strong> d'un espace de dimension finie sont diagonalisables (voir l'exemple d'application de la <a href="#s5-4" class="lien-interne">section 4</a>).</div></div>
+    <div class="math-key"><div class="math-key-bullet"></div><div><strong>La matrice \(R = \begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix}\) n'est pas diagonalisable :</strong> pour tout réel \(\lambda\), \(\det(R - \lambda I_2) = \lambda^2 + 1 \neq 0\), donc \(R - \lambda I_2\) est inversible et \(R\) n'a aucune valeur propre réelle. Une matrice semblable à une matrice diagonale \(D\) aurait les coefficients diagonaux de \(D\) pour valeurs propres.</div></div>
+    <div class="math-key"><div class="math-key-bullet"></div><div><strong>La matrice \(N = \begin{pmatrix} 0 & 1 \\ 0 & 0 \end{pmatrix}\) n'est pas diagonalisable :</strong> elle est triangulaire, donc \(\Sp(N) = \{0\}\) ; si elle était diagonalisable, elle serait semblable à la matrice nulle, donc égale à la matrice nulle, ce qui n'est pas le cas.</div></div>
+  </div>
+
+  <div class="math-section" id="s5-3">
+    <div class="math-section-title">3 — Une condition suffisante de diagonalisabilité</div>
+    <div class="thm-card">
+      <div class="thm-label">Proposition 22</div>
+      <div class="thm-title">Une condition suffisante de diagonalisabilité</div>
+      <p>Soient \(E\) un espace vectoriel de dimension finie non nulle \(n\) et \(f\) un endomorphisme de \(E\). Si l'endomorphisme \(f\) admet \(n\) valeurs propres distinctes, alors il est diagonalisable :</p>
+      <div class="formula-block">\[\Card(\Sp(f)) = \dim E \implies f \text{ diagonalisable}.\]</div>
+      <p>De plus, les sous-espaces propres sont tous des droites vectorielles. En termes matriciels : pour toute matrice \(A \in \MM_n(\mathbb{R})\), \(\Card(\Sp(A)) = n \implies A\) diagonalisable.</p>
+    </div>
+    <div class="remark">Bien entendu, la réciproque est fausse (penser à l'endomorphisme nul, diagonalisable, qui n'a qu'une seule valeur propre).</div>
+  </div>
+
+  <div class="math-section" id="s5-4">
+    <div class="math-section-title">4 — Une condition nécessaire et suffisante de diagonalisabilité</div>
+    <p>Rappelons la convention, qui n'est pas propre à ce chapitre : \(\displaystyle\sum_{i \in \varnothing} u_i = 0\).</p>
+    <div class="thm-card">
+      <div class="thm-label">Proposition 23</div>
+      <div class="thm-title">Condition nécessaire et suffisante de diagonalisabilité</div>
+      <p>Soient \(E\) un espace vectoriel de dimension finie non nulle \(n\) et \(f\) un endomorphisme de \(E\). Alors :</p>
+      <div class="formula-block">\[f \text{ diagonalisable} \iff \bigoplus_{\lambda \in \Sp(f)} E_\lambda(f) = E \iff \sum_{\lambda \in \Sp(f)} \dim E_\lambda(f) = n.\]</div>
+      <p>Traduction matricielle. Soit \(A \in \MM_n(\mathbb{R})\). Les conditions suivantes sont équivalentes :</p>
+      <div class="formula-block">\[A \text{ diagonalisable} \iff \bigoplus_{\lambda \in \Sp(A)} E_\lambda(A) = \MM_{n,1}(\mathbb{R}) \iff \sum_{\lambda \in \Sp(A)} \dim E_\lambda(A) = n.\]</div>
+    </div>
+    <p><strong>Exemple d'application : les projecteurs.</strong> On a démontré, dans les <a href="revision-projecteurs-symetries.html" class="lien-interne">rappels sur les projecteurs</a>, que si \(p\) est un projecteur d'un espace vectoriel \(E\), alors \(E = \Img p \oplus \Ker p\) et \(\Img p = \{x \in E \,;\, p(x) = x\}\), autrement dit \(\Img p = \Ker(p - \Id_E)\), donc \(E = \Ker(p - \Id_E) \oplus \Ker p\). Supposons de plus l'espace \(E\) de dimension finie.</p>
+    <ul class="def-list">
+      <li>Si \(p = 0_{\LL(E)}\), alors évidemment \(p\) est diagonalisable.</li>
+      <li>Si \(p = \Id_E\), alors évidemment \(p\) est diagonalisable.</li>
+      <li>Si \(p \neq 0_{\LL(E)}\) et \(p \neq \Id_E\), alors l'égalité ci-dessus s'écrit \(E = E_1(p) \oplus E_0(p)\). La condition nécessaire et suffisante de diagonalisabilité montre que le projecteur \(p\) est diagonalisable.</li>
+    </ul>
+  </div>
+
+  <div class="math-section" id="s5-5">
+    <div class="math-section-title">5 — Le cas des matrices symétriques à coefficients réels</div>
+    <p>On admet le théorème qui suit. On y reviendra plus tard dans l'année, en en donnant une version plus précise :</p>
+    <div class="thm-card">
+      <div class="thm-label">Proposition 24</div>
+      <div class="thm-title">Diagonalisabilité des matrices symétriques à coefficients réels</div>
+      <p>Toute matrice symétrique réelle est diagonalisable.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE VI
+════════════════════════════════════════ -->
+<div class="math-part" id="part6">
+  <div class="math-part-header">
+    <div class="math-part-num">VI</div>
+    <div class="math-part-title">Application de la diagonalisation au calcul des puissances d'une matrice</div>
+  </div>
+
+  <div class="math-section" id="s6-1">
+    <div class="math-section-title">1 — Puissances d'une matrice diagonalisable</div>
+    <p>Si \(A \in \MM_n(\mathbb{R})\) est diagonalisable, il existe une matrice \(D \in \MM_n(\mathbb{R})\) diagonale et une matrice \(P \in \GL_n(\mathbb{R})\) vérifiant \(A = PDP^{-1}\). Ainsi, on obtient</p>
+    <div class="formula-block">\[A^2 = PD\underbrace{P^{-1}P}_{= I_n}DP^{-1} = PD^2P^{-1},\]</div>
+    <p>puis, par une récurrence immédiate :</p>
+    <div class="prop-card"><div class="formula-block">\[\forall k \in \mathbb{N}, \qquad A^k = PD^kP^{-1}.\]</div></div>
+    <p>Si de plus la matrice \(A\) est inversible, alors la matrice \(D\) l'est aussi (en tant que produit de matrices inversibles : \(D = P^{-1}AP\)), et on a :</p>
+    <div class="formula-block">\[A^{-1} = \big((PD)P^{-1}\big)^{-1} = (P^{-1})^{-1}(PD)^{-1} = PD^{-1}P^{-1}.\]</div>
+    <p>Puis, par une récurrence immédiate, \(\forall k \in \mathbb{N},\ (A^{-1})^k = P(D^{-1})^kP^{-1}\). Ainsi, dans le cas où la matrice \(A\) est inversible, on a :</p>
+    <div class="prop-card"><div class="formula-block">\[\forall k \in \mathbb{Z}, \qquad A^k = PD^kP^{-1}.\]</div></div>
+  </div>
+
+  <div class="math-section" id="s6-2">
+    <div class="math-section-title">2 — Avantages et limites de la méthode</div>
+    <div class="math-key"><div class="math-key-bullet"></div><div><strong>Avantage :</strong> les puissances d'une matrice diagonale se calculent immédiatement : il suffit d'élever chaque coefficient diagonal à la puissance \(k\).</div></div>
+    <div class="math-key"><div class="math-key-bullet"></div><div><strong>Inconvénients :</strong> la méthode nécessite de calculer les éléments propres de \(A\) (sauf cas particuliers), ainsi que la matrice inverse \(P^{-1}\). De plus, toutes les matrices ne sont pas diagonalisables.</div></div>
+    <p>Il existe d'autres techniques, exposées en première année (voir aussi la <a href="revision-algebre-lineaire.html#s7-3" class="lien-interne">fiche de révisions d'algèbre linéaire</a>, en particulier le binôme de Newton), de calcul des puissances d'une matrice carrée, qui peuvent être plus efficaces que la diagonalisation.</p>
+  </div>
+</div>
+
+</div><!-- fin .content -->
+
+<footer class="site-footer">
+  <div class="footer-logo">Chapitre 1 : Réduction des endomorphismes et des matrices carrées</div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut de page">↑</button>
+
+
+<script>
+  document.querySelectorAll('.toc-list a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
+
+</body>
+</html>
