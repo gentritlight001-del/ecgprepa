@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Révisions d'algèbre : les projecteurs et les symétries</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false}],macros:{'\\Vect':'\\operatorname{Vect}','\\rg':'\\operatorname{rg}','\\Ker':'\\operatorname{Ker}','\\Img':'\\operatorname{Im}','\\Mat':'\\operatorname{Mat}','\\Card':'\\operatorname{Card}','\\GL':'\\operatorname{GL}','\\Id':'\\operatorname{Id}','\\LL':'\\mathscr{L}','\\MM':'\\mathscr{M}','\\BB':'\\mathscr{B}'}});"></script>
+<style>
+  :root {
+    --cream: #FBF7EE;
+    --dark: #241A06;
+    --terra: #9A6A12;
+    --terra-dark: #2E2006;
+    --terra-mid: #C4922F;
+    --terra-light: #F6EBD3;
+    --terra-border: #DDC08A;
+    --glow: #F0CF8C;
+    --muted: #7A6545;
+    --accent: #9A6A12;
+    --accent-soft: #9A6A1222;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--dark); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid rgba(154,106,18,0.25);
+    background: var(--terra-dark); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--glow); cursor: pointer; letter-spacing: 0.02em; }
+  .nav-logo a { color: inherit; text-decoration: none; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(251,247,238,0.5); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: inherit; text-decoration: none; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb a:hover span, .breadcrumb span:hover { color: var(--glow); }
+  .breadcrumb .sep { color: rgba(251,247,238,0.25); }
+  .breadcrumb .current { color: #FBF7EE; cursor: default; }
+
+  /* ─── HERO ─── */
+  .ch-hero {
+    background: radial-gradient(120% 140% at 15% 0%, #5E420E 0%, var(--terra-dark) 55%, #1A1203 100%);
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ch-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C4922F' fill-opacity='0.18'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--glow); margin-bottom: 1.5rem; opacity: 0.9; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 4rem); color: var(--cream); font-weight: 900; max-width: 900px; margin: 0 auto 1.5rem; line-height: 1.1; position: relative; z-index: 1; }
+  .ch-hero p { color: rgba(251,247,238,0.5); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  /* ─── TOC ─── */
+  .toc-bar { background: #F6EDDA; padding: 2rem; border-bottom: 1px solid var(--terra-border); }
+  .toc-inner { max-width: 960px; margin: 0 auto; }
+  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
+  .toc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.4rem; list-style: none; }
+  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: #2E2310; font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
+  .toc-list a:hover { border-color: var(--terra-border); background: white; color: #000; }
+  .toc-num { font-family: "DM Mono", monospace; font-size: 0.65rem; color: var(--terra); flex-shrink: 0; margin-top: 0.15rem; }
+
+  /* ─── CONTENT ─── */
+  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 3rem; }
+
+  /* PART */
+  .math-part { margin-bottom: 5rem; }
+  .math-part:last-of-type { margin-bottom: 0; }
+  .math-part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--terra); }
+  .math-part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: var(--terra-border); line-height: 1; flex-shrink: 0; }
+  .math-part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--dark); line-height: 1.25; }
+
+  /* SECTION */
+  .math-section { margin-bottom: 3.5rem; }
+  .math-section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--terra-dark); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--terra); scroll-margin-top: 2rem; }
+  .math-subsection-title { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--terra); margin: 2rem 0 0.75rem; }
+
+  /* TEXT */
+  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: #302411; line-height: 1.85; font-weight: 300; }
+  .content strong { color: var(--dark); font-weight: 600; }
+
+  /* DÉFINITION CARD */
+  .def-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(154,106,18,0.10), 0 0 0 1px rgba(154,106,18,0.14);
+    display: flex;
+    margin: 1.4rem 0;
+  }
+  .def-accent-bar {
+    width: 5px;
+    background: linear-gradient(180deg, #D2A24A 0%, #2E2006 100%);
+    flex-shrink: 0;
+    border-radius: 10px 0 0 10px;
+  }
+  .def-body { padding: 1.2rem 1.5rem; flex: 1; min-width: 0; }
+  @media screen { .def-body { overflow-x: auto; } }
+  .def-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.65rem; }
+  .def-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--terra); font-weight: 500; }
+  .def-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--terra-dark); }
+  .def-body p { margin-bottom: 0.5rem; font-size: 0.93rem; line-height: 1.75; }
+  .def-body p:last-child { margin-bottom: 0; }
+
+  /* PROPRIÉTÉ CARD */
+  .prop-card {
+    background: var(--terra-light);
+    border-radius: 8px;
+    border: 1px solid var(--terra-border);
+    border-left: 4px solid var(--terra);
+    padding: 1.2rem 1.5rem;
+    margin: 1.4rem 0;
+  }
+  .prop-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--terra-dark); font-weight: 700; margin-bottom: 0.6rem; }
+  .prop-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--terra-dark); margin-bottom: 0.7rem; }
+  .prop-card p { margin-bottom: 0.5rem; font-size: 0.93rem; color: var(--terra-dark); line-height: 1.75; }
+  .prop-card p:last-child { margin-bottom: 0; }
+  .prop-card ol { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .prop-card ol li { font-size: 0.93rem; color: var(--terra-dark); line-height: 1.8; margin-bottom: 0.35rem; }
+  .prop-card ul { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .prop-card ul li { font-size: 0.93rem; color: var(--terra-dark); line-height: 1.8; margin-bottom: 0.35rem; }
+
+  /* THÉORÈME CARD */
+  .thm-card {
+    background: var(--terra-dark);
+    color: var(--cream);
+    border-radius: 8px;
+    padding: 1.5rem 1.75rem;
+    margin: 1.4rem 0;
+  }
+  .thm-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--glow); margin-bottom: 0.5rem; }
+  .thm-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--cream); margin-bottom: 0.75rem; }
+  .thm-card p { color: rgba(251,247,238,0.88); font-size: 0.93rem; margin-bottom: 0.5rem; line-height: 1.75; }
+  .thm-card p:last-child { margin-bottom: 0; }
+  .thm-card ul, .thm-card ol { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .thm-card strong { color: var(--glow); font-weight: 600; }
+  .thm-card li { font-size: 0.93rem; color: rgba(251,247,238,0.88); line-height: 1.8; margin-bottom: 0.35rem; }
+
+  /* MÉTHODE CARD */
+  .meth-card {
+    background: white;
+    border: 2px solid var(--terra);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.4rem 0;
+  }
+  .meth-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--terra); font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+  .meth-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--terra-dark); margin-bottom: 0.7rem; }
+  .meth-card p { font-size: 0.93rem; line-height: 1.75; margin-bottom: 0.5rem; }
+  .meth-card p:last-child { margin-bottom: 0; }
+  .meth-card ul, .meth-card ol { padding-left: 1.4rem; margin: 0.3rem 0 0.5rem; }
+  .meth-card li { font-size: 0.93rem; line-height: 1.8; margin-bottom: 0.3rem; }
+
+  /* REMARQUE */
+  .remark { background: white; border-left: 3px solid var(--terra-border); padding: 1rem 1.4rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; font-size: 0.9rem; color: #2E2310; line-height: 1.7; font-style: italic; }
+  .remark::before { content: 'Remarque — '; font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--terra); display: block; margin-bottom: 0.3rem; }
+
+  /* FORMULE DISPLAY */
+  .formula-block {
+    background: white;
+    border: 1px solid var(--terra-border);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.2rem 0;
+    text-align: center;
+    overflow-x: auto;
+    color: var(--dark);
+  }
+  .formula-block .katex-display { margin: 0; }
+  .formula-block .katex { font-size: 1.05em; color: var(--dark); }
+
+  /* Cartes à fond blanc : toujours forcer le texte en noir/sombre,
+     même imbriquées dans un thm-card à fond sombre */
+  .def-card, .meth-card, .formula-block {
+    color: var(--dark);
+  }
+  .def-card *, .meth-card *, .formula-block * { color: inherit; }
+  .def-card .def-label, .meth-card .meth-label { color: var(--terra); }
+  .def-card .def-name, .meth-card .meth-title { color: var(--terra-dark); }
+
+  /* TABLE */
+  .math-table-wrap { overflow-x: auto; margin: 1.5rem 0; border-radius: 8px; border: 1px solid var(--terra-border); box-shadow: 0 2px 8px rgba(154,106,18,0.08); }
+  .math-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .math-table th { background: var(--terra-dark); color: var(--cream); font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.75rem 1rem; text-align: center; font-weight: 500; border: 1px solid rgba(255,255,255,0.1); }
+  .math-table td { padding: 0.65rem 1rem; text-align: center; border: 1px solid var(--terra-light); color: #302411; vertical-align: middle; background: white; line-height: 1.6; }
+  .math-table tr:nth-child(even) td { background: #FBF7EE; }
+  .math-table tr:hover td { background: var(--terra-light); }
+  .math-table td.left { text-align: left; }
+  .math-table .katex { font-size: 0.95em; }
+
+  /* KEY FACT */
+  .math-key { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 0.6rem; padding: 0.85rem 1.1rem; background: white; border: 1px solid var(--terra-light); border-radius: 6px; }
+  .math-key-bullet { width: 6px; height: 6px; background: var(--terra); border-radius: 50%; flex-shrink: 0; margin-top: 0.55rem; }
+  .math-key > div { font-size: 0.91rem; color: #302411; line-height: 1.75; font-weight: 300; }
+
+  /* INLINE MATH */
+  .katex { font-size: 1em; }
+  .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.2rem 0; }
+
+  /* DEUX COLONNES */
+  .two-col-formulas { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
+  .two-col-formulas .formula-block { margin: 0; }
+
+  /* TROIS COLONNES */
+  .three-col-formulas { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
+  .three-col-formulas .formula-block { margin: 0; }
+
+  /* HIGHLIGHT BOX */
+  .math-highlight { background: var(--terra-light); border-left: 4px solid var(--terra); padding: 1.25rem 1.75rem; margin: 1.5rem 0; color: var(--terra-dark); font-size: 0.93rem; line-height: 1.75; border-radius: 0 6px 6px 0; }
+
+  /* FOOTER */
+  .site-footer {
+    background: var(--terra-dark);
+    border-top: 1px solid rgba(154,106,18,0.35);
+    padding: 2.5rem 2rem;
+    text-align: center;
+  }
+  .site-footer .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--glow);
+    letter-spacing: 0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+  /* BACK TO TOP */
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--terra); color: var(--cream); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 4px 14px rgba(154,106,18,0.45); opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 200; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+  .back-to-top:hover { background: var(--terra-mid); }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--terra-border); border-radius: 3px; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .two-col-formulas { grid-template-columns: 1fr; }
+    .three-col-formulas { grid-template-columns: 1fr; }
+    .content p, .content li, .math-key > div, .remark, .math-highlight { overflow-x: auto; overflow-y: hidden; }
+    .content { padding: 3rem 1rem 2rem; }
+    .formula-block { padding: 0.9rem 0.6rem; }
+    .formula-block .katex { font-size: 0.86em; }
+    .def-body, .prop-card, .thm-card { padding-left: 1rem; padding-right: 1rem; }
+  }
+
+  @media print {
+    @page { size: A4; margin: 15mm 14mm 15mm 14mm; }
+    nav, .back-to-top, .toc-bar, .site-footer { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    html, body { background: white !important; color: #000 !important; font-size: 10pt; width: 100% !important; }
+    .ch-hero { background: #2E2006 !important; padding: 0.9rem 1rem 0.7rem !important; }
+    .ch-hero::before { display: none !important; }
+    .ch-hero h1 { font-size: 16pt !important; color: #fff !important; margin-bottom: 0.3rem !important; }
+    .ch-hero .chap-label { font-size: 7pt !important; color: #F0CF8C !important; margin-bottom: 0.4rem !important; }
+    .ch-hero p { font-size: 7pt !important; color: #F0CF8C !important; margin: 0 !important; }
+    .content { max-width: 100% !important; padding: 0.6rem 0 !important; margin: 0 !important; }
+    .content p { font-size: 9pt !important; line-height: 1.5 !important; margin-bottom: 0.45rem !important; color: #000 !important; }
+    .math-part { margin-bottom: 0.8rem; page-break-inside: auto; }
+    .math-part-header { page-break-after: avoid; padding-bottom: 0.6rem !important; margin-bottom: 1rem !important; border-bottom: 2pt solid #9A6A12 !important; }
+    .math-part-num { font-size: 2rem !important; color: #DDC08A !important; }
+    .math-part-title { font-size: 13pt !important; }
+    .math-section { page-break-inside: auto; margin-bottom: 0.8rem; }
+    .math-section-title { page-break-after: avoid; font-size: 11pt !important; padding-left: 0.7rem !important; border-left: 2.5pt solid #9A6A12 !important; margin-bottom: 0.55rem !important; color: #2E2006 !important; }
+    .math-subsection-title { page-break-after: avoid; font-size: 7pt !important; margin: 0.65rem 0 0.35rem !important; color: #9A6A12 !important; }
+    .def-card { page-break-inside: avoid; box-shadow: none !important; border: 1pt solid #DDC08A !important; display: flex !important; border-radius: 0 !important; margin: 0.55rem 0 !important; }
+    .def-accent-bar { background: #9A6A12 !important; width: 4px !important; border-radius: 0 !important; }
+    .def-body { padding: 0.7rem 1rem !important; }
+    .def-body p { font-size: 8.5pt !important; line-height: 1.5 !important; color: #000 !important; }
+    .prop-card { page-break-inside: avoid; background: #F6EBD3 !important; border: 1pt solid #DDC08A !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .prop-card p, .prop-card li { font-size: 8.5pt !important; line-height: 1.5 !important; }
+    .thm-card { page-break-inside: avoid; background: #2E2006 !important; padding: 0.7rem 1rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .thm-label { font-size: 6pt !important; color: #F0CF8C !important; }
+    .thm-title { font-size: 9.5pt !important; color: #fff !important; }
+    .thm-card p, .thm-card li { font-size: 8.5pt !important; line-height: 1.5 !important; color: #F6EDDC !important; }
+    .meth-card { page-break-inside: avoid; border: 1.5pt solid #9A6A12 !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .meth-title { font-size: 9.5pt !important; }
+    .meth-card p, .meth-card li { font-size: 8.5pt !important; line-height: 1.5 !important; }
+    .remark { border-left: 2pt solid #DDC08A !important; padding: 0.5rem 0.8rem !important; margin: 0.5rem 0 !important; font-size: 8pt !important; border-radius: 0 !important; }
+    .formula-block { border: 1pt solid #DDC08A !important; padding: 0.55rem 0.8rem !important; margin: 0.5rem 0 !important; border-radius: 0 !important; }
+    .math-table-wrap { border: 1pt solid #DDC08A !important; border-radius: 0 !important; box-shadow: none !important; margin: 0.5rem 0 !important; }
+    .math-table th { background: #2E2006 !important; color: #F0CF8C !important; font-size: 6.5pt !important; padding: 0.4rem 0.6rem !important; }
+    .math-table td { font-size: 8pt !important; padding: 0.4rem 0.6rem !important; border: 0.5pt solid #F6EBD3 !important; }
+    .two-col-formulas, .three-col-formulas { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 0.5rem !important; margin: 0.45rem 0 !important; }
+    .katex { font-size: 0.82em !important; }
+    .katex-display { margin: 0.15rem 0 !important; overflow: visible !important; }
+    .katex-html { white-space: normal !important; }
+    .katex .base { display: inline !important; white-space: nowrap !important; }
+    .def-body p, .prop-card p, .thm-card p, .remark, .math-key > div, .content p { overflow: visible !important; word-break: break-word !important; }
+    .formula-block { overflow: visible !important; height: auto !important; min-height: 0 !important; text-align: center !important; }
+    .formula-block .katex-display { overflow-x: visible !important; overflow-y: visible !important; text-align: center !important; }
+    .math-table td, .math-table th { overflow: visible !important; word-break: break-word !important; }
+    .katex *, .katex-html * { position: static !important; top: auto !important; bottom: auto !important; left: auto !important; right: auto !important; }
+    .math-table .katex { font-size: 0.75em !important; }
+  }
+
+  /* FIGURES */
+  .math-figure { background: white; border: 1px solid var(--terra-border); border-radius: 8px; padding: 1.2rem 1rem 0.9rem; margin: 1.4rem 0; text-align: center; }
+  .math-svg { width: 100%; max-width: 460px; height: auto; display: block; margin: 0 auto; }
+  .math-svg .ax { stroke: var(--muted); stroke-width: 1; }
+  .math-svg .axh { fill: var(--muted); }
+  .math-svg .tk { font-family: 'DM Mono', monospace; font-size: 11px; fill: var(--muted); }
+  .math-svg .lb { font-family: 'Newsreader', Georgia, serif; font-style: italic; font-size: 13px; fill: var(--terra-dark); }
+  .math-svg .cv { fill: none; stroke: var(--terra-dark); stroke-width: 2.4; stroke-linejoin: round; }
+  .math-svg .tg { fill: none; stroke: var(--terra); stroke-width: 1.4; stroke-dasharray: 6 5; }
+  .math-figure figcaption { font-size: 0.82rem; color: var(--muted); margin-top: 0.6rem; line-height: 1.6; }
+  @media print { .math-figure { page-break-inside: avoid; border: 1pt solid #DDC08A !important; padding: 0.5rem !important; margin: 0.5rem 0 !important; } .math-svg { max-width: 300px; } }
+  .math-svg .vec { stroke: var(--terra-dark); stroke-width: 2; }
+  .math-svg .vec2 { stroke: var(--terra); stroke-width: 1.8; }
+  .math-svg .pte { fill: var(--terra-dark); }
+  .math-svg .dot { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 2 3; }
+  .math-svg .ligne { stroke: var(--muted); stroke-width: 1; }
+  .math-svg .lb { font-size: 14px; }
+  .def-list { padding-left: 1.4rem; margin: 0.3rem 0 1rem; }
+  .def-list li { font-size: 0.93rem; line-height: 1.8; margin-bottom: 0.35rem; }
+  .def-body .def-list { margin-bottom: 0.3rem; }
+  a.lien-interne { color: var(--terra); text-decoration: underline; text-underline-offset: 2px; }
+  .thm-card strong { color: var(--glow); font-weight: 600; }
+  .content > .math-highlight:first-child { margin-top: 0; margin-bottom: 3rem; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left"><div class="nav-logo"><a href="../../index.html">ECG Prépa</a></div></div>
+  <div class="breadcrumb">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">/</span>
+    <a href="../index.html"><span>2ème Année</span></a>
+    <span class="sep">/</span>
+    <a href="index.html"><span>Mathématiques</span></a>
+    <span class="sep">/</span>
+    <span class="current">Projecteurs et symétries</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="chap-label">&#x2015;&nbsp; Révisions d'algèbre · Fiche 2 &nbsp;&#x2015;</div>
+  <h1>Les projecteurs et les symétries</h1>
+  <p>Projections · Projecteurs · Image et noyau · Symétries · Lien entre les deux</p>
+</div>
+
+<!-- TOC -->
+<div class="toc-bar">
+  <div class="toc-inner">
+    <div class="toc-title">Table des matières</div>
+    <ul class="toc-list">
+      <li><a href="#part1"><span class="toc-num">I</span> Projections et projecteurs</a></li>
+      <li><a href="#part2"><span class="toc-num">II</span> Compléments : symétries</a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="content">
+
+<div class="math-highlight">Cette fiche s'appuie sur les notions de sous-espaces supplémentaires, de noyau et d'image : en cas de doute, voir la fiche <a href="revision-algebre-lineaire.html#part4" class="lien-interne">L'algèbre linéaire</a>.</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE I — PROJECTIONS ET PROJECTEURS
+════════════════════════════════════════ -->
+<div class="math-part" id="part1">
+  <div class="math-part-header">
+    <div class="math-part-num">I</div>
+    <div class="math-part-title">Projections et projecteurs</div>
+  </div>
+
+  <div class="math-section" id="s1-1">
+    <div class="math-section-title">1 — Projection sur un sous-espace parallèlement à un autre</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span><span class="def-name">Projection</span></div>
+        <p>Soient \(E\) un espace vectoriel, \(F\) et \(G\) deux sous-espaces vectoriels de \(E\) supplémentaires : \(E = F \oplus G\). Ainsi, tout vecteur \(x\) de \(E\) se décompose de façon unique sous la forme \(x = x_F + x_G\), où \(x_F\) est un vecteur de \(F\) et \(x_G\) un vecteur de \(G\). Plus formellement, pour tout \(x \in E\), il existe un unique couple \((x_F, x_G) \in F \times G\) tel que \(x = x_F + x_G\).</p>
+        <p>La <strong>projection \(p_{F,G}\) sur \(F\) parallèlement à \(G\)</strong> est l'application :</p>
+        <div class="formula-block">\[p_{F,G} : \begin{array}{rcl} E & \longrightarrow & E \\ x = x_F + x_G & \longmapsto & x_F. \end{array}\]</div>
+        <p>Le vecteur \(p_{F,G}(x) = x_F\) est appelé le <strong>projeté</strong> du vecteur \(x\) sur \(F\) parallèlement à \(G\). En particulier, on a :</p>
+        <div class="formula-block">\[x = \underbrace{p_{F,G}(x)}_{= x_F \in F} + \underbrace{\big(x - p_{F,G}(x)\big)}_{= x_G \in G}.\]</div>
+      </div>
+    </div>
+
+    <p>Illustration dans le cas où \(F\) et \(G\) sont deux droites vectorielles distinctes de \(E = \mathbb{R}^2\) :</p>
+    <figure class="math-figure"><svg class="math-svg" viewBox="0 0 460 260" role="img" aria-label="Projection sur F parallèlement à G" xmlns="http://www.w3.org/2000/svg"><defs><marker id="pointe" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="pte"/></marker></defs><line x1="74.0" y1="200" x2="435.0" y2="200" class="ligne"/><line x1="57.7" y1="249.1" x2="426.8" y2="52.8" class="ligne"/><line x1="246.5" y1="148.7" x2="351.0" y2="148.7" class="dot"/><line x1="254.5" y1="200.0" x2="351.0" y2="148.7" class="dot"/><line x1="150.0" y1="200.0" x2="254.5" y2="200.0" class="vec" marker-end="url(#pointe)"/><line x1="150.0" y1="200.0" x2="246.5" y2="148.7" class="vec" marker-end="url(#pointe)"/><line x1="150.0" y1="200.0" x2="351.0" y2="148.7" class="vec" marker-end="url(#pointe)"/><text x="357.0" y="144.7" class="lb" text-anchor="start">x</text><text x="256.5" y="218.0" class="lb" text-anchor="middle">x<tspan baseline-shift="sub" font-size="10">F</tspan></text><text x="238.5" y="142.7" class="lb" text-anchor="end">x<tspan baseline-shift="sub" font-size="10">G</tspan></text><text x="416.0" y="218.0" class="lb" text-anchor="middle">F</text><text x="414.0" y="75.7" class="lb" text-anchor="start">G</text></svg><figcaption>Le projeté \(x_F\) de \(x\) sur \(F\) parallèlement à \(G\) : on « descend » de \(x\) jusqu'à \(F\) en suivant la direction de \(G\).</figcaption></figure>
+
+    <div class="math-subsection-title">Exemples</div>
+    <p><strong>1.</strong> Soit \(E\) un espace vectoriel. Alors :</p>
+    <ul class="def-list">
+      <li>l'application nulle \(0_{\LL(E)} : x \in E \mapsto 0_E\) est une projection : c'est la projection sur le sous-espace \(\{0_E\}\) parallèlement à \(E\) ;</li>
+      <li>l'application identité \(\Id_E\) est une projection : c'est la projection sur le sous-espace \(E\) parallèlement à \(\{0_E\}\).</li>
+    </ul>
+
+    <p><strong>2.</strong> Dans l'espace vectoriel \(E = \mathbb{R}^2\), considérons la base canonique \((e_1, e_2)\) et les deux droites vectorielles \(D_1 = \Vect(e_1)\) et \(D_2 = \Vect(e_2)\). On a clairement \(\mathbb{R}^2 = D_1 \oplus D_2\). Pour tout vecteur \(u = (x, y)\) de \(\mathbb{R}^2\), l'unique décomposition de \(u\) selon \(D_1\) et \(D_2\) s'écrit :</p>
+    <div class="formula-block">\[u = \underbrace{(x, 0)}_{= u_1 \in D_1} + \underbrace{(0, y)}_{= u_2 \in D_2}.\]</div>
+    <p>Autrement dit, l'application \(p_1 : (x, y) \in \mathbb{R}^2 \mapsto (x, 0) \in \mathbb{R}^2\) est la projection sur \(D_1\) parallèlement à \(D_2\) : elle est dite <em>première projection canonique</em>. L'application \(p_2 : (x, y) \in \mathbb{R}^2 \mapsto (0, y) \in \mathbb{R}^2\) est la projection sur \(D_2\) parallèlement à \(D_1\) : elle est dite <em>deuxième projection canonique</em>.</p>
+
+    <p><strong>3.</strong> Considérons :</p>
+    <ul class="def-list">
+      <li>\(\mathscr{T}_n(\mathbb{R})\) le sous-espace vectoriel de \(\MM_n(\mathbb{R})\) formé des matrices triangulaires supérieures ;</li>
+      <li>\(\mathscr{T}_n^+(\mathbb{R})\) le sous-espace vectoriel de \(\MM_n(\mathbb{R})\) formé des matrices triangulaires supérieures strictes, c'est-à-dire comportant exclusivement des 0 sur la diagonale ;</li>
+      <li>\(\mathscr{D}_n(\mathbb{R})\) le sous-espace vectoriel de \(\MM_n(\mathbb{R})\) formé des matrices diagonales.</li>
+    </ul>
+    <p>On vérifie immédiatement que \(\mathscr{T}_n(\mathbb{R}) = \mathscr{T}_n^+(\mathbb{R}) \oplus \mathscr{D}_n(\mathbb{R})\). Pour fixer les idées, considérons le cas \(n = 3\). Toute matrice triangulaire supérieure se décompose sous la forme \(T = T^+ + D\) :</p>
+    <div class="formula-block">\[T = \begin{pmatrix} a & b & c \\ 0 & d & e \\ 0 & 0 & f \end{pmatrix} = \underbrace{\begin{pmatrix} 0 & b & c \\ 0 & 0 & e \\ 0 & 0 & 0 \end{pmatrix}}_{T^+ \text{ triangulaire supérieure stricte}} + \underbrace{\begin{pmatrix} a & 0 & 0 \\ 0 & d & 0 \\ 0 & 0 & f \end{pmatrix}}_{D \text{ diagonale}}.\]</div>
+    <p>Cette décomposition est clairement unique (par exemple parce que \(\mathscr{T}_n^+(\mathbb{R}) \cap \mathscr{D}_n(\mathbb{R}) = \{0\}\) : la seule matrice à la fois triangulaire supérieure stricte et diagonale est la matrice nulle). La projection sur \(\mathscr{T}_3^+(\mathbb{R})\) parallèlement à \(\mathscr{D}_3(\mathbb{R})\) est l'application \(T \mapsto T^+\), et la projection sur \(\mathscr{D}_3(\mathbb{R})\) parallèlement à \(\mathscr{T}_3^+(\mathbb{R})\) est l'application \(T \mapsto D\) :</p>
+    <div class="two-col-formulas">
+      <div class="formula-block">\[p_{\mathscr{T}_3^+, \mathscr{D}_3}(T) = T^+ = \begin{pmatrix} 0 & b & c \\ 0 & 0 & e \\ 0 & 0 & 0 \end{pmatrix}\]</div>
+      <div class="formula-block">\[p_{\mathscr{D}_3, \mathscr{T}_3^+}(T) = D = \begin{pmatrix} a & 0 & 0 \\ 0 & d & 0 \\ 0 & 0 & f \end{pmatrix}\]</div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Remarque</div>
+      <div class="prop-title">Les deux projections associées à \(E = F \oplus G\)</div>
+      <p>Si \(F\) et \(G\) sont deux sous-espaces vectoriels de \(E\) supplémentaires, connaître la projection \(p_{F,G}\) sur \(F\) parallèlement à \(G\) revient à connaître la projection \(p_{G,F}\) sur \(G\) parallèlement à \(F\). En effet, en reprenant les notations de la définition, on a, pour tout vecteur \(x\) de \(E\), \(x = x_F + x_G = p_{F,G}(x) + p_{G,F}(x)\), autrement dit :</p>
+      <div class="formula-block">\[p_{G,F} = \Id_E - p_{F,G}.\]</div>
+    </div>
+  </div>
+
+  <div class="math-section" id="s1-2">
+    <div class="math-section-title">2 — Premières propriétés des projections</div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 1</div>
+      <div class="thm-title">Premières propriétés des projections</div>
+      <p>Soient \(E\) un espace vectoriel, \(F\) et \(G\) deux sous-espaces vectoriels de \(E\) supplémentaires. La projection \(p_{F,G}\) sur \(F\) parallèlement à \(G\) vérifie les propriétés suivantes :</p>
+      <ol>
+        <li>\(p_{F,G}\) est une application linéaire ; c'est un <strong>endomorphisme</strong> de \(E\) ;</li>
+        <li>\(\Img(p_{F,G}) = \underbrace{\{x \in E \,;\, p_{F,G}(x) = x\}}_{\text{vecteurs invariants par } p_{F,G}} = F\) ;</li>
+        <li>\(\Ker(p_{F,G}) = G\).</li>
+      </ol>
+      <p>Ainsi, toute projection \(p\) est la projection sur \(\Img p\) parallèlement à \(\Ker p\).</p>
+      <ol start="4">
+        <li>Supposons de plus l'espace \(E\) de dimension finie \(n \in \mathbb{N}^*\). Notons \(r = \dim F \in \llbracket 0, n \rrbracket\). Soient \(\BB_F\) une base de \(F\), \(\BB_G\) une base de \(G\) et \(\BB\) la base de \(E\) obtenue en concaténant les familles \(\BB_F\) et \(\BB_G\). La matrice de la projection \(p_{F,G}\) dans la base \(\BB\) est alors la matrice diagonale
+          <div class="formula-block">\[J_{n,n,r} = \begin{pmatrix} 1 & & & & & \\ & \ddots & & & & \\ & & 1 & & & \\ & & & 0 & & \\ & & & & \ddots & \\ & & & & & 0 \end{pmatrix} = \begin{pmatrix} I_r & 0_{r,n-r} \\ 0_{n-r,r} & 0_{n-r,n-r} \end{pmatrix} \in \MM_n(\mathbb{R})\]</div>
+          dont les \(r\) premiers coefficients diagonaux sont égaux à 1 et les autres sont nuls.</li>
+      </ol>
+    </div>
+
+    <figure class="math-figure"><svg class="math-svg" viewBox="0 0 460 260" role="img" aria-label="Image et noyau d un projecteur" xmlns="http://www.w3.org/2000/svg"><defs><marker id="pointe" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="pte"/></marker></defs><line x1="74.0" y1="200" x2="435.0" y2="200" class="ligne"/><line x1="57.7" y1="249.1" x2="426.8" y2="52.8" class="ligne"/><line x1="246.5" y1="148.7" x2="351.0" y2="148.7" class="dot"/><line x1="254.5" y1="200.0" x2="351.0" y2="148.7" class="dot"/><line x1="150.0" y1="200.0" x2="254.5" y2="200.0" class="vec" marker-end="url(#pointe)"/><line x1="150.0" y1="200.0" x2="246.5" y2="148.7" class="vec" marker-end="url(#pointe)"/><line x1="150.0" y1="200.0" x2="351.0" y2="148.7" class="vec" marker-end="url(#pointe)"/><text x="357.0" y="144.7" class="lb" text-anchor="start">x</text><text x="250.5" y="218.0" class="lb" text-anchor="middle">p(x) = p∘p(x)</text><text x="238.5" y="142.7" class="lb" text-anchor="end">x − p(x)</text><text x="416.0" y="218.0" class="lb" text-anchor="middle">Im p</text><text x="414.0" y="75.7" class="lb" text-anchor="start">Ker p</text></svg><figcaption>Pour une projection \(p\) : \(p(x) = p \circ p(x)\) appartient à \(\Img p\), et \(x - p(x)\) appartient à \(\Ker p\).</figcaption></figure>
+
+    <div class="math-subsection-title">Démonstration</div>
+    <p>Soient \(E\) un espace vectoriel, \(F\) et \(G\) deux sous-espaces vectoriels de \(E\) supplémentaires.</p>
+
+    <p><strong>1. Linéarité.</strong> Soient \(x\) et \(x'\) deux vecteurs de \(E\) et \(\lambda\) un réel. Il existe un unique couple \((x_F, x_G) \in F \times G\) tel que \(x = x_F + x_G\). Comme on l'a vu plus haut, le vecteur \(x_F\) s'écrit \(p_{F,G}(x)\), d'où :</p>
+    <div class="formula-block">\[x = x_F + x_G = \underbrace{p_{F,G}(x)}_{\in F} + \underbrace{(x - p_{F,G}(x))}_{\in G}, \qquad x' = x'_F + x'_G = \underbrace{p_{F,G}(x')}_{\in F} + \underbrace{(x' - p_{F,G}(x'))}_{\in G}.\]</div>
+    <p>Il en résulte :</p>
+    <div class="formula-block">\[\lambda x + x' = \big(\lambda p_{F,G}(x) + p_{F,G}(x')\big) + \big(\lambda(x - p_{F,G}(x)) + x' - p_{F,G}(x')\big). \qquad (1)\]</div>
+    <p>Comme \(F\) est un sous-espace vectoriel de \(E\), il est stable par combinaison linéaire, d'où \(\lambda p_{F,G}(x) + p_{F,G}(x') \in F\). De même, comme \(G\) est un sous-espace vectoriel de \(E\), on a \(\lambda(x - p_{F,G}(x)) + x' - p_{F,G}(x') \in G\). D'autre part :</p>
+    <div class="formula-block">\[\lambda x + x' = \underbrace{p_{F,G}(\lambda x + x')}_{\in F} + \underbrace{\big(\lambda x + x' - p_{F,G}(\lambda x + x')\big)}_{\in G}. \qquad (2)\]</div>
+    <p>Par hypothèse, \(E = F \oplus G\) ; ainsi, la décomposition du vecteur \(\lambda x + x'\) comme somme d'un vecteur de \(F\) et d'un vecteur de \(G\) est unique. On peut donc identifier les vecteurs intervenant dans les expressions (1) et (2), ce qui fournit \(p_{F,G}(\lambda x + x') = \lambda p_{F,G}(x) + p_{F,G}(x')\). Ceci montre que <strong>\(p_{F,G}\) est bien linéaire ; c'est un endomorphisme de \(E\)</strong>.</p>
+    <div class="math-highlight"><strong>Remarque importante.</strong> Même s'il n'est pas difficile de démontrer qu'une projection est linéaire, ce n'est pas non plus tout à fait évident ; un argument crucial est l'<em>unicité</em> de la décomposition d'un vecteur de \(E\) comme somme d'un vecteur de \(F\) et d'un vecteur de \(G\).</div>
+
+    <p><strong>2. Image.</strong> Soit \(x \in E\). On a vu que \(x = \underbrace{p_{F,G}(x)}_{\in F} + \underbrace{(x - p_{F,G}(x))}_{\in G}\). Ainsi, on obtient l'équivalence \(p_{F,G}(x) = x \iff x \in F\), d'où \(\{x \in E \,;\, p_{F,G}(x) = x\} = F\).</p>
+    <p>L'inclusion \(\{x \in E \,;\, p_{F,G}(x) = x\} \subset \Img p_{F,G}\) est évidente. Réciproquement, soit \(y \in \Img p_{F,G}\) ; c'est donc un élément de \(F\). Comme tous les vecteurs de \(E\), \(y\) se décompose comme somme d'un vecteur de \(F\) et d'un vecteur de \(G\) :</p>
+    <div class="formula-block">\[y = \underbrace{p_{F,G}(y)}_{\in F} + \underbrace{(y - p_{F,G}(y))}_{\in G} \quad (3) \qquad \text{et d'autre part} \qquad y = \underbrace{y}_{\in F} + \underbrace{0_E}_{\in G}. \quad (4)\]</div>
+    <p>L'unicité de la décomposition de \(y\) comme somme d'un vecteur de \(F\) et d'un vecteur de \(G\) permet d'identifier les vecteurs des membres de droite de (3) et (4) : \(p_{F,G}(y) = y\), et donc \(y \in \{x \in E \,;\, p_{F,G}(x) = x\}\). L'inclusion \(\Img p_{F,G} \subset \{x \in E \,;\, p_{F,G}(x) = x\}\) est démontrée. Finalement, l'égalité <strong>\(\Img p_{F,G} = \{x \in E \,;\, p_{F,G}(x) = x\}\)</strong> est démontrée.</p>
+
+    <p><strong>3. Noyau.</strong> Soit \(x \in E\). Écrivons de nouveau l'identité \(x = \underbrace{p_{F,G}(x)}_{= x_F \in F} + \underbrace{(x - p_{F,G}(x))}_{= x_G \in G}\). On a alors :</p>
+    <div class="formula-block">\[x \in \Ker p_{F,G} \iff p_{F,G}(x) = 0_E \iff x = x_G \iff x \in G.\]</div>
+    <p>Ceci démontre l'identité <strong>\(\Ker p_{F,G} = G\)</strong>.</p>
+
+    <p><strong>4. Matrice.</strong> La relation \(F \oplus G = E\) montre que la famille \(\BB\) obtenue en concaténant les bases \(\BB_F\) de \(F\) et \(\BB_G\) de \(G\) est une base de \(E\). Notons \(\BB_F = (u_1, \dots, u_r)\) et \(\BB_G = (u_{r+1}, \dots, u_n)\). Tout vecteur de \(F\) est invariant par la projection \(p_{F,G}\) (d'après le point 2), donc pour tout \(i \in \llbracket 1, r \rrbracket\), \(p(u_i) = u_i\) : ceci fournit les \(r\) premières colonnes de la matrice de \(p_{F,G}\) dans la base \(\BB\). Tout vecteur de \(G\) appartient au noyau de \(p_{F,G}\) (d'après le point 3) ; ainsi, pour tout \(i \in \llbracket r+1, n \rrbracket\), \(p(u_i) = 0_E\) : ceci fournit les \(n - r\) dernières colonnes. On obtient bien la matrice \(J_{n,n,r}\) souhaitée.</p>
+  </div>
+
+  <div class="math-section" id="s1-3">
+    <div class="math-section-title">3 — Projecteurs</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 2</span><span class="def-name">Projecteur</span></div>
+        <p>Soient \(E\) un espace vectoriel et \(p : E \to E\) une application. On dit que \(p\) est un <strong>projecteur</strong> si \(p\) est linéaire et vérifie \(p \circ p = p\).</p>
+      </div>
+    </div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 2</div>
+      <div class="thm-title">Équivalence des définitions</div>
+      <ol>
+        <li>Toute projection est un projecteur.</li>
+        <li>Tout projecteur est une projection. Plus précisément, tout projecteur \(p\) est la projection sur \(\Img p\) parallèlement à \(\Ker p\). Autrement dit, pour tout \(p \in \LL(E)\) :</li>
+      </ol>
+      <div class="formula-block">\[p \circ p = p \iff \big(E = \Img p \oplus \Ker p, \text{ et } p \text{ est la projection sur } \Img p \text{ parallèlement à } \Ker p\big).\]</div>
+    </div>
+
+    <div class="math-subsection-title">Démonstration du point 1</div>
+    <p>Soient \(E\) un espace vectoriel, \(F\) et \(G\) deux sous-espaces vectoriels de \(E\) supplémentaires. Notons \(p_{F,G}\) la projection sur \(F\) parallèlement à \(G\). Soit \(x \in E\). Il existe un unique couple \((x_F, x_G) \in F \times G\) tel que \(x = x_F + x_G\). Par définition de la projection, \(p_{F,G}(x) = x_F\). La décomposition du vecteur \(x_F\) selon \(F\) et \(G\) est triviale : \(x_F = \underbrace{x_F}_{\in F} + \underbrace{0_E}_{\in G}\). On en déduit :</p>
+    <div class="formula-block">\[p_{F,G} \circ p_{F,G}(x) = p_{F,G}(x_F) = x_F = p_{F,G}(x).\]</div>
+    <p>Ainsi, on a démontré que <strong>\(p_{F,G} \circ p_{F,G} = p_{F,G}\)</strong>, ce qui prouve, \(p_{F,G}\) étant linéaire, que <strong>\(p_{F,G}\) est un projecteur</strong>.</p>
+    <div class="remark">Sur le dessin précédent, ce point est évident : projeter deux fois de suite le vecteur \(x\) (sur \(F\) parallèlement à \(G\)) revient exactement à ne le projeter qu'une fois.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE II — SYMÉTRIES
+════════════════════════════════════════ -->
+<div class="math-part" id="part2">
+  <div class="math-part-header">
+    <div class="math-part-num">II</div>
+    <div class="math-part-title">Compléments : symétries</div>
+  </div>
+
+  <div class="math-section" id="s2-1">
+    <div class="math-section-title">1 — Définition</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 3</span><span class="def-name">Symétrie</span></div>
+        <p><em>Comme pour les projections et les projecteurs, on donne ici deux définitions qui paraissent différentes mais qui vont s'avérer équivalentes.</em> Soit \(E\) un espace vectoriel.</p>
+        <ol class="def-list">
+          <li>On suppose que \(F\) et \(G\) sont deux sous-espaces vectoriels de \(E\) supplémentaires. Ainsi, tout vecteur \(x\) de \(E\) se décompose de façon unique sous la forme \(x = x_F + x_G\), où \(x_F\) est un vecteur de \(F\) et \(x_G\) un vecteur de \(G\). On appelle <strong>symétrie par rapport à \(F\) parallèlement à \(G\)</strong> l'application :
+            <div class="formula-block">\[s_{F,G} : \begin{array}{rcl} E & \longrightarrow & E \\ x = x_F + x_G & \longmapsto & s_{F,G}(x) = x_F - x_G. \end{array}\]</div></li>
+          <li>On appelle <strong>symétrie</strong> de \(E\) tout endomorphisme \(s \in \LL(E)\) tel que \(s \circ s = \Id_E\).</li>
+        </ol>
+      </div>
+    </div>
+
+    <figure class="math-figure"><svg class="math-svg" viewBox="0 0 480 290" role="img" aria-label="Symétrie par rapport à F parallèlement à G" xmlns="http://www.w3.org/2000/svg"><defs><marker id="pointe" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="pte"/></marker></defs><line x1="10.0" y1="150" x2="469.0" y2="150" class="ligne"/><line x1="70.8" y1="213.4" x2="364.8" y2="57.0" class="ligne"/><line x1="281.4" y1="101.4" x2="380.4" y2="101.4" class="dot"/><line x1="289.0" y1="150.0" x2="380.4" y2="101.4" class="dot"/><line x1="98.6" y1="198.6" x2="197.6" y2="198.6" class="dot"/><line x1="289.0" y1="150.0" x2="197.6" y2="198.6" class="dot"/><line x1="190.0" y1="150.0" x2="289.0" y2="150.0" class="vec" marker-end="url(#pointe)"/><line x1="190.0" y1="150.0" x2="281.4" y2="101.4" class="vec" marker-end="url(#pointe)"/><line x1="190.0" y1="150.0" x2="98.6" y2="198.6" class="vec" marker-end="url(#pointe)"/><line x1="190.0" y1="150.0" x2="380.4" y2="101.4" class="vec" marker-end="url(#pointe)"/><line x1="190.0" y1="150.0" x2="197.6" y2="198.6" class="vec" marker-end="url(#pointe)"/><text x="386.4" y="97.4" class="lb" text-anchor="start">x</text><text x="295.0" y="166.0" class="lb" text-anchor="start">x<tspan baseline-shift="sub" font-size="10">F</tspan> = p(x)</text><text x="273.4" y="95.4" class="lb" text-anchor="end">x<tspan baseline-shift="sub" font-size="10">G</tspan> = x − x<tspan baseline-shift="sub" font-size="10">F</tspan></text><text x="90.6" y="202.6" class="lb" text-anchor="end">−x<tspan baseline-shift="sub" font-size="10">G</tspan></text><text x="203.6" y="212.6" class="lb" text-anchor="start">s(x) = x<tspan baseline-shift="sub" font-size="10">F</tspan> − x<tspan baseline-shift="sub" font-size="10">G</tspan></text><text x="460.0" y="142.0" class="lb" text-anchor="end">F</text><text x="362.9" y="65.3" class="lb" text-anchor="start">G</text></svg><figcaption>La symétrie par rapport à \(F\) parallèlement à \(G\) conserve la composante \(x_F\) et change \(x_G\) en son opposé.</figcaption></figure>
+
+    <div class="math-subsection-title">Exemples</div>
+    <ol class="def-list">
+      <li>Soit \(E\) un espace vectoriel. L'application identité \(\Id_E\) est une symétrie. Plus précisément, c'est la symétrie par rapport à \(E\) parallèlement à \(\{0_E\}\).</li>
+      <li>Dans l'espace vectoriel \(E = \mathbb{R}^2\), considérons la base canonique \((e_1, e_2)\) et les deux droites vectorielles \(D_1 = \Vect(e_1)\) et \(D_2 = \Vect(e_2)\). On a \(\mathbb{R}^2 = D_1 \oplus D_2\), et pour tout vecteur \(u = (x, y)\) de \(\mathbb{R}^2\), \(u = \underbrace{(x, 0)}_{\in D_1} + \underbrace{(0, y)}_{\in D_2}\). L'application \(s : (x, y) \in \mathbb{R}^2 \mapsto (x, -y) \in \mathbb{R}^2\) est la symétrie par rapport à la droite \(D_1\) parallèlement à la droite \(D_2\). L'ensemble des vecteurs invariants par cette symétrie est \(\{u \in \mathbb{R}^2 \,;\, s(u) = u\} = \Ker(s - \Id_E) = D_1\), tandis que l'ensemble des vecteurs transformés en leur opposé est \(\{u \in \mathbb{R}^2 \,;\, s(u) = -u\} = \Ker(s + \Id_E) = D_2\).</li>
+      <li>L'application « transposition » \(T : A \in \MM_n(\mathbb{R}) \mapsto {}^tA \in \MM_n(\mathbb{R})\) est une symétrie. L'ensemble des vecteurs invariants par cette symétrie est le sous-espace vectoriel des matrices symétriques :
+        <div class="formula-block">\[\{A \in \MM_n(\mathbb{R}) \,;\, {}^tA = A\} = \Ker(T - \Id_{\MM_n(\mathbb{R})}) = \mathscr{S}_n(\mathbb{R}),\]</div>
+        tandis que l'ensemble des vecteurs transformés en leur opposé est le sous-espace vectoriel des matrices antisymétriques :
+        <div class="formula-block">\[\{A \in \MM_n(\mathbb{R}) \,;\, {}^tA = -A\} = \Ker(T + \Id_{\MM_n(\mathbb{R})}) = \mathscr{A}_n(\mathbb{R}).\]</div></li>
+    </ol>
+
+    <div class="math-subsection-title">Remarques</div>
+    <ol class="def-list">
+      <li>Toute symétrie est un automorphisme vérifiant \(s^{-1} = s\).</li>
+      <li>Si l'espace vectoriel \(E\) est de dimension finie \(n \in \mathbb{N}^*\), en notant \(\BB_F\) une base de \(F\), \(r = \dim F = \Card(\BB_F)\), \(\BB_G\) une base de \(G\) et \(\BB\) la base de \(E\) obtenue en concaténant les familles \(\BB_F\) et \(\BB_G\), la matrice de la symétrie \(s_{F,G}\) dans la base \(\BB\) est la matrice diagonale
+        <div class="formula-block">\[\begin{pmatrix} 1 & & & & & \\ & \ddots & & & & \\ & & 1 & & & \\ & & & -1 & & \\ & & & & \ddots & \\ & & & & & -1 \end{pmatrix} = \begin{pmatrix} I_r & 0_{r,n-r} \\ 0_{n-r,r} & -I_{n-r} \end{pmatrix} \in \MM_n(\mathbb{R})\]</div>
+        dont les \(r\) premiers coefficients diagonaux sont égaux à 1 et les autres à \(-1\).</li>
+    </ol>
+  </div>
+
+  <div class="math-section" id="s2-2">
+    <div class="math-section-title">2 — Lien entre projecteur et symétrie</div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 3</div>
+      <div class="thm-title">Lien entre projecteur et symétrie</div>
+      <p>Soit \(E\) un espace vectoriel. Soit \(p \in \LL(E)\) ; alors \(p\) est un projecteur si et seulement si \(s = 2p - \Id_E\) est une symétrie.</p>
+      <p>Dit autrement : soit \(s \in \LL(E)\) ; alors \(s\) est une symétrie si et seulement si \(p = \frac{1}{2}(s + \Id_E)\) est un projecteur.</p>
+    </div>
+
+    <p><strong>Démonstration.</strong> Soit \(s \in \LL(E)\). Posons \(p = \frac{1}{2}(s + \Id_E)\). On calcule :</p>
+    <div class="formula-block">\[p \circ p = \left(\frac{1}{2}(s + \Id_E)\right) \circ \left(\frac{1}{2}(s + \Id_E)\right) = \frac{1}{4}(s \circ s + 2s + \Id_E).\]</div>
+    <p>On en déduit l'équivalence :</p>
+    <div class="formula-block">\[p \circ p = p \iff \frac{1}{4}(s \circ s + 2s + \Id_E) = \frac{1}{2}(s + \Id_E) \iff s \circ s + 2s + \Id_E = 2(s + \Id_E) \iff s \circ s = \Id_E.\]</div>
+    <p>L'équivalence est démontrée.</p>
+
+    <div class="remark">Soient \(E\) un espace vectoriel, \(p\) un endomorphisme de \(E\) et \(s = 2p - \Id_E\). On observe alors, pour tout vecteur \(x\) de \(E\), que \(p(x) = x \iff s(x) = x\) et \(p(x) = 0_E \iff s(x) = -x\). Il en résulte : \(\Ker(p - \Id_E) = \Ker(s - \Id_E)\) et \(\Ker(p) = \Ker(s + \Id_E)\).</div>
+
+    <p>On en déduit, en utilisant aussi les résultats des propositions 2 et 3, en notant \(F\) et \(G\) deux sous-espaces vectoriels supplémentaires de \(E\) :</p>
+    <div class="prop-card"><div class="formula-block">\[\begin{aligned} &p \text{ projection sur } F \text{ parallèlement à } G \\ \iff\ &s = 2p - \Id_E \text{ symétrie par rapport à } F \text{ parallèlement à } G. \end{aligned}\]</div></div>
+    <figure class="math-figure"><svg class="math-svg" viewBox="0 0 540 300" role="img" aria-label="Lien entre projecteur et symétrie" xmlns="http://www.w3.org/2000/svg"><defs><marker id="pointe" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="pte"/></marker></defs><line x1="58.0" y1="160" x2="517.0" y2="160" class="ligne"/><line x1="117.4" y1="227.8" x2="425.1" y2="64.2" class="ligne"/><line x1="331.3" y1="114.1" x2="424.8" y2="114.1" class="dot"/><line x1="338.5" y1="160.0" x2="424.8" y2="114.1" class="dot"/><line x1="158.7" y1="205.9" x2="252.2" y2="205.9" class="dot"/><line x1="338.5" y1="160.0" x2="252.2" y2="205.9" class="dot"/><line x1="245.0" y1="160.0" x2="432.0" y2="160.0" class="vec2" marker-end="url(#pointe)"/><line x1="245.0" y1="160.0" x2="338.5" y2="160.0" class="vec" marker-end="url(#pointe)"/><line x1="245.0" y1="160.0" x2="331.3" y2="114.1" class="vec" marker-end="url(#pointe)"/><line x1="245.0" y1="160.0" x2="158.7" y2="205.9" class="vec" marker-end="url(#pointe)"/><line x1="245.0" y1="160.0" x2="424.8" y2="114.1" class="vec" marker-end="url(#pointe)"/><line x1="245.0" y1="160.0" x2="252.2" y2="205.9" class="vec" marker-end="url(#pointe)"/><line x1="245.0" y1="160.0" x2="65.2" y2="205.9" class="vec2" marker-end="url(#pointe)"/><text x="430.8" y="110.1" class="lb" text-anchor="start">x</text><text x="338.5" y="177.0" class="lb" text-anchor="middle">p(x)</text><text x="432.0" y="177.0" class="lb" text-anchor="middle">2p(x)</text><text x="323.3" y="108.1" class="lb" text-anchor="end">x − p(x)</text><text x="152.7" y="219.9" class="lb" text-anchor="end">p(x) − x</text><text x="258.2" y="219.9" class="lb" text-anchor="start">s(x) = 2p(x) − x</text><text x="59.2" y="209.9" class="lb" text-anchor="end">−x</text><text x="517.0" y="152.0" class="lb" text-anchor="end">Im p = Ker(s − Id)</text><text x="411.6" y="64.2" class="lb" text-anchor="end">Ker p = Ker(s + Id)</text></svg><figcaption>\(s(x) = p(x) + (p(x) - x) = 2p(x) - x\) : la symétrie « va deux fois plus loin » que la projection.</figcaption></figure>
+  </div>
+
+  <div class="math-section" id="s2-3">
+    <div class="math-section-title">3 — Équivalence des définitions des symétries</div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 4</div>
+      <div class="thm-title">Équivalence des définitions des symétries</div>
+      <p>Soit \(E\) un espace vectoriel.</p>
+      <ol>
+        <li>On suppose que \(F\) et \(G\) sont deux sous-espaces vectoriels de \(E\) supplémentaires. Soit \(s_{F,G}\) la symétrie par rapport à \(F\) parallèlement à \(G\). Alors l'application \(s_{F,G}\) est une symétrie, au sens où c'est un endomorphisme de \(E\) vérifiant \(s_{F,G} \circ s_{F,G} = \Id_E\).</li>
+        <li>Réciproquement, si \(s\) est une symétrie de \(E\), c'est-à-dire un endomorphisme de \(E\) vérifiant \(s \circ s = \Id_E\), alors c'est la symétrie par rapport au sous-espace vectoriel \(F = \{x \in E \,;\, s(x) = x\} = \Ker(s - \Id_E)\) parallèlement au sous-espace vectoriel \(G = \{x \in E \,;\, s(x) = -x\} = \Ker(s + \Id_E)\).</li>
+      </ol>
+    </div>
+
+    <p><strong>Démonstration.</strong> On peut, au choix, imiter la démonstration analogue sur les projections et projecteurs, ou bien s'appuyer sur l'équivalence des définitions de projection et projecteur ; c'est cette deuxième possibilité que l'on développe ici.</p>
+    <p><strong>1.</strong> Supposons \(E = F \oplus G\). Ainsi, pour tout \(x \in E\), il existe un unique couple \((x_F, x_G) \in F \times G\) tel que \(x = x_F + x_G\). Par définition de la symétrie par rapport à \(F\) parallèlement à \(G\), on a \(s_{F,G}(x) = x_F - x_G = \underbrace{x_F}_{\in F} + \underbrace{(-x_G)}_{\in G}\), d'où :</p>
+    <div class="formula-block">\[s_{F,G} \circ s_{F,G}(x) = x_F - (-x_G) = x_F + x_G = x.\]</div>
+    <p>Ceci démontre l'identité <strong>\(s_{F,G} \circ s_{F,G} = \Id_E\)</strong>, ce qui montre que \(s_{F,G}\) est une symétrie de \(E\) (au sens de la deuxième définition).</p>
+    <p><strong>2.</strong> Réciproquement, soit \(s\) une symétrie de \(E\), c'est-à-dire un endomorphisme de \(E\) vérifiant \(s \circ s = \Id_E\). D'après la proposition précédente, l'endomorphisme \(p = \frac{1}{2}(s + \Id_E)\) est un projecteur de \(E\). L'endomorphisme \(p\) est donc la projection sur \(\Ker(p - \Id_E) = \Ker(s - \Id_E)\) parallèlement à \(\Ker(p) = \Ker(s + \Id_E)\). L'application \(s = 2p - \Id_E\) est donc la symétrie par rapport à \(F = \Ker(s - \Id_E)\) parallèlement à \(G = \Ker(s + \Id_E)\).</p>
+  </div>
+</div>
+
+</div><!-- fin .content -->
+
+<footer class="site-footer">
+  <div class="footer-logo">Révisions d'algèbre : les projecteurs et les symétries</div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut de page">↑</button>
+
+<script>
+  document.querySelectorAll('.toc-list a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
+
+</body>
+</html>
