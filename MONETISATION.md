@@ -35,7 +35,7 @@ auth.js ── rpc mon_abonnement() ──▶ ouvre ou ferme les rubriques marqu
 ### 1. Stripe
 1. Crée un compte sur [stripe.com](https://stripe.com), reste en **mode test**.
 2. **Catalogue de produits** → nouveau produit « ECG Prépa Premium » avec deux prix récurrents :
-   4,90 €/mois et 39 €/an (ou tes propres prix). Note les deux identifiants `price_…`.
+   1,99 €/mois et 15 €/an (ou tes propres prix). Note les deux identifiants `price_…`.
 3. **Paramètres → Billing → Portail client** : active-le ; autorise la résiliation (à la fin de la
    période), la mise à jour du moyen de paiement, l'historique des factures, et le changement
    d'offre entre les deux prix.
