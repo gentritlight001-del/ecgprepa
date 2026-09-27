@@ -21,6 +21,9 @@ au format PDF. Tout se joue dans `newsletter/`.
 3. Lancer :
    `python newsletter/generer-pdf.py newsletter/build/<fichier>.html "newsletter/out/<NOM DU PDF>.pdf"`
 4. Relire la capture PNG produite à côté du PDF avant de livrer.
+5. Les PDF ne sont **jamais** versionnés ni publiés sur le site (`build/` et `out/` sont
+   ignorés par git). Ils se rangent dans la page admin « Mes newsletters »
+   (`mes-newsletters.html`), stockés dans le bucket privé Supabase `newsletters`.
 
 ## Sources du contenu
 
