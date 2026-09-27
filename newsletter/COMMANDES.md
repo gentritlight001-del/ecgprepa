@@ -9,7 +9,7 @@ le numéro et la date.
 
 ```
 Newsletter édition anglophone, semaine du ... au ..., N° x du <date>.
-Code langue : en. Encadré : vocabulaire anglais → français, 12 entrées.
+Code langue : en. Encadré : vocabulaire anglais → français, au moins 12 entrées.
 Tag des brèves du bas : le pays.
 Sors deux PDF dans newsletter/out/ :
 "FR - Newsletter Anglophone - Semaine du X <mois> 2026.pdf" puis
@@ -20,7 +20,7 @@ Sors deux PDF dans newsletter/out/ :
 
 ```
 Newsletter édition hispanophone, semaine du ... au ..., N° x du <date>.
-Code langue : es. Encadré : vocabulaire espagnol → français, 12 entrées.
+Code langue : es. Encadré : vocabulaire espagnol → français, au moins 12 entrées.
 Tag des brèves du bas : le pays.
 Sors deux PDF dans newsletter/out/ :
 "FR - Newsletter Hispanophone - Semaine du X <mois> 2026.pdf" puis
@@ -31,7 +31,7 @@ Sors deux PDF dans newsletter/out/ :
 
 ```
 Newsletter édition germanophone, semaine du ... au ..., N° x du <date>.
-Code langue : de. Encadré : vocabulaire allemand → français, 12 entrées.
+Code langue : de. Encadré : vocabulaire allemand → français, au moins 12 entrées.
 Tag des brèves du bas : le pays.
 Sors deux PDF dans newsletter/out/ :
 "FR - Newsletter Germanophone - Semaine du X <mois> 2026.pdf" puis
