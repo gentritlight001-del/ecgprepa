@@ -120,6 +120,7 @@
   var K_NL_ATTENTE = 'ecg_newsletter_attente'; // choix fait à l'inscription
   var K_SID    = 'ecg_sid';      // identifiant de la session ouverte
   var K_VERIF  = 'ecg_verif_t';  // date de la dernière vérification réussie
+  var K_PREMIUM = 'ecg_premium';  // miroir local du statut Premium (affichage seulement)
   /* Si la session a été vérifiée il y a moins de VERIF_OK_MS, la page
      s'affiche tout de suite ; la vérification continue en arrière-plan
      et renvoie vers la connexion si elle échoue. */
@@ -177,6 +178,17 @@
     { id: 'p2-langues',       niveau: 3, nom: 'Langues',        groupe: '2ème année', motifs: ['deuxieme_annee/langues/'], retour: 'deuxieme_annee/index.html' }
   ];
 
+  /* ─── Offres Premium : prix AFFICHÉS sur le site ────────────────
+     ★ À garder IDENTIQUES aux prix créés dans Stripe ★ (c'est Stripe
+     qui encaisse ; ces montants ne servent qu'à l'affichage, sur
+     tarifs.html et dans l'onglet Premium de l'admin). Les « id »
+     correspondent aux secrets STRIPE_PRIX_MENSUEL / STRIPE_PRIX_ANNUEL
+     des fonctions Edge : ne pas les changer. */
+  var OFFRES_PREMIUM = [
+    { id: 'mensuel', nom: 'Mensuel', prix: 4.90,  unite: '/ mois', mois: 1,  detail: 'Sans engagement, résiliable à tout moment.' },
+    { id: 'annuel',  nom: 'Annuel',  prix: 39.00, unite: '/ an',   mois: 12, detail: 'Une année de prépa, payée une fois.', etiquette: true }
+  ];
+
   /* Repère TOUTES les rubriques (le cas échéant, plusieurs niveaux
      à la fois) sous lesquelles vit la page actuelle, à partir de son
      chemin dans l'URL. Une page de chapitre de maths 1ère année
@@ -219,7 +231,10 @@
 
   /* Pages consultables sans compte (vitrine publique, référencement).
      Toutes les autres pages exigent une session valide. */
-  var PAGES_PUBLIQUES = ['login.html', 'accueil.html', 'contact.html', 'mentions-legales.html', 'cgu.html', 'confidentialite.html', '404.html', 'desinscription.html', 'hors-ligne.html'];
+  var PAGES_PUBLIQUES = ['login.html', 'accueil.html', 'contact.html', 'mentions-legales.html', 'cgu.html', 'cgv.html', 'tarifs.html', 'confidentialite.html', '404.html', 'desinscription.html', 'hors-ligne.html'];
+
+  /* Page de présentation de l'offre Premium (publique). */
+  var TARIFS_URL = BASE + 'tarifs.html';
 
   /* Pages réservées aux administrateurs : un membre connecté qui
      connaît l'adresse est arrêté et renvoyé vers l'accueil. */
@@ -242,7 +257,7 @@
   }
   function memoriser(p) {
     if (p) { ecrire(K_PROFIL, JSON.stringify(p)); ecrire(K_VERIF, String(Date.now())); }
-    else { effacer(K_PROFIL); effacer(K_VERIF); }
+    else { effacer(K_PROFIL); effacer(K_VERIF); effacer(K_PREMIUM); }
   }
 
   /* ─── Voile anti-clignotement sur les pages protégées ─── */
@@ -317,6 +332,30 @@
     return _sb;
   }
 
+  /* ─── Abonnement Premium ──────────────────────────────────────
+     La base (fonction « mon_abonnement ») est la seule source de
+     vérité ; le miroir local ne sert qu'à afficher vite le badge.
+     En cas d'erreur (réseau, table pas encore créée), le membre est
+     considéré comme non abonné. */
+  var _premium = null;
+  function premiumLocal() {
+    try { return JSON.parse(lire(K_PREMIUM) || 'null'); } catch (e) { return null; }
+  }
+  function statutPremium(forcer) {
+    if (_premium && !forcer) return _premium;
+    _premium = sb().then(function (c) {
+      return c.rpc('mon_abonnement');
+    }).then(function (r) {
+      var d = (r && !r.error && r.data) ? r.data : { premium: false };
+      d.premium = !!d.premium;
+      ecrire(K_PREMIUM, JSON.stringify(d));
+      return d;
+    }).catch(function () {
+      return { premium: false };
+    });
+    return _premium;
+  }
+
   /* ─── Verrouillage universel de TOUTES les cartes cliquables ────
      Repère automatiquement, sur n'importe quelle page, chaque carte
      qui mène quelque part : celles marquées data-rubrique="…" (les
@@ -360,6 +399,31 @@
     el.appendChild(b);
   }
 
+  /* Carte d'une rubrique Premium, vue par un membre non abonné :
+     elle reste visible (on voit ce qu'on rate), porte un badge, et
+     mène à la page des tarifs plutôt qu'au contenu. */
+  function marquerPremium(el) {
+    if (el.querySelector('.ecg-badge-premium')) return;
+    if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+    el.setAttribute('data-ecg-premium', '1');
+    var b = document.createElement('span');
+    b.className = 'ecg-badge-premium';
+    b.textContent = '✦ Premium';
+    b.style.cssText = 'position:absolute;top:10px;right:12px;z-index:3;pointer-events:none;' +
+      'font:500 .6rem/1 "DM Mono",monospace;letter-spacing:.14em;text-transform:uppercase;' +
+      'color:#12120f;background:#c8a96e;padding:4px 8px;border-radius:20px';
+    el.appendChild(b);
+  }
+  /* Un seul écouteur, en phase de capture : il passe avant le lien
+     ou le onclick de la carte et renvoie vers les tarifs. */
+  document.addEventListener('click', function (e) {
+    var carte = e.target && e.target.closest && e.target.closest('[data-ecg-premium]');
+    if (!carte) return;
+    e.preventDefault();
+    e.stopPropagation();
+    location.href = TARIFS_URL + '?depuis=' + encodeURIComponent(location.pathname);
+  }, true);
+
   function griserPourMembre(el) {
     el.style.opacity = '0.45';
     el.style.pointerEvents = 'none';
@@ -369,9 +433,10 @@
 
   /* Bouton discret, toujours présent sur une carte reconnue, pour
      qu'un administrateur bascule son état sans quitter la page. */
-  function ajouterBoutonAdmin(el, id, verrouille) {
+  function ajouterBoutonAdmin(el, id, verrouille, premium) {
     if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
     if (verrouille) ajouterCadenas(el);
+    ajouterBoutonPremium(el, id, premium);
     var ancien = el.querySelector('.ecg-bouton-verrou');
     if (ancien) ancien.parentNode.removeChild(ancien);
     var btn = document.createElement('button');
@@ -394,20 +459,58 @@
     el.appendChild(btn);
   }
 
+  /* Second bouton admin, à gauche du cadenas : bascule Premium.
+     Doré = rubrique réservée aux abonnés ; gris = gratuite. */
+  function ajouterBoutonPremium(el, id, premium) {
+    var ancien = el.querySelector('.ecg-bouton-premium');
+    if (ancien) ancien.parentNode.removeChild(ancien);
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'ecg-bouton-premium';
+    btn.textContent = '✦';
+    btn.title = premium ? 'Premium — rendre gratuit' : 'Gratuit — passer en Premium';
+    btn.setAttribute('aria-label', btn.title);
+    btn.style.cssText = 'position:absolute;bottom:10px;right:44px;z-index:5;border:0;border-radius:50%;' +
+      'width:28px;height:28px;display:flex;align-items:center;justify-content:center;' +
+      'font-size:.85rem;line-height:1;cursor:pointer;pointer-events:auto;opacity:.94;' +
+      (premium ? 'background:#c8a96e;color:#12120f' : 'background:#3a3a44;color:#8a8880');
+    btn.addEventListener('click', function (e) {
+      e.preventDefault(); e.stopPropagation();
+      btn.disabled = true; btn.textContent = '…';
+      Auth.admin.definirPremium(id, !premium)
+        .then(function () { location.reload(); })
+        .catch(function (err) {
+          btn.disabled = false; btn.textContent = '✦';
+          alert(String((err && err.message) || err));
+        });
+    });
+    el.appendChild(btn);
+  }
+
   function appliquerVerrouillageCartes() {
     var noeuds = collecterNoeudsVerrouillables();
     if (!noeuds.length) return;
     var admin = (function () { var p = profilLocal(); return !!p && p.role === 'admin'; })();
+    /* select('*') : fonctionne avant comme après l'ajout de la
+       colonne « premium » (supabase/premium.sql). */
     sb().then(function (c) {
-      return c.from('rubriques_verrouillage').select('id,verrouille');
+      return c.from('rubriques_verrouillage').select('*');
     }).then(function (r) {
       if (!r || r.error) return;
-      var etat = {};
-      (r.data || []).forEach(function (x) { etat[x.id] = !!x.verrouille; });
-      noeuds.forEach(function (n) {
-        var v = !!etat[n.id];
-        if (admin) ajouterBoutonAdmin(n.el, n.id, v);
-        else if (v) griserPourMembre(n.el);
+      var etat = {}, prem = {}, auMoinsUnPremium = false;
+      (r.data || []).forEach(function (x) {
+        etat[x.id] = !!x.verrouille;
+        prem[x.id] = !!x.premium;
+        if (x.premium) auMoinsUnPremium = true;
+      });
+      var abonne = (admin || !auMoinsUnPremium) ? Promise.resolve({ premium: true }) : statutPremium();
+      return abonne.then(function (st) {
+        noeuds.forEach(function (n) {
+          var v = !!etat[n.id], p = !!prem[n.id];
+          if (admin) ajouterBoutonAdmin(n.el, n.id, v, p);
+          else if (v) griserPourMembre(n.el);
+          else if (p && !st.premium) marquerPremium(n.el);
+        });
       });
     }).catch(function () { /* silencieux : les cartes gardent leur état par défaut (déverrouillé) */ });
   }
@@ -637,10 +740,88 @@
       }
     },
 
+    /* ─── Abonnement Premium ────────────────────────────────────
+       Le paiement est confié à Stripe : le site ne voit jamais de
+       numéro de carte. Ces méthodes ne font qu'ouvrir les pages
+       Stripe via les fonctions Edge « stripe-paiement » et
+       « stripe-portail ». */
+    premium: {
+      tarifsUrl: TARIFS_URL,
+
+      /* Copie des offres affichées (voir OFFRES_PREMIUM). */
+      offres: function () {
+        return OFFRES_PREMIUM.map(function (o) { var c = {}; for (var k in o) c[k] = o[k]; return c; });
+      },
+
+      /* { premium, statut, offre, fin_periode, annulation_prevue }
+         forcer = true pour ignorer le résultat déjà en mémoire. */
+      statut: function (forcer) { return statutPremium(forcer); },
+
+      /* Lecture synchrone du dernier statut connu (affichage). */
+      local: function () { return premiumLocal(); },
+
+      /* Redirige vers la page de paiement Stripe.
+         offre : 'mensuel' | 'annuel'
+         renonciation : true si le membre a coché la case de
+         renonciation au délai de rétractation (obligatoire). */
+      payer: function (offre, renonciation) {
+        return appelerFonction('stripe-paiement', { offre: offre, renonciation: renonciation === true })
+          .then(function (d) { location.href = d.url; return d; });
+      },
+
+      /* Code d'accès offert par l'administrateur. Si c'est le bon,
+         la base ouvre le Premium à ce membre (statut « offert »). */
+      utiliserCode: function (code) {
+        return sb().then(function (c) {
+          return c.rpc('utiliser_code_acces', { p_code: String(code || '') });
+        }).then(function (r) {
+          if (r.error) throw new Error('Vérification impossible pour le moment. Réessaie dans un instant.');
+          var d = r.data || {};
+          if (d.ok) { _premium = null; return true; }
+          throw new Error({
+            connexion: 'Connecte-toi avec un compte actif pour utiliser un code.',
+            trop_de_tentatives: 'Trop d\'essais. Réessaie dans une heure.',
+            inactif: 'Aucun code d\'accès n\'est valable en ce moment.',
+            mauvais_code: 'Ce code n\'est pas le bon.',
+            deja_abonne: 'Tu as déjà un abonnement Premium en cours : garde-le, ou résilie-le avant d\'utiliser un code.'
+          }[d.raison] || 'Code refusé.');
+        });
+      },
+
+      /* Ouvre le portail client Stripe (carte, factures, résiliation). */
+      gerer: function () {
+        return appelerFonction('stripe-portail', {})
+          .then(function (d) { location.href = d.url; return d; });
+      }
+    },
+
     /* Permet aux autres scripts d'attendre que la base soit prête */
     pret: function () { return sb(); },
     client: sb
   };
+
+  /* Appel d'une fonction Edge qui renvoie { url } ou { erreur }.
+     Les messages d'erreur sont rédigés côté serveur, en français. */
+  function appelerFonction(nom, corps) {
+    return sb().then(function (c) {
+      return c.functions.invoke(nom, { body: corps });
+    }).then(function (r) {
+      if (r.error) {
+        /* Réponse d'erreur de la fonction : on récupère son message. */
+        var ctx = r.error.context;
+        if (ctx && typeof ctx.json === 'function') {
+          return ctx.json().catch(function () { return {}; }).then(function (d) {
+            throw new Error((d && d.erreur) || 'Service de paiement indisponible pour le moment.');
+          });
+        }
+        throw new Error('Service de paiement indisponible pour le moment.');
+      }
+      if (!r.data || r.data.erreur || !r.data.url) {
+        throw new Error((r.data && r.data.erreur) || 'Réponse inattendue du service de paiement.');
+      }
+      return r.data;
+    });
+  }
 
   window.ECGAuth = Auth;
 
@@ -740,6 +921,53 @@
             var libelle = meta ? meta.nom + (meta.niveau === 3 ? ' (' + meta.groupe + ')' : '') : id;
             return noter('reglage', (profilLocal() || {}).email, libelle + (verrouille ? ' verrouillée' : ' déverrouillée'));
           });
+      });
+    },
+
+    /* Réserve (ou non) une rubrique aux abonnés Premium.
+       N'a aucun effet sur son verrouillage éventuel. */
+    definirPremium: function (id, premium) {
+      return sb().then(function (c) {
+        return c.from('rubriques_verrouillage')
+          .upsert({ id: id, premium: !!premium, maj_le: new Date().toISOString() });
+      }).then(function (r) {
+        if (r && r.error) {
+          if (/premium/.test(r.error.message || '')) {
+            throw new Error('La colonne « premium » n\'existe pas encore : lance supabase/premium.sql.');
+          }
+          throw new Error(traduire(r.error.message));
+        }
+        var meta = RUBRIQUES_SITE.filter(function (x) { return x.id === id; })[0];
+        var libelle = meta ? meta.nom + (meta.niveau === 3 ? ' (' + meta.groupe + ')' : '') : id;
+        return noter('reglage', (profilLocal() || {}).email, libelle + (premium ? ' → Premium' : ' → gratuite'));
+      });
+    },
+
+    /* Code d'accès offert : { code, actif, maj_le, offerts } */
+    etatCode: function () {
+      return sb().then(function (c) { return T(c.rpc('etat_code_acces')); });
+    },
+
+    /* code : nouveau code (ou null pour garder l'actuel) ; actif : true/false */
+    definirCode: function (code, actif) {
+      return sb().then(function (c) {
+        return T(c.rpc('definir_code_acces', { p_code: code == null ? null : String(code), p_actif: !!actif }));
+      }).then(function () {
+        return noter('reglage', (profilLocal() || {}).email, 'code d\'accès ' + (actif ? 'activé' : 'désactivé') + (code ? ' (nouveau code)' : ''));
+      });
+    },
+
+    /* Retire un accès offert (ne touche jamais un abonnement payant). */
+    retirerAccesOffert: function (id, email) {
+      return sb().then(function (c) {
+        return T(c.rpc('retirer_acces_offert', { p_utilisateur: id }));
+      }).then(function () { return noter('reglage', email, 'accès Premium offert retiré'); });
+    },
+
+    /* Tous les abonnés (actuels et passés), avec nom et adresse. */
+    abonnes: function () {
+      return sb().then(function (c) {
+        return T(c.rpc('abonnes_premium'));
       });
     },
 
@@ -1145,10 +1373,12 @@
          Un administrateur passe toujours, mais voit un bandeau de
          rappel si l'une d'elles est fermée. */
       if (rubriquesActuelles.length || cheminActuel) {
-        return client.from('rubriques_verrouillage').select('id,verrouille')
+        /* select('*') : marche avant comme après l'ajout de la
+           colonne « premium » (supabase/premium.sql). */
+        return client.from('rubriques_verrouillage').select('*')
           .then(function (r) {
-            var etat = {};
-            (r && r.data || []).forEach(function (x) { etat[x.id] = !!x.verrouille; });
+            var etat = {}, prem = {};
+            (r && r.data || []).forEach(function (x) { etat[x.id] = !!x.verrouille; prem[x.id] = !!x.premium; });
 
             /* Le chemin exact de la page est le cas le plus précis
                possible : une leçon verrouillée individuellement ne
@@ -1163,7 +1393,7 @@
             }
 
             var verrouillees = rubriquesActuelles.filter(function (rb) { return !!etat[rb.id]; });
-            if (!verrouillees.length) { terminer(); return; }
+            if (!verrouillees.length) { return verifierPremium(prem, profil, terminer); }
             /* La plus précise d'abord (matière > année > section),
                pour un message le plus utile possible. */
             verrouillees.sort(function (a, b) { return b.niveau - a.niveau; });
@@ -1189,6 +1419,30 @@
       if (p) demarrerBadge(p);
     });
 
+  /* Page non verrouillée : est-elle réservée aux abonnés ? Elle
+     l'est si son propre chemin, ou l'une des rubriques qui la
+     contiennent, est marqué « premium ». Un administrateur passe
+     toujours (avec un bandeau de rappel). En cas de doute (réseau,
+     base pas à jour), statutPremium() répond « non abonné » : on
+     ne montre jamais un contenu payant par erreur. */
+  function verifierPremium(prem, profil, terminer) {
+    var rubPremium = null;
+    if (cheminActuel && prem[cheminActuel]) {
+      rubPremium = { id: cheminActuel, niveau: 4, nom: null, groupe: null,
+                     retour: cheminActuel.replace(/[^/]*$/, 'index.html') };
+    } else {
+      var p = rubriquesActuelles.filter(function (rb) { return !!prem[rb.id]; });
+      p.sort(function (a, b) { return b.niveau - a.niveau; });
+      rubPremium = p[0] || null;
+    }
+    if (!rubPremium) { terminer(); return; }
+    if (profil.role === 'admin') { terminer(); bandeauPremiumAdmin(rubPremium); return; }
+    return statutPremium(true).then(function (st) {
+      if (st.premium) { terminer(); return; }
+      refuserPremium(rubPremium);
+    });
+  }
+
   /* ══════════════════════════════════════════════════════════════
      Refus d'accès à une page réservée
      Le contenu reste masqué : on remplace l'affichage par un écran
@@ -1196,7 +1450,7 @@
      ══════════════════════════════════════════════════════════════ */
   /* Écran plein cadre générique : accès admin refusé, ou rubrique
      verrouillée, partagent la même présentation. */
-  function ecranRefus(titre, texte, sousTexte, urlRetour, libelleBouton) {
+  function ecranRefus(titre, texte, sousTexte, urlRetour, libelleBouton, secondaire) {
     var css = document.createElement('style');
     css.textContent =
       'html{visibility:hidden!important}' +
@@ -1210,7 +1464,9 @@
       '#ecg-refus p{color:#8a8880;font-size:.88rem;line-height:1.6;margin:0 0 8px}' +
       '#ecg-refus .qui{font-family:"DM Mono",monospace;font-size:.72rem;color:#4a4845;margin:14px 0 24px;word-break:break-all}' +
       '#ecg-refus button{background:#c8a96e;border:0;border-radius:9px;color:#12120f;' +
-      'font:500 .88rem "DM Sans",system-ui,sans-serif;padding:11px 22px;cursor:pointer}';
+      'font:500 .88rem "DM Sans",system-ui,sans-serif;padding:11px 22px;cursor:pointer}' +
+      '#ecg-refus button.second{background:none;border:1px solid #2a2a35;color:#8a8880;margin-left:10px}' +
+      '#ecg-refus button.second:hover{border-color:#c8a96e;color:#c8a96e}';
     (document.head || document.documentElement).appendChild(css);
 
     var poser = function () {
@@ -1223,8 +1479,13 @@
         '<h1>' + titre + '</h1>' +
         '<p>' + texte + '</p>' +
         (sousTexte ? '<div class="qui">' + sousTexte + '</div>' : '') +
-        '<button type="button">' + libelleBouton + '</button></div>';
+        '<button type="button">' + libelleBouton + '</button>' +
+        (secondaire ? '<button type="button" class="second">' + secondaire.libelle + '</button>' : '') +
+        '</div>';
       d.querySelector('button').addEventListener('click', function () { location.replace(urlRetour); });
+      if (secondaire) {
+        d.querySelector('button.second').addEventListener('click', function () { location.replace(secondaire.url); });
+      }
       document.body.appendChild(d);
     };
     if (document.body) poser();
@@ -1252,6 +1513,41 @@
     ecranRefus('Rubrique verrouillée',
       'La rubrique « ' + rub.nom + suffixe + ' » n\'est pas encore disponible.',
       'Un administrateur peut la déverrouiller depuis l\'espace admin.', urlRetour, 'Retour');
+  }
+
+  /* Contenu réservé aux abonnés : même écran, mais le bouton
+     principal mène à l'offre plutôt qu'en arrière. */
+  function refuserPremium(rub) {
+    var quoi = rub.nom
+      ? 'La rubrique « ' + rub.nom + (rub.niveau === 3 ? ' (' + rub.groupe + ')' : '') + ' »'
+      : 'Ce contenu';
+    ecranRefus('Contenu Premium',
+      quoi + (rub.nom ? ' est réservée' : ' est réservé') + ' aux membres Premium.',
+      'Tu es déjà abonné·e ? Recharge la page dans un instant.',
+      TARIFS_URL + '?depuis=' + encodeURIComponent(location.pathname), 'Découvrir Premium',
+      { libelle: 'Retour', url: BASE + rub.retour });
+    /* Le cadenas n'a pas de sens ici : une étoile, plutôt. */
+    var poser = function () {
+      var cle = document.querySelector('#ecg-refus .cle');
+      if (cle) { cle.textContent = '✦'; cle.style.color = '#c8a96e'; }
+    };
+    if (document.body) setTimeout(poser, 0);
+    else document.addEventListener('DOMContentLoaded', function () { setTimeout(poser, 0); });
+  }
+
+  function bandeauPremiumAdmin(rub) {
+    if (document.getElementById('ecg-verrou-admin')) return;
+    var quoi = rub.nom ? ('« ' + rub.nom + (rub.niveau === 3 ? ' (' + rub.groupe + ')' : '') + ' »') : 'Cette page';
+    var poser = function () {
+      var d = document.createElement('div');
+      d.id = 'ecg-verrou-admin';
+      d.textContent = '✦ ' + quoi + ' est réservée aux abonnés Premium — visible parce que tu es administrateur.';
+      d.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:2147483646;background:#2a2416;color:#c8a96e;' +
+        'font:500 .8rem/1.5 "DM Sans",system-ui,sans-serif;padding:10px 18px;text-align:center';
+      document.body.appendChild(d);
+    };
+    if (document.body) poser();
+    else document.addEventListener('DOMContentLoaded', poser);
   }
 
   /* Bandeau discret pour un administrateur qui consulte une
@@ -1365,6 +1661,7 @@
       '<button type="button" id="ecg-favoris" role="menuitem">Mes favoris<span id="ecg-fav-count"></span></button>' +
       '<button type="button" id="ecg-agenda" role="menuitem">Mon agenda</button>' +
       '<button type="button" id="ecg-newsletter" role="menuitem">Ma newsletter</button>' +
+      '<button type="button" id="ecg-abonnement" role="menuitem">Mon abonnement</button>' +
       '<button type="button" id="ecg-contact" role="menuitem">Contact</button>' +
       (admin ? '<button type="button" id="ecg-admin" class="admin" role="menuitem">Espace administrateur</button>' : '') +
       (admin ? '<button type="button" id="ecg-idees" class="admin" role="menuitem">Idées d\'articles</button>' : '') +
@@ -1402,6 +1699,25 @@
     wrap.querySelector('#ecg-favoris').addEventListener('click', function () { location.href = BASE + 'favoris.html'; });
     wrap.querySelector('#ecg-agenda').addEventListener('click', function () { location.href = BASE + 'agenda.html'; });
     wrap.querySelector('#ecg-newsletter').addEventListener('click', function () { location.href = BASE + 'newsletter.html'; });
+    wrap.querySelector('#ecg-abonnement').addEventListener('click', function () { location.href = BASE + 'abonnement.html'; });
+
+    /* Pastille « Premium » sous le nom, d'après le dernier statut
+       connu, puis confirmée par la base. */
+    function pastillePremium(st) {
+      var qui = wrap.querySelector('.who');
+      var deja = qui.querySelector('i.premium');
+      if (st && st.premium && !deja) {
+        var i = document.createElement('i');
+        i.className = 'premium';
+        i.textContent = '✦ Premium';
+        i.style.cssText = 'color:#c8a96e;background:rgba(200,169,110,.14)' + (qui.querySelector('i') ? ';margin-left:6px' : '');
+        qui.appendChild(i);
+      } else if ((!st || !st.premium) && deja) {
+        deja.parentNode.removeChild(deja);
+      }
+    }
+    pastillePremium(premiumLocal());
+    statutPremium().then(pastillePremium);
     wrap.querySelector('#ecg-contact').addEventListener('click', function () { location.href = BASE + 'contact.html'; });
     if (admin) wrap.querySelector('#ecg-admin').addEventListener('click', function () { location.href = ADMIN_URL; });
     if (admin) wrap.querySelector('#ecg-idees').addEventListener('click', function () { location.href = BASE + 'idees-articles.html'; });
