@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Le développement durable : concilier croissance, justice et planète</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<style>
+  :root{
+    --kraft:#dde5d3; --paper:#f3f6ea; --paper2:#e7eed9; --ink:#1a2415; --ink-dim:#4a5a3f; --ink-faint:#8a9a7c;
+    --rule:#bfcdab; --stamp:#4a7c2a; --ledger:#2a5a6a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--kraft); color:var(--ink); font-family:'Newsreader',Georgia,serif;
+    padding:8px 16px 60px; overflow-x:hidden;
+    background-image:
+      radial-gradient(ellipse at 15% 10%, rgba(255,255,255,0.3), transparent 55%),
+      radial-gradient(ellipse at 90% 85%, rgba(0,0,0,0.05), transparent 50%);
+  }
+  nav{width:100%; margin:0 auto 22px; display:flex; align-items:center; justify-content:space-between; padding:18px 24px; box-sizing:border-box; background:var(--paper2); border-bottom:1px solid var(--rule); position:sticky; top:0; z-index:100}
+  .nav-logo{font-family:'Fraunces',serif; font-size:1.1rem; font-weight:700; color:var(--stamp); cursor:pointer}
+  .breadcrumb{display:flex; align-items:center; gap:8px; font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--ink-dim); flex-wrap:wrap}
+  .breadcrumb a{color:var(--ink-dim); text-decoration:none}
+  .breadcrumb a:hover{color:var(--stamp)}
+  .breadcrumb .sep{color:var(--ink-faint)}
+  .breadcrumb .current{color:var(--ink)}
+  .card{
+    max-width:1000px; margin:0 auto; background:var(--paper);
+    border:1px solid var(--rule); position:relative;
+    box-shadow:0 1px 0 rgba(255,255,255,0.5) inset, 0 18px 40px rgba(20,32,26,0.18);
+  }
+  .tab{
+    position:absolute; top:-16px; left:36px; background:var(--paper);
+    border:1px solid var(--rule); border-bottom:none;
+    padding:6px 16px 10px; font-family:'IBM Plex Mono',monospace; font-size:10px;
+    letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-dim);
+  }
+  .stamp{
+    position:absolute; top:34px; right:34px; width:76px; height:76px;
+    border:2px solid var(--stamp); border-radius:50%;
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    transform:rotate(-8deg); opacity:0.85; background:var(--paper);
+  }
+  .stamp span{
+    font-family:'IBM Plex Mono',monospace; font-size:8.5px; font-weight:600;
+    letter-spacing:0.08em; text-transform:uppercase; color:var(--stamp); line-height:1.4;
+  }
+  .head{padding:54px 48px 30px; border-bottom:1px dashed var(--rule)}
+  .catno{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ledger); letter-spacing:0.08em; margin-bottom:18px}
+  .catno b{color:var(--ink)}
+  h1{font-family:'Fraunces',serif; font-weight:700; font-size:32px; line-height:1.18; margin-bottom:16px; text-wrap:balance; max-width:560px}
+  .intro{font-size:15px; line-height:1.75; color:var(--ink-dim); font-style:italic; border-left:2px solid var(--stamp); padding-left:16px; max-width:660px}
+  .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--rule); border-top:1px dashed var(--rule); border-bottom:1px dashed var(--rule)}
+  .stat{background:var(--paper2); padding:18px 14px; text-align:center}
+  .stat-num{font-family:'Fraunces',serif; font-weight:700; font-size:22px; color:var(--stamp); display:block; margin-bottom:4px}
+  .stat-desc{font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:0.04em; color:var(--ink-dim); line-height:1.4}
+  .body{padding:36px 48px 46px}
+  .cols{display:grid; grid-template-columns:1fr 1fr; gap:44px}
+  .sub{font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--stamp); margin:26px 0 10px; padding-bottom:7px; border-bottom:1px solid var(--rule)}
+  .sub:first-child{margin-top:0}
+  p{font-size:14.5px; line-height:1.78; color:var(--ink); margin-bottom:13px}
+  em{color:var(--ledger); font-style:italic}
+  .quote{background:rgba(20,32,26,0.045); border-left:2px solid var(--stamp); padding:16px 20px; margin:20px 0; border-radius:0 6px 6px 0}
+  .quote p{margin:0 0 7px; font-size:14.5px; font-style:italic}
+  .quote cite{font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--stamp); font-style:normal; letter-spacing:0.04em}
+  .note{background:var(--paper2); border:1px solid var(--rule); border-radius:6px; padding:15px 18px; margin:18px 0; display:flex; gap:13px; align-items:flex-start}
+  .note-icon{font-size:22px; flex-shrink:0; margin-top:1px}
+  .note-text{font-size:13px; line-height:1.65; color:var(--ink-dim)}
+  .note-text strong{color:var(--ink)}
+  .tl{margin:18px 0 6px; border-left:2px dashed var(--rule); padding-left:20px}
+  .tl-item{margin-bottom:16px; position:relative}
+  .tl-item::before{content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:var(--stamp); border:2px solid var(--paper); box-shadow:0 0 0 1px var(--rule)}
+  .tl-date{font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--stamp); margin-bottom:3px}
+  .tl-text{font-size:13.5px; color:var(--ink-dim); line-height:1.6; margin:0}
+  .ctx{ background:linear-gradient(160deg,#3d6b22,#14260b); color:#f3f6ea; border-radius:8px; padding:24px 26px; margin-top:26px; border:1px solid var(--stamp); }
+  .ctx-label{font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.2em; text-transform:uppercase; color:#c9e89a; margin-bottom:10px; font-weight:600}
+  .ctx p{font-family:'Newsreader',serif; font-size:13.5px; color:rgba(243,246,234,0.9); line-height:1.7; margin:0}
+  .ctx p + p{margin-top:10px}
+  .ctx em{color:#c9e89a}
+  .foot{border-top:1px dashed var(--rule); padding:16px 48px; display:flex; justify-content:space-between; font-family:'IBM Plex Mono',monospace; font-size:9.5px; color:var(--ink-dim); letter-spacing:0.05em}
+  @media(max-width:768px){
+    .cols{grid-template-columns:1fr}
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .head{padding:48px 24px 24px}
+    .body{padding:24px 24px 32px}
+    .foot{padding:14px 24px}
+    .stamp{width:58px; height:58px; top:22px; right:20px}
+    h1{font-size:26px; max-width:100%}
+    nav{padding:14px 16px}
+  }
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo" onclick="window.location.href='../index.html'">ECG Prépa</div>
+  <div class="breadcrumb">
+    <a href="../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../culture-generale.html">Culture Générale</a>
+    <span class="sep">/</span>
+    <span class="current">Le développement durable : concilier croissance, justice et planète</span>
+  </div>
+</nav>
+
+<div class="card">
+  <div class="tab">Dossier n° 051</div>
+  <div class="stamp"><span>Fiche<br>vérifiée</span></div>
+
+  <div class="head">
+    <div class="catno">CLASSÉE SOUS — <b>🌱 Environnement · 🌍 Diplomatie · 💶 Économie · ⚖️ Justice sociale</b></div>
+    <h1>Le développement durable&nbsp;: concilier croissance, justice et planète</h1>
+    <p class="intro">Popularisé en 1987 par le rapport Brundtland, le développement durable promet de réconcilier ce que le XXe siècle avait opposé : la croissance économique, la justice sociale et la préservation de la planète. Devenu la matrice des grands sommets onusiens, des politiques publiques et des stratégies d'entreprise, il est aussi l'un des concepts les plus discutés de notre temps — horizon indispensable pour les uns, <em>oxymore</em> commode pour les autres.</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><span class="stat-num">1987</span><span class="stat-desc">Rapport Brundtland,<br/>Notre avenir à tous</span></div>
+    <div class="stat"><span class="stat-num">17</span><span class="stat-desc">Objectifs de développement<br/>durable (Agenda 2030)</span></div>
+    <div class="stat"><span class="stat-num">169</span><span class="stat-desc">Cibles adoptées<br/>par 193 États en 2015</span></div>
+    <div class="stat"><span class="stat-num">7 / 9</span><span class="stat-desc">Limites planétaires<br/>dépassées (2025)</span></div>
+  </div>
+
+  <div class="body">
+    <div class="cols">
+      <div>
+        <div class="sub">Genèse : de Stockholm au rapport Brundtland</div>
+        <p>La prise de conscience naît au tournant des années 1970. En 1972, le rapport Meadows commandé par le Club de Rome alerte sur les <em>limites de la croissance</em> dans un monde fini, tandis que la conférence des Nations unies de Stockholm, première grande réunion internationale sur l'environnement, crée le Programme des Nations unies pour l'environnement (PNUE). L'économiste Ignacy Sachs y défend l'idée d'<em>écodéveloppement</em> : un développement pensé dès l'origine avec ses contraintes écologiques.</p>
+        <p>En 1987, la Commission mondiale sur l'environnement et le développement, présidée par la Première ministre norvégienne Gro Harlem Brundtland, publie <em>Notre avenir à tous</em>. Le rapport fixe la définition qui fait encore référence et introduit une idée neuve : la <strong>solidarité entre les générations</strong>, à côté de la solidarité entre pays riches et pays pauvres.</p>
+        <div class="quote"><p>« Le développement durable est un développement qui répond aux besoins du présent sans compromettre la capacité des générations futures de répondre aux leurs. »</p><cite>— Rapport Brundtland, Notre avenir à tous, 1987</cite></div>
+        <div class="sub">Les trois piliers : viable, vivable, équitable</div>
+        <p>Le développement durable se représente classiquement comme l'intersection de trois sphères : l'<strong>économique</strong> (produire des richesses), le <strong>social</strong> (satisfaire les besoins de tous, réduire les inégalités) et l'<strong>environnemental</strong> (préserver les ressources et les écosystèmes). Leurs intersections deux à deux dessinent un développement <em>viable</em> (économie et environnement), <em>vivable</em> (social et environnement) et <em>équitable</em> (économie et social). En 1994, John Elkington transpose l'idée au monde de l'entreprise avec la <em>triple bottom line</em> : <em>people, planet, profit</em>.</p>
+        <div class="note"><div class="note-icon">⚖️</div><div class="note-text"><strong>Durabilité faible ou forte ?</strong> Pour les tenants de la durabilité <em>faible</em> (Robert Solow), le capital naturel peut être remplacé par du capital produit par l'homme : il suffit de transmettre un stock global de richesse constant. Pour ceux de la durabilité <em>forte</em> (Herman Daly), certains éléments du capital naturel — climat stable, biodiversité — sont irremplaçables et doivent être préservés en tant que tels.</div></div>
+        <div class="sub">Chronologie</div>
+        <div class="tl">
+          <div class="tl-item"><div class="tl-date">1972</div><p class="tl-text">Rapport Meadows et conférence de Stockholm, création du PNUE.</p></div>
+          <div class="tl-item"><div class="tl-date">1987</div><p class="tl-text">Rapport Brundtland : définition du développement durable.</p></div>
+          <div class="tl-item"><div class="tl-date">1992</div><p class="tl-text">Sommet de la Terre de Rio : Agenda 21, conventions sur le climat et la biodiversité.</p></div>
+          <div class="tl-item"><div class="tl-date">1997</div><p class="tl-text">Protocole de Kyoto : premiers objectifs chiffrés de réduction des émissions pour les pays industrialisés.</p></div>
+          <div class="tl-item"><div class="tl-date">2000</div><p class="tl-text">Les huit Objectifs du millénaire pour le développement (OMD), horizon 2015.</p></div>
+          <div class="tl-item"><div class="tl-date">2005</div><p class="tl-text">La Charte de l'environnement entre dans la Constitution française.</p></div>
+          <div class="tl-item"><div class="tl-date">Sept. 2015</div><p class="tl-text">Adoption de l'Agenda 2030 et de ses 17 ODD à l'ONU.</p></div>
+          <div class="tl-item"><div class="tl-date">Déc. 2015</div><p class="tl-text">Accord de Paris : contenir le réchauffement nettement sous 2 °C.</p></div>
+        </div>
+      </div>
+      <div>
+        <div class="sub">Rio, 1992 : le développement durable devient un programme</div>
+        <p>Le Sommet de la Terre de Rio de Janeiro consacre le concept à l'échelle mondiale. Il adopte une déclaration de 27 principes, dont le <strong>principe de précaution</strong> (principe 15) et celui des <strong>responsabilités communes mais différenciées</strong> (principe 7), qui reconnaît la dette écologique des pays industrialisés. Il lance l'Agenda 21, un plan d'action décliné jusqu'à l'échelle des collectivités locales, et ouvre à la signature les conventions sur le climat et sur la biodiversité.</p>
+        <div class="quote"><p>« Notre maison brûle et nous regardons ailleurs. »</p><cite>— Jacques Chirac, Sommet de la Terre de Johannesburg, 2002</cite></div>
+        <div class="sub">L'Agenda 2030 et les 17 ODD</div>
+        <p>En septembre 2015, les 193 États membres de l'ONU adoptent l'Agenda 2030. Ses 17 Objectifs de développement durable (ODD) et 169 cibles vont de l'éradication de la pauvreté (ODD 1) à l'action climatique (ODD 13) en passant par l'égalité entre les sexes (ODD 5). À la différence des OMD, réservés aux pays du Sud, ils s'appliquent à tous les pays, riches compris. Mais à cinq ans de l'échéance, le bilan est sombre : selon l'ONU, à peine plus d'un tiers des cibles progresse à un rythme suffisant, et près d'une sur cinq recule.</p>
+        <div class="note"><div class="note-icon">🌡️</div><div class="note-text"><strong>Les limites planétaires :</strong> définies en 2009 par l'équipe de Johan Rockström (Stockholm Resilience Centre), ces neuf seuils — climat, biodiversité, cycles de l'azote et du phosphore, eau douce… — délimitent un « espace de fonctionnement sûr » pour l'humanité. En 2025, sept sur neuf sont dépassés, dont désormais l'acidification des océans. L'économiste Kate Raworth en a tiré sa « théorie du donut » : un plancher social à garantir, un plafond écologique à ne pas franchir.</div></div>
+        <div class="sub">Un concept contesté : croissance verte ou décroissance ?</div>
+        <p>Pour ses partisans, la <strong>croissance verte</strong> est possible grâce au progrès technique, qui permettrait de <em>découpler</em> la création de richesse de la consommation de ressources ; la courbe environnementale de Kuznets suggère même que la pollution finit par reculer quand le revenu augmente. Ses critiques répondent que le découplage observé reste le plus souvent <em>relatif</em> — moins d'émissions par unité de PIB — et non <em>absolu</em>, comme le montre Tim Jackson dans <em>Prospérité sans croissance</em> (2009). Serge Latouche, figure de la décroissance, voit dans le développement durable un <em>oxymore</em> qui permet de ne rien changer. D'autres dénoncent le <em>greenwashing</em> des entreprises, que l'Union européenne tente d'encadrer par des obligations de reporting extra-financier (directive CSRD, 2022).</p>
+        <div class="ctx">
+          <div class="ctx-label">Un consensus apparent, un conflit réel</div>
+          <p>Le succès du développement durable tient à son ambiguïté : chacun peut y lire la priorité qui lui convient, qu'il s'agisse de croissance pour les pays du Sud, de climat pour les ONG ou de compétitivité pour les entreprises.</p>
+          <p>Dans une copie, il est utile de le présenter comme un <em>compromis</em> plutôt que comme une solution : il pose la question de l'arbitrage entre générations présentes et futures, que Hans Jonas formulait dès 1979 dans <em>Le Principe responsabilité</em> — agir de façon que les effets de notre action soient compatibles avec la permanence d'une vie authentiquement humaine sur Terre.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot"><span>ECG Prépa — Culture Générale</span><span>Dossier n° 051 · Environnement</span></div>
+</div>
+
+</body>
+</html>
