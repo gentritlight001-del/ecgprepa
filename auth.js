@@ -185,8 +185,8 @@
      correspondent aux secrets STRIPE_PRIX_MENSUEL / STRIPE_PRIX_ANNUEL
      des fonctions Edge : ne pas les changer. */
   var OFFRES_PREMIUM = [
-    { id: 'mensuel', nom: 'Mensuel', prix: 4.90,  unite: '/ mois', mois: 1,  detail: 'Sans engagement, résiliable à tout moment.' },
-    { id: 'annuel',  nom: 'Annuel',  prix: 39.00, unite: '/ an',   mois: 12, detail: 'Une année de prépa, payée une fois.', etiquette: true }
+    { id: 'mensuel', nom: 'Mensuel', prix: 1.99,  unite: '/ mois', mois: 1,  detail: 'Sans engagement, résiliable à tout moment.' },
+    { id: 'annuel',  nom: 'Annuel',  prix: 15.00, unite: '/ an',   mois: 12, detail: 'Une année de prépa, payée une fois.', etiquette: true }
   ];
 
   /* Repère TOUTES les rubriques (le cas échéant, plusieurs niveaux
