@@ -38,7 +38,8 @@ create table if not exists public.abonnements (
   stripe_abonnement  text unique,          -- sub_…
   -- Statut tel que donné par Stripe : active, trialing, past_due,
   -- canceled, unpaid, incomplete, incomplete_expired, paused
-  -- (ou « aucun » tant qu'aucun paiement n'a abouti).
+  -- (ou « aucun » tant qu'aucun paiement n'a abouti, ou « offert »
+  -- pour un accès gratuit obtenu avec le code d'accès).
   statut             text not null default 'aucun',
   offre              text,                 -- 'mensuel' | 'annuel'
   fin_periode        timestamptz,          -- fin de la période payée
@@ -97,8 +98,9 @@ language sql stable security definer set search_path = public
 as $$
   select json_build_object(
     'premium', coalesce(bool_or(
-        a.statut in ('active', 'trialing', 'past_due')
-        and (a.fin_periode is null or a.fin_periode > now() - interval '3 days')
+        a.statut = 'offert'   -- accès offert par code (voir plus bas)
+        or (a.statut in ('active', 'trialing', 'past_due')
+            and (a.fin_periode is null or a.fin_periode > now() - interval '3 days'))
       ), false),
     'statut',            max(a.statut),
     'offre',             max(a.offre),
@@ -139,3 +141,141 @@ $$;
 
 revoke all on function public.abonnes_premium() from public, anon;
 grant execute on function public.abonnes_premium() to authenticated;
+
+
+-- ══════════════════════════════════════════════════════════════════
+--  Accès offert par code
+--
+--  L'administrateur choisit un code dans l'admin (onglet Premium).
+--  Un membre qui le saisit dans « Mon abonnement » obtient le
+--  Premium gratuitement, sans limite de durée, jusqu'à ce que
+--  l'administrateur le lui retire. Changer le code n'enlève pas
+--  l'accès à ceux qui l'ont déjà utilisé.
+-- ══════════════════════════════════════════════════════════════════
+
+-- Le code lui-même : une seule ligne, invisible depuis le navigateur
+-- (aucune politique RLS) ; lu et modifié uniquement par les fonctions
+-- ci-dessous.
+create table if not exists public.code_acces (
+  id      int primary key default 1 check (id = 1),
+  code    text,
+  actif   boolean not null default false,
+  maj_le  timestamptz not null default now()
+);
+alter table public.code_acces enable row level security;
+
+-- Tentatives de saisie, pour bloquer les essais en rafale.
+create table if not exists public.code_acces_tentatives (
+  id           bigserial primary key,
+  utilisateur  uuid not null references auth.users(id) on delete cascade,
+  t            timestamptz not null default now()
+);
+create index if not exists code_acces_tentatives_u_t on public.code_acces_tentatives (utilisateur, t);
+alter table public.code_acces_tentatives enable row level security;
+
+-- Le membre saisit un code. Renvoie { ok: true } ou { ok: false, raison }.
+-- raison : connexion | trop_de_tentatives | inactif | mauvais_code | deja_abonne
+create or replace function public.utiliser_code_acces(p_code text)
+returns json
+language plpgsql volatile security definer set search_path = public
+as $$
+declare
+  v_uid   uuid := auth.uid();
+  v_code  public.code_acces%rowtype;
+  v_ligne public.abonnements%rowtype;
+begin
+  if v_uid is null or not exists (
+    select 1 from public.profils where id = v_uid and statut = 'actif'
+  ) then
+    return json_build_object('ok', false, 'raison', 'connexion');
+  end if;
+
+  -- 5 essais par heure et par membre.
+  if (select count(*) from public.code_acces_tentatives
+      where utilisateur = v_uid and t > now() - interval '1 hour') >= 5 then
+    return json_build_object('ok', false, 'raison', 'trop_de_tentatives');
+  end if;
+  insert into public.code_acces_tentatives (utilisateur) values (v_uid);
+
+  select * into v_code from public.code_acces where id = 1;
+  if not found or not v_code.actif or coalesce(v_code.code, '') = '' then
+    return json_build_object('ok', false, 'raison', 'inactif');
+  end if;
+  if lower(btrim(coalesce(p_code, ''))) <> lower(btrim(v_code.code)) then
+    return json_build_object('ok', false, 'raison', 'mauvais_code');
+  end if;
+
+  -- Un abonné payant garde son abonnement Stripe tel quel.
+  select * into v_ligne from public.abonnements where utilisateur = v_uid;
+  if found and v_ligne.statut in ('active', 'trialing', 'past_due') then
+    return json_build_object('ok', false, 'raison', 'deja_abonne');
+  end if;
+
+  insert into public.abonnements (utilisateur, statut, offre, fin_periode, annulation_prevue, maj_le)
+  values (v_uid, 'offert', 'offert', null, false, now())
+  on conflict (utilisateur) do update
+    set statut = 'offert', offre = 'offert', fin_periode = null,
+        annulation_prevue = false, maj_le = now();
+
+  delete from public.code_acces_tentatives where utilisateur = v_uid;
+  return json_build_object('ok', true);
+end;
+$$;
+
+revoke all on function public.utiliser_code_acces(text) from public, anon;
+grant execute on function public.utiliser_code_acces(text) to authenticated;
+
+-- Admin : lire le code actuel et le nombre d'accès offerts.
+create or replace function public.etat_code_acces()
+returns json
+language plpgsql stable security definer set search_path = public
+as $$
+begin
+  if not public.premium_est_admin() then raise exception 'non_autorise'; end if;
+  return (
+    select json_build_object(
+      'code',  c.code,
+      'actif', coalesce(c.actif, false),
+      'maj_le', c.maj_le,
+      'offerts', (select count(*) from public.abonnements where statut = 'offert')
+    )
+    from (select 1) x left join public.code_acces c on c.id = 1
+  );
+end;
+$$;
+
+-- Admin : changer le code et/ou l'activer. p_code null = garder le code actuel.
+create or replace function public.definir_code_acces(p_code text, p_actif boolean)
+returns void
+language plpgsql volatile security definer set search_path = public
+as $$
+begin
+  if not public.premium_est_admin() then raise exception 'non_autorise'; end if;
+  insert into public.code_acces (id, code, actif, maj_le)
+  values (1, nullif(btrim(p_code), ''), coalesce(p_actif, false), now())
+  on conflict (id) do update
+    set code  = coalesce(nullif(btrim(p_code), ''), public.code_acces.code),
+        actif = coalesce(p_actif, public.code_acces.actif),
+        maj_le = now();
+end;
+$$;
+
+-- Admin : retirer un accès offert (ne touche jamais un abonnement payant).
+create or replace function public.retirer_acces_offert(p_utilisateur uuid)
+returns void
+language plpgsql volatile security definer set search_path = public
+as $$
+begin
+  if not public.premium_est_admin() then raise exception 'non_autorise'; end if;
+  update public.abonnements
+     set statut = 'aucun', offre = null, maj_le = now()
+   where utilisateur = p_utilisateur and statut = 'offert';
+end;
+$$;
+
+revoke all on function public.etat_code_acces() from public, anon;
+revoke all on function public.definir_code_acces(text, boolean) from public, anon;
+revoke all on function public.retirer_acces_offert(uuid) from public, anon;
+grant execute on function public.etat_code_acces() to authenticated;
+grant execute on function public.definir_code_acces(text, boolean) to authenticated;
+grant execute on function public.retirer_acces_offert(uuid) to authenticated;

@@ -20,7 +20,7 @@ auth.js ── rpc mon_abonnement() ──▶ ouvre ou ferme les rubriques marqu
 
 | Fichier | Rôle |
 |---|---|
-| `supabase/premium.sql` | Table `abonnements`, colonne `premium` sur `rubriques_verrouillage`, fonctions `mon_abonnement()` et `abonnes_premium()` |
+| `supabase/premium.sql` | Table `abonnements`, colonne `premium` sur `rubriques_verrouillage`, fonctions `mon_abonnement()` et `abonnes_premium()`, code d'accès offert |
 | `supabase/functions/stripe-paiement` | Crée la session de paiement Stripe Checkout |
 | `supabase/functions/stripe-portail` | Ouvre le portail client (carte, factures, résiliation) |
 | `supabase/functions/stripe-webhook` | Reçoit les événements Stripe et met à jour `abonnements` |
@@ -77,6 +77,16 @@ auth.js ── rpc mon_abonnement() ──▶ ouvre ou ferme les rubriques marqu
 ### 4. Choisir ce qui est payant
 Admin → onglet **Premium** : coche les rubriques réservées. Ou, sur n'importe quelle carte du site,
 le bouton rond **✦** (à gauche du cadenas) bascule ce chapitre précis.
+
+### 5. Offrir l'accès à quelqu'un (code d'accès)
+Admin → onglet **Premium** → bloc « Code d'accès offert » : choisis un code (6 caractères minimum)
+et active-le. Donne-le aux personnes de ton choix : dans **Mon abonnement**, elles le saisissent
+(majuscules et espaces ignorés) et obtiennent tout le Premium, gratuitement et sans date de fin.
+- 5 essais par heure et par compte, pour empêcher de deviner le code.
+- Changer ou désactiver le code n'enlève rien à ceux qui l'ont déjà utilisé.
+- Pour retirer l'accès à quelqu'un : bouton **Retirer** dans la liste des abonnés.
+- Un abonné payant ne peut pas utiliser le code (son abonnement Stripe continuerait de lui être facturé).
+- Le code est stocké dans la table `code_acces`, invisible depuis le navigateur : seul un admin peut le lire.
 
 ## Avant de passer en réel (checklist)
 - [ ] **Statut juridique** : vendre impose un SIRET (la micro-entreprise suffit pour commencer).

@@ -57,7 +57,15 @@
   .btn:disabled{opacity:.4;cursor:default;transform:none;box-shadow:none}
   .btn.ghost{background:none;border:1px solid var(--border);color:var(--text-dim)}
   .btn.ghost:hover:not(:disabled){border-color:var(--accent);color:var(--accent);box-shadow:none}
-  #erreur{color:var(--danger);font-size:.84rem;margin-top:14px}
+  #erreur,#code-msg{color:var(--danger);font-size:.84rem;margin-top:14px}
+  #code-msg.ok{color:var(--green)}
+
+  .carte.code{margin-top:18px}
+  .carte.code h3{font-family:'Playfair Display',serif;font-size:1.15rem;margin-bottom:6px}
+  .champ-code{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+  .champ-code input{flex:1;min-width:200px;background:var(--surface2);border:1px solid var(--border);border-radius:9px;
+    color:var(--text);font:400 .92rem 'DM Sans',sans-serif;padding:12px 14px;outline:none;transition:border-color .18s}
+  .champ-code input:focus{border-color:var(--accent)}
 
   .note{margin-top:28px;font-size:.8rem;color:var(--text-faint);line-height:1.7;font-weight:300}
   .note a{color:var(--text-dim)}
@@ -119,7 +127,20 @@
     var c = $('contenu');
     c.style.display = 'block';
 
-    if (st.premium) {
+    if (st.premium && st.statut === 'offert') {
+      c.innerHTML =
+        '<div class="carte prem">' +
+        '<span class="statut">✦ Accès offert</span>' +
+        '<h2>Tu as accès à tout le site</h2>' +
+        '<p>Ton accès Premium t\'a été offert : tous les contenus réservés te sont ouverts, sans paiement et sans date de fin.</p>' +
+        '<div class="lignes"><div><span>Offre</span><b>Accès offert</b></div></div>' +
+        '<div class="actions">' +
+        '<a class="btn" href="index.html">Aller aux cours</a>' +
+        (st.client_stripe ? '<button class="btn ghost" id="gerer">Mes anciennes factures</button>' : '') +
+        '</div>' +
+        '<div id="erreur" role="alert"></div>' +
+        '</div>';
+    } else if (st.premium) {
       var alerte = st.statut === 'past_due';
       var echeance = st.annulation_prevue
         ? '<div><span>Accès jusqu\'au</span><b>' + date(st.fin_periode) + '</b></div>'
@@ -165,7 +186,18 @@
         (st.client_stripe ? '<button class="btn ghost" id="gerer">Mes factures</button>' : '') +
         '</div>' +
         '<div id="erreur" role="alert"></div>' +
+        '</div>' +
+        /* Code d'accès offert par l'administrateur */
+        '<div class="carte code" id="code">' +
+        '<h3>Tu as un code d\'accès ?</h3>' +
+        '<p>Si on t\'a donné un code, saisis-le ici : il t\'ouvre tout le site gratuitement.</p>' +
+        '<form class="champ-code" id="form-code" autocomplete="off">' +
+        '<input type="text" id="saisie-code" placeholder="Ton code d\'accès" aria-label="Code d\'accès" autocapitalize="off" spellcheck="false">' +
+        '<button class="btn" type="submit" id="valider-code">Valider</button>' +
+        '</form>' +
+        '<div id="code-msg" role="alert"></div>' +
         '</div>';
+      brancherCode();
     }
 
     var g = $('gerer');
@@ -175,6 +207,25 @@
       A.premium.gerer().catch(function (e) {
         g.disabled = false;
         $('erreur').textContent = String((e && e.message) || e);
+      });
+    });
+  }
+
+  function brancherCode() {
+    var form = $('form-code'), champ = $('saisie-code'), btn = $('valider-code'), msg = $('code-msg');
+    if (location.hash === '#code') { champ.focus(); }
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      msg.className = ''; msg.textContent = '';
+      if (!champ.value.trim()) { msg.textContent = 'Saisis ton code.'; return; }
+      btn.disabled = true; btn.textContent = 'Vérification…';
+      A.premium.utiliserCode(champ.value).then(function () {
+        msg.className = 'ok';
+        msg.textContent = 'Code accepté : bienvenue !';
+        return A.premium.statut(true).then(function (st) { setTimeout(function () { afficher(st); }, 900); });
+      }).catch(function (err) {
+        msg.textContent = String((err && err.message) || err);
+        btn.disabled = false; btn.textContent = 'Valider';
       });
     });
   }

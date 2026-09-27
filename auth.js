@@ -769,6 +769,25 @@
           .then(function (d) { location.href = d.url; return d; });
       },
 
+      /* Code d'accès offert par l'administrateur. Si c'est le bon,
+         la base ouvre le Premium à ce membre (statut « offert »). */
+      utiliserCode: function (code) {
+        return sb().then(function (c) {
+          return c.rpc('utiliser_code_acces', { p_code: String(code || '') });
+        }).then(function (r) {
+          if (r.error) throw new Error('Vérification impossible pour le moment. Réessaie dans un instant.');
+          var d = r.data || {};
+          if (d.ok) { _premium = null; return true; }
+          throw new Error({
+            connexion: 'Connecte-toi avec un compte actif pour utiliser un code.',
+            trop_de_tentatives: 'Trop d\'essais. Réessaie dans une heure.',
+            inactif: 'Aucun code d\'accès n\'est valable en ce moment.',
+            mauvais_code: 'Ce code n\'est pas le bon.',
+            deja_abonne: 'Tu as déjà un abonnement Premium en cours : garde-le, ou résilie-le avant d\'utiliser un code.'
+          }[d.raison] || 'Code refusé.');
+        });
+      },
+
       /* Ouvre le portail client Stripe (carte, factures, résiliation). */
       gerer: function () {
         return appelerFonction('stripe-portail', {})
@@ -922,6 +941,27 @@
         var libelle = meta ? meta.nom + (meta.niveau === 3 ? ' (' + meta.groupe + ')' : '') : id;
         return noter('reglage', (profilLocal() || {}).email, libelle + (premium ? ' → Premium' : ' → gratuite'));
       });
+    },
+
+    /* Code d'accès offert : { code, actif, maj_le, offerts } */
+    etatCode: function () {
+      return sb().then(function (c) { return T(c.rpc('etat_code_acces')); });
+    },
+
+    /* code : nouveau code (ou null pour garder l'actuel) ; actif : true/false */
+    definirCode: function (code, actif) {
+      return sb().then(function (c) {
+        return T(c.rpc('definir_code_acces', { p_code: code == null ? null : String(code), p_actif: !!actif }));
+      }).then(function () {
+        return noter('reglage', (profilLocal() || {}).email, 'code d\'accès ' + (actif ? 'activé' : 'désactivé') + (code ? ' (nouveau code)' : ''));
+      });
+    },
+
+    /* Retire un accès offert (ne touche jamais un abonnement payant). */
+    retirerAccesOffert: function (id, email) {
+      return sb().then(function (c) {
+        return T(c.rpc('retirer_acces_offert', { p_utilisateur: id }));
+      }).then(function () { return noter('reglage', email, 'accès Premium offert retiré'); });
     },
 
     /* Tous les abonnés (actuels et passés), avec nom et adresse. */

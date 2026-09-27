@@ -68,6 +68,9 @@ async function synchroniser(s: Stripe, idAbonnement: string, extra: Record<strin
     .select('stripe_abonnement,statut')
     .eq('utilisateur', utilisateur).maybeSingle();
 
+  // Un abonnement Stripe terminé ne retire pas un accès offert par code.
+  if (ligne?.statut === 'offert' && !ACTIFS.includes(sub.status)) return;
+
   // Un vieil abonnement terminé ne doit pas écraser un abonnement
   // plus récent encore en cours.
   if (ligne?.stripe_abonnement && ligne.stripe_abonnement !== sub.id &&

@@ -45,6 +45,9 @@ Deno.serve(async (req) => {
     // Pas de second abonnement par-dessus un abonnement en cours.
     const encours = ligne && ['active', 'trialing', 'past_due'].includes(ligne.statut) &&
       (!ligne.fin_periode || new Date(ligne.fin_periode).getTime() > Date.now());
+    if (ligne?.statut === 'offert') {
+      return json({ erreur: 'Tu as déjà un accès Premium offert : pas besoin de payer.', deja: true }, 409);
+    }
     if (encours) {
       return json({ erreur: 'Tu es déjà abonné·e. Gère ton abonnement depuis la page « Mon abonnement ».', deja: true }, 409);
     }
