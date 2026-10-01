@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Colombie : la méga-prison Renacer</title>
+<link rel="stylesheet" href="../../../fonts/fonts.css">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #c60b1e;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #c60b1e; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #f1bf00; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #c60b1e; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #c60b1e; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #c60b1e; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#c60b1e; border-color:#c60b1e; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  .ap-band { position: relative; z-index: 1; background: #b5131f; text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(28,5,8,0.95); padding:12px 60px; border-bottom: 1px solid rgba(198,11,30,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#f1bf00; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(198,11,30,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(181,19,31,0.2);  color:#f08080; border:1px solid rgba(181,19,31,0.35); }
+  .ap-tag-navy   { background:rgba(13,27,42,0.6);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #f1bf00; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(14,5,5,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(198,11,30,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(241,191,0,0.7); }
+
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#f1bf00; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(241,191,0,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#1a0204,#2e080c); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat.blue   { background:linear-gradient(135deg,#071422,#0d2540); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #f1bf00; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(241,191,0,0.06),rgba(241,191,0,0.02)); border-left:3px solid #f1bf00; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(241,191,0,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(241,191,0,0.7); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(28,5,8,0.9),rgba(14,3,4,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(198,11,30,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#f1bf00; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(198,11,30,0.06); border:1px solid rgba(198,11,30,0.18); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(241,191,0,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#f1bf00; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(241,191,0,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#f1bf00; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(28,5,8,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-hero-cap { padding:10px 40px; font-family:'DM Mono',monospace; font-size:10px; line-height:1.55; letter-spacing:0.04em; color:rgba(255,255,255,0.45); border-bottom:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.02); }
+  .ap-es-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.25s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+    .ap-hero-cap { padding:10px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-es.html">Espagnol</a>
+    <span class="sep">/</span>
+    <a href="../colombie.html">Colombie</a>
+    <span class="sep">/</span>
+    <span class="current">Méga-prison Renacer</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-es" class="ap-lang-btn" onclick="setLang('es')">🇨🇴 ES</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇨🇴 Colombie — Méga-prison « Renacer »</div>
+<div class="ap-back-bar">
+  <a href="../colombie.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main">
+<div class="ap-card fade-in">
+
+  <div class="ap-hero-img-wrap">
+    <img class="ap-hero-img" style="object-position:center top" src="../images/colombie-mega-prison-haute-securite.webp" alt="Vue aérienne de nuit d'une prison de haute sécurité du Salvador, aux longs pavillons voûtés éclairés, entourée de murs" onerror="this.parentElement.style.display='none'">
+  </div>
+
+  <!-- ═══ SECTION FR ═══ -->
+  <div class="ap-fr-section">
+    <div class="ap-hero-cap">Photo officielle de la présidence du Salvador (logo visible en haut à gauche) : vue aérienne de nuit d'une prison de haute sécurité salvadorienne, vraisemblablement le CECOT. Elle illustre le modèle dont la Colombie s'inspire ; ce n'est pas une image de la prison colombienne « Renacer ».</div>
+    <div class="ap-header">
+      <div class="ap-tags">
+        <span class="ap-tag ap-tag-red">🇨🇴 Colombie</span>
+        <span class="ap-tag ap-tag-navy">Sécurité</span>
+        <span class="ap-tag ap-tag-gold">Prisons</span>
+        <span class="ap-tag ap-tag-orange">Modèle Bukele</span>
+        <span class="ap-tag ap-tag-purple">Droits humains</span>
+      </div>
+      <div class="ap-date">Septembre 2026 — ECG Prépa · Colombie</div>
+      <h1 class="ap-title">Colombie : De la Espriella accélère « Renacer », première d'une série de dix méga-prisons inspirées du modèle Bukele</h1>
+      <p class="ap-intro">Fin septembre 2026, une source de l'Unité des services pénitentiaires et carcéraux (USPEC) a indiqué à l'AFP que la Colombie allait ouvrir « Renacer », une prison de haute sécurité de 1 974 places au nord du pays, présentée comme la première des dix méga-prisons voulues par le président Abelardo de la Espriella. Le chantier n'a toutefois rien de neuf : lancé sous Iván Duque, il cumule plus de quatre ans de retard, et sa capacité reste vingt fois inférieure à celle du CECOT salvadorien.</p>
+    </div>
+
+    <div class="ap-body">
+
+      <div class="ap-stats">
+        <div class="ap-stat red"><span class="ap-stat-num">1 974</span><span class="ap-stat-desc">Places prévues<br>à Renacer (Magdalena)</span></div>
+        <div class="ap-stat gold"><span class="ap-stat-num">291 Md</span><span class="ap-stat-desc">Pesos déjà investis<br>(≈ 87 M$, selon l'AFP)</span></div>
+        <div class="ap-stat blue"><span class="ap-stat-num">10</span><span class="ap-stat-desc">Méga-prisons annoncées<br>pour le mandat 2026-2030</span></div>
+        <div class="ap-stat green"><span class="ap-stat-num">27,1 %</span><span class="ap-stat-desc">Surpopulation carcérale<br>en Colombie (mars 2026)</span></div>
+      </div>
+
+      <div class="ap-facts">
+        <div class="ap-fact"><div class="ap-fact-label">Lieu</div><div class="ap-fact-val">Sabanas de San Ángel, Magdalena (nord de la Colombie), site isolé de 22 hectares</div></div>
+        <div class="ap-fact"><div class="ap-fact-label">Avancement du chantier</div><div class="ap-fact-val">86 à 88 % selon les sources ; 75 % de l'exécution financière</div></div>
+        <div class="ap-fact"><div class="ap-fact-label">Conditions de détention annoncées</div><div class="ap-fact-val">Isolement total, ni réseau mobile ni internet, garde par une division spéciale de l'armée</div></div>
+        <div class="ap-fact"><div class="ap-fact-label">Ouverture visée</div><div class="ap-fact-val">« Dès que possible » ; objectif officiel : avant la fin de 2026</div></div>
+      </div>
+
+      <div class="ap-cols">
+        <div>
+          <div class="ap-sub">Ce qui a été annoncé</div>
+          <p>Le 29 septembre 2026, l'AFP a rapporté, d'après une source de l'USPEC, que la Colombie s'apprêtait à ouvrir « Renacer » (« Renaître »), une prison de haute sécurité bâtie à Sabanas de San Ángel, dans le département de Magdalena. Isolé, le site doit accueillir 1 974 détenus en isolement total. Selon l'agence, le chantier est avancé à 88 % (86 % selon les chiffres publiés par la presse colombienne), l'établissement sera inauguré dès que possible, et sa construction a déjà coûté 291 milliards de pesos, soit environ 87 millions de dollars.</p>
+          <p>Le président Abelardo de la Espriella, en fonction depuis le 7 août 2026, veut en faire la première de dix méga-prisons construites en zones reculées pendant son mandat de quatre ans, pour y enfermer les criminels les plus dangereux. Ces établissements doivent être privés de réseau mobile et d'internet, et gardés par une division spéciale de l'armée. La source de l'USPEC citée par l'AFP résume la consigne présidentielle : relancer immédiatement le chantier. Selon la même dépêche, la marine travaille aussi à un projet de détention de criminels dangereux sur des navires en mer, et une prison de haute sécurité de 1 300 places est en préparation à Medellín.</p>
+
+          <div class="ap-sub">Une idée de campagne devenue priorité d'État</div>
+          <p>Le projet n'est pas né à la faveur de ce chantier. Candidat, Abelardo de la Espriella proposait déjà, lors d'une interview radiophonique du 19 novembre 2025, de bâtir six à huit méga-prisons isolées. Son argument : selon lui, 75 % des extorsions commises en Colombie partiraient des centres pénitentiaires. Dès <a href="colombie-investiture-de-la-espriella.html" style="color:#e8e4d8;text-decoration:underline;text-underline-offset:2px">son discours d'investiture du 7 août</a>, il a annoncé la construction de méga-prisons, puis, fin août, un schéma de <a href="colombie-virage-securitaire.html" style="color:#e8e4d8;text-decoration:underline;text-underline-offset:2px">dix établissements confiés à des concessionnaires privés</a> pour des contrats de cinquante à quatre-vingts ans.</p>
+
+          <div class="ap-quote">
+            <p>« … donde no entre ni la señal de la Santa Cruz para que no pueda seguir extorsionando desde allá. »</p>
+            <cite>— Abelardo de la Espriella, alors candidat, interview radio du 19 novembre 2025 : des prisons « où n'entre même pas le signal de la Sainte Croix, pour qu'il ne puisse plus continuer à extorquer de là-bas » (traduction ; jeu de mots entre « señal », signal, et le signe de croix)</cite>
+          </div>
+
+          <div class="ap-sub">Une prison héritée de Duque</div>
+          <p>Contrairement à ce que l'effet d'annonce laisse penser, Renacer n'est pas une construction lancée par le nouveau pouvoir : le projet remonte au document de politique publique Conpes 3871 de 2016, le contrat de construction a été signé fin 2019 sous Iván Duque, et le chantier traîne depuis. Selon plusieurs médias, le projet initial prévoyait jusqu'à 3 500 places, ramenées à 1 974. Les entreprises et les autorités invoquent des modifications de plans, des retards de permis environnementaux, des problèmes d'ordre public, la dégradation de la route d'accès et des contraintes budgétaires.</p>
+
+          <div class="ap-tl">
+            <div class="ap-tl-item"><div class="ap-tl-date">2016</div><p class="ap-tl-text">Le document Conpes 3871 (gouvernement de Juan Manuel Santos) pose les bases du projet de nouvelle prison à Sabanas de San Ángel.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">26 déc. 2019</div><p class="ap-tl-text">Signature du contrat de construction sous Iván Duque, pour 183,6 milliards de pesos ; le coût des travaux atteindra ensuite 275,4 milliards.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">2021</div><p class="ap-tl-text">Début effectif du chantier, avec un an de décalage sur le calendrier initial.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">Sept. 2022</div><p class="ap-tl-text">Date de livraison initialement prévue, non tenue : le retard cumulé atteint aujourd'hui 49 mois.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">2022-2023</div><p class="ap-tl-text">Menaces d'ordre public, difficultés d'accès et contraintes budgétaires provoquent arrêts et ralentissements du chantier sous Gustavo Petro.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">7 août 2026</div><p class="ap-tl-text">Investiture d'Abelardo de la Espriella : les méga-prisons figurent parmi ses annonces.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">29-30 sept. 2026</div><p class="ap-tl-text">L'AFP révèle l'ouverture prochaine de Renacer. La gouverneure du Magdalena, Margarita Guerra, annonce que les ressources nécessaires ont été obtenues et qu'une date d'ouverture existe, à annoncer officiellement dans les jours suivants.</p></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="ap-sub">Un modèle inspiré du CECOT, à une tout autre échelle</div>
+          <p>L'AFP souligne que Renacer reprend l'architecture de grands pavillons et de cellules individuelles du <a href="bukele-securite.html" style="color:#e8e4d8;text-decoration:underline;text-underline-offset:2px">CECOT salvadorien</a>, vitrine de la politique de Nayib Bukele. Mais la comparaison s'arrête largement là : le CECOT affiche 40 000 places, soit plus de vingt fois la capacité de Renacer. La Colombie s'inscrit par ailleurs dans un mouvement régional : l'AFP rappelle que ce modèle est aussi défendu par l'Équatorien Daniel Noboa et la Péruvienne Keiko Fujimori, et qu'il est dénoncé par les organisations de défense des droits humains pour ses atteintes à la dignité des détenus.</p>
+
+          <table class="ap-table">
+            <thead><tr><th>Critère</th><th>Renacer (Colombie)</th><th>CECOT (Salvador)</th></tr></thead>
+            <tbody>
+              <tr><td class="ap-cell-bold">Capacité</td><td>1 974 places</td><td>40 000 places</td></tr>
+              <tr><td class="ap-cell-bold">Statut</td><td>En construction (86-88 %)</td><td>En service</td></tr>
+              <tr><td class="ap-cell-bold">Contacts avec l'extérieur</td><td>Ni réseau mobile ni internet (objectif annoncé)</td><td>Visites familiales interdites</td></tr>
+            </tbody>
+          </table>
+
+          <div class="ap-sub">Des prisons déjà saturées</div>
+          <p>Le chantier répond aussi à une urgence. Selon l'INPEC, en mars 2026, la Colombie comptait 102 949 détenus pour 81 025 places, soit une surpopulation de 27,1 %, contre 19,9 % en février 2022. Un rapport de transition de l'INPEC évoque en outre un déficit d'environ 12 000 gardiens (14 142 en poste). Dans l'un des centres de détention transitoire de Valledupar, 349 personnes occupaient un espace prévu pour environ 70. La Cour constitutionnelle, qui maintient depuis des années un « état de choses inconstitutionnel » dans les prisons, a de son côté pris des mesures pour lever les obstacles budgétaires de Renacer (auto 756 de 2026) et suit le chantier de près.</p>
+          <p>Renacer ne règle donc qu'une fraction du problème : ses 1 974 places représentent environ 9 % du surplus de détenus (calcul de la rédaction d'après les chiffres de l'INPEC de mars 2026). Et la prison vise d'abord les chefs de réseaux criminels, non la masse des détenus.</p>
+
+          <div class="ap-sub">Critiques et obstacles</div>
+          <p>Le coût est le premier point de friction. Dès le 16 septembre, l'ancien ministre de la Justice de Gustavo Petro, Jorge Iván Cuervo, jugeait que dix méga-prisons sur le modèle panaméen de La Nueva Joya coûteraient environ 5 billions de pesos, et demandait si c'était une priorité en période d'ajustement budgétaire. Le ministre de la Justice, Iván Cancino, a pour sa part déclaré que construire des prisons exigeait des ressources et que la planification restait « bastante abierta », tout en promettant aussi des cultures de substitution et des « prisons productives ».</p>
+
+          <div class="ap-quote">
+            <p>« Dix “méga-prisons” comme celles de La Nueva Joya au Panamá, qui semble être le modèle à suivre, coûteraient environ 5 billions. Est-ce la priorité en période d'ajustement budgétaire ? »</p>
+            <cite>— Jorge Iván Cuervo, ancien ministre de la Justice, septembre 2026 (traduction ; 5 billions = 5 000 milliards de pesos)</cite>
+          </div>
+
+          <p>Les spécialistes consultés par Infobae en mars 2026 formulaient d'autres réserves : le criminologue Norberto Hernández Jiménez (Université Javeriana) rappelle que, selon la Constitution colombienne, la dignité et la resocialisation doivent primer ; Hugo Acero, ancien secrétaire à la Sécurité de Bogotá, estime qu'une prison devient ingérable au-delà de 2 000 à 2 500 détenus, ce qui place Renacer (1 974 places) juste sous ce seuil ; Angélica Beltrán, de la Corporación Humanas, juge que construire davantage de prisons ne résout pas la crise structurelle.</p>
+
+          <div class="ap-info">
+            <div class="ap-info-icon">⚠️</div>
+            <div class="ap-info-text"><strong>À retenir :</strong> Renacer n'est pas encore ouverte. Elle sera une prison de haute sécurité parmi d'autres, non une prison de masse à la salvadorienne. Reste en outre à financer les neuf autres projets, qui n'en sont qu'au stade de la planification, selon le ministre de la Justice. Voir aussi l'encadré en tête de page : la photo qui illustre cet article montre le Salvador, pas la Colombie.</div>
+          </div>
+
+          <div class="ap-ctx">
+            <div class="ap-ctx-label">Un symbole avant d'être un changement d'échelle</div>
+            <p>L'annonce relève autant de la communication politique que de la politique pénitentiaire : Renacer est un chantier hérité, long de dix ans, dont le gouvernement fait la vitrine d'une promesse de campagne. Le véritable test viendra de la capacité à financer et construire les neuf autres établissements, de la tolérance de la Cour constitutionnelle face à des conditions d'isolement extrêmes et de l'effet réel sur l'extorsion, que l'État dit vouloir couper à la source. Tout le débat du modèle Bukele est là : la sécurité promise vaut-elle les libertés et les garanties que la Constitution protège ?</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <!-- /ap-fr-section -->
+
+  <!-- ═══ SECTION ES ═══ -->
+  <div class="ap-es-section">
+    <div class="ap-hero-cap">Foto oficial de la presidencia de El Salvador (logotipo visible arriba a la izquierda): vista aérea nocturna de una cárcel de máxima seguridad salvadoreña, probablemente el CECOT. Ilustra el modelo que inspira a Colombia; no es una imagen de la cárcel colombiana «Renacer».</div>
+    <div class="ap-header">
+      <div class="ap-tags">
+        <span class="ap-tag ap-tag-red">🇨🇴 Colombia</span>
+        <span class="ap-tag ap-tag-navy">Seguridad</span>
+        <span class="ap-tag ap-tag-gold">Cárceles</span>
+        <span class="ap-tag ap-tag-orange">Modelo Bukele</span>
+        <span class="ap-tag ap-tag-purple">Derechos humanos</span>
+      </div>
+      <div class="ap-date">Septiembre de 2026 — ECG Prépa · Colombia</div>
+      <h1 class="ap-title">Colombia: De la Espriella acelera «Renacer», la primera de diez megacárceles inspiradas en el modelo Bukele</h1>
+      <p class="ap-intro">A finales de septiembre de 2026, una fuente de la Unidad de Servicios Penitenciarios y Carcelarios (USPEC) indicó a la AFP que Colombia abrirá «Renacer», una cárcel de máxima seguridad con 1974 cupos en el norte del país, presentada como la primera de las diez megacárceles que quiere el presidente Abelardo de la Espriella. La obra, sin embargo, no es nueva: arrancó con Iván Duque, acumula más de cuatro años de retraso y su capacidad es veinte veces inferior a la del CECOT salvadoreño.</p>
+    </div>
+
+    <div class="ap-body">
+
+      <div class="ap-stats">
+        <div class="ap-stat red"><span class="ap-stat-num">1974</span><span class="ap-stat-desc">Cupos previstos<br>en Renacer (Magdalena)</span></div>
+        <div class="ap-stat gold"><span class="ap-stat-num">291 mil M</span><span class="ap-stat-desc">Pesos ya invertidos<br>(≈ 87 M$, según la AFP)</span></div>
+        <div class="ap-stat blue"><span class="ap-stat-num">10</span><span class="ap-stat-desc">Megacárceles anunciadas<br>para el mandato 2026-2030</span></div>
+        <div class="ap-stat green"><span class="ap-stat-num">27,1 %</span><span class="ap-stat-desc">Hacinamiento carcelario<br>en Colombia (marzo de 2026)</span></div>
+      </div>
+
+      <div class="ap-facts">
+        <div class="ap-fact"><div class="ap-fact-label">Lugar</div><div class="ap-fact-val">Sabanas de San Ángel, Magdalena (norte de Colombia), terreno aislado de 22 hectáreas</div></div>
+        <div class="ap-fact"><div class="ap-fact-label">Avance de la obra</div><div class="ap-fact-val">Entre el 86 y el 88 % según las fuentes; 75 % de ejecución financiera</div></div>
+        <div class="ap-fact"><div class="ap-fact-label">Condiciones de reclusión anunciadas</div><div class="ap-fact-val">Aislamiento total, sin señal de celular ni internet, custodia de una división especial del Ejército</div></div>
+        <div class="ap-fact"><div class="ap-fact-label">Apertura prevista</div><div class="ap-fact-val">«Lo más pronto posible»; meta oficial: antes de que termine 2026</div></div>
+      </div>
+
+      <div class="ap-cols">
+        <div>
+          <div class="ap-sub">Lo que se anunció</div>
+          <p>El 29 de septiembre de 2026, la AFP informó, a partir de una fuente de la USPEC, de que Colombia se dispone a abrir «Renacer», una cárcel de máxima seguridad construida en Sabanas de San Ángel, en el departamento de Magdalena. Aislado, el recinto debe alojar a 1974 reclusos en aislamiento total. Según la agencia, la obra está al 88 % (86 % según las cifras publicadas por la prensa colombiana), el penal se inaugurará lo antes posible y su construcción ya ha costado 291 000 millones de pesos, unos 87 millones de dólares.</p>
+          <p>El presidente Abelardo de la Espriella, en el cargo desde el 7 de agosto de 2026, quiere convertirla en la primera de diez megacárceles levantadas en zonas remotas durante su mandato de cuatro años para encerrar a los criminales más peligrosos. Estos centros no tendrán señal de celular ni internet y los custodiará una división especial del Ejército. La fuente de la USPEC citada por la AFP resume la instrucción presidencial: reactivar de inmediato la obra. Según el mismo despacho, la Armada trabaja además en un plan para recluir a criminales peligrosos en barcos en alta mar, y en Medellín se prepara una cárcel de máxima seguridad para 1300 personas.</p>
+
+          <div class="ap-sub">Una idea de campaña convertida en prioridad de Estado</div>
+          <p>El proyecto no nació con esta obra. Como candidato, Abelardo de la Espriella ya proponía, en una entrevista radial del 19 de noviembre de 2025, construir entre seis y ocho megacárceles aisladas. Su argumento: según él, el 75 % de las extorsiones cometidas en Colombia salen de los centros penitenciarios. Desde <a href="colombie-investiture-de-la-espriella.html" style="color:#e8e4d8;text-decoration:underline;text-underline-offset:2px">su discurso de posesión del 7 de agosto</a> anunció la construcción de megacárceles y, a finales de agosto, un esquema de <a href="colombie-virage-securitaire.html" style="color:#e8e4d8;text-decoration:underline;text-underline-offset:2px">diez establecimientos confiados a concesionarios privados</a> con contratos de cincuenta a ochenta años.</p>
+
+          <div class="ap-quote">
+            <p>«… donde no entre ni la señal de la Santa Cruz para que no pueda seguir extorsionando desde allá.»</p>
+            <cite>— Abelardo de la Espriella, entonces candidato, entrevista radial del 19 de noviembre de 2025 (juego de palabras entre «señal» y la señal de la cruz)</cite>
+          </div>
+
+          <div class="ap-sub">Una cárcel heredada de Duque</div>
+          <p>Contra lo que sugiere el anuncio, Renacer no es una obra iniciada por el nuevo gobierno: el proyecto se remonta al documento de política pública Conpes 3871 de 2016, el contrato de construcción se firmó a finales de 2019 bajo Iván Duque y la obra se arrastra desde entonces. Según varios medios, el proyecto inicial preveía hasta 3500 cupos, reducidos a 1974. Las empresas y las autoridades citan modificaciones de diseño, retrasos en las licencias ambientales, problemas de orden público, el deterioro de la vía de acceso y limitaciones presupuestarias.</p>
+
+          <div class="ap-tl">
+            <div class="ap-tl-item"><div class="ap-tl-date">2016</div><p class="ap-tl-text">El documento Conpes 3871 (gobierno de Juan Manuel Santos) sienta las bases del proyecto de nueva cárcel en Sabanas de San Ángel.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">26 dic. 2019</div><p class="ap-tl-text">Firma del contrato de construcción con Iván Duque, por 183 630 millones de pesos; el costo de las obras llegará después a 275 400 millones.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">2021</div><p class="ap-tl-text">Inicio efectivo de las obras, con un año de desfase respecto al calendario inicial.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">Sept. 2022</div><p class="ap-tl-text">Fecha de entrega inicialmente prevista, incumplida: el retraso acumulado alcanza hoy los 49 meses.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">2022-2023</div><p class="ap-tl-text">Amenazas de orden público, dificultades de acceso y limitaciones presupuestarias provocan paradas y ralentizaciones de la obra con Gustavo Petro.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">7 ago. 2026</div><p class="ap-tl-text">Posesión de Abelardo de la Espriella: las megacárceles figuran entre sus anuncios.</p></div>
+            <div class="ap-tl-item"><div class="ap-tl-date">29-30 sept. 2026</div><p class="ap-tl-text">La AFP revela la próxima apertura de Renacer. La gobernadora del Magdalena, Margarita Guerra, afirma que se obtuvieron los recursos necesarios y que existe una fecha de apertura, que se anunciará oficialmente en los días siguientes.</p></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="ap-sub">Un modelo inspirado en el CECOT, a otra escala</div>
+          <p>La AFP subraya que Renacer retoma la arquitectura de grandes pabellones y celdas individuales del <a href="bukele-securite.html" style="color:#e8e4d8;text-decoration:underline;text-underline-offset:2px">CECOT salvadoreño</a>, escaparate de la política de Nayib Bukele. Pero la comparación termina ahí en buena medida: el CECOT tiene 40 000 plazas, más de veinte veces la capacidad de Renacer. Colombia se suma además a una tendencia regional: la AFP recuerda que este modelo también lo defienden el ecuatoriano Daniel Noboa y la peruana Keiko Fujimori, y que las organizaciones de derechos humanos lo critican por atentar contra la dignidad de los reclusos.</p>
+
+          <table class="ap-table">
+            <thead><tr><th>Criterio</th><th>Renacer (Colombia)</th><th>CECOT (El Salvador)</th></tr></thead>
+            <tbody>
+              <tr><td class="ap-cell-bold">Capacidad</td><td>1974 cupos</td><td>40 000 plazas</td></tr>
+              <tr><td class="ap-cell-bold">Estado</td><td>En construcción (86-88 %)</td><td>En funcionamiento</td></tr>
+              <tr><td class="ap-cell-bold">Contacto con el exterior</td><td>Sin celular ni internet (objetivo anunciado)</td><td>Visitas familiares prohibidas</td></tr>
+            </tbody>
+          </table>
+
+          <div class="ap-sub">Cárceles ya saturadas</div>
+          <p>La obra responde también a una urgencia. Según el INPEC, en marzo de 2026 Colombia tenía 102 949 reclusos para 81 025 cupos, un hacinamiento del 27,1 %, frente al 19,9 % de febrero de 2022. Un informe de empalme del INPEC señala además un déficit de unos 12 000 guardianes (hay 14 142 en servicio). En uno de los centros de detención transitoria de Valledupar, 349 personas ocupaban un espacio previsto para unas 70. La Corte Constitucional, que mantiene desde hace años un «estado de cosas inconstitucional» en las cárceles, adoptó por su parte medidas para superar las barreras presupuestales de Renacer (auto 756 de 2026) y sigue de cerca la obra.</p>
+          <p>Renacer solo resuelve, pues, una fracción del problema: sus 1974 cupos equivalen a cerca del 9 % del excedente de reclusos (cálculo de la redacción a partir de las cifras del INPEC de marzo de 2026). Y la cárcel apunta ante todo a los cabecillas de redes criminales, no a la masa de reclusos.</p>
+
+          <div class="ap-sub">Críticas y obstáculos</div>
+          <p>El costo es el primer punto de fricción. Ya el 16 de septiembre, el exministro de Justicia de Gustavo Petro, Jorge Iván Cuervo, estimaba que diez megacárceles como las del modelo panameño de La Nueva Joya costarían alrededor de 5 billones de pesos y preguntaba si era una prioridad en tiempos de ajuste fiscal. El ministro de Justicia, Iván Cancino, declaró por su parte que construir cárceles requería recursos y que el tema de planeación seguía «bastante abierto», aunque prometió también sustitución de cultivos y «cárceles productivas».</p>
+
+          <div class="ap-quote">
+            <p>«Diez “mega cárceles” como las de la Nueva Joya en Panamá, que parece ser el modelo a seguir, costarían alrededor de 5 billones. ¿Es la prioridad en tiempos de ajuste fiscal?»</p>
+            <cite>— Jorge Iván Cuervo, exministro de Justicia, septiembre de 2026</cite>
+          </div>
+
+          <p>Los especialistas consultados por Infobae en marzo de 2026 planteaban otras reservas: el criminólogo Norberto Hernández Jiménez (Universidad Javeriana) recuerda que, según la Constitución colombiana, deben primar la dignidad y la resocialización; Hugo Acero, exsecretario de Seguridad de Bogotá, considera que una cárcel se vuelve ingobernable por encima de 2000 a 2500 reclusos, lo que sitúa a Renacer (1974 cupos) justo por debajo de ese umbral; y Angélica Beltrán, de la Corporación Humanas, opina que construir más cárceles no resuelve la crisis estructural.</p>
+
+          <div class="ap-info">
+            <div class="ap-info-icon">⚠️</div>
+            <div class="ap-info-text"><strong>Conviene recordar:</strong> Renacer todavía no está abierta. Será una cárcel de máxima seguridad entre otras, no una cárcel masiva a la salvadoreña. Falta además financiar los otros nueve proyectos, que según el ministro de Justicia siguen en fase de planeación. Véase también la nota al inicio de la página: la foto que ilustra este artículo muestra El Salvador, no Colombia.</div>
+          </div>
+
+          <div class="ap-ctx">
+            <div class="ap-ctx-label">Un símbolo antes que un cambio de escala</div>
+            <p>El anuncio tiene tanto de comunicación política como de política penitenciaria: Renacer es una obra heredada, de diez años, que el gobierno convierte en escaparate de una promesa de campaña. La verdadera prueba llegará con la capacidad de financiar y construir los otros nueve establecimientos, con la tolerancia de la Corte Constitucional ante condiciones de aislamiento extremas y con el efecto real sobre la extorsión, que el Estado dice querer cortar de raíz. Ahí está todo el debate del modelo Bukele: ¿vale la seguridad prometida las libertades y garantías que protege la Constitución?</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <!-- /ap-es-section -->
+
+</div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — Colombie — Septembre 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-es').classList.toggle('active', lang === 'es');
+  const isEs = lang === 'es';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEs ? 'none' : 'block');
+  document.querySelectorAll('.ap-es-section').forEach(el => el.style.display = isEs ? 'block' : 'none');
+}
+setLang('fr');
+</script>
+</body>
+</html>
