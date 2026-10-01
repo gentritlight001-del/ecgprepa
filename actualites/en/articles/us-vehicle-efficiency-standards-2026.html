@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Normes automobiles américaines assouplies — 2026</title>
+<link rel="stylesheet" href="../../../fonts/fonts.css">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #b22234;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #b22234; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #3c3b6e; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #b22234; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #b22234; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #b22234; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#b22234; border-color:#b22234; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  /* Article styles */
+  .ap-band { position: relative; z-index: 1; background: #b5131f; text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(10,10,28,0.95); padding:12px 60px; border-bottom: 1px solid rgba(178,34,52,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#e8c84a; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(178,34,52,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(178,34,52,0.2);  color:#f08080; border:1px solid rgba(178,34,52,0.35); }
+  .ap-tag-navy   { background:rgba(60,59,110,0.4);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #e8c84a; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(178,34,52,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(232,200,74,0.7); }
+
+  /* Rich components */
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#e8c84a; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(232,200,74,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#071422,#0d2540); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat.navy   { background:linear-gradient(135deg,#0e0e3a,#2a2870); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-facts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:18px 0; }
+  .ap-fact { background:rgba(255,255,255,0.03); border-radius:6px; padding:12px 14px; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #e8c84a; }
+  .ap-fact-label { font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+  .ap-fact-val   { font-size:12.5px; font-weight:700; color:#e8e4d8; font-family:'DM Mono',monospace; line-height:1.3; }
+  .ap-quote { background:linear-gradient(135deg,rgba(178,34,52,0.06),rgba(178,34,52,0.02)); border-left:3px solid #e8c84a; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(232,200,74,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(232,200,74,0.7); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(10,10,28,0.9),rgba(5,5,18,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(178,34,52,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#e8c84a; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(178,34,52,0.06); border:1px solid rgba(178,34,52,0.15); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(232,200,74,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#e8c84a; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(232,200,74,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#e8c84a; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(10,10,28,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-en-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.25s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-facts { grid-template-columns:1fr; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-en.html">Anglais</a>
+    <span class="sep">/</span>
+    <a href="../etats-unis.html">États-Unis</a>
+    <span class="sep">/</span>
+    <span class="current">Normes automobiles</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-en" class="ap-lang-btn" onclick="setLang('en')">🇺🇸 EN</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">⛽ Normes automobiles : Washington assouplit les objectifs de consommation</div>
+<div class="ap-back-bar">
+  <a href="../etats-unis.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+    <div class="ap-hero-img-wrap">
+      <img id="ap-hero" class="ap-hero-img" src="../images/us-vehicle-efficiency-standards-2026.webp" alt="Embouteillage nocturne sur une autoroute de Los Angeles, avec un panneau indiquant la sortie Highland Ave / Hollywood Bowl">
+    </div>
+
+    <!-- ══ SECTION FR ══ -->
+
+    <div class="ap-fr-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-navy">🇺🇸 États-Unis</span>
+          <span class="ap-tag ap-tag-green">Environnement</span>
+          <span class="ap-tag ap-tag-orange">Économie</span>
+          <span class="ap-tag ap-tag-purple">Politique</span>
+        </div>
+        <div class="ap-date">Septembre 2026 — ECG Prépa · États-Unis</div>
+        <h1 class="ap-title">Normes automobiles&nbsp;: l'administration Trump ramène l'objectif d'efficacité énergétique à 34,9 miles par gallon en 2031</h1>
+        <p class="ap-intro">Le 28 septembre 2026, le département des Transports a dévoilé la règle finale «&nbsp;Freedom Means Affordable Cars&nbsp;», qui réécrit d'un seul coup les normes CAFE (Corporate Average Fuel Economy) de dix années-modèles, de 2022 à 2031. La consommation moyenne exigée du parc neuf en 2031 tombe à environ 34,9 miles par gallon (mpg), contre 50,4 mpg projetés par la règle de l'administration Biden. Washington promet des voitures moins chères&nbsp;; les associations environnementales dénoncent une facture plus lourde à la pompe et annoncent des recours en justice.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat gold"><span class="ap-stat-num">34,9 mpg</span><span class="ap-stat-desc">moyenne du parc neuf visée<br>en 2031 (estimation NHTSA)</span></div>
+          <div class="ap-stat red"><span class="ap-stat-num">50,4 mpg</span><span class="ap-stat-desc">trajectoire 2031 de la règle<br>Biden de 2024</span></div>
+          <div class="ap-stat green"><span class="ap-stat-num">1&nbsp;300&nbsp;$</span><span class="ap-stat-desc">baisse du prix moyen d'un véhicule<br>neuf promise par le DOT</span></div>
+          <div class="ap-stat navy"><span class="ap-stat-num">10</span><span class="ap-stat-desc">années-modèles réécrites<br>d'un coup (2022-2031)</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Ce que change la règle</div>
+            <p>Les normes CAFE, créées par l'Energy Policy and Conservation Act de 1975, fixent la consommation moyenne que chaque constructeur doit atteindre sur l'ensemble des voitures et camionnettes qu'il vend. Celles-ci sont fixées par la NHTSA, l'agence fédérale de sécurité routière, rattachée au département des Transports. La règle finale abaisse l'exigence pour les années-modèles 2022 à 2031&nbsp;: pour les voitures particulières, la norme progresse de 0,90&nbsp;% par an jusqu'en 2029, puis de 1&nbsp;% par an jusqu'en 2031&nbsp;; pour les SUV et pick-up classés comme camions légers, elle progresse de 0,51&nbsp;% par an jusqu'en 2029, puis de 1&nbsp;% par an. La NHTSA estime que l'ensemble correspondra à une moyenne d'environ 34,9 mpg en 2031, contre 30,1 mpg en 2024.</p>
+            <p>Le texte modifie aussi les règles du jeu. Les échanges de crédits de conformité entre constructeurs sont supprimés pour les crédits acquis à partir de l'année-modèle 2028, ce qui prive notamment Tesla d'une source de revenus&nbsp;: l'entreprise avait indiqué avoir tiré 2,8 milliards de dollars de ces crédits dans le monde l'an dernier, selon Reuters. À partir de 2030, les critères de classement des véhicules changent&nbsp;: de nombreux crossovers et SUV passeront dans la catégorie des voitures particulières, ce qui, selon le DOT, inverse la composition du parc (environ 70&nbsp;% de camions légers aujourd'hui, environ 70&nbsp;% de voitures particulières ensuite). Enfin, la NHTSA ne tient plus compte des véhicules électriques pour fixer les normes, conformément à une règle interprétative de juin 2025.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Signature de la règle</div><div class="ap-fact-val">25 septembre 2026</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Annonce du DOT</div><div class="ap-fact-val">28 septembre 2026</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Federal Register</div><div class="ap-fact-val">30 sept. 2026 (91 FR 61988)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Entrée en vigueur</div><div class="ap-fact-val">30 novembre 2026</div></div>
+            </div>
+
+            <div class="ap-quote">
+              <p>«&nbsp;Nous avons enfin mis fin au mandat illégal qui forçait les constructeurs à produire des véhicules électriques plus chers dont les familles américaines ne voulaient pas.&nbsp;»</p>
+              <cite>— Sean Duffy, secrétaire aux Transports, 28 septembre 2026 (traduction)</cite>
+            </div>
+
+            <div class="ap-sub">Une rupture préparée depuis 2025</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">Juin 2024</div><p class="ap-tl-text">L'administration Biden finalise les normes CAFE pour 2027-2031, qui conduisent à une moyenne projetée de 50,4 mpg en 2031.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Juillet 2025</div><p class="ap-tl-text">La loi budgétaire «&nbsp;One Big Beautiful Bill&nbsp;» ramène à zéro les amendes CAFE infligées aux constructeurs et supprime le crédit d'impôt de 7&nbsp;500&nbsp;$ pour l'achat d'un véhicule électrique, qui prend fin le 30 septembre 2025.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">3 déc. 2025</div><p class="ap-tl-text">Donald Trump présente à la Maison-Blanche, avec des dirigeants de Ford, General Motors et Stellantis, la proposition de réduire l'objectif 2031 à 34,5 mpg.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">12 févr. 2026</div><p class="ap-tl-text">L'agence de protection de l'environnement (EPA) signe l'abrogation de l'«&nbsp;endangerment finding&nbsp;» de 2009 et de toutes les normes fédérales d'émissions de gaz à effet de serre des véhicules.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">25-30 sept. 2026</div><p class="ap-tl-text">La règle finale est signée, annoncée puis publiée au Federal Register&nbsp;; l'objectif 2031 est relevé de 34,5 à 34,9 mpg par rapport à la proposition.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">Des économies annoncées, des coûts contestés</div>
+            <p>Le département des Transports affirme que la règle réduira le prix moyen d'un véhicule neuf d'environ 1&nbsp;300&nbsp;$ et fera économiser 138 milliards de dollars aux Américains sur cinq ans. Il avance aussi qu'en rendant les voitures neuves plus abordables, elle favorisera le renouvellement du parc et sauvera ainsi 1&nbsp;900 vies tout en évitant plus de 300&nbsp;000 blessures graves. «&nbsp;Les voitures neuves sont plus sûres&nbsp;», a résumé Jonathan Morrison, administrateur de la NHTSA, selon la presse spécialisée.</p>
+            <p>Ces chiffres sont contestés. D'après les propres estimations du département, relevées par l'Associated Press, les nouvelles normes réduiront le coût des véhicules mais augmenteront la consommation de carburant et les émissions de CO₂ pendant des décennies. À l'étape de la proposition, en décembre 2025, le département chiffrait ce surcroît à environ 100 milliards de gallons de carburant d'ici 2050 et à 185 milliards de dollars de dépenses en carburant, avec des émissions de CO₂ supérieures d'environ 5&nbsp;%. Le contexte pèse aussi&nbsp;: l'essence coûtait en moyenne 4,47&nbsp;$ le gallon à l'annonce, contre 3,13&nbsp;$ un an plus tôt, après le début du conflit avec l'Iran en février 2026.</p>
+
+            <div class="ap-sub">Constructeurs, ONG, États&nbsp;: des réactions contrastées</div>
+            <p>L'Alliance for Automotive Innovation, qui représente les grands constructeurs présents aux États-Unis, a salué un texte qui «&nbsp;aligne mieux les normes sur la loi et sur les conditions actuelles du marché&nbsp;». Les ONG sont à l'opposé. Le Sierra Club juge que Donald Trump offre aux constructeurs «&nbsp;un passe-droit sur la pollution&nbsp;» et «&nbsp;fait payer la facture aux familles, à la pompe et sur le plan de leur santé&nbsp;». Le Natural Resources Defense Council relève que la nouvelle norme est inférieure à ce que les constructeurs atteignent déjà, alors qu'une norme est censée faire progresser la consommation dans le temps. Le gouverneur de Californie Gavin Newsom a, lui, dénoncé une règle qui oblige à «&nbsp;faire moins de kilomètres avec chaque plein&nbsp;» («&nbsp;Make America Smoggy Again&nbsp;»).</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Indicateur</th><th>Règle Biden (2024)</th><th>Règle finale (2026)</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Moyenne du parc en 2031</td><td>50,4 mpg</td><td>≈ 34,9 mpg</td></tr>
+                <tr><td class="ap-cell-bold">Années-modèles visées</td><td>2027-2031</td><td>2022-2031</td></tr>
+                <tr><td class="ap-cell-bold">Échange de crédits</td><td>Maintenu</td><td>Supprimé dès 2028</td></tr>
+                <tr><td class="ap-cell-bold">Amendes pour non-respect</td><td>Existantes</td><td>Nulles depuis juillet 2025</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-quote">
+              <p>«&nbsp;La règle finale d'aujourd'hui est une correction de trajectoire appropriée.&nbsp;»</p>
+              <cite>— John Bozzella, Alliance for Automotive Innovation, 28 septembre 2026 (traduction)</cite>
+            </div>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">⛽</div>
+              <div class="ap-info-text"><strong>Pour s'y retrouver.</strong> Un mile par gallon américain correspond à 235,2 divisé par la consommation en litres aux 100 km. 34,9 mpg équivalent donc à environ 6,7 l/100&nbsp;km, contre environ 4,7 l/100&nbsp;km pour 50,4 mpg.</div>
+            </div>
+
+            <div class="ap-sub">Des recours annoncés</div>
+            <p>Le Sierra Club a promis de combattre la règle et d'autres associations ont indiqué vouloir la contester. Au 1<sup>er</sup> octobre 2026, nous n'avons trouvé aucun recours déposé. Les États démocrates s'étaient déjà mobilisés contre le projet&nbsp;: en février 2026, une coalition de 21 procureurs généraux, dont celui de la Californie, Rob Bonta, avait adressé à la NHTSA des commentaires hostiles, et dix-neuf procureurs généraux avaient attaqué la règle interprétative de juin 2025 qui exclut les véhicules électriques du calcul des normes.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Abordabilité contre climat&nbsp;: un arbitrage qui se joue désormais devant les juges</div>
+              <p>Avec l'abrogation par l'EPA des normes fédérales de CO₂ des véhicules en février 2026, les normes CAFE étaient l'un des derniers leviers fédéraux sur la consommation des voitures neuves&nbsp;: <a href="trump-climat-2026.html" style="color:rgba(255,255,255,.75);text-decoration:underline;text-underline-offset:2px">le démantèlement de la politique climatique américaine</a> se poursuit donc sur la route. L'administration invoque le pouvoir d'achat des ménages et l'emploi industriel&nbsp;; ses opposants répondent que les économies à l'achat seront annulées par la dépense en carburant, dans un pays où l'essence est chère. La règle entre en vigueur le 30 novembre 2026, quelques semaines après les élections de mi-mandat&nbsp;: son sort dépendra autant des tribunaux que du prochain équilibre politique à Washington.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-fr-section -->
+
+    <!-- ══ SECTION EN ══ -->
+
+    <div class="ap-en-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-navy">🇺🇸 United States</span>
+          <span class="ap-tag ap-tag-green">Environment</span>
+          <span class="ap-tag ap-tag-orange">Economy</span>
+          <span class="ap-tag ap-tag-purple">Politics</span>
+        </div>
+        <div class="ap-date">September 2026 — ECG Prépa · United States</div>
+        <h1 class="ap-title">Vehicle Standards: Trump Administration Cuts the 2031 Fuel Economy Target to 34.9 Miles per Gallon</h1>
+        <p class="ap-intro">On September 28, 2026, the Department of Transportation unveiled its final "Freedom Means Affordable Cars" rule, which rewrites Corporate Average Fuel Economy (CAFE) standards for ten model years at once, from 2022 to 2031. The fleet average required of new vehicles in 2031 falls to about 34.9 miles per gallon (mpg), against the 50.4 mpg projected under the Biden administration's rule. Washington promises cheaper cars; environmental groups warn of higher costs at the pump and say they will go to court.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat gold"><span class="ap-stat-num">34.9 mpg</span><span class="ap-stat-desc">targeted new-fleet average<br>in 2031 (NHTSA estimate)</span></div>
+          <div class="ap-stat red"><span class="ap-stat-num">50.4 mpg</span><span class="ap-stat-desc">2031 trajectory under the<br>2024 Biden rule</span></div>
+          <div class="ap-stat green"><span class="ap-stat-num">$1,300</span><span class="ap-stat-desc">drop in the average new-vehicle<br>price promised by the DOT</span></div>
+          <div class="ap-stat navy"><span class="ap-stat-num">10</span><span class="ap-stat-desc">model years rewritten<br>at once (2022-2031)</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">What the Rule Changes</div>
+            <p>CAFE standards, created by the Energy Policy and Conservation Act of 1975, set the average fuel economy each manufacturer must reach across all the cars and light trucks it sells. They are set by NHTSA, the federal road-safety agency housed within the Department of Transportation. The final rule lowers the bar for model years 2022 through 2031: for passenger cars, the standard rises 0.90% a year through 2029, then 1% a year through 2031; for SUVs and pickups classed as light trucks, it rises 0.51% a year through 2029, then 1% a year. NHTSA estimates the result will correspond to a fleet average of about 34.9 mpg in 2031, up from 30.1 mpg in 2024.</p>
+            <p>The text also changes the rules of the game. Trading of compliance credits between manufacturers ends for credits earned from model year 2028 onward, which hits Tesla in particular: the company said it earned $2.8 billion worldwide from such credits last year, according to Reuters. From 2030, vehicle classification criteria change: many crossovers and SUVs will move into the passenger-car category, which, according to the DOT, flips the fleet mix (from roughly 70% light trucks today to roughly 70% passenger cars afterward). Finally, NHTSA no longer counts electric vehicles when setting the standards, in line with an interpretive rule issued in June 2025.</p>
+
+            <div class="ap-facts">
+              <div class="ap-fact"><div class="ap-fact-label">Rule signed</div><div class="ap-fact-val">September 25, 2026</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">DOT announcement</div><div class="ap-fact-val">September 28, 2026</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Federal Register</div><div class="ap-fact-val">Sept. 30, 2026 (91 FR 61988)</div></div>
+              <div class="ap-fact"><div class="ap-fact-label">Takes effect</div><div class="ap-fact-val">November 30, 2026</div></div>
+            </div>
+
+            <div class="ap-quote">
+              <p>"We have finally ended the illegal mandate that forced automakers to produce more expensive electric vehicles that American families didn't want."</p>
+              <cite>— Sean Duffy, Transportation Secretary, September 28, 2026</cite>
+            </div>
+
+            <div class="ap-sub">A Break Prepared Since 2025</div>
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">June 2024</div><p class="ap-tl-text">The Biden administration finalizes CAFE standards for 2027-2031, leading to a projected 50.4 mpg fleet average in 2031.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">July 2025</div><p class="ap-tl-text">The "One Big Beautiful Bill" budget law sets CAFE fines on automakers to zero and ends the $7,500 tax credit for buying an electric vehicle, which expires on September 30, 2025.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Dec. 3, 2025</div><p class="ap-tl-text">Donald Trump presents at the White House, with executives from Ford, General Motors and Stellantis, the proposal to cut the 2031 target to 34.5 mpg.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Feb. 12, 2026</div><p class="ap-tl-text">The Environmental Protection Agency (EPA) signs the repeal of the 2009 "endangerment finding" and of all federal greenhouse-gas emissions standards for vehicles.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">Sept. 25-30, 2026</div><p class="ap-tl-text">The final rule is signed, announced, then published in the Federal Register; the 2031 target is raised from 34.5 to 34.9 mpg compared with the proposal.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">Announced Savings, Disputed Costs</div>
+            <p>The Department of Transportation says the rule will cut the average price of a new vehicle by about $1,300 and save Americans $138 billion over five years. It also argues that by making new cars more affordable, the rule will speed up fleet turnover, saving 1,900 lives and preventing more than 300,000 serious injuries. "Newer cars are safer cars," said NHTSA Administrator Jonathan Morrison, according to trade press.</p>
+            <p>These figures are disputed. According to the department's own estimates, reported by the Associated Press, the new standards will lower vehicle costs but raise fuel consumption and carbon dioxide emissions for decades. At the proposal stage in December 2025, the department put the extra burden at about 100 billion gallons of fuel through 2050 and $185 billion in additional fuel spending, with CO₂ emissions about 5% higher. Context matters too: gasoline averaged $4.47 a gallon at the announcement, against $3.13 a year earlier, after the conflict with Iran began in February 2026.</p>
+
+            <div class="ap-sub">Automakers, NGOs, States: Contrasting Reactions</div>
+            <p>The Alliance for Automotive Innovation, which represents the major automakers operating in the United States, welcomed a text that "better aligns fuel economy standards with the law and current market conditions." Environmental groups take the opposite view. The Sierra Club says Donald Trump is giving automakers "a free pass on pollution" and "handing families the bill, at the pump and with their health." The Natural Resources Defense Council points out that the new standard sits below what automakers already achieve, even though a standard is supposed to improve fuel economy over time. California Governor Gavin Newsom denounced a rule that makes drivers "get fewer miles out of every tank of gas," adding "Make America Smoggy Again."</p>
+
+            <table class="ap-table">
+              <thead><tr><th>Indicator</th><th>Biden rule (2024)</th><th>Final rule (2026)</th></tr></thead>
+              <tbody>
+                <tr><td class="ap-cell-bold">Fleet average in 2031</td><td>50.4 mpg</td><td>≈ 34.9 mpg</td></tr>
+                <tr><td class="ap-cell-bold">Model years covered</td><td>2027-2031</td><td>2022-2031</td></tr>
+                <tr><td class="ap-cell-bold">Credit trading</td><td>Kept</td><td>Ended from 2028</td></tr>
+                <tr><td class="ap-cell-bold">Fines for non-compliance</td><td>In force</td><td>Zero since July 2025</td></tr>
+              </tbody>
+            </table>
+
+            <div class="ap-quote">
+              <p>"Today's final rule is an appropriate course correction."</p>
+              <cite>— John Bozzella, Alliance for Automotive Innovation, September 28, 2026</cite>
+            </div>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">⛽</div>
+              <div class="ap-info-text"><strong>Making sense of the units.</strong> Miles per US gallon convert to litres per 100 km by dividing 235.2 by the mpg figure. 34.9 mpg is therefore about 6.7 L/100&nbsp;km, against about 4.7 L/100&nbsp;km for 50.4 mpg.</div>
+            </div>
+
+            <div class="ap-sub">Legal Challenges Announced</div>
+            <p>The Sierra Club has promised to fight the rule and other groups have said they intend to challenge it. As of October 1, 2026, we found no lawsuit filed. Democratic-led states had already mobilized against the plan: in February 2026, a coalition of 21 attorneys general, including California's Rob Bonta, sent NHTSA comments opposing it, and nineteen attorneys general challenged the June 2025 interpretive rule that excludes electric vehicles from the standard-setting calculation.</p>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Affordability Versus Climate: A Trade-Off Now Headed for the Courts</div>
+              <p>With the EPA's repeal of federal vehicle CO₂ standards in February 2026, CAFE standards were one of the last federal levers over the fuel economy of new cars: <a href="trump-climat-2026.html" style="color:rgba(255,255,255,.75);text-decoration:underline;text-underline-offset:2px">the dismantling of American climate policy</a> is therefore continuing on the road. The administration invokes household purchasing power and industrial jobs; its opponents reply that savings at purchase will be wiped out by fuel spending, in a country where gasoline is expensive. The rule takes effect on November 30, 2026, a few weeks after the midterm elections: its fate will depend as much on the courts as on the next political balance in Washington.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-en-section -->
+
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — États-Unis — Septembre 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-en').classList.toggle('active', lang === 'en');
+  const isEn = lang === 'en';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEn ? 'none' : 'block');
+  document.querySelectorAll('.ap-en-section').forEach(el => el.style.display = isEn ? 'block' : 'none');
+
+  const band = document.getElementById('ap-band');
+  if (band) band.textContent = isEn
+    ? '⛽ Vehicle Standards: Washington Loosens Fuel Economy Targets'
+    : '⛽ Normes automobiles : Washington assouplit les objectifs de consommation';
+  const hero = document.getElementById('ap-hero');
+  if (hero) hero.alt = isEn
+    ? 'Night-time traffic jam on a Los Angeles freeway, with a sign for the Highland Ave / Hollywood Bowl exit'
+    : 'Embouteillage nocturne sur une autoroute de Los Angeles, avec un panneau indiquant la sortie Highland Ave / Hollywood Bowl';
+}
+setLang('fr');
+</script>
+</body>
+</html>
