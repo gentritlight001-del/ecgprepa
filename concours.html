@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Concours : calendrier et coefficients</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #c8a96e;
+    --accent2: #7c9ec9;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; line-height: 1.55; }
+
+  nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 40px; border-bottom: 1px solid var(--border); background: rgba(13,13,15,0.85); backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 10; }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--accent); cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { font-size: 0.82rem; color: var(--text-dim); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--accent); }
+  .breadcrumb .current { color: var(--accent); }
+
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 48px 24px 80px; }
+  .eyebrow { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 3rem); line-height: 1.1; margin-bottom: 14px; }
+  .lead { color: var(--text-dim); max-width: 640px; margin-bottom: 40px; }
+
+  h2 { font-family: 'Playfair Display', serif; font-size: 1.6rem; margin: 56px 0 8px; }
+  .sub { color: var(--text-dim); font-size: 0.92rem; margin-bottom: 22px; max-width: 700px; }
+
+  /* Compte à rebours */
+  .countdown { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; text-align: center; }
+  .countdown-label { font-size: 0.9rem; color: var(--text-dim); margin-bottom: 18px; }
+  .countdown-label strong { color: var(--text); font-weight: 600; }
+  .cd-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; max-width: 560px; margin: 0 auto; }
+  .cd-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 16px 6px; }
+  .cd-num { font-family: 'DM Mono', monospace; font-size: clamp(1.8rem, 6vw, 2.8rem); font-weight: 500; color: var(--accent); line-height: 1; font-variant-numeric: tabular-nums; }
+  .cd-unit { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-dim); margin-top: 8px; }
+  .cd-note { font-size: 0.78rem; color: var(--text-dim); margin-top: 18px; }
+
+  /* Calendrier */
+  .notice { background: rgba(200,169,110,0.08); border: 1px solid rgba(200,169,110,0.35); border-radius: 12px; padding: 14px 18px; font-size: 0.9rem; margin-bottom: 24px; }
+  .tl { border-left: 2px solid var(--border); margin-left: 8px; }
+  .tl-item { position: relative; padding: 0 0 26px 26px; }
+  .tl-item::before { content: ''; position: absolute; left: -7px; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: var(--bg); border: 2px solid var(--accent2); }
+  .tl-item.ecrit::before { border-color: var(--accent); background: var(--accent); }
+  .tl-date { font-family: 'DM Mono', monospace; font-size: 0.8rem; color: var(--accent); margin-bottom: 4px; }
+  .tl-title { font-weight: 600; }
+  .tl-desc { color: var(--text-dim); font-size: 0.9rem; }
+
+  /* Coefficients */
+  .tabs { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+  .tab { background: var(--surface); border: 1px solid var(--border); color: var(--text-dim); border-radius: 999px; padding: 9px 18px; font: inherit; font-size: 0.88rem; cursor: pointer; transition: all .15s; }
+  .tab:hover { color: var(--text); }
+  .tab.active { background: var(--accent); border-color: var(--accent); color: #1a1208; font-weight: 600; }
+  .tbl-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+  table { width: 100%; border-collapse: collapse; min-width: 560px; }
+  th, td { padding: 13px 16px; text-align: center; border-bottom: 1px solid var(--border); font-size: 0.92rem; }
+  th { font-family: 'DM Mono', monospace; font-size: 0.74rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); background: var(--surface2); font-weight: 500; }
+  th:first-child, td:first-child { text-align: left; }
+  td:first-child { font-weight: 500; }
+  td.max { color: var(--accent); font-weight: 700; background: rgba(200,169,110,0.07); }
+  tr.total td { font-weight: 700; background: var(--surface2); border-bottom: none; }
+  tbody tr:not(.total):hover td { background: rgba(255,255,255,0.025); }
+  tbody tr:not(.total):hover td.max { background: rgba(200,169,110,0.12); }
+
+  .epreuves { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-top: 18px; }
+  .ep { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; font-size: 0.88rem; }
+  .ep b { display: block; color: var(--text); margin-bottom: 2px; }
+  .ep span { color: var(--text-dim); }
+
+  .sources { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--border); font-size: 0.82rem; color: var(--text-dim); }
+  .sources a { color: var(--accent2); }
+  .sources p + p { margin-top: 8px; }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .wrap { padding: 32px 16px 64px; }
+    .countdown { padding: 20px 14px; }
+    .cd-grid { gap: 8px; }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo" onclick="window.location.href='index.html'">ECG Prépa</div>
+  <div class="breadcrumb">
+    <a href="index.html">Accueil</a><span>/</span>
+    <a href="cours-ecg.html">Cours ECG</a><span>/</span>
+    <span class="current">Concours</span>
+  </div>
+</nav>
+
+<main class="wrap">
+  <div class="eyebrow">🎯 Concours</div>
+  <h1>Calendrier et coefficients</h1>
+  <p class="lead">Les dates à retenir et le poids de chaque épreuve écrite dans les grandes écoles de commerce, pour savoir où concentrer tes révisions.</p>
+
+  <section class="countdown" aria-live="off">
+    <div class="countdown-label">Début estimé des écrits BCE 2027&nbsp;: <strong id="cd-cible">mercredi 21 avril 2027</strong></div>
+    <div class="cd-grid">
+      <div class="cd-box"><div class="cd-num" id="cd-j">–</div><div class="cd-unit">jours</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-h">–</div><div class="cd-unit">heures</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-m">–</div><div class="cd-unit">minutes</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-s">–</div><div class="cd-unit">secondes</div></div>
+    </div>
+    <p class="cd-note">Date estimée d’après la session 2026. Le calendrier officiel de la BCE est annoncé à partir de la mi-novembre 2026.</p>
+  </section>
+
+  <h2>Calendrier des épreuves</h2>
+  <p class="sub">Le rythme du concours est stable d’une année sur l’autre&nbsp;: inscriptions de décembre à janvier, écrits en avril, oraux de mi-juin à début juillet.</p>
+  <div class="notice"><strong>Session 2027&nbsp;:</strong> les dates officielles ne sont pas encore publiées. Voici la session 2026 comme repère.</div>
+  <div class="tl">
+    <div class="tl-item">
+      <div class="tl-date">8 décembre 2025 → 12 janvier 2026, 17&nbsp;h</div>
+      <div class="tl-title">Inscriptions BCE et ECRICOME</div>
+      <div class="tl-desc">Une inscription par banque d’épreuves, avec le choix des écoles.</div>
+    </div>
+    <div class="tl-item ecrit">
+      <div class="tl-date">14 → 16 avril 2026</div>
+      <div class="tl-title">Écrits ECRICOME</div>
+      <div class="tl-desc">Les épreuves ECRICOME se déroulent avant celles de la BCE.</div>
+    </div>
+    <div class="tl-item ecrit">
+      <div class="tl-date">22 → 29 avril 2026</div>
+      <div class="tl-title">Écrits BCE</div>
+      <div class="tl-desc">Deux semaines d’épreuves de 4&nbsp;h, hors week-end. Journée de rattrapage prévue le 6 mai.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">15 juin → 6 juillet 2026</div>
+      <div class="tl-title">Oraux BCE</div>
+      <div class="tl-desc">Résultats d’admission publiés les 8 et 9 juillet selon les écoles.</div>
+    </div>
+  </div>
+
+  <h2>Coefficients des épreuves écrites</h2>
+  <p class="sub">Coefficients de la session 2026 pour les cinq écoles de la banque BCE les plus demandées. Dans chaque école, le total fait 30 points. En gras doré, l’épreuve qui pèse le plus.</p>
+  <div class="tabs" role="tablist">
+    <button class="tab active" role="tab" data-voie="appro" aria-selected="true">Maths approfondies</button>
+    <button class="tab" role="tab" data-voie="appli" aria-selected="false">Maths appliquées</button>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr><th>Épreuve</th><th>HEC</th><th>ESSEC</th><th>ESCP</th><th>EDHEC</th><th>emlyon</th></tr>
+      </thead>
+      <tbody id="coef-body"></tbody>
+    </table>
+  </div>
+  <div class="epreuves">
+    <div class="ep"><b>Mathématiques 1 et 2</b><span>Deux épreuves de 4&nbsp;h, appliquées ou approfondies selon ta voie.</span></div>
+    <div class="ep"><b>HGGMC</b><span>Histoire, géographie et géopolitique du monde contemporain.</span></div>
+    <div class="ep"><b>Culture générale</b><span>Dissertation sur le thème de l’année.</span></div>
+    <div class="ep"><b>Contraction / synthèse</b><span>Étude et synthèse de textes.</span></div>
+    <div class="ep"><b>LVA et LVB</b><span>Deux langues vivantes&nbsp;: la LVA pèse plus que la LVB.</span></div>
+  </div>
+
+  <div class="sources">
+    <p>Sources&nbsp;: <a href="https://voieprepa.com/blog/coefficients-concours-cpge-2026-toutes-filieres/" target="_blank" rel="noopener">Voie Prépa</a>, <a href="https://prepaecg.com/concours/coefficients-bce/" target="_blank" rel="noopener">Prépa ECG</a> (coefficients)&nbsp;; <a href="https://khallot-prepa.fr/calendrier.html" target="_blank" rel="noopener">Khallot Prépa</a> (dates BCE 2026).</p>
+    <p>Les coefficients peuvent changer d’une année à l’autre&nbsp;: vérifie toujours le règlement officiel de la BCE et de ton école avant de faire des choix.</p>
+  </div>
+</main>
+
+<script>
+(function () {
+  /* ── Compte à rebours ──
+     À ajuster dès que la BCE publie le calendrier 2027 (mi-novembre 2026) :
+     changer la date ci-dessous et le libellé. */
+  var CIBLE = new Date('2027-04-21T08:00:00+02:00');
+
+  var ids = { j: 'cd-j', h: 'cd-h', m: 'cd-m', s: 'cd-s' };
+  function el(k) { return document.getElementById(ids[k]); }
+  function maj() {
+    var reste = CIBLE.getTime() - Date.now();
+    if (reste <= 0) {
+      document.querySelector('.countdown-label').textContent = 'Les écrits ont commencé : bon courage !';
+      ['j', 'h', 'm', 's'].forEach(function (k) { el(k).textContent = '0'; });
+      return false;
+    }
+    var s = Math.floor(reste / 1000);
+    el('j').textContent = Math.floor(s / 86400);
+    el('h').textContent = String(Math.floor(s % 86400 / 3600)).padStart(2, '0');
+    el('m').textContent = String(Math.floor(s % 3600 / 60)).padStart(2, '0');
+    el('s').textContent = String(s % 60).padStart(2, '0');
+    return true;
+  }
+  if (maj()) {
+    var t = setInterval(function () { if (!maj()) clearInterval(t); }, 1000);
+  }
+
+  /* ── Coefficients (session 2026) : HEC, ESSEC, ESCP, EDHEC, emlyon ── */
+  var COEF = {
+    appro: [
+      ['Maths 1', [5, 6, 5, 8, 8]],
+      ['Maths 2', [5, 5, 5, 2, 3]],
+      ['Culture générale', [4, 5, 4, 4, 5]],
+      ['HGGMC', [6, 6, 6, 7, 6]],
+      ['Contraction / synthèse', [3, 2, 4, 2, 2]],
+      ['LVA', [4, 4, 4, 5, 4]],
+      ['LVB', [3, 2, 2, 2, 2]]
+    ],
+    appli: [
+      ['Maths 1', [4, 4, 4, 5, 6]],
+      ['Maths 2', [3, 4, 3, 2, 2]],
+      ['Culture générale', [6, 6, 5, 5, 6]],
+      ['HGGMC', [7, 7, 8, 8, 8]],
+      ['Contraction / synthèse', [3, 3, 4, 3, 2]],
+      ['LVA', [4, 4, 4, 5, 4]],
+      ['LVB', [3, 2, 2, 2, 2]]
+    ]
+  };
+
+  var corps = document.getElementById('coef-body');
+  function afficher(voie) {
+    var lignes = COEF[voie];
+    var html = '';
+    var totaux = [0, 0, 0, 0, 0];
+    lignes.forEach(function (l) {
+      html += '<tr><td>' + l[0] + '</td>';
+      l[1].forEach(function (v, i) {
+        totaux[i] += v;
+        var max = Math.max.apply(null, lignes.map(function (x) { return x[1][i]; }));
+        html += '<td' + (v === max ? ' class="max"' : '') + '>' + v + '</td>';
+      });
+      html += '</tr>';
+    });
+    html += '<tr class="total"><td>Total</td>' + totaux.map(function (t) { return '<td>' + t + '</td>'; }).join('') + '</tr>';
+    corps.innerHTML = html;
+  }
+
+  /* Le « plus fort » se lit par école (colonne) : l'épreuve au plus gros
+     coefficient de l'école est surlignée. */
+  document.querySelectorAll('.tab').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.tab').forEach(function (x) {
+        x.classList.toggle('active', x === b);
+        x.setAttribute('aria-selected', x === b ? 'true' : 'false');
+      });
+      afficher(b.getAttribute('data-voie'));
+    });
+  });
+  afficher('appro');
+})();
+</script>
+</body>
+</html>
