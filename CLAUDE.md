@@ -49,15 +49,31 @@ d'abord » et `_headers` désactive le cache : pas de numéro de version à chan
 
 ### Modèle
 
+Le propriétaire garde une « Bibliothèque de prompts » (PDF) dont ces règles sont tirées : si
+elle est jointe à la conversation, elle fait foi.
+
 - Partir d'un article récent de la même édition et garder sa structure :
-  `ap-band`, `ap-header`, `ap-hero-img`, `ap-stats` (4 chiffres), `ap-facts`, `ap-tl`
+  `ap-band`, `ap-header`, `ap-hero-img`, `ap-stats` (4 chiffres), `ap-tl`
   (chronologie), `ap-quote`, `ap-ctx`, `ap-info`, `ap-tags`.
+- **Pas de cartes de faits** (`ap-facts`, les 4 cartes Lieu / Date / Belligérants / Enjeu) dans
+  les nouveaux articles : ne pas les écrire, ni leur CSS.
 - Éditions de langue : article **bilingue**, avec `ap-fr-section` et `ap-<langue>-section`
-  et le bouton `setLang`. Mondiale : français seulement.
+  et le bouton `setLang`. Le CSS du toggle (`.nav-left`, `.nav-right`, `.ap-lang-btn`,
+  `.ap-lang-btn.active`, `.ap-<langue>-section { display:none; }`) doit être présent : le copier
+  d'un article de référence de la même édition. Le bouton bascule le texte sans recharger la page.
+  Mondiale : français seulement, un seul bloc de contenu, **sans** bouton de langue ni section
+  cachée.
 - **Bandeau du haut toujours rouge uni** :
   `.ap-band { position: relative; z-index: 1; background: #b5131f; … }`
-  (pas de dégradé, pas d'autre couleur).
-- Image de une : la photo fournie, **sans** emoji ni libellé de secours par-dessus.
+  (pas de dégradé, pas d'autre couleur). Titre du bandeau **court, sans date**.
+- Image de une : la photo fournie, **sans** emoji ni libellé de secours par-dessus, **sans
+  légende** dessous. Aucune autre image dans le corps de l'article.
+- **Deux colonnes** (`ap-cols`) de hauteurs presque égales (écart de 200 px au plus à 1280 px) :
+  déplacer des blocs entiers (titre + paragraphes) d'une colonne à l'autre en gardant l'ordre de
+  lecture, sans toucher aux polices ni aux marges. Mesurer avec Playwright.
+- **Encadré de fin** (`ap-ctx`, bas de la 2e colonne) : titre d'analyse original, jamais
+  « Conclusion », et pas de ton scolaire (pas de « pour les concours », « enjeu de dissertation »).
+- Dans la liste du mois, l'article passe **en premier**.
 - **Renvois vers d'autres articles** : pas de « Lire notre article ». Le lien se met
   directement sur le texte concerné, par exemple « l'attentat de Leipzig » renvoie vers
   l'article sur l'attentat :
