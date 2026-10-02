@@ -1665,7 +1665,6 @@
       '<div id="ecg-menu" role="menu">' +
       '<div class="who"><b></b><span></span>' + (admin ? '<i>Administrateur</i>' : '') + '</div>' +
       '<button type="button" id="ecg-favoris" role="menuitem">Mes favoris<span id="ecg-fav-count"></span></button>' +
-      '<button type="button" id="ecg-agenda" role="menuitem">Mon agenda</button>' +
       '<button type="button" id="ecg-newsletter" role="menuitem">Ma newsletter</button>' +
       '<button type="button" id="ecg-abonnement" role="menuitem">Mon abonnement</button>' +
       '<button type="button" id="ecg-contact" role="menuitem">Contact</button>' +
@@ -1704,7 +1703,6 @@
 
     wrap.querySelector('#ecg-home').addEventListener('click', function () { location.href = HOME_URL; });
     wrap.querySelector('#ecg-favoris').addEventListener('click', function () { location.href = BASE + 'favoris.html'; });
-    wrap.querySelector('#ecg-agenda').addEventListener('click', function () { location.href = BASE + 'agenda.html'; });
     wrap.querySelector('#ecg-newsletter').addEventListener('click', function () { location.href = BASE + 'newsletter.html'; });
     wrap.querySelector('#ecg-abonnement').addEventListener('click', function () { location.href = BASE + 'abonnement.html'; });
 
