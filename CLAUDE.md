@@ -49,8 +49,16 @@ d'abord » et `_headers` désactive le cache : pas de numéro de version à chan
 
 ### Modèle
 
-Le propriétaire garde une « Bibliothèque de prompts » (PDF) dont ces règles sont tirées : si
-elle est jointe à la conversation, elle fait foi.
+**Avant d'écrire un article, lire `actualites/prompts-articles-ecg-prepa.pdf`** (outil Read,
+pages 1 à 4 : prompts n°1 à 4 = articles EN, ES, DE, MONDE). C'est la « Bibliothèque de
+prompts » du propriétaire : elle fait foi, et les règles ci-dessous la complètent. Une demande
+type est « Rédige un article d'actualité sur le sujet suivant : … » + photo : tout doit être
+parfait du premier coup (faits vérifiés, mise en page, listes, mise en ligne). Les prompts
+n°5 à 9 (pages 5 à 7) sont les newsletters : voir la section 5.
+
+Plusieurs articles à la fois : un sous-agent par article, chacun avec **son propre dossier de
+travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichiers partagés
+(`tous-<code>.html`, pages pays) sont modifiés par une seule personne, à la fin.
 
 - Partir d'un article récent de la même édition et garder sa structure :
   `ap-band`, `ap-header`, `ap-hero-img`, `ap-stats` (4 chiffres), `ap-tl`
@@ -68,9 +76,13 @@ elle est jointe à la conversation, elle fait foi.
   (pas de dégradé, pas d'autre couleur). Titre du bandeau **court, sans date**.
 - Image de une : la photo fournie, **sans** emoji ni libellé de secours par-dessus, **sans
   légende** dessous. Aucune autre image dans le corps de l'article.
-- **Deux colonnes** (`ap-cols`) de hauteurs presque égales (écart de 200 px au plus à 1280 px) :
-  déplacer des blocs entiers (titre + paragraphes) d'une colonne à l'autre en gardant l'ordre de
-  lecture, sans toucher aux polices ni aux marges. Mesurer avec Playwright.
+- **Deux colonnes** (`ap-cols`) de hauteurs presque égales : écart de **110 px au plus** à
+  1280 px, pour chaque langue. Déplacer des blocs entiers (titre + paragraphes, citation,
+  tableau, chronologie) d'une colonne à l'autre, sans toucher aux polices ni aux marges.
+  Mesurer avec Playwright (bas du dernier élément de chaque colonne).
+- **Chronologie** (`ap-tl`) : soit **tout en bas de la colonne gauche**, soit **incrustée dans la
+  colonne droite** ; jamais au milieu de la colonne gauche. L'encadré de fin `ap-ctx` reste le
+  dernier élément de la colonne droite.
 - **Encadré de fin** (`ap-ctx`, bas de la 2e colonne) : titre d'analyse original, jamais
   « Conclusion », et pas de ton scolaire (pas de « pour les concours », « enjeu de dissertation »).
 - Dans la liste du mois, l'article passe **en premier**.
