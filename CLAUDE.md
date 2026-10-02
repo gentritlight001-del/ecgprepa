@@ -80,6 +80,8 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   1280 px, pour chaque langue. Déplacer des blocs entiers (titre + paragraphes, citation,
   tableau, chronologie) d'une colonne à l'autre, sans toucher aux polices ni aux marges.
   Mesurer avec Playwright (bas du dernier élément de chaque colonne).
+- **Chaque colonne s'ouvre sur un titre (`ap-sub`) suivi de texte** : jamais sur la
+  chronologie, une citation, un tableau ou un encadré.
 - **Chronologie** (`ap-tl`) : soit **tout en bas de la colonne gauche**, soit **incrustée dans la
   colonne droite** ; jamais au milieu de la colonne gauche. L'encadré de fin `ap-ctx` reste le
   dernier élément de la colonne droite.
