@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Journée de la vérité et de la réconciliation — 2026</title>
+<link rel="stylesheet" href="../../../fonts/fonts.css">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #c0392b;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #c0392b; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #003087; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #c0392b; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #c0392b; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #c0392b; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#c0392b; border-color:#c0392b; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  /* Article styles */
+  .ap-band { position: relative; z-index: 1; background: #b5131f; text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(0,15,40,0.95); padding:12px 60px; border-bottom: 1px solid rgba(192,57,43,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#e8c84a; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(192,57,43,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; background: linear-gradient(135deg, #0a0f1e 0%, #0d1830 40%, #1a0810 100%); display:flex; align-items:center; justify-content:center; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); pointer-events:none; }
+  .ap-hero-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; z-index:0; }
+  .ap-hero-inner { text-align:center; padding: 40px; position:relative; z-index:1; }
+  .ap-hero-emoji { font-size: 80px; line-height:1; display:block; margin-bottom:20px; filter: drop-shadow(0 0 40px rgba(192,57,43,0.5)); }
+  .ap-hero-label { font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.3em; text-transform:uppercase; color:rgba(192,57,43,0.7); }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(181,19,31,0.2);  color:#f08080; border:1px solid rgba(181,19,31,0.35); }
+  .ap-tag-navy   { background:rgba(0,48,135,0.4);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #e8c84a; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(192,57,43,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(232,200,74,0.7); }
+
+  /* Rich components */
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#e8c84a; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(232,200,74,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#071422,#0d2540); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat.teal   { background:linear-gradient(135deg,#004d40,#00796b); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-quote { background:linear-gradient(135deg,rgba(192,57,43,0.06),rgba(192,57,43,0.02)); border-left:3px solid #e8c84a; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(232,200,74,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(232,200,74,0.7); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(0,15,40,0.9),rgba(0,8,24,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(192,57,43,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#e8c84a; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(192,57,43,0.06); border:1px solid rgba(192,57,43,0.15); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(232,200,74,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#e8c84a; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(232,200,74,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#e8c84a; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-en-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.25s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-en.html">Anglais</a>
+    <span class="sep">/</span>
+    <a href="../canada.html">Canada</a>
+    <span class="sep">/</span>
+    <span class="current">Vérité et réconciliation</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-en" class="ap-lang-btn" onclick="setLang('en')">🇨🇦 EN</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇨🇦 Vérité et réconciliation</div>
+<div class="ap-back-bar"><a class="ap-back-btn" href="../canada.html">Retour aux articles</a></div>
+
+<div class="ap-main">
+  <div class="ap-card fade-in">
+
+    <div class="ap-hero-img-wrap">
+      <img class="ap-hero-img" src="../images/canada-journee-verite-reconciliation-2026.webp" alt="Un homme en costume sombre et cravate orange parle à un pupitre, devant un grand drapeau orange à motif autochtone">
+    </div>
+
+    <!-- ══ SECTION FR ══ -->
+    <div class="ap-fr-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-red">🇨🇦 Canada</span>
+          <span class="ap-tag ap-tag-orange">Social</span>
+          <span class="ap-tag ap-tag-gold">Peuples autochtones</span>
+          <span class="ap-tag ap-tag-teal">Réconciliation</span>
+        </div>
+        <div class="ap-date">Septembre 2026 — ECG Prépa · Canada</div>
+        <h1 class="ap-title">Vérité et réconciliation : Mark Carney reconnaît que le chemin reste long</h1>
+        <p class="ap-intro">Le mercredi 30 septembre 2026, le Canada a marqué pour la sixième fois la Journée nationale de la vérité et de la réconciliation, créée en 2021 pour honorer les enfants disparus des pensionnats autochtones et leurs survivants. Le Premier ministre Mark Carney, qui s'exprimait à Edmonton, a reconnu des progrès mais jugé que le travail est « loin, très loin d'être terminé ». Selon l'organisme de suivi Indigenous Watchdog, seuls 14 des 94 appels à l'action de la Commission de vérité et réconciliation sont pleinement réalisés.</p>
+      </div>
+      <div class="ap-body">
+        <div class="ap-stats">
+          <div class="ap-stat"><span class="ap-stat-num">14&nbsp;/&nbsp;94</span><span class="ap-stat-desc">Appels à l'action<br>réalisés en 11 ans</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">150&nbsp;000+</span><span class="ap-stat-desc">Enfants passés<br>par les pensionnats</span></div>
+          <div class="ap-stat red"><span class="ap-stat-num">215</span><span class="ap-stat-desc">Sépultures possibles annoncées<br>à Kamloops en 2021</span></div>
+          <div class="ap-stat teal"><span class="ap-stat-num">4,6&nbsp;G$</span><span class="ap-stat-desc">Prévus sur 5 ans par<br>le projet de loi C-37 (eau)</span></div>
+        </div>
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Une journée, deux scènes</div>
+
+            <p>La journée a eu deux visages. À <strong>Ottawa</strong>, sur la colline du Parlement, le rassemblement commémoratif national a réuni survivants, dirigeants autochtones et personnalités, avec une bande de tissu de 60&nbsp;mètres portant les noms d'enfants morts dans les pensionnats. La gouverneure générale <strong>Louise Arbour</strong> y a déclaré : « Se souvenir n'est qu'une étape. Cela doit s'accompagner de l'engagement de ne jamais, jamais répéter ces injustices. »</p>
+
+            <p>Le Premier ministre, lui, était à <strong>Edmonton</strong>, sa ville d'origine, pour une cérémonie au Fort Edmonton Park avec des familles et des dirigeants des Premières Nations. Le chef conservateur <strong>Pierre Poilievre</strong> y assistait aussi et a décrit les pensionnats comme « une immense intrusion de la coercition gouvernementale imposée aux familles autochtones ». Le communiqué de Mark Carney a été publié en anglais, en français et en neuf langues autochtones.</p>
+
+            <div class="ap-sub">Ce qu'a dit Mark Carney</div>
+
+            <p>Le Premier ministre a affirmé : « Nous faisons des progrès, mais nous savons que le travail de réconciliation est loin, très loin d'être terminé. Les blessures sont encore trop profondes. Les écarts sont encore trop grands. » Il a cité l'éducation, le logement dans les réserves, la loi sur l'eau potable et des soins de santé adaptés aux cultures des Premières Nations et des Inuit.</p>
+
+            <p>Il a aussi appelé à ne pas faire de tri dans l'histoire : « Nous ne devrions pas choisir de quelles parties de notre histoire nous souvenir », ni « entendre la vérité sur les pensionnats et ne pas agir ». Son communiqué reconnaît que le Canada « porte la responsabilité » de ces torts et promet de mettre en œuvre les 94 appels à l'action.</p>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">📌</div>
+              <div class="ap-info-text"><strong>Deux bilans qui s'opposent.</strong> Selon Indigenous Watchdog, <strong>14</strong> appels à l'action sur 94 sont réalisés, <strong>41</strong> en cours, <strong>24</strong> au point mort et <strong>15</strong> non commencés (situation au 1<sup>er</sup> septembre 2026). Pour Ottawa, plus de 85&nbsp;% des 76 appels qui exigent un leadership fédéral sont « réalisés ou bien avancés ».</div>
+            </div>
+
+            <div class="ap-sub">Les grandes dates</div>
+
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">30 sept. 2026</div><p class="ap-tl-text">Sixième Journée nationale ; cérémonie nationale à Ottawa, Carney à Edmonton.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">16 juin 2026</div><p class="ap-tl-text">Dépôt du projet de loi C-37 sur l'eau potable des Premières Nations.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">30 sept. 2021</div><p class="ap-tl-text">Première Journée nationale de la vérité et de la réconciliation.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">21 juin 2021</div><p class="ap-tl-text">Adoption de la loi sur la Déclaration des Nations unies sur les droits des peuples autochtones.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">3 juin 2021</div><p class="ap-tl-text">Loi créant le jour férié fédéral du 30 septembre.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">27 mai 2021</div><p class="ap-tl-text">Annonce de 215 sépultures possibles près de l'ancien pensionnat de Kamloops.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2015</div><p class="ap-tl-text">La Commission de vérité et réconciliation publie ses 94 appels à l'action.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2013</div><p class="ap-tl-text">Premier événement de la Journée du chandail orange, à Williams Lake.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">1973</div><p class="ap-tl-text">Phyllis Webstad se fait enlever son chandail orange à son arrivée au pensionnat de la mission Saint-Joseph.</p></div>
+            </div>
+          </div>
+          <div>
+            <div class="ap-sub">Mémoire, négationnisme et réactions</div>
+
+            <p>Le 30 septembre, la cheffe nationale de l'Assemblée des Premières Nations, <strong>Cindy Woodhouse Nepinak</strong>, s'est rendue à Tk'emlúps te Secwépemc (Kamloops), en solidarité après la découverte d'une bannière suprémaciste blanche. La cheffe de la communauté, Rosanne Casimir, a dénoncé l'incident. Stephanie Scott, du Centre national pour la vérité et la réconciliation, a pour sa part déploré que le droit canadien « ne reconnaisse toujours pas le négationnisme pour ce qu'il est : une haine déguisée en liberté d'expression ».</p>
+
+            <p>Pour Cynthia Wesley-Esquimaux, présidente du cercle de gouvernance du même centre, « nous avons progressé, mais il reste beaucoup à faire, et nous nous heurtons de plus en plus au déni ».</p>
+
+            <div class="ap-sub">L'eau potable, test de crédibilité</div>
+
+            <p>Le 16 juin 2026, le gouvernement a déposé le projet de loi <strong>C-37</strong>, la loi sur l'eau potable des Premières Nations, appuyé par 4,6&nbsp;milliards de dollars sur cinq ans. Il impose aux systèmes des terres des Premières Nations de respecter les normes de qualité canadiennes ou provinciales et prévoit une commission de l'eau dirigée par les Premières Nations.</p>
+
+            <p>Mais le texte ne reconnaît plus un droit humain à l'eau potable, comme le faisait la version précédente, et s'engage seulement à en assurer « la réalisation progressive ». Cindy Woodhouse Nepinak a répondu que « l'eau potable est un droit de la personne » et que les gouvernements ont l'obligation de le respecter.</p>
+
+            <div class="ap-sub">Aux origines de la journée</div>
+
+            <p>La date du 30 septembre vient de <strong>Phyllis Webstad</strong>, dont le chandail orange, neuf à son arrivée au pensionnat en 1973, fut confisqué. Son histoire a donné naissance en 2013 à la Journée du chandail orange. La Commission de vérité et réconciliation, dont le rapport date de 2015, avait recommandé une journée nationale ; elle est devenue fériée au niveau fédéral en 2021, après l'annonce des sépultures de Kamloops. Plus de 150&nbsp;000 enfants autochtones sont passés par les pensionnats, où la Commission a documenté au moins 3&nbsp;200 décès, un chiffre sans doute inférieur à la réalité.</p>
+
+            <div class="ap-quote">
+              <p>« La réconciliation est un voyage, pas une destination. C'est une attitude, pas une réussite. »</p>
+              <cite>— Mark Carney, Edmonton, 30 septembre 2026 (traduction)</cite>
+            </div>
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Des mots aux preuves</div>
+              <p>Six ans après sa création, la journée garde une double fonction : le deuil et la mise à l'épreuve du gouvernement. Les deux bilans, l'un qui compte 14 appels réalisés et l'autre plus de 85&nbsp;% « réalisés ou bien avancés », ne mesurent pas la même chose : l'un attend des résultats achevés, l'autre inclut les chantiers en cours. Le débat sur l'eau, le recul du droit annoncé et la montée du déni montrent que la confiance se joue désormais sur des textes et des chiffres vérifiables, bien plus que sur les cérémonies.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /ap-fr-section -->
+
+    <!-- ══ SECTION EN ══ -->
+    <div class="ap-en-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-red">🇨🇦 Canada</span>
+          <span class="ap-tag ap-tag-orange">Social</span>
+          <span class="ap-tag ap-tag-gold">Indigenous peoples</span>
+          <span class="ap-tag ap-tag-teal">Reconciliation</span>
+        </div>
+        <div class="ap-date">September 2026 — ECG Prépa · Canada</div>
+        <h1 class="ap-title">Truth and Reconciliation: Mark Carney Admits the Road Is Still Long</h1>
+        <p class="ap-intro">On Wednesday 30 September 2026, Canada marked the sixth National Day for Truth and Reconciliation, created in 2021 to honour the children lost to Indigenous residential schools and their Survivors. Prime Minister Mark Carney, speaking in Edmonton, acknowledged some progress but said the work of reconciliation is "far, far from finished". According to the monitoring group Indigenous Watchdog, only 14 of the Truth and Reconciliation Commission's 94 Calls to Action have been fully completed.</p>
+      </div>
+      <div class="ap-body">
+        <div class="ap-stats">
+          <div class="ap-stat"><span class="ap-stat-num">14 / 94</span><span class="ap-stat-desc">Calls to Action<br>completed in 11 years</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">150,000+</span><span class="ap-stat-desc">Children who went through<br>residential schools</span></div>
+          <div class="ap-stat red"><span class="ap-stat-num">215</span><span class="ap-stat-desc">Possible graves announced<br>at Kamloops in 2021</span></div>
+          <div class="ap-stat teal"><span class="ap-stat-num">$4.6B</span><span class="ap-stat-desc">Over five years in<br>water bill C-37</span></div>
+        </div>
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">One Day, Two Settings</div>
+
+            <p>The day had two faces. In <strong>Ottawa</strong>, on Parliament Hill, the national commemorative gathering brought together Survivors, Indigenous leaders and dignitaries, with a 60-metre cloth bearing the names of children who died in residential schools. Governor General <strong>Louise Arbour</strong> said: "Remembering is only one step. It must be accompanied by a commitment to ensuring that injustices are never, ever repeated."</p>
+
+            <p>The Prime Minister was in <strong>Edmonton</strong>, his hometown, for a ceremony at Fort Edmonton Park with families and First Nations leaders. Conservative Leader <strong>Pierre Poilievre</strong> also attended and described residential schools as "a massive intrusion of government coercion imposed on Indigenous families". Carney's statement was released in English, French and nine Indigenous languages.</p>
+
+            <div class="ap-sub">What Mark Carney Said</div>
+
+            <p>The Prime Minister said: "We are making some progress, but we know the work of reconciliation is far, far from finished. The wounds are still too deep. The gaps are still too wide." He pointed to education, housing on reserves, drinking water legislation and culturally relevant health care for First Nations and Inuit.</p>
+
+            <p>He also urged Canadians not to pick and choose their history: "We shouldn't choose which parts of history we remember", nor "hear the truth of residential schools and fail to act on it". His statement acknowledges that Canada "bears responsibility" for the harm and pledges to implement the 94 Calls to Action.</p>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">📌</div>
+              <div class="ap-info-text"><strong>Two Competing Scorecards.</strong> According to Indigenous Watchdog, <strong>14</strong> of the 94 Calls to Action are completed, <strong>41</strong> in progress, <strong>24</strong> stalled and <strong>15</strong> not started (as of 1 September 2026). Ottawa says more than 85% of the 76 calls requiring federal leadership are "completed or well underway".</div>
+            </div>
+
+            <div class="ap-sub">Key Dates</div>
+
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">30 Sep. 2026</div><p class="ap-tl-text">Sixth National Day; national ceremony in Ottawa, Carney in Edmonton.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">16 Jun. 2026</div><p class="ap-tl-text">Bill C-37 on First Nations drinking water is tabled.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">30 Sep. 2021</div><p class="ap-tl-text">First National Day for Truth and Reconciliation.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">21 Jun. 2021</div><p class="ap-tl-text">The United Nations Declaration on the Rights of Indigenous Peoples Act is passed.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">3 Jun. 2021</div><p class="ap-tl-text">Law creating the federal statutory holiday of 30 September.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">27 May 2021</div><p class="ap-tl-text">215 possible graves announced near the former Kamloops residential school.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2015</div><p class="ap-tl-text">The Truth and Reconciliation Commission publishes its 94 Calls to Action.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">2013</div><p class="ap-tl-text">First Orange Shirt Day event, in Williams Lake.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">1973</div><p class="ap-tl-text">Phyllis Webstad has her orange shirt taken away on arrival at St. Joseph Mission residential school.</p></div>
+            </div>
+          </div>
+          <div>
+            <div class="ap-sub">Memory, Denialism and Reactions</div>
+
+            <p>On 30 September, Assembly of First Nations National Chief <strong>Cindy Woodhouse Nepinak</strong> visited Tk'emlúps te Secwépemc (Kamloops) in solidarity after a white supremacist banner appeared there. The community's chief, Rosanne Casimir, condemned the incident. Stephanie Scott of the National Centre for Truth and Reconciliation lamented that Canada's legal system "still fails to recognize denialism for what it is — hatred disguised as free speech".</p>
+
+            <p>Cynthia Wesley-Esquimaux, chair of the Centre's governing circle, said: "We have made some headway. There is still much to do, and we're now increasingly coming up against denial."</p>
+
+            <div class="ap-sub">Drinking Water, a Test of Credibility</div>
+
+            <p>On 16 June 2026, the government tabled <strong>Bill C-37</strong>, the First Nations Clean Water Act, backed by $4.6 billion over five years. It requires systems on First Nations lands to meet Canadian or provincial quality standards and creates a First Nations-led water commission.</p>
+
+            <p>But the bill no longer recognizes a human right to clean water, as the previous version did, and only commits to "further the progressive realization" of it. Cindy Woodhouse Nepinak replied that "clean drinking water is a human right" and that governments are obliged to honour it.</p>
+
+            <div class="ap-sub">How the Day Began</div>
+
+            <p>The date comes from <strong>Phyllis Webstad</strong>, whose new orange shirt was taken from her on arriving at residential school in 1973. Her story gave rise in 2013 to Orange Shirt Day. The Truth and Reconciliation Commission, whose report dates from 2015, had recommended a national day; it became a federal holiday in 2021, after the Kamloops announcement. More than 150,000 Indigenous children went through residential schools, where the Commission documented at least 3,200 deaths, a figure probably below the reality.</p>
+
+            <div class="ap-quote">
+              <p>"Reconciliation is a journey, not a destination. It's an attitude, not an achievement."</p>
+              <cite>— Mark Carney, Edmonton, 30 September 2026</cite>
+            </div>
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">From Words to Proof</div>
+              <p>Six years after its creation, the day serves a double purpose: mourning, and putting the government to the test. The two scorecards, one counting 14 completed calls and the other more than 85% "completed or well underway", do not measure the same thing: one waits for finished results, the other includes work in progress. The water debate, the dropped rights language and the rise of denialism show that trust now depends on verifiable texts and figures far more than on ceremonies.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /ap-en-section -->
+
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — Canada — Septembre 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-en').classList.toggle('active', lang === 'en');
+  const isEn = lang === 'en';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEn ? 'none' : 'block');
+  document.querySelectorAll('.ap-en-section').forEach(el => el.style.display = isEn ? 'block' : 'none');
+
+  const band = document.getElementById('ap-band');
+  if (band) band.textContent = isEn
+    ? '🇨🇦 Truth and Reconciliation'
+    : '🇨🇦 Vérité et réconciliation';
+}
+setLang('fr');
+</script>
+</body>
+</html>
