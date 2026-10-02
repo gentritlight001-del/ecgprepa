@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Tennessee, une exécution ratée — 2026</title>
+<link rel="stylesheet" href="../../../fonts/fonts.css">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #c0392b;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #c0392b; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #003087; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #c0392b; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #c0392b; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #c0392b; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#c0392b; border-color:#c0392b; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  /* Article styles */
+  .ap-band { position: relative; z-index: 1; background: #b5131f; text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(0,15,40,0.95); padding:12px 60px; border-bottom: 1px solid rgba(192,57,43,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#e8c84a; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(192,57,43,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; background: linear-gradient(135deg, #0a0f1e 0%, #0d1830 40%, #1a0810 100%); display:flex; align-items:center; justify-content:center; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); pointer-events:none; }
+  .ap-hero-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; z-index:0; }
+  .ap-hero-inner { text-align:center; padding: 40px; position:relative; z-index:1; }
+  .ap-hero-emoji { font-size: 80px; line-height:1; display:block; margin-bottom:20px; filter: drop-shadow(0 0 40px rgba(192,57,43,0.5)); }
+  .ap-hero-label { font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.3em; text-transform:uppercase; color:rgba(192,57,43,0.7); }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(181,19,31,0.2);  color:#f08080; border:1px solid rgba(181,19,31,0.35); }
+  .ap-tag-navy   { background:rgba(0,48,135,0.4);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #e8c84a; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(192,57,43,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(232,200,74,0.7); }
+
+  /* Rich components */
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#e8c84a; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(232,200,74,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#071422,#0d2540); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat.teal   { background:linear-gradient(135deg,#004d40,#00796b); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-quote { background:linear-gradient(135deg,rgba(192,57,43,0.06),rgba(192,57,43,0.02)); border-left:3px solid #e8c84a; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(232,200,74,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(232,200,74,0.7); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(0,15,40,0.9),rgba(0,8,24,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(192,57,43,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#e8c84a; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(192,57,43,0.06); border:1px solid rgba(192,57,43,0.15); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(232,200,74,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#e8c84a; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(232,200,74,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#e8c84a; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-en-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.25s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-en.html">Anglais</a>
+    <span class="sep">/</span>
+    <a href="../etats-unis.html">États-Unis</a>
+    <span class="sep">/</span>
+    <span class="current">Exécution ratée au Tennessee</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-en" class="ap-lang-btn" onclick="setLang('en')">🇺🇸 EN</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇺🇸 Exécution ratée au Tennessee</div>
+<div class="ap-back-bar"><a class="ap-back-btn" href="../etats-unis.html">Retour aux articles</a></div>
+
+<div class="ap-main">
+  <div class="ap-card fade-in">
+
+    <!-- Hero visuel -->
+    <div class="ap-hero-img-wrap">
+      <img class="ap-hero-img" src="../images/us-tennessee-execution-ratee-2026.webp" alt="Portrait anthropométrique d'une femme aux longs cheveux bruns, devant une toise graduée">
+    </div>
+
+
+    <div class="ap-fr-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-navy">🇺🇸 États-Unis</span>
+          <span class="ap-tag ap-tag-red">Social</span>
+          <span class="ap-tag ap-tag-purple">Peine de mort</span>
+          <span class="ap-tag ap-tag-gold">Tennessee</span>
+        </div>
+        <div class="ap-date">Septembre 2026 — ECG Prépa · États-Unis</div>
+        <h1 class="ap-title" id="ap-title-fr">Tennessee : l'exécution de Christa Pike échoue après deux injections létales</h1>
+        <p class="ap-intro" id="ap-intro-fr">Le mercredi 30 septembre 2026, le Tennessee devait exécuter pour la première fois une femme depuis plus de deux siècles. Christa Pike, 50 ans, condamnée pour un meurtre commis en 1995, a reçu deux doses de pentobarbital, mais elle était toujours en vie quand l'opération a été interrompue. Elle a été transportée à l'hôpital, où elle se trouvait encore en état critique le lendemain. Le gouverneur Bill Lee a ordonné une enquête indépendante et annulé la dernière exécution prévue en 2026.</p>
+      </div>
+
+      <div class="ap-body">
+        <div class="ap-stats">
+          <div class="ap-stat"><span class="ap-stat-num">1820</span><span class="ap-stat-desc">Dernière exécution d'une<br>femme dans l'État</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">2</span><span class="ap-stat-desc">Doses de pentobarbital<br>administrées</span></div>
+          <div class="ap-stat red"><span class="ap-stat-num">7 +</span><span class="ap-stat-desc">Aiguilles utilisées<br>en environ une heure</span></div>
+          <div class="ap-stat teal"><span class="ap-stat-num">28</span><span class="ap-stat-desc">Exécutions aux États-Unis<br>en 2026, avant celle-ci</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">Une soirée qui tourne mal</div>
+
+            <p>L'exécution de <strong>Christa Pike</strong>, seule femme dans le couloir de la mort du Tennessee, était fixée au 30 septembre 2026, à 10&nbsp;heures du matin. Elle n'a commencé qu'en soirée. Vers 19&nbsp;h&nbsp;26, le rideau de la chambre d'exécution s'est ouvert devant les témoins. Quelques minutes plus tard, la condamnée a dit : « Mon bras a l'impression d'être sur le point d'éclater. » Selon les journalistes présents, plusieurs aiguilles ont dû être posées, au moins sept en environ une heure, dans le bras gauche, et l'une d'elles semblait tordue lorsqu'elle a été retirée.</p>
+
+            <p>Deux doses de <strong>pentobarbital</strong>, le barbiturique que l'État utilise seul depuis la reprise de ses exécutions, ont été injectées. Les témoins ont entendu Pike ronfler bruyamment et l'ont vue bouger, au point de faire glisser le drap qui la couvrait. Après la fermeture du rideau, les ronflements restaient audibles. Ses avocats ont déposé en urgence une requête devant la justice fédérale : leur cliente, écrivaient-ils, « n'a pas perdu connaissance et a toujours un battement de cœur ». Une ambulance a été appelée vers 20&nbsp;h&nbsp;50.</p>
+
+            <div class="ap-sub">Des tribunaux qui se contredisent en quelques heures</div>
+
+            <p>La journée avait déjà été heurtée. Environ une heure avant l'horaire prévu, la cour d'appel fédérale du sixième circuit avait suspendu l'exécution pour examiner à fond les arguments des parties, notamment la question de savoir si les violences sexuelles subies par Pike dans son enfance avaient été correctement prises en compte lors de son procès. La Cour suprême des États-Unis a levé cette suspension par six voix contre trois, sans motiver sa décision, ce qui laissait à l'État jusqu'à minuit pour agir, le mandat d'exécution expirant ce jour-là.</p>
+
+            <p>Le gouverneur avait de son côté refusé la grâce le 28 septembre. Les avocats de la condamnée avaient aussi contesté le protocole d'injection létale, en invoquant ses problèmes veineux et un traumatisme psychique ancien. Après l'échec, l'un d'eux, Randall Spivey, présent dans la salle, a parlé d'une soirée « cruelle » et non simplement mal conduite. Son confrère Stephen Ferrell estime que la perfusion s'est probablement diffusée dans les tissus au lieu du sang, ce qui expliquerait les douleurs décrites. Le bras droit de la détenue serait devenu violacé après la seconde dose.</p>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">📌</div>
+              <div class="ap-info-text"><strong>« Plus de 200 ans » : un chiffre à nuancer.</strong> La dernière femme exécutée dans l'État serait Eve Martin, pendue en 1820, mais les archives sont incomplètes : une autre femme aurait été exécutée en 1819, sans que son nom soit connu. L'expression « depuis au moins 1820 » est donc la plus sûre.</div>
+            </div>
+
+            <div class="ap-sub">De la grâce refusée à l'échec, en dates</div>
+
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">1<sup>er</sup> oct. 2026</div><p class="ap-tl-text">Le gouverneur ordonne une enquête indépendante et annule l'exécution du 3 décembre ; Pike est toujours hospitalisée en état critique.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">30 sept. 2026</div><p class="ap-tl-text">Suspension par la cour d'appel, puis levée par la Cour suprême (6 voix contre 3) ; deux doses injectées en soirée sans effet mortel.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">28 sept. 2026</div><p class="ap-tl-text">Le gouverneur Lee rejette la demande de grâce.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">21 mai 2026</div><p class="ap-tl-text">Tony Carruthers : exécution abandonnée faute de pouvoir poser la perfusion de secours ; sursis d'un an.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">30 sept. 2025</div><p class="ap-tl-text">La Cour suprême du Tennessee fixe l'exécution de Pike au 30 septembre 2026.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">1996</div><p class="ap-tl-text">Pike est condamnée à mort.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">1995</div><p class="ap-tl-text">Meurtre de Colleen Slemmer à Knoxville.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">Le gouverneur suspend tout</div>
+
+            <p>Le lendemain, <strong>Bill Lee</strong> s'est dit « très déçu » : les habitants du Tennessee attendent qu'une peine soit exécutée « d'une manière non seulement légale et constitutionnelle, mais efficace. Et cela ne s'est pas produit ». Il a ordonné une enquête « complète » menée par un tiers et annulé la seule autre exécution prévue en 2026, celle de <strong>Gary Wayne Sutton</strong>, fixée au 3 décembre. Il a aussi rappelé que ce procédé avait été utilisé plus d'une centaine de fois dans le pays sans un tel résultat. L'organisme chargé de l'enquête n'était pas connu au moment de la rédaction.</p>
+
+            <p>La famille de la victime n'a pas épargné les autorités. May Martinez, la mère de Colleen Slemmer, a jugé que « c'était un fiasco », en critiquant le manque d'information des proches. Les adversaires de la peine capitale ont réagi avec dureté. Amnesty International a parlé d'une « manifestation extrême de cruauté ». Le Haut-Commissariat de l'ONU aux droits de l'homme a qualifié de « abominables et cruelles » les souffrances prolongées liées à des tentatives d'exécution successives, et son chef, Volker Türk, a demandé à l'État de ne pas recommencer. À l'opposé, la sénatrice républicaine Marsha Blackburn, favorite pour succéder à Bill Lee, qui ne peut pas se représenter, a réclamé le retour de la chaise électrique.</p>
+
+            <div class="ap-sub">Un crime commis par une jeune adulte de 18 ans</div>
+
+            <p>En 1995, <strong>Christa Pike</strong>, alors âgée de 18 ans, a tué <strong>Colleen Slemmer</strong>, 19 ans, une camarade du centre de formation Job Corps de Knoxville. Les tribunaux ont décrit un meurtre d'une extrême brutalité, commis avec deux complices : son petit ami Tadaryl Shipp, 17 ans, et Shadolla Peterson, 19 ans. Condamnée à mort en 1996, Pike est devenue l'une des plus jeunes femmes du couloir de la mort. Shipp, mineur, a reçu la perpétuité avec possibilité de libération conditionnelle, et Peterson, qui a témoigné pour l'accusation, la probation.</p>
+
+            <p>Ses avocats soutiennent que sa défense initiale n'a pas présenté son histoire : exposition prénatale à l'alcool, abus sexuels dans l'enfance, pauvreté, troubles psychiques graves. Ils affirment qu'elle ne serait pas condamnée à mort aujourd'hui. Les tribunaux ont toujours rejeté ces recours, y compris la demande de rouvrir le dossier au nom des lois sur la justice des mineurs, qui ne s'appliquent pas à une personne majeure au moment des faits.</p>
+
+            <div class="ap-sub">Un État qui venait de reprendre les exécutions</div>
+
+            <p>Le Tennessee avait suspendu ses exécutions pendant une revue du protocole menée de 2022 à 2025, qui avait conclu que les produits n'avaient pas été correctement contrôlés. Elles ont repris en 2025 avec le seul pentobarbital. En mai 2026, l'exécution de Tony Carruthers avait déjà été abandonnée, et le gouverneur lui avait accordé un sursis d'un an. Pike est donc la deuxième condamnée de l'année à ne pas être exécutée malgré un mandat valide, et la première à avoir reçu les produits. Des spécialistes jugent le cas sans précédent.</p>
+
+            <div class="ap-quote">
+              <p>« C'est une tragédie. Personne ne voulait que ce qui s'est passé hier soir arrive. »</p>
+              <cite>— Bill Lee, gouverneur du Tennessee (traduction)</cite>
+            </div>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">Quand le protocole ne tient pas sa promesse</div>
+              <p>Les partisans de l'injection létale la présentent comme la méthode la plus sûre et la plus rapide. Deux échecs en cinq mois dans un même État montrent la fragilité de cette promesse : pose des voies veineuses, secret sur les produits et sur la formation des équipes, contrôle par les tribunaux. Aux États-Unis, 28 personnes ont été exécutées en 2026 avant cette affaire, toutes des hommes, et environ 2&nbsp;000 attendent dans les couloirs de la mort, dont 45 femmes. L'enquête promise par Bill Lee devra dire si l'erreur vient d'un geste, d'un protocole ou d'une méthode. Elle posera aussi une question que le droit américain laisse ouverte : que faire d'un condamné qui a survécu, alors que le mandat d'exécution est arrivé à son terme ?</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-fr-section -->
+
+    <!-- ══ SECTION EN ══ -->
+    <div class="ap-en-section">
+      <div class="ap-header">
+        <div class="ap-tags">
+          <span class="ap-tag ap-tag-navy">🇺🇸 United States</span>
+          <span class="ap-tag ap-tag-red">Social</span>
+          <span class="ap-tag ap-tag-purple">Death Penalty</span>
+          <span class="ap-tag ap-tag-gold">Tennessee</span>
+        </div>
+        <div class="ap-date">September 2026 — ECG Prépa · United States</div>
+        <h1 class="ap-title" id="ap-title-en">Tennessee: Christa Pike's Execution Fails After Two Lethal Injections</h1>
+        <p class="ap-intro" id="ap-intro-en">On Wednesday 30 September 2026, Tennessee was due to execute a woman for the first time in more than two centuries. Christa Pike, 50, convicted of a 1995 murder, received two doses of pentobarbital but was still alive when the procedure was halted. She was taken to hospital, where she remained in critical condition the next day. Governor Bill Lee ordered an independent review and cancelled the last execution scheduled for 2026.</p>
+      </div>
+      <div class="ap-body">
+
+        <div class="ap-stats">
+          <div class="ap-stat"><span class="ap-stat-num">1820</span><span class="ap-stat-desc">Last woman executed<br>in the state</span></div>
+          <div class="ap-stat gold"><span class="ap-stat-num">2</span><span class="ap-stat-desc">Doses of pentobarbital<br>administered</span></div>
+          <div class="ap-stat red"><span class="ap-stat-num">7+</span><span class="ap-stat-desc">Needles used<br>in about an hour</span></div>
+          <div class="ap-stat teal"><span class="ap-stat-num">28</span><span class="ap-stat-desc">US executions in 2026<br>before this one</span></div>
+        </div>
+
+        <div class="ap-cols">
+          <div>
+            <div class="ap-sub">An Evening That Went Wrong</div>
+
+            <p>The execution of <strong>Christa Pike</strong>, the only woman on Tennessee's death row, was set for 10 a.m. on 30 September 2026. It did not begin until the evening. At about 7:26 p.m., the curtain of the execution chamber opened in front of the witnesses. A few minutes later the prisoner said: "My arm feels like it's about to burst open." According to reporters present, several needles had to be placed, at least seven over about an hour, in her left arm, and one appeared bent when it was removed.</p>
+
+            <p>Two doses of <strong>pentobarbital</strong>, the barbiturate the state has used alone since resuming executions, were injected. Witnesses heard Pike snoring loudly and saw her move, to the point of dislodging the sheet covering her. After the curtain closed, the snoring could still be heard. Her lawyers filed an emergency motion in federal court, saying their client "has not lost consciousness and still has a heartbeat". An ambulance was called at about 8:50 p.m.</p>
+
+            <div class="ap-sub">Courts Reverse Each Other Within Hours</div>
+
+            <p>The day had already been turbulent. About an hour before the scheduled time, the federal Sixth Circuit Court of Appeals had paused the execution to examine the parties' arguments properly, including whether Pike's childhood sexual abuse had been adequately weighed at trial. The US Supreme Court lifted that stay by six votes to three, without explanation, leaving the state until midnight to act, when the death warrant expired.</p>
+
+            <p>The governor had already refused clemency on 28 September. Her lawyers had also challenged the lethal-injection protocol, citing her vein problems and long-standing trauma. After the failure, one of them, Randall Spivey, who was in the room, called the evening "cruel" rather than merely poorly handled. His colleague Stephen Ferrell believes the IV line probably leaked into the tissue instead of the bloodstream, which would explain the pain she described. Her right arm reportedly turned purple after the second dose.</p>
+
+            <div class="ap-info">
+              <div class="ap-info-icon">📌</div>
+              <div class="ap-info-text"><strong>"More than 200 years": a figure to qualify.</strong> The last woman executed in the state is said to be Eve Martin, hanged in 1820, but the records are incomplete: another woman was reportedly executed in 1819, her name unknown. "Since at least 1820" is therefore the safest wording.</div>
+            </div>
+
+            <div class="ap-sub">From Denied Clemency to Failure, in Dates</div>
+
+            <div class="ap-tl">
+              <div class="ap-tl-item"><div class="ap-tl-date">1 Oct. 2026</div><p class="ap-tl-text">The governor orders an independent review and cancels the 3 December execution; Pike remains hospitalized in critical condition.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">30 Sep. 2026</div><p class="ap-tl-text">Stay by the appeals court, then lifted by the Supreme Court (6 to 3); two doses injected in the evening without a fatal effect.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">28 Sep. 2026</div><p class="ap-tl-text">Governor Lee rejects the clemency petition.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">21 May 2026</div><p class="ap-tl-text">Tony Carruthers: execution abandoned because no backup IV line could be placed; one-year reprieve.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">30 Sep. 2025</div><p class="ap-tl-text">The Tennessee Supreme Court sets Pike's execution for 30 September 2026.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">1996</div><p class="ap-tl-text">Pike is sentenced to death.</p></div>
+              <div class="ap-tl-item"><div class="ap-tl-date">1995</div><p class="ap-tl-text">Murder of Colleen Slemmer in Knoxville.</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="ap-sub">The Governor Halts Everything</div>
+
+            <p>The next day <strong>Bill Lee</strong> said he was "highly disappointed": Tennesseans expect a sentence to be carried out "in a manner that's not only legal and constitutional, but effective. And that didn't happen." He ordered a "comprehensive" third-party review and cancelled the only other execution planned for 2026, that of <strong>Gary Wayne Sutton</strong>, set for 3 December. He also noted that the procedure had been used more than a hundred times in the country without such an outcome. The body that will conduct the review was not known at the time of writing.</p>
+
+            <p>The victim's family did not spare the authorities. May Martinez, Colleen Slemmer's mother, called it "a mess" and criticized the lack of information given to relatives. Opponents of capital punishment reacted harshly. Amnesty International described "an extreme display of cruelty". The UN human rights office called the prolonged suffering from repeated execution attempts "abhorrent, and cruel", and its chief, Volker Türk, urged the state not to try again. On the other side, Republican Senator Marsha Blackburn, the front-runner to succeed the term-limited Lee, called for the return of the electric chair.</p>
+
+            <div class="ap-sub">A Crime Committed by an 18-Year-Old</div>
+
+            <p>In 1995, <strong>Christa Pike</strong>, then 18, killed <strong>Colleen Slemmer</strong>, 19, a fellow student at the Knoxville Job Corps center. The courts described an extremely brutal murder, carried out with two accomplices: her boyfriend Tadaryl Shipp, 17, and Shadolla Peterson, 19. Sentenced to death in 1996, Pike became one of the youngest women on death row. Shipp, a minor, received life with the possibility of parole, and Peterson, who testified for the prosecution, received probation.</p>
+
+            <p>Her lawyers argue that her original defense never presented her history: prenatal alcohol exposure, childhood sexual abuse, poverty and severe mental illness. They say she would not be sentenced to death today. The courts have consistently rejected these appeals, including the request to reopen the case under juvenile-justice rulings, which do not apply to someone who was an adult at the time of the crime.</p>
+
+            <div class="ap-sub">A State That Had Just Resumed Executions</div>
+
+            <p>Tennessee had paused executions during a protocol review from 2022 to 2025, which concluded that the drugs had not been properly tested. They resumed in 2025 using only pentobarbital. In May 2026, Tony Carruthers's execution had already been abandoned, and the governor granted him a one-year reprieve. Pike is thus the second condemned prisoner this year not to be executed despite a valid warrant, and the first to have received the drugs. Specialists describe the case as unprecedented.</p>
+
+            <div class="ap-quote">
+              <p>"This is a tragedy. There is no one that wanted what happened last night to happen."</p>
+              <cite>— Bill Lee, Governor of Tennessee</cite>
+            </div>
+
+            <div class="ap-ctx">
+              <div class="ap-ctx-label">When the Protocol Fails Its Promise</div>
+              <p>Supporters of lethal injection present it as the safest and quickest method. Two failures in five months in the same state show how fragile that promise is: placing IV lines, secrecy over drugs and team training, and court oversight. In the United States, 28 people were executed in 2026 before this case, all of them men, and about 2,000 wait on death rows, 45 of them women. The review promised by Bill Lee will have to say whether the fault lies in a gesture, a protocol or a method. It will also raise a question American law leaves open: what to do with a prisoner who survived, once the death warrant has run out?</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /ap-en-section -->
+
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — États-Unis — Septembre 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-en').classList.toggle('active', lang === 'en');
+  const isEn = lang === 'en';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEn ? 'none' : 'block');
+  document.querySelectorAll('.ap-en-section').forEach(el => el.style.display = isEn ? 'block' : 'none');
+
+  const band = document.getElementById('ap-band');
+  if (band) band.textContent = isEn
+    ? '🇺🇸 Failed execution in Tennessee'
+    : '🇺🇸 Exécution ratée au Tennessee';
+}
+setLang('fr');
+</script>
+</body>
+</html>
