@@ -236,7 +236,7 @@
 
   /* Pages consultables sans compte (vitrine publique, référencement).
      Toutes les autres pages exigent une session valide. */
-  var PAGES_PUBLIQUES = ['login.html', 'accueil.html', 'contact.html', 'mentions-legales.html', 'cgu.html', 'cgv.html', 'tarifs.html', 'confidentialite.html', '404.html', 'desinscription.html', 'hors-ligne.html'];
+  var PAGES_PUBLIQUES = ['login.html', 'accueil.html', 'newsletters.html', 'contact.html', 'mentions-legales.html', 'cgu.html', 'cgv.html', 'tarifs.html', 'confidentialite.html', '404.html', 'desinscription.html', 'hors-ligne.html'];
 
   /* Cours, actualités et culture générale : consultables sans compte.
      Un visiteur non connecté n'est pas renvoyé vers la connexion ; en
