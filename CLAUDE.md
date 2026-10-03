@@ -203,6 +203,7 @@ Une page A4, style journal, au format PDF. Tout se joue dans `newsletter/`.
 | Fichier | Rôle |
 |---|---|
 | `newsletter/gabarit-newsletter.html` | le gabarit figé : **le `<style>` ne se réécrit jamais** |
+| `newsletter/outils/preparer.py` | prépare le JSON de départ de la semaine (une, brèves, images, liens, dates) |
 | `newsletter/outils/remplir.py` | remplit le gabarit depuis un JSON de contenu (champs, images, encadré, typo, « Le chiffre » traduit) |
 | `newsletter/outils/controle.py` | vérifie toutes les règles de mise en page, avec une ligne ✅/❌ par règle et la correction à faire |
 | `newsletter/outils/exemples/` | JSON de numéros réels : `mondiale-…` (mot du numéro), `hispanophone-…-fr/es` (vocabulaire) |
@@ -215,8 +216,12 @@ Une page A4, style journal, au format PDF. Tout se joue dans `newsletter/`.
 ### Procédure
 
 1. Lire les articles de la période (voir « Sources ») et faire les recherches web.
-2. Écrire un JSON par PDF dans `newsletter/build/` en copiant l'exemple qui correspond.
-   Pour une édition de langue, il faut deux JSON : `-fr` et `-<langue>`.
+2. Lancer `python3 newsletter/outils/preparer.py <monde|en|es|de|cg>` (option `--date AAAA-MM-JJ`
+   pour une autre semaine) : il choisit la une et les 3 brèves du bas (les 4 articles les plus
+   récents de l'édition) et écrit dans `newsletter/build/` un JSON de départ avec images, liens,
+   kickers, titres, semaine et période. Tous les champs valant « À RÉDIGER » restent à écrire
+   (en s'inspirant de l'exemple qui correspond). Pour une édition de langue, il faut deux JSON :
+   `-fr` (créé par le script) et `-<langue>` (traduction, à créer en copiant le `-fr`).
 3. `python3 newsletter/outils/remplir.py newsletter/build/<numero>-*.json`
 4. `python3 newsletter/outils/controle.py newsletter/build/<numero>-*.html`
    Corriger le texte du JSON selon les ❌, puis relancer 3 et 4 jusqu'à ce que tout soit ✅.
