@@ -189,9 +189,9 @@ page pays ou région :
 - Mise en page commune (`humanite/cinema/`, `humanite/litterature/`) : bandeau compact, bande
   « En bref » (réalisateur ou auteur, année, genre) avec le plan en pastilles, puis le texte.
   Une nouvelle fiche reprend une fiche existante (`blade-runner.html`, `1984.html`).
-- **Affiche / couverture** : `python3 outils/fiche-visuel.py <page> <image> "<légende>"`. Le
-  script crée le WebP dans `images/` de la rubrique et ajoute le visuel et le fond flou. Légende
-  **sur une seule ligne** (34 caractères au plus). Sans visuel, le bandeau reste en texte seul.
+- **Affiche / couverture** : `python3 outils/fiche-visuel.py <page> <image>`. Le script crée le
+  WebP dans `images/` de la rubrique et ajoute le visuel et le fond flou. **Pas de légende** sous
+  l'image. Sans visuel, le bandeau reste en texte seul.
 
 ### Dossiers de langues (DS)
 
