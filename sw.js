@@ -27,7 +27,7 @@
 /* Changer ce numéro vide les caches chez tous les visiteurs (voir
    « activate »). Avec la stratégie « réseau d'abord », ce n'est plus
    nécessaire pour publier une mise à jour du contenu. */
-var VERSION = 'v9';
+var VERSION = 'v10';
 var CACHE_SOCLE   = 'ecg-prepa-socle-'   + VERSION;
 var CACHE_PAGES   = 'ecg-prepa-pages-'   + VERSION;
 var CACHE_IMAGES  = 'ecg-prepa-images-'  + VERSION;
@@ -98,8 +98,12 @@ function cleDe(requete) {
 }
 
 /* Télécharge la ressource et en range une copie dans le cache. */
-function telechargerEtRanger(requete, nomCache) {
-  return fetch(requete).then(function (reponse) {
+function telechargerEtRanger(requete, nomCache, revalider) {
+  /* « revalider » : on demande au serveur si le fichier a changé au
+     lieu de se fier à la copie du navigateur (images des actualités
+     et de la culture générale, remplacées sous le même nom). */
+  var demande = revalider ? new Request(requete.url, { cache: 'no-cache' }) : requete;
+  return fetch(demande).then(function (reponse) {
     if (reponse && reponse.ok && reponse.type === 'basic' && !reponse.redirected) {
       var copie = reponse.clone();
       caches.open(nomCache).then(function (cache) { cache.put(cleDe(requete), copie); });
@@ -110,8 +114,8 @@ function telechargerEtRanger(requete, nomCache) {
 
 /* Réseau d'abord ; en cas d'échec (hors connexion), dernière copie
    connue, puis la page de secours s'il y en a une. */
-function reseauDabord(requete, nomCache, secours) {
-  return telechargerEtRanger(requete, nomCache).catch(function () {
+function reseauDabord(requete, nomCache, secours, revalider) {
+  return telechargerEtRanger(requete, nomCache, revalider).catch(function () {
     return caches.match(cleDe(requete), { ignoreVary: true }).then(function (r) {
       return r || (secours ? secours() : Response.error());
     });
@@ -162,7 +166,9 @@ self.addEventListener('fetch', function (evenement) {
 
   /* Images, icônes et polices. */
   if (estImage(url)) {
-    evenement.respondWith(reseauDabord(requete, CACHE_IMAGES));
+    var chemin = url.pathname.toLowerCase();
+    var contenu = chemin.indexOf('/actualites/') !== -1 || chemin.indexOf('/culture-generale/') !== -1;
+    evenement.respondWith(reseauDabord(requete, CACHE_IMAGES, null, contenu));
     return;
   }
 
