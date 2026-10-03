@@ -34,6 +34,8 @@ directement après chaque modification, sans attendre un nouveau « mets en lign
    de partage 1200 × 630 px (`partage/`) et ajoute les balises `og:` dans le `<head>` des pages
    qui n'en ont pas encore (aperçu des liens sur WhatsApp, Discord, etc.). Il ignore les pages
    déjà faites : on peut le relancer sans risque. Il a besoin de playwright (voir section 5).
+   Puis `python3 outils/referencement.py` : il ajoute la description et la balise canonical des
+   pages qui n'en ont pas et régénère `sitemap.xml` (ne jamais modifier ce fichier à la main).
 1. Commit sur la branche de travail de la session, puis `git push -u origin <branche>`.
 2. Créer la PR vers `main` et la merger (outils GitHub MCP).
 3. Remettre la branche à jour sur `main` :
