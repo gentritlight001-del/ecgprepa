@@ -36,6 +36,7 @@
 
   var LOGIN_URL = BASE + 'login.html';
   var HOME_URL  = BASE + 'index.html';
+  var ACCUEIL_URL = BASE + 'accueil.html';
   var ADMIN_URL = BASE + 'admin.html';
 
   /* ─── Service worker : mise en cache, mode hors-ligne ──────────
@@ -235,13 +236,13 @@
 
   /* Pages consultables sans compte (vitrine publique, référencement).
      Toutes les autres pages exigent une session valide. */
-  var PAGES_PUBLIQUES = ['login.html', 'accueil.html', 'contact.html', 'mentions-legales.html', 'cgu.html', 'cgv.html', 'tarifs.html', 'confidentialite.html', '404.html', 'desinscription.html', 'hors-ligne.html'];
+  var PAGES_PUBLIQUES = ['login.html', 'accueil.html', 'newsletters.html', 'contact.html', 'mentions-legales.html', 'cgu.html', 'cgv.html', 'tarifs.html', 'confidentialite.html', '404.html', 'desinscription.html', 'hors-ligne.html'];
 
   /* Cours, actualités et culture générale : consultables sans compte.
      Un visiteur non connecté n'est pas renvoyé vers la connexion ; en
      revanche, une page verrouillée ou Premium reste fermée pour lui.
      Un membre connecté suit le parcours normal (badge, verrous). */
-  var DOSSIERS_OUVERTS = ['cours-ecg.html', 'culture-generale.html', 'premiere_annee/', 'deuxieme_annee/', 'actualites/', 'culture-generale/'];
+  var DOSSIERS_OUVERTS = ['index.html', 'humanite.html', 'humanite/', 'cours-ecg.html', 'culture-generale.html', 'premiere_annee/', 'deuxieme_annee/', 'actualites/', 'culture-generale/'];
   var pageOuverte = (function () {
     var c = cheminActuelBrut();
     if (c === null) return false;
@@ -1537,7 +1538,7 @@
 
   function refuserAcces(profil) {
     ecranRefus('Accès réservé', 'Cette page est réservée aux administrateurs du site.',
-      (profil && profil.email) || 'session non identifiée', HOME_URL, 'Retour à l\'accueil');
+      (profil && profil.email) || 'session non identifiée', ACCUEIL_URL, 'Retour à l\'accueil');
   }
 
   /* Rubrique verrouillée par un administrateur : le membre est
@@ -1738,7 +1739,7 @@
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') basculer(false); });
     menu.addEventListener('click', function (e) { e.stopPropagation(); });
 
-    wrap.querySelector('#ecg-home').addEventListener('click', function () { location.href = HOME_URL; });
+    wrap.querySelector('#ecg-home').addEventListener('click', function () { location.href = ACCUEIL_URL; });
     wrap.querySelector('#ecg-favoris').addEventListener('click', function () { location.href = BASE + 'favoris.html'; });
     wrap.querySelector('#ecg-newsletter').addEventListener('click', function () { location.href = BASE + 'newsletter.html'; });
     wrap.querySelector('#ecg-abonnement').addEventListener('click', function () { location.href = BASE + 'abonnement.html'; });
