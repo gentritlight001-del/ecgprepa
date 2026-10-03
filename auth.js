@@ -229,12 +229,27 @@
      permet de verrouiller une page précise (un chapitre, une leçon…)
      individuellement, sans qu'elle corresponde à aucun motif de
      RUBRIQUES_SITE ci-dessus. */
+  function cheminActuelBrut() { try { return cheminRelatifAuSite(new URL(location.href)); } catch (e) { return null; } }
   var cheminActuel = (function () { try { return cheminRelatifAuSite(new URL(location.href)); } catch (e) { return null; } })();
 
 
   /* Pages consultables sans compte (vitrine publique, référencement).
      Toutes les autres pages exigent une session valide. */
   var PAGES_PUBLIQUES = ['login.html', 'accueil.html', 'contact.html', 'mentions-legales.html', 'cgu.html', 'cgv.html', 'tarifs.html', 'confidentialite.html', '404.html', 'desinscription.html', 'hors-ligne.html'];
+
+  /* Cours, actualités et culture générale : consultables sans compte.
+     Un visiteur non connecté n'est pas renvoyé vers la connexion ; en
+     revanche, une page verrouillée ou Premium reste fermée pour lui.
+     Un membre connecté suit le parcours normal (badge, verrous). */
+  var DOSSIERS_OUVERTS = ['cours-ecg.html', 'culture-generale.html', 'premiere_annee/', 'deuxieme_annee/', 'actualites/', 'culture-generale/'];
+  var pageOuverte = (function () {
+    var c = cheminActuelBrut();
+    if (c === null) return false;
+    for (var i = 0; i < DOSSIERS_OUVERTS.length; i++) {
+      if (c.indexOf(DOSSIERS_OUVERTS[i]) === 0) return true;
+    }
+    return false;
+  })();
 
   /* Page de présentation de l'offre Premium (publique). */
   var TARIFS_URL = BASE + 'tarifs.html';
@@ -1330,6 +1345,7 @@
     .then(function (c) { client = c; return c.auth.getSession(); })
     .then(function (r) {
       if (!r.data || !r.data.session) {
+        if (pageOuverte) { return visiteur(); }
         versLogin();
         return Promise.reject('redirige');
       }
@@ -1424,6 +1440,27 @@
       alerteReseau('Serveur de comptes injoignable — affichage hors ligne, certaines fonctions sont indisponibles.');
       if (p) demarrerBadge(p);
     });
+
+  /* Visiteur sans compte sur une page ouverte : on la montre, sauf si
+     elle (ou une rubrique qui la contient) est verrouillée ou Premium.
+     Si la table des verrous est illisible, on laisse passer, comme
+     pour un membre. */
+  function visiteur() {
+    return client.from('rubriques_verrouillage').select('*')
+      .then(function (r) {
+        var etat = {}, prem = {};
+        (r && r.data || []).forEach(function (x) { etat[x.id] = !!x.verrouille; prem[x.id] = !!x.premium; });
+        var ids = rubriquesActuelles.map(function (rb) { return rb.id; });
+        if (cheminActuel) ids.push(cheminActuel);
+        var ferme = ids.some(function (id) { return etat[id]; });
+        var payant = ids.some(function (id) { return prem[id]; });
+        if (ferme) { versLogin(); return; }
+        if (payant) { location.replace(TARIFS_URL); return; }
+        leverVoile();
+      })
+      .catch(function () { leverVoile(); })
+      .then(function () { return Promise.reject('redirige'); });
+  }
 
   /* Page non verrouillée : est-elle réservée aux abonnés ? Elle
      l'est si son propre chemin, ou l'une des rubriques qui la
