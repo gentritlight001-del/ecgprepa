@@ -230,7 +230,14 @@
      permet de verrouiller une page précise (un chapitre, une leçon…)
      individuellement, sans qu'elle corresponde à aucun motif de
      RUBRIQUES_SITE ci-dessus. */
-  function cheminActuelBrut() { try { return cheminRelatifAuSite(new URL(location.href)); } catch (e) { return null; } }
+  /* Cloudflare sert /index.html sous « / » : une adresse vide est la racine. */
+  function cheminActuelBrut() {
+    try {
+      var c = cheminRelatifAuSite(new URL(location.href));
+      if (c === null) return null;
+      return (c === '' || c.slice(-1) === '/') && c.indexOf('/') === -1 ? 'index.html' : c;
+    } catch (e) { return null; }
+  }
   var cheminActuel = (function () { try { return cheminRelatifAuSite(new URL(location.href)); } catch (e) { return null; } })();
 
 
