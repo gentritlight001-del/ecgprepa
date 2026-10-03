@@ -1798,7 +1798,9 @@
      défilement est bloqué. Un bouton flottant l'invite à s'abonner avant. */
   function apercuAuDefilement(carte) {
     leverVoile();
-    var SEUIL = 120, ouvert = false, root = document.documentElement;
+    var SEUIL = 160, ouvert = false, root = document.documentElement;
+    function position() { return window.pageYOffset || root.scrollTop || 0; }
+    var depart = position(), actif = false;
     var bandeau = document.createElement('div');
     bandeau.id = 'ecg-bandeau-prem';
     bandeau.innerHTML = '<button type="button">\u2726 Contenu Premium \u2014 d\u00e9bloquer la suite</button>';
@@ -1812,17 +1814,18 @@
       document.body.style.overflow = 'hidden';
     }
     bandeau.querySelector('button').addEventListener('click', ouvrir);
-    function surDefilement() {
-      var haut = window.pageYOffset || root.scrollTop || 0;
-      if (haut > SEUIL) ouvrir();
-    }
+    /* On ne compte que le défilement fait par le visiteur depuis l'affichage
+       de la page (position de départ mémorisée, 1 s de calme pour laisser
+       passer le retour à la position précédente ou le chargement). */
+    setTimeout(function () { depart = position(); actif = true; }, 1000);
+    window.addEventListener('scroll', function () {
+      if (actif && position() - depart > SEUIL) ouvrir();
+    }, { passive: true });
     function surGeste() {
-      if (root.scrollHeight - window.innerHeight <= SEUIL) ouvrir();
+      if (actif && root.scrollHeight - window.innerHeight <= SEUIL) ouvrir();
     }
-    window.addEventListener('scroll', surDefilement, { passive: true });
     window.addEventListener('wheel', surGeste, { passive: true });
     window.addEventListener('touchmove', surGeste, { passive: true });
-    surDefilement();
   }
 
   function bandeauPremiumAdmin(rub) {
