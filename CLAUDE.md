@@ -26,8 +26,14 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
 
 ## 2. Mise en ligne
 
-« Mets en ligne » = toute la séquence, sans demander :
+« Mets en ligne » = toute la séquence, sans demander. Le propriétaire demande de mettre en ligne
+directement après chaque modification, sans attendre un nouveau « mets en ligne » :
 
+0. Si la modification ajoute une page de contenu (article, fiche de culture générale, chapitre,
+   leçon, fiche d'Humanité…) : lancer `python3 outils/images-partage.py`. Le script crée l'image
+   de partage 1200 × 630 px (`partage/`) et ajoute les balises `og:` dans le `<head>` des pages
+   qui n'en ont pas encore (aperçu des liens sur WhatsApp, Discord, etc.). Il ignore les pages
+   déjà faites : on peut le relancer sans risque. Il a besoin de playwright (voir section 5).
 1. Commit sur la branche de travail de la session, puis `git push -u origin <branche>`.
 2. Créer la PR vers `main` et la merger (outils GitHub MCP).
 3. Remettre la branche à jour sur `main` :
