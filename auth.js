@@ -204,6 +204,7 @@
     var chemin = '';
     try { chemin = decodeURIComponent(location.pathname).toLowerCase(); } catch (e) { chemin = location.pathname.toLowerCase(); }
     var trouve = [];
+    if (chemin.slice(-1) !== '/' && chemin.split('/').pop().indexOf('.') === -1) chemin += '.html';
     RUBRIQUES_SITE.forEach(function (r) {
       for (var i = 0; i < r.motifs.length; i++) {
         if (chemin.indexOf('/' + r.motifs[i].toLowerCase()) !== -1) { trouve.push(r); return; }
@@ -253,6 +254,8 @@
   var pageOuverte = (function () {
     var c = cheminActuelBrut();
     if (c === null) return false;
+    /* Cloudflare retire « .html » des adresses : on le remet pour comparer. */
+    if (c.slice(-1) !== '/' && c.split('/').pop().indexOf('.') === -1) c += '.html';
     for (var i = 0; i < DOSSIERS_OUVERTS.length; i++) {
       if (c.indexOf(DOSSIERS_OUVERTS[i]) === 0) return true;
     }
