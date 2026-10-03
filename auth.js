@@ -274,7 +274,7 @@
 
   /* Pages réservées aux administrateurs : un membre connecté qui
      connaît l'adresse est arrêté et renvoyé vers l'accueil. */
-  var PAGES_ADMIN = ['admin.html', 'idees-articles.html', 'mes-newsletters.html'];
+  var PAGES_ADMIN = ['admin.html', 'idees-articles.html', 'mes-newsletters.html', 'statistiques.html'];
 
   var file = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
   if (file.indexOf('.') === -1) file = file + '.html';
@@ -1894,6 +1894,7 @@
       (admin ? '<button type="button" id="ecg-admin" class="admin" role="menuitem">Espace administrateur</button>' : '') +
       (admin ? '<button type="button" id="ecg-idees" class="admin" role="menuitem">Idées d\'articles</button>' : '') +
       (admin ? '<button type="button" id="ecg-mes-nl" class="admin" role="menuitem">Mes newsletters</button>' : '') +
+      (admin ? '<button type="button" id="ecg-stats" class="admin" role="menuitem">Statistiques</button>' : '') +
       '<div class="sep"></div>' +
       '<button type="button" id="ecg-home" role="menuitem">Retour à l\'accueil</button>' +
       '<button type="button" id="ecg-logout" class="danger" role="menuitem">Se déconnecter</button>' +
@@ -1950,6 +1951,7 @@
     wrap.querySelector('#ecg-contact').addEventListener('click', function () { location.href = BASE + 'contact.html'; });
     if (admin) wrap.querySelector('#ecg-admin').addEventListener('click', function () { location.href = ADMIN_URL; });
     if (admin) wrap.querySelector('#ecg-idees').addEventListener('click', function () { location.href = BASE + 'idees-articles.html'; });
+    if (admin) wrap.querySelector('#ecg-stats').addEventListener('click', function () { location.href = BASE + 'statistiques.html'; });
     if (admin) wrap.querySelector('#ecg-mes-nl').addEventListener('click', function () { location.href = BASE + 'mes-newsletters.html'; });
     wrap.querySelector('#ecg-logout').addEventListener('click', function () { Auth.logout(); });
 
