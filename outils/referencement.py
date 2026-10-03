@@ -6,12 +6,13 @@
 - Ajoute <meta name="description"> et <link rel="canonical"> aux pages de contenu qui n'en ont
   pas (la description est tirée du début de la page ; les descriptions existantes ne sont
   jamais modifiées).
+- Écrit statistiques-site.json (chiffres du contenu, lus par la page admin « Statistiques »).
 - Régénère sitemap.xml : pages publiques + toutes les pages de contenu, avec la date de la
   dernière modification (date du dernier commit Git de chaque fichier).
 
 Relançable sans risque : à lancer après avoir ajouté une page de contenu.
 """
-import glob, html, os, re, subprocess
+import datetime, glob, html, json, os, re, subprocess
 from html.parser import HTMLParser
 
 RACINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + '/'
@@ -103,6 +104,51 @@ def date_modif(rel):
     return r.stdout.strip() or None
 
 
+def champ_js(bloc, nom):
+    m = re.search(nom + r":\s*'((?:[^'\\]|\\.)*)'", bloc)
+    if not m:
+        return ''
+    t = m.group(1).replace("\\'", "'")
+    return re.sub(r'\\u([0-9a-fA-F]{4})', lambda x: chr(int(x.group(1), 16)), t)
+
+
+def statistiques(nb_adresses):
+    """Chiffres du contenu du site, pour la page admin « Statistiques »."""
+    def compte(motif):
+        return len([f for f in glob.glob(RACINE + motif, recursive=True) if not f.endswith('index.html')])
+    editions = []
+    for code, nom in (('monde', 'Mondiale'), ('en', 'Anglophone'), ('es', 'Hispanophone'), ('de', 'Germanophone')):
+        src = open(RACINE + 'actualites/%s/tous-%s.html' % (code, code), encoding='utf-8').read()
+        m = re.search(r"id:\s*'([^']+)'(.*?)externalUrl:", src, re.S)
+        dernier = None
+        if m:
+            b = m.group(2)
+            mois = re.search(r'month:\s*(\d+),\s*year:\s*(\d+)', src[m.end():m.end() + 400])
+            dernier = {'titre': champ_js(b, 'cardTitle'), 'pays': champ_js(b, 'pays'),
+                       'mois': int(mois.group(1)) if mois else None, 'annee': int(mois.group(2)) if mois else None}
+        editions.append({'code': code, 'nom': nom, 'articles': compte('actualites/%s/articles/*.html' % code), 'dernier': dernier})
+    cg_src = open(RACINE + 'culture-generale.html', encoding='utf-8').read()
+    fiches = [m for m in re.finditer(r"id:\s*'([^']+)'", cg_src) if m.group(1) != 'identifiant-unique']
+    dossiers = [int(n) for f in glob.glob(RACINE + 'Culture-Generale/*.html')
+                for n in re.findall(r'Dossier n°\s*(\d+)', open(f, encoding='utf-8').read())[:1]]
+    cours = []
+    for annee, dossier in (('1re année', 'premiere_annee'), ('2e année', 'deuxieme_annee')):
+        for mat in sorted(os.listdir(RACINE + dossier)):
+            if os.path.isdir(RACINE + dossier + '/' + mat):
+                n = compte('%s/%s/**/*.html' % (dossier, mat))
+                if n:
+                    cours.append({'annee': annee, 'matiere': mat, 'pages': n})
+    sans_image = sum(1 for f in glob.glob(RACINE + 'actualites/*/articles/*.html')
+                     if 'og:image' not in open(f, encoding='utf-8').read())
+    return {'genere_le': datetime.date.today().isoformat(), 'adresses_plan_du_site': nb_adresses,
+            'editions': editions,
+            'culture_generale': {'fiches': len(fiches), 'dernier_dossier': max(dossiers) if dossiers else None},
+            'humanite': {'cinema': compte('humanite/cinema/*.html'), 'litterature': compte('humanite/litterature/*.html'),
+                         'cours': compte('humanite/cours-humanite/**/*.html')},
+            'cours': cours, 'images_partage': len(glob.glob(RACINE + 'partage/**/*.jpg', recursive=True)),
+            'articles_sans_image_partage': sans_image}
+
+
 def main():
     pages = sorted({os.path.relpath(f, RACINE) for g in PERIMETRE for f in glob.glob(RACINE + g, recursive=True)})
     pages = [p for p in pages if os.path.basename(p) not in IGNORER]
@@ -139,6 +185,7 @@ def main():
         out.append('  <url><loc>%s%s</loc>%s</url>' % (SITE, rel, '<lastmod>%s</lastmod>' % d if d else ''))
     out.append('</urlset>')
     open(RACINE + 'sitemap.xml', 'w', encoding='utf-8').write('\n'.join(out) + '\n')
+    open(RACINE + 'statistiques-site.json', 'w', encoding='utf-8').write(json.dumps(statistiques(len(urls)), ensure_ascii=False, indent=1) + '\n')
     print('%d page(s) complétée(s) ; sitemap.xml : %d adresses.' % (ajoutes, len(urls)))
 
 
