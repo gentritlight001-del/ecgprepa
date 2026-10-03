@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leçon 29 — Les Connecteurs Logiques | Allemand ECG</title>
+<link rel="stylesheet" href="../../../fonts/fonts.css">
+<style>
+  :root {
+    --c-nom: var(--col-subj); --c-akk: var(--col-verb); --c-dat: var(--col-obj); --c-gen: var(--col-q);
+    --bg: #061a1a;
+    --surface: #0c2626;
+    --surface2: #123333;
+    --border: #1f5252;
+    --accent: #f472b6;
+    --accent2: #a78bfa;
+    --accent3: #fce7f3;
+    --accent4: #fb923c;
+    --accent5: #fbbf24;
+    --text: #e8f7f6;
+    --text-dim: #8cc2c0;
+    --text-faint: #3a8585;
+    --col-subj: #f472b6;
+    --col-verb: #2dd4bf;
+    --col-obj: #fbbf24;
+    --col-neg: #fb923c;
+    --col-q: #a78bfa;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  /* ─── BACKGROUND ─── */
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(180px); pointer-events: none; z-index: 0; }
+  .orb1 { width: 800px; height: 800px; background: rgba(244,114,182,0.07); top: -300px; right: -200px; }
+  .orb2 { width: 600px; height: 600px; background: rgba(251,146,60,0.05); bottom: -200px; left: -200px; }
+  .orb3 { width: 500px; height: 500px; background: rgba(251,191,36,0.025); top: 50%; left: 50%; transform: translate(-50%,-50%); }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(6,26,26,0.92); backdrop-filter: blur(20px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: var(--accent); cursor: pointer; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: var(--text-dim); flex-wrap: wrap; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb span:hover { color: var(--accent); }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); cursor: default; }
+
+  /* ─── CHAPTER HERO ─── */
+  .chapter-hero {
+    position: relative; overflow: hidden;
+    padding: 80px 64px 64px;
+    background: linear-gradient(135deg, #07302f 0%, #0a3a38 50%, #04191a 100%);
+    border-bottom: 1px solid rgba(244,114,182,0.12);
+    z-index: 1;
+    text-align: center; display: flex; flex-direction: column; align-items: center;
+  }
+  .chapter-hero::after {
+    content: '29';
+    position: absolute; right: -10px; bottom: -40px;
+    font-family: 'Playfair Display', serif; font-size: 22rem; font-weight: 900;
+    color: rgba(244,114,182,0.03); line-height: 1; pointer-events: none;
+    letter-spacing: -0.05em;
+  }
+  .ch-eyebrow {
+    font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px; justify-content: center;
+  }
+  .ch-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--accent); }
+  .ch-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 6vw, 5.5rem); font-weight: 900;
+    line-height: 1.0; margin-bottom: 20px; color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .ch-title span { color: var(--accent); }
+  .ch-subtitle { font-size: 1rem; color: var(--text-dim); font-weight: 300; max-width: 600px; line-height: 1.7; margin-bottom: 40px; }
+
+  .ch-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .ch-tag {
+    padding: 5px 14px; border-radius: 20px; font-family: 'DM Mono', monospace;
+    font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em;
+    border: 1px solid;
+  }
+  .ch-tag.subj { color: var(--col-subj); border-color: rgba(244,114,182,0.3);  background: rgba(244,114,182,0.08); }
+  .ch-tag.verb { color: var(--col-verb); border-color: rgba(45,212,191,0.3);  background: rgba(45,212,191,0.08); }
+  .ch-tag.obj  { color: var(--col-obj);  border-color: rgba(251,191,36,0.3);  background: rgba(251,191,36,0.08); }
+  .ch-tag.neg  { color: var(--col-neg);  border-color: rgba(251,146,60,0.3);  background: rgba(251,146,60,0.08); }
+  .ch-tag.q    { color: var(--col-q);    border-color: rgba(167,139,250,0.3);  background: rgba(167,139,250,0.08); }
+
+  /* ─── LAYOUT ─── */
+  .page-body { display: block; min-height: calc(100vh - 300px); position: relative; z-index: 1; }
+
+  /* ─── MAIN CONTENT ─── */
+  .main-content { width: 100%; padding: 48px 80px 100px; max-width: 1100px; margin: 0 auto; box-sizing: border-box; }
+
+  /* ─── SECTION ─── */
+  .section { margin-bottom: 72px; scroll-margin-top: 80px; }
+  .section-header {
+    display: flex; align-items: flex-start; gap: 20px; margin-bottom: 32px;
+    padding-bottom: 20px; border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 900;
+    color: var(--text-faint); line-height: 1; flex-shrink: 0; min-width: 48px;
+  }
+  .section-info {}
+  .section-tag { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--text); line-height: 1.2; }
+
+  /* ─── PROSE ─── */
+  .prose { font-size: 0.95rem; color: var(--text-dim); line-height: 1.85; font-weight: 300; }
+  .prose p { margin-bottom: 14px; }
+  .prose strong { color: var(--text); font-weight: 500; }
+  .prose em { color: var(--accent); font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.9rem; }
+
+  /* ─── DEFINITION BOX ─── */
+  .def-box {
+    background: linear-gradient(135deg, rgba(244,114,182,0.07) 0%, rgba(244,114,182,0.02) 100%);
+    border: 1px solid rgba(244,114,182,0.22); border-left: 3px solid var(--accent);
+    border-radius: 0 12px 12px 0; padding: 24px 28px; margin: 24px 0;
+  }
+  .def-box .def-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .def-box p { font-size: 0.92rem; color: var(--text-dim); line-height: 1.7; font-style: italic; }
+  .def-box strong { color: var(--text); }
+  .def-box em { color: var(--accent3); font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.88rem; }
+
+  /* ─── HIGHLIGHT BOX ─── */
+  .hl-box {
+    border-radius: 12px; padding: 20px 24px; margin: 20px 0;
+    border: 1px solid; display: flex; gap: 16px; align-items: flex-start;
+  }
+  .hl-box.warning { background: rgba(244,114,182,0.06);  border-color: rgba(244,114,182,0.25); }
+  .hl-box.tip     { background: rgba(251,191,36,0.05);  border-color: rgba(251,191,36,0.22); }
+  .hl-box.info    { background: rgba(167,139,250,0.05);  border-color: rgba(167,139,250,0.22); }
+  .hl-box.danger  { background: rgba(251,146,60,0.05);  border-color: rgba(251,146,60,0.22); }
+  .hl-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 1px; }
+  .hl-body { font-size: 0.88rem; color: var(--text-dim); line-height: 1.7; }
+  .hl-body strong { color: var(--text); font-weight: 500; }
+  .hl-body em { color: var(--accent3); font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.84rem; }
+
+  /* ─── CONJUGATION TABLE ─── */
+  .conj-table {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; overflow: hidden; margin: 24px 0;
+  }
+  .conj-table-head {
+    display: grid; grid-template-columns: 1fr 1.4fr 1.8fr;
+    padding: 12px 20px; background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  .conj-table-head .th {
+    font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em;
+    text-transform: uppercase; font-weight: 500;
+  }
+  .th.pron  { color: var(--col-subj); }
+  .th.form  { color: var(--col-verb); }
+  .th.ex    { color: var(--text-faint); }
+
+  .conj-row {
+    display: grid; grid-template-columns: 1fr 1.4fr 1.8fr;
+    padding: 11px 20px; border-bottom: 1px solid rgba(31,82,82,0.6);
+    align-items: center; transition: background 0.15s;
+  }
+  .conj-row:last-child { border-bottom: none; }
+  .conj-row:hover { background: rgba(244,114,182,0.04); }
+  .conj-row .pron-cell { font-family: 'DM Mono', monospace; font-size: 0.82rem; color: var(--col-subj); }
+  .conj-row .form-cell { font-family: 'DM Mono', monospace; font-size: 0.88rem; font-weight: 500; color: var(--col-verb); }
+  .conj-row .form-cell .s-suffix { color: var(--accent3); }
+  .conj-row .ex-cell   { font-size: 0.82rem; color: var(--text-dim); font-weight: 300; font-style: italic; }
+
+  /* ─── FORMULA BOX ─── */
+  .formula-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 24px 0; }
+  .formula-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px 22px;
+  }
+  .formula-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 14px; }
+  .formula-label.aff { color: var(--col-subj); }
+  .formula-label.neg { color: var(--col-neg); }
+  .formula-label.int { color: var(--col-q); }
+
+  .formula-expr {
+    font-family: 'DM Mono', monospace; font-size: 0.9rem; font-weight: 500;
+    display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-bottom: 16px;
+    line-height: 1.6;
+  }
+  .f-subj   { color: var(--col-subj); background: rgba(244,114,182,0.1);  padding: 2px 8px; border-radius: 4px; }
+  .f-verb   { color: var(--col-verb); background: rgba(45,212,191,0.1);  padding: 2px 8px; border-radius: 4px; }
+  .f-obj    { color: var(--col-obj);  background: rgba(251,191,36,0.1);  padding: 2px 8px; border-radius: 4px; }
+  .f-aux    { color: var(--col-neg);  background: rgba(251,146,60,0.1);  padding: 2px 8px; border-radius: 4px; }
+  .f-q      { color: var(--col-q);    background: rgba(167,139,250,0.1);  padding: 2px 8px; border-radius: 4px; }
+  .f-sep    { color: var(--text-faint); font-size: 0.7rem; }
+
+  .formula-example { font-size: 0.82rem; color: var(--text-dim); line-height: 1.7; }
+  .formula-example span { font-family: 'DM Mono', monospace; }
+  .formula-example .e-pos { color: var(--col-subj); }
+  .formula-example .e-neg { color: var(--col-neg); }
+  .formula-example .e-q   { color: var(--col-q); }
+
+  /* ─── USAGE CARDS ─── */
+  .usage-grid { display: grid; grid-template-columns: 1fr; gap: 14px; margin: 24px 0; }
+  .usage-card {
+    display: grid; grid-template-columns: auto 1fr 1.6fr; align-items: center; gap: 24px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px 24px; transition: border-color 0.2s;
+  }
+  .usage-card:hover { border-color: rgba(244,114,182,0.35); background: var(--surface2); }
+  .usage-icon { font-size: 1.6rem; margin-bottom: 0; }
+  .usage-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .usage-desc { font-size: 0.82rem; color: var(--text-dim); line-height: 1.65; font-weight: 300; margin-bottom: 0; }
+  .usage-desc em { color: var(--accent3); font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.78rem; }
+  .usage-example { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--accent); background: rgba(244,114,182,0.07); border-left: 2px solid var(--accent); padding: 8px 12px; border-radius: 0 6px 6px 0; }
+  .usage-example .trans { display: block; color: var(--text-faint); font-size: 0.72rem; margin-top: 4px; font-style: italic; }
+
+  /* ─── SPELLING RULES ─── */
+  .spelling-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin: 20px 0; }
+  .spelling-grid.three { grid-template-columns: repeat(3, 1fr); }
+  .spelling-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px 22px;
+  }
+  .spelling-rule { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--accent3); margin-bottom: 10px; font-weight: 500; line-height: 1.5; }
+  .spelling-cases { display: flex; flex-direction: column; gap: 6px; }
+  .sc-row { display: flex; gap: 10px; align-items: center; font-size: 0.8rem; }
+  .sc-base { color: var(--col-verb); font-family: 'DM Mono', monospace; min-width: 90px; }
+  .sc-arrow { color: var(--text-faint); }
+  .sc-result { color: var(--accent3); font-family: 'DM Mono', monospace; }
+  .sc-note { color: var(--text-faint); font-size: 0.72rem; margin-left: auto; }
+
+  /* ─── ADVERBS LIST ─── */
+  .adv-grid { display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 0; }
+  .adv-pill {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 10px 16px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; transition: all 0.2s; cursor: default;
+  }
+  .adv-pill:hover { border-color: rgba(244,114,182,0.35); background: var(--surface2); }
+  .adv-en { font-family: 'DM Mono', monospace; font-size: 0.82rem; color: var(--col-subj); font-weight: 500; }
+  .adv-fr { font-size: 0.72rem; color: var(--text-dim); margin-top: 2px; }
+  .adv-freq {
+    display: flex; height: 3px; gap: 2px; margin-top: 8px;
+  }
+  .adv-freq span { height: 3px; border-radius: 2px; background: var(--border); width: 14px; }
+  .adv-freq span.on { background: var(--accent); }
+
+  /* ─── COMPARISON TABLE ─── */
+  .cmp-table {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; overflow: hidden; margin: 24px 0;
+  }
+  .cmp-head {
+    display: grid; grid-template-columns: 1.1fr 1.4fr 1.4fr;
+    padding: 12px 20px; background: var(--surface2); border-bottom: 1px solid var(--border);
+  }
+  .cmp-head .th { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; }
+  .th.ps { color: var(--accent); }
+  .th.pc { color: var(--accent2); }
+  .cmp-row {
+    display: grid; grid-template-columns: 1.1fr 1.4fr 1.4fr;
+    padding: 11px 20px; border-bottom: 1px solid rgba(31,82,82,0.6); align-items: start; gap: 12px;
+  }
+  .cmp-row:last-child { border-bottom: none; }
+  .cmp-row:hover { background: rgba(244,114,182,0.03); }
+  .cmp-label { font-size: 0.82rem; color: var(--text-dim); font-weight: 300; line-height: 1.5; }
+  .cmp-ps { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--accent); line-height: 1.5; }
+  .cmp-pc { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--accent2); line-height: 1.5; }
+  .cmp-note { display: block; color: var(--text-faint); font-size: 0.68rem; font-style: italic; margin-top: 3px; font-family: 'DM Sans', sans-serif; }
+
+  /* ─── EXERCISE BLOCK ─── */
+  .exercise-block {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 14px; padding: 28px 32px; margin: 28px 0;
+  }
+  .ex-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .ex-badge {
+    font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em;
+    text-transform: uppercase; padding: 4px 10px; border-radius: 6px;
+    background: rgba(244,114,182,0.1); color: var(--accent); border: 1px solid rgba(244,114,182,0.25);
+  }
+  .ex-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--text); }
+  .ex-items { display: flex; flex-direction: column; gap: 12px; }
+  .ex-item { display: flex; gap: 14px; align-items: flex-start; font-size: 0.88rem; }
+  .ex-num { font-family: 'DM Mono', monospace; color: var(--text-faint); font-size: 0.75rem; min-width: 20px; margin-top: 2px; }
+  .ex-q { color: var(--text-dim); line-height: 1.6; }
+  .ex-q strong { color: var(--text); }
+  .ex-answer { display: none; margin-top: 4px; font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--accent); }
+  .ex-item.revealed .ex-answer { display: block; }
+  .show-answers-btn {
+    margin-top: 20px; padding: 9px 20px;
+    background: rgba(244,114,182,0.08); border: 1px solid rgba(244,114,182,0.25);
+    border-radius: 8px; color: var(--accent); font-family: 'DM Mono', monospace;
+    font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .show-answers-btn:hover { background: rgba(244,114,182,0.15); }
+
+  /* ─── SCROLL ─── */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-up { animation: fadeUp 0.25s ease forwards; opacity: 0; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .usage-card { grid-template-columns: 1fr; gap: 12px; padding: 18px 20px; }
+    .main-content { padding: 32px 24px 80px; }
+    .chapter-hero { padding: 48px 24px 48px; }
+    nav { padding: 14px 20px; }
+    .formula-grid { grid-template-columns: 1fr; }
+    .spelling-grid, .spelling-grid.three { grid-template-columns: 1fr; }
+    .usage-grid { grid-template-columns: 1fr; }
+    .conj-table-head, .conj-row { grid-template-columns: 0.8fr 1fr; }
+    .th.ex, .ex-cell { display: none; }
+    .cmp-head, .cmp-row { grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  }
+
+  /* ─── TABLE DES FORMES (infinitif / prétérit / participe II) ─── */
+  .vt { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin: 24px 0; }
+  .vt-head, .vt-row { display: grid; grid-template-columns: 1.3fr 1fr 1.2fr 1.5fr; gap: 12px; padding: 11px 20px; align-items: center; }
+  .vt-head { background: var(--surface2); border-bottom: 1px solid var(--border); }
+  .vt-head .th { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 500; }
+  .vt-head .th:nth-child(1) { color: var(--col-verb); }
+  .vt-head .th:nth-child(2) { color: var(--accent3); }
+  .vt-head .th:nth-child(3) { color: var(--col-obj); }
+  .vt-head .th:nth-child(4) { color: var(--text-faint); }
+  .vt-row { border-bottom: 1px solid rgba(31,82,82,0.6); transition: background 0.15s; }
+  .vt-row:last-child { border-bottom: none; }
+  .vt-row:hover { background: rgba(244,114,182,0.04); }
+  .vt-sep { padding: 9px 20px; font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; background: rgba(244,114,182,0.05); border-bottom: 1px solid var(--border); }
+  .vt-inf  { font-family: 'DM Mono', monospace; font-size: 0.86rem; font-weight: 500; color: var(--col-verb); }
+  .vt-inf small { display: block; font-family: 'DM Sans', sans-serif; font-size: 0.7rem; color: var(--text-faint); font-weight: 300; margin-top: 2px; }
+  .vt-pret { font-family: 'DM Mono', monospace; font-size: 0.84rem; color: var(--accent3); }
+  .vt-pp   { font-family: 'DM Mono', monospace; font-size: 0.84rem; color: var(--col-obj); }
+  .vt-ex   { font-size: 0.8rem; color: var(--text-dim); font-weight: 300; font-style: italic; }
+
+  .adv-forms { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--accent3); margin-top: 4px; }
+
+  .cmp-head.four, .cmp-row.four { grid-template-columns: 1fr 1.2fr 1.2fr 1.2fr; }
+
+  @media (max-width: 900px) {
+    .vt-head, .vt-row { grid-template-columns: 1.2fr 1fr 1.1fr; padding: 11px 16px; }
+    .vt-head .th:nth-child(4), .vt-ex { display: none; }
+    .conj-table.three .conj-table-head, .conj-table.three .conj-row { grid-template-columns: 1fr 1fr 1fr; }
+    .conj-table.three .th.ex { display: block; }
+    .conj-table.three .ex-cell { display: block; }
+    .cmp-head.four, .cmp-row.four { grid-template-columns: 0.9fr 1fr 1fr 1fr; }
+  }
+
+  /* ─── TABLEAU DU CADRE VERBAL ─── */
+  .fr { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin: 24px 0; }
+  .fr-head, .fr-row { display: grid; grid-template-columns: 1fr 0.9fr 1.8fr 1fr; gap: 12px; padding: 11px 20px; align-items: center; }
+  .fr-head { background: var(--surface2); border-bottom: 1px solid var(--border); }
+  .fr-head .th { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 500; }
+  .fr-head .th:nth-child(1) { color: var(--col-subj); }
+  .fr-head .th:nth-child(2) { color: var(--col-verb); }
+  .fr-head .th:nth-child(3) { color: var(--col-obj); }
+  .fr-head .th:nth-child(4) { color: var(--col-q); }
+  .fr-row { border-bottom: 1px solid rgba(31,82,82,0.6); font-family: 'DM Mono', monospace; font-size: 0.84rem; transition: background 0.15s; }
+  .fr-row:last-child { border-bottom: none; }
+  .fr-row:hover { background: rgba(244,114,182,0.04); }
+  .fr-row span:nth-child(1) { color: var(--col-subj); }
+  .fr-row span:nth-child(2) { color: var(--col-verb); font-weight: 500; }
+  .fr-row span:nth-child(3) { color: var(--col-obj); }
+  .fr-row span:nth-child(4) { color: var(--col-q); font-weight: 500; }
+  .fr-sep { padding: 9px 20px; font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; background: rgba(244,114,182,0.05); border-bottom: 1px solid var(--border); color: var(--text-dim); }
+
+  @media (max-width: 900px) {
+    .fr-head, .fr-row { grid-template-columns: 1fr 0.9fr 1.5fr 1fr; gap: 8px; padding: 10px 12px; }
+    .fr-row { font-size: 0.74rem; }
+    .fr-head .th { font-size: 0.52rem; letter-spacing: 0.08em; }
+  }
+
+  /* ─── LISTES DE GENRE (lisibles) ─── */
+  .gl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 24px 0; }
+  .gl-card { background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--gl-color); border-radius: 12px; padding: 20px 22px 12px; }
+  .gl-art { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 900; color: var(--gl-color); line-height: 1; }
+  .gl-name { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-faint); margin: 4px 0 14px; }
+  .gl-row { padding: 10px 0; border-top: 1px solid var(--border); }
+  .gl-cat { display: block; font-size: 0.8rem; color: var(--text-dim); }
+  .gl-ex { display: block; font-family: 'DM Mono', monospace; font-size: 0.84rem; color: var(--text); margin-top: 3px; }
+  .gl-ex b { color: var(--gl-color); font-weight: 500; }
+  .gl-note { font-size: 0.72rem; color: var(--text-faint); font-family: 'DM Sans', sans-serif; }
+
+  .vt.three .vt-head, .vt.three .vt-row { grid-template-columns: 1.3fr 1fr 1.6fr; }
+  .vt.three .vt-head .th:nth-child(3) { color: var(--col-obj); }
+  .vt.three .vt-inf small { color: var(--text-dim); font-size: 0.74rem; }
+  .vt-inf .gn { display: inline-block; font-size: 0.6rem; margin-left: 6px; color: var(--text-faint); font-family: 'DM Sans', sans-serif; }
+
+  @media (max-width: 900px) {
+    .gl-grid { grid-template-columns: 1fr; }
+    .vt.three .vt-head, .vt.three .vt-row { grid-template-columns: 1.2fr 1fr 1.4fr; }
+    .vt.three .vt-head .th:nth-child(3) { display: block; }
+  }
+
+  /* ─── TABLEAU DES CAS ─── */
+  .cs { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin: 24px 0; }
+  .cs-head, .cs-row { display: grid; grid-template-columns: 1fr 1.3fr 1.7fr; gap: 16px; padding: 14px 20px; align-items: center; }
+  .cs-head { background: var(--surface2); border-bottom: 1px solid var(--border); padding-top: 12px; padding-bottom: 12px; }
+  .cs-head .th { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-faint); }
+  .cs-row { border-bottom: 1px solid var(--border); }
+  .cs-row:last-child { border-bottom: none; }
+  .cs-case { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.1rem; color: var(--rc); }
+  .cs-case small { display: block; font-family: 'DM Mono', monospace; font-size: 0.72rem; font-weight: 400; color: var(--text-dim); margin-top: 3px; }
+  .cs-role { font-size: 0.85rem; color: var(--text-dim); line-height: 1.5; }
+  .cs-ex { font-family: 'DM Mono', monospace; font-size: 0.82rem; color: var(--text); line-height: 1.5; }
+  .cs-ex b { color: var(--rc); font-weight: 600; }
+
+  /* ─── TABLEAU DE DÉCLINAISON ─── */
+  .dc { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin: 24px 0; }
+  .dc-head, .dc-row { display: grid; grid-template-columns: 1.1fr 1fr 1fr 1fr 1fr; gap: 8px; padding: 12px 20px; align-items: center; }
+  .dc-head { background: var(--surface2); border-bottom: 1px solid var(--border); }
+  .dc-head .th { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-faint); }
+  .dc-row { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  .dc-row:last-child { border-bottom: none; }
+  .dc-row:hover { background: rgba(244,114,182,0.04); }
+  .dc-row span { font-family: 'DM Mono', monospace; font-size: 0.95rem; color: var(--text-dim); }
+  .dc-row span:first-child { font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 600; color: var(--rc); }
+  .dc-row span.ch { color: var(--rc); font-weight: 600; }
+  .dc-sep { padding: 9px 20px; font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-dim); background: rgba(244,114,182,0.05); border-bottom: 1px solid var(--border); }
+
+  /* ─── ANALYSE D'UNE PHRASE ─── */
+  .ana { display: flex; gap: 10px; flex-wrap: wrap; margin: 20px 0 8px; }
+  .ana-cell { background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--rc); border-radius: 10px; padding: 12px 16px; }
+  .ana-w { font-family: 'DM Mono', monospace; font-size: 0.95rem; color: var(--text); }
+  .ana-l { font-size: 0.72rem; color: var(--text-dim); margin-top: 4px; }
+  .ana-tr { font-size: 0.82rem; color: var(--text-dim); font-style: italic; margin-bottom: 20px; }
+
+  .gl-grid.two { grid-template-columns: repeat(2, 1fr); }
+
+  @media (max-width: 900px) {
+    .cs-head { display: none; }
+    .cs-row { grid-template-columns: 1fr; gap: 6px; padding: 14px 16px; }
+    .dc-head, .dc-row { grid-template-columns: 1.2fr 1fr 1fr 1fr 1fr; gap: 4px; padding: 10px 12px; }
+    .dc-row span { font-size: 0.78rem; }
+    .dc-head .th { font-size: 0.5rem; letter-spacing: 0.06em; }
+    .gl-grid.two { grid-template-columns: 1fr; }
+  }
+
+  .conj-table.frt .form-cell { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 0.85rem; color: var(--text-dim); }
+  /* ─── TABLEAUX DE PRONOMS ─── */
+  .dc.four .dc-head, .dc.four .dc-row { grid-template-columns: 1.1fr 1fr 1fr 1fr; }
+  .dc.pc .dc-row span:first-child { font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 600; color: var(--text); }
+  .dc.nad .dc-head .th:nth-child(2), .dc.nad .dc-row span:nth-child(2) { color: var(--c-nom); }
+  .dc.nad .dc-head .th:nth-child(3), .dc.nad .dc-row span:nth-child(3) { color: var(--c-akk); }
+  .dc.nad .dc-head .th:nth-child(4), .dc.nad .dc-row span:nth-child(4) { color: var(--c-dat); }
+  .dc.nad .dc-head .th:nth-child(5), .dc.nad .dc-row span:nth-child(5) { color: var(--accent3); }
+  .dc.ad .dc-head .th:nth-child(2), .dc.ad .dc-row span:nth-child(2) { color: var(--c-akk); }
+  .dc.ad .dc-head .th:nth-child(3), .dc.ad .dc-row span:nth-child(3) { color: var(--c-dat); }
+  .dc.pc .dc-row span:nth-child(n+2) { font-weight: 600; }
+  @media (max-width: 900px) {
+    .dc.four .dc-head, .dc.four .dc-row { grid-template-columns: 1.2fr 1fr 1fr 1fr; }
+  }
+
+  .fr-row b { color: var(--col-neg); font-weight: 600; }
+  .conj-table.wide .conj-table-head, .conj-table.wide .conj-row { grid-template-columns: 1.6fr 1fr 1.8fr; }
+  @media (max-width: 900px) { .conj-table.wide .conj-table-head, .conj-table.wide .conj-row { grid-template-columns: 1fr 1fr; } }
+  .conj-table.frt1 .pron-cell, .conj-table.frt0 .pron-cell { font-family: 'DM Sans', sans-serif; font-size: 0.85rem; color: var(--text); }
+
+  .conj-table.frt .conj-row { column-gap: 16px; }
+
+  /* ─── TABLEAU DES FORMES À 4 COLONNES ─── */
+  .vt.fourcol .vt-head, .vt.fourcol .vt-row { grid-template-columns: 1.4fr 1fr 1fr 1.2fr; }
+  .vt.fourcol .vt-ex { font-family: 'DM Mono', monospace; font-style: normal; font-size: 0.84rem; color: var(--col-neg); }
+  .vt.fourcol .vt-head .th:nth-child(4) { color: var(--col-neg); }
+  .vt.fourcol .vt-inf small { color: var(--text-dim); font-size: 0.72rem; }
+  @media (max-width: 900px) {
+    .vt.fourcol .vt-head, .vt.fourcol .vt-row { grid-template-columns: 1.3fr 1fr 1fr 1.1fr; gap: 6px; padding: 10px 12px; }
+    .vt.fourcol .vt-head .th:nth-child(4), .vt.fourcol .vt-ex { display: block; font-size: 0.72rem; }
+    .vt.fourcol .vt-pret, .vt.fourcol .vt-pp { font-size: 0.74rem; }
+  }
+
+  .dc-row b { color: var(--rc); font-weight: 700; }
+  .dc-row span.ch b { color: var(--text); }
+
+  /* ─── MOBILE : garder la 3ᵉ colonne des tableaux visible ─── */
+  @media (max-width: 900px) {
+    .conj-table .conj-table-head, .conj-table .conj-row { grid-template-columns: 1fr 1fr 1.1fr; gap: 8px; padding-left: 14px; padding-right: 14px; }
+    .conj-table .th.ex, .conj-table .ex-cell { display: block; font-size: 0.74rem; }
+    .conj-table .pron-cell, .conj-table .form-cell { font-size: 0.74rem; }
+  }
+
+  /* ─── TABLEAU ACCUSATIF / DATIF ─── */
+  .conj-table.pd .conj-table-head, .conj-table.pd .conj-row { grid-template-columns: 0.6fr 1.5fr 1.5fr; }
+  .conj-table.pd .th.form { color: var(--c-akk); }
+  .conj-table.pd .th.ex { color: var(--c-dat); }
+  .conj-table.pd .form-cell { color: var(--text); font-weight: 400; font-size: 0.8rem; }
+  .conj-table.pd .ex-cell { color: var(--text); font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.8rem; font-weight: 400; }
+  .conj-table.pd .pron-cell { font-weight: 600; }
+  .conj-table.pd b.a { color: var(--c-akk); font-weight: 600; }
+  .conj-table.pd b.d { color: var(--c-dat); font-weight: 600; }
+  @media (max-width: 900px) { .conj-table.pd .conj-table-head, .conj-table.pd .conj-row { grid-template-columns: 1fr; } }
+
+  /* ─── VERBES PAR PRÉPOSITION ─── */
+  .vp { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin: 24px 0; }
+  .vp-row { display: grid; grid-template-columns: 150px 1fr; gap: 20px; padding: 16px 20px; border-bottom: 1px solid var(--border); align-items: start; }
+  .vp-row:last-child { border-bottom: none; }
+  .vp-prep b { display: block; font-family: 'Playfair Display', serif; font-size: 1.25rem; color: var(--rc); line-height: 1.1; }
+  .vp-prep small { display: block; margin-top: 4px; font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--text-dim); }
+  .vp-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .vp-chip { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; line-height: 1.3; }
+  .vp-chip b { font-family: 'DM Mono', monospace; font-weight: 500; font-size: 0.82rem; color: var(--text); }
+  .vp-chip span { margin-left: 6px; font-size: 0.74rem; color: var(--text-dim); }
+
+  /* ─── TABLEAUX PERSONNE / CHOSE ─── */
+  .conj-table.pc2 .conj-table-head, .conj-table.pc2 .conj-row { grid-template-columns: 0.9fr 1.4fr 1.4fr; }
+  .conj-table.pc2 .th.form { color: var(--c-akk); }
+  .conj-table.pc2 .th.ex { color: var(--c-dat); }
+  .conj-table.pc2 .pron-cell { font-family: 'DM Sans', sans-serif; font-size: 0.85rem; color: var(--text); }
+  .conj-table.pc2 .form-cell, .conj-table.pc2 .ex-cell { font-family: 'DM Mono', monospace; font-style: normal; font-weight: 400; font-size: 0.82rem; color: var(--text); }
+  .conj-table.pc2.mono .pron-cell { font-family: 'DM Mono', monospace; font-weight: 500; color: var(--col-subj); }
+  @media (max-width: 900px) {
+    .vp-row { grid-template-columns: 1fr; gap: 10px; padding: 14px 16px; }
+    .conj-table.pc2 .conj-table-head, .conj-table.pc2 .conj-row { grid-template-columns: 1fr 1fr 1fr; }
+  }
+
+  .vt.fourcol.frx .vt-ex { font-family: 'DM Sans', sans-serif; color: var(--text-dim); font-size: 0.78rem; }
+  .vt.fourcol.frx .vt-head .th:nth-child(4) { color: var(--text-faint); }
+  .dc-row b { color: var(--rc); font-weight: 700; }
+
+  .conj-table.pc2.frmid .form-cell { font-family: 'DM Sans', sans-serif; font-size: 0.85rem; color: var(--text-dim); }
+  /* ─── PARTICIPES ÉTENDUS (version) ─── */
+  .conj-table.ext .conj-table-head, .conj-table.ext .conj-row { grid-template-columns: 1.25fr 1.25fr 1fr; }
+  .conj-table.ext .th.form { color: var(--c-akk); }
+  .conj-table.ext .th.ex { color: var(--c-dat); }
+  .conj-table.ext .pron-cell, .conj-table.ext .form-cell { font-family: 'DM Mono', monospace; font-size: 0.78rem; font-weight: 400; line-height: 1.5; }
+  .conj-table.ext .pron-cell { color: var(--text); }
+  .conj-table.ext .form-cell { color: var(--text-dim); }
+  .conj-table.ext .ex-cell { font-family: 'DM Sans', sans-serif; font-style: normal; font-size: 0.82rem; color: var(--c-dat); }
+  .conj-table.ext b { color: var(--c-akk); font-weight: 600; }
+  @media (max-width: 900px) { .conj-table.ext .conj-table-head, .conj-table.ext .conj-row { grid-template-columns: 1fr; } }
+
+  .conj-table.pc2.frlast .ex-cell { font-family: 'DM Sans', sans-serif; font-style: normal; font-size: 0.82rem; color: var(--text-dim); }
+</style>
+<meta property="og:type" content="article">
+<meta property="og:title" content="Leçon 29 — Les Connecteurs Logiques">
+<meta property="og:image" content="https://ecg-prepa.fr/partage/cours/premiere_annee-langues-allemand-lecon29.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Leçon 29 — Les Connecteurs Logiques">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ecg-prepa.fr/partage/cours/premiere_annee-langues-allemand-lecon29.jpg">
+<meta name="description" content="Les connecteurs logiques relient les phrases et les idées d&#x27;un texte : ils expriment l&#x27;addition, l&#x27;opposition, la cause, la conséquence… Leur emploi est…">
+<link rel="canonical" href="https://ecg-prepa.fr/premiere_annee/langues/allemand/lecon29.html">
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div>
+  <div class="breadcrumb">
+    <span onclick="window.location.href='../../../index.html'">Accueil</span>
+    <span class="sep">/</span>
+    <span onclick="window.location.href='../../index.html'">1ère Année</span>
+    <span class="sep">/</span>
+    <span onclick="window.location.href='../index.html'">Langues</span>
+      <span class="sep">/</span>
+      <span onclick="window.location.href='index.html'">Allemand</span>
+    <span class="sep">/</span>
+    <span class="current">Leçon 29 · Les Connecteurs Logiques</span>
+  </div>
+</nav>
+
+<div class="chapter-hero">
+  <div class="ch-eyebrow">Leçon 29 — Grammaire fondamentale</div>
+  <div class="ch-title">Les Connecteurs <span>Logiques</span></div>
+  <div class="ch-tags" style="margin-top: 20px;"><span class="ch-tag subj">Addition</span><span class="ch-tag verb">Opposition</span><span class="ch-tag obj">Cause · conséquence</span><span class="ch-tag neg">Paires corrélatives</span><span class="ch-tag q">Place du verbe</span></div>
+</div>
+
+<div class="page-body">
+  <main class="main-content">
+<section class="section" id="s1"><div class="section-header"><div class="section-num">1</div><div class="section-info"><div class="section-tag">Fondamentaux</div><div class="section-title">Définition : relier les idées</div></div></div><div class="prose"><p>Les <strong>connecteurs logiques</strong> relient les phrases et les idées d'un texte : ils expriment l'addition, l'opposition, la cause, la conséquence… Leur emploi est essentiel à l'écrit. Mais chaque famille de connecteurs impose une <strong>place précise au verbe</strong> (leçons 3 et 20).</p></div><div class="cs"><div class="cs-head"><div class="th">Famille</div><div class="th">Effet sur le verbe</div><div class="th">Exemple</div></div><div class="cs-row" style="--rc:var(--col-subj);"><div class="cs-case">Coordination<small>und, aber, oder, denn, sondern</small></div><div class="cs-role">ordre normal : sujet, puis verbe</div><div class="cs-ex">Er arbeitet, <b>aber</b> er ist müde.</div></div><div class="cs-row" style="--rc:var(--col-verb);"><div class="cs-case">Adverbe de liaison<small>deshalb, trotzdem, außerdem, jedoch…</small></div><div class="cs-role">verbe en 2ᵉ position, sujet derrière</div><div class="cs-ex">Er ist müde, <b>deshalb</b> schläft er.</div></div><div class="cs-row" style="--rc:var(--col-obj);"><div class="cs-case">Subordination<small>weil, obwohl, dass, wenn…</small></div><div class="cs-role">verbe conjugué à la fin</div><div class="cs-ex">Er schläft, <b>weil</b> er müde ist.</div></div></div></section><section class="section" id="s2"><div class="section-header"><div class="section-num">2</div><div class="section-info"><div class="section-tag">Argumenter</div><div class="section-title">Ajouter, opposer, expliquer</div></div></div><div class="vp"><div class="vp-row" style="--rc:var(--col-subj);"><div class="vp-prep"><b>Addition</b><small></small></div><div class="vp-list"><div class="vp-chip"><b>und</b><span>et</span></div><div class="vp-chip"><b>außerdem</b><span>en outre</span></div><div class="vp-chip"><b>zudem</b><span>de plus</span></div><div class="vp-chip"><b>darüber hinaus</b><span>au-delà de cela</span></div><div class="vp-chip"><b>ferner</b><span>par ailleurs</span></div><div class="vp-chip"><b>sowohl … als auch</b><span>aussi bien … que</span></div></div></div><div class="vp-row" style="--rc:var(--col-verb);"><div class="vp-prep"><b>Opposition</b><small></small></div><div class="vp-list"><div class="vp-chip"><b>aber</b><span>mais</span></div><div class="vp-chip"><b>jedoch</b><span>cependant</span></div><div class="vp-chip"><b>dagegen</b><span>en revanche</span></div><div class="vp-chip"><b>hingegen</b><span>par contre</span></div><div class="vp-chip"><b>allerdings</b><span>toutefois</span></div><div class="vp-chip"><b>doch</b><span>pourtant</span></div></div></div><div class="vp-row" style="--rc:var(--col-obj);"><div class="vp-prep"><b>Concession</b><small></small></div><div class="vp-list"><div class="vp-chip"><b>obwohl</b><span>bien que</span></div><div class="vp-chip"><b>trotzdem</b><span>malgré cela</span></div><div class="vp-chip"><b>dennoch</b><span>néanmoins</span></div><div class="vp-chip"><b>zwar … aber</b><span>certes … mais</span></div><div class="vp-chip"><b>obgleich</b><span>quoique</span></div></div></div><div class="vp-row" style="--rc:var(--col-neg);"><div class="vp-prep"><b>Cause</b><small></small></div><div class="vp-list"><div class="vp-chip"><b>weil</b><span>parce que</span></div><div class="vp-chip"><b>da</b><span>puisque</span></div><div class="vp-chip"><b>denn</b><span>car</span></div><div class="vp-chip"><b>nämlich</b><span>en effet</span></div><div class="vp-chip"><b>wegen + génitif</b><span>à cause de</span></div><div class="vp-chip"><b>aufgrund + génitif</b><span>en raison de</span></div></div></div><div class="vp-row" style="--rc:var(--col-q);"><div class="vp-prep"><b>Conséquence</b><small></small></div><div class="vp-list"><div class="vp-chip"><b>deshalb</b><span>c'est pourquoi</span></div><div class="vp-chip"><b>deswegen</b><span>pour cette raison</span></div><div class="vp-chip"><b>daher</b><span>donc</span></div><div class="vp-chip"><b>folglich</b><span>par conséquent</span></div><div class="vp-chip"><b>somit</b><span>ainsi</span></div><div class="vp-chip"><b>sodass</b><span>de sorte que</span></div></div></div></div></section><section class="section" id="s3"><div class="section-header"><div class="section-num">3</div><div class="section-info"><div class="section-tag">Organiser</div><div class="section-title">Condition, but, ordre, exemple, conclusion</div></div></div><div class="vp"><div class="vp-row" style="--rc:var(--col-subj);"><div class="vp-prep"><b>Condition</b><small></small></div><div class="vp-list"><div class="vp-chip"><b>wenn</b><span>si</span></div><div class="vp-chip"><b>falls</b><span>au cas où</span></div><div class="vp-chip"><b>sonst</b><span>sinon</span></div><div class="vp-chip"><b>andernfalls</b><span>dans le cas contraire</span></div></div></div><div class="vp-row" style="--rc:var(--col-verb);"><div class="vp-prep"><b>But</b><small></small></div><div class="vp-list"><div class="vp-chip"><b>damit</b><span>pour que</span></div><div class="vp-chip"><b>um … zu</b><span>pour</span></div><div class="vp-chip"><b>zu diesem Zweck</b><span>dans ce but</span></div></div></div><div class="vp-row" style="--rc:var(--col-obj);"><div class="vp-prep"><b>Ordre du discours</b><small></small></div><div class="vp-list"><div class="vp-chip"><b>zuerst</b><span>d'abord</span></div><div class="vp-chip"><b>zunächst</b><span>tout d'abord</span></div><div class="vp-chip"><b>dann</b><span>ensuite</span></div><div class="vp-chip"><b>danach</b><span>après cela</span></div><div class="vp-chip"><b>schließlich</b><span>enfin</span></div><div class="vp-chip"><b>erstens, zweitens</b><span>premièrement, deuxièmement</span></div></div></div><div class="vp-row" style="--rc:var(--col-neg);"><div class="vp-prep"><b>Exemple, reformulation</b><small></small></div><div class="vp-list"><div class="vp-chip"><b>zum Beispiel</b><span>par exemple</span></div><div class="vp-chip"><b>das heißt</b><span>c'est-à-dire</span></div><div class="vp-chip"><b>mit anderen Worten</b><span>autrement dit</span></div><div class="vp-chip"><b>insbesondere</b><span>en particulier</span></div></div></div><div class="vp-row" style="--rc:var(--col-q);"><div class="vp-prep"><b>Conclusion</b><small></small></div><div class="vp-list"><div class="vp-chip"><b>insgesamt</b><span>au total</span></div><div class="vp-chip"><b>zusammenfassend</b><span>en résumé</span></div><div class="vp-chip"><b>abschließend</b><span>pour conclure</span></div><div class="vp-chip"><b>letztlich</b><span>en fin de compte</span></div></div></div></div></section><section class="section" id="s4"><div class="section-header"><div class="section-num">4</div><div class="section-info"><div class="section-tag">Place du verbe</div><div class="section-title">Où placer le verbe après un connecteur ?</div></div></div><div class="conj-table pc2 frt1 frmid"><div class="conj-table-head"><div class="th pron">Type</div><div class="th form">Place du verbe</div><div class="th ex">Exemple</div></div><div class="conj-row"><span class="pron-cell">coordination : und, aber, oder, denn, sondern</span><span class="form-cell">ordre normal</span><span class="ex-cell">Er ist müde, aber er arbeitet weiter.</span></div><div class="conj-row"><span class="pron-cell">adverbe de liaison : deshalb, trotzdem, außerdem, jedoch</span><span class="form-cell">inversion : verbe en 2ᵉ position</span><span class="ex-cell">Er ist müde, trotzdem arbeitet er weiter.</span></div><div class="conj-row"><span class="pron-cell">subordination : weil, obwohl, dass, damit</span><span class="form-cell">verbe conjugué à la fin</span><span class="ex-cell">Er arbeitet weiter, obwohl er müde ist.</span></div><div class="conj-row"><span class="pron-cell">adverbes mobiles : jedoch, allerdings, nämlich, also</span><span class="form-cell">peuvent aussi se placer après le verbe</span><span class="ex-cell">Er ist jedoch müde.</span></div></div><div class="hl-box warning"><div class="hl-icon">⚠️</div><div class="hl-body"><strong>Piège :</strong> <em>aber</em>, <em>doch</em>, <em>allerdings</em> et <em>jedoch</em> ne se comportent pas pareil. <em>aber</em> (coordination) n'entraîne pas d'inversion en tête de proposition ; <em>jedoch</em> peut ouvrir la phrase (inversion) ou se placer après le verbe.</div></div></section><section class="section" id="s5"><div class="section-header"><div class="section-num">5</div><div class="section-info"><div class="section-tag">Paires corrélatives</div><div class="section-title">Les connecteurs en deux parties</div></div></div><div class="conj-table pc2 frt1 frmid"><div class="conj-table-head"><div class="th pron">Paire</div><div class="th form">Sens</div><div class="th ex">Exemple</div></div><div class="conj-row"><span class="pron-cell">zwar … aber</span><span class="form-cell">certes … mais</span><span class="ex-cell">Er ist zwar jung, aber erfahren.</span></div><div class="conj-row"><span class="pron-cell">einerseits … andererseits</span><span class="form-cell">d'une part … d'autre part</span><span class="ex-cell">Einerseits ist es teuer, andererseits praktisch.</span></div><div class="conj-row"><span class="pron-cell">sowohl … als auch</span><span class="form-cell">aussi bien … que</span><span class="ex-cell">Sie spricht sowohl Englisch als auch Deutsch.</span></div><div class="conj-row"><span class="pron-cell">nicht nur … sondern auch</span><span class="form-cell">non seulement … mais aussi</span><span class="ex-cell">Sie ist nicht nur klug, sondern auch fleißig.</span></div><div class="conj-row"><span class="pron-cell">weder … noch</span><span class="form-cell">ni … ni</span><span class="ex-cell">Er hat weder Zeit noch Geld.</span></div><div class="conj-row"><span class="pron-cell">entweder … oder</span><span class="form-cell">soit … soit</span><span class="ex-cell">Entweder du kommst oder ich gehe.</span></div><div class="conj-row"><span class="pron-cell">je … desto</span><span class="form-cell">plus … plus</span><span class="ex-cell">Je mehr er arbeitet, desto müder ist er.</span></div></div></section><section class="section" id="s6"><div class="section-header"><div class="section-num">6</div><div class="section-info"><div class="section-tag">Approfondissement</div><div class="section-title">Les pièges de sens et de construction</div></div></div><div class="conj-table pc2 frt1 frmid"><div class="conj-table-head"><div class="th pron">Connecteur</div><div class="th form">Particularité</div><div class="th ex">Exemple</div></div><div class="conj-row"><span class="pron-cell">nämlich</span><span class="form-cell">explication : se place après le verbe</span><span class="ex-cell">Er ist müde, er hat nämlich viel gearbeitet.</span></div><div class="conj-row"><span class="pron-cell">also</span><span class="form-cell">conséquence : « donc »</span><span class="ex-cell">Ich denke, also bin ich.</span></div><div class="conj-row"><span class="pron-cell">dagegen, hingegen</span><span class="form-cell">opposition : « en revanche »</span><span class="ex-cell">Er arbeitet viel, sie dagegen wenig.</span></div><div class="conj-row"><span class="pron-cell">stattdessen</span><span class="form-cell">« à la place »</span><span class="ex-cell">Er kam nicht, stattdessen rief er an.</span></div><div class="conj-row"><span class="pron-cell">daher, darum, deshalb</span><span class="form-cell">conséquence : inversion</span><span class="ex-cell">Er ist krank, daher bleibt er zu Hause.</span></div><div class="conj-row"><span class="pron-cell">während</span><span class="form-cell">opposition : « alors que » (subordination)</span><span class="ex-cell">Er arbeitet, während sie schläft.</span></div></div></section><section class="section" id="s7"><div class="section-header"><div class="section-num">7</div><div class="section-info"><div class="section-tag">Récapitulatif</div><div class="section-title">Construire un paragraphe argumenté</div></div></div><div class="prose"><p>Voici un modèle de paragraphe, avec les connecteurs en gras.</p></div><div class="def-box"><div class="def-label">Exemple</div><p><strong>Zunächst</strong> hat das Homeoffice Vorteile: Man spart Zeit. <strong>Außerdem</strong> ist man flexibler. <strong>Zwar</strong> fehlt der Kontakt zu den Kollegen, <strong>jedoch</strong> gibt es dafür digitale Lösungen. <strong>Insgesamt</strong> überwiegen daher die Vorteile.</p></div><div class="conj-table pc2 frt1 frlast"><div class="conj-table-head"><div class="th pron">Étape</div><div class="th form">Connecteur</div><div class="th ex">Rôle</div></div><div class="conj-row"><span class="pron-cell">introduire</span><span class="form-cell">zunächst · erstens</span><span class="ex-cell">premier argument</span></div><div class="conj-row"><span class="pron-cell">ajouter</span><span class="form-cell">außerdem · zudem</span><span class="ex-cell">argument suivant</span></div><div class="conj-row"><span class="pron-cell">concéder puis opposer</span><span class="form-cell">zwar … jedoch</span><span class="ex-cell">nuancer</span></div><div class="conj-row"><span class="pron-cell">conclure</span><span class="form-cell">insgesamt · abschließend</span><span class="ex-cell">synthèse</span></div></div><div class="hl-box tip"><div class="hl-icon">💡</div><div class="hl-body"><strong>Réflexe :</strong> 1) quel rapport logique (addition, opposition, cause, conséquence) ? 2) quelle famille (coordination, adverbe, subordination) ? 3) donc quelle place pour le verbe ?</div></div></section>
+<section class="section" id="exercices"><div class="section-header"><div class="section-num">8</div><div class="section-info"><div class="section-tag">Entraînement</div><div class="section-title">Exercices de consolidation</div></div></div><div class="exercise-block"><div class="ex-header"><span class="ex-badge">Exercice 1</span><span class="ex-title">Reliez avec le connecteur indiqué</span></div><div class="ex-items" id="ex1"><div class="ex-item"><span class="ex-num">1.</span><div><div class="ex-q">Er ist krank. Er bleibt zu Hause. (deshalb)</div><div class="ex-answer">Er ist krank, deshalb bleibt er zu Hause.</div></div></div><div class="ex-item"><span class="ex-num">2.</span><div><div class="ex-q">Er ist krank. Er arbeitet. (trotzdem)</div><div class="ex-answer">Er ist krank, trotzdem arbeitet er.</div></div></div><div class="ex-item"><span class="ex-num">3.</span><div><div class="ex-q">Er ist krank. Er arbeitet. (obwohl)</div><div class="ex-answer">Er arbeitet, obwohl er krank ist.</div></div></div><div class="ex-item"><span class="ex-num">4.</span><div><div class="ex-q">Er hat viel gearbeitet. Er ist müde. (denn)</div><div class="ex-answer">Er ist müde, denn er hat viel gearbeitet.</div></div></div><div class="ex-item"><span class="ex-num">5.</span><div><div class="ex-q">Sie spricht Englisch. Sie spricht Deutsch. (nicht nur … sondern auch)</div><div class="ex-answer">Sie spricht nicht nur Englisch, sondern auch Deutsch.</div></div></div></div><button class="show-answers-btn" onclick="revealAnswers('ex1', this)">Afficher les réponses</button></div><div class="exercise-block"><div class="ex-header"><span class="ex-badge">Exercice 2</span><span class="ex-title">Corrigez l'ordre des mots</span></div><div class="ex-items" id="ex2"><div class="ex-item"><span class="ex-num">1.</span><div><div class="ex-q">Er ist müde, deshalb er schläft.</div><div class="ex-answer">…, deshalb schläft er.</div></div></div><div class="ex-item"><span class="ex-num">2.</span><div><div class="ex-q">Er ist müde, weil schläft er.</div><div class="ex-answer">…, weil er schläft.</div></div></div><div class="ex-item"><span class="ex-num">3.</span><div><div class="ex-q">Er ist krank, trotzdem er arbeitet.</div><div class="ex-answer">…, trotzdem arbeitet er.</div></div></div><div class="ex-item"><span class="ex-num">4.</span><div><div class="ex-q">Obwohl er ist müde, arbeitet er.</div><div class="ex-answer">Obwohl er müde ist, arbeitet er.</div></div></div></div><button class="show-answers-btn" onclick="revealAnswers('ex2', this)">Afficher les réponses</button></div><div class="exercise-block"><div class="ex-header"><span class="ex-badge">Exercice 3</span><span class="ex-title">Traduisez en allemand</span></div><div class="ex-items" id="ex3"><div class="ex-item"><span class="ex-num">1.</span><div><div class="ex-q">En outre, il faut tenir compte du coût.</div><div class="ex-answer">Außerdem muss man die Kosten berücksichtigen.</div></div></div><div class="ex-item"><span class="ex-num">2.</span><div><div class="ex-q">Cependant, tout le monde n'est pas d'accord.</div><div class="ex-answer">Jedoch sind nicht alle einverstanden.</div></div></div><div class="ex-item"><span class="ex-num">3.</span><div><div class="ex-q">C'est pourquoi nous avons décidé de rester.</div><div class="ex-answer">Deshalb haben wir uns entschieden zu bleiben.</div></div></div><div class="ex-item"><span class="ex-num">4.</span><div><div class="ex-q">D'une part c'est cher, d'autre part c'est pratique.</div><div class="ex-answer">Einerseits ist es teuer, andererseits ist es praktisch.</div></div></div><div class="ex-item"><span class="ex-num">5.</span><div><div class="ex-q">Pour conclure, la solution est bonne.</div><div class="ex-answer">Abschließend ist die Lösung gut.</div></div></div><div class="ex-item"><span class="ex-num">6.</span><div><div class="ex-q">Bien qu'il soit jeune, il est expérimenté.</div><div class="ex-answer">Obwohl er jung ist, ist er erfahren.</div></div></div></div><button class="show-answers-btn" onclick="revealAnswers('ex3', this)">Afficher les réponses</button></div></section>
+  </main>
+</div>
+
+<script>
+  function revealAnswers(blockId, btn) {
+    const block = document.getElementById(blockId);
+    const items = block.querySelectorAll('.ex-item');
+    const isRevealed = btn.dataset.revealed === 'true';
+    if (isRevealed) {
+      items.forEach(item => item.classList.remove('revealed'));
+      btn.textContent = 'Afficher les réponses';
+      btn.dataset.revealed = 'false';
+    } else {
+      items.forEach(item => item.classList.add('revealed'));
+      btn.textContent = 'Masquer les réponses';
+      btn.dataset.revealed = 'true';
+    }
+  }
+</script>
+
+</body>
+</html>
