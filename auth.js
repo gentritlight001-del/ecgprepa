@@ -242,7 +242,7 @@
      Un visiteur non connecté n'est pas renvoyé vers la connexion ; en
      revanche, une page verrouillée ou Premium reste fermée pour lui.
      Un membre connecté suit le parcours normal (badge, verrous). */
-  var DOSSIERS_OUVERTS = ['index.html', 'cours-ecg.html', 'culture-generale.html', 'premiere_annee/', 'deuxieme_annee/', 'actualites/', 'culture-generale/'];
+  var DOSSIERS_OUVERTS = ['index.html', 'humanite.html', 'humanite/', 'cours-ecg.html', 'culture-generale.html', 'premiere_annee/', 'deuxieme_annee/', 'actualites/', 'culture-generale/'];
   var pageOuverte = (function () {
     var c = cheminActuelBrut();
     if (c === null) return false;
