@@ -172,6 +172,8 @@ page pays ou région :
     Ils doivent être clairs et concis.
     Traiter **uniquement** ce que demande le programme de colle (questions et exercices
     listés), sans exercice, matrice ou question bonus en plus, même si le poly en contient.
+    En tête des PDF, sous le titre : seulement le thème de la colle (pas de « — énoncés à
+    connaître… » ni « — solutions rédigées… »). Matrice de passage écrite sans barres verticales.
   - Mettre à jour la carte « Colle de la semaine » de `deuxieme_annee/maths/index.html`.
 
 ### Dossiers de langues (DS)
