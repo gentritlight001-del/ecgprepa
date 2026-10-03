@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Ajoute (ou remplace) l'affiche d'un film / la couverture d'un livre sur une fiche de l'Humanité.
 
-    python3 outils/fiche-visuel.py humanite/cinema/robocop.html /chemin/affiche.jpg "Affiche du film, 1987"
-    python3 outils/fiche-visuel.py humanite/litterature/la-peste.html /chemin/couverture.jpg "Édition Folio"
+    python3 outils/fiche-visuel.py humanite/cinema/robocop.html /chemin/affiche.jpg
+    python3 outils/fiche-visuel.py humanite/litterature/la-peste.html /chemin/couverture.jpg
 
 L'image est convertie en WebP (1600 px maximum) et rangée dans le dossier images/ de la
-rubrique ; le visuel et le fond flou du bandeau sont insérés dans la page. La légende doit
-tenir sur une ligne (une trentaine de caractères au plus).
+rubrique ; le visuel et le fond flou du bandeau sont insérés dans la page. Pas de légende
+sous l'image (le troisième argument, facultatif, ne sert qu'en cas de besoin particulier).
 """
 import re
 import sys
