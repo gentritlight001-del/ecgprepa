@@ -1589,7 +1589,7 @@
      ══════════════════════════════════════════════════════════════ */
   /* Écran plein cadre générique : accès admin refusé, ou rubrique
      verrouillée, partagent la même présentation. */
-  function ecranRefus(titre, texte, sousTexte, urlRetour, libelleBouton, secondaire) {
+  function ecranRefus(titre, texte, sousTexte, urlRetour, libelleBouton, secondaire, premium) {
     var css = document.createElement('style');
     css.textContent =
       'html{visibility:hidden!important}' +
@@ -1605,13 +1605,58 @@
       '#ecg-refus button{background:#c8a96e;border:0;border-radius:9px;color:#12120f;' +
       'font:500 .88rem "DM Sans",system-ui,sans-serif;padding:11px 22px;cursor:pointer}' +
       '#ecg-refus button.second{background:none;border:1px solid #2a2a35;color:#8a8880;margin-left:10px}' +
-      '#ecg-refus button.second:hover{border-color:#c8a96e;color:#c8a96e}';
+      '#ecg-refus button.second:hover{border-color:#c8a96e;color:#c8a96e}' +
+      /* Variante Premium : faux article flouté (décor, aucun vrai contenu)
+         derrière une carte avec un bouton « Débloquer ». */
+      '#ecg-refus.prem{padding:0;display:block;overflow:hidden}' +
+      '#ecg-refus .fond{position:absolute;inset:0;filter:blur(7px);opacity:.55;pointer-events:none}' +
+      '#ecg-refus .fond .bande{height:64px;background:#b5131f}' +
+      '#ecg-refus .fond .page{max-width:900px;margin:0 auto;padding:40px 48px;display:flex;flex-direction:column;gap:18px}' +
+      '#ecg-refus .fond i{display:block;height:14px;background:#a9a79f;border-radius:4px}' +
+      '#ecg-refus .voile{position:absolute;inset:0;background:rgba(13,13,15,.6);display:flex;align-items:center;justify-content:center;padding:24px;overflow:auto}' +
+      '#ecg-refus .carte-p{width:100%;max-width:520px;background:#16161a;border:1px solid #3a3a46;border-radius:24px;padding:44px 40px;' +
+      'display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px}' +
+      '#ecg-refus .carte-p .cle{width:56px;height:56px;border-radius:50%;background:#c8a96e;color:#12120f;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:700;margin:0;opacity:1}' +
+      '#ecg-refus .carte-p .eyebrow{font-family:"DM Mono",monospace;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:#c8a96e}' +
+      '#ecg-refus .carte-p h1{font-size:2.1rem;font-weight:900;line-height:1.12;margin:0}' +
+      '#ecg-refus .carte-p p{color:#a9a79f;font-size:.95rem;font-weight:300;line-height:1.65;margin:0}' +
+      '#ecg-refus .carte-p .actions{display:flex;flex-direction:column;gap:12px;width:100%;margin-top:10px}' +
+      '#ecg-refus .carte-p button{width:100%;min-height:44px;border-radius:999px;padding:15px;font-size:1rem;margin:0}' +
+      '#ecg-refus .carte-p button.second{background:none;border:1px solid #3a3a46;color:#e8e6e0}' +
+      '#ecg-refus .carte-p .petit{font-size:.82rem;color:#8a8880}';
     (document.head || document.documentElement).appendChild(css);
 
     var poser = function () {
       if (document.getElementById('ecg-refus')) return;
       var d = document.createElement('div');
       d.id = 'ecg-refus';
+      if (premium) {
+        d.className = 'prem';
+        d.setAttribute('role', 'dialog');
+        d.setAttribute('aria-label', 'Contenu Premium');
+        d.innerHTML =
+          '<div class="fond" aria-hidden="true"><div class="bande"></div><div class="page">' +
+          '<i style="height:36px;width:70%;background:#e8e6e0;border-radius:6px"></i>' +
+          '<i style="height:300px;background:#2a2a35;border-radius:14px"></i>' +
+          '<i></i><i style="width:92%"></i><i style="width:96%"></i><i style="width:60%"></i><i></i><i style="width:88%"></i>' +
+          '</div></div>' +
+          '<div class="voile"><div class="carte-p">' +
+          '<div class="cle">✦</div>' +
+          '<div class="eyebrow">Contenu Premium</div>' +
+          '<h1>' + titre + '</h1>' +
+          '<p>' + texte + '</p>' +
+          '<div class="actions"><button type="button">' + libelleBouton + '</button>' +
+          (secondaire ? '<button type="button" class="second">' + secondaire.libelle + '</button>' : '') +
+          '</div>' +
+          (sousTexte ? '<div class="petit">' + sousTexte + '</div>' : '') +
+          '</div></div>';
+        d.querySelector('button').addEventListener('click', function () { location.replace(urlRetour); });
+        if (secondaire) {
+          d.querySelector('button.second').addEventListener('click', function () { location.replace(secondaire.url); });
+        }
+        document.body.appendChild(d);
+        return;
+      }
       d.innerHTML =
         '<div class="boite">' +
         '<div class="cle">&#128274;</div>' +
@@ -1657,21 +1702,18 @@
   /* Contenu réservé aux abonnés : même écran, mais le bouton
      principal mène à l'offre plutôt qu'en arrière. */
   function refuserPremium(rub) {
-    var quoi = rub.nom
-      ? 'La rubrique « ' + rub.nom + (rub.niveau === 3 ? ' (' + rub.groupe + ')' : '') + ' »'
-      : 'Ce contenu';
-    ecranRefus('Contenu Premium',
-      quoi + (rub.nom ? ' est réservée' : ' est réservé') + ' aux membres Premium.',
-      'Tu es déjà abonné·e ? Recharge la page dans un instant.',
-      TARIFS_URL + '?depuis=' + encodeURIComponent(location.pathname), 'Découvrir Premium',
-      { libelle: 'Retour', url: BASE + rub.retour });
-    /* Le cadenas n'a pas de sens ici : une étoile, plutôt. */
-    var poser = function () {
-      var cle = document.querySelector('#ecg-refus .cle');
-      if (cle) { cle.textContent = '✦'; cle.style.color = '#c8a96e'; }
-    };
-    if (document.body) setTimeout(poser, 0);
-    else document.addEventListener('DOMContentLoaded', function () { setTimeout(poser, 0); });
+    var prix = (OFFRES_PREMIUM[0] && OFFRES_PREMIUM[0].prix || 1.99).toFixed(2).replace('.', ',') + ' €';
+    var actu = !rub.nom && infoActu(cheminActuel);
+    var titre = rub.nom
+      ? 'La rubrique « ' + rub.nom + (rub.niveau === 3 ? ' (' + rub.groupe + ')' : '') + ' » est réservée aux abonnés'
+      : (actu ? 'Cet article est réservé aux abonnés' : 'Ce contenu est réservé aux abonnés');
+    var texte = actu
+      ? 'Seul l\u2019article le plus récent est gratuit. Avec Premium, tu lis tous les autres, à partir de ' + prix + ' par mois.'
+      : 'Avec Premium, tu accèdes à tous les contenus réservés, à partir de ' + prix + ' par mois.';
+    ecranRefus(titre, texte,
+      'Déjà abonné·e ? Recharge la page dans un instant.',
+      TARIFS_URL + '?depuis=' + encodeURIComponent(location.pathname), 'Débloquer avec Premium',
+      { libelle: actu ? 'Retour aux articles' : 'Retour', url: BASE + rub.retour }, true);
   }
 
   function bandeauPremiumAdmin(rub) {
@@ -1770,21 +1812,24 @@
       '#ecg-avatar:focus-visible{outline:2px solid #c8a96e;outline-offset:3px}' +
       '#ecg-avatar.admin::after{content:"";position:absolute;top:-1px;right:-1px;width:9px;height:9px;' +
       'border-radius:50%;background:#9ecba0;border:2px solid #16161a}' +
-      '#ecg-menu{position:absolute;top:48px;right:0;min-width:224px;background:#16161a;' +
-      'border:1px solid #2a2a35;border-radius:12px;padding:8px;box-shadow:0 18px 50px rgba(0,0,0,.55);' +
+      '#ecg-menu{position:absolute;top:48px;right:0;width:300px;max-width:calc(100vw - 20px);background:#16161a;' +
+      'border:1px solid #2a2a35;border-radius:16px;padding:8px;box-shadow:0 18px 50px rgba(0,0,0,.55);' +
       'opacity:0;visibility:hidden;transform:translateY(-6px);transition:opacity .18s,transform .18s,visibility .18s}' +
       '#ecg-menu.open{opacity:1;visibility:visible;transform:translateY(0)}' +
-      '#ecg-menu .who{padding:10px 12px 12px;border-bottom:1px solid #2a2a35;margin-bottom:6px}' +
-      '#ecg-menu .who b{display:block;color:#e8e6e0;font-size:.88rem;font-weight:500}' +
-      '#ecg-menu .who span{display:block;color:#8a8880;font-size:.72rem;margin-top:3px;word-break:break-all}' +
+      '#ecg-menu .who{padding:12px 14px 14px;border-bottom:1px solid #2a2a35;margin-bottom:6px}' +
+      '#ecg-menu .who b{display:block;color:#e8e6e0;font-size:.95rem;font-weight:500}' +
+      '#ecg-menu .who span{display:block;color:#8a8880;font-size:.78rem;margin-top:3px;word-break:break-all}' +
       '#ecg-menu .who i{display:inline-block;font-style:normal;margin-top:7px;font-family:"DM Mono",monospace;' +
-      'font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:#9ecba0;' +
-      'background:rgba(158,203,160,.12);padding:2px 8px;border-radius:20px}' +
+      'font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:#7c9ec9;' +
+      'background:rgba(124,158,201,.14);padding:2px 8px;border-radius:20px}' +
       '#ecg-menu button{display:block;width:100%;text-align:left;background:none;border:0;color:#e8e6e0;' +
-      'font-family:inherit;font-size:.83rem;padding:9px 12px;border-radius:8px;cursor:pointer;transition:background .15s,color .15s}' +
+      'font-family:inherit;font-size:.9rem;padding:12px 14px;min-height:44px;border-radius:10px;cursor:pointer;transition:background .15s,color .15s}' +
       '#ecg-menu button:hover{background:#1e1e24;color:#c8a96e}' +
+      '#ecg-menu button.danger{color:#e08a8a}' +
       '#ecg-menu button.danger:hover{color:#e08a8a}' +
-      '#ecg-menu button.admin{color:#9ecba0}' +
+      '#ecg-menu button.admin{color:#7c9ec9}' +
+      '#ecg-menu .sep{height:1px;background:#2a2a35;margin:6px 0}' +
+      '#ecg-menu .titre-admin{padding:6px 14px 2px;font-family:"DM Mono",monospace;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:#7c9ec9}' +
       '#ecg-fav-count{display:none;margin-left:8px;background:rgba(200,169,110,.16);color:#c8a96e;' +
       'font-family:"DM Mono",monospace;font-size:.66rem;padding:2px 7px;border-radius:20px;vertical-align:1px}' +
       '@media (max-width:640px){#ecg-account-badge{top:10px;right:10px}#ecg-avatar{width:34px;height:34px;font-size:.72rem}}' +
@@ -1801,11 +1846,13 @@
       '<button type="button" id="ecg-newsletter" role="menuitem">Ma newsletter</button>' +
       '<button type="button" id="ecg-abonnement" role="menuitem">Mon abonnement</button>' +
       '<button type="button" id="ecg-contact" role="menuitem">Contact</button>' +
+      (admin ? '<div class="sep"></div><div class="titre-admin">Administration</div>' : '') +
       (admin ? '<button type="button" id="ecg-admin" class="admin" role="menuitem">Espace administrateur</button>' : '') +
       (admin ? '<button type="button" id="ecg-idees" class="admin" role="menuitem">Idées d\'articles</button>' : '') +
       (admin ? '<button type="button" id="ecg-mes-nl" class="admin" role="menuitem">Mes newsletters</button>' : '') +
+      '<div class="sep"></div>' +
       '<button type="button" id="ecg-home" role="menuitem">Retour à l\'accueil</button>' +
-      '<button type="button" id="ecg-logout" role="menuitem">Se déconnecter</button>' +
+      '<button type="button" id="ecg-logout" class="danger" role="menuitem">Se déconnecter</button>' +
       '</div>';
 
     var navRight = document.querySelector('nav .nav-right');
