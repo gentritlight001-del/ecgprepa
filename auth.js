@@ -419,18 +419,29 @@
   /* ─── Actualités : seul l'article le plus récent de chaque édition
      est gratuit, les autres sont Premium. L'article le plus récent est
      le premier de ACTU_DATA dans actualites/<code>/tous-<code>.html.
+     Même règle pour la culture générale (dernière entrée de CG_DATA).
      Un réglage manuel (ligne dans rubriques_verrouillage, posée par les
      boutons ✦ de l'admin) l'emporte toujours sur cette règle. ─── */
   var _dernierActu = {};
   function infoActu(id) {
     var m = /^actualites\/(en|es|de|monde)\/articles\/([^/]+?)(?:\.html)?$/.exec(id || '');
-    return m ? { code: m[1], slug: m[2] } : null;
+    if (m) return { code: m[1], slug: m[2] };
+    /* Culture générale : un dossier par fiche, la dernière ajoutée
+       est la dernière entrée de CG_DATA. */
+    var c = /^culture-generale\/([^/]+?)(?:\.html)?$/.exec(id || '');
+    return c ? { code: 'cg', slug: c[1] } : null;
   }
   function dernierActu(code) {
     if (!_dernierActu[code]) {
-      _dernierActu[code] = fetch(BASE + 'actualites/' + code + '/tous-' + code + '.html', { cache: 'no-cache' })
+      var cg = code === 'cg';
+      _dernierActu[code] = fetch(BASE + (cg ? 'culture-generale.html' : 'actualites/' + code + '/tous-' + code + '.html'), { cache: 'no-cache' })
         .then(function (r) { return r.ok ? r.text() : ''; })
         .then(function (t) {
+          if (cg) {
+            var re = /^\s*externalUrl:\s*'Culture-Generale\/([^'\/]+?)\.html'/gm, m2, dernier = null;
+            while ((m2 = re.exec(t))) dernier = m2[1].toLowerCase();
+            return dernier;
+          }
           var m = /externalUrl:\s*'articles\/([^']+?)\.html'/.exec(t);
           return m ? m[1] : null;
         })
@@ -600,7 +611,7 @@
   /* Les listes d'actualités se reconstruisent à chaque filtre : on
      remet badges et boutons sur les nouvelles cartes. */
   document.addEventListener('DOMContentLoaded', function () {
-    var grille = document.querySelector('.actu-grid');
+    var grille = document.querySelector('.actu-grid, #cg-grid');
     if (!grille || !window.MutationObserver) return;
     var t = null;
     new MutationObserver(function (muts) {
@@ -1556,7 +1567,7 @@
     if (cheminActuel && prem[cheminActuel]) {
       var ia = infoActu(cheminActuel);
       rubPremium = { id: cheminActuel, niveau: 4, nom: null, groupe: null,
-                     retour: ia ? 'actualites/' + ia.code + '/tous-' + ia.code + '.html'
+                     retour: ia ? (ia.code === 'cg' ? 'culture-generale.html' : 'actualites/' + ia.code + '/tous-' + ia.code + '.html')
                                 : cheminActuel.replace(/[^/]*$/, 'index.html') };
     } else {
       var p = rubriquesActuelles.filter(function (rb) { return !!prem[rb.id]; });
