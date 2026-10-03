@@ -303,7 +303,13 @@
     voile = document.createElement('style');
     voile.textContent =
       'html{visibility:hidden!important}' +
-      'html::after{content:"";visibility:visible;position:fixed;inset:0;background:#0d0d0f;z-index:2147483647}';
+      'html::after{content:"ECG Prépa";visibility:visible;position:fixed;inset:0;z-index:2147483646;background:#0d0d0f;' +
+      'color:#c8a96e;display:flex;align-items:center;justify-content:center;padding-bottom:84px;' +
+      'font:700 1.6rem "Playfair Display",Georgia,serif}' +
+      'html::before{content:"";visibility:visible;position:fixed;left:50%;top:50%;width:28px;height:28px;margin:-2px 0 0 -14px;' +
+      'z-index:2147483647;border:3px solid #2a2a35;border-top-color:#c8a96e;border-radius:50%;animation:ecgtourne 1s linear infinite}' +
+      '@keyframes ecgtourne{to{transform:rotate(360deg)}}' +
+      '@media (prefers-reduced-motion:reduce){html::before{animation:none}}';
     (document.head || document.documentElement).appendChild(voile);
     setTimeout(leverVoile, 8000); /* filet de sécurité : jamais de page blanche définitive */
   }
@@ -320,6 +326,44 @@
     return !!(p && p.email && Date.now() - t < VERIF_OK_MS);
   })();
   if (!verifRecente) poserVoile();
+
+  /* Information sur le stockage local, une seule fois par appareil. Le site n'utilise ni
+     cookies publicitaires ni traceurs (voir confidentialite.html) : c'est une information,
+     pas une demande de consentement. */
+  function infoCookies() {
+    var CLE = 'ecg_info_cookies';
+    try { if (localStorage.getItem(CLE)) return; } catch (e) { return; }
+    function poser() {
+      if (document.getElementById('ecg-cookies')) return;
+      var css = document.createElement('style');
+      css.textContent =
+        '#ecg-cookies{position:fixed;left:20px;bottom:20px;z-index:99998;width:380px;max-width:calc(100vw - 40px);' +
+        'box-sizing:border-box;background:#1e1e24;border:1px solid #3a3a46;border-radius:18px;padding:22px 24px;' +
+        'display:flex;flex-direction:column;gap:14px;box-shadow:0 18px 50px rgba(0,0,0,.5);color:#e8e6e0;' +
+        'font-family:"DM Sans",system-ui,sans-serif}' +
+        '#ecg-cookies b{font:700 1.25rem "Playfair Display",Georgia,serif}' +
+        '#ecg-cookies p{margin:0;font-size:.88rem;line-height:1.6;font-weight:300;color:#a9a79f}' +
+        '#ecg-cookies a{color:#c8a96e;text-decoration:underline}' +
+        '#ecg-cookies button{align-self:flex-start;cursor:pointer;border:0;border-radius:999px;background:#c8a96e;color:#0d0d0f;' +
+        'font:500 .88rem "DM Sans",system-ui,sans-serif;padding:12px 24px;min-height:44px}';
+      document.head.appendChild(css);
+      var d = document.createElement('div');
+      d.id = 'ecg-cookies';
+      d.setAttribute('role', 'region');
+      d.setAttribute('aria-label', 'Information sur les cookies');
+      d.innerHTML = '<b>Un mot sur les cookies</b>' +
+        '<p>Ce site n\'utilise ni cookies publicitaires ni traceurs : seulement le stockage nécessaire pour te garder connecté·e et retrouver tes favoris. ' +
+        '<a href="' + BASE + 'confidentialite.html">En savoir plus</a></p>' +
+        '<button type="button">J\'ai compris</button>';
+      d.querySelector('button').addEventListener('click', function () {
+        try { localStorage.setItem(CLE, '1'); } catch (e) {}
+        d.parentNode.removeChild(d);
+      });
+      document.body.appendChild(d);
+    }
+    if (document.body) poser(); else document.addEventListener('DOMContentLoaded', poser);
+  }
+  infoCookies();
 
   function alerteReseau(texte) {
     leverVoile();
