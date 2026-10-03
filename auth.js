@@ -1644,10 +1644,10 @@
     return '<div class="offres">' + h + '</div>';
   }
 
-  function ecranRefus(titre, texte, sousTexte, urlRetour, libelleBouton, secondaire, premium, apercu) {
+  function ecranRefus(titre, texte, sousTexte, urlRetour, libelleBouton, secondaire, premium) {
     var css = document.createElement('style');
     css.textContent =
-      (apercu ? '' : 'html{visibility:hidden!important}') +
+      'html{visibility:hidden!important}' +
       '#ecg-refus,#ecg-refus *{visibility:visible!important}' +
       '#ecg-refus{position:fixed;inset:0;z-index:2147483647;background:#0d0d0f;display:flex;' +
       'align-items:center;justify-content:center;padding:24px;text-align:center;' +
@@ -1679,14 +1679,6 @@
       '#ecg-refus .carte-p button{width:100%;min-height:44px;border-radius:999px;padding:15px;font-size:1rem;margin:0}' +
       '#ecg-refus .carte-p button.second{background:none;border:1px solid #3a3a46;color:#e8e6e0}' +
       '#ecg-refus .carte-p .petit{font-size:.82rem;color:#8a8880}' +
-      /* Aperçu : on voit le début de la vraie page, puis la carte apparaît au défilement. */
-      '#ecg-refus.apercu{display:none;background:transparent}' +
-      '#ecg-refus.apercu.on{display:block}' +
-      '#ecg-refus.apercu .voile{background:rgba(13,13,15,.72);-webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px)}' +
-      '#ecg-bandeau-prem{position:fixed;left:0;right:0;bottom:0;z-index:2147483640;padding:56px 16px 18px;' +
-      'background:linear-gradient(to top,#0d0d0f 35%,rgba(13,13,15,0));display:flex;justify-content:center;pointer-events:none}' +
-      '#ecg-bandeau-prem button{pointer-events:auto;display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 26px;' +
-      'border:0;border-radius:999px;background:#c8a96e;color:#12120f;font:500 .95rem "DM Sans",system-ui,sans-serif;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,.5)}' +
       '#ecg-refus .carte-p .avantages{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:8px;text-align:left;width:100%}' +
       '#ecg-refus .carte-p .avantages li{color:#a9a79f;font-size:.92rem;line-height:1.5;padding-left:26px;position:relative}' +
       '#ecg-refus .carte-p .avantages li::before{content:"\\2713";position:absolute;left:0;color:#c8a96e;font-weight:700}' +
@@ -1704,16 +1696,15 @@
       var d = document.createElement('div');
       d.id = 'ecg-refus';
       if (premium) {
-        d.className = 'prem' + (apercu ? ' apercu' : '');
+        d.className = 'prem';
         d.setAttribute('role', 'dialog');
         d.setAttribute('aria-label', 'Contenu Premium');
         d.innerHTML =
-          (apercu ? '' :
           '<div class="fond" aria-hidden="true"><div class="bande"></div><div class="page">' +
           '<i style="height:36px;width:70%;background:#e8e6e0;border-radius:6px"></i>' +
           '<i style="height:300px;background:#2a2a35;border-radius:14px"></i>' +
           '<i></i><i style="width:92%"></i><i style="width:96%"></i><i style="width:60%"></i><i></i><i style="width:88%"></i>' +
-          '</div></div>') +
+          '</div></div>' +
           '<div class="voile"><div class="carte-p">' +
           '<div class="cle">✦</div>' +
           '<div class="eyebrow">Contenu Premium</div>' +
@@ -1731,7 +1722,6 @@
           d.querySelector('button.second').addEventListener('click', function () { location.replace(secondaire.url); });
         }
         document.body.appendChild(d);
-        if (apercu) apercu(d);
         return;
       }
       d.innerHTML =
@@ -1790,42 +1780,7 @@
     ecranRefus(titre, texte,
       'Déjà abonné·e ? Recharge la page dans un instant.',
       TARIFS_URL + '?depuis=' + encodeURIComponent(location.pathname), 'Débloquer avec Premium',
-      { libelle: actu ? 'Retour aux articles' : 'Retour', url: BASE + rub.retour }, true, apercuAuDefilement);
-  }
-
-  /* Le visiteur lit le début de la page ; après quelques centaines de pixels
-     de défilement, la carte « Contenu Premium » se met par-dessus et le
-     défilement est bloqué. Un bouton flottant l'invite à s'abonner avant. */
-  function apercuAuDefilement(carte) {
-    leverVoile();
-    var SEUIL = 160, ouvert = false, root = document.documentElement;
-    function position() { return window.pageYOffset || root.scrollTop || 0; }
-    var depart = position(), actif = false;
-    var bandeau = document.createElement('div');
-    bandeau.id = 'ecg-bandeau-prem';
-    bandeau.innerHTML = '<button type="button">\u2726 Contenu Premium \u2014 d\u00e9bloquer la suite</button>';
-    document.body.appendChild(bandeau);
-    function ouvrir() {
-      if (ouvert) return;
-      ouvert = true;
-      carte.classList.add('on');
-      bandeau.style.display = 'none';
-      root.style.overflow = 'hidden';
-      document.body.style.overflow = 'hidden';
-    }
-    bandeau.querySelector('button').addEventListener('click', ouvrir);
-    /* On ne compte que le défilement fait par le visiteur depuis l'affichage
-       de la page (position de départ mémorisée, 1 s de calme pour laisser
-       passer le retour à la position précédente ou le chargement). */
-    setTimeout(function () { depart = position(); actif = true; }, 1000);
-    window.addEventListener('scroll', function () {
-      if (actif && position() - depart > SEUIL) ouvrir();
-    }, { passive: true });
-    function surGeste() {
-      if (actif && root.scrollHeight - window.innerHeight <= SEUIL) ouvrir();
-    }
-    window.addEventListener('wheel', surGeste, { passive: true });
-    window.addEventListener('touchmove', surGeste, { passive: true });
+      { libelle: actu ? 'Retour aux articles' : 'Retour', url: BASE + rub.retour }, true);
   }
 
   function bandeauPremiumAdmin(rub) {
