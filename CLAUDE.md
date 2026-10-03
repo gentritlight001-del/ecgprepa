@@ -170,6 +170,8 @@ page pays ou région :
   - `colleN.html` : page d'une colle, avec 2 PDF dans `colles/pdf/` :
     `colleN-questions-de-cours.pdf` et `colleN-exercices-traites.pdf`.
     Ils doivent être clairs et concis.
+    Traiter **uniquement** ce que demande le programme de colle (questions et exercices
+    listés), sans exercice, matrice ou question bonus en plus, même si le poly en contient.
   - Mettre à jour la carte « Colle de la semaine » de `deuxieme_annee/maths/index.html`.
 
 ### Dossiers de langues (DS)
