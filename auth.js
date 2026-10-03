@@ -239,7 +239,14 @@
       return (c === '' || c.slice(-1) === '/') && c.indexOf('/') === -1 ? 'index.html' : c;
     } catch (e) { return null; }
   }
-  var cheminActuel = (function () { try { return cheminRelatifAuSite(new URL(location.href)); } catch (e) { return null; } })();
+  var cheminActuel = (function () {
+    try {
+      var c = cheminRelatifAuSite(new URL(location.href));
+      /* Cloudflare retire « .html » des adresses : on le remet. */
+      if (c && c.slice(-1) !== '/' && c.split('/').pop().indexOf('.') === -1) c += '.html';
+      return c;
+    } catch (e) { return null; }
+  })();
 
 
   /* Pages consultables sans compte (vitrine publique, référencement).
@@ -400,6 +407,7 @@
      verrouiller/déverrouiller en un clic, sans passer par l'admin. */
   function resoudreDestination(el) {
     var href = (el.tagName === 'A') ? el.getAttribute('href') : null;
+    if (!href) href = el.getAttribute('data-href'); /* cartes d'articles, construites en JS */
     if (!href) {
       var m = /location\.href\s*=\s*['"]([^'"]+)['"]/.exec(el.getAttribute('onclick') || '');
       if (m) href = m[1];
@@ -408,9 +416,46 @@
     try { return cheminRelatifAuSite(new URL(href, location.href)); } catch (e) { return null; }
   }
 
+  /* ─── Actualités : seul l'article le plus récent de chaque édition
+     est gratuit, les autres sont Premium. L'article le plus récent est
+     le premier de ACTU_DATA dans actualites/<code>/tous-<code>.html.
+     Un réglage manuel (ligne dans rubriques_verrouillage, posée par les
+     boutons ✦ de l'admin) l'emporte toujours sur cette règle. ─── */
+  var _dernierActu = {};
+  function infoActu(id) {
+    var m = /^actualites\/(en|es|de|monde)\/articles\/([^/]+?)(?:\.html)?$/.exec(id || '');
+    return m ? { code: m[1], slug: m[2] } : null;
+  }
+  function dernierActu(code) {
+    if (!_dernierActu[code]) {
+      _dernierActu[code] = fetch(BASE + 'actualites/' + code + '/tous-' + code + '.html', { cache: 'no-cache' })
+        .then(function (r) { return r.ok ? r.text() : ''; })
+        .then(function (t) {
+          var m = /externalUrl:\s*'articles\/([^']+?)\.html'/.exec(t);
+          return m ? m[1] : null;
+        })
+        .catch(function () { return null; });
+    }
+    return _dernierActu[code];
+  }
+  /* Complète « prem » : pour chaque article sans réglage manuel
+     (absent de « lignes »), Premium s'il n'est pas le plus récent. */
+  function appliquerRegleActu(prem, lignes, ids) {
+    var codes = {};
+    ids.forEach(function (id) { var m = infoActu(id); if (m && !lignes[id]) codes[m.code] = 1; });
+    return Promise.all(Object.keys(codes).map(function (c) {
+      return dernierActu(c).then(function (s) { codes[c] = s; });
+    })).then(function () {
+      ids.forEach(function (id) {
+        var m = infoActu(id);
+        if (m && !lignes[id] && codes[m.code]) prem[id] = (m.slug !== codes[m.code]);
+      });
+    });
+  }
+
   function collecterNoeudsVerrouillables() {
     var noeuds = [];
-    document.querySelectorAll('[data-rubrique], .chapter-item, .choice-card, .home-card').forEach(function (el) {
+    document.querySelectorAll('[data-rubrique], .chapter-item, .choice-card, .home-card, .actu-card').forEach(function (el) {
       var id = el.getAttribute('data-rubrique') || resoudreDestination(el);
       if (!id) return; /* carte décorative ou déjà figée « à venir » : on n'y touche pas */
       noeuds.push({ el: el, id: id });
@@ -526,12 +571,15 @@
       return c.from('rubriques_verrouillage').select('*');
     }).then(function (r) {
       if (!r || r.error) return;
-      var etat = {}, prem = {}, auMoinsUnPremium = false;
+      var etat = {}, prem = {}, lignes = {}, auMoinsUnPremium = false;
       (r.data || []).forEach(function (x) {
         etat[x.id] = !!x.verrouille;
         prem[x.id] = !!x.premium;
+        lignes[x.id] = true;
         if (x.premium) auMoinsUnPremium = true;
       });
+      return appliquerRegleActu(prem, lignes, noeuds.map(function (n) { return n.id; })).then(function () {
+      for (var k in prem) if (prem[k]) auMoinsUnPremium = true;
       var abonne = (admin || !auMoinsUnPremium) ? Promise.resolve({ premium: true }) : statutPremium();
       return abonne.then(function (st) {
         noeuds.forEach(function (n) {
@@ -541,6 +589,7 @@
           else if (p && !st.premium) marquerPremium(n.el);
         });
       });
+      });
     }).catch(function () { /* silencieux : les cartes gardent leur état par défaut (déverrouillé) */ });
   }
   if (document.readyState === 'loading') {
@@ -548,6 +597,23 @@
   } else {
     appliquerVerrouillageCartes();
   }
+  /* Les listes d'actualités se reconstruisent à chaque filtre : on
+     remet badges et boutons sur les nouvelles cartes. */
+  document.addEventListener('DOMContentLoaded', function () {
+    var grille = document.querySelector('.actu-grid');
+    if (!grille || !window.MutationObserver) return;
+    var t = null;
+    new MutationObserver(function (muts) {
+      var neuf = muts.some(function (m) {
+        return Array.prototype.some.call(m.addedNodes, function (n) {
+          return n.nodeType === 1 && n.classList && n.classList.contains('actu-card');
+        });
+      });
+      if (!neuf) return;
+      clearTimeout(t);
+      t = setTimeout(appliquerVerrouillageCartes, 120);
+    }).observe(grille, { childList: true });
+  });
 
   function agent() { return (navigator.userAgent || '').slice(0, 400); }
   function plateforme() { return (navigator.platform || '').slice(0, 80); }
@@ -1410,8 +1476,8 @@
            colonne « premium » (supabase/premium.sql). */
         return client.from('rubriques_verrouillage').select('*')
           .then(function (r) {
-            var etat = {}, prem = {};
-            (r && r.data || []).forEach(function (x) { etat[x.id] = !!x.verrouille; prem[x.id] = !!x.premium; });
+            var etat = {}, prem = {}, lignes = {};
+            (r && r.data || []).forEach(function (x) { etat[x.id] = !!x.verrouille; prem[x.id] = !!x.premium; lignes[x.id] = true; });
 
             /* Le chemin exact de la page est le cas le plus précis
                possible : une leçon verrouillée individuellement ne
@@ -1426,7 +1492,11 @@
             }
 
             var verrouillees = rubriquesActuelles.filter(function (rb) { return !!etat[rb.id]; });
-            if (!verrouillees.length) { return verifierPremium(prem, profil, terminer); }
+            if (!verrouillees.length) {
+              return appliquerRegleActu(prem, lignes, [cheminActuel]).then(function () {
+                return verifierPremium(prem, profil, terminer);
+              });
+            }
             /* La plus précise d'abord (matière > année > section),
                pour un message le plus utile possible. */
             verrouillees.sort(function (a, b) { return b.niveau - a.niveau; });
@@ -1459,15 +1529,17 @@
   function visiteur() {
     return client.from('rubriques_verrouillage').select('*')
       .then(function (r) {
-        var etat = {}, prem = {};
-        (r && r.data || []).forEach(function (x) { etat[x.id] = !!x.verrouille; prem[x.id] = !!x.premium; });
+        var etat = {}, prem = {}, lignes = {};
+        (r && r.data || []).forEach(function (x) { etat[x.id] = !!x.verrouille; prem[x.id] = !!x.premium; lignes[x.id] = true; });
         var ids = rubriquesActuelles.map(function (rb) { return rb.id; });
         if (cheminActuel) ids.push(cheminActuel);
         var ferme = ids.some(function (id) { return etat[id]; });
-        var payant = ids.some(function (id) { return prem[id]; });
         if (ferme) { versLogin(); return; }
-        if (payant) { location.replace(TARIFS_URL); return; }
-        leverVoile();
+        return appliquerRegleActu(prem, lignes, [cheminActuel]).then(function () {
+          var payant = ids.some(function (id) { return prem[id]; });
+          if (payant) { location.replace(TARIFS_URL); return; }
+          leverVoile();
+        });
       })
       .catch(function () { leverVoile(); })
       .then(function () { return Promise.reject('redirige'); });
@@ -1482,8 +1554,10 @@
   function verifierPremium(prem, profil, terminer) {
     var rubPremium = null;
     if (cheminActuel && prem[cheminActuel]) {
+      var ia = infoActu(cheminActuel);
       rubPremium = { id: cheminActuel, niveau: 4, nom: null, groupe: null,
-                     retour: cheminActuel.replace(/[^/]*$/, 'index.html') };
+                     retour: ia ? 'actualites/' + ia.code + '/tous-' + ia.code + '.html'
+                                : cheminActuel.replace(/[^/]*$/, 'index.html') };
     } else {
       var p = rubriquesActuelles.filter(function (rb) { return !!prem[rb.id]; });
       p.sort(function (a, b) { return b.niveau - a.niveau; });
