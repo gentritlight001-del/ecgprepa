@@ -1798,7 +1798,7 @@
      défilement est bloqué. Un bouton flottant l'invite à s'abonner avant. */
   function apercuAuDefilement(carte) {
     leverVoile();
-    var SEUIL = 350, ouvert = false, root = document.documentElement;
+    var SEUIL = 120, ouvert = false, root = document.documentElement;
     var bandeau = document.createElement('div');
     bandeau.id = 'ecg-bandeau-prem';
     bandeau.innerHTML = '<button type="button">\u2726 Contenu Premium \u2014 d\u00e9bloquer la suite</button>';
