@@ -136,10 +136,10 @@
      pas une fois le site en ligne, sinon les abonnements existants
      ne correspondront plus. Le libellé, lui, est libre. */
   var RUBRIQUES = [
-    { id: 'monde',      titre: 'Actualité mondiale',    detail: 'Toutes les deux semaines.' },
-    { id: 'en',         titre: 'Actualité anglophone',  detail: 'Toutes les deux semaines.' },
-    { id: 'es',         titre: 'Actualité hispanophone', detail: 'Toutes les deux semaines.' },
-    { id: 'de',         titre: 'Actualité germanophone', detail: 'Toutes les deux semaines.' },
+    { id: 'monde',      titre: 'Actualité mondiale',    detail: 'Toutes les semaines.' },
+    { id: 'en',         titre: 'Actualité anglophone',  detail: 'Toutes les semaines.' },
+    { id: 'es',         titre: 'Actualité hispanophone', detail: 'Toutes les semaines.' },
+    { id: 'de',         titre: 'Actualité germanophone', detail: 'Toutes les semaines.' },
     { id: 'culture',    titre: 'Culture générale',      detail: 'Rester au courant des nouvelles fiches.' },
     { id: 'nouveautes', titre: 'Nouveautés du site',    detail: 'Être au courant des nouveautés du site.' }
   ];
