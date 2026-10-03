@@ -80,6 +80,18 @@
   .edition b{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700}
   .edition span{font-size:.88rem;line-height:1.55;color:var(--dim);font-weight:300}
 
+
+  .latest{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);background:var(--bg);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:16px;transition:border-color .25s}
+  .latest:hover{border-color:var(--red)}
+  .latest[hidden]{display:none}
+  .latest img{width:100%;height:100%;min-height:220px;max-height:260px;object-fit:cover;display:block}
+  .latest-body{display:flex;flex-direction:column;gap:12px;padding:28px 32px}
+  .latest-meta{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+  .latest-badge{background:var(--red);color:#fff;font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;padding:4px 10px;border-radius:999px}
+  .latest-info{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+  .latest-title{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;line-height:1.3}
+  .latest .go{margin-top:auto;color:var(--pink)}
+
   .duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:20px;padding:72px 0}
   .duo .card{padding:40px}
 
@@ -97,6 +109,8 @@
     .hero{padding:64px 0 48px}
     .card,.duo .card{padding:28px}
     .premium{padding:32px 24px}
+    .latest{grid-template-columns:1fr}
+    .latest-body{padding:24px}
     footer{padding:24px 20px}
   }
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -160,6 +174,14 @@
     <div class="eyebrow dim">Actualités</div>
     <h2>Le monde lu en quatre éditions</h2>
     <p class="lead">Des articles sourcés avec chronologie et analyse, pour nourrir la culture générale et les dissertations.</p>
+    <a class="latest" id="dernier-article" href="actualites/monde/tous-monde.html" hidden>
+      <img id="latest-img" src="" alt="" loading="lazy">
+      <div class="latest-body">
+        <div class="latest-meta"><span class="latest-badge">Dernier article</span><span class="latest-info" id="latest-info"></span></div>
+        <div class="latest-title" id="latest-title"></div>
+        <div class="go">Lire l'article →</div>
+      </div>
+    </a>
     <div class="editions">
       <a class="edition" href="actualites/monde/tous-monde.html"><i></i><b>Mondiale</b><span>Géopolitique, économie, environnement, par région du globe.</span></a>
       <a class="edition" href="actualites/en/tous-en.html"><i></i><b>Anglophone</b><span>L'actualité des pays anglophones, articles bilingues FR / EN.</span></a>
@@ -216,6 +238,26 @@
       b.href = 'index.html';
     }
   } catch (e) {}
+})();
+</script>
+<script>
+/* Dernier article : premier élément de ACTU_DATA (édition mondiale, le plus récent en tête) */
+(function(){
+  var MOIS=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+  fetch('actualites/monde/tous-monde.html').then(function(r){return r.text();}).then(function(t){
+    var i=t.indexOf('ACTU_DATA = ['); if(i<0) return;
+    var b=t.slice(i,t.indexOf('},',i)+1);
+    function g(k){var m=b.match(new RegExp("\\b"+k+":\\s*'((?:[^'\\\\]|\\\\.)*)'"));return m?JSON.parse('"'+m[1].replace(/\\'/g,"'").replace(/"/g,'\\"')+'"'):'';}
+    var url=g('externalUrl'),img=g('image'),title=g('cardTitle');
+    if(!url||!img||!title) return;
+    var mm=b.match(/month:\s*(\d+)/),yy=b.match(/year:\s*(\d+)/);
+    var a=document.getElementById('dernier-article');
+    a.href='actualites/monde/'+url;
+    document.getElementById('latest-img').src='actualites/monde/'+img;
+    document.getElementById('latest-title').textContent=title;
+    document.getElementById('latest-info').textContent=[g('pays'),g('theme'),mm&&yy?MOIS[mm[1]-1]+' '+yy[1]:''].filter(Boolean).join(' · ');
+    a.hidden=false;
+  }).catch(function(){});
 })();
 </script>
 </body>
