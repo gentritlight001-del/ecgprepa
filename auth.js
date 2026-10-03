@@ -1633,6 +1633,17 @@
      ══════════════════════════════════════════════════════════════ */
   /* Écran plein cadre générique : accès admin refusé, ou rubrique
      verrouillée, partagent la même présentation. */
+  /* Les deux offres (OFFRES_PREMIUM) en petites tuiles, dans l'écran Premium. */
+  function offresHtml() {
+    var h = OFFRES_PREMIUM.map(function (o) {
+      return '<div class="offre' + (o.etiquette ? ' best' : '') + '">' +
+        (o.etiquette ? '<em>Le plus avantageux</em>' : '') +
+        '<b>' + o.prix.toFixed(2).replace('.', ',').replace(',00', '') + ' € <small>' + o.unite + '</small></b>' +
+        '<span>' + o.nom + '</span></div>';
+    }).join('');
+    return '<div class="offres">' + h + '</div>';
+  }
+
   function ecranRefus(titre, texte, sousTexte, urlRetour, libelleBouton, secondaire, premium) {
     var css = document.createElement('style');
     css.textContent =
@@ -1667,7 +1678,17 @@
       '#ecg-refus .carte-p .actions{display:flex;flex-direction:column;gap:12px;width:100%;margin-top:10px}' +
       '#ecg-refus .carte-p button{width:100%;min-height:44px;border-radius:999px;padding:15px;font-size:1rem;margin:0}' +
       '#ecg-refus .carte-p button.second{background:none;border:1px solid #3a3a46;color:#e8e6e0}' +
-      '#ecg-refus .carte-p .petit{font-size:.82rem;color:#8a8880}';
+      '#ecg-refus .carte-p .petit{font-size:.82rem;color:#8a8880}' +
+      '#ecg-refus .carte-p .avantages{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:8px;text-align:left;width:100%}' +
+      '#ecg-refus .carte-p .avantages li{color:#a9a79f;font-size:.92rem;line-height:1.5;padding-left:26px;position:relative}' +
+      '#ecg-refus .carte-p .avantages li::before{content:"\\2713";position:absolute;left:0;color:#c8a96e;font-weight:700}' +
+      '#ecg-refus .carte-p .offres{display:flex;flex-wrap:wrap;gap:10px;width:100%}' +
+      '#ecg-refus .carte-p .offre{flex:1 1 150px;border:1px solid #3a3a46;border-radius:14px;padding:14px 16px;text-align:left;position:relative}' +
+      '#ecg-refus .carte-p .offre.best{border-color:#c8a96e}' +
+      '#ecg-refus .carte-p .offre b{display:block;font-family:"Playfair Display",Georgia,serif;font-size:1.5rem;font-weight:700;color:#e8e6e0}' +
+      '#ecg-refus .carte-p .offre b small{font:400 .8rem "DM Sans",system-ui,sans-serif;color:#a9a79f}' +
+      '#ecg-refus .carte-p .offre span{font-size:.8rem;color:#8a8880}' +
+      '#ecg-refus .carte-p .offre em{position:absolute;top:-10px;left:14px;background:#c8a96e;color:#12120f;font:700 .66rem "DM Sans",system-ui,sans-serif;font-style:normal;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:999px}';
     (document.head || document.documentElement).appendChild(css);
 
     var poser = function () {
@@ -1689,6 +1710,8 @@
           '<div class="eyebrow">Contenu Premium</div>' +
           '<h1>' + titre + '</h1>' +
           '<p>' + texte + '</p>' +
+          '<ul class="avantages"><li>Tous les cours, colles et dossiers</li><li>Les actualités des quatre éditions</li><li>Résiliable à tout moment</li></ul>' +
+          offresHtml() +
           '<div class="actions"><button type="button">' + libelleBouton + '</button>' +
           (secondaire ? '<button type="button" class="second">' + secondaire.libelle + '</button>' : '') +
           '</div>' +
