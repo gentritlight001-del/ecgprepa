@@ -1189,8 +1189,12 @@
         try {
           Promise.resolve(Auth.admin.envoyerMail([{ id: u.id, email: u.email, prenom: u.prenom, nom: u.nom }],
               'Ton abonnement Premium ECG Prépa est offert ✦', corps, 'libre'))
-            .then(function () { if (apresMail) apresMail(true); },
-                  function () { if (apresMail) apresMail(false); });
+            .then(function (d) {
+                    if (!apresMail) return;
+                    if (d && d.echecs && d.echecs.length) apresMail(false, 'Resend a refusé l\'envoi (domaine non vérifié ?)');
+                    else apresMail(true);
+                  },
+                  function (err) { if (apresMail) apresMail(false, String((err && err.message) || err)); });
         } catch (e) { if (apresMail) apresMail(false); }
         return { ok: true };
       });

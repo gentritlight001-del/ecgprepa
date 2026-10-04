@@ -124,8 +124,8 @@
       var u = membres.filter(function (m) { return (m.email || '').toLowerCase() === v; })[0];
       if (!u) { toast('Aucun membre avec cette adresse.', 'err'); return; }
       if (!confirm('Offrir le Premium à ' + u.email + ' ?')) return;
-      Ad.offrirPremium(u, function (ok) {
-        toast(ok ? 'Mail envoyé à ' + u.email + '.' : 'Le mail n\'a pas pu partir (le Premium est bien offert).', ok ? 'ok' : 'err');
+      Ad.offrirPremium(u, function (ok, cause) {
+        toast(ok ? 'Mail envoyé à ' + u.email + '.' : 'Le mail n\'a pas pu partir (le Premium est bien offert)' + (cause === 'fonction_absente' ? ' : la fonction « envoyer-mail » n\'est pas déployée.' : cause ? ' : ' + cause : '.'), ok ? 'ok' : 'err');
       }).then(function () {
         $('#pr-offrir').value = '';
         toast('Premium offert à ' + u.email + '.', 'ok');
