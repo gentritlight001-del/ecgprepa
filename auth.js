@@ -1139,7 +1139,7 @@
 
     /* Offre le Premium à un membre (sans date de fin). Ne touche jamais
        un abonnement payant en cours. */
-    offrirPremium: function (u) {
+    offrirPremium: function (u, apresMail) {
       return sb().then(function (c) {
         return T(c.rpc('offrir_acces_premium', { p_utilisateur: u.id }));
       }).then(function (d) {
@@ -1153,12 +1153,15 @@
           'Bonne nouvelle : l\u2019administrateur d\u2019ECG Prépa t\u2019offre l\u2019abonnement Premium, sans date de fin.\n\n' +
           'Tu as désormais accès à tous les contenus réservés aux abonnés : cours de langues, actualités, culture générale et plus encore. ' +
           'Il te suffit de te connecter pour en profiter.\n\n' + SITE_URL_MAIL + '\n\nBonne révision !\nECG Prépa';
-        var envoi = Auth.admin.envoyerMail([{ id: u.id, email: u.email, prenom: u.prenom, nom: u.nom }],
-            'Ton abonnement Premium ECG Prépa est offert ✦', corps, 'libre')
-          .then(function () { return { mail: true }; });
-        var delai = new Promise(function (ok) { setTimeout(function () { ok({ mail: false }); }, 8000); });
-        try { return Promise.race([envoi, delai]).catch(function () { return { mail: false }; }); }
-        catch (e) { return { mail: false }; }
+        /* Envoi en arrière-plan : le cadeau est déjà fait, le résultat du
+           mail est rendu à part via « apresMail(true|false) ». */
+        try {
+          Promise.resolve(Auth.admin.envoyerMail([{ id: u.id, email: u.email, prenom: u.prenom, nom: u.nom }],
+              'Ton abonnement Premium ECG Prépa est offert ✦', corps, 'libre'))
+            .then(function () { if (apresMail) apresMail(true); },
+                  function () { if (apresMail) apresMail(false); });
+        } catch (e) { if (apresMail) apresMail(false); }
+        return { ok: true };
       });
     },
 
