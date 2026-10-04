@@ -36,6 +36,10 @@ directement après chaque modification, sans attendre un nouveau « mets en lign
    déjà faites : on peut le relancer sans risque. Il a besoin de playwright (voir section 5).
    Puis `python3 outils/referencement.py` : il ajoute la description et la balise canonical des
    pages qui n'en ont pas et régénère `sitemap.xml` (ne jamais modifier ce fichier à la main).
+   Puis `python3 outils/nouveautes.py` : il régénère `nouveautes.js`, la liste des derniers
+   contenus (articles, dossiers de CG, fiches Humanité, chapitres) affichée sous les 4 cartes de
+   l'accueil et dans la page `nouveautes.html`. Les dates de mise en ligne sont gardées dans
+   `outils/nouveautes-dates.json` (ne jamais modifier ces deux fichiers à la main).
 1. Commit sur la branche de travail de la session, puis `git push -u origin <branche>`.
 2. Créer la PR vers `main` et la merger (outils GitHub MCP).
 3. Remettre la branche à jour sur `main` :

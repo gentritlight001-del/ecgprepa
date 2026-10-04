@@ -830,6 +830,32 @@ try {
   .fade-up:nth-child(3) { animation-delay: 0.04s; }
   .fade-up:nth-child(4) { animation-delay: 0.06s; }
 
+
+  /* ─── NOUVEAUTÉS (sous les 4 cartes, rempli depuis nouveautes.js) ─── */
+  .nx { max-width: 860px; width: 100%; margin: 88px auto 0; text-align: left; }
+  .nx[hidden] { display: none; }
+  .nx-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .nx-head h2 { font-family: 'Playfair Display', serif; font-weight: 900; font-size: 2rem; color: var(--text); }
+  .nx-head span { font-family: 'DM Mono', monospace; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: #a9a79f; }
+  .nx-lead { display: flex; flex-wrap: wrap; gap: 24px; align-items: center; padding: 24px 0; border-bottom: 1px solid var(--surface2); color: var(--text); text-decoration: none; }
+  .nx-lead img { width: 260px; max-width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; display: block; }
+  .nx-lead img.portrait { width: 110px; aspect-ratio: 2 / 3; }
+  .nx-lead-txt { flex: 1 1 300px; display: flex; flex-direction: column; gap: 8px; }
+  .nx-kind { font-family: 'DM Mono', monospace; font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; }
+  .nx-lead-title { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.5rem; line-height: 1.2; transition: color .2s; }
+  .nx-lead:hover .nx-lead-title, .nx-row:hover .nx-row-title { color: var(--accent); }
+  .nx-row { display: flex; gap: 18px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--surface2); color: var(--text); text-decoration: none; }
+  .nx-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .nx-row-title { flex: 1; min-width: 0; font-size: 1rem; line-height: 1.4; transition: color .2s; }
+  .nx-row .nx-kind { white-space: nowrap; }
+  .nx-all { display: table; margin: 28px auto 0; font-size: .95rem; padding: 13px 26px; border-radius: 999px; border: 1px solid #3a3a46; color: var(--text); text-decoration: none; transition: border-color .2s; }
+  .nx-all:hover { border-color: var(--accent); }
+  @media (max-width: 768px) {
+    .nx { margin-top: 64px; }
+    .nx-row { flex-wrap: wrap; gap: 6px 12px; }
+    .nx-row-title { flex-basis: calc(100% - 20px); order: 2; padding-left: 20px; }
+  }
+
   @media (max-width: 768px) {
     nav { padding: 14px 20px; }
     .hero { padding: 60px 24px; }
@@ -918,8 +944,52 @@ try {
         <div class="card-arrow">→</div>
       </div>
     </div>
+    <section class="nx" id="nouveautes" hidden>
+      <div class="nx-head">
+        <h2>Les nouveautés</h2>
+        <span id="nx-maj"></span>
+      </div>
+      <div id="nx-liste"></div>
+      <a class="nx-all" href="nouveautes.html">Voir toutes les nouveautés</a>
+    </section>
   </div>
 </div>
+<script src="nouveautes.js"></script>
+<script>
+/* Les nouveautés : le dernier contenu de chaque rubrique (actu monde, anglais, espagnol,
+   allemand, culture générale, Humanité, cours), du plus récent au plus ancien. */
+(function(){
+  var data = window.ECG_NOUVEAUTES;
+  if (!data || !data.length) return;
+  var COULEUR = { monde:'#c97c9e', en:'#c97c9e', es:'#c97c9e', de:'#c97c9e', cg:'#7c9ec9', humanite:'#9ecba0', cours:'#c8a96e' };
+  var vus = {}, items = [];
+  data.forEach(function(e){ if (!vus[e.t]) { vus[e.t] = 1; items.push(e); } });
+  function esc(s){ return String(s || '').replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function quand(iso){
+    var d = new Date(iso), j = new Date(); j.setHours(0,0,0,0);
+    var x = new Date(d); x.setHours(0,0,0,0);
+    var n = Math.round((j - x) / 864e5);
+    if (n <= 0) return 'aujourd\u2019hui';
+    if (n === 1) return 'hier';
+    if (n < 7) return 'il y a ' + n + ' jours';
+    return d.toLocaleDateString('fr-FR', { day:'numeric', month:'long' });
+  }
+  var lead = items[0], h = '';
+  h += '<a class="nx-lead" href="' + esc(lead.url) + '">' +
+    (lead.image ? '<img src="' + esc(lead.image) + '" alt="" loading="lazy"' + (lead.portrait ? ' class="portrait"' : '') + '>' : '') +
+    '<span class="nx-lead-txt"><span class="nx-kind" style="color:' + COULEUR[lead.t] + '">' +
+    esc(lead.rubrique + ' · ' + lead.meta + ' · ' + quand(lead.date)) + '</span>' +
+    '<span class="nx-lead-title">' + esc(lead.titre) + '</span></span></a>';
+  items.slice(1).forEach(function(e){
+    h += '<a class="nx-row" href="' + esc(e.url) + '"><span class="nx-dot" style="background:' + COULEUR[e.t] + '"></span>' +
+      '<span class="nx-row-title">' + esc(e.titre) + '</span>' +
+      '<span class="nx-kind" style="color:' + COULEUR[e.t] + '">' + esc(e.rubrique) + '</span></a>';
+  });
+  document.getElementById('nx-liste').innerHTML = h;
+  document.getElementById('nx-maj').textContent = 'Mis à jour ' + quand(lead.date);
+  document.getElementById('nouveautes').hidden = false;
+})();
+</script>
 
 </body>
 </html>
