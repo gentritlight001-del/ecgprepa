@@ -1191,7 +1191,7 @@
               'Ton abonnement Premium ECG Prépa est offert ✦', corps, 'libre'))
             .then(function (d) {
                     if (!apresMail) return;
-                    if (d && d.echecs && d.echecs.length) apresMail(false, 'Brevo a refusé l\'envoi (expéditeur non validé ?)');
+                    if (d && d.echecs && d.echecs.length) apresMail(false, String((d.echecs[0] && d.echecs[0].erreur) || d.echecs[0]));
                     else apresMail(true);
                   },
                   function (err) { if (apresMail) apresMail(false, String((err && err.message) || err)); });
