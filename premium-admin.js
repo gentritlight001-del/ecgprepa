@@ -99,11 +99,6 @@
       '<input type="text" id="pr-offrir" list="pr-membres" placeholder="Adresse e-mail du membre" spellcheck="false">' +
       '<datalist id="pr-membres"></datalist>' +
       '<button class="btn" type="submit">Offrir le Premium</button></form></div>' +
-      '<div class="bloc"><header><h3>Contenus Premium</h3>' +
-      '<p>Une rubrique cochée n\'est plus accessible qu\'aux abonnés (et à toi). Elle reste visible pour les autres membres, ' +
-      'avec un badge « Premium » qui mène à la page des tarifs. Tu peux aussi basculer un chapitre précis directement ' +
-      'depuis sa carte, avec le bouton ✦. Une rubrique <em>verrouillée</em> reste fermée à tout le monde, abonnés compris.</p></header>' +
-      '<div id="pr-rubriques"></div></div>' +
       '<div class="bloc"><header><h3>Abonnés</h3>' +
       '<p>Abonnés payants (mis à jour automatiquement par Stripe) et accès offerts par code. Remboursements, factures et litiges : ' +
       '<a href="' + STRIPE_DASHBOARD + '" target="_blank" rel="noopener" style="color:var(--blue)">tableau de bord Stripe</a>.</p></header>' +
@@ -192,7 +187,6 @@
       }
       rendreStats();
       rendreCode();
-      rendreRubriques();
       rendreAbonnes();
     });
   }
@@ -217,46 +211,6 @@
       '<div class="stat" style="--c:var(--pink)"><b>' + offerts + '</b><span>Accès offerts</span></div>';
     var badge = document.getElementById('c-premium');
     if (badge) badge.textContent = actifs.length + offerts;
-  }
-
-  function rendreRubriques() {
-    var par = {};
-    etat.rubriques.forEach(function (r) { par[r.id] = r; });
-    var connues = {};
-    var html = '', groupe = null;
-    Ad.listeRubriques().forEach(function (r) {
-      connues[r.id] = 1;
-      if (r.groupe !== groupe) { groupe = r.groupe; html += '<div class="groupe">' + esc(groupe) + '</div>'; }
-      html += ligne(r.id, r.nom, par[r.id]);
-    });
-    /* Chapitres ou pages marqués individuellement depuis leur carte. */
-    var autres = etat.rubriques.filter(function (r) { return r.premium && !connues[r.id]; });
-    if (autres.length) {
-      html += '<div class="groupe">Pages individuelles</div>';
-      autres.forEach(function (r) { html += ligne(r.id, r.id, r); });
-    }
-    var hote = $('#pr-rubriques');
-    hote.innerHTML = html;
-    hote.querySelectorAll('.sw').forEach(function (b) {
-      b.addEventListener('click', function () {
-        var id = b.dataset.id, vers = !b.classList.contains('on');
-        b.disabled = true;
-        Ad.definirPremium(id, vers).then(function () {
-          toast(vers ? 'Réservé aux abonnés.' : 'De nouveau gratuit.', 'ok');
-          return rafraichir();
-        }).catch(function (e) {
-          b.disabled = false;
-          toast(String((e && e.message) || e), 'err');
-        });
-      });
-    });
-  }
-
-  function ligne(id, nom, r) {
-    var on = !!(r && r.premium), v = !!(r && r.verrouille);
-    return '<div class="setting"><div><h3>' + esc(nom) +
-      (v ? '<span class="verrou">🔒 verrouillée</span>' : '') + '</h3></div>' +
-      '<button class="sw' + (on ? ' on' : '') + '" data-id="' + esc(id) + '" aria-label="Premium : ' + esc(nom) + '"></button></div>';
   }
 
   function rendreAbonnes() {
