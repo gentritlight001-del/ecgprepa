@@ -365,7 +365,7 @@
         D.users = r[0] || []; D.sessions = r[1] || [];
         D.journal = r[2] || []; D.config = r[3] || {};
         D.premium = {};
-        (r[4] || []).forEach(function(a){ if (a.statut === 'offert' || ['active','trialing','past_due'].indexOf(a.statut) !== -1) D.premium[a.utilisateur] = true; });
+        (r[4] || []).forEach(function(a){ if (a.statut === 'offert' || ['active','trialing','past_due'].indexOf(a.statut) !== -1) D.premium[a.utilisateur] = a.statut; });
         rendre();
         $('#maj').textContent = 'à jour · ' + new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
       })
@@ -420,6 +420,7 @@
         a.push(bt('','role',u.id, u.role === 'admin' ? 'Retirer admin' : 'Passer admin'));
         a.push(bt('bad','supprimer',u.id,'Supprimer'));
       }
+      if (D.premium[u.id] === 'offert') a.push(bt('bad','retirerprem',u.id,'Retirer Premium'));
       a.push(bt('','ecrire',u.id,'Écrire'));
       a.push(bt('','mdp',u.id,'Lien mot de passe'));
 
@@ -517,6 +518,10 @@
     if (a === 'deconnecter')
       return agir(Ad.deconnecterUtilisateur(u.id, u.email), 'Sessions de ' + nom + ' fermées.');
 
+    if (a === 'retirerprem') {
+      if (!confirm('Retirer le Premium offert à ' + nom + ' ?')) return;
+      return agir(Ad.retirerAccesOffert(u.id, u.email), 'Premium retiré à ' + nom + '.');
+    }
     if (a === 'role') {
       var r = u.role === 'admin' ? 'membre' : 'admin';
       if (!confirm(r === 'admin' ? 'Donner les droits d\'administration à ' + nom + ' ?'
