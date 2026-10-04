@@ -1311,6 +1311,16 @@
           }
         });
       }).then(function (r) {
+        /* Une réponse non-2xx cache le vrai message dans r.error.context :
+           on le lit pour afficher la cause exacte (ex. refus de Brevo). */
+        if (r.error && r.error.context && typeof r.error.context.json === 'function') {
+          return r.error.context.json().then(function (j) {
+            if (j && j.erreur) throw new Error(j.erreur + (j.echecs && j.echecs[0] ? ' — ' + (j.echecs[0].erreur || '') : ''));
+            return r;
+          }, function () { return r; });
+        }
+        return r;
+      }).then(function (r) {
         if (r.error) {
           var m = String(r.error.message || r.error);
           if (/Failed to send|not found|404|Failed to fetch/i.test(m)) {
