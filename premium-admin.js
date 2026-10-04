@@ -129,9 +129,11 @@
       var u = membres.filter(function (m) { return (m.email || '').toLowerCase() === v; })[0];
       if (!u) { toast('Aucun membre avec cette adresse.', 'err'); return; }
       if (!confirm('Offrir le Premium à ' + u.email + ' ?')) return;
-      Ad.offrirPremium(u).then(function (r) {
+      Ad.offrirPremium(u, function (ok) {
+        toast(ok ? 'Mail envoyé à ' + u.email + '.' : 'Le mail n\'a pas pu partir (le Premium est bien offert).', ok ? 'ok' : 'err');
+      }).then(function () {
         $('#pr-offrir').value = '';
-        toast('Premium offert à ' + u.email + (r && r.mail ? ' — mail envoyé.' : ' — mais le mail n\'a pas pu partir.'), r && r.mail ? 'ok' : 'err');
+        toast('Premium offert à ' + u.email + '.', 'ok');
         return rafraichir();
       }).catch(function (err) { toast(String((err && err.message) || err), 'err'); });
     });
