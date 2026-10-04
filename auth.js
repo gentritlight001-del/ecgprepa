@@ -467,6 +467,13 @@
      Un réglage manuel (ligne dans rubriques_verrouillage, posée par les
      boutons ✦ de l'admin) l'emporte toujours sur cette règle. ─── */
   var _dernierActu = {};
+  /* Cours de langues de 2e année (leçons de civilisation, DS) : Premium
+     par défaut, tant qu'aucun réglage manuel n'existe pour la page. Les
+     pages d'accueil de chaque langue restent ouvertes. */
+  function estCoursLangue2(id) {
+    return /^deuxieme_annee\/langues\/[^/]+\/[^/]+\/.+/.test(id || '') ||
+           /^deuxieme_annee\/langues\/[^/]+\/(?!index\.html$)[^/]+\.html$/.test(id || '');
+  }
   function infoActu(id) {
     var m = /^actualites\/(en|es|de|monde)\/articles\/([^/]+?)(?:\.html)?$/.exec(id || '');
     if (m) return { code: m[1], slug: m[2] };
@@ -496,6 +503,7 @@
   /* Complète « prem » : pour chaque article sans réglage manuel
      (absent de « lignes »), Premium s'il n'est pas le plus récent. */
   function appliquerRegleActu(prem, lignes, ids) {
+    ids.forEach(function (id) { if (!lignes[id] && estCoursLangue2(id)) prem[id] = true; });
     var codes = {};
     ids.forEach(function (id) { var m = infoActu(id); if (m && !lignes[id]) codes[m.code] = 1; });
     return Promise.all(Object.keys(codes).map(function (c) {
@@ -510,7 +518,7 @@
 
   function collecterNoeudsVerrouillables() {
     var noeuds = [];
-    document.querySelectorAll('[data-rubrique], .chapter-item, .choice-card, .home-card, .actu-card').forEach(function (el) {
+    document.querySelectorAll('[data-rubrique], .chapter-item, .choice-card, .home-card, .actu-card, .civi-card').forEach(function (el) {
       var id = el.getAttribute('data-rubrique') || resoudreDestination(el);
       if (!id) return; /* carte décorative ou déjà figée « à venir » : on n'y touche pas */
       noeuds.push({ el: el, id: id });
@@ -588,7 +596,7 @@
     btn.addEventListener('click', function (e) {
       e.preventDefault(); e.stopPropagation();
       btn.disabled = true; btn.textContent = '…';
-      Auth.admin.verrouillerRubrique(id, !verrouille)
+      Auth.admin.verrouillerRubrique(id, !verrouille, premium)
         .then(function () { location.reload(); })
         .catch(function () { btn.disabled = false; btn.textContent = verrouille ? '🔓' : '🔒'; btn.title = verrouille ? 'Déverrouiller' : 'Verrouiller'; });
     });
@@ -1072,10 +1080,11 @@
       }).catch(function () { return []; });
     },
 
-    verrouillerRubrique: function (id, verrouille) {
+    verrouillerRubrique: function (id, verrouille, premium) {
       return sb().then(function (c) {
-        return T(c.from('rubriques_verrouillage')
-          .upsert({ id: id, verrouille: !!verrouille, maj_le: new Date().toISOString() }))
+        var ligne = { id: id, verrouille: !!verrouille, maj_le: new Date().toISOString() };
+        if (premium != null) ligne.premium = !!premium; /* garde l'état Premium effectif */
+        return T(c.from('rubriques_verrouillage').upsert(ligne))
           .then(function () {
             var meta = RUBRIQUES_SITE.filter(function (r) { return r.id === id; })[0];
             var libelle = meta ? meta.nom + (meta.niveau === 3 ? ' (' + meta.groupe + ')' : '') : id;
@@ -1114,6 +1123,18 @@
         return T(c.rpc('definir_code_acces', { p_code: code == null ? null : String(code), p_actif: !!actif }));
       }).then(function () {
         return noter('reglage', (profilLocal() || {}).email, 'code d\'accès ' + (actif ? 'activé' : 'désactivé') + (code ? ' (nouveau code)' : ''));
+      });
+    },
+
+    /* Offre le Premium à un membre (sans date de fin). Ne touche jamais
+       un abonnement payant en cours. */
+    offrirPremium: function (id, email) {
+      return sb().then(function (c) {
+        return T(c.rpc('offrir_acces_premium', { p_utilisateur: id }));
+      }).then(function (d) {
+        if (d && d.ok === false) throw new Error(d.raison === 'deja_abonne'
+          ? 'Ce membre a déjà un abonnement payant en cours.' : 'Impossible d\'offrir le Premium.');
+        return noter('reglage', email, 'accès Premium offert par l\'administrateur');
       });
     },
 

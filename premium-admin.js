@@ -93,6 +93,12 @@
       '<form class="code-ligne" id="pr-code-form" autocomplete="off">' +
       '<input type="text" id="pr-code" placeholder="Nouveau code (6 caractères minimum)" spellcheck="false">' +
       '<button class="btn" type="submit">Enregistrer le code</button></form></div>' +
+      '<div class="bloc"><header><h3>Offrir le Premium à un membre</h3>' +
+      '<p>Choisis un compte : il obtient tout le Premium gratuitement, sans date de fin (retirable depuis la liste des abonnés).</p></header>' +
+      '<form class="code-ligne" id="pr-offrir-form" autocomplete="off">' +
+      '<input type="text" id="pr-offrir" list="pr-membres" placeholder="Adresse e-mail du membre" spellcheck="false">' +
+      '<datalist id="pr-membres"></datalist>' +
+      '<button class="btn" type="submit">Offrir le Premium</button></form></div>' +
       '<div class="bloc"><header><h3>Contenus Premium</h3>' +
       '<p>Une rubrique cochée n\'est plus accessible qu\'aux abonnés (et à toi). Elle reste visible pour les autres membres, ' +
       'avec un badge « Premium » qui mène à la page des tarifs. Tu peux aussi basculer un chapitre précis directement ' +
@@ -105,7 +111,30 @@
       '<tbody id="pr-abonnes"></tbody></table></div>' +
       '<div class="empty" id="pr-vide" style="display:none">Aucun abonné pour le moment.</div></div>';
     brancherCode();
+    brancherOffrir();
     rafraichir();
+  }
+
+  function brancherOffrir() {
+    var membres = [];
+    Ad.utilisateurs().then(function (l) {
+      membres = l || [];
+      $('#pr-membres').innerHTML = membres.map(function (u) {
+        return '<option value="' + esc(u.email || '') + '">' + esc(((u.prenom || '') + ' ' + (u.nom || '')).trim()) + '</option>';
+      }).join('');
+    }).catch(function () {});
+    $('#pr-offrir-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = $('#pr-offrir').value.trim().toLowerCase();
+      var u = membres.filter(function (m) { return (m.email || '').toLowerCase() === v; })[0];
+      if (!u) { toast('Aucun membre avec cette adresse.', 'err'); return; }
+      if (!confirm('Offrir le Premium à ' + u.email + ' ?')) return;
+      Ad.offrirPremium(u.id, u.email).then(function () {
+        $('#pr-offrir').value = '';
+        toast('Premium offert à ' + u.email + '.', 'ok');
+        return rafraichir();
+      }).catch(function (err) { toast(String((err && err.message) || err), 'err'); });
+    });
   }
 
   function brancherCode() {

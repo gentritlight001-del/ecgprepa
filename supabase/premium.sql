@@ -279,3 +279,29 @@ revoke all on function public.retirer_acces_offert(uuid) from public, anon;
 grant execute on function public.etat_code_acces() to authenticated;
 grant execute on function public.definir_code_acces(text, boolean) to authenticated;
 grant execute on function public.retirer_acces_offert(uuid) to authenticated;
+
+
+-- Admin : offrir le Premium directement à un membre (sans date de fin).
+-- Ne touche jamais un abonnement payant en cours.
+create or replace function public.offrir_acces_premium(p_utilisateur uuid)
+returns json
+language plpgsql volatile security definer set search_path = public
+as $$
+declare v_ligne public.abonnements%rowtype;
+begin
+  if not public.premium_est_admin() then raise exception 'non_autorise'; end if;
+  select * into v_ligne from public.abonnements where utilisateur = p_utilisateur;
+  if found and v_ligne.statut in ('active', 'trialing', 'past_due') then
+    return json_build_object('ok', false, 'raison', 'deja_abonne');
+  end if;
+  insert into public.abonnements (utilisateur, statut, offre, fin_periode, annulation_prevue, maj_le)
+  values (p_utilisateur, 'offert', 'offert', null, false, now())
+  on conflict (utilisateur) do update
+    set statut = 'offert', offre = 'offert', fin_periode = null,
+        annulation_prevue = false, maj_le = now();
+  return json_build_object('ok', true);
+end;
+$$;
+
+revoke all on function public.offrir_acces_premium(uuid) from public, anon;
+grant execute on function public.offrir_acces_premium(uuid) to authenticated;
