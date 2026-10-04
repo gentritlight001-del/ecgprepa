@@ -1883,15 +1883,39 @@
       { libelle: actu ? 'Retour aux articles' : 'Retour', url: BASE + rub.retour }, true);
   }
 
+  /* Croix pour fermer le bandeau admin ; il reste fermé sur cette
+     page jusqu'à la fin de la session du navigateur. */
+  var K_BANDEAU_FERME = 'ecg-bandeau-admin-ferme:';
+  function bandeauAdminFerme() {
+    try { return sessionStorage.getItem(K_BANDEAU_FERME + location.pathname) === '1'; } catch (e) { return false; }
+  }
+  function croixBandeauAdmin(d) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = '\u00d7';
+    b.title = 'Masquer ce bandeau';
+    b.setAttribute('aria-label', 'Masquer ce bandeau');
+    b.style.cssText = 'position:absolute;top:50%;right:10px;transform:translateY(-50%);width:28px;height:28px;' +
+      'border:0;border-radius:50%;background:transparent;color:#c8a96e;font:400 20px/28px system-ui,sans-serif;cursor:pointer;padding:0';
+    b.onmouseover = function () { b.style.background = 'rgba(200,169,110,.15)'; };
+    b.onmouseout = function () { b.style.background = 'transparent'; };
+    b.onclick = function () {
+      try { sessionStorage.setItem(K_BANDEAU_FERME + location.pathname, '1'); } catch (e) {}
+      if (d.parentNode) d.parentNode.removeChild(d);
+    };
+    d.appendChild(b);
+  }
+
   function bandeauPremiumAdmin(rub) {
-    if (document.getElementById('ecg-verrou-admin')) return;
+    if (document.getElementById('ecg-verrou-admin') || bandeauAdminFerme()) return;
     var quoi = rub.nom ? ('« ' + rub.nom + (rub.niveau === 3 ? ' (' + rub.groupe + ')' : '') + ' »') : 'Cette page';
     var poser = function () {
       var d = document.createElement('div');
       d.id = 'ecg-verrou-admin';
       d.textContent = '✦ ' + quoi + ' est réservée aux abonnés Premium — visible parce que tu es administrateur.';
       d.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:2147483646;background:#2a2416;color:#c8a96e;' +
-        'font:500 .8rem/1.5 "DM Sans",system-ui,sans-serif;padding:10px 18px;text-align:center';
+        'font:500 .8rem/1.5 "DM Sans",system-ui,sans-serif;padding:10px 44px;text-align:center';
+      croixBandeauAdmin(d);
       document.body.appendChild(d);
     };
     if (document.body) poser();
@@ -1902,14 +1926,15 @@
      rubrique verrouillée : lui seul continue d'y avoir accès, mais
      autant qu'il n'oublie pas qu'elle est fermée aux membres. */
   function bandeauRubriqueAdmin(rub) {
-    if (document.getElementById('ecg-verrou-admin')) return;
+    if (document.getElementById('ecg-verrou-admin') || bandeauAdminFerme()) return;
     var quoi = rub.nom ? ('« ' + rub.nom + (rub.niveau === 3 ? ' (' + rub.groupe + ')' : '') + ' »') : 'Cette page';
     var poser = function () {
       var d = document.createElement('div');
       d.id = 'ecg-verrou-admin';
       d.textContent = '🔒 ' + quoi + ' est verrouillée pour les membres — visible uniquement parce que tu es administrateur.';
       d.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:2147483646;background:#2a2416;color:#c8a96e;' +
-        'font:500 .8rem/1.5 "DM Sans",system-ui,sans-serif;padding:10px 18px;text-align:center';
+        'font:500 .8rem/1.5 "DM Sans",system-ui,sans-serif;padding:10px 44px;text-align:center';
+      croixBandeauAdmin(d);
       document.body.appendChild(d);
     };
     if (document.body) poser();
