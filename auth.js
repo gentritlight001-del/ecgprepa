@@ -571,6 +571,37 @@
     location.href = TARIFS_URL + '?depuis=' + encodeURIComponent(location.pathname);
   }, true);
 
+  /* PDF des chapitres (liens « download ») : réservés aux abonnés Premium
+     et à l'administrateur. Les autres sont envoyés vers les tarifs. */
+  var _pdfOuvert = (function () {
+    var p = profilLocal(), l = premiumLocal();
+    return !!((p && p.role === 'admin') || (l && l.premium));
+  })();
+  function liensPdf() { return document.querySelectorAll('a[download][href$=".pdf"]'); }
+  function marquerPdf() {
+    liensPdf().forEach(function (a) {
+      if (_pdfOuvert) { a.removeAttribute('data-ecg-pdf'); return; }
+      a.setAttribute('data-ecg-pdf', '1');
+      a.title = 'PDF réservé aux abonnés Premium';
+    });
+  }
+  document.addEventListener('click', function (e) {
+    var a = e.target && e.target.closest && e.target.closest('a[download][href$=".pdf"]');
+    if (!a || _pdfOuvert) return;
+    e.preventDefault();
+    e.stopPropagation();
+    location.href = TARIFS_URL + '?depuis=' + encodeURIComponent(location.pathname);
+  }, true);
+  function initPdf() {
+    if (!liensPdf().length) return;
+    marquerPdf();
+    var p = profilLocal();
+    if (p && p.role === 'admin') { _pdfOuvert = true; marquerPdf(); return; }
+    statutPremium().then(function (st) { _pdfOuvert = !!(st && st.premium); marquerPdf(); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initPdf);
+  else initPdf();
+
   function griserPourMembre(el) {
     el.style.opacity = '0.45';
     el.style.pointerEvents = 'none';
