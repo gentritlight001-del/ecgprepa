@@ -164,6 +164,7 @@
     var cards = document.querySelectorAll('.actu-card:not([data-fav])');
     for (var i = 0; i < cards.length; i++) {
       var card = cards[i];
+      if (card.hasAttribute('data-ecg-premium')) continue;
       var titleEl = card.querySelector('.actu-card-title');
       if (!titleEl) continue;
       var item = index[plain(titleEl.textContent)];
