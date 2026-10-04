@@ -9,7 +9,8 @@
 //    BREVO_API_KEY      clé API Brevo (xkeysib-…) — Brevo → SMTP et API → Clés API
 //    MAIL_EXPEDITEUR    adresse d'expédition, ex. contact@ecg-prepa.fr
 //                       (doit être un expéditeur validé dans Brevo)
-//    MAIL_EXPEDITEUR_NOM  (facultatif) nom affiché, « ECG Prépa » par défaut
+//    MAIL_NOM           (facultatif) nom affiché, « ECG Prépa » par défaut
+//    MAIL_REPONSE       (facultatif) adresse de réponse
 //
 //  Déploiement :
 //    supabase functions deploy envoyer-mail
@@ -59,7 +60,8 @@ Deno.serve(async (req) => {
         method: 'POST',
         headers: { 'api-key': cle, 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({
-          sender: { name: Deno.env.get('MAIL_EXPEDITEUR_NOM') || 'ECG Prépa', email: exp },
+          sender: { name: Deno.env.get('MAIL_NOM') || 'ECG Prépa', email: exp.replace(/^.*<|>.*$/g, '').trim() },
+          ...(Deno.env.get('MAIL_REPONSE') ? { replyTo: { email: Deno.env.get('MAIL_REPONSE') } } : {}),
           to: [{ email: d.email, name: `${d.prenom || ''} ${d.nom || ''}`.trim() || undefined }],
           subject: sub(objet), textContent: texte, htmlContent: html,
         }),
