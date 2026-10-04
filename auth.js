@@ -1153,10 +1153,12 @@
           'Bonne nouvelle : l\u2019administrateur d\u2019ECG Prépa t\u2019offre l\u2019abonnement Premium, sans date de fin.\n\n' +
           'Tu as désormais accès à tous les contenus réservés aux abonnés : cours de langues, actualités, culture générale et plus encore. ' +
           'Il te suffit de te connecter pour en profiter.\n\n' + SITE_URL_MAIL + '\n\nBonne révision !\nECG Prépa';
-        return Auth.admin.envoyerMail([{ id: u.id, email: u.email, prenom: u.prenom, nom: u.nom }],
+        var envoi = Auth.admin.envoyerMail([{ id: u.id, email: u.email, prenom: u.prenom, nom: u.nom }],
             'Ton abonnement Premium ECG Prépa est offert ✦', corps, 'libre')
-          .then(function () { return { mail: true }; })
-          .catch(function () { return { mail: false }; });
+          .then(function () { return { mail: true }; });
+        var delai = new Promise(function (ok) { setTimeout(function () { ok({ mail: false }); }, 8000); });
+        try { return Promise.race([envoi, delai]).catch(function () { return { mail: false }; }); }
+        catch (e) { return { mail: false }; }
       });
     },
 
