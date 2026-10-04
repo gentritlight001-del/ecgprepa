@@ -124,6 +124,7 @@
   var K_NL_ATTENTE = 'ecg_newsletter_attente'; // choix fait à l'inscription
   var K_SID    = 'ecg_sid';      // identifiant de la session ouverte
   var K_VERIF  = 'ecg_verif_t';  // date de la dernière vérification réussie
+  var SITE_URL_MAIL = 'https://ecg-prepa.fr';
   var K_PREMIUM = 'ecg_premium';  // miroir local du statut Premium (affichage seulement)
   /* Si la session a été vérifiée il y a moins de VERIF_OK_MS, la page
      s'affiche tout de suite ; la vérification continue en arrière-plan
@@ -471,6 +472,8 @@
      par défaut, tant qu'aucun réglage manuel n'existe pour la page. Les
      pages d'accueil de chaque langue restent ouvertes. */
   function estCoursLangue2(id) {
+    /* Première leçon de chaque pays (civi-xx-1) : gratuite. */
+    if (/\/civi-[a-z]+-1\.html$/.test(id || '')) return false;
     return /^deuxieme_annee\/langues\/[^/]+\/[^/]+\/.+/.test(id || '') ||
            /^deuxieme_annee\/langues\/[^/]+\/(?!index\.html$)[^/]+\.html$/.test(id || '');
   }
@@ -597,7 +600,7 @@
       e.preventDefault(); e.stopPropagation();
       btn.disabled = true; btn.textContent = '…';
       Auth.admin.verrouillerRubrique(id, !verrouille, premium)
-        .then(function () { location.reload(); })
+        .then(function () { nettoyerCartes(); appliquerVerrouillageCartes(); })
         .catch(function () { btn.disabled = false; btn.textContent = verrouille ? '🔓' : '🔒'; btn.title = verrouille ? 'Déverrouiller' : 'Verrouiller'; });
     });
     el.appendChild(btn);
@@ -622,13 +625,21 @@
       e.preventDefault(); e.stopPropagation();
       btn.disabled = true; btn.textContent = '…';
       Auth.admin.definirPremium(id, !premium)
-        .then(function () { location.reload(); })
+        .then(function () { nettoyerCartes(); appliquerVerrouillageCartes(); })
         .catch(function (err) {
           btn.disabled = false; btn.textContent = '✦';
           alert(String((err && err.message) || err));
         });
     });
     el.appendChild(btn);
+  }
+
+  /* Retire cadenas, boutons et badges posés sur les cartes : permet de
+     ré-appliquer l'état sans recharger la page. */
+  function nettoyerCartes() {
+    document.querySelectorAll('.ecg-cadenas, .ecg-bouton-verrou, .ecg-bouton-premium, .ecg-badge-premium')
+      .forEach(function (n) { n.parentNode && n.parentNode.removeChild(n); });
+    document.querySelectorAll('[data-ecg-premium]').forEach(function (n) { n.removeAttribute('data-ecg-premium'); });
   }
 
   function appliquerVerrouillageCartes() {
@@ -1128,13 +1139,24 @@
 
     /* Offre le Premium à un membre (sans date de fin). Ne touche jamais
        un abonnement payant en cours. */
-    offrirPremium: function (id, email) {
+    offrirPremium: function (u) {
       return sb().then(function (c) {
-        return T(c.rpc('offrir_acces_premium', { p_utilisateur: id }));
+        return T(c.rpc('offrir_acces_premium', { p_utilisateur: u.id }));
       }).then(function (d) {
         if (d && d.ok === false) throw new Error(d.raison === 'deja_abonne'
           ? 'Ce membre a déjà un abonnement payant en cours.' : 'Impossible d\'offrir le Premium.');
-        return noter('reglage', email, 'accès Premium offert par l\'administrateur');
+        noter('reglage', u.email, 'accès Premium offert par l\'administrateur');
+        /* Mail automatique au membre (fonction « envoyer-mail ») : un échec
+           d'envoi n'annule pas le cadeau, on le signale seulement. */
+        var prenom = (u.prenom || '').trim();
+        var corps = (prenom ? 'Bonjour ' + prenom : 'Bonjour') + ',\n\n' +
+          'Bonne nouvelle : l\u2019administrateur d\u2019ECG Prépa t\u2019offre l\u2019abonnement Premium, sans date de fin.\n\n' +
+          'Tu as désormais accès à tous les contenus réservés aux abonnés : cours de langues, actualités, culture générale et plus encore. ' +
+          'Il te suffit de te connecter pour en profiter.\n\n' + SITE_URL_MAIL + '\n\nBonne révision !\nECG Prépa';
+        return Auth.admin.envoyerMail([{ id: u.id, email: u.email, prenom: u.prenom, nom: u.nom }],
+            'Ton abonnement Premium ECG Prépa est offert ✦', corps, 'libre')
+          .then(function () { return { mail: true }; })
+          .catch(function () { return { mail: false }; });
       });
     },
 
