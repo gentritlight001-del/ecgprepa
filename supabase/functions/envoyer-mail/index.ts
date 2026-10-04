@@ -3,12 +3,13 @@
 //
 //  Appelée depuis le panneau d'administration (bouton « Écrire » et mail
 //  automatique quand le Premium est offert). Réservée aux administrateurs.
-//  Envoi via Resend (https://resend.com), depuis l'adresse du site.
+//  Envoi via Brevo (https://www.brevo.com), depuis l'adresse du site.
 //
 //  Secrets à définir (Supabase → Edge Functions → Secrets) :
-//    RESEND_API_KEY     clé API Resend (re_…)
-//    MAIL_EXPEDITEUR    ex. « ECG Prépa <contact@ecg-prepa.fr> »
-//                       (le domaine ecg-prepa.fr doit être vérifié dans Resend)
+//    BREVO_API_KEY      clé API Brevo (xkeysib-…) — Brevo → SMTP et API → Clés API
+//    MAIL_EXPEDITEUR    adresse d'expédition, ex. contact@ecg-prepa.fr
+//                       (doit être un expéditeur validé dans Brevo)
+//    MAIL_EXPEDITEUR_NOM  (facultatif) nom affiché, « ECG Prépa » par défaut
 //
 //  Déploiement :
 //    supabase functions deploy envoyer-mail
@@ -37,9 +38,9 @@ Deno.serve(async (req) => {
     const { data: estAdmin } = await client.rpc('premium_est_admin');
     if (!estAdmin) return rep({ erreur: 'Action réservée aux administrateurs.' }, 403);
 
-    const cle = Deno.env.get('RESEND_API_KEY');
+    const cle = Deno.env.get('BREVO_API_KEY');
     const exp = Deno.env.get('MAIL_EXPEDITEUR');
-    if (!cle || !exp) return rep({ erreur: 'Secrets RESEND_API_KEY / MAIL_EXPEDITEUR manquants.' });
+    if (!cle || !exp) return rep({ erreur: 'Secrets BREVO_API_KEY / MAIL_EXPEDITEUR manquants.' });
 
     const { destinataires, objet, corps } = await req.json();
     if (!Array.isArray(destinataires) || !destinataires.length || !objet || !corps)
@@ -54,10 +55,14 @@ Deno.serve(async (req) => {
       const texte = sub(corps);
       const html = '<div style="font-family:Arial,sans-serif;font-size:15px;line-height:1.6;color:#222">' +
         esc(texte).replace(/\n/g, '<br>') + '</div>';
-      const r = await fetch('https://api.resend.com/emails', {
+      const r = await fetch('https://api.brevo.com/v3/smtp/email', {
         method: 'POST',
-        headers: { Authorization: `Bearer ${cle}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ from: exp, to: [d.email], subject: sub(objet), text: texte, html }),
+        headers: { 'api-key': cle, 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          sender: { name: Deno.env.get('MAIL_EXPEDITEUR_NOM') || 'ECG Prépa', email: exp },
+          to: [{ email: d.email, name: `${d.prenom || ''} ${d.nom || ''}`.trim() || undefined }],
+          subject: sub(objet), textContent: texte, htmlContent: html,
+        }),
       });
       if (r.ok) envoyes++; else echecs.push(d.email);
     }
