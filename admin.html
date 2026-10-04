@@ -78,6 +78,7 @@
   .t-attente{background:rgba(200,169,110,.14);color:var(--accent)}
   .t-bloque{background:rgba(224,138,138,.14);color:var(--danger)}
   .t-admin{background:rgba(124,158,201,.14);color:var(--blue)}
+  .t-premium{background:rgba(200,169,110,.16);color:#c8a96e}
   .t-membre{background:rgba(138,136,128,.12);color:var(--dim)}
 
   .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;vertical-align:1px}
@@ -353,16 +354,18 @@
   }
   function enLigne(vu){ return vu && (Date.now() - new Date(vu).getTime()) < A.enLigneMs; }
 
-  var D = { users:[], sessions:[], journal:[], config:{}, affiches:[] };
+  var D = { premium:{}, users:[], sessions:[], journal:[], config:{}, affiches:[] };
   var occupe = false;
 
   function charger(){
     if (occupe) return Promise.resolve();
     occupe = true;
-    return Promise.all([Ad.utilisateurs(), Ad.sessions(), Ad.journal(300), Ad.config()])
+    return Promise.all([Ad.utilisateurs(), Ad.sessions(), Ad.journal(300), Ad.config(), Ad.abonnes().catch(function(){ return []; })])
       .then(function(r){
         D.users = r[0] || []; D.sessions = r[1] || [];
         D.journal = r[2] || []; D.config = r[3] || {};
+        D.premium = {};
+        (r[4] || []).forEach(function(a){ if (a.statut === 'offert' || ['active','trialing','past_due'].indexOf(a.statut) !== -1) D.premium[a.utilisateur] = true; });
         rendre();
         $('#maj').textContent = 'à jour · ' + new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
       })
@@ -427,7 +430,7 @@
           '<div class="e">'+esc(u.email)+'</div></div></div></td>' +
         '<td><span class="dot '+(online?'on-line':'off-line')+'"></span>' +
             '<span class="tag t-'+esc(u.statut)+'">'+(u.statut==='actif'?'Actif':u.statut==='attente'?'En attente':'Bloqué')+'</span></td>' +
-        '<td><span class="tag t-'+(u.role==='admin'?'admin':'membre')+'">'+(u.role==='admin'?'Admin':'Membre')+'</span></td>' +
+        '<td><span class="tag t-'+(u.role==='admin'?'admin':D.premium[u.id]?'premium':'membre')+'">'+(u.role==='admin'?'Admin':D.premium[u.id]?'✦ Premium':'Membre')+'</span></td>' +
         '<td class="mono">'+dateCourte(u.cree_le)+'</td>' +
         '<td class="mono">'+(online ? '<span style="color:var(--green)">en ligne</span>' : dateCourte(u.derniere_connexion))+'</td>' +
         '<td class="mono">'+(u.nb_connexions||0)+'</td>' +
