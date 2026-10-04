@@ -535,6 +535,13 @@
     if (el.querySelector('.ecg-badge-premium')) return;
     if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
     el.setAttribute('data-ecg-premium', '1');
+    /* Le badge occupe la place de l'étoile des favoris : on la retire. */
+    if (!document.getElementById('ecg-premium-css')) {
+      var st = document.createElement('style');
+      st.id = 'ecg-premium-css';
+      st.textContent = '[data-ecg-premium] .ecg-fav-btn{display:none!important}';
+      document.head.appendChild(st);
+    }
     var b = document.createElement('span');
     b.className = 'ecg-badge-premium';
     b.textContent = '✦ Premium';
