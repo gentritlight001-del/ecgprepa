@@ -969,16 +969,21 @@ try {
 </div>
 <script src="nouveautes.js"></script>
 <script>
-/* Les nouveautés : le dernier contenu de chaque rubrique du site (un cours, une fiche
-   d'Humanité, un dossier de culture générale), du plus récent au plus ancien. Les actualités
-   n'y figurent pas : elles ont leur propre page (nouveautes.html les liste toutes). */
+/* Les nouveautés : ce qui est vraiment neuf sur le site, soit le dernier contenu de chaque
+   rubrique (un cours, une fiche d'Humanité, un dossier de culture générale) s'il a été mis en
+   ligne il y a moins de FRAICHEUR_JOURS jours, du plus récent au plus ancien. Rien de récent :
+   le coin reste masqué. Les actualités n'y figurent pas (nouveautes.html les liste toutes). */
 (function(){
   var data = window.ECG_NOUVEAUTES;
   if (!data || !data.length) return;
   var COULEUR = { monde:'#c97c9e', en:'#c97c9e', es:'#c97c9e', de:'#c97c9e', cg:'#7c9ec9', humanite:'#9ecba0', cours:'#c8a96e' };
   var vus = {}, items = [];
-  var RUBRIQUES = { cg:1, humanite:1, cours:1 };
-  data.forEach(function(e){ if (RUBRIQUES[e.t] && !vus[e.t]) { vus[e.t] = 1; items.push(e); } });
+  var RUBRIQUES = { cg:1, humanite:1, cours:1 }, FRAICHEUR_JOURS = 7;
+  data.forEach(function(e){
+    if (!RUBRIQUES[e.t] || vus[e.t]) return;
+    vus[e.t] = 1;
+    if ((Date.now() - new Date(e.date).getTime()) / 864e5 <= FRAICHEUR_JOURS) items.push(e);
+  });
   function esc(s){ return String(s || '').replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   function quand(iso){
     var d = new Date(iso), j = new Date(); j.setHours(0,0,0,0);
