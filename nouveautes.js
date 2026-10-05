@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
+"titre": "Visite surprise de Merz à Kiev : drones, missiles et 1 milliard d'euros d'aide militaire",
+"url": "actualites/de/articles/merz-visite-surprise-kiev.html",
+"image": "actualites/de/images/merz-visite-surprise-kiev.webp",
+"date": "2026-10-05T17:40:18+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Espagne",
