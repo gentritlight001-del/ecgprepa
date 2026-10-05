@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Espagne",
+"titre": "Espagne : Sánchez dissout les Cortes et convoque des élections anticipées le 29 novembre",
+"url": "actualites/es/articles/sanchez-dissolution-cortes.html",
+"image": "actualites/es/images/sanchez-dissolution-cortes.webp",
+"date": "2026-10-05T16:32:20+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Brésil",
@@ -1285,15 +1294,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Fujimori contre Sánchez : au second tour de la présidentielle, le Pérou retient son souffle",
 "url": "actualites/es/articles/perou-second-tour.html",
 "image": "actualites/es/images/perou-second-tour.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Espagne",
-"titre": "Léon XIV en Espagne : un voyage apostolique hors normes dans un pays fracturé",
-"url": "actualites/es/articles/pape-leon-xiv-espagne.html",
-"image": "actualites/es/images/pape-leon-xiv-espagne.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
