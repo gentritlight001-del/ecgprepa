@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Brésil",
+"titre": "Brésil : Flávio Bolsonaro devance Lula au premier tour, second tour serré le 25 octobre",
+"url": "actualites/monde/articles/bresil-presidentielle-premier-tour.html",
+"image": "actualites/monde/images/bresil-presidentielle-premier-tour.webp",
+"date": "2026-10-05T04:48:46+00:00"
+},
+{
 "t": "cours",
 "rubrique": "Cours",
 "meta": "HGG 2e année · chapitre 2",
@@ -997,15 +1006,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Filigrane invisible : Anthropic marque tous les textes de Claude, en réponse aux règles de l'UE",
 "url": "actualites/monde/articles/anthropic-filigrane-claude-ue.html",
 "image": "actualites/monde/images/anthropic-filigrane-claude-ue.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Espagne / Islande",
-"titre": "Éclipse solaire totale",
-"url": "actualites/monde/articles/eclipse-solaire-totale-2026.html",
-"image": "actualites/monde/images/eclipse-solaire-totale-2026.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
