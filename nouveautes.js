@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "Royaume-Uni",
+"titre": "Royaume-Uni : les États-Unis retirent leurs bombardiers de Fairford sur fond de menace iranienne",
+"url": "actualites/en/articles/uk-bombers-withdraw-fairford-2026.html",
+"image": "actualites/en/images/uk-bombers-withdraw-fairford-2026.webp",
+"date": "2026-10-05T18:04:14+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Pérou",
@@ -1150,15 +1159,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Guerre commerciale : le Canada et les États-Unis « en guerre » tarifaire, Ottawa réplique dollar pour dollar",
 "url": "actualites/en/articles/canada-guerre-commerciale-2026.html",
 "image": "actualites/en/images/canada-guerre-commerciale-2026.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "Corée du Sud : Trump réduit les exercices militaires conjoints, l'alliance en question",
-"url": "actualites/en/articles/coree-sud-exercices-militaires-2026.html",
-"image": "actualites/en/images/coree-sud-exercices-militaires-2026.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
