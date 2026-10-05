@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Bosnie-Herzégovine",
+"titre": "Bosnie-Herzégovine : participation record de faiblesse, nationalistes confortés, Dodik triomphe",
+"url": "actualites/monde/articles/bosnie-elections-generales-2026.html",
+"image": "actualites/monde/images/bosnie-elections-generales-2026.webp",
+"date": "2026-10-05T17:51:31+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Russie",
 "titre": "Sibérie : une laborantine d'un institut anti-peste meurt, près de 200 personnes en quarantaine",
 "url": "actualites/monde/articles/russie-irkoutsk-peste-pulmonaire.html",
@@ -1015,15 +1024,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Ratko Mladić, condamné pour le génocide de Srebrenica, meurt en détention à La Haye",
 "url": "actualites/monde/articles/mort-ratko-mladic.html",
 "image": "actualites/monde/images/mort-ratko-mladic.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "RDC",
-"titre": "Ebola : l'épidémie la plus meurtrière de l'histoire de la RDC",
-"url": "actualites/monde/articles/ebola-plus-meurtriere-histoire-rdc.html",
-"image": "actualites/monde/images/ebola-plus-meurtriere-histoire-rdc.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
