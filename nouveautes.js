@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Pérou",
+"titre": "Pérou : López Aliaga et Allison au coude-à-coude pour Lima, seconds tours régionaux en vue",
+"url": "actualites/es/articles/perou-elections-regionales-municipales-2026.html",
+"image": "actualites/es/images/perou-elections-regionales-municipales-2026.webp",
+"date": "2026-10-05T17:59:53+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Bosnie-Herzégovine",
@@ -1294,15 +1303,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Ceuta : la crise migratoire qui ébranle l'Espagne et le Maroc",
 "url": "actualites/es/articles/ceuta-crise-migratoire-espagne.html",
 "image": "actualites/es/images/ceuta-crise-migratoire-espagne.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Pérou",
-"titre": "Fujimori contre Sánchez : au second tour de la présidentielle, le Pérou retient son souffle",
-"url": "actualites/es/articles/perou-second-tour.html",
-"image": "actualites/es/images/perou-second-tour.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
