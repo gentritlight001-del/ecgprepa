@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Russie",
+"titre": "Sibérie : une laborantine d'un institut anti-peste meurt, près de 200 personnes en quarantaine",
+"url": "actualites/monde/articles/russie-irkoutsk-peste-pulmonaire.html",
+"image": "actualites/monde/images/russie-irkoutsk-peste-pulmonaire.webp",
+"date": "2026-10-05T17:47:29+00:00"
+},
+{
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne",
@@ -1015,15 +1024,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Ebola : l'épidémie la plus meurtrière de l'histoire de la RDC",
 "url": "actualites/monde/articles/ebola-plus-meurtriere-histoire-rdc.html",
 "image": "actualites/monde/images/ebola-plus-meurtriere-histoire-rdc.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Union européenne",
-"titre": "Filigrane invisible : Anthropic marque tous les textes de Claude, en réponse aux règles de l'UE",
-"url": "actualites/monde/articles/anthropic-filigrane-claude-ue.html",
-"image": "actualites/monde/images/anthropic-filigrane-claude-ue.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
