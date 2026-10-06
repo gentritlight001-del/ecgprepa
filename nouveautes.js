@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "cg",
+"rubrique": "Culture générale",
+"meta": "Géopolitique",
+"titre": "Les FARC : soixante ans de guérilla, un accord de paix et des dissidences",
+"url": "Culture-Generale/farc.html",
+"image": "Culture-Generale/images/farc.webp",
+"date": "2026-10-06T18:08:34+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Prix Nobel",
@@ -1807,15 +1816,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "L'uranium : le minerai qui redessine la géopolitique de l'énergie",
 "url": "Culture-Generale/uranium.html",
 "image": "Culture-Generale/images/uranium.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Entreprise",
-"titre": "BlackRock : le colosse discret de la finance mondiale",
-"url": "Culture-Generale/blackrock.html",
-"image": "Culture-Generale/images/blackrock.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
