@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "Canada",
+"titre": "Élections au Québec : le PQ remporte une majorité relative, la CAQ disparaît de l'Assemblée",
+"url": "actualites/en/articles/canada-quebec-elections-pq-minoritaire-2026.html",
+"image": "actualites/en/images/canada-quebec-elections-pq-minoritaire-2026.webp",
+"date": "2026-10-06T17:52:05+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Venezuela",
@@ -1159,15 +1168,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Données des enfants : TikTok accepte de payer 400 millions de dollars aux États-Unis",
 "url": "actualites/en/articles/tiktok-amende-400-millions-2026.html",
 "image": "actualites/en/images/tiktok-amende-400-millions-2026.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "Canada",
-"titre": "Guerre commerciale : le Canada et les États-Unis « en guerre » tarifaire, Ottawa réplique dollar pour dollar",
-"url": "actualites/en/articles/canada-guerre-commerciale-2026.html",
-"image": "actualites/en/images/canada-guerre-commerciale-2026.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
