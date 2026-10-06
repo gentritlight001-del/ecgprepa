@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Prix Nobel",
+"titre": "Nobel de médecine 2026 : Deisseroth, Hegemann et Nagel couronnés pour l'optogénétique",
+"url": "actualites/monde/articles/nobel-medecine-2026-optogenetique.html",
+"image": "actualites/monde/images/nobel-medecine-2026-optogenetique.webp",
+"date": "2026-10-06T17:58:22+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "Canada",
@@ -1051,15 +1060,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Népal : une crue glaciaire dévastatrice fait plus de 600 morts à la frontière tibétaine",
 "url": "actualites/monde/articles/nepal-crue-glaciaire-catastrophe.html",
 "image": "actualites/monde/images/nepal-crue-glaciaire-catastrophe.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Serbie / Bosnie",
-"titre": "Ratko Mladić, condamné pour le génocide de Srebrenica, meurt en détention à La Haye",
-"url": "actualites/monde/articles/mort-ratko-mladic.html",
-"image": "actualites/monde/images/mort-ratko-mladic.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
