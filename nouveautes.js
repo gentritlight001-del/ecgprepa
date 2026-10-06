@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Venezuela",
+"titre": "Venezuela : les États-Unis refusent l'immunité à Maduro et maintiennent le procès à New York",
+"url": "actualites/es/articles/venezuela-maduro-immunite-refusee-2026.html",
+"image": "actualites/es/images/venezuela-maduro-immunite-refusee-2026.webp",
+"date": "2026-10-06T04:56:47+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "Royaume-Uni",
@@ -1294,15 +1303,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Investiture d'Abelardo de la Espriella — passation inédite à Cali",
 "url": "actualites/es/articles/colombie-investiture-de-la-espriella.html",
 "image": "actualites/es/images/colombie-investiture-de-la-espriella.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Espagne",
-"titre": "Ceuta : la crise migratoire qui ébranle l'Espagne et le Maroc",
-"url": "actualites/es/articles/ceuta-crise-migratoire-espagne.html",
-"image": "actualites/es/images/ceuta-crise-migratoire-espagne.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
