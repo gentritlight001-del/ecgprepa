@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Espagne",
+"titre": "Le Tribunal suprême lève l'ordre d'arrestation contre Puigdemont, qui peut rentrer en Espagne",
+"url": "actualites/es/articles/puigdemont-levee-ordre-arrestation.html",
+"image": "actualites/es/images/puigdemont-levee-ordre-arrestation.webp",
+"date": "2026-10-07T05:19:00+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Prix Nobel",
@@ -1294,15 +1303,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Incendies de la Sierra Oeste : Madrid affronte le plus grand feu de forêt de l'histoire d'Espagne",
 "url": "actualites/es/articles/incendies-madrid-espagne.html",
 "image": "actualites/es/images/incendies-madrid-espagne.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Colombie",
-"titre": "Investiture d'Abelardo de la Espriella — passation inédite à Cali",
-"url": "actualites/es/articles/colombie-investiture-de-la-espriella.html",
-"image": "actualites/es/images/colombie-investiture-de-la-espriella.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
