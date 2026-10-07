@@ -2566,7 +2566,7 @@ window.ECG_NOUVEAUTES = [
 "meta": "Histoire · Économie · Société",
 "titre": "La Révolution industrielle : quand l'humanité a basculé dans l'ère moderne",
 "url": "Culture-Generale/revolution-industrielle.html",
-"image": "",
+"image": "Culture-Generale/images/revolution-industrielle.webp",
 "date": "2025-10-07T12:00:00+00:00"
 }
 ];
