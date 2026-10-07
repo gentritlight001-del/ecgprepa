@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "États-Unis",
+"titre": "Nebraska : Trump suggère de laisser l'Iran « détruire » Los Angeles ou San Diego",
+"url": "actualites/en/articles/us-trump-nebraska-iran-los-angeles-2026.html",
+"image": "actualites/en/images/us-trump-nebraska-iran-los-angeles-2026.webp",
+"date": "2026-10-07T05:26:41+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Espagne",
@@ -1177,15 +1186,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Cybersécurité : des hackers liés à l'Iran accusés d'avoir provoqué l'arrêt d'une centrale électrique britannique",
 "url": "actualites/en/articles/uk-iran-hackers-power-plant-2026.html",
 "image": "actualites/en/images/uk-iran-hackers-power-plant-2026.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "Données des enfants : TikTok accepte de payer 400 millions de dollars aux États-Unis",
-"url": "actualites/en/articles/tiktok-amende-400-millions-2026.html",
-"image": "actualites/en/images/tiktok-amende-400-millions-2026.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
