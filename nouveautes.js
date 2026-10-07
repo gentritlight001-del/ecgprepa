@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Kosovo",
+"titre": "Kosovo : le Parlement élit Justina Pula présidente à quelques minutes de l'échéance",
+"url": "actualites/monde/articles/kosovo-justina-pula-presidente.html",
+"image": "actualites/monde/images/kosovo-justina-pula-presidente.webp",
+"date": "2026-10-07T05:30:22+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "États-Unis",
@@ -1078,15 +1087,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Harald V, roi de Norvège pendant trente-cinq ans, meurt à l'âge de 89 ans",
 "url": "actualites/monde/articles/mort-harald-v.html",
 "image": "actualites/monde/images/mort-harald-v.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Népal",
-"titre": "Népal : une crue glaciaire dévastatrice fait plus de 600 morts à la frontière tibétaine",
-"url": "actualites/monde/articles/nepal-crue-glaciaire-catastrophe.html",
-"image": "actualites/monde/images/nepal-crue-glaciaire-catastrophe.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
