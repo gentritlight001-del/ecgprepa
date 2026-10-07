@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Kenya",
+"titre": "Kenya : un homme revenu de RDC meurt d'Ebola à Nairobi, premier cas jamais recensé",
+"url": "actualites/monde/articles/kenya-premier-deces-ebola.html",
+"image": "actualites/monde/images/kenya-premier-deces-ebola.webp",
+"date": "2026-10-07T05:33:33+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Kosovo",
 "titre": "Kosovo : le Parlement élit Justina Pula présidente à quelques minutes de l'échéance",
 "url": "actualites/monde/articles/kosovo-justina-pula-presidente.html",
@@ -1078,15 +1087,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Islande : le référendum sur la reprise des négociations d'adhésion à l'UE rejeté",
 "url": "actualites/monde/articles/islande-adhesion-ue-rejetee.html",
 "image": "actualites/monde/images/islande-adhesion-ue-rejetee.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Norvège",
-"titre": "Harald V, roi de Norvège pendant trente-cinq ans, meurt à l'âge de 89 ans",
-"url": "actualites/monde/articles/mort-harald-v.html",
-"image": "actualites/monde/images/mort-harald-v.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
