@@ -4,6 +4,15 @@ window.ECG_NOUVEAUTES = [
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne",
+"titre": "Démographie : l'Allemagne passerait de 83,3 à 81,8 millions d'habitants d'ici 2045",
+"url": "actualites/de/articles/demografische-lage-nation-2045.html",
+"image": "actualites/de/images/demografische-lage-nation-2045.webp",
+"date": "2026-10-07T06:48:15+00:00"
+},
+{
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
 "titre": "Saxe-Anhalt : Tobias Rausch (AfD) élu président du Landtag, une première en Allemagne",
 "url": "actualites/de/articles/saxe-anhalt-rausch-president-landtag.html",
 "image": "actualites/de/images/saxe-anhalt-rausch-president-landtag.webp",
@@ -1519,15 +1528,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Quitter l'Allemagne plus de 3 mois : la nouvelle obligation d'autorisation militaire",
 "url": "actualites/de/articles/autorisation-quitter-territoire.html",
 "image": "actualites/de/images/autorisation-quitter-territoire.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Autriche",
-"titre": "Stocker face au FPÖ : la coalition tripartite autrichienne sous pression",
-"url": "actualites/de/articles/stocker-coalition.html",
-"image": "actualites/de/images/stocker-coalition.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
