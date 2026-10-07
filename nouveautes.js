@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "cg",
+"rubrique": "Culture générale",
+"meta": "Histoire",
+"titre": "La Révolution industrielle : quand l'humanité a basculé dans l'ère moderne",
+"url": "Culture-Generale/revolution-industrielle.html",
+"image": "Culture-Generale/images/revolution-industrielle.webp",
+"date": "2026-10-07T15:39:36Z"
+},
+{
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne",
@@ -1810,15 +1819,6 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Sciences",
-"titre": "L'uranium : le minerai qui redessine la géopolitique de l'énergie",
-"url": "Culture-Generale/uranium.html",
-"image": "Culture-Generale/images/uranium.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
 "t": "humanite",
 "rubrique": "Humanité",
 "meta": "Cinéma",
@@ -2559,14 +2559,5 @@ window.ECG_NOUVEAUTES = [
 "url": "premiere_annee/hgg/chapitre-9/chapitre-9-hgg.html",
 "image": "",
 "date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Histoire · Économie · Société",
-"titre": "La Révolution industrielle : quand l'humanité a basculé dans l'ère moderne",
-"url": "Culture-Generale/revolution-industrielle.html",
-"image": "Culture-Generale/images/revolution-industrielle.webp",
-"date": "2026-10-07T12:00:00+00:00"
 }
 ];
