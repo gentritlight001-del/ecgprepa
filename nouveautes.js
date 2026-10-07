@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
+"titre": "Saxe-Anhalt : Tobias Rausch (AfD) élu président du Landtag, une première en Allemagne",
+"url": "actualites/de/articles/saxe-anhalt-rausch-president-landtag.html",
+"image": "actualites/de/images/saxe-anhalt-rausch-president-landtag.webp",
+"date": "2026-10-07T06:43:41+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Prix Nobel",
@@ -1519,15 +1528,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Stocker face au FPÖ : la coalition tripartite autrichienne sous pression",
 "url": "actualites/de/articles/stocker-coalition.html",
 "image": "actualites/de/images/stocker-coalition.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Suisse",
-"titre": "Les Bilatérales III : la Suisse signe avec l'UE et se retrouve face à l'Europe et à elle-même",
-"url": "actualites/de/articles/suisse-bilaterales.html",
-"image": "actualites/de/images/suisse-bilaterales.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
