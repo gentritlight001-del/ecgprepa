@@ -2559,5 +2559,14 @@ window.ECG_NOUVEAUTES = [
 "url": "premiere_annee/hgg/chapitre-9/chapitre-9-hgg.html",
 "image": "",
 "date": "2026-09-11T19:03:33+00:00"
+},
+{
+"t": "cg",
+"rubrique": "Culture générale",
+"meta": "Histoire · Économie · Société",
+"titre": "La Révolution industrielle : quand l'humanité a basculé dans l'ère moderne",
+"url": "Culture-Generale/revolution-industrielle.html",
+"image": "",
+"date": "2025-10-07T12:00:00+00:00"
 }
 ];
