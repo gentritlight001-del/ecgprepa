@@ -79,6 +79,7 @@
   .t-bloque{background:rgba(224,138,138,.14);color:var(--danger)}
   .t-admin{background:rgba(124,158,201,.14);color:var(--blue)}
   .t-premium{background:rgba(200,169,110,.16);color:#c8a96e}
+  .t-redacteur{background:rgba(158,203,160,.14);color:#9ecba0}
   .t-membre{background:rgba(138,136,128,.12);color:var(--dim)}
 
   .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;vertical-align:1px}
@@ -187,6 +188,7 @@
         <option value="attente">En attente</option>
         <option value="bloque">Bloqués</option>
         <option value="admin">Administrateurs</option>
+        <option value="redacteur">Rédacteurs</option>
         <option value="online">En ligne</option>
       </select>
       <button class="btn ghost" id="btn-mail-groupe">Écrire aux comptes affichés</button>
@@ -396,6 +398,7 @@
     var liste = D.users.filter(function(u){
       if (q && (u.prenom + ' ' + u.nom + ' ' + u.email).toLowerCase().indexOf(q) === -1) return false;
       if (f === 'admin')  return u.role === 'admin';
+      if (f === 'redacteur') return u.role === 'redacteur';
       if (f === 'online') return userEnLigne(u.id);
       if (f) return u.statut === f;
       return true;
@@ -417,7 +420,8 @@
       if (u.statut === 'actif' && !estMoi) a.push(bt('','bloquer',u.id,'Bloquer'));
       if (nbS) a.push(bt('','deconnecter',u.id,'Déconnecter'));
       if (!estMoi) {
-        a.push(bt('','role',u.id, u.role === 'admin' ? 'Retirer admin' : 'Passer admin'));
+        if (u.role !== 'redacteur') a.push(bt('','role',u.id, u.role === 'admin' ? 'Retirer admin' : 'Passer admin'));
+        if (u.role !== 'admin') a.push(bt('','redac',u.id, u.role === 'redacteur' ? 'Retirer rédacteur' : 'Passer rédacteur'));
         a.push(bt('bad','supprimer',u.id,'Supprimer'));
       }
       if (D.premium[u.id] === 'offert') a.push(bt('bad','retirerprem',u.id,'Retirer Premium'));
@@ -431,7 +435,7 @@
           '<div class="e">'+esc(u.email)+'</div></div></div></td>' +
         '<td><span class="dot '+(online?'on-line':'off-line')+'"></span>' +
             '<span class="tag t-'+esc(u.statut)+'">'+(u.statut==='actif'?'Actif':u.statut==='attente'?'En attente':'Bloqué')+'</span></td>' +
-        '<td><span class="tag t-'+(u.role==='admin'?'admin':D.premium[u.id]?'premium':'membre')+'">'+(u.role==='admin'?'Admin':D.premium[u.id]?'✦ Premium':'Membre')+'</span></td>' +
+        '<td><span class="tag t-'+(u.role==='admin'?'admin':u.role==='redacteur'?'redacteur':D.premium[u.id]?'premium':'membre')+'">'+(u.role==='admin'?'Admin':u.role==='redacteur'?'Rédacteur':D.premium[u.id]?'✦ Premium':'Membre')+'</span></td>' +
         '<td class="mono">'+dateCourte(u.cree_le)+'</td>' +
         '<td class="mono">'+(online ? '<span style="color:var(--green)">en ligne</span>' : dateCourte(u.derniere_connexion))+'</td>' +
         '<td class="mono">'+(u.nb_connexions||0)+'</td>' +
@@ -527,6 +531,12 @@
       if (!confirm(r === 'admin' ? 'Donner les droits d\'administration à ' + nom + ' ?'
                                  : 'Retirer les droits d\'administration à ' + nom + ' ?')) return;
       return agir(Ad.definirRole(u.id, r, u.email), 'Rôle mis à jour.');
+    }
+    if (a === 'redac') {
+      var r2 = u.role === 'redacteur' ? 'membre' : 'redacteur';
+      if (!confirm(r2 === 'redacteur' ? 'Donner à ' + nom + ' l\'accès à l\'espace rédaction ?'
+                                      : 'Retirer à ' + nom + ' l\'accès à l\'espace rédaction ?')) return;
+      return agir(Ad.definirRole(u.id, r2, u.email), 'Rôle mis à jour.');
     }
     if (a === 'supprimer') {
       if (!confirm('Supprimer définitivement le compte de ' + nom + ' ?\n\nCette action est irréversible.')) return;
