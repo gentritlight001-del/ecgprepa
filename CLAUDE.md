@@ -34,6 +34,9 @@ directement après chaque modification, sans attendre un nouveau « mets en lign
    de partage 1200 × 630 px (`partage/`) et ajoute les balises `og:` dans le `<head>` des pages
    qui n'en ont pas encore (aperçu des liens sur WhatsApp, Discord, etc.). Il ignore les pages
    déjà faites : on peut le relancer sans risque. Il a besoin de playwright (voir section 5).
+   **Lancer ces scripts en dernier**, après la dernière régénération ou modification de la page :
+   recréer une page depuis un gabarit efface ses balises `og:` et sa description, et le script
+   ne les remet qu'au passage suivant.
    Puis `python3 outils/referencement.py` : il ajoute la description et la balise canonical des
    pages qui n'en ont pas et régénère `sitemap.xml` (ne jamais modifier ce fichier à la main).
    Puis `python3 outils/nouveautes.py` : il régénère `nouveautes.js`, la liste des derniers
@@ -92,6 +95,14 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   1280 px, pour chaque langue. Déplacer des blocs entiers (titre + paragraphes, citation,
   tableau, chronologie) d'une colonne à l'autre, sans toucher aux polices ni aux marges.
   Mesurer avec Playwright (bas du dernier élément de chaque colonne).
+- **Longueur** : **1 100 à 1 300 mots par langue** (version française comprise ; comme les anciens
+  articles du site, qui font en moyenne ~1 200 mots), avec **3 à 4 rubriques (`ap-sub`) par
+  colonne** : contexte et historique, chiffres clés, réactions et enjeux, un tableau, une
+  chronologie, et un encadré de fin `ap-ctx` développé. Un article de moins de 1 000 mots est
+  trop court. Pour équilibrer les colonnes, **ajouter ou déplacer des blocs des deux côtés**
+  plutôt que couper du contenu. Compter les mots du bloc `ap-body` de la version française
+  avant de mettre en ligne. Une recherche web plus poussée (plusieurs sources par article) est
+  nécessaire pour atteindre cette longueur sans rien inventer.
 - **Chaque colonne s'ouvre sur un titre (`ap-sub`) suivi de texte** : jamais sur la
   chronologie, une citation, un tableau ou un encadré.
 - **Chronologie** (`ap-tl`) : soit **tout en bas de la colonne gauche**, soit **incrustée dans la
