@@ -280,7 +280,7 @@
   var file = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
   if (file.indexOf('.') === -1) file = file + '.html';
   var pageLogin = file === 'login.html';
-  var pagePublique = PAGES_PUBLIQUES.indexOf(file) !== -1;
+  var pagePublique = PAGES_PUBLIQUES.indexOf(file) !== -1 || window.ECG_PAGE_404 === true;
   var pageAdmin = file === 'admin.html';
   var pageReserveeAdmin = PAGES_ADMIN.indexOf(file) !== -1;
 
