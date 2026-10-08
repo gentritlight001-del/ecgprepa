@@ -51,6 +51,17 @@ directement après chaque modification, sans attendre un nouveau « mets en lign
 Cloudflare Pages redéploie `main` automatiquement. Le service worker est « réseau
 d'abord » et `_headers` désactive le cache : pas de numéro de version à changer.
 
+**Attention, exception réelle** : Cloudflare écrase `_headers` pour les fichiers statiques (`.js`,
+`.css`, images) et leur impose `max-age=14400` (4 h), à cause du réglage de la zone « Browser
+Cache TTL » (vérifiable avec `curl -I https://ecg-prepa.fr/nouveautes.js`). Les pages `.html`
+ne sont pas touchées. Conséquence : un fichier de **données générées chargé par script**
+(`nouveautes.js`) ne se met pas à jour avant 4 h sans Ctrl+Maj+R. `index.html` et
+`nouveautes.html` le chargent donc avec un paramètre qui change chaque minute
+(`nouveautes.js?v=<minute>`) : ne pas remettre un simple `<script src="nouveautes.js">`, et
+faire pareil pour tout nouveau fichier de données `.js`. Le vrai remède, côté tableau de bord
+Cloudflare (que seul le propriétaire peut régler) : Caching → Configuration → Browser Cache TTL
+→ « Respect Existing Headers ».
+
 ## 3. Articles d'actualité
 
 ### Où
