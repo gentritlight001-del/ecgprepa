@@ -49,6 +49,11 @@
   .grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }
   .sujet { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; transition: border-color .2s, transform .2s; }
   .sujet:hover { border-color: #3a3a46; transform: translateY(-2px); }
+  .sujet.pris { opacity: .62; }
+  .sujet.pris:hover { transform: none; border-color: var(--border); }
+  .sujet.pris .vignette { filter: grayscale(1) brightness(.6); }
+  .pris-par { font-size: .86rem; color: #c4a6f5; background: rgba(180,140,240,.1); border: 1px solid rgba(180,140,240,.3); border-radius: 10px; padding: 9px 12px; }
+  .pris-par b { font-weight: 600; }
   .sujet .vignette { aspect-ratio: 16/8; background: #111 center/cover no-repeat; }
   .sujet .vignette.cg { background: linear-gradient(135deg, #e6ddd0, #cdbba3); display: flex; align-items: center; justify-content: center; font-size: 2.4rem; }
   .sujet .corps { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
@@ -113,7 +118,7 @@
   'use strict';
   var R = window.Redac, A = window.ECGAuth;
   var $ = function (s) { return document.querySelector(s); };
-  var client, moi, sujets = [], onglet = 'dispo', filtre = '';
+  var client, moi, sujets = [], pris = [], onglet = 'dispo', filtre = '';
 
   if (new URLSearchParams(location.search).get('soumis')) message('Article soumis : l\'administrateur va le relire. Merci !', false);
 
@@ -126,12 +131,19 @@
   function message(t, err) { var m = $('#message'); m.textContent = t; m.className = 'message ' + (err ? 'err' : 'ok'); }
 
   function charger() {
+    /* Les sujets déjà pris (par n'importe qui) : seulement titre, image
+       et nom du rédacteur, via une fonction dédiée de la base. */
+    var lirePris = client.rpc('redaction_sujets_pris')
+      .then(function (r) { return r.error ? [] : (r.data || []); }, function () { return []; });
     client.from('redaction_sujets')
       .select('id,type,edition,titre,consignes,image_url,statut,redacteur,redacteur_nom,commentaire,cree_le,pris_le,soumis_le,maj_le')
       .order('cree_le', { ascending: false })
       .then(function (r) {
         if (r.error) throw r.error;
         sujets = r.data || [];
+        return lirePris;
+      }).then(function (p) {
+        pris = p.map(function (x) { x.pris = true; return x; });
         rendre();
       }).catch(function (e) { $('#grille').innerHTML = '<div class="vide"><b>Erreur</b>' + R.esc(R.erreur(e)) + '</div>'; });
   }
@@ -142,7 +154,8 @@
   function rendre() {
     $('#n-dispo').textContent = dispo().length;
     $('#n-miens').textContent = miens().length;
-    var liste = onglet === 'dispo' ? dispo() : miens();
+    /* Onglet des sujets : les libres d'abord, puis ceux déjà pris, grisés. */
+    var liste = onglet === 'dispo' ? dispo().concat(pris) : miens();
 
     /* Filtres : type pour les sujets libres, statut pour les miens. */
     var choix = onglet === 'dispo'
@@ -166,7 +179,22 @@
     $('#grille').innerHTML = liste.map(carte).join('');
   }
 
+  function cartePrise(s) {
+    var moiMeme = s.redacteur === moi.id;
+    var vignette = s.type === 'cg'
+      ? '<div class="vignette cg">🧠</div>'
+      : '<div class="vignette" style="background-image:url(\'' + R.esc(s.image_url || '') + '\')"></div>';
+    return '<div class="sujet pris">' + vignette +
+      '<div class="corps">' +
+        '<div class="meta"><span>' + R.esc(R.libelleType(s)) + '</span>' + (s.pris_le ? '<span>pris le ' + R.dateCourte(s.pris_le) + '</span>' : '') + '</div>' +
+        '<h3>' + R.esc(s.titre) + '</h3>' +
+        '<div class="pris-par">' + (s.type === 'cg' ? 'Dossier pris par ' : 'Article pris par ') + '<b>' + (moiMeme ? 'toi' : R.esc(s.redacteur_nom || 'un rédacteur')) + '</b></div>' +
+        (moiMeme ? '<div class="actions"><a class="btn" href="redaction-editeur.html?id=' + s.id + '">Ouvrir</a></div>' : '') +
+      '</div></div>';
+  }
+
   function carte(s) {
+    if (s.pris) return cartePrise(s);
     var st = R.STATUTS[s.statut] || {};
     var vignette = s.type === 'cg'
       ? '<div class="vignette cg">🧠</div>'
