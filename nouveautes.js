@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Mexique",
+"titre": "Mexique : Ceci Flores et sa fille, premières mères chercheuses certifiées pour retrouver des disparus",
+"url": "actualites/es/articles/mexique-buscadoras-certification.html",
+"image": "actualites/es/images/mexique-buscadoras-certification.webp",
+"date": "2026-10-08T19:05:36+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "États-Unis",
@@ -1321,15 +1330,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Séisme de magnitude 7,4 dans le Chocó — plus de 300 morts et un pays sous le choc",
 "url": "actualites/es/articles/colombie-seisme-magnitude-7-4.html",
 "image": "actualites/es/images/colombie-seisme-magnitude-7-4.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Espagne",
-"titre": "Incendies de la Sierra Oeste : Madrid affronte le plus grand feu de forêt de l'histoire d'Espagne",
-"url": "actualites/es/articles/incendies-madrid-espagne.html",
-"image": "actualites/es/images/incendies-madrid-espagne.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
