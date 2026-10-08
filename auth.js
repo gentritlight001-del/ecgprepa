@@ -2018,6 +2018,11 @@
       'transition:transform .2s,border-color .2s,box-shadow .2s;padding:0;position:relative}' +
       '#ecg-avatar:hover{transform:scale(1.06);border-color:#c8a96e;box-shadow:0 6px 22px rgba(0,0,0,.45)}' +
       '#ecg-avatar:focus-visible{outline:2px solid #c8a96e;outline-offset:3px}' +
+      '#ecg-avatar.redacteur::after{content:"";position:absolute;top:-1px;right:-1px;width:9px;height:9px;' +
+      'border-radius:50%;background:#b48cf0;border:2px solid #16161a}' +
+      '#ecg-menu .ecg-who i.redac{color:#c4a6f5;background:rgba(180,140,240,.16)}' +
+      '#ecg-menu button.redac{color:#c4a6f5}' +
+      '#ecg-menu button.redac:hover{color:#d9c4fa}' +
       '#ecg-avatar.admin::after{content:"";position:absolute;top:-1px;right:-1px;width:9px;height:9px;' +
       'border-radius:50%;background:#9ecba0;border:2px solid #16161a}' +
       '#ecg-menu{position:absolute;top:48px;right:0;width:300px;max-width:calc(100vw - 20px);background:#16161a;' +
@@ -2047,14 +2052,14 @@
     var wrap = document.createElement('div');
     wrap.id = 'ecg-account-badge';
     wrap.innerHTML =
-      '<button id="ecg-avatar" class="' + (admin ? 'admin' : '') + '" aria-haspopup="true" aria-expanded="false" title="Mon compte">' + initiales(s) + '</button>' +
+      '<button id="ecg-avatar" class="' + (admin ? 'admin' : redacteur ? 'redacteur' : '') + '" aria-haspopup="true" aria-expanded="false" title="Mon compte">' + initiales(s) + '</button>' +
       '<div id="ecg-menu" role="menu">' +
-      '<div class="ecg-who"><b></b><span></span>' + (admin ? '<i>Administrateur</i>' : redacteur ? '<i>Rédacteur</i>' : '') + '</div>' +
+      '<div class="ecg-who"><b></b><span></span>' + (admin ? '<i>Administrateur</i>' : redacteur ? '<i class="redac">Rédacteur</i>' : '') + '</div>' +
       '<button type="button" id="ecg-favoris" role="menuitem">Mes favoris<span id="ecg-fav-count"></span></button>' +
       '<button type="button" id="ecg-newsletter" role="menuitem">Ma newsletter</button>' +
       '<button type="button" id="ecg-abonnement" role="menuitem">Mon abonnement</button>' +
       '<button type="button" id="ecg-contact" role="menuitem">Contact</button>' +
-      (admin || redacteur ? '<button type="button" id="ecg-redaction" class="admin" role="menuitem">Espace rédaction</button>' : '') +
+      (admin || redacteur ? '<button type="button" id="ecg-redaction" class="redac" role="menuitem">Espace rédaction</button>' : '') +
       (admin ? '<div class="sep"></div><div class="titre-admin">Administration</div>' : '') +
       (admin ? '<button type="button" id="ecg-admin" class="admin" role="menuitem">Espace administrateur</button>' : '') +
       (admin ? '<button type="button" id="ecg-idees" class="admin" role="menuitem">Idées pour le site</button>' : '') +
