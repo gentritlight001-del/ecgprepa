@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>ECG Prépa — Gestion de la rédaction</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+  :root {
+    --bg: #0d0d0f; --surface: #16161a; --surface2: #1e1e24; --border: #2a2a35;
+    --accent: #c8a96e; --accent2: #7c9ec9; --accent3: #9ecba0; --accent4: #c97c9e;
+    --danger: #e08a8a; --text: #e8e6e0; --text-dim: #a9a79f; --text-faint: #8a8880;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', system-ui, sans-serif; min-height: 100vh; overflow-x: hidden; }
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: var(--accent); top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: var(--accent2); bottom: -250px; left: -250px; }
+
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px); position: sticky; top: 0; z-index: 100; }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--accent); cursor: pointer; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--accent); }
+  .breadcrumb .current { color: var(--text); }
+  .nav-right { display: flex; align-items: center; }
+
+  .page-header { padding: 56px 48px 32px; position: relative; z-index: 1; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+  .page-eyebrow { font-size: .75rem; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; font-family: 'DM Mono', monospace; }
+  .page-title { font-family: 'Playfair Display', serif; font-size: clamp(2.2rem, 4.5vw, 3.5rem); font-weight: 900; line-height: 1.05; }
+  .page-subtitle { font-size: 1rem; color: var(--text-dim); margin-top: 10px; font-weight: 300; max-width: 640px; line-height: 1.6; }
+  .lien { color: var(--accent2); font-size: .9rem; text-decoration: none; border: 1px solid rgba(124,158,201,.35); padding: 10px 18px; border-radius: 999px; }
+
+  .main { display: flex; gap: 0; position: relative; z-index: 1; border-top: 1px solid var(--border); }
+  .sidebar { width: 360px; flex-shrink: 0; border-right: 1px solid var(--border); padding: 30px 28px; }
+  .contenu { flex: 1; min-width: 0; padding: 30px 40px 80px; }
+  h2 { font-family: 'DM Mono', monospace; font-size: .66rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 16px; font-weight: 500; }
+  .champ { margin-bottom: 14px; }
+  .champ label { display: block; font-size: .78rem; color: var(--text-dim); margin-bottom: 6px; }
+  input[type=text], select, textarea { width: 100%; background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-family: inherit; font-size: .9rem; padding: 11px 16px; border-radius: 12px; outline: none; }
+  input[type=text]:focus, select:focus, textarea:focus { border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 110px; line-height: 1.5; }
+  .types { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .types button { font-family: inherit; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface2); color: var(--text-dim); cursor: pointer; font-size: .86rem; }
+  .types button.on { border-color: var(--accent); color: var(--text); background: rgba(200,169,110,.1); }
+  .depot { border: 1.5px dashed var(--border); border-radius: 12px; padding: 16px; text-align: center; font-size: .82rem; color: var(--text-faint); cursor: pointer; display: block; }
+  .depot:hover, .depot.over { border-color: var(--accent); color: var(--text-dim); }
+  .depot img { display: block; width: 100%; aspect-ratio: 16/7; object-fit: cover; border-radius: 8px; margin-bottom: 8px; }
+  .btn { font-family: inherit; font-size: .85rem; border-radius: 999px; padding: 9px 18px; min-height: 38px; cursor: pointer; border: 1px solid var(--border); background: var(--surface2); color: var(--text); text-decoration: none; display: inline-flex; align-items: center; white-space: nowrap; }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn.primaire { background: var(--accent); border-color: var(--accent); color: #0d0d0f; font-weight: 500; width: 100%; justify-content: center; min-height: 46px; font-size: .95rem; }
+  .btn.primaire:hover { filter: brightness(1.08); color: #0d0d0f; }
+  .btn.mini { padding: 6px 12px; min-height: 32px; font-size: .78rem; }
+  .btn.vert { color: var(--accent3); }
+  .btn.rouge { color: var(--danger); }
+  .btn:disabled { opacity: .5; cursor: default; }
+  .etat { font-size: .82rem; margin-top: 10px; min-height: 1.2em; color: var(--text-dim); }
+  .etat.err { color: var(--danger); }
+
+  .onglets { display: flex; gap: 8px; margin-bottom: 22px; flex-wrap: wrap; }
+  .onglet { font-family: inherit; border: 0; border-radius: 999px; padding: 9px 16px; min-height: 38px; font-size: .86rem; cursor: pointer; background: var(--surface2); color: var(--text-dim); }
+  .onglet.on { background: var(--accent); color: #0d0d0f; }
+  .onglet em { font-style: normal; font-family: 'DM Mono', monospace; font-size: .72rem; margin-left: 6px; opacity: .75; }
+
+  .ligne { display: flex; gap: 16px; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; }
+  .ligne .vig { width: 96px; height: 54px; border-radius: 8px; background: #111 center/cover no-repeat; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+  .ligne .vig.cg { background: linear-gradient(135deg, #e6ddd0, #cdbba3); }
+  .ligne .txt { flex: 1; min-width: 0; }
+  .ligne .txt b { font-family: 'Playfair Display', serif; font-size: 1.02rem; display: block; margin-bottom: 4px; }
+  .ligne .meta { font-size: .76rem; color: var(--text-faint); display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .ligne .acts { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; max-width: 380px; }
+  .pastille { display: inline-block; font-size: .72rem; padding: 2px 9px; border-radius: 999px; border: 1px solid currentColor; }
+  .vide { text-align: center; padding: 60px 20px; color: var(--text-faint); border: 1px dashed var(--border); border-radius: 16px; }
+  .aide { font-size: .8rem; color: var(--text-faint); line-height: 1.6; margin-top: 26px; }
+  .aide b { color: var(--text-dim); font-weight: 500; }
+
+  @media (max-width: 1000px) {
+    nav { padding: 14px 20px; } .breadcrumb { display: none; }
+    .page-header { padding: 36px 20px 24px; }
+    .main { flex-direction: column; }
+    .sidebar { width: 100%; border-right: 0; border-bottom: 1px solid var(--border); padding: 24px 20px; }
+    .contenu { padding: 24px 16px 60px; }
+    .ligne { flex-wrap: wrap; } .ligne .acts { max-width: none; justify-content: flex-start; }
+  }
+</style>
+<link rel="stylesheet" href="admin-refonte.css">
+</head>
+<body>
+<div class="bg-orb orb1"></div><div class="bg-orb orb2"></div>
+
+<nav>
+  <div class="nav-logo" onclick="location.href='index.html'">ECG Prépa</div>
+  <div class="breadcrumb"><a href="index.html">Accueil</a><span>/</span><a href="admin.html">Administration</a><span>/</span><span class="current">Gestion de la rédaction</span></div>
+  <div class="nav-right"></div>
+</nav>
+
+<div class="page-header">
+  <div>
+    <div class="page-eyebrow">✍️ Rédaction · Administration</div>
+    <div class="page-title">Gestion de la rédaction</div>
+    <div class="page-subtitle">Propose des sujets aux rédacteurs, suis leur avancement, relis les articles soumis et récupère-les pour la mise en ligne.</div>
+  </div>
+  <a class="lien" href="redaction.html">Voir l'espace rédaction →</a>
+</div>
+
+<div class="main">
+  <aside class="sidebar">
+    <h2>Nouveau sujet</h2>
+    <div class="champ">
+      <label>Type</label>
+      <div class="types" id="types">
+        <button class="on" data-t="article">📰 Article d'actualité</button>
+        <button data-t="cg">🧠 Culture générale</button>
+      </div>
+    </div>
+    <div class="champ" id="champ-edition">
+      <label for="edition">Édition</label>
+      <select id="edition">
+        <option value="monde">🌐 Mondiale (français seulement)</option>
+        <option value="en">🇬🇧 Anglophone (bilingue)</option>
+        <option value="es">🇪🇸 Hispanophone (bilingue)</option>
+        <option value="de">🇩🇪 Germanophone (bilingue)</option>
+      </select>
+    </div>
+    <div class="champ">
+      <label for="titre">Titre *</label>
+      <input type="text" id="titre" placeholder="Titre de l'article ou du dossier">
+    </div>
+    <div class="champ">
+      <label for="consignes">Consignes pour le rédacteur</label>
+      <textarea id="consignes" placeholder="Angle, sources à consulter, points à traiter, longueur…"></textarea>
+    </div>
+    <div class="champ" id="champ-image">
+      <label>Image de une * (paysage, convertie en WebP 1600 px)</label>
+      <label class="depot" id="depot"><span id="depot-txt">Clique ou dépose une image ici</span>
+        <input type="file" id="image" accept="image/*" hidden></label>
+    </div>
+    <button class="btn primaire" id="creer">Publier le sujet</button>
+    <div class="etat" id="etat"></div>
+
+    <div class="aide">
+      <b>Le circuit :</b> le sujet apparaît dans l'espace rédaction → un rédacteur le prend (il disparaît pour les autres) → il le rédige dans l'éditeur → il le soumet → tu le relis ici : <b>renvoyer</b> avec des remarques, ou <b>valider</b> → tu télécharges le HTML pour la mise en ligne, puis tu le marques comme publié.<br><br>
+      Pour donner le rôle de rédacteur à un compte : Espace administrateur → Comptes → « Passer rédacteur ».
+    </div>
+  </aside>
+
+  <section class="contenu">
+    <div class="onglets" id="onglets"></div>
+    <div id="liste"><div class="vide">Chargement…</div></div>
+  </section>
+</div>
+
+<script src="redaction/redaction.js"></script>
+<script>
+(function () {
+  'use strict';
+  var R = window.Redac, A = window.ECGAuth;
+  var $ = function (s) { return document.querySelector(s); };
+  var client, sujets = [], onglet = 'soumis', type = 'article', image = null;
+
+  var ONGLETS = [
+    ['soumis', 'À relire'], ['disponible', 'Disponibles'], ['en_cours', 'En cours'],
+    ['a_revoir', 'Renvoyés'], ['valide', 'Validés'], ['publie', 'Publiés']
+  ];
+
+  A.client().then(function (c) { client = c; charger(); });
+
+  function etat(t, err) { var e = $('#etat'); e.textContent = t; e.className = 'etat' + (err ? ' err' : ''); }
+
+  function charger() {
+    client.from('redaction_sujets')
+      .select('id,type,edition,titre,consignes,image_url,statut,redacteur,redacteur_nom,commentaire,cree_le,pris_le,soumis_le,valide_le,maj_le')
+      .order('cree_le', { ascending: false })
+      .then(function (r) {
+        if (r.error) throw r.error;
+        sujets = r.data || [];
+        rendre();
+      }).catch(function (e) { $('#liste').innerHTML = '<div class="vide">' + R.esc(R.erreur(e)) + '</div>'; });
+  }
+
+  function rendre() {
+    $('#onglets').innerHTML = ONGLETS.map(function (o) {
+      var n = sujets.filter(function (s) { return s.statut === o[0]; }).length;
+      return '<button class="onglet' + (onglet === o[0] ? ' on' : '') + '" data-o="' + o[0] + '">' + o[1] + '<em>' + n + '</em></button>';
+    }).join('');
+    var liste = sujets.filter(function (s) { return s.statut === onglet; });
+    if (onglet === 'soumis') liste.sort(function (a, b) { return new Date(a.soumis_le) - new Date(b.soumis_le); });
+    if (!liste.length) { $('#liste').innerHTML = '<div class="vide">Rien ici pour l\'instant.</div>'; return; }
+    $('#liste').innerHTML = liste.map(ligne).join('');
+  }
+
+  function ligne(s) {
+    var st = R.STATUTS[s.statut] || {};
+    var vig = s.type === 'cg' ? '<div class="vig cg">🧠</div>' : '<div class="vig" style="background-image:url(\'' + R.esc(s.image_url || '') + '\')"></div>';
+    var quand = s.statut === 'soumis' ? 'soumis le ' + R.dateCourte(s.soumis_le)
+      : s.statut === 'valide' ? 'validé le ' + R.dateCourte(s.valide_le)
+      : s.statut === 'disponible' ? 'proposé le ' + R.dateCourte(s.cree_le)
+      : 'modifié le ' + R.dateCourte(s.maj_le);
+    var a = [];
+    var ouvrir = '<a class="btn mini" href="redaction-editeur.html?id=' + s.id + '">' + (s.statut === 'soumis' ? 'Relire et corriger' : 'Ouvrir') + '</a>';
+    if (s.statut !== 'disponible') a.push(ouvrir);
+    if (s.statut === 'soumis') { a.push(bt('valider', 'Valider', 'vert')); a.push(bt('renvoyer', 'Renvoyer', 'rouge')); }
+    if (s.statut === 'valide' || s.statut === 'publie') a.push(bt('html', 'Télécharger le HTML'));
+    if (s.statut === 'valide') a.push(bt('publie', 'Marquer publié', 'vert'));
+    if (s.statut !== 'disponible' && s.statut !== 'publie') a.push(bt('liberer', 'Libérer'));
+    a.push(bt('suppr', 'Supprimer', 'rouge'));
+    function bt(x, t, c) { return '<button class="btn mini ' + (c || '') + '" data-a="' + x + '" data-id="' + s.id + '">' + t + '</button>'; }
+    return '<div class="ligne">' + vig +
+      '<div class="txt"><b>' + R.esc(s.titre) + '</b>' +
+        '<div class="meta"><span>' + R.esc(R.libelleType(s)) + '</span><span class="pastille" style="color:' + st.c + '">' + st.l + '</span>' +
+        (s.redacteur_nom ? '<span>✍️ ' + R.esc(s.redacteur_nom) + '</span>' : '') + '<span>' + quand + '</span></div>' +
+        (s.statut === 'a_revoir' && s.commentaire ? '<div class="meta" style="margin-top:6px;color:#f0b0b0">Remarques : ' + R.esc(s.commentaire) + '</div>' : '') +
+      '</div>' +
+      '<div class="acts">' + a.join('') + '</div></div>';
+  }
+
+  $('#onglets').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-o]'); if (!b) return;
+    onglet = b.dataset.o; rendre();
+  });
+
+  function maj(id, champs) {
+    champs.maj_le = new Date().toISOString();
+    return client.from('redaction_sujets').update(champs).eq('id', id).then(function (r) { if (r.error) throw r.error; });
+  }
+
+  $('#liste').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-a]'); if (!b) return;
+    var s = sujets.filter(function (x) { return x.id === b.dataset.id; })[0]; if (!s) return;
+    var p = null;
+    switch (b.dataset.a) {
+      case 'valider':
+        if (!confirm('Valider « ' + s.titre + ' » ?')) return;
+        p = maj(s.id, { statut: 'valide', valide_le: new Date().toISOString() }); break;
+      case 'renvoyer':
+        var c = prompt('Remarques pour le rédacteur (ce qu\'il doit corriger) :', s.commentaire || '');
+        if (c === null) return;
+        p = maj(s.id, { statut: 'a_revoir', commentaire: c }); break;
+      case 'publie':
+        if (!confirm('Marquer « ' + s.titre + ' » comme publié sur le site ?')) return;
+        p = maj(s.id, { statut: 'publie' }); break;
+      case 'liberer':
+        if (!confirm('Libérer ce sujet ?\n\nIl redevient disponible pour tous les rédacteurs et le texte déjà écrit est effacé.')) return;
+        p = maj(s.id, { statut: 'disponible', redacteur: null, redacteur_nom: null, contenu: null, commentaire: null, pris_le: null, soumis_le: null, valide_le: null }); break;
+      case 'suppr':
+        if (!confirm('Supprimer définitivement « ' + s.titre + ' » ?')) return;
+        p = client.from('redaction_sujets').delete().eq('id', s.id).then(function (r) { if (r.error) throw r.error; }); break;
+      case 'html':
+        b.disabled = true;
+        client.from('redaction_sujets').select('*').eq('id', s.id).single().then(function (r) {
+          b.disabled = false;
+          if (r.error) throw r.error;
+          R.telecharger(r.data);
+        }).catch(function (er) { b.disabled = false; alert(R.erreur(er)); });
+        return;
+    }
+    if (p) { b.disabled = true; p.then(charger).catch(function (er) { b.disabled = false; alert(R.erreur(er)); }); }
+  });
+
+  /* ─── Création d'un sujet ─── */
+  $('#types').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-t]'); if (!b) return;
+    type = b.dataset.t;
+    document.querySelectorAll('#types button').forEach(function (x) { x.classList.toggle('on', x === b); });
+    $('#champ-edition').style.display = type === 'cg' ? 'none' : '';
+    $('#champ-image').style.display = type === 'cg' ? 'none' : '';
+  });
+
+  function choisirImage(f) {
+    if (!f || !/^image\//.test(f.type)) return;
+    image = f;
+    var url = URL.createObjectURL(f);
+    var test = new Image();
+    test.onload = function () {
+      var paysage = test.naturalWidth > test.naturalHeight;
+      $('#depot-txt').innerHTML = '<img src="' + url + '" alt="">' + R.esc(f.name) +
+        (paysage ? '' : '<br><span style="color:var(--danger)">Attention : image en portrait, la une doit être en paysage.</span>');
+    };
+    test.src = url;
+  }
+  $('#image').addEventListener('change', function (e) { choisirImage(e.target.files[0]); });
+  var depot = $('#depot');
+  ['dragenter', 'dragover'].forEach(function (t) { depot.addEventListener(t, function (e) { e.preventDefault(); depot.classList.add('over'); }); });
+  ['dragleave', 'drop'].forEach(function (t) { depot.addEventListener(t, function (e) { e.preventDefault(); depot.classList.remove('over'); }); });
+  depot.addEventListener('drop', function (e) { choisirImage(e.dataTransfer.files[0]); });
+
+  /* WebP, 1600 px au plus, qualité 86 (comme les images du site). */
+  function versWebp(f) {
+    return new Promise(function (ok, ko) {
+      var img = new Image();
+      img.onload = function () {
+        var k = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight));
+        var c = document.createElement('canvas');
+        c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        c.toBlob(function (b) { b ? ok(b) : ko('Conversion de l\'image impossible.'); }, 'image/webp', 0.86);
+      };
+      img.onerror = function () { ko('Image illisible.'); };
+      img.src = URL.createObjectURL(f);
+    });
+  }
+
+  $('#creer').addEventListener('click', function () {
+    var titre = $('#titre').value.trim();
+    if (!titre) { etat('Il manque le titre.', true); $('#titre').focus(); return; }
+    if (type === 'article' && !image) { etat('Il manque l\'image de une.', true); return; }
+    var bouton = $('#creer'); bouton.disabled = true;
+    var p = Promise.resolve(null);
+    if (type === 'article') {
+      etat('Envoi de l\'image…');
+      p = versWebp(image).then(function (blob) {
+        var chemin = 'sujets/' + Date.now() + '-' + R.slug(titre) + '.webp';
+        return client.storage.from('redaction').upload(chemin, blob, { contentType: 'image/webp', upsert: false }).then(function (r) {
+          if (r.error) throw r.error;
+          return client.storage.from('redaction').getPublicUrl(chemin).data.publicUrl;
+        });
+      });
+    }
+    p.then(function (url) {
+      etat('Création du sujet…');
+      return client.from('redaction_sujets').insert({
+        type: type, edition: type === 'cg' ? null : $('#edition').value,
+        titre: titre, consignes: $('#consignes').value.trim(), image_url: url
+      });
+    }).then(function (r) {
+      if (r.error) throw r.error;
+      bouton.disabled = false;
+      etat('Sujet publié : il est visible dans l\'espace rédaction.');
+      $('#titre').value = ''; $('#consignes').value = ''; image = null; $('#image').value = '';
+      $('#depot-txt').textContent = 'Clique ou dépose une image ici';
+      onglet = 'disponible'; charger();
+    }).catch(function (e) { bouton.disabled = false; etat(typeof e === 'string' ? e : R.erreur(e), true); });
+  });
+})();
+</script>
+</body>
+</html>
