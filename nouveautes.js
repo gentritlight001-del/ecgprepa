@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "France",
+"titre": "Mistral AI dévoile Large 4, un modèle à 1 000 milliards de paramètres, pour revenir dans la course",
+"url": "actualites/monde/articles/mistral-large-4-retard.html",
+"image": "actualites/monde/images/mistral-large-4-retard.webp",
+"date": "2026-10-08T18:53:04+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "États-Unis",
 "titre": "Nvidia vaut désormais près de deux fois toute la Bourse de Paris, au seuil des 6 000 milliards",
 "url": "actualites/monde/articles/nvidia-double-bourse-paris.html",
@@ -1096,15 +1105,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Serbie : dissolution du Parlement",
 "url": "actualites/monde/articles/serbie-dissolution-parlement.html",
 "image": "actualites/monde/images/serbie-dissolution-parlement.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Monde",
-"titre": "OpenAI affirme avoir résolu un problème du prix du millénaire",
-"url": "actualites/monde/articles/openai-navier-stokes-millenaire.html",
-"image": "actualites/monde/images/openai-navier-stokes-millenaire.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
