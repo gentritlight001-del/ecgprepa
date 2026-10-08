@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Prix Nobel",
+"titre": "Nobel de chimie 2026 : Henri Kagan et Kenso Soai couronnés pour les molécules « miroir »",
+"url": "actualites/monde/articles/nobel-chimie-2026-kagan-soai.html",
+"image": "actualites/monde/images/nobel-chimie-2026-kagan-soai.webp",
+"date": "2026-10-08T18:03:48+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "France",
 "titre": "Air Liquide lance son premier rachat d'actions, 4 milliards d'euros, dans son plan BEYOND",
 "url": "actualites/monde/articles/air-liquide-rachat-actions-4-milliards.html",
@@ -1096,15 +1105,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Classement PISA 2025 : la France recule, l'Asie de l'Est domine",
 "url": "actualites/monde/articles/classement-pisa-2025.html",
 "image": "actualites/monde/images/classement-pisa-2025.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Monde",
-"titre": "Abandon de Mercator : l'avènement de la projection Eckert IV",
-"url": "actualites/monde/articles/abandon-mercator-eckert.html",
-"image": "actualites/monde/images/abandon-mercator-eckert.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
