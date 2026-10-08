@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "États-Unis",
+"titre": "Nvidia vaut désormais près de deux fois toute la Bourse de Paris, au seuil des 6 000 milliards",
+"url": "actualites/monde/articles/nvidia-double-bourse-paris.html",
+"image": "actualites/monde/images/nvidia-double-bourse-paris.webp",
+"date": "2026-10-08T18:47:24+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Prix Nobel",
 "titre": "Nobel de chimie 2026 : Henri Kagan et Kenso Soai couronnés pour les molécules « miroir »",
 "url": "actualites/monde/articles/nobel-chimie-2026-kagan-soai.html",
@@ -1096,15 +1105,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "OpenAI affirme avoir résolu un problème du prix du millénaire",
 "url": "actualites/monde/articles/openai-navier-stokes-millenaire.html",
 "image": "actualites/monde/images/openai-navier-stokes-millenaire.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Monde",
-"titre": "Classement PISA 2025 : la France recule, l'Asie de l'Est domine",
-"url": "actualites/monde/articles/classement-pisa-2025.html",
-"image": "actualites/monde/images/classement-pisa-2025.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
