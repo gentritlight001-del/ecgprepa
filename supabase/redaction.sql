@@ -167,6 +167,23 @@ begin
 end;
 $$;
 
+-- Sujets déjà pris par quelqu'un : visibles de tous les rédacteurs (« Article
+-- pris par … »), sans jamais exposer le texte en cours d'écriture.
+create or replace function public.redaction_sujets_pris()
+returns table (id uuid, type text, edition text, titre text, image_url text,
+               statut text, redacteur uuid, redacteur_nom text, pris_le timestamptz)
+language sql stable security definer set search_path = public
+as $$
+  select s.id, s.type, s.edition, s.titre, s.image_url, s.statut, s.redacteur, s.redacteur_nom, s.pris_le
+    from public.redaction_sujets s
+   where public.redaction_est_redacteur()
+     and s.statut in ('en_cours', 'a_revoir', 'soumis')
+   order by s.pris_le desc nulls last;
+$$;
+
+revoke all on function public.redaction_sujets_pris() from public, anon;
+grant execute on function public.redaction_sujets_pris() to authenticated;
+
 revoke all on function public.redaction_prendre(uuid) from public, anon;
 revoke all on function public.redaction_enregistrer(uuid, text, boolean) from public, anon;
 revoke all on function public.redaction_abandonner(uuid) from public, anon;
