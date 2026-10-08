@@ -8,9 +8,14 @@
      - Toutes les ressources du site (pages, scripts, styles, images,
        polices) sont demandées au réseau à chaque visite, pour que
        chacun voie TOUJOURS la dernière version publiée, sans avoir à
-       forcer le rafraîchissement (Ctrl+Maj+R). Grâce aux en-têtes du
-       fichier _headers, le navigateur ne retélécharge un fichier que
-       s'il a changé : c'est donc rapide.
+       forcer le rafraîchissement (Ctrl+Maj+R).
+     - Scripts, styles et données (.js, .css, .json…) sont toujours
+       redemandés au serveur avec { cache: 'no-cache' } : Cloudflare
+       leur impose « max-age=14400 » (4 h) quoi que dise _headers, et
+       sans cette option le navigateur resservirait sa vieille copie.
+       Le serveur répond 304 si rien n'a changé : c'est donc rapide.
+       Seuls vendor/ (version figée) et les polices .woff2 gardent le
+       cache normal.
      - Chaque réponse est recopiée dans le cache, qui ne sert plus
        qu'en secours : hors connexion, on affiche la dernière copie
        connue, et à défaut la page « Hors ligne ».
@@ -27,7 +32,7 @@
 /* Changer ce numéro vide les caches chez tous les visiteurs (voir
    « activate »). Avec la stratégie « réseau d'abord », ce n'est plus
    nécessaire pour publier une mise à jour du contenu. */
-var VERSION = 'v10';
+var VERSION = 'v11';
 var CACHE_SOCLE   = 'ecg-prepa-socle-'   + VERSION;
 var CACHE_PAGES   = 'ecg-prepa-pages-'   + VERSION;
 var CACHE_IMAGES  = 'ecg-prepa-images-'  + VERSION;
@@ -60,7 +65,8 @@ var SOCLE = [
 self.addEventListener('install', function (evenement) {
   evenement.waitUntil(
     caches.open(CACHE_SOCLE).then(function (cache) {
-      return cache.addAll(SOCLE);
+      /* « reload » : jamais la copie périmée du cache du navigateur. */
+      return cache.addAll(SOCLE.map(function (u) { return new Request(u, { cache: 'reload' }); }));
     }).then(function () {
       /* Passe en contrôle dès l'installation suivante, sans attendre
          la fermeture de tous les onglets ouverts. */
@@ -95,6 +101,16 @@ function memeOrigine(url) {
 
 function cleDe(requete) {
   return new Request(requete.url.split('#')[0]);
+}
+
+/* Réponse identique, mais marquée « no-cache » : sinon le navigateur
+   garde le fichier en mémoire 4 h (max-age imposé par Cloudflare) et
+   ne repasse même plus par ce service worker pour le redemander. */
+function sansCacheNavigateur(reponse) {
+  if (!reponse || !reponse.ok || reponse.type !== 'basic' || reponse.redirected) return reponse;
+  var entetes = new Headers(reponse.headers);
+  entetes.set('Cache-Control', 'no-cache');
+  return new Response(reponse.body, { status: reponse.status, statusText: reponse.statusText, headers: entetes });
 }
 
 /* Télécharge la ressource et en range une copie dans le cache. */
@@ -172,6 +188,11 @@ self.addEventListener('fetch', function (evenement) {
     return;
   }
 
-  /* Le reste (auth.js, favoris.js, fonts.css, vendor/…). */
-  evenement.respondWith(reseauDabord(requete, CACHE_PAGES));
+  /* Le reste (auth.js, favoris.js, refonte.css, nouveautes.js…) :
+     toujours revérifié auprès du serveur, sauf vendor/ (figé). */
+  if (url.pathname.indexOf('/vendor/') === 0) {
+    evenement.respondWith(reseauDabord(requete, CACHE_PAGES));
+    return;
+  }
+  evenement.respondWith(reseauDabord(requete, CACHE_PAGES, null, true).then(sansCacheNavigateur));
 });
