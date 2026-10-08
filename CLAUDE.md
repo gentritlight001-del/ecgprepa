@@ -64,7 +64,10 @@ ne sont pas touchées. Conséquence : un fichier de **données générées charg
 (`nouveautes.js`) ne se met pas à jour avant 4 h sans Ctrl+Maj+R. `index.html` et
 `nouveautes.html` le chargent donc avec un paramètre qui change chaque minute
 (`nouveautes.js?v=<minute>`) : ne pas remettre un simple `<script src="nouveautes.js">`, et
-faire pareil pour tout nouveau fichier de données `.js`. Le vrai remède, côté tableau de bord
+faire pareil pour tout nouveau fichier de données `.js`. Pour tous les autres `.js` et `.css`, c'est
+`sw.js` qui règle le problème : il les redemande au serveur à chaque visite (`cache: 'no-cache'`, 304
+si inchangé) et réécrit leur en-tête en `no-cache` pour que Chrome ne les garde pas en mémoire. Ne
+pas retirer ce mécanisme (`sansCacheNavigateur`). Le vrai remède, côté tableau de bord
 Cloudflare (que seul le propriétaire peut régler) : Caching → Configuration → Browser Cache TTL
 → « Respect Existing Headers ».
 
