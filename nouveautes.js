@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Ghana",
+"titre": "Ghana : le Cabinet approuve une candidature officielle aux BRICS, adhésion encore incertaine",
+"url": "actualites/monde/articles/ghana-candidature-brics.html",
+"image": "actualites/monde/images/ghana-candidature-brics.webp",
+"date": "2026-10-08T18:56:44+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "France",
 "titre": "Mistral AI dévoile Large 4, un modèle à 1 000 milliards de paramètres, pour revenir dans la course",
 "url": "actualites/monde/articles/mistral-large-4-retard.html",
@@ -1096,15 +1105,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Chine : le 50e anniversaire de la mort de Mao ravive les débats historiques",
 "url": "actualites/monde/articles/chine-mao-50e-anniversaire-mort.html",
 "image": "actualites/monde/images/chine-mao-50e-anniversaire-mort.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Serbie",
-"titre": "Serbie : dissolution du Parlement",
-"url": "actualites/monde/articles/serbie-dissolution-parlement.html",
-"image": "actualites/monde/images/serbie-dissolution-parlement.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
