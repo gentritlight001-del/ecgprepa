@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Israël / Gaza",
+"titre": "7 octobre : trois ans après, Israël commémore entre cessez-le-feu bloqué et élections",
+"url": "actualites/monde/articles/israel-7-octobre-troisieme-anniversaire.html",
+"image": "actualites/monde/images/israel-7-octobre-troisieme-anniversaire.webp",
+"date": "2026-10-08T17:49:00+00:00"
+},
+{
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne",
@@ -1096,15 +1105,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "El Niño : le phénomène climatique qui menace de battre tous les records en 2026",
 "url": "actualites/monde/articles/el-nino-phenomene-climatique.html",
 "image": "actualites/monde/images/el-nino-phenomene-climatique.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Kirghizistan",
-"titre": "Le Kirghizistan retrouve ses Jeux mondiaux nomades, les « Olympiades des steppes »",
-"url": "actualites/monde/articles/kirghizistan-world-nomad-games.html",
-"image": "actualites/monde/images/kirghizistan-world-nomad-games.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
