@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "France",
+"titre": "Air Liquide lance son premier rachat d'actions, 4 milliards d'euros, dans son plan BEYOND",
+"url": "actualites/monde/articles/air-liquide-rachat-actions-4-milliards.html",
+"image": "actualites/monde/images/air-liquide-rachat-actions-4-milliards.webp",
+"date": "2026-10-08T17:56:08+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Israël / Gaza",
 "titre": "7 octobre : trois ans après, Israël commémore entre cessez-le-feu bloqué et élections",
 "url": "actualites/monde/articles/israel-7-octobre-troisieme-anniversaire.html",
@@ -1096,15 +1105,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Abandon de Mercator : l'avènement de la projection Eckert IV",
 "url": "actualites/monde/articles/abandon-mercator-eckert.html",
 "image": "actualites/monde/images/abandon-mercator-eckert.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Monde",
-"titre": "El Niño : le phénomène climatique qui menace de battre tous les records en 2026",
-"url": "actualites/monde/articles/el-nino-phenomene-climatique.html",
-"image": "actualites/monde/images/el-nino-phenomene-climatique.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
