@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "États-Unis",
+"titre": "Trump veut bannir « intelligence artificielle » et imposer « super intelligence » partout",
+"url": "actualites/en/articles/trump-super-intelligence-onu.html",
+"image": "actualites/en/images/trump-super-intelligence-onu.webp",
+"date": "2026-10-08T19:01:47+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Ghana",
@@ -1195,15 +1204,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Addiction des jeunes aux réseaux sociaux : Meta accepte de payer jusqu'à 17 milliards de dollars",
 "url": "actualites/en/articles/meta-amende-addiction-reseaux-2026.html",
 "image": "actualites/en/images/meta-amende-addiction-reseaux-2026.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "Royaume-Uni",
-"titre": "Cybersécurité : des hackers liés à l'Iran accusés d'avoir provoqué l'arrêt d'une centrale électrique britannique",
-"url": "actualites/en/articles/uk-iran-hackers-power-plant-2026.html",
-"image": "actualites/en/images/uk-iran-hackers-power-plant-2026.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
