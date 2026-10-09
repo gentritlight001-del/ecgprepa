@@ -7,7 +7,7 @@
 « Les nouveautés ») et par la page `nouveautes.html` (fil complet).
 
 Contenus suivis : articles d'actualité des quatre éditions (listes ACTU_DATA), dossiers de
-culture générale (CG_DATA), fiches de l'Humanité (cinéma, littérature) et chapitres de cours
+culture générale (CG_DATA), fiches et cours de l'Humanité (cinéma, littérature, cours) et chapitres de cours
 (chapitres et notions de philosophie, 1re et 2e année).
 
 La date de mise en ligne d'une page est retenue une fois pour toutes dans
@@ -108,6 +108,14 @@ def humanite():
             titre = re.sub(r'^(Cinéma|Littérature)\s*[—-]\s*', '', titre_page(contenu))
             yield {'t': 'humanite', 'rubrique': 'Humanité', 'meta': nom, 'titre': titre,
                    'url': chemin, 'image': premiere_image(chemin, contenu), 'portrait': True}
+    # cours de l'Humanité (humanite/cours-humanite/Cours/coursN.html)
+    for chemin in sorted(glob.glob(RACINE + 'humanite/cours-humanite/Cours/cours[0-9]*.html')):
+        chemin = chemin[len(RACINE):]
+        contenu = lire(chemin)
+        num = re.search(r'cours(\d+)\.html$', chemin).group(1)
+        titre = re.sub(r'^Cours Humanité\s*·\s*', '', titre_page(contenu))
+        yield {'t': 'humanite', 'rubrique': 'Humanité', 'meta': 'Cours ' + num, 'titre': titre,
+               'url': chemin, 'image': premiere_image(chemin, contenu)}
 
 
 def cours():
