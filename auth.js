@@ -275,10 +275,7 @@
 
   /* Pages réservées aux administrateurs : un membre connecté qui
      connaît l'adresse est arrêté et renvoyé vers l'accueil. */
-  var PAGES_ADMIN = ['admin.html', 'idees-articles.html', 'mes-newsletters.html', 'admin-redaction.html'];
-
-  /* Espace rédaction : réservé aux rédacteurs et aux administrateurs. */
-  var PAGES_REDACTION = ['redaction.html', 'redaction-editeur.html'];
+  var PAGES_ADMIN = ['admin.html', 'idees-articles.html', 'mes-newsletters.html'];
 
   var file = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
   if (file.indexOf('.') === -1) file = file + '.html';
@@ -286,8 +283,6 @@
   var pagePublique = PAGES_PUBLIQUES.indexOf(file) !== -1 || window.ECG_PAGE_404 === true;
   var pageAdmin = file === 'admin.html';
   var pageReserveeAdmin = PAGES_ADMIN.indexOf(file) !== -1;
-  var pageRedaction = PAGES_REDACTION.indexOf(file) !== -1;
-  function peutRediger(p) { return !!p && (p.role === 'admin' || p.role === 'redacteur'); }
 
   /* ─── Petit stockage local (miroir seulement) ─── */
   function lire(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
@@ -326,7 +321,7 @@
   /* Affichage immédiat si le compte a été vérifié récemment.
      Les pages réservées à l'admin gardent toujours le voile. */
   var verifRecente = (function () {
-    if (pagePublique || pageReserveeAdmin || pageRedaction) return false;
+    if (pagePublique || pageReserveeAdmin) return false;
     var p = profilLocal();
     var t = +lire(K_VERIF) || 0;
     return !!(p && p.email && Date.now() - t < VERIF_OK_MS);
@@ -788,9 +783,6 @@
       var p = profilLocal();
       return !!p && p.role === 'admin';
     },
-
-    /* Rédacteur ou administrateur : accès à l'espace rédaction. */
-    estRedacteur: function () { return peutRediger(profilLocal()); },
 
     loginUrl: LOGIN_URL,
     homeUrl: HOME_URL,
@@ -1619,7 +1611,6 @@
       memoriser(profil);
       appliquerNewsletterEnAttente();
       if (pageReserveeAdmin && profil.role !== 'admin') { refuserAcces(profil); return; }
-      if (pageRedaction && !peutRediger(profil)) { refuserRedaction(profil); return; }
 
       function terminer() {
         leverVoile();
@@ -1681,7 +1672,6 @@
          Une page réservée aux administrateurs reste fermée. */
       var p = profilLocal();
       if (pageReserveeAdmin && (!p || p.role !== 'admin')) { refuserAcces(p); return; }
-      if (pageRedaction && !peutRediger(p)) { refuserRedaction(p); return; }
       leverVoile();
       alerteReseau('Serveur de comptes injoignable — affichage hors ligne, certaines fonctions sont indisponibles.');
       if (p) demarrerBadge(p);
@@ -1853,11 +1843,6 @@
     else document.addEventListener('DOMContentLoaded', poser);
   }
 
-  function refuserRedaction(profil) {
-    ecranRefus('Accès réservé', 'L\'espace rédaction est réservé aux rédacteurs du site.',
-      (profil && profil.email) || 'session non identifiée', ACCUEIL_URL, 'Retour à l\'accueil');
-  }
-
   function refuserAcces(profil) {
     ecranRefus('Accès réservé', 'Cette page est réservée aux administrateurs du site.',
       (profil && profil.email) || 'session non identifiée', ACCUEIL_URL, 'Retour à l\'accueil');
@@ -2005,7 +1990,6 @@
   function monterBadge(s) {
     if (!s || document.getElementById('ecg-account-badge')) return;
     var admin = s.role === 'admin';
-    var redacteur = s.role === 'redacteur';
 
     var css = document.createElement('style');
     css.textContent =
@@ -2018,11 +2002,6 @@
       'transition:transform .2s,border-color .2s,box-shadow .2s;padding:0;position:relative}' +
       '#ecg-avatar:hover{transform:scale(1.06);border-color:#c8a96e;box-shadow:0 6px 22px rgba(0,0,0,.45)}' +
       '#ecg-avatar:focus-visible{outline:2px solid #c8a96e;outline-offset:3px}' +
-      '#ecg-avatar.redacteur::after{content:"";position:absolute;top:-1px;right:-1px;width:9px;height:9px;' +
-      'border-radius:50%;background:#b48cf0;border:2px solid #16161a}' +
-      '#ecg-menu .ecg-who i.redac{color:#c4a6f5;background:rgba(180,140,240,.16)}' +
-      '#ecg-menu button.redac{color:#c4a6f5}' +
-      '#ecg-menu button.redac:hover{color:#d9c4fa}' +
       '#ecg-avatar.admin::after{content:"";position:absolute;top:-1px;right:-1px;width:9px;height:9px;' +
       'border-radius:50%;background:#9ecba0;border:2px solid #16161a}' +
       '#ecg-menu{position:absolute;top:48px;right:0;width:300px;max-width:calc(100vw - 20px);background:#16161a;' +
@@ -2052,19 +2031,17 @@
     var wrap = document.createElement('div');
     wrap.id = 'ecg-account-badge';
     wrap.innerHTML =
-      '<button id="ecg-avatar" class="' + (admin ? 'admin' : redacteur ? 'redacteur' : '') + '" aria-haspopup="true" aria-expanded="false" title="Mon compte">' + initiales(s) + '</button>' +
+      '<button id="ecg-avatar" class="' + (admin ? 'admin' : '') + '" aria-haspopup="true" aria-expanded="false" title="Mon compte">' + initiales(s) + '</button>' +
       '<div id="ecg-menu" role="menu">' +
-      '<div class="ecg-who"><b></b><span></span>' + (admin ? '<i>Administrateur</i>' : redacteur ? '<i class="redac">Rédacteur</i>' : '') + '</div>' +
+      '<div class="ecg-who"><b></b><span></span>' + (admin ? '<i>Administrateur</i>' : '') + '</div>' +
       '<button type="button" id="ecg-favoris" role="menuitem">Mes favoris<span id="ecg-fav-count"></span></button>' +
       '<button type="button" id="ecg-newsletter" role="menuitem">Ma newsletter</button>' +
       '<button type="button" id="ecg-abonnement" role="menuitem">Mon abonnement</button>' +
       '<button type="button" id="ecg-contact" role="menuitem">Contact</button>' +
-      (admin || redacteur ? '<button type="button" id="ecg-redaction" class="redac" role="menuitem">Espace rédaction</button>' : '') +
       (admin ? '<div class="sep"></div><div class="titre-admin">Administration</div>' : '') +
       (admin ? '<button type="button" id="ecg-admin" class="admin" role="menuitem">Espace administrateur</button>' : '') +
       (admin ? '<button type="button" id="ecg-idees" class="admin" role="menuitem">Idées pour le site</button>' : '') +
       (admin ? '<button type="button" id="ecg-mes-nl" class="admin" role="menuitem">Mes newsletters</button>' : '') +
-      (admin ? '<button type="button" id="ecg-gerer-redac" class="admin" role="menuitem">Gérer la rédaction</button>' : '') +
       '<div class="sep"></div>' +
       '<button type="button" id="ecg-home" role="menuitem">Retour à l\'accueil</button>' +
       '<button type="button" id="ecg-logout" class="danger" role="menuitem">Se déconnecter</button>' +
@@ -2122,8 +2099,6 @@
     if (admin) wrap.querySelector('#ecg-admin').addEventListener('click', function () { location.href = ADMIN_URL; });
     if (admin) wrap.querySelector('#ecg-idees').addEventListener('click', function () { location.href = BASE + 'idees-articles.html'; });
     if (admin) wrap.querySelector('#ecg-mes-nl').addEventListener('click', function () { location.href = BASE + 'mes-newsletters.html'; });
-    if (admin) wrap.querySelector('#ecg-gerer-redac').addEventListener('click', function () { location.href = BASE + 'admin-redaction.html'; });
-    if (admin || redacteur) wrap.querySelector('#ecg-redaction').addEventListener('click', function () { location.href = BASE + 'redaction.html'; });
     wrap.querySelector('#ecg-logout').addEventListener('click', function () { Auth.logout(); });
 
     var compteur = wrap.querySelector('#ecg-fav-count');

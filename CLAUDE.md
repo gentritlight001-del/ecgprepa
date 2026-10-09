@@ -17,14 +17,8 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
 - **Verrouillage** : ne jamais verrouiller une page ni la rendre Premium. Le propriétaire du
   site le fait lui-même (`auth.js`).
 - Pages réservées à l'administrateur : `PAGES_ADMIN` dans `auth.js` (`admin.html`,
-  `idees-articles.html`, `mes-newsletters.html`, `admin-redaction.html`). Une nouvelle page admin s'ajoute à cette
+  `idees-articles.html`, `mes-newsletters.html`). Une nouvelle page admin s'ajoute à cette
   liste et au menu admin de `auth.js`, dans le même style que `idees-articles.html`.
-- **Espace rédaction** (rôle `redacteur`, `PAGES_REDACTION` dans `auth.js`) : l'admin propose des
-  sujets (`admin-redaction.html`), un rédacteur en prend un et l'écrit dans `redaction-editeur.html`,
-  l'admin relit, valide et télécharge le HTML. Gabarits et export : `redaction/redaction.js`. Base :
-  `supabase/redaction.sql`. Mettre en ligne un HTML exporté = le traiter comme un nouvel article
-  (section 3) : télécharger l'image (URL Supabase) en WebP dans `images/`, corriger le chemin, ajouter
-  la carte dans les listes, puis la séquence de la section 2.
 - Tester une page avec Playwright : `NODE_PATH=$(npm root -g)` pour Node, Chromium dans
   `/opt/pw-browsers/chromium`. Remplacer `auth.js` par un script vide (sinon redirection
   vers la connexion).
