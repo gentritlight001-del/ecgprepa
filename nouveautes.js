@@ -4,7 +4,7 @@ window.ECG_NOUVEAUTES = [
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Mexique",
-"titre": "Mexique : Ceci Flores et sa fille, premières mères chercheuses certifiées pour retrouver des disparus",
+"titre": "Mexique : Ceci Flores et sa fille, premières familles certifiées pour rechercher les disparus",
 "url": "actualites/es/articles/mexique-buscadoras-certification.html",
 "image": "actualites/es/images/mexique-buscadoras-certification.webp",
 "date": "2026-10-08T19:05:36+00:00"
@@ -485,6 +485,15 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/de/articles/biontech-fermeture-sites-allemagne.html",
 "image": "actualites/de/images/biontech-fermeture-sites-allemagne.webp",
 "date": "2026-10-01T13:52:44+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Cours 1",
+"titre": "Qu'est-ce que l'humanité ?",
+"url": "humanite/cours-humanite/Cours/cours1.html",
+"image": "humanite/cours-humanite/Cours/images/ecole-d-athenes.webp",
+"date": "2026-10-01T15:21:10+02:00"
 },
 {
 "t": "monde",
@@ -2205,16 +2214,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Les Misérables",
 "url": "humanite/litterature/les-miserables.html",
 "image": "humanite/litterature/images/les-miserables-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "Le Livre de la jungle",
-"url": "humanite/litterature/livre-de-la-jungle.html",
-"image": "humanite/litterature/images/livre-de-la-jungle-couverture.webp",
 "portrait": true,
 "date": "2026-09-11T19:03:33+00:00"
 },
