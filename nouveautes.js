@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Cours 1",
+"titre": "Qu'est-ce que l'humanité ?",
+"url": "humanite/cours-humanite/Cours/cours1.html",
+"image": "humanite/cours-humanite/Cours/images/ecole-d-athenes.webp",
+"date": "2026-10-09T19:29:57+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Mexique",
@@ -485,15 +494,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/de/articles/biontech-fermeture-sites-allemagne.html",
 "image": "actualites/de/images/biontech-fermeture-sites-allemagne.webp",
 "date": "2026-10-01T13:52:44+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cours 1",
-"titre": "Qu'est-ce que l'humanité ?",
-"url": "humanite/cours-humanite/Cours/cours1.html",
-"image": "humanite/cours-humanite/Cours/images/ecole-d-athenes.webp",
-"date": "2026-10-01T15:21:10+02:00"
 },
 {
 "t": "monde",
