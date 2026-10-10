@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Contrôle d'une page « L'anglais au quotidien » avant sa mise en ligne.
+"""Contrôle d'une page « <langue> au quotidien » (anglais, espagnol…) avant sa mise en ligne.
 
-    python3 outils/quotidien-controle.py premiere_annee/langues/anglais/quotidien/jour-AAAA-MM-JJ.html
+    python3 outils/quotidien-controle.py premiere_annee/langues/<langue>/quotidien/jour-AAAA-MM-JJ.html
 
-Une ligne ✅/❌ par règle (voir CLAUDE.md, « L'anglais au quotidien »). Code de sortie 1 s'il
+Une ligne ✅/❌ par règle (voir CLAUDE.md, « Les langues au quotidien »). Code de sortie 1 s'il
 reste un ❌ : corriger la page (ou l'index, les listes) et relancer jusqu'à ce que tout soit ✅.
 Ouvre la page dans Chromium (auth.js remplacé par un script vide), à 1280 et 390 px.
 """
@@ -45,7 +45,7 @@ def main():
     page = Path(sys.argv[1]).resolve()
     rel = page.relative_to(RACINE).as_posix()
     dossier = page.parent
-    langue_dir = dossier.parent                      # premiere_annee/langues/anglais
+    langue_dir = dossier.parent                      # premiere_annee/langues/<langue>
     langue = langue_dir.name
     html = page.read_text(encoding='utf-8')
     date = re.search(r'jour-(\d{4}-\d{2}-\d{2})\.html$', page.name)
@@ -101,8 +101,11 @@ def main():
           '%d / %d' % (len(J['version']), len(J['theme'])))
     regle(4 <= len(J['bilan']) <= 5, 'Bilan de 4 ou 5 phrases', str(len(J['bilan'])))
     regle('comprehension' not in J, 'Pas de questions de compréhension')
+    regle(('/' + rel + '"') in html and ('-' + date + '.jpg') in html,
+          'Balises canonical et og:image propres à cette page (retirer celles copiées de la veille)')
     regle(J.get('date') == date, 'La date des données correspond au nom du fichier', '%s / %s' % (J.get('date'), date))
-    mots = len(re.sub(r'\[\d+\||\{[^|{}]*\|[^{}]*\}|[\[\]]', ' ', ' '.join(J['texte']['paragraphes'])).split())
+    mots = len(re.sub(r'\[\d+\||\{([^|{}]*)\|[^{}]*\}|[\[\]]', lambda m: m.group(1) or ' ',
+                      ' '.join(J['texte']['paragraphes'])).split())
     regle(230 <= mots <= 370, 'Texte de 250 à 350 mots environ', '%d mots' % mots)
 
     # Renvois vers les leçons : l'ancre doit exister

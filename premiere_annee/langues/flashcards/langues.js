@@ -1,2 +1,2 @@
 /* Généré par outils/flashcards.py : ne pas modifier à la main. */
-window.ECG_FLASHCARDS_LANGUES = ["anglais"];
+window.ECG_FLASHCARDS_LANGUES = ["anglais", "espagnol"];

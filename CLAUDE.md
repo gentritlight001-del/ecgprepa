@@ -224,52 +224,63 @@ page pays ou région :
   WebP dans `images/` de la rubrique et ajoute le visuel et le fond flou. **Pas de légende** sous
   l'image. Sans visuel, le bandeau reste en texte seul.
 
-### L'anglais au quotidien (1re année)
+### Les langues au quotidien (1re année) : anglais, espagnol
 
-Un « coin » de pratique par matière, comme les colles de maths de 2e année. Le premier :
-`premiere_annee/langues/anglais/quotidien/`, un texte d'actualité par jour, décortiqué pour
-travailler surtout la grammaire de 1re année. Demande type : « Fais le texte du jour d'anglais ».
+Un « coin » de pratique par matière, comme les colles de maths de 2e année : pour chaque langue,
+`premiere_annee/langues/<langue>/quotidien/`, un texte d'actualité par jour, décortiqué pour
+travailler surtout la grammaire de 1re année. Demandes types : « Fais le texte du jour d'anglais »,
+« … d'espagnol ».
 
+| Langue | Dossier | Édition source (articles, images) | Section de l'article | Leçons |
+|---|---|---|---|---|
+| Anglais | `premiere_annee/langues/anglais/quotidien/` | `actualites/en/` (`tous-en.html`) | `ap-en-section` | `premiere_annee/langues/anglais/lecon<N>.html` |
+| Espagnol | `premiere_annee/langues/espagnol/quotidien/` | `actualites/es/` (`tous-es.html`) | `ap-es-section` | `premiere_annee/langues/espagnol/lecon<N>.html` |
+
+- Code commun : `premiere_annee/langues/commun/quotidien.js` et `quotidien.css` (la langue se lit
+  dans l'adresse ; titres des leçons et sens des cartes dans `LANGUES`) ; cartes :
+  `premiere_annee/langues/flashcards/cartes.js` et `cartes.css`. Nouvelle langue : l'ajouter à
+  `LANGUES` de `quotidien.js` et à `LANGUES` de `flashcards/index.html`, copier l'index d'une
+  langue existante, ajouter le bouton et la carte « Le texte du jour » à l'index de la langue.
+- Dans les données, les champs `en` désignent toujours **la langue étudiée** (mot, phrase de
+  version, traduction du thème), quelle que soit la langue.
 - `index.html` : la carte « Le texte du jour » (`.une` : image, « Jour N · <jour> <date> », titre)
   et la grille `jours-grid` (le nouveau jour **en tête**, avec `data-date` ; la carte « Demain »
   et les compteurs « jours terminés » / « mots à revoir » sont ajoutés par `quotidien.js`).
   **Pas de puces ni de texte qui résume la grammaire du jour** (index, cartes, en-tête du jour).
-  Pas d'italique dans l'index ; dans la page du jour, les mots anglais (`<em>`) restent en italique.
-- `jour-AAAA-MM-JJ.html` : une page par jour. Copier la page du dernier jour et ne changer que
-  le `<title>`, la description, « Jour N » dans le fil d'Ariane et le bloc
-  `<script id="donnees">`. `quotidien.js` construit tout ; `quotidien.css` est commun ; les cartes
-  viennent de `premiere_annee/langues/flashcards/cartes.js` et `cartes.css`.
+  Pas d'italique dans l'index ; dans la page du jour, les mots étrangers (`<em>`) restent en italique.
+- `jour-AAAA-MM-JJ.html` : une page par jour, construite par `quotidien.js` à partir du bloc
+  `<script id="donnees">`.
 - Le compteur « mots à revoir » de l'index mène à l'**espace flashcards**
-  (`premiere_annee/langues/flashcards/index.html`) : toutes les cartes de tous les jours, langue
-  par langue (onglets Anglais, Espagnol, Allemand ; une langue s'ouvre dès qu'elle a des pages du
-  jour dans `premiere_annee/langues/<langue>/quotidien/`). Ses données (`<langue>.js`,
-  `langues.js`) sont générées par `python3 outils/flashcards.py` : à lancer à chaque nouveau jour
-  (voir « Mise en ligne »), ne jamais les modifier à la main. Paquet « À revoir » :
-  `localStorage` `ecg-<langue>-quotidien-a-revoir`, commun à la page du jour et à l'espace.
-- Mettre aussi à jour la carte « Le texte du jour » de la barre latérale de
-  `premiere_annee/langues/anglais/index.html`.
+  (`premiere_annee/langues/flashcards/index.html#<langue>`) : toutes les cartes de tous les jours,
+  langue par langue (onglets Anglais, Espagnol, Allemand ; une langue s'ouvre dès qu'elle a des
+  pages du jour). Ses données (`<langue>.js`, `langues.js`) sont générées par
+  `python3 outils/flashcards.py` : à lancer à chaque nouveau jour (voir « Mise en ligne »), ne
+  jamais les modifier à la main. Paquet « À revoir » : `localStorage`
+  `ecg-<langue>-quotidien-a-revoir`, commun à la page du jour et à l'espace.
 
-**Procédure d'un nouveau jour** (demande « Fais le texte du jour d'anglais », ou routine automatique
-tous les jours à 0 h, heure de Paris) — sans poser de question, jusqu'à la mise en ligne :
-1. Date = date du jour à Paris : `TZ=Europe/Paris date +%F`. Si `jour-<date>.html` existe déjà,
-   s'arrêter : rien à faire.
-2. Article : le premier de `ACTU_DATA` (`actualites/en/tous-en.html`) qui n'a pas encore servi
-   (`grep -ho 'actualites/en/articles/[^"]*' premiere_annee/langues/anglais/quotidien/jour-*.html`).
+**Procédure d'un nouveau jour**, pour une langue (demande ci-dessus, ou routine automatique tous
+les jours à 0 h, heure de Paris, qui fait l'anglais puis l'espagnol) — sans poser de question,
+jusqu'à la mise en ligne :
+1. Date = date du jour à Paris : `TZ=Europe/Paris date +%F`. Si `jour-<date>.html` existe déjà
+   pour cette langue, passer : rien à faire.
+2. Article : le premier de `ACTU_DATA` de l'édition source (tableau ci-dessus) qui n'a pas encore
+   servi (`grep -ho 'actualites/<code>/articles/[^"]*' premiere_annee/langues/<langue>/quotidien/jour-*.html`).
    S'il n'y a aucun nouvel article, prendre le plus récent qui n'a pas servi, même plus ancien.
 3. Numéro = numéro du dernier jour + 1. Copier la page du dernier jour, réécrire `<title>`,
    description, « Jour N » du fil d'Ariane et tout le bloc de données (règles ci-dessous).
-4. `index.html` : la carte `.une` pointe sur le nouveau jour (lien, image de l'article
-   `../../../../actualites/en/images/<image>` et son `aria-label`, « Jour N · <Jour> <date> »,
-   titre) ; nouvelle carte en tête de `jours-grid`. Carte « Le texte du jour » de
-   `premiere_annee/langues/anglais/index.html` mise à jour.
+   **Supprimer de la copie les balises `og:`, `twitter:` et `canonical`** de la veille : les
+   scripts de l'étape 5 les recréent pour la nouvelle page.
+4. `index.html` de la langue : la carte `.une` pointe sur le nouveau jour (lien, image de
+   l'article `../../../../actualites/<code>/images/<image>` et un `aria-label` qui décrit ce que la
+   photo montre vraiment, « Jour N · <Jour> <date> », titre) ; nouvelle carte en tête de
+   `jours-grid`. Carte « Le texte du jour » de `premiere_annee/langues/<langue>/index.html` mise à jour.
 5. Scripts de la mise en ligne (étape 0, dont `outils/flashcards.py`), puis
-   `python3 outils/quotidien-controle.py premiere_annee/langues/anglais/quotidien/jour-<date>.html` :
+   `python3 outils/quotidien-controle.py premiere_annee/langues/<langue>/quotidien/jour-<date>.html` :
    corriger jusqu'à ce que tout soit ✅.
 6. Mise en ligne complète (commit, PR, merge, branche remise sur `main`).
 
 Contenu d'un jour (le bloc de données du 10 octobre 2026 sert de modèle) :
-- **Texte** : le plus récent article de l'édition anglophone (`ACTU_DATA` de
-  `actualites/en/tous-en.html`) pas encore utilisé, version anglaise (`ap-en-section`). Extrait
+- **Texte** : l'article choisi à l'étape 2, dans la langue étudiée (section du tableau). Extrait
   de 250 à 350 mots en 4 à 6 paragraphes, légèrement adapté pour qu'il se lise seul. Balises :
   `[n|…]` = repère du point de grammaire n (dans l'ordre du texte ; un même n peut revenir),
   `{mot|traduction}` = aide au vocabulaire (8 à 15 mots).
@@ -289,7 +300,7 @@ Contenu d'un jour (le bloc de données du 10 octobre 2026 sert de modèle) :
   presse, connecteurs, tournures), 12 à 18 mots du thème, chacun avec un exemple. **Nombre pair
   dans chaque liste** (affichée sur deux colonnes : pas de case vide). Pas
   d'exercice à trous : `quotidien.js` en tire le module « Mémoriser », des cartes
-  **français → anglais** seulement. Les cartes ratées vont dans le paquet « À revoir », gardé
+  **français → langue étudiée** seulement. Les cartes ratées vont dans le paquet « À revoir », gardé
   dans le navigateur d'un jour à l'autre.
 - **Traduction** : version de 3 phrases du texte, thème de **3 phrases** construites avec les
   mots du vocabulaire du jour et la grammaire étudiée (l'indice rappelle les mots à placer),
