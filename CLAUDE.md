@@ -246,19 +246,25 @@ Contenu d'un jour (le bloc de données du 10 octobre 2026 sert de modèle) :
 - **Grammaire** : 5 ou 6 cartes, une par repère : titre, citation (forme en `<mark>`), rappel
   court, piège du francophone, leçon et ancre (`lecon` + `ancre` = `id` d'une `<section>` de
   `../lecon<N>.html`), exercice de 3 ou 4 phrases à trous (`___`, réponses acceptées dans
-  `r`). Puis `aussi` (« Et aussi dans le texte ») : 4 à 8 points courts, **une ligne
+  `r`). Une carte qui traite deux points renvoie vers deux sections avec
+  `liens: [{ lecon, ancre, libelle }, …]`. Puis `aussi` (« Et aussi dans le texte ») : 4 à 8 points courts, **une ligne
   chacune**, groupés par catégorie (`cat` : constructions verbales, noms et articles,
   comparaison, dates et chiffres, liens logiques…), avec l'extrait (`ext`, forme en `<mark>`),
   la règle en une phrase (`regle`), un exemple court (`ex`) et la leçon. Seulement des leçons
   de 1re année, rien d'inventé hors du texte.
+- **Chaque renvoi doit tomber juste** : avant de lier une section, vérifier (grep) qu'elle traite
+  vraiment le point annoncé. Si aucune leçon ne le traite, ajouter dans la section où il a sa
+  place un court encadré `hl-box` (`tip` ou `info`), dans le style de la leçon, puis y lier.
 - **Vocabulaire** : 12 à 15 « essentiels » réutilisables dans n'importe quelle copie (verbes de
   presse, connecteurs, tournures), 12 à 18 mots du thème, chacun avec un exemple ; un exercice
   de réemploi de 6 à 8 phrases. `quotidien.js` en tire le module « Mémoriser » : 1. cartes
-  anglais → français, 2. cartes français → anglais, 3. les phrases à trous. Les cartes ratées
+  **français → anglais** (seulement dans ce sens), 2. les phrases à trous. Les cartes ratées
   vont dans le paquet « À revoir », gardé dans le navigateur d'un jour à l'autre.
 - **Traduction** : version de 3 phrases du texte, thème de **3 phrases** construites avec les
   mots du vocabulaire du jour et la grammaire étudiée (l'indice rappelle les mots à placer),
   chacune avec traduction proposée et 2 ou 3 remarques.
+- **Durées** : une par étape dans `DUREES` (`quotidien.js`) ; le total en tête est leur somme.
+- **Chapeau** (`chapo`) : une phrase qui dit le sujet, sans annoncer la grammaire.
 - **Bilan** : 4 ou 5 phrases, sans liens vers les leçons (ils sont déjà dans la grammaire).
 - Pas de questions de compréhension.
 - Vérifier avec Playwright : aucune erreur JS, et chaque exercice rempli avec `r[0]` donne
