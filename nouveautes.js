@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "en",
 "rubrique": "Actu Anglais",
+"meta": "Royaume-Uni",
+"titre": "Andy Burnham à Berlin pour sa première visite officielle : le traité de Kensington entre en vigueur",
+"url": "actualites/en/articles/uk-burnham-berlin-visite.html",
+"image": "actualites/en/images/uk-burnham-berlin-visite.webp",
+"date": "2026-10-10T18:57:42+00:00"
+},
+{
+"t": "en",
+"rubrique": "Actu Anglais",
 "meta": "États-Unis",
 "titre": "Le Pentagone veut diffuser en direct l'exécution du tireur de Fort Hood, Nidal Hasan, le 3 décembre",
 "url": "actualites/en/articles/hasan-execution-livestream-hegseth.html",
@@ -1231,15 +1240,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Le directeur de la CIA à Moscou : avertissement à la Russie ou pression sur l'Iran ?",
 "url": "actualites/en/articles/cia-ratcliffe-visite-russie-2026.html",
 "image": "actualites/en/images/cia-ratcliffe-visite-russie-2026.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "Royaume-Uni",
-"titre": "Harry et Meghan rentrent au Royaume-Uni avec leurs enfants, six ans après leur départ",
-"url": "actualites/en/articles/uk-harry-meghan-return-2026.html",
-"image": "actualites/en/images/uk-harry-meghan-return-2026.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
