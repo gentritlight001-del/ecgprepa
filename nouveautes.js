@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Panama",
+"titre": "Panama : séisme de magnitude 7,7, plus de 400 bâtiments endommagés et aucun mort signalé",
+"url": "actualites/es/articles/panama-seisme-7-7-octobre-2026.html",
+"image": "actualites/es/images/panama-seisme-7-7-octobre-2026.webp",
+"date": "2026-10-10T19:21:53+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Côte d'Ivoire",
@@ -1348,15 +1357,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Bolivie : corruption, arrestations et rupture — la présidence Paz assiégée par les scandales",
 "url": "actualites/es/articles/bolivie-crise-corruption-paz.html",
 "image": "actualites/es/images/bolivie-crise-corruption-paz.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Cuba",
-"titre": "Cuba à bout : pannes, blocus pétrolier et population en recul, la crise s'aggrave partout",
-"url": "actualites/es/articles/cuba-crise-aout-2026.html",
-"image": "actualites/es/images/cuba-crise-aout-2026.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
