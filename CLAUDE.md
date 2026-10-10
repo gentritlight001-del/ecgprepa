@@ -249,6 +249,24 @@ travailler surtout la grammaire de 1re année. Demande type : « Fais le texte d
 - Mettre aussi à jour la carte « Le texte du jour » de la barre latérale de
   `premiere_annee/langues/anglais/index.html`.
 
+**Procédure d'un nouveau jour** (demande « Fais le texte du jour d'anglais », ou routine automatique
+tous les jours à 0 h, heure de Paris) — sans poser de question, jusqu'à la mise en ligne :
+1. Date = date du jour à Paris : `TZ=Europe/Paris date +%F`. Si `jour-<date>.html` existe déjà,
+   s'arrêter : rien à faire.
+2. Article : le premier de `ACTU_DATA` (`actualites/en/tous-en.html`) qui n'a pas encore servi
+   (`grep -ho 'actualites/en/articles/[^"]*' premiere_annee/langues/anglais/quotidien/jour-*.html`).
+   S'il n'y a aucun nouvel article, prendre le plus récent qui n'a pas servi, même plus ancien.
+3. Numéro = numéro du dernier jour + 1. Copier la page du dernier jour, réécrire `<title>`,
+   description, « Jour N » du fil d'Ariane et tout le bloc de données (règles ci-dessous).
+4. `index.html` : la carte `.une` pointe sur le nouveau jour (lien, image de l'article
+   `../../../../actualites/en/images/<image>` et son `aria-label`, « Jour N · <Jour> <date> »,
+   titre) ; nouvelle carte en tête de `jours-grid`. Carte « Le texte du jour » de
+   `premiere_annee/langues/anglais/index.html` mise à jour.
+5. Scripts de la mise en ligne (étape 0, dont `outils/flashcards.py`), puis
+   `python3 outils/quotidien-controle.py premiere_annee/langues/anglais/quotidien/jour-<date>.html` :
+   corriger jusqu'à ce que tout soit ✅.
+6. Mise en ligne complète (commit, PR, merge, branche remise sur `main`).
+
 Contenu d'un jour (le bloc de données du 10 octobre 2026 sert de modèle) :
 - **Texte** : le plus récent article de l'édition anglophone (`ACTU_DATA` de
   `actualites/en/tous-en.html`) pas encore utilisé, version anglaise (`ap-en-section`). Extrait
@@ -281,8 +299,8 @@ Contenu d'un jour (le bloc de données du 10 octobre 2026 sert de modèle) :
 - **Chapeau** (`chapo`) : une phrase qui dit le sujet, sans annoncer la grammaire.
 - **Bilan** : 4 ou 5 phrases, sans liens vers les leçons (ils sont déjà dans la grammaire).
 - Pas de questions de compréhension.
-- Vérifier avec Playwright : aucune erreur JS, et chaque exercice de grammaire rempli avec `r[0]` donne
-  « parfait ». Typographie française gérée par `quotidien.js` pour les champs en français.
+- Vérifier avec `outils/quotidien-controle.py` (aucune erreur JS, chaque exercice de grammaire rempli avec `r[0]` donne
+  « parfait », listes à jour, renvois valides…). Typographie française gérée par `quotidien.js` pour les champs en français.
 
 ### Dossiers de langues (DS)
 
