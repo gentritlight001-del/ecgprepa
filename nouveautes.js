@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Côte d'Ivoire",
+"titre": "Côte d'Ivoire : un gisement d'or de 115 tonnes présenté à Boundiali, dans le nord du pays",
+"url": "actualites/monde/articles/cote-ivoire-gisement-or-boundiali.html",
+"image": "actualites/monde/images/cote-ivoire-gisement-or-boundiali.webp",
+"date": "2026-10-10T19:18:57+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Union européenne",
 "titre": "Une statue satirique de Trump nu et doré est exposée au Parlement européen, à Strasbourg",
 "url": "actualites/monde/articles/ue-statue-trump-orange-plague.html",
@@ -1114,15 +1123,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "18e sommet des BRICS+ : New Delhi sous le poids des tensions internationales",
 "url": "actualites/monde/articles/brics-18e-sommet-new-delhi.html",
 "image": "actualites/monde/images/brics-18e-sommet-new-delhi.webp",
-"date": "2026-09-12T10:40:02+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Union européenne",
-"titre": "La BCE relève ses taux directeurs face à la flambée des prix de l'énergie",
-"url": "actualites/monde/articles/bce-hausse-taux-directeurs.html",
-"image": "actualites/monde/images/bce-hausse-taux-directeurs.webp",
 "date": "2026-09-12T10:40:02+00:00"
 },
 {
