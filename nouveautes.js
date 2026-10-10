@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "États-Unis",
+"titre": "Trump annonce un accord avec Poutine sur des livraisons de diesel russe, sanctions suspendues",
+"url": "actualites/en/articles/us-trump-poutine-accord-diesel.html",
+"image": "actualites/en/images/us-trump-poutine-accord-diesel.webp",
+"date": "2026-10-10T19:28:55+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "États-Unis",
@@ -1249,15 +1258,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Reform UK x Rassemblement National : Farage et Bardella scellent un pacte anti-immigration à Birmingham",
 "url": "actualites/en/articles/uk-reformuk-rn-farage-bardella-2026.html",
 "image": "actualites/en/images/uk-reformuk-rn-farage-bardella-2026.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "Crue meurtrière dans le Grand Canyon : deux morts, un disparu et l'unique conduite d'eau du parc dévastée",
-"url": "actualites/en/articles/crue-grand-canyon-2026.html",
-"image": "actualites/en/images/crue-grand-canyon-2026.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
