@@ -197,20 +197,6 @@
         if (carte) { carte.scrollIntoView({ behavior: 'smooth', block: 'start' }); flash(carte); }
       }
     });
-    if (J.comprehension && J.comprehension.length) {
-      s1.appendChild(el('h3', 'sous-titre', 'Avez-vous compris ?'));
-      s1.appendChild(el('p', 'sous-intro', 'Répondez en anglais, à voix haute ou par écrit, en une phrase complète.'));
-      var qs = el('div', 'questions');
-      J.comprehension.forEach(function (c) {
-        var q = el('div', 'question');
-        q.appendChild(el('div', 'q', c.q));
-        var r = el('div', 'reponse', c.r);
-        q.appendChild(boutonDevoiler(r, 'Voir une réponse possible'));
-        q.appendChild(r);
-        qs.appendChild(q);
-      });
-      s1.appendChild(qs);
-    }
     main.appendChild(s1);
 
     /* 2. La grammaire */
@@ -237,16 +223,23 @@
     });
     if (J.aussi && J.aussi.length) {
       s2.appendChild(el('h3', 'sous-titre', 'Et aussi dans le texte'));
-      s2.appendChild(el('p', 'sous-intro', 'Des points plus courts, à repérer au passage.'));
-      var grille = el('div', 'aussi');
+      s2.appendChild(el('p', 'sous-intro', 'Les autres points du texte, une ligne chacun : la phrase, la règle, un exemple, la leçon.'));
+      var liste = el('div', 'aussi');
+      var cat = null;
       J.aussi.forEach(function (a) {
-        var it = el('div', 'aussi-item');
-        it.appendChild(el('div', 'a-ext', a.ext));
-        it.appendChild(el('div', 'a-note', typo(a.note)));
-        if (a.lecon) it.appendChild(lienLecon(a.lecon, a.ancre, true));
-        grille.appendChild(it);
+        if (a.cat && a.cat !== cat) { cat = a.cat; liste.appendChild(el('div', 'aussi-cat', typo(cat))); }
+        var ligne = el('div', 'aussi-ligne');
+        ligne.appendChild(el('div', 'a-ext', a.ext));
+        ligne.appendChild(el('div', 'a-regle', typo(a.regle) + (a.ex ? '<span class="a-ex">' + a.ex + '</span>' : '')));
+        if (a.lecon) {
+          var l = el('a', 'a-lecon', 'Leçon ' + a.lecon + ' →');
+          l.href = '../lecon' + a.lecon + '.html' + (a.ancre ? '#' + a.ancre : '');
+          l.title = 'Leçon ' + a.lecon + ' : ' + LECONS[a.lecon];
+          ligne.appendChild(l);
+        }
+        liste.appendChild(ligne);
       });
-      s2.appendChild(grille);
+      s2.appendChild(liste);
     }
     main.appendChild(s2);
 
@@ -304,14 +297,6 @@
     var s5 = enteteBloc('bilan', '5', 'Wrap-up · 1 min', 'Ce que je retiens');
     var bil = el('div', 'bilan');
     bil.appendChild(el('ul', null, J.bilan.map(function (b) { return '<li>' + typo(b) + '</li>'; }).join('')));
-    var vues = {};
-    var lecons = el('div', 'lecons-revoir');
-    J.grammaire.concat(J.aussi || []).forEach(function (g) {
-      if (!g.lecon || vues[g.lecon]) return;
-      vues[g.lecon] = 1;
-      lecons.appendChild(lienLecon(g.lecon, null, true));
-    });
-    bil.appendChild(lecons);
     s5.appendChild(bil);
     var fin = el('div', 'fin');
     var bT = el('button', 'termine', 'J\'ai terminé ce jour ✓'); bT.type = 'button';

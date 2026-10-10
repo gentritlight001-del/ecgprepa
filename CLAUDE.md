@@ -243,18 +243,22 @@ Contenu d'un jour (le bloc de données du 10 octobre 2026 sert de modèle) :
   de 250 à 350 mots en 4 à 6 paragraphes, légèrement adapté pour qu'il se lise seul. Balises :
   `[n|…]` = repère du point de grammaire n (dans l'ordre du texte ; un même n peut revenir),
   `{mot|traduction}` = aide au vocabulaire (8 à 15 mots).
-- **Compréhension** : 3 ou 4 questions en anglais, réponses en anglais.
 - **Grammaire** : 5 ou 6 cartes, une par repère : titre, citation (forme en `<mark>`), rappel
   court, piège du francophone, leçon et ancre (`lecon` + `ancre` = `id` d'une `<section>` de
   `../lecon<N>.html`), exercice de 3 ou 4 phrases à trous (`___`, réponses acceptées dans
-  `r`). Puis `aussi` : 4 à 8 points courts (articles, prépositions, nombres, connecteurs…),
-  chacun avec sa leçon. Seulement des leçons de 1re année, rien d'inventé hors du texte.
+  `r`). Puis `aussi` (« Et aussi dans le texte ») : 4 à 8 points courts, **une ligne
+  chacune**, groupés par catégorie (`cat` : constructions verbales, noms et articles,
+  comparaison, dates et chiffres, liens logiques…), avec l'extrait (`ext`, forme en `<mark>`),
+  la règle en une phrase (`regle`), un exemple court (`ex`) et la leçon. Seulement des leçons
+  de 1re année, rien d'inventé hors du texte.
 - **Vocabulaire** : 12 à 15 « essentiels » réutilisables dans n'importe quelle copie (verbes de
   presse, connecteurs, tournures), 12 à 18 mots du thème, chacun avec un exemple ; un exercice
   de réemploi de 6 à 8 phrases.
-- **Traduction** : version de 3 phrases du texte, thème de 5 phrases qui réemploient la
-  grammaire et le vocabulaire du jour, chacune avec traduction proposée et 2 ou 3 remarques.
-- **Bilan** : 4 ou 5 phrases.
+- **Traduction** : version de 3 phrases du texte, thème de **3 phrases** construites avec les
+  mots du vocabulaire du jour et la grammaire étudiée (l'indice rappelle les mots à placer),
+  chacune avec traduction proposée et 2 ou 3 remarques.
+- **Bilan** : 4 ou 5 phrases, sans liens vers les leçons (ils sont déjà dans la grammaire).
+- Pas de questions de compréhension.
 - Vérifier avec Playwright : aucune erreur JS, et chaque exercice rempli avec `r[0]` donne
   « parfait ». Typographie française gérée par `quotidien.js` pour les champs en français.
 
