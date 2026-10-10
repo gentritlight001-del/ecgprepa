@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "Royaume-Uni",
+"titre": "Les futurs billets de la Banque d'Angleterre porteront des animaux plutôt que des figures historiques",
+"url": "actualites/en/articles/uk-boe-billets-animaux.html",
+"image": "actualites/en/images/uk-boe-billets-animaux.webp",
+"date": "2026-10-10T19:06:26+00:00"
+},
+{
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne",
@@ -1240,15 +1249,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Crue meurtrière dans le Grand Canyon : deux morts, un disparu et l'unique conduite d'eau du parc dévastée",
 "url": "actualites/en/articles/crue-grand-canyon-2026.html",
 "image": "actualites/en/images/crue-grand-canyon-2026.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "Le directeur de la CIA à Moscou : avertissement à la Russie ou pression sur l'Iran ?",
-"url": "actualites/en/articles/cia-ratcliffe-visite-russie-2026.html",
-"image": "actualites/en/images/cia-ratcliffe-visite-russie-2026.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
