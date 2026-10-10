@@ -224,17 +224,18 @@ page pays ou région :
   WebP dans `images/` de la rubrique et ajoute le visuel et le fond flou. **Pas de légende** sous
   l'image. Sans visuel, le bandeau reste en texte seul.
 
-### Les langues au quotidien (1re année) : anglais, espagnol
+### Les langues au quotidien (1re année) : anglais, espagnol, allemand
 
 Un « coin » de pratique par matière, comme les colles de maths de 2e année : pour chaque langue,
 `premiere_annee/langues/<langue>/quotidien/`, un texte d'actualité par jour, décortiqué pour
 travailler surtout la grammaire de 1re année. Demandes types : « Fais le texte du jour d'anglais »,
-« … d'espagnol ».
+« … d'espagnol », « … d'allemand ».
 
 | Langue | Dossier | Édition source (articles, images) | Section de l'article | Leçons |
 |---|---|---|---|---|
 | Anglais | `premiere_annee/langues/anglais/quotidien/` | `actualites/en/` (`tous-en.html`) | `ap-en-section` | `premiere_annee/langues/anglais/lecon<N>.html` |
 | Espagnol | `premiere_annee/langues/espagnol/quotidien/` | `actualites/es/` (`tous-es.html`) | `ap-es-section` | `premiere_annee/langues/espagnol/lecon<N>.html` |
+| Allemand | `premiere_annee/langues/allemand/quotidien/` | `actualites/de/` (`tous-de.html`) | `ap-de-section` | `premiere_annee/langues/allemand/lecon<N>.html` (ancres génériques `s1`…`s7`, `formation`, `structures`… : se fier au titre de la section, pas au nom de l'ancre) |
 
 - Code commun : `premiere_annee/langues/commun/quotidien.js` et `quotidien.css` (la langue se lit
   dans l'adresse ; titres des leçons et sens des cartes dans `LANGUES`) ; cartes :
@@ -259,7 +260,7 @@ travailler surtout la grammaire de 1re année. Demandes types : « Fais le texte
   `ecg-<langue>-quotidien-a-revoir`, commun à la page du jour et à l'espace.
 
 **Procédure d'un nouveau jour**, pour une langue (demande ci-dessus, ou routine automatique tous
-les jours à 0 h, heure de Paris, qui fait l'anglais puis l'espagnol) — sans poser de question,
+les jours à 0 h, heure de Paris, qui fait l'anglais, puis l'espagnol, puis l'allemand) — sans poser de question,
 jusqu'à la mise en ligne :
 1. Date = date du jour à Paris : `TZ=Europe/Paris date +%F`. Si `jour-<date>.html` existe déjà
    pour cette langue, passer : rien à faire.
