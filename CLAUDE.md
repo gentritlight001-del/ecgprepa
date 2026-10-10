@@ -267,8 +267,9 @@ Contenu d'un jour (le bloc de données du 10 octobre 2026 sert de modèle) :
 - **Chaque renvoi doit tomber juste** : avant de lier une section, vérifier (grep) qu'elle traite
   vraiment le point annoncé. Si aucune leçon ne le traite, ajouter dans la section où il a sa
   place un court encadré `hl-box` (`tip` ou `info`), dans le style de la leçon, puis y lier.
-- **Vocabulaire** : 12 à 15 « essentiels » réutilisables dans n'importe quelle copie (verbes de
-  presse, connecteurs, tournures), 12 à 18 mots du thème, chacun avec un exemple. Pas
+- **Vocabulaire** : 12 à 14 « essentiels » réutilisables dans n'importe quelle copie (verbes de
+  presse, connecteurs, tournures), 12 à 18 mots du thème, chacun avec un exemple. **Nombre pair
+  dans chaque liste** (affichée sur deux colonnes : pas de case vide). Pas
   d'exercice à trous : `quotidien.js` en tire le module « Mémoriser », des cartes
   **français → anglais** seulement. Les cartes ratées vont dans le paquet « À revoir », gardé
   dans le navigateur d'un jour à l'autre.
