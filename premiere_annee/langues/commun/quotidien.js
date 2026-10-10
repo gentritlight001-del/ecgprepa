@@ -31,6 +31,20 @@
         21: 'Le plus-que-parfait du subjonctif', 22: 'La phrase conditionnelle', 23: 'Les subordonnées de concession',
         24: 'Avoir beau', 25: 'Les tournures emphatiques', 26: 'Les propositions corrélatives'
       }
+    },
+    allemand: {
+      sens: 'Français → allemand',
+      lecons: {
+        1: 'Le présent', 2: 'Les verbes forts et irréguliers', 3: 'La place du verbe',
+        4: 'Genre, pluriel et déclinaison des noms', 5: "Les cas et la déclinaison de l'article",
+        6: 'Les pronoms personnels et réfléchis', 7: 'La négation', 8: 'Les verbes de modalité', 9: "L'impératif",
+        10: 'Les verbes à particule', 11: "La déclinaison de l'adjectif", 12: 'Les prépositions',
+        13: 'Les verbes à rection prépositionnelle', 14: 'Comparatifs et superlatifs', 15: 'Les participes I et II',
+        16: 'Le parfait', 17: 'Le prétérit', 18: 'Le plus-que-parfait', 19: 'Le futur', 20: 'Les subordonnées',
+        21: "L'expression du temps", 22: 'Les propositions relatives', 23: "L'infinitive avec « zu »",
+        24: 'La voix passive', 25: 'Le subjonctif II', 26: "L'hypothèse", 27: 'Le subjonctif I et le discours indirect',
+        28: 'La traduction de « on »', 29: 'Les connecteurs logiques', 30: 'Les nombres et les variations chiffrées'
+      }
     }
   };
   var LANGUE = (location.pathname.match(/langues\/([^\/]+)\/quotidien\//) || [])[1] || 'anglais';
