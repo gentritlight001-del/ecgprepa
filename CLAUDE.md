@@ -212,7 +212,12 @@ page pays ou région :
     Traiter **uniquement** ce que demande le programme de colle (questions et exercices
     listés), sans exercice, matrice ou question bonus en plus, même si le poly en contient.
     En tête des PDF, sous le titre : seulement le thème de la colle (pas de « — énoncés à
-    connaître… » ni « — solutions rédigées… »). Matrice de passage écrite sans barres verticales.
+    connaître… » ni « — solutions rédigées… »).
+    Matrice de passage (et matrice d'une application linéaire) disposée comme dans le cours,
+    sans barres verticales : parenthèses vides, vecteurs de la nouvelle base au-dessus
+    (e'_1 ⋯ e'_n), vecteurs de l'ancienne base à droite (e_1 ⋮ e_n).
+    Une couleur par colle, jamais deux fois la même ni un autre bleu : 1 vert, 2 bordeaux,
+    3 sarcelle, 4 prune, 5 terre cuite.
   - Mettre à jour la carte « Colle de la semaine » de `deuxieme_annee/maths/index.html`.
 
 ### Fiches de l'Humanité (cinéma, littérature)
