@@ -16,12 +16,24 @@
     30: 'Les connecteurs logiques'
   };
   var CLE_FAITS = 'ecg-anglais-quotidien-faits';
+  var CLE_REVOIR = 'ecg-anglais-quotidien-a-revoir';  /* mots ratés, gardés d'un jour à l'autre */
 
   function lireFaits() {
     try { return JSON.parse(localStorage.getItem(CLE_FAITS) || '[]') || []; } catch (e) { return []; }
   }
   function ecrireFaits(l) {
     try { localStorage.setItem(CLE_FAITS, JSON.stringify(l)); } catch (e) { /* stockage indisponible */ }
+  }
+
+  function lireRevoir() {
+    try { return JSON.parse(localStorage.getItem(CLE_REVOIR) || '[]') || []; } catch (e) { return []; }
+  }
+  function ecrireRevoir(l) {
+    try { localStorage.setItem(CLE_REVOIR, JSON.stringify(l)); } catch (e) { /* stockage indisponible */ }
+  }
+  function melanger(t) {
+    for (var i = t.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var x = t[i]; t[i] = t[j]; t[j] = x; }
+    return t;
   }
 
   /* Typographie française : espace insécable avant : ; ! ? % » et après « */
@@ -119,33 +131,156 @@
   }
 
   function tableVocab(mots) {
-    var t = el('table', 'vocab cache-fr');
+    var t = el('table', 'vocab');
     t.innerHTML = '<thead><tr><th>Anglais</th><th>Français</th><th>Dans une phrase</th></tr></thead>';
     var tb = el('tbody');
     mots.forEach(function (m) {
-      var tr = el('tr');
-      tr.appendChild(el('td', 'en', m.en));
-      var fr = el('td', 'fr', '<span>' + typo(m.fr) + '</span>');
-      fr.addEventListener('click', function () { fr.classList.toggle('vu'); });
-      tr.appendChild(fr);
-      tr.appendChild(el('td', 'ex', m.ex || ''));
-      tb.appendChild(tr);
+      tb.appendChild(el('tr', null, '<td class="en">' + m.en + '</td><td class="fr">' + typo(m.fr) + '</td><td class="ex">' + (m.ex || '') + '</td>'));
     });
     t.appendChild(tb);
     return t;
   }
-  function interrupteurVocab(table) {
-    var outils = el('div', 'outils');
-    var b = el('button', 'bouton on', 'Mode révision : français caché'); b.type = 'button';
-    b.addEventListener('click', function () {
-      var cache = table.classList.toggle('cache-fr');
-      b.classList.toggle('on', cache);
-      b.textContent = cache ? 'Mode révision : français caché' : 'Afficher tout le français';
-      table.querySelectorAll('td.fr.vu').forEach(function (td) { td.classList.remove('vu'); });
+
+  /* Mémoriser : 1. cartes anglais → français, 2. cartes français → anglais,
+     3. phrases à trous. Une carte ratée revient trois cartes plus loin et
+     rejoint le paquet « À revoir », gardé d'un jour à l'autre. */
+  function memoriser(J) {
+    var paquets = {
+      tous: J.vocabulaire.essentiels.concat(J.vocabulaire.theme.mots),
+      essentiels: J.vocabulaire.essentiels,
+      theme: J.vocabulaire.theme.mots
+    };
+    var etat = { etape: 1, paquet: 'tous', file: [], total: 0, sus: 0, rates: 0, carte: null };
+    var box = el('div', 'memo');
+
+    var etapes = el('div', 'memo-etapes');
+    [[1, 'Reconnaître', 'anglais → français'], [2, 'Retrouver', 'français → anglais'], [3, 'Réemployer', 'les mots en contexte']]
+      .forEach(function (e) {
+        var b = el('button', 'memo-etape', '<b>' + e[0] + '</b><span>' + e[1] + '<small>' + e[2] + '</small></span>');
+        b.type = 'button'; b.setAttribute('data-etape', e[0]);
+        b.addEventListener('click', function () { allerA(e[0]); });
+        etapes.appendChild(b);
+      });
+    box.appendChild(etapes);
+
+    /* Cartes */
+    var zoneCartes = el('div', 'memo-cartes');
+    var paquetsBar = el('div', 'memo-paquets');
+    var libelles = { tous: 'Tous les mots', essentiels: 'Essentiels', theme: 'Thème', revoir: 'À revoir' };
+    Object.keys(libelles).forEach(function (k) {
+      var b = el('button', 'memo-paquet', libelles[k]); b.type = 'button'; b.setAttribute('data-paquet', k);
+      b.addEventListener('click', function () { etat.paquet = k; demarrer(); });
+      paquetsBar.appendChild(b);
     });
-    outils.appendChild(b);
-    outils.appendChild(el('span', 'score', 'Touchez une case pour vérifier.'));
-    return outils;
+    zoneCartes.appendChild(paquetsBar);
+    var progres = el('div', 'memo-progres', '<div class="memo-jauge"><i></i></div><span></span>');
+    zoneCartes.appendChild(progres);
+    var carte = el('div', 'memo-carte');
+    carte.tabIndex = 0;
+    zoneCartes.appendChild(carte);
+    var actions = el('div', 'memo-actions');
+    var bRetourner = el('button', 'bouton plein', 'Retourner la carte'); bRetourner.type = 'button';
+    var bRevoir = el('button', 'memo-non', '↺ À revoir'); bRevoir.type = 'button';
+    var bSavais = el('button', 'memo-oui', '✓ Je savais'); bSavais.type = 'button';
+    actions.appendChild(bRetourner); actions.appendChild(bRevoir); actions.appendChild(bSavais);
+    zoneCartes.appendChild(actions);
+    var aide = el('p', 'memo-aide', 'Dites la réponse à voix haute avant de retourner la carte. Clavier : espace pour retourner, ← à revoir, → je savais.');
+    zoneCartes.appendChild(aide);
+    box.appendChild(zoneCartes);
+
+    /* Phrases à trous */
+    var zoneExo = el('div', 'memo-exo');
+    if (J.vocabulaire.exercice) zoneExo.appendChild(exercice(J.vocabulaire.exercice));
+    box.appendChild(zoneExo);
+
+    function mots() { return etat.paquet === 'revoir' ? lireRevoir() : paquets[etat.paquet]; }
+    function majPaquets() {
+      var n = lireRevoir().length;
+      paquetsBar.querySelectorAll('.memo-paquet').forEach(function (b) {
+        var k = b.getAttribute('data-paquet');
+        b.classList.toggle('actif', k === etat.paquet);
+        b.textContent = libelles[k] + ' (' + (k === 'revoir' ? n : paquets[k].length) + ')';
+      });
+    }
+    function majProgres() {
+      progres.querySelector('i').style.width = (etat.total ? Math.round(100 * etat.sus / etat.total) : 0) + '%';
+      progres.querySelector('span').textContent = etat.sus + ' / ' + etat.total + ' sus' + (etat.rates ? ' · ' + etat.rates + ' à revoir' : '');
+    }
+    function demarrer() {
+      etat.file = melanger(mots().slice());
+      etat.total = etat.file.length; etat.sus = 0; etat.rates = 0;
+      majPaquets(); suivante();
+    }
+    function recto(c) { return etat.etape === 1 ? c.en : typo(c.fr); }
+    function verso(c) { return etat.etape === 1 ? typo(c.fr) : c.en; }
+    function suivante() {
+      majProgres();
+      etat.carte = etat.file.shift() || null;
+      carte.classList.remove('retournee');
+      if (!etat.carte) return fin();
+      carte.innerHTML = '<div class="memo-sens">' + (etat.etape === 1 ? 'Anglais → français' : 'Français → anglais') + '</div>' +
+        '<div class="memo-recto">' + recto(etat.carte) + '</div>' +
+        '<div class="memo-verso"><div class="memo-trad">' + verso(etat.carte) + '</div>' +
+        (etat.carte.ex ? '<div class="memo-ex">' + etat.carte.ex + '</div>' : '') + '</div>';
+      actions.className = 'memo-actions';
+      aide.hidden = false;
+    }
+    function fin() {
+      actions.className = 'memo-actions fini';
+      aide.hidden = true;
+      if (!etat.total) {
+        carte.innerHTML = '<div class="memo-fin">Aucun mot à revoir pour l’instant.<small>Les mots marqués « À revoir » s’ajoutent ici et vous suivent d’un jour à l’autre.</small></div>'
+          .replace(/« /g, '« ').replace(/ »/g, ' »');
+        return;
+      }
+      var suite = etat.etape === 1 ? 'Passer à l’étape 2 : français → anglais' : 'Passer à l’étape 3 : les mots en contexte';
+      carte.innerHTML = '<div class="memo-fin">' + etat.total + (etat.total > 1 ? ' mots sus' : ' mot su') + ' !<small>' +
+        (etat.rates ? etat.rates + ' raté' + (etat.rates > 1 ? 's' : '') + ' en route, gardé' + (etat.rates > 1 ? 's' : '') + ' dans « À revoir ».' : 'Aucune erreur.').replace(/« /g, '« ').replace(/ »/g, ' »') +
+        '</small><span class="memo-fin-actions"><button type="button" class="bouton" data-a="refaire">Recommencer</button>' +
+        '<button type="button" class="bouton plein" data-a="suite">' + suite + ' →</button></span></div>';
+      carte.querySelector('[data-a="refaire"]').addEventListener('click', demarrer);
+      carte.querySelector('[data-a="suite"]').addEventListener('click', function () { allerA(etat.etape + 1); });
+    }
+    function retourner() { if (etat.carte) carte.classList.add('retournee'); }
+    function savais() {
+      if (!etat.carte) return;
+      if (etat.paquet === 'revoir') ecrireRevoir(lireRevoir().filter(function (m) { return m.en !== etat.carte.en; }));
+      etat.sus++; majPaquets(); suivante();
+    }
+    function aRevoir() {
+      if (!etat.carte) return;
+      var l = lireRevoir();
+      if (!l.some(function (m) { return m.en === etat.carte.en; })) {
+        l.push({ en: etat.carte.en, fr: etat.carte.fr, ex: etat.carte.ex || '', date: J.date });
+        ecrireRevoir(l);
+      }
+      etat.rates++;
+      etat.file.splice(Math.min(3, etat.file.length), 0, etat.carte);
+      majPaquets(); suivante();
+    }
+    function allerA(n) {
+      etat.etape = Math.min(3, n);
+      etapes.querySelectorAll('.memo-etape').forEach(function (b) {
+        var k = +b.getAttribute('data-etape');
+        b.classList.toggle('actif', k === etat.etape);
+        b.classList.toggle('passee', k < etat.etape);
+      });
+      zoneCartes.hidden = etat.etape === 3;
+      zoneExo.hidden = etat.etape !== 3;
+      if (etat.etape < 3) demarrer();
+    }
+    carte.addEventListener('click', function (ev) { if (!ev.target.closest('button')) retourner(); });
+    bRetourner.addEventListener('click', retourner);
+    bRevoir.addEventListener('click', aRevoir);
+    bSavais.addEventListener('click', savais);
+    box.addEventListener('keydown', function (ev) {
+      if (zoneCartes.hidden || /INPUT|TEXTAREA|BUTTON/.test(ev.target.tagName) && ev.key === ' ') return;
+      if (ev.key === ' ') { ev.preventDefault(); if (carte.classList.contains('retournee')) return; retourner(); }
+      else if (ev.key === 'ArrowLeft' && carte.classList.contains('retournee')) aRevoir();
+      else if (ev.key === 'ArrowRight' && carte.classList.contains('retournee')) savais();
+    });
+    allerA(1);
+    return box;
   }
 
   function construireJour(J) {
@@ -244,24 +379,17 @@
     main.appendChild(s2);
 
     /* 3. Le vocabulaire */
-    var s3 = enteteBloc('vocabulaire', '3', 'Vocabulary · 4 min', 'Le vocabulaire à retenir',
-      "D'abord les mots qui servent partout (dans n'importe quelle copie ou colle), puis le vocabulaire du thème. Cachez le français et testez-vous.");
+    var s3 = enteteBloc('vocabulaire', '3', 'Vocabulary · 6 min', 'Le vocabulaire à retenir',
+      "D'abord les mots qui servent partout (dans n'importe quelle copie ou colle), puis le vocabulaire du thème. Lisez les deux listes, puis passez à « Mémoriser ».");
     s3.appendChild(el('h3', 'sous-titre', 'Les essentiels, utiles partout'));
     s3.appendChild(el('p', 'sous-intro', 'Verbes et tournures de presse à réemployer dans vos essais et vos commentaires.'));
-    var t1 = tableVocab(J.vocabulaire.essentiels);
-    s3.appendChild(interrupteurVocab(t1)); s3.appendChild(t1);
+    s3.appendChild(tableVocab(J.vocabulaire.essentiels));
     s3.appendChild(el('h3', 'sous-titre', typo('Vocabulaire du thème : ' + J.vocabulaire.theme.titre)));
     s3.appendChild(el('p', 'sous-intro', 'Les mots propres au sujet du jour.'));
-    var t2 = tableVocab(J.vocabulaire.theme.mots);
-    s3.appendChild(interrupteurVocab(t2)); s3.appendChild(t2);
-    if (J.vocabulaire.exercice) {
-      var cv = el('div', 'g-carte');
-      cv.style.marginTop = '22px';
-      cv.appendChild(el('div', 'g-tete', '<span class="g-titre">Réemploi</span>'));
-      cv.appendChild(exercice(J.vocabulaire.exercice));
-      cv.querySelector('.exo').style.cssText = 'margin-top:0;padding-top:0;border-top:0';
-      s3.appendChild(cv);
-    }
+    s3.appendChild(tableVocab(J.vocabulaire.theme.mots));
+    s3.appendChild(el('h3', 'sous-titre', 'Mémoriser'));
+    s3.appendChild(el('p', 'sous-intro', typo("Trois étapes, de la plus facile à la plus exigeante. Une carte ratée revient un peu plus loin, jusqu'à ce qu'elle soit sue, et reste dans le paquet « À revoir » pour les jours suivants.")));
+    s3.appendChild(memoriser(J));
     main.appendChild(s3);
 
     /* 4. La traduction */

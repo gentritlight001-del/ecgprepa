@@ -253,7 +253,9 @@ Contenu d'un jour (le bloc de données du 10 octobre 2026 sert de modèle) :
   de 1re année, rien d'inventé hors du texte.
 - **Vocabulaire** : 12 à 15 « essentiels » réutilisables dans n'importe quelle copie (verbes de
   presse, connecteurs, tournures), 12 à 18 mots du thème, chacun avec un exemple ; un exercice
-  de réemploi de 6 à 8 phrases.
+  de réemploi de 6 à 8 phrases. `quotidien.js` en tire le module « Mémoriser » : 1. cartes
+  anglais → français, 2. cartes français → anglais, 3. les phrases à trous. Les cartes ratées
+  vont dans le paquet « À revoir », gardé dans le navigateur d'un jour à l'autre.
 - **Traduction** : version de 3 phrases du texte, thème de **3 phrases** construites avec les
   mots du vocabulaire du jour et la grammaire étudiée (l'indice rappelle les mots à placer),
   chacune avec traduction proposée et 2 ou 3 remarques.
