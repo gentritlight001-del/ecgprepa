@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
+"titre": "Allemagne : Reiche relève la prévision de croissance 2026 à 1,3 %, contre 0,5 % au printemps",
+"url": "actualites/de/articles/allemagne-herbstprojektion-2026.html",
+"image": "actualites/de/images/allemagne-herbstprojektion-2026.webp",
+"date": "2026-10-10T19:03:28+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "Royaume-Uni",
@@ -1537,15 +1546,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Merz à la chancellerie : la grande coalition face aux défis d'une Allemagne en mutation",
 "url": "actualites/de/articles/merz-politique.html",
 "image": "actualites/de/images/merz-politique.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "Quitter l'Allemagne plus de 3 mois : la nouvelle obligation d'autorisation militaire",
-"url": "actualites/de/articles/autorisation-quitter-territoire.html",
-"image": "actualites/de/images/autorisation-quitter-territoire.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
