@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Brésil",
+"titre": "Brésil : mandat d'arrêt contre Eduardo Bolsonaro, condamné pour avoir sollicité Washington",
+"url": "actualites/monde/articles/bresil-eduardo-bolsonaro-mandat-arret.html",
+"image": "actualites/monde/images/bresil-eduardo-bolsonaro-mandat-arret.webp",
+"date": "2026-10-10T19:12:49+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Prix Nobel",
 "titre": "Nobel de la paix 2026 : la juriste sud-africaine Navi Pillay couronnée pour le droit international",
 "url": "actualites/monde/articles/nobel-paix-2026-pillay.html",
@@ -1178,15 +1187,6 @@ window.ECG_NOUVEAUTES = [
 "url": "Culture-Generale/amazon.html",
 "image": "Culture-Generale/images/amazon.webp",
 "date": "2026-09-12T10:40:02+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Arabie saoudite",
-"titre": "Arabie saoudite – Houthis : le front s'aggrave dangereusement",
-"url": "actualites/monde/articles/arabie-houthis-front-aggrave.html",
-"image": "actualites/monde/images/arabie-houthis-front-aggrave.webp",
-"date": "2026-09-11T19:03:33+00:00"
 },
 {
 "t": "en",
