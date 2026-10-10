@@ -108,6 +108,18 @@ def main():
                       ' '.join(J['texte']['paragraphes'])).split())
     regle(230 <= mots <= 370, 'Texte de 250 à 350 mots environ', '%d mots' % mots)
 
+    # Pas de tiret cadratin dans la rédaction (titres exceptés)
+    def textes(o, cle=''):
+        if isinstance(o, str):
+            return [] if cle in ('titre', 'libelle', 'cat') else [o]
+        if isinstance(o, dict):
+            return [t for k, v in o.items() for t in textes(v, k)]
+        return [t for v in o for t in textes(v, cle)] if isinstance(o, list) else []
+    tirets = [t for t in textes(J) if '—' in t]
+    regle(not tirets, 'Aucun tiret cadratin « — » dans le texte',
+          'remplacer par une virgule, un deux-points ou des parenthèses : '
+          + ' | '.join(t[:60] for t in tirets[:3]))
+
     # Renvois vers les leçons : l'ancre doit exister
     absents = []
     for c in g:

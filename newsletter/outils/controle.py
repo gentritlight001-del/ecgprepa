@@ -44,6 +44,9 @@ MESURE = r"""() => {
     nbVocab: vocab.length,
     vocabSur2: vocab.filter(t => t.getBoundingClientRect().height > hLigne * 1.5).map(t => t.textContent.trim()),
     motDuNumero: !!$('.motblock'),
+    tirets: [...document.querySelectorAll('.paper p')].map(p => {
+      const c = p.cloneNode(true); c.querySelectorAll('.dropcity, .lab').forEach(e => e.remove());
+      return c.textContent.trim(); }).filter(t => t.includes('—')).map(t => t.slice(0, 50)),
   };
 }"""
 
@@ -90,6 +93,8 @@ def controler(page, fichier):
        "reformuler le titre qui ne fait pas 2 lignes")
     ok(all(v <= 4 for v in m["videBas"]), f"Brèves du bas jusqu'à la ligne « Lire → » : vide {m['videBas']} px",
        "allonger le texte qui laisse un vide (ou raccourcir celui qui fait descendre les autres)")
+    ok(not m["tirets"], f"Aucun tiret cadratin « — » dans les textes {m['tirets'] if m['tirets'] else ''}",
+       "remplacer par une virgule, un deux-points ou des parenthèses")
     if not m["motDuNumero"]:
         ok(m["nbVocab"] >= 12, f"Vocabulaire : {m['nbVocab']} entrées (min 12)", "ajouter des entrées")
         ok(not m["vocabSur2"], f"Vocabulaire sur une ligne {m['vocabSur2'] if m['vocabSur2'] else ''}",
