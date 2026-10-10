@@ -348,7 +348,18 @@
     }
   }
 
+  /* La barre des étapes se colle juste sous la navigation, quelle que soit sa hauteur
+     (fil d'Ariane sur plusieurs lignes, avatar ajouté par auth.js). */
+  function caler() {
+    var nav = document.querySelector('nav.haut');
+    if (nav) document.documentElement.style.setProperty('--haut-nav', nav.offsetHeight + 'px');
+  }
+
   function demarrer() {
+    caler();
+    var nav = document.querySelector('nav.haut');
+    if (nav && 'ResizeObserver' in window) new ResizeObserver(caler).observe(nav);
+    else window.addEventListener('resize', caler);
     if (window.JOUR && document.getElementById('jour')) construireJour(window.JOUR);
     else if (document.querySelector('.jours-grid')) construireIndex();
   }
