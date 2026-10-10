@@ -222,6 +222,42 @@ page pays ou région :
   WebP dans `images/` de la rubrique et ajoute le visuel et le fond flou. **Pas de légende** sous
   l'image. Sans visuel, le bandeau reste en texte seul.
 
+### L'anglais au quotidien (1re année)
+
+Un « coin » de pratique par matière, comme les colles de maths de 2e année. Le premier :
+`premiere_annee/langues/anglais/quotidien/`, un texte d'actualité par jour, décortiqué pour
+travailler surtout la grammaire de 1re année. Demande type : « Fais le texte du jour d'anglais ».
+
+- `index.html` : la carte « Le texte du jour » (`.une`) et la grille `jours-grid` (le nouveau
+  jour **en tête**, avec `data-date` et `data-lecons` = numéros des leçons des cartes de
+  grammaire, qui alimentent le filtre par leçon).
+- `jour-AAAA-MM-JJ.html` : une page par jour. Copier la page du dernier jour et ne changer que
+  le `<title>`, la description, « Jour N » dans le fil d'Ariane et le bloc
+  `<script id="donnees">`. `quotidien.js` construit tout ; `quotidien.css` est commun.
+- Mettre aussi à jour la carte « Le texte du jour » de la barre latérale de
+  `premiere_annee/langues/anglais/index.html`.
+
+Contenu d'un jour (le bloc de données du 10 octobre 2026 sert de modèle) :
+- **Texte** : le plus récent article de l'édition anglophone (`ACTU_DATA` de
+  `actualites/en/tous-en.html`) pas encore utilisé, version anglaise (`ap-en-section`). Extrait
+  de 250 à 350 mots en 4 à 6 paragraphes, légèrement adapté pour qu'il se lise seul. Balises :
+  `[n|…]` = repère du point de grammaire n (dans l'ordre du texte ; un même n peut revenir),
+  `{mot|traduction}` = aide au vocabulaire (8 à 15 mots).
+- **Compréhension** : 3 ou 4 questions en anglais, réponses en anglais.
+- **Grammaire** : 5 ou 6 cartes, une par repère : titre, citation (forme en `<mark>`), rappel
+  court, piège du francophone, leçon et ancre (`lecon` + `ancre` = `id` d'une `<section>` de
+  `../lecon<N>.html`), exercice de 3 ou 4 phrases à trous (`___`, réponses acceptées dans
+  `r`). Puis `aussi` : 4 à 8 points courts (articles, prépositions, nombres, connecteurs…),
+  chacun avec sa leçon. Seulement des leçons de 1re année, rien d'inventé hors du texte.
+- **Vocabulaire** : 12 à 15 « essentiels » réutilisables dans n'importe quelle copie (verbes de
+  presse, connecteurs, tournures), 12 à 18 mots du thème, chacun avec un exemple ; un exercice
+  de réemploi de 6 à 8 phrases.
+- **Traduction** : version de 3 phrases du texte, thème de 5 phrases qui réemploient la
+  grammaire et le vocabulaire du jour, chacune avec traduction proposée et 2 ou 3 remarques.
+- **Bilan** : 4 ou 5 phrases.
+- Vérifier avec Playwright : aucune erreur JS, et chaque exercice rempli avec `r[0]` donne
+  « parfait ». Typographie française gérée par `quotidien.js` pour les champs en français.
+
 ### Dossiers de langues (DS)
 
 - Page type `deuxieme_annee/langues/anglais/DS/ang-dsN.html` : seul le bloc
