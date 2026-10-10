@@ -1,10 +1,19 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Prix Nobel",
+"titre": "Nobel de la paix 2026 : la juriste sud-africaine Navi Pillay couronnée pour le droit international",
+"url": "actualites/monde/articles/nobel-paix-2026-pillay.html",
+"image": "actualites/monde/images/nobel-paix-2026-pillay.webp",
+"date": "2026-10-10T19:09:46+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "Royaume-Uni",
-"titre": "Les futurs billets de la Banque d'Angleterre porteront des animaux plutôt que des figures historiques",
+"titre": "Les futurs billets de la Banque d'Angleterre porteront des animaux, pas des figures historiques",
 "url": "actualites/en/articles/uk-boe-billets-animaux.html",
 "image": "actualites/en/images/uk-boe-billets-animaux.webp",
 "date": "2026-10-10T19:06:26+00:00"
@@ -1177,15 +1186,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Arabie saoudite – Houthis : le front s'aggrave dangereusement",
 "url": "actualites/monde/articles/arabie-houthis-front-aggrave.html",
 "image": "actualites/monde/images/arabie-houthis-front-aggrave.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Chine",
-"titre": "Chine : le 50e anniversaire de la mort de Mao ravive les débats historiques",
-"url": "actualites/monde/articles/chine-mao-50e-anniversaire-mort.html",
-"image": "actualites/monde/images/chine-mao-50e-anniversaire-mort.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
