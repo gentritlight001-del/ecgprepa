@@ -10,6 +10,150 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-10-10T15:41:06+00:00"
 },
 {
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Cours 1",
+"titre": "Qu'est-ce que l'humanité ?",
+"url": "humanite/cours-humanite/Cours/cours1.html",
+"image": "humanite/cours-humanite/Cours/images/ecole-d-athenes.webp",
+"date": "2026-10-09T19:29:57+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Mexique",
+"titre": "Mexique : Ceci Flores et sa fille, premières familles certifiées pour rechercher les disparus",
+"url": "actualites/es/articles/mexique-buscadoras-certification.html",
+"image": "actualites/es/images/mexique-buscadoras-certification.webp",
+"date": "2026-10-08T19:05:36+00:00"
+},
+{
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "États-Unis",
+"titre": "Trump veut bannir « intelligence artificielle » et imposer « super intelligence » partout",
+"url": "actualites/en/articles/trump-super-intelligence-onu.html",
+"image": "actualites/en/images/trump-super-intelligence-onu.webp",
+"date": "2026-10-08T19:01:47+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Ghana",
+"titre": "Ghana : le Cabinet approuve une candidature officielle aux BRICS, adhésion encore incertaine",
+"url": "actualites/monde/articles/ghana-candidature-brics.html",
+"image": "actualites/monde/images/ghana-candidature-brics.webp",
+"date": "2026-10-08T18:56:44+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "France",
+"titre": "Mistral AI dévoile Large 4, un modèle à 1 000 milliards de paramètres, pour revenir dans la course",
+"url": "actualites/monde/articles/mistral-large-4-retard.html",
+"image": "actualites/monde/images/mistral-large-4-retard.webp",
+"date": "2026-10-08T18:53:04+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "États-Unis",
+"titre": "Nvidia vaut désormais près de deux fois toute la Bourse de Paris, au seuil des 6 000 milliards",
+"url": "actualites/monde/articles/nvidia-double-bourse-paris.html",
+"image": "actualites/monde/images/nvidia-double-bourse-paris.webp",
+"date": "2026-10-08T18:47:24+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Prix Nobel",
+"titre": "Nobel de chimie 2026 : Henri Kagan et Kenso Soai couronnés pour les molécules « miroir »",
+"url": "actualites/monde/articles/nobel-chimie-2026-kagan-soai.html",
+"image": "actualites/monde/images/nobel-chimie-2026-kagan-soai.webp",
+"date": "2026-10-08T18:03:48+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "France",
+"titre": "Air Liquide lance son premier rachat d'actions, 4 milliards d'euros, dans son plan BEYOND",
+"url": "actualites/monde/articles/air-liquide-rachat-actions-4-milliards.html",
+"image": "actualites/monde/images/air-liquide-rachat-actions-4-milliards.webp",
+"date": "2026-10-08T17:56:08+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Israël / Gaza",
+"titre": "7 octobre : trois ans après, Israël commémore entre cessez-le-feu bloqué et élections",
+"url": "actualites/monde/articles/israel-7-octobre-troisieme-anniversaire.html",
+"image": "actualites/monde/images/israel-7-octobre-troisieme-anniversaire.webp",
+"date": "2026-10-08T17:49:00+00:00"
+},
+{
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
+"titre": "Démographie : l'Allemagne passerait de 83,3 à 81,8 millions d'habitants d'ici 2045",
+"url": "actualites/de/articles/demografische-lage-nation-2045.html",
+"image": "actualites/de/images/demografische-lage-nation-2045.webp",
+"date": "2026-10-07T06:48:15+00:00"
+},
+{
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
+"titre": "Saxe-Anhalt : Tobias Rausch (AfD) élu président du Landtag, une première en Allemagne",
+"url": "actualites/de/articles/saxe-anhalt-rausch-president-landtag.html",
+"image": "actualites/de/images/saxe-anhalt-rausch-president-landtag.webp",
+"date": "2026-10-07T06:43:41+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Prix Nobel",
+"titre": "Nobel de physique 2026 : Francis Halzen couronné pour ses travaux sur les neutrinos",
+"url": "actualites/monde/articles/nobel-physique-2026-halzen-neutrinos.html",
+"image": "actualites/monde/images/nobel-physique-2026-halzen-neutrinos.webp",
+"date": "2026-10-07T06:39:03+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Kenya",
+"titre": "Kenya : un homme revenu de RDC meurt d'Ebola à Nairobi, premier cas jamais recensé",
+"url": "actualites/monde/articles/kenya-premier-deces-ebola.html",
+"image": "actualites/monde/images/kenya-premier-deces-ebola.webp",
+"date": "2026-10-07T05:33:33+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Kosovo",
+"titre": "Kosovo : le Parlement élit Justina Pula présidente à quelques minutes de l'échéance",
+"url": "actualites/monde/articles/kosovo-justina-pula-presidente.html",
+"image": "actualites/monde/images/kosovo-justina-pula-presidente.webp",
+"date": "2026-10-07T05:30:22+00:00"
+},
+{
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "États-Unis",
+"titre": "Nebraska : Trump suggère de laisser l'Iran « détruire » Los Angeles ou San Diego",
+"url": "actualites/en/articles/us-trump-nebraska-iran-los-angeles-2026.html",
+"image": "actualites/en/images/us-trump-nebraska-iran-los-angeles-2026.webp",
+"date": "2026-10-07T05:26:41+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Espagne",
+"titre": "Le Tribunal suprême lève l'ordre d'arrestation contre Puigdemont, qui peut rentrer en Espagne",
+"url": "actualites/es/articles/puigdemont-levee-ordre-arrestation.html",
+"image": "actualites/es/images/puigdemont-levee-ordre-arrestation.webp",
+"date": "2026-10-07T05:19:00+00:00"
+},
+{
 "t": "cg",
 "rubrique": "Culture générale",
 "meta": "Géopolitique",
@@ -1000,87 +1144,6 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Serbie",
-"titre": "Serbie : dissolution du Parlement",
-"url": "actualites/monde/articles/serbie-dissolution-parlement.html",
-"image": "actualites/monde/images/serbie-dissolution-parlement.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Monde",
-"titre": "OpenAI affirme avoir résolu un problème du prix du millénaire",
-"url": "actualites/monde/articles/openai-navier-stokes-millenaire.html",
-"image": "actualites/monde/images/openai-navier-stokes-millenaire.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Monde",
-"titre": "Classement PISA 2025 : la France recule, l'Asie de l'Est domine",
-"url": "actualites/monde/articles/classement-pisa-2025.html",
-"image": "actualites/monde/images/classement-pisa-2025.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Monde",
-"titre": "Abandon de Mercator : l'avènement de la projection Eckert IV",
-"url": "actualites/monde/articles/abandon-mercator-eckert.html",
-"image": "actualites/monde/images/abandon-mercator-eckert.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Monde",
-"titre": "El Niño : le phénomène climatique qui menace de battre tous les records en 2026",
-"url": "actualites/monde/articles/el-nino-phenomene-climatique.html",
-"image": "actualites/monde/images/el-nino-phenomene-climatique.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Kirghizistan",
-"titre": "Le Kirghizistan retrouve ses Jeux mondiaux nomades, les « Olympiades des steppes »",
-"url": "actualites/monde/articles/kirghizistan-world-nomad-games.html",
-"image": "actualites/monde/images/kirghizistan-world-nomad-games.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Islande",
-"titre": "Islande : le référendum sur la reprise des négociations d'adhésion à l'UE rejeté",
-"url": "actualites/monde/articles/islande-adhesion-ue-rejetee.html",
-"image": "actualites/monde/images/islande-adhesion-ue-rejetee.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Norvège",
-"titre": "Harald V, roi de Norvège pendant trente-cinq ans, meurt à l'âge de 89 ans",
-"url": "actualites/monde/articles/mort-harald-v.html",
-"image": "actualites/monde/images/mort-harald-v.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Népal",
-"titre": "Népal : une crue glaciaire dévastatrice fait plus de 600 morts à la frontière tibétaine",
-"url": "actualites/monde/articles/nepal-crue-glaciaire-catastrophe.html",
-"image": "actualites/monde/images/nepal-crue-glaciaire-catastrophe.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "États-Unis",
@@ -1168,24 +1231,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Addiction des jeunes aux réseaux sociaux : Meta accepte de payer jusqu'à 17 milliards de dollars",
 "url": "actualites/en/articles/meta-amende-addiction-reseaux-2026.html",
 "image": "actualites/en/images/meta-amende-addiction-reseaux-2026.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "Royaume-Uni",
-"titre": "Cybersécurité : des hackers liés à l'Iran accusés d'avoir provoqué l'arrêt d'une centrale électrique britannique",
-"url": "actualites/en/articles/uk-iran-hackers-power-plant-2026.html",
-"image": "actualites/en/images/uk-iran-hackers-power-plant-2026.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "Données des enfants : TikTok accepte de payer 400 millions de dollars aux États-Unis",
-"url": "actualites/en/articles/tiktok-amende-400-millions-2026.html",
-"image": "actualites/en/images/tiktok-amende-400-millions-2026.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
@@ -1303,24 +1348,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Séisme de magnitude 7,4 dans le Chocó — plus de 300 morts et un pays sous le choc",
 "url": "actualites/es/articles/colombie-seisme-magnitude-7-4.html",
 "image": "actualites/es/images/colombie-seisme-magnitude-7-4.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Espagne",
-"titre": "Incendies de la Sierra Oeste : Madrid affronte le plus grand feu de forêt de l'histoire d'Espagne",
-"url": "actualites/es/articles/incendies-madrid-espagne.html",
-"image": "actualites/es/images/incendies-madrid-espagne.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Colombie",
-"titre": "Investiture d'Abelardo de la Espriella — passation inédite à Cali",
-"url": "actualites/es/articles/colombie-investiture-de-la-espriella.html",
-"image": "actualites/es/images/colombie-investiture-de-la-espriella.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
@@ -1519,24 +1546,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Quitter l'Allemagne plus de 3 mois : la nouvelle obligation d'autorisation militaire",
 "url": "actualites/de/articles/autorisation-quitter-territoire.html",
 "image": "actualites/de/images/autorisation-quitter-territoire.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Autriche",
-"titre": "Stocker face au FPÖ : la coalition tripartite autrichienne sous pression",
-"url": "actualites/de/articles/stocker-coalition.html",
-"image": "actualites/de/images/stocker-coalition.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Suisse",
-"titre": "Les Bilatérales III : la Suisse signe avec l'UE et se retrouve face à l'Europe et à elle-même",
-"url": "actualites/de/articles/suisse-bilaterales.html",
-"image": "actualites/de/images/suisse-bilaterales.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
@@ -2205,16 +2214,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Les Misérables",
 "url": "humanite/litterature/les-miserables.html",
 "image": "humanite/litterature/images/les-miserables-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "Le Livre de la jungle",
-"url": "humanite/litterature/livre-de-la-jungle.html",
-"image": "humanite/litterature/images/livre-de-la-jungle-couverture.webp",
 "portrait": true,
 "date": "2026-09-11T19:03:33+00:00"
 },

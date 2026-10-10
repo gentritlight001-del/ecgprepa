@@ -280,7 +280,7 @@
   var file = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
   if (file.indexOf('.') === -1) file = file + '.html';
   var pageLogin = file === 'login.html';
-  var pagePublique = PAGES_PUBLIQUES.indexOf(file) !== -1;
+  var pagePublique = PAGES_PUBLIQUES.indexOf(file) !== -1 || window.ECG_PAGE_404 === true;
   var pageAdmin = file === 'admin.html';
   var pageReserveeAdmin = PAGES_ADMIN.indexOf(file) !== -1;
 
@@ -742,7 +742,7 @@
     bloque: 'Ton compte a été désactivé par l\'administrateur.',
     attente: 'Ton compte attend la validation de l\'administrateur.',
     supprime: 'Ton compte a été supprimé.',
-    session_fermee: 'Ta session a été fermée par l\'administrateur.',
+    session_fermee: 'Ta session a été fermée : ton compte a été ouvert sur un autre appareil, ou fermé par l\'administrateur.',
     anonyme: 'Ta session a expiré.'
   };
 
@@ -2008,10 +2008,10 @@
       'border:1px solid #2a2a35;border-radius:16px;padding:8px;box-shadow:0 18px 50px rgba(0,0,0,.55);' +
       'opacity:0;visibility:hidden;transform:translateY(-6px);transition:opacity .18s,transform .18s,visibility .18s}' +
       '#ecg-menu.open{opacity:1;visibility:visible;transform:translateY(0)}' +
-      '#ecg-menu .who{padding:12px 14px 14px;border-bottom:1px solid #2a2a35;margin-bottom:6px}' +
-      '#ecg-menu .who b{display:block;color:#e8e6e0;font-size:.95rem;font-weight:500}' +
-      '#ecg-menu .who span{display:block;color:#8a8880;font-size:.78rem;margin-top:3px;word-break:break-all}' +
-      '#ecg-menu .who i{display:inline-block;font-style:normal;margin-top:7px;font-family:"DM Mono",monospace;' +
+      '#ecg-menu .ecg-who{display:block;padding:12px 14px 14px;border-bottom:1px solid #2a2a35;margin-bottom:6px}' +
+      '#ecg-menu .ecg-who b{display:block;color:#e8e6e0;font-size:.95rem;font-weight:500}' +
+      '#ecg-menu .ecg-who span{display:block;color:#8a8880;font-size:.78rem;margin-top:3px;word-break:break-all}' +
+      '#ecg-menu .ecg-who i{display:inline-block;font-style:normal;margin-top:7px;font-family:"DM Mono",monospace;' +
       'font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:#7c9ec9;' +
       'background:rgba(124,158,201,.14);padding:2px 8px;border-radius:20px}' +
       '#ecg-menu button{display:block;width:100%;text-align:left;background:none;border:0;color:#e8e6e0;' +
@@ -2033,14 +2033,14 @@
     wrap.innerHTML =
       '<button id="ecg-avatar" class="' + (admin ? 'admin' : '') + '" aria-haspopup="true" aria-expanded="false" title="Mon compte">' + initiales(s) + '</button>' +
       '<div id="ecg-menu" role="menu">' +
-      '<div class="who"><b></b><span></span>' + (admin ? '<i>Administrateur</i>' : '') + '</div>' +
+      '<div class="ecg-who"><b></b><span></span>' + (admin ? '<i>Administrateur</i>' : '') + '</div>' +
       '<button type="button" id="ecg-favoris" role="menuitem">Mes favoris<span id="ecg-fav-count"></span></button>' +
       '<button type="button" id="ecg-newsletter" role="menuitem">Ma newsletter</button>' +
       '<button type="button" id="ecg-abonnement" role="menuitem">Mon abonnement</button>' +
       '<button type="button" id="ecg-contact" role="menuitem">Contact</button>' +
       (admin ? '<div class="sep"></div><div class="titre-admin">Administration</div>' : '') +
       (admin ? '<button type="button" id="ecg-admin" class="admin" role="menuitem">Espace administrateur</button>' : '') +
-      (admin ? '<button type="button" id="ecg-idees" class="admin" role="menuitem">Idées d\'articles</button>' : '') +
+      (admin ? '<button type="button" id="ecg-idees" class="admin" role="menuitem">Idées pour le site</button>' : '') +
       (admin ? '<button type="button" id="ecg-mes-nl" class="admin" role="menuitem">Mes newsletters</button>' : '') +
       '<div class="sep"></div>' +
       '<button type="button" id="ecg-home" role="menuitem">Retour à l\'accueil</button>' +
@@ -2059,8 +2059,8 @@
       document.body.appendChild(wrap);
     }
 
-    wrap.querySelector('.who b').textContent = ((s.prenom || '') + ' ' + (s.nom || '')).trim();
-    wrap.querySelector('.who span').textContent = s.email;
+    wrap.querySelector('.ecg-who b').textContent = ((s.prenom || '') + ' ' + (s.nom || '')).trim();
+    wrap.querySelector('.ecg-who span').textContent = s.email;
 
     var btn = wrap.querySelector('#ecg-avatar');
     var menu = wrap.querySelector('#ecg-menu');
@@ -2081,7 +2081,7 @@
     /* Pastille « Premium » sous le nom, d'après le dernier statut
        connu, puis confirmée par la base. */
     function pastillePremium(st) {
-      var qui = wrap.querySelector('.who');
+      var qui = wrap.querySelector('.ecg-who');
       var deja = qui.querySelector('i.premium');
       if (st && st.premium && !deja) {
         var i = document.createElement('i');

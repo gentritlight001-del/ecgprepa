@@ -34,12 +34,17 @@ directement après chaque modification, sans attendre un nouveau « mets en lign
    de partage 1200 × 630 px (`partage/`) et ajoute les balises `og:` dans le `<head>` des pages
    qui n'en ont pas encore (aperçu des liens sur WhatsApp, Discord, etc.). Il ignore les pages
    déjà faites : on peut le relancer sans risque. Il a besoin de playwright (voir section 5).
+   **Lancer ces scripts en dernier**, après la dernière régénération ou modification de la page :
+   recréer une page depuis un gabarit efface ses balises `og:` et sa description, et le script
+   ne les remet qu'au passage suivant.
    Puis `python3 outils/referencement.py` : il ajoute la description et la balise canonical des
    pages qui n'en ont pas et régénère `sitemap.xml` (ne jamais modifier ce fichier à la main).
    Puis `python3 outils/nouveautes.py` : il régénère `nouveautes.js`, la liste des derniers
    contenus (articles, dossiers de CG, fiches Humanité, chapitres) affichée sous les 4 cartes de
    l'accueil et dans la page `nouveautes.html`. Les dates de mise en ligne sont gardées dans
    `outils/nouveautes-dates.json` (ne jamais modifier ces deux fichiers à la main).
+   Puis `python3 outils/flashcards.py` : il régénère les données de l'espace flashcards
+   (`premiere_annee/langues/flashcards/*.js`) à partir des pages du jour de langues.
 1. Commit sur la branche de travail de la session, puis `git push -u origin <branche>`.
 2. Créer la PR vers `main` et la merger (outils GitHub MCP).
 3. Remettre la branche à jour sur `main` :
@@ -47,6 +52,20 @@ directement après chaque modification, sans attendre un nouveau « mets en lign
 
 Cloudflare Pages redéploie `main` automatiquement. Le service worker est « réseau
 d'abord » et `_headers` désactive le cache : pas de numéro de version à changer.
+
+**Attention, exception réelle** : Cloudflare écrase `_headers` pour les fichiers statiques (`.js`,
+`.css`, images) et leur impose `max-age=14400` (4 h), à cause du réglage de la zone « Browser
+Cache TTL » (vérifiable avec `curl -I https://ecg-prepa.fr/nouveautes.js`). Les pages `.html`
+ne sont pas touchées. Conséquence : un fichier de **données générées chargé par script**
+(`nouveautes.js`) ne se met pas à jour avant 4 h sans Ctrl+Maj+R. `index.html` et
+`nouveautes.html` le chargent donc avec un paramètre qui change chaque minute
+(`nouveautes.js?v=<minute>`) : ne pas remettre un simple `<script src="nouveautes.js">`, et
+faire pareil pour tout nouveau fichier de données `.js`. Pour tous les autres `.js` et `.css`, c'est
+`sw.js` qui règle le problème : il les redemande au serveur à chaque visite (`cache: 'no-cache'`, 304
+si inchangé) et réécrit leur en-tête en `no-cache` pour que Chrome ne les garde pas en mémoire. Ne
+pas retirer ce mécanisme (`sansCacheNavigateur`). Le vrai remède, côté tableau de bord
+Cloudflare (que seul le propriétaire peut régler) : Caching → Configuration → Browser Cache TTL
+→ « Respect Existing Headers ».
 
 ## 3. Articles d'actualité
 
@@ -92,6 +111,14 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   1280 px, pour chaque langue. Déplacer des blocs entiers (titre + paragraphes, citation,
   tableau, chronologie) d'une colonne à l'autre, sans toucher aux polices ni aux marges.
   Mesurer avec Playwright (bas du dernier élément de chaque colonne).
+- **Longueur** : **1 100 à 1 300 mots par langue** (version française comprise ; comme les anciens
+  articles du site, qui font en moyenne ~1 200 mots), avec **3 à 4 rubriques (`ap-sub`) par
+  colonne** : contexte et historique, chiffres clés, réactions et enjeux, un tableau, une
+  chronologie, et un encadré de fin `ap-ctx` développé. Un article de moins de 1 000 mots est
+  trop court. Pour équilibrer les colonnes, **ajouter ou déplacer des blocs des deux côtés**
+  plutôt que couper du contenu. Compter les mots du bloc `ap-body` de la version française
+  avant de mettre en ligne. Une recherche web plus poussée (plusieurs sources par article) est
+  nécessaire pour atteindre cette longueur sans rien inventer.
 - **Chaque colonne s'ouvre sur un titre (`ap-sub`) suivi de texte** : jamais sur la
   chronologie, une citation, un tableau ou un encadré.
 - **Chronologie** (`ap-tl`) : soit **tout en bas de la colonne gauche**, soit **incrustée dans la
@@ -196,6 +223,96 @@ page pays ou région :
 - **Affiche / couverture** : `python3 outils/fiche-visuel.py <page> <image>`. Le script crée le
   WebP dans `images/` de la rubrique et ajoute le visuel et le fond flou. **Pas de légende** sous
   l'image. Sans visuel, le bandeau reste en texte seul.
+
+### Les langues au quotidien (1re année) : anglais, espagnol, allemand
+
+Un « coin » de pratique par matière, comme les colles de maths de 2e année : pour chaque langue,
+`premiere_annee/langues/<langue>/quotidien/`, un texte d'actualité par jour, décortiqué pour
+travailler surtout la grammaire de 1re année. Demandes types : « Fais le texte du jour d'anglais »,
+« … d'espagnol », « … d'allemand ».
+
+| Langue | Dossier | Édition source (articles, images) | Section de l'article | Leçons |
+|---|---|---|---|---|
+| Anglais | `premiere_annee/langues/anglais/quotidien/` | `actualites/en/` (`tous-en.html`) | `ap-en-section` | `premiere_annee/langues/anglais/lecon<N>.html` |
+| Espagnol | `premiere_annee/langues/espagnol/quotidien/` | `actualites/es/` (`tous-es.html`) | `ap-es-section` | `premiere_annee/langues/espagnol/lecon<N>.html` |
+| Allemand | `premiere_annee/langues/allemand/quotidien/` | `actualites/de/` (`tous-de.html`) | `ap-de-section` | `premiere_annee/langues/allemand/lecon<N>.html` (ancres génériques `s1`…`s7`, `formation`, `structures`… : se fier au titre de la section, pas au nom de l'ancre) |
+
+- Code commun : `premiere_annee/langues/commun/quotidien.js` et `quotidien.css` (la langue se lit
+  dans l'adresse ; titres des leçons et sens des cartes dans `LANGUES`) ; cartes :
+  `premiere_annee/langues/flashcards/cartes.js` et `cartes.css`. Nouvelle langue : l'ajouter à
+  `LANGUES` de `quotidien.js` et à `LANGUES` de `flashcards/index.html`, copier l'index d'une
+  langue existante, ajouter le bouton et la carte « Le texte du jour » à l'index de la langue.
+- Dans les données, les champs `en` désignent toujours **la langue étudiée** (mot, phrase de
+  version, traduction du thème), quelle que soit la langue.
+- `index.html` : la carte « Le texte du jour » (`.une` : image, « Jour N · <jour> <date> », titre)
+  et la grille `jours-grid` (le nouveau jour **en tête**, avec `data-date` ; la carte « Demain »
+  et les compteurs « jours terminés » / « mots à revoir » sont ajoutés par `quotidien.js`).
+  **Pas de puces ni de texte qui résume la grammaire du jour** (index, cartes, en-tête du jour).
+  Pas d'italique dans l'index ; dans la page du jour, les mots étrangers (`<em>`) restent en italique.
+- `jour-AAAA-MM-JJ.html` : une page par jour, construite par `quotidien.js` à partir du bloc
+  `<script id="donnees">`.
+- Le compteur « mots à revoir » de l'index mène à l'**espace flashcards**
+  (`premiere_annee/langues/flashcards/index.html#<langue>`) : toutes les cartes de tous les jours,
+  langue par langue (onglets Anglais, Espagnol, Allemand ; une langue s'ouvre dès qu'elle a des
+  pages du jour). Ses données (`<langue>.js`, `langues.js`) sont générées par
+  `python3 outils/flashcards.py` : à lancer à chaque nouveau jour (voir « Mise en ligne »), ne
+  jamais les modifier à la main. Paquet « À revoir » : `localStorage`
+  `ecg-<langue>-quotidien-a-revoir`, commun à la page du jour et à l'espace.
+
+**Procédure d'un nouveau jour**, pour une langue (demande ci-dessus, ou routine automatique tous
+les jours à 0 h, heure de Paris, qui fait l'anglais, puis l'espagnol, puis l'allemand) — sans poser de question,
+jusqu'à la mise en ligne :
+1. Date = date du jour à Paris : `TZ=Europe/Paris date +%F`. Si `jour-<date>.html` existe déjà
+   pour cette langue, passer : rien à faire.
+2. Article : le premier de `ACTU_DATA` de l'édition source (tableau ci-dessus) qui n'a pas encore
+   servi (`grep -ho 'actualites/<code>/articles/[^"]*' premiere_annee/langues/<langue>/quotidien/jour-*.html`).
+   S'il n'y a aucun nouvel article, prendre le plus récent qui n'a pas servi, même plus ancien.
+3. Numéro = numéro du dernier jour + 1. Copier la page du dernier jour, réécrire `<title>`,
+   description, « Jour N » du fil d'Ariane et tout le bloc de données (règles ci-dessous).
+   **Supprimer de la copie les balises `og:`, `twitter:` et `canonical`** de la veille : les
+   scripts de l'étape 5 les recréent pour la nouvelle page.
+4. `index.html` de la langue : la carte `.une` pointe sur le nouveau jour (lien, image de
+   l'article `../../../../actualites/<code>/images/<image>` et un `aria-label` qui décrit ce que la
+   photo montre vraiment, « Jour N · <Jour> <date> », titre) ; nouvelle carte en tête de
+   `jours-grid`. Carte « Le texte du jour » de `premiere_annee/langues/<langue>/index.html` mise à jour.
+5. Scripts de la mise en ligne (étape 0, dont `outils/flashcards.py`), puis
+   `python3 outils/quotidien-controle.py premiere_annee/langues/<langue>/quotidien/jour-<date>.html` :
+   corriger jusqu'à ce que tout soit ✅.
+6. Mise en ligne complète (commit, PR, merge, branche remise sur `main`).
+
+Contenu d'un jour (le bloc de données du 10 octobre 2026 sert de modèle) :
+- **Texte** : l'article choisi à l'étape 2, dans la langue étudiée (section du tableau). Extrait
+  de 250 à 350 mots en 4 à 6 paragraphes, légèrement adapté pour qu'il se lise seul. Balises :
+  `[n|…]` = repère du point de grammaire n (dans l'ordre du texte ; un même n peut revenir),
+  `{mot|traduction}` = aide au vocabulaire (8 à 15 mots).
+- **Grammaire** : 5 ou 6 cartes, une par repère : titre, citation (forme en `<mark>`), rappel
+  court, piège du francophone, leçon et ancre (`lecon` + `ancre` = `id` d'une `<section>` de
+  `../lecon<N>.html`), exercice de 3 ou 4 phrases à trous (`___`, réponses acceptées dans
+  `r`). Une carte qui traite deux points renvoie vers deux sections avec
+  `liens: [{ lecon, ancre, libelle }, …]`. Puis `aussi` (« Et aussi dans le texte ») : 4 à 8 points courts, **une ligne
+  chacune**, groupés par catégorie (`cat` : constructions verbales, noms et articles,
+  comparaison, dates et chiffres, liens logiques…), avec l'extrait (`ext`, forme en `<mark>`),
+  la règle en une phrase (`regle`), un exemple court (`ex`) et la leçon. Seulement des leçons
+  de 1re année, rien d'inventé hors du texte.
+- **Chaque renvoi doit tomber juste** : avant de lier une section, vérifier (grep) qu'elle traite
+  vraiment le point annoncé. Si aucune leçon ne le traite, ajouter dans la section où il a sa
+  place un court encadré `hl-box` (`tip` ou `info`), dans le style de la leçon, puis y lier.
+- **Vocabulaire** : 12 à 14 « essentiels » réutilisables dans n'importe quelle copie (verbes de
+  presse, connecteurs, tournures), 12 à 18 mots du thème, chacun avec un exemple. **Nombre pair
+  dans chaque liste** (affichée sur deux colonnes : pas de case vide). Pas
+  d'exercice à trous : `quotidien.js` en tire le module « Mémoriser », des cartes
+  **français → langue étudiée** seulement. Les cartes ratées vont dans le paquet « À revoir », gardé
+  dans le navigateur d'un jour à l'autre.
+- **Traduction** : version de 3 phrases du texte, thème de **3 phrases** construites avec les
+  mots du vocabulaire du jour et la grammaire étudiée (l'indice rappelle les mots à placer),
+  chacune avec traduction proposée et 2 ou 3 remarques.
+- **Durées** : une par étape dans `DUREES` (`quotidien.js`) ; le total en tête est leur somme
+  (30 min, chiffre rond à garder).
+- **Chapeau** (`chapo`) : une phrase qui dit le sujet, sans annoncer la grammaire.
+- **Bilan** : 4 ou 5 phrases, sans liens vers les leçons (ils sont déjà dans la grammaire).
+- Pas de questions de compréhension.
+- Vérifier avec `outils/quotidien-controle.py` (aucune erreur JS, chaque exercice de grammaire rempli avec `r[0]` donne
+  « parfait », listes à jour, renvois valides…). Typographie française gérée par `quotidien.js` pour les champs en français.
 
 ### Dossiers de langues (DS)
 
