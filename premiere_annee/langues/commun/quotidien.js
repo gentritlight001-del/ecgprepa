@@ -4,21 +4,43 @@
 (function () {
   'use strict';
 
-  /* Leçons de grammaire de 1re année (../lecon<N>.html) */
-  var LECONS = {
-    1: 'Le présent simple', 2: "L'impératif", 3: 'Les pronoms', 4: 'Les articles', 5: 'Le génitif',
-    6: 'Les quantifieurs', 7: "L'accord sujet-verbe", 8: "L'ordre des mots", 9: 'Les prépositions de lieu et de temps',
-    10: 'La ponctuation', 11: 'Nombres, dates et mesures', 12: 'Les verbes irréguliers', 13: 'Le prétérit',
-    14: 'Le present perfect', 15: 'Since / For', 16: 'Le past perfect', 17: 'Le futur', 18: 'Les modaux',
-    19: 'Les modaux du passé', 20: 'Le conditionnel', 21: "L'hypothèse", 22: 'Comparatifs et superlatifs',
-    23: 'Le gérondif', 24: 'Les verbes de perception', 25: 'La voix passive', 26: 'Les propositions relatives',
-    27: 'Les conjonctions de subordination', 28: 'Le discours indirect', 29: 'Les structures emphatiques',
-    30: 'Les connecteurs logiques'
+  /* Langues : leçons de grammaire de 1re année (../lecon<N>.html) et sens des cartes.
+     La langue se lit dans l'adresse : premiere_annee/langues/<langue>/quotidien/… */
+  var LANGUES = {
+    anglais: {
+      sens: 'Français → anglais',
+      lecons: {
+        1: 'Le présent simple', 2: "L'impératif", 3: 'Les pronoms', 4: 'Les articles', 5: 'Le génitif',
+        6: 'Les quantifieurs', 7: "L'accord sujet-verbe", 8: "L'ordre des mots", 9: 'Les prépositions de lieu et de temps',
+        10: 'La ponctuation', 11: 'Nombres, dates et mesures', 12: 'Les verbes irréguliers', 13: 'Le prétérit',
+        14: 'Le present perfect', 15: 'Since / For', 16: 'Le past perfect', 17: 'Le futur', 18: 'Les modaux',
+        19: 'Les modaux du passé', 20: 'Le conditionnel', 21: "L'hypothèse", 22: 'Comparatifs et superlatifs',
+        23: 'Le gérondif', 24: 'Les verbes de perception', 25: 'La voix passive', 26: 'Les propositions relatives',
+        27: 'Les conjonctions de subordination', 28: 'Le discours indirect', 29: 'Les structures emphatiques',
+        30: 'Les connecteurs logiques'
+      }
+    },
+    espagnol: {
+      sens: 'Français → espagnol',
+      lecons: {
+        1: 'Le présent', 2: 'Ser / Estar', 3: 'Les pronoms personnels', 4: 'La négation', 5: "L'impératif",
+        6: 'Le gérondif', 7: "L'obligation", 8: 'Comparatifs et superlatifs', 9: 'Le passé composé',
+        10: 'Le passé simple', 11: "L'imparfait", 12: 'Le plus-que-parfait', 13: 'Le futur', 14: 'Le conditionnel',
+        15: "L'expression du temps écoulé", 16: 'La traduction de « devenir »', 17: 'La traduction de « on »',
+        18: 'Le subjonctif présent', 19: 'Le subjonctif à la place du futur', 20: 'Le subjonctif imparfait',
+        21: 'Le plus-que-parfait du subjonctif', 22: 'La phrase conditionnelle', 23: 'Les subordonnées de concession',
+        24: 'Avoir beau', 25: 'Les tournures emphatiques', 26: 'Les propositions corrélatives'
+      }
+    }
   };
+  var LANGUE = (location.pathname.match(/langues\/([^\/]+)\/quotidien\//) || [])[1] || 'anglais';
+  if (!LANGUES[LANGUE]) LANGUE = 'anglais';
+  var LECONS = LANGUES[LANGUE].lecons;
+
   /* Durée de chaque étape (minutes) ; le total affiché en tête en est la somme */
   var DUREES = { texte: 5, grammaire: 10, vocabulaire: 6, traduction: 7, bilan: 2 };
-  var CLE_FAITS = 'ecg-anglais-quotidien-faits';
-  var CLE_REVOIR = 'ecg-anglais-quotidien-a-revoir';  /* mots ratés, gardés d'un jour à l'autre */
+  var CLE_FAITS = 'ecg-' + LANGUE + '-quotidien-faits';
+  var CLE_REVOIR = 'ecg-' + LANGUE + '-quotidien-a-revoir';  /* mots ratés, gardés d'un jour à l'autre */
 
   function lireFaits() {
     try { return JSON.parse(localStorage.getItem(CLE_FAITS) || '[]') || []; } catch (e) { return []; }
@@ -232,8 +254,8 @@
     listes.appendChild(listeVocab(titreTheme.charAt(0).toUpperCase() + titreTheme.slice(1), J.vocabulaire.theme.mots));
     s3.appendChild(listes);
     s3.appendChild(window.ECGCartes.creer({
-      titre: 'Mémoriser · français → anglais',
-      sens: 'Français → anglais',
+      titre: 'Mémoriser · ' + LANGUES[LANGUE].sens.toLowerCase(),
+      sens: LANGUES[LANGUE].sens,
       paquets: [
         { id: 'tous', libelle: 'Tous', mots: J.vocabulaire.essentiels.concat(J.vocabulaire.theme.mots) },
         { id: 'essentiels', libelle: 'Essentiels', mots: J.vocabulaire.essentiels },
@@ -341,6 +363,7 @@
       var r = lireRevoir().length;
       nr.querySelector('b').textContent = r;
       nr.querySelector('span').textContent = (r > 1 ? 'mots à revoir' : 'mot à revoir') + ' →';
+      nr.href = '../../flashcards/index.html#' + LANGUE;
     }
     var grille = document.querySelector('.jours-grid');
     if (grille && cartes.length) {
