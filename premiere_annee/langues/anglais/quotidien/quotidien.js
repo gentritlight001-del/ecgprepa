@@ -15,6 +15,8 @@
     27: 'Les conjonctions de subordination', 28: 'Le discours indirect', 29: 'Les structures emphatiques',
     30: 'Les connecteurs logiques'
   };
+  /* Durée de chaque étape (minutes) ; le total affiché en tête en est la somme */
+  var DUREES = { texte: 4, grammaire: 10, vocabulaire: 6, traduction: 6, bilan: 1 };
   var CLE_FAITS = 'ecg-anglais-quotidien-faits';
   var CLE_REVOIR = 'ecg-anglais-quotidien-a-revoir';  /* mots ratés, gardés d'un jour à l'autre */
 
@@ -141,8 +143,7 @@
     return t;
   }
 
-  /* Mémoriser : 1. cartes anglais → français, 2. cartes français → anglais,
-     3. phrases à trous. Une carte ratée revient trois cartes plus loin et
+  /* Mémoriser : 1. cartes français → anglais, 2. phrases à trous. Une carte ratée revient trois cartes plus loin et
      rejoint le paquet « À revoir », gardé d'un jour à l'autre. */
   function memoriser(J) {
     var paquets = {
@@ -154,7 +155,7 @@
     var box = el('div', 'memo');
 
     var etapes = el('div', 'memo-etapes');
-    [[1, 'Reconnaître', 'anglais → français'], [2, 'Retrouver', 'français → anglais'], [3, 'Réemployer', 'les mots en contexte']]
+    [[1, 'Retrouver', 'français → anglais'], [2, 'Réemployer', 'les mots en contexte']]
       .forEach(function (e) {
         var b = el('button', 'memo-etape', '<b>' + e[0] + '</b><span>' + e[1] + '<small>' + e[2] + '</small></span>');
         b.type = 'button'; b.setAttribute('data-etape', e[0]);
@@ -184,7 +185,7 @@
     var bSavais = el('button', 'memo-oui', '✓ Je savais'); bSavais.type = 'button';
     actions.appendChild(bRetourner); actions.appendChild(bRevoir); actions.appendChild(bSavais);
     zoneCartes.appendChild(actions);
-    var aide = el('p', 'memo-aide', 'Dites la réponse à voix haute avant de retourner la carte. Clavier : espace pour retourner, ← à revoir, → je savais.');
+    var aide = el('p', 'memo-aide', typo('Clavier : espace pour retourner, ← à revoir, → je savais.'));
     zoneCartes.appendChild(aide);
     box.appendChild(zoneCartes);
 
@@ -211,16 +212,14 @@
       etat.total = etat.file.length; etat.sus = 0; etat.rates = 0;
       majPaquets(); suivante();
     }
-    function recto(c) { return etat.etape === 1 ? c.en : typo(c.fr); }
-    function verso(c) { return etat.etape === 1 ? typo(c.fr) : c.en; }
     function suivante() {
       majProgres();
       etat.carte = etat.file.shift() || null;
       carte.classList.remove('retournee');
       if (!etat.carte) return fin();
-      carte.innerHTML = '<div class="memo-sens">' + (etat.etape === 1 ? 'Anglais → français' : 'Français → anglais') + '</div>' +
-        '<div class="memo-recto">' + recto(etat.carte) + '</div>' +
-        '<div class="memo-verso"><div class="memo-trad">' + verso(etat.carte) + '</div>' +
+      carte.innerHTML = '<div class="memo-sens">Français → anglais</div>' +
+        '<div class="memo-recto">' + typo(etat.carte.fr) + '</div>' +
+        '<div class="memo-verso"><div class="memo-trad">' + etat.carte.en + '</div>' +
         (etat.carte.ex ? '<div class="memo-ex">' + etat.carte.ex + '</div>' : '') + '</div>';
       actions.className = 'memo-actions';
       aide.hidden = false;
@@ -233,7 +232,7 @@
           .replace(/« /g, '« ').replace(/ »/g, ' »');
         return;
       }
-      var suite = etat.etape === 1 ? 'Passer à l’étape 2 : français → anglais' : 'Passer à l’étape 3 : les mots en contexte';
+      var suite = 'Passer à l’étape 2 : les mots en contexte';
       carte.innerHTML = '<div class="memo-fin">' + etat.total + (etat.total > 1 ? ' mots sus' : ' mot su') + ' !<small>' +
         (etat.rates ? etat.rates + ' raté' + (etat.rates > 1 ? 's' : '') + ' en route, gardé' + (etat.rates > 1 ? 's' : '') + ' dans « À revoir ».' : 'Aucune erreur.').replace(/« /g, '« ').replace(/ »/g, ' »') +
         '</small><span class="memo-fin-actions"><button type="button" class="bouton" data-a="refaire">Recommencer</button>' +
@@ -259,15 +258,15 @@
       majPaquets(); suivante();
     }
     function allerA(n) {
-      etat.etape = Math.min(3, n);
+      etat.etape = Math.min(2, n);
       etapes.querySelectorAll('.memo-etape').forEach(function (b) {
         var k = +b.getAttribute('data-etape');
         b.classList.toggle('actif', k === etat.etape);
         b.classList.toggle('passee', k < etat.etape);
       });
-      zoneCartes.hidden = etat.etape === 3;
-      zoneExo.hidden = etat.etape !== 3;
-      if (etat.etape < 3) demarrer();
+      zoneCartes.hidden = etat.etape === 2;
+      zoneExo.hidden = etat.etape !== 2;
+      if (etat.etape === 1) demarrer();
     }
     carte.addEventListener('click', function (ev) { if (!ev.target.closest('button')) retourner(); });
     bRetourner.addEventListener('click', retourner);
@@ -294,7 +293,7 @@
       '<h1 class="page-title">' + J.titre + '</h1>' +
       '<p class="page-lead">' + typo(J.chapo) + '</p>';
     var tags = el('div', 'tags');
-    [J.pays, J.sujet, '≈ ' + (J.duree || 20) + ' min'].forEach(function (t, i) {
+    [J.pays, J.sujet, '≈ ' + Object.keys(DUREES).reduce(function (t, k) { return t + DUREES[k]; }, 0) + ' min'].forEach(function (t, i) {
       if (t) tags.appendChild(el('span', 'tag' + (i === 0 ? ' or' : ''), t));
     });
     hero.appendChild(tags);
@@ -302,7 +301,7 @@
     var main = document.getElementById('jour');
 
     /* 1. Le texte */
-    var s1 = enteteBloc('texte', '1', 'Read · 5 min', 'Lire le texte',
+    var s1 = enteteBloc('texte', '1', 'Read · ' + DUREES.texte + ' min', 'Lire le texte',
       "Lisez d'abord le texte en entier, sans dictionnaire. Les repères bleus signalent la grammaire étudiée en 2 (cliquez dessus), les mots soulignés en pointillé se traduisent au survol ou d'une touche.");
     var outils = el('div', 'outils');
     var bRep = el('button', 'bouton on', 'Repères de grammaire'); bRep.type = 'button';
@@ -335,7 +334,7 @@
     main.appendChild(s1);
 
     /* 2. La grammaire */
-    var s2 = enteteBloc('grammaire', '2', 'Grammar · 8 min', 'La grammaire du texte',
+    var s2 = enteteBloc('grammaire', '2', 'Grammar · ' + DUREES.grammaire + ' min', 'La grammaire du texte',
       "Chaque point part d'une phrase du texte : le rappel, le piège à éviter, la leçon du cours à revoir, puis un exercice rapide.");
     J.grammaire.forEach(function (g, i) {
       var n = i + 1;
@@ -352,7 +351,11 @@
       c.appendChild(cit);
       c.appendChild(el('div', 'rappel', typo(g.rappel)));
       if (g.piege) c.appendChild(el('div', 'piege', typo(g.piege)));
-      c.appendChild(lienLecon(g.lecon, g.ancre));
+      (g.liens || [{ lecon: g.lecon, ancre: g.ancre }]).forEach(function (l) {
+        var a = lienLecon(l.lecon, l.ancre);
+        if (l.libelle) a.innerHTML = 'Revoir la <b>leçon ' + l.lecon + '</b> · ' + typo(l.libelle) + ' →';
+        c.appendChild(a);
+      });
       if (g.exercice) c.appendChild(exercice(g.exercice));
       s2.appendChild(c);
     });
@@ -379,7 +382,7 @@
     main.appendChild(s2);
 
     /* 3. Le vocabulaire */
-    var s3 = enteteBloc('vocabulaire', '3', 'Vocabulary · 6 min', 'Le vocabulaire à retenir',
+    var s3 = enteteBloc('vocabulaire', '3', 'Vocabulary · ' + DUREES.vocabulaire + ' min', 'Le vocabulaire à retenir',
       "D'abord les mots qui servent partout (dans n'importe quelle copie ou colle), puis le vocabulaire du thème. Lisez les deux listes, puis passez à « Mémoriser ».");
     s3.appendChild(el('h3', 'sous-titre', 'Les essentiels, utiles partout'));
     s3.appendChild(el('p', 'sous-intro', 'Verbes et tournures de presse à réemployer dans vos essais et vos commentaires.'));
@@ -388,12 +391,12 @@
     s3.appendChild(el('p', 'sous-intro', 'Les mots propres au sujet du jour.'));
     s3.appendChild(tableVocab(J.vocabulaire.theme.mots));
     s3.appendChild(el('h3', 'sous-titre', 'Mémoriser'));
-    s3.appendChild(el('p', 'sous-intro', typo("Trois étapes, de la plus facile à la plus exigeante. Une carte ratée revient un peu plus loin, jusqu'à ce qu'elle soit sue, et reste dans le paquet « À revoir » pour les jours suivants.")));
+    s3.appendChild(el('p', 'sous-intro', typo("Retrouvez le mot anglais à partir du français, puis replacez-le en contexte. Une carte ratée revient un peu plus loin, jusqu'à ce qu'elle soit sue, et reste dans le paquet « À revoir » pour les jours suivants.")));
     s3.appendChild(memoriser(J));
     main.appendChild(s3);
 
     /* 4. La traduction */
-    var s4 = enteteBloc('traduction', '4', 'Translation · 6 min', 'Traduire',
+    var s4 = enteteBloc('traduction', '4', 'Translation · ' + DUREES.traduction + ' min', 'Traduire',
       'Écrivez votre traduction avant de regarder la proposition. Les remarques expliquent les choix et les pièges.');
     function blocTrad(items, sens, prefixe) {
       items.forEach(function (t, i) {
@@ -422,7 +425,7 @@
     main.appendChild(s4);
 
     /* 5. Bilan */
-    var s5 = enteteBloc('bilan', '5', 'Wrap-up · 1 min', 'Ce que je retiens');
+    var s5 = enteteBloc('bilan', '5', 'Wrap-up · ' + DUREES.bilan + ' min', 'Ce que je retiens');
     var bil = el('div', 'bilan');
     bil.appendChild(el('ul', null, J.bilan.map(function (b) { return '<li>' + typo(b) + '</li>'; }).join('')));
     s5.appendChild(bil);
