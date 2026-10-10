@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Espagne",
+"titre": "Espagne : mort de Maricarmen, 87 ans, expulsée le 23 septembre et devenue symbole du logement",
+"url": "actualites/es/articles/espagne-mort-maricarmen-symbole.html",
+"image": "actualites/es/images/espagne-mort-maricarmen-symbole.webp",
+"date": "2026-10-10T18:48:57+00:00"
+},
+{
 "t": "cg",
 "rubrique": "Culture générale",
 "meta": "Histoire",
@@ -1339,15 +1348,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Cuba à bout : pannes, blocus pétrolier et population en recul, la crise s'aggrave partout",
 "url": "actualites/es/articles/cuba-crise-aout-2026.html",
 "image": "actualites/es/images/cuba-crise-aout-2026.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Colombie",
-"titre": "Séisme de magnitude 7,4 dans le Chocó — plus de 300 morts et un pays sous le choc",
-"url": "actualites/es/articles/colombie-seisme-magnitude-7-4.html",
-"image": "actualites/es/images/colombie-seisme-magnitude-7-4.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
