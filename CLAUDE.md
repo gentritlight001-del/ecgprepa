@@ -14,6 +14,12 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
 - Tout le contenu est en **français** (sauf les versions en langue étrangère des articles
   et des newsletters). Typographie française : espace insécable avant `: ; ! ? %` et
   à l'intérieur des « guillemets ».
+- **Pas de tiret cadratin « — »** dans la rédaction : cours, articles (toutes les langues),
+  newsletters, fiches de culture générale et d'Humanité, jours de langues. Il est utilisé
+  abusivement : à la place, une virgule, un deux-points, des parenthèses ou une nouvelle phrase.
+  Restent permis : les titres (« Chapitre 3 — … », « X — ECG Prépa ») et les numéros de section
+  (« 1 — … »). `quotidien-controle.py` et `newsletter/outils/controle.py` le vérifient. Le
+  contenu déjà en ligne n'est pas à reprendre.
 - **Verrouillage** : ne jamais verrouiller une page ni la rendre Premium. Le propriétaire du
   site le fait lui-même (`auth.js`).
 - Pages réservées à l'administrateur : `PAGES_ADMIN` dans `auth.js` (`admin.html`,
@@ -133,6 +139,7 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   l'article sur l'attentat :
   `<a href="slug.html" style="color:<couleur du texte>;text-decoration:underline;text-underline-offset:2px">…</a>`
 - Faits vérifiés par recherche web, sans rien inventer.
+- Pas de tiret cadratin « — » dans le texte, même dans les versions étrangères (voir section 1).
 
 ### Image
 
@@ -265,7 +272,7 @@ travailler surtout la grammaire de 1re année. Demandes types : « Fais le texte
   `ecg-<langue>-quotidien-a-revoir`, commun à la page du jour et à l'espace.
 
 **Procédure d'un nouveau jour**, pour une langue (demande ci-dessus, ou routine automatique tous
-les jours à 0 h, heure de Paris, qui fait l'anglais, puis l'espagnol, puis l'allemand) — sans poser de question,
+les jours à 0 h, heure de Paris, qui fait l'anglais, puis l'espagnol, puis l'allemand), sans poser de question
 jusqu'à la mise en ligne :
 1. Date = date du jour à Paris : `TZ=Europe/Paris date +%F`. Si `jour-<date>.html` existe déjà
    pour cette langue, passer : rien à faire.
