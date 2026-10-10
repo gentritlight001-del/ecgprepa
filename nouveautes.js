@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Union européenne",
+"titre": "Une statue satirique de Trump nu et doré est exposée au Parlement européen, à Strasbourg",
+"url": "actualites/monde/articles/ue-statue-trump-orange-plague.html",
+"image": "actualites/monde/images/ue-statue-trump-orange-plague.webp",
+"date": "2026-10-10T19:16:02+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Brésil",
 "titre": "Brésil : mandat d'arrêt contre Eduardo Bolsonaro, condamné pour avoir sollicité Washington",
 "url": "actualites/monde/articles/bresil-eduardo-bolsonaro-mandat-arret.html",
@@ -1114,15 +1123,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "La BCE relève ses taux directeurs face à la flambée des prix de l'énergie",
 "url": "actualites/monde/articles/bce-hausse-taux-directeurs.html",
 "image": "actualites/monde/images/bce-hausse-taux-directeurs.webp",
-"date": "2026-09-12T10:40:02+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Monde",
-"titre": "Jacob Coxon, chercheur en IA, alerte sur les risques existentiels de l'intelligence artificielle",
-"url": "actualites/monde/articles/jacob-coxon-alerte-ia.html",
-"image": "actualites/monde/images/jacob-coxon-alerte-ia.webp",
 "date": "2026-09-12T10:40:02+00:00"
 },
 {
