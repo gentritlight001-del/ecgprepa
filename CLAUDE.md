@@ -256,18 +256,19 @@ Contenu d'un jour (le bloc de données du 10 octobre 2026 sert de modèle) :
   vraiment le point annoncé. Si aucune leçon ne le traite, ajouter dans la section où il a sa
   place un court encadré `hl-box` (`tip` ou `info`), dans le style de la leçon, puis y lier.
 - **Vocabulaire** : 12 à 15 « essentiels » réutilisables dans n'importe quelle copie (verbes de
-  presse, connecteurs, tournures), 12 à 18 mots du thème, chacun avec un exemple ; un exercice
-  de réemploi de 6 à 8 phrases. `quotidien.js` en tire le module « Mémoriser » : 1. cartes
-  **français → anglais** (seulement dans ce sens), 2. les phrases à trous. Les cartes ratées
-  vont dans le paquet « À revoir », gardé dans le navigateur d'un jour à l'autre.
+  presse, connecteurs, tournures), 12 à 18 mots du thème, chacun avec un exemple. Pas
+  d'exercice à trous : `quotidien.js` en tire le module « Mémoriser », des cartes
+  **français → anglais** seulement. Les cartes ratées vont dans le paquet « À revoir », gardé
+  dans le navigateur d'un jour à l'autre.
 - **Traduction** : version de 3 phrases du texte, thème de **3 phrases** construites avec les
   mots du vocabulaire du jour et la grammaire étudiée (l'indice rappelle les mots à placer),
   chacune avec traduction proposée et 2 ou 3 remarques.
-- **Durées** : une par étape dans `DUREES` (`quotidien.js`) ; le total en tête est leur somme.
+- **Durées** : une par étape dans `DUREES` (`quotidien.js`) ; le total en tête est leur somme
+  (30 min, chiffre rond à garder).
 - **Chapeau** (`chapo`) : une phrase qui dit le sujet, sans annoncer la grammaire.
 - **Bilan** : 4 ou 5 phrases, sans liens vers les leçons (ils sont déjà dans la grammaire).
 - Pas de questions de compréhension.
-- Vérifier avec Playwright : aucune erreur JS, et chaque exercice rempli avec `r[0]` donne
+- Vérifier avec Playwright : aucune erreur JS, et chaque exercice de grammaire rempli avec `r[0]` donne
   « parfait ». Typographie française gérée par `quotidien.js` pour les champs en français.
 
 ### Dossiers de langues (DS)
