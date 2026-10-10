@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "États-Unis",
+"titre": "Les États-Unis sanctionnent la Cour pénale internationale en tant qu'institution, une première",
+"url": "actualites/monde/articles/cpi-sanctions-americaines-institution.html",
+"image": "actualites/monde/images/cpi-sanctions-americaines-institution.webp",
+"date": "2026-10-10T19:26:24+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Panama",
@@ -1124,15 +1133,6 @@ window.ECG_NOUVEAUTES = [
 "url": "Culture-Generale/nicaragua.html",
 "image": "Culture-Generale/images/nicaragua.webp",
 "date": "2026-09-12T19:52:51+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Inde",
-"titre": "18e sommet des BRICS+ : New Delhi sous le poids des tensions internationales",
-"url": "actualites/monde/articles/brics-18e-sommet-new-delhi.html",
-"image": "actualites/monde/images/brics-18e-sommet-new-delhi.webp",
-"date": "2026-09-12T10:40:02+00:00"
 },
 {
 "t": "en",
