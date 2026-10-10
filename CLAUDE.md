@@ -228,9 +228,11 @@ Un « coin » de pratique par matière, comme les colles de maths de 2e année. 
 `premiere_annee/langues/anglais/quotidien/`, un texte d'actualité par jour, décortiqué pour
 travailler surtout la grammaire de 1re année. Demande type : « Fais le texte du jour d'anglais ».
 
-- `index.html` : la carte « Le texte du jour » (`.une`) et la grille `jours-grid` (le nouveau
-  jour **en tête**, avec `data-date` et `data-lecons` = numéros des leçons des cartes de
-  grammaire, qui alimentent le filtre par leçon).
+- `index.html` : la carte « Le texte du jour » (`.une` : image, « Jour N · <jour> <date> », titre)
+  et la grille `jours-grid` (le nouveau jour **en tête**, avec `data-date` ; la carte « Demain »
+  et les compteurs « jours terminés » / « mots à revoir » sont ajoutés par `quotidien.js`).
+  **Pas d'italique, pas de puces ni de texte qui résume la grammaire du jour** (index, cartes,
+  en-tête du jour).
 - `jour-AAAA-MM-JJ.html` : une page par jour. Copier la page du dernier jour et ne changer que
   le `<title>`, la description, « Jour N » dans le fil d'Ariane et le bloc
   `<script id="donnees">`. `quotidien.js` construit tout ; `quotidien.css` est commun.
