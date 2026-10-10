@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "États-Unis",
+"titre": "Le Pentagone veut diffuser en direct l'exécution du tireur de Fort Hood, Nidal Hasan, le 3 décembre",
+"url": "actualites/en/articles/hasan-execution-livestream-hegseth.html",
+"image": "actualites/en/images/hasan-execution-livestream-hegseth.webp",
+"date": "2026-10-10T18:52:55+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Espagne",
@@ -1231,15 +1240,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Harry et Meghan rentrent au Royaume-Uni avec leurs enfants, six ans après leur départ",
 "url": "actualites/en/articles/uk-harry-meghan-return-2026.html",
 "image": "actualites/en/images/uk-harry-meghan-return-2026.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "Addiction des jeunes aux réseaux sociaux : Meta accepte de payer jusqu'à 17 milliards de dollars",
-"url": "actualites/en/articles/meta-amende-addiction-reseaux-2026.html",
-"image": "actualites/en/images/meta-amende-addiction-reseaux-2026.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
