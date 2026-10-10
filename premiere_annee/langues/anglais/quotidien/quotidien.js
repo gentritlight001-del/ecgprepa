@@ -30,13 +30,6 @@
   function lireRevoir() {
     try { return JSON.parse(localStorage.getItem(CLE_REVOIR) || '[]') || []; } catch (e) { return []; }
   }
-  function ecrireRevoir(l) {
-    try { localStorage.setItem(CLE_REVOIR, JSON.stringify(l)); } catch (e) { /* stockage indisponible */ }
-  }
-  function melanger(t) {
-    for (var i = t.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var x = t[i]; t[i] = t[j]; t[j] = x; }
-    return t;
-  }
 
   /* Typographie française : espace insécable avant : ; ! ? % » et après « */
   function typo(s) {
@@ -121,116 +114,9 @@
     var b = el('div', 'liste-vocab');
     b.appendChild(el('div', 'liste-tete', '<b>' + typo(titre) + '</b><span>' + mots.length + ' mots</span>'));
     b.appendChild(el('div', 'liste-mots', mots.map(function (m) {
-      return '<div class="en">' + m.en + '</div><div class="fr">' + typo(m.fr) + '</div>';
+      return '<div class="mot"><div class="en">' + m.en + '</div><div class="fr">' + typo(m.fr) + '</div></div>';
     }).join('')));
     return b;
-  }
-
-  /* Mémoriser : cartes français → anglais. Une carte ratée revient trois cartes plus loin et
-     rejoint le paquet « À revoir », gardé d'un jour à l'autre. */
-  function memoriser(J, paquetInitial) {
-    var paquets = {
-      tous: J.vocabulaire.essentiels.concat(J.vocabulaire.theme.mots),
-      essentiels: J.vocabulaire.essentiels,
-      theme: J.vocabulaire.theme.mots
-    };
-    var etat = { paquet: paquetInitial || 'tous', file: [], total: 0, sus: 0, rates: 0, carte: null };
-    var box = el('div', 'memo'); box.id = 'memoriser';
-    var tete = el('div', 'memo-tete', '<h3>Mémoriser · français → anglais</h3>');
-    var paquetsBar = el('div', 'memo-paquets');
-    var libelles = { tous: 'Tous', essentiels: 'Essentiels', theme: 'Thème', revoir: 'À revoir' };
-    Object.keys(libelles).forEach(function (k) {
-      var b = el('button', 'memo-paquet', libelles[k]); b.type = 'button'; b.setAttribute('data-paquet', k);
-      b.addEventListener('click', function () { etat.paquet = k; demarrer(); });
-      paquetsBar.appendChild(b);
-    });
-    tete.appendChild(paquetsBar);
-    box.appendChild(tete);
-    var progres = el('div', 'memo-progres', '<div class="memo-jauge"><i></i></div><span></span>');
-    box.appendChild(progres);
-    var carte = el('div', 'memo-carte');
-    carte.tabIndex = 0;
-    box.appendChild(carte);
-    var actions = el('div', 'memo-actions');
-    var bRetourner = el('button', 'bouton plein', 'Retourner la carte'); bRetourner.type = 'button';
-    var bRevoir = el('button', 'memo-non', 'À revoir'); bRevoir.type = 'button';
-    var bSavais = el('button', 'memo-oui', 'Je savais'); bSavais.type = 'button';
-    actions.appendChild(bRetourner); actions.appendChild(bRevoir); actions.appendChild(bSavais);
-    box.appendChild(actions);
-    var aide = el('p', 'memo-aide', typo('Clavier : espace pour retourner, ← à revoir, → je savais.'));
-    box.appendChild(aide);
-
-    function mots() { return etat.paquet === 'revoir' ? lireRevoir() : paquets[etat.paquet]; }
-    function majPaquets() {
-      var n = lireRevoir().length;
-      paquetsBar.querySelectorAll('.memo-paquet').forEach(function (b) {
-        var k = b.getAttribute('data-paquet');
-        b.classList.toggle('actif', k === etat.paquet);
-        b.textContent = libelles[k] + ' (' + (k === 'revoir' ? n : paquets[k].length) + ')';
-      });
-    }
-    function majProgres() {
-      progres.querySelector('i').style.width = (etat.total ? Math.round(100 * etat.sus / etat.total) : 0) + '%';
-      progres.querySelector('span').textContent = etat.sus + ' / ' + etat.total + ' sus' + (etat.rates ? ' · ' + etat.rates + ' à revoir' : '');
-    }
-    function demarrer() {
-      etat.file = melanger(mots().slice());
-      etat.total = etat.file.length; etat.sus = 0; etat.rates = 0;
-      majPaquets(); suivante();
-    }
-    function suivante() {
-      majProgres();
-      etat.carte = etat.file.shift() || null;
-      carte.classList.remove('retournee');
-      if (!etat.carte) return fin();
-      carte.innerHTML = '<div class="memo-sens">Français → anglais</div>' +
-        '<div class="memo-recto">' + typo(etat.carte.fr) + '</div>' +
-        '<div class="memo-verso"><div class="memo-trad">' + etat.carte.en + '</div>' +
-        (etat.carte.ex ? '<div class="memo-ex">' + etat.carte.ex + '</div>' : '') + '</div>';
-      actions.className = 'memo-actions';
-      aide.hidden = false;
-    }
-    function fin() {
-      actions.className = 'memo-actions fini';
-      aide.hidden = true;
-      if (!etat.total) {
-        carte.innerHTML = typo('<div class="memo-fin">Aucun mot à revoir pour l’instant.<small>Les mots marqués « À revoir » s’ajoutent ici et vous suivent d’un jour à l’autre.</small></div>');
-        return;
-      }
-      carte.innerHTML = '<div class="memo-fin">' + etat.total + (etat.total > 1 ? ' mots sus' : ' mot su') + ' !<small>' +
-        typo(etat.rates ? etat.rates + ' raté' + (etat.rates > 1 ? 's' : '') + ' en route, gardé' + (etat.rates > 1 ? 's' : '') + ' dans « À revoir ».' : 'Aucune erreur.') +
-        '</small><span class="memo-fin-actions"><button type="button" class="bouton plein" data-a="refaire">Recommencer</button></span></div>';
-      carte.querySelector('[data-a="refaire"]').addEventListener('click', demarrer);
-    }
-    function retourner() { if (etat.carte) carte.classList.add('retournee'); }
-    function savais() {
-      if (!etat.carte) return;
-      if (etat.paquet === 'revoir') ecrireRevoir(lireRevoir().filter(function (m) { return m.en !== etat.carte.en; }));
-      etat.sus++; majPaquets(); suivante();
-    }
-    function aRevoir() {
-      if (!etat.carte) return;
-      var l = lireRevoir();
-      if (!l.some(function (m) { return m.en === etat.carte.en; })) {
-        l.push({ en: etat.carte.en, fr: etat.carte.fr, ex: etat.carte.ex || '', date: J.date });
-        ecrireRevoir(l);
-      }
-      etat.rates++;
-      etat.file.splice(Math.min(3, etat.file.length), 0, etat.carte);
-      majPaquets(); suivante();
-    }
-    carte.addEventListener('click', function (ev) { if (!ev.target.closest('button')) retourner(); });
-    bRetourner.addEventListener('click', retourner);
-    bRevoir.addEventListener('click', aRevoir);
-    bSavais.addEventListener('click', savais);
-    box.addEventListener('keydown', function (ev) {
-      if (/INPUT|TEXTAREA|BUTTON/.test(ev.target.tagName) && ev.key === ' ') return;
-      if (ev.key === ' ') { ev.preventDefault(); if (carte.classList.contains('retournee')) return; retourner(); }
-      else if (ev.key === 'ArrowLeft' && carte.classList.contains('retournee')) aRevoir();
-      else if (ev.key === 'ArrowRight' && carte.classList.contains('retournee')) savais();
-    });
-    demarrer();
-    return box;
   }
 
   var CHEVRON = '<svg class="g-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
@@ -345,9 +231,17 @@
     listes.appendChild(listeVocab('Les essentiels', J.vocabulaire.essentiels));
     listes.appendChild(listeVocab(titreTheme.charAt(0).toUpperCase() + titreTheme.slice(1), J.vocabulaire.theme.mots));
     s3.appendChild(listes);
-    var revoir = location.hash === '#revoir';
-    var memo = memoriser(J, revoir ? 'revoir' : null);
-    s3.appendChild(memo);
+    s3.appendChild(window.ECGCartes.creer({
+      titre: 'Mémoriser · français → anglais',
+      sens: 'Français → anglais',
+      paquets: [
+        { id: 'tous', libelle: 'Tous', mots: J.vocabulaire.essentiels.concat(J.vocabulaire.theme.mots) },
+        { id: 'essentiels', libelle: 'Essentiels', mots: J.vocabulaire.essentiels },
+        { id: 'theme', libelle: 'Thème', mots: J.vocabulaire.theme.mots }
+      ],
+      cleRevoir: CLE_REVOIR,
+      date: J.date
+    }));
     main.appendChild(s3);
 
     /* 4. La traduction : onglets Version / Thème */
@@ -418,8 +312,6 @@
     s5.appendChild(fin);
     main.appendChild(s5);
 
-    if (revoir) setTimeout(function () { memo.scrollIntoView({ behavior: 'instant', block: 'start' }); }, 150);
-
     /* Étapes : surligne la section en cours */
     var liensEtapes = document.querySelectorAll('.etapes a');
     if ('IntersectionObserver' in window) {
@@ -445,12 +337,10 @@
       nf.querySelector('span').textContent = n > 1 ? 'jours terminés' : 'jour terminé';
     }
     var nr = document.getElementById('nb-revoir');
-    var une = document.querySelector('.une');
     if (nr) {
       var r = lireRevoir().length;
       nr.querySelector('b').textContent = r;
       nr.querySelector('span').textContent = (r > 1 ? 'mots à revoir' : 'mot à revoir') + ' →';
-      if (une) nr.href = une.getAttribute('href') + '#revoir';
     }
     var grille = document.querySelector('.jours-grid');
     if (grille && cartes.length) {

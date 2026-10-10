@@ -43,6 +43,8 @@ directement après chaque modification, sans attendre un nouveau « mets en lign
    contenus (articles, dossiers de CG, fiches Humanité, chapitres) affichée sous les 4 cartes de
    l'accueil et dans la page `nouveautes.html`. Les dates de mise en ligne sont gardées dans
    `outils/nouveautes-dates.json` (ne jamais modifier ces deux fichiers à la main).
+   Puis `python3 outils/flashcards.py` : il régénère les données de l'espace flashcards
+   (`premiere_annee/langues/flashcards/*.js`) à partir des pages du jour de langues.
 1. Commit sur la branche de travail de la session, puis `git push -u origin <branche>`.
 2. Créer la PR vers `main` et la merger (outils GitHub MCP).
 3. Remettre la branche à jour sur `main` :
@@ -231,11 +233,19 @@ travailler surtout la grammaire de 1re année. Demande type : « Fais le texte d
 - `index.html` : la carte « Le texte du jour » (`.une` : image, « Jour N · <jour> <date> », titre)
   et la grille `jours-grid` (le nouveau jour **en tête**, avec `data-date` ; la carte « Demain »
   et les compteurs « jours terminés » / « mots à revoir » sont ajoutés par `quotidien.js`).
-  **Pas d'italique, pas de puces ni de texte qui résume la grammaire du jour** (index, cartes,
-  en-tête du jour).
+  **Pas de puces ni de texte qui résume la grammaire du jour** (index, cartes, en-tête du jour).
+  Pas d'italique dans l'index ; dans la page du jour, les mots anglais (`<em>`) restent en italique.
 - `jour-AAAA-MM-JJ.html` : une page par jour. Copier la page du dernier jour et ne changer que
   le `<title>`, la description, « Jour N » dans le fil d'Ariane et le bloc
-  `<script id="donnees">`. `quotidien.js` construit tout ; `quotidien.css` est commun.
+  `<script id="donnees">`. `quotidien.js` construit tout ; `quotidien.css` est commun ; les cartes
+  viennent de `premiere_annee/langues/flashcards/cartes.js` et `cartes.css`.
+- Le compteur « mots à revoir » de l'index mène à l'**espace flashcards**
+  (`premiere_annee/langues/flashcards/index.html`) : toutes les cartes de tous les jours, langue
+  par langue (onglets Anglais, Espagnol, Allemand ; une langue s'ouvre dès qu'elle a des pages du
+  jour dans `premiere_annee/langues/<langue>/quotidien/`). Ses données (`<langue>.js`,
+  `langues.js`) sont générées par `python3 outils/flashcards.py` : à lancer à chaque nouveau jour
+  (voir « Mise en ligne »), ne jamais les modifier à la main. Paquet « À revoir » :
+  `localStorage` `ecg-<langue>-quotidien-a-revoir`, commun à la page du jour et à l'espace.
 - Mettre aussi à jour la carte « Le texte du jour » de la barre latérale de
   `premiere_annee/langues/anglais/index.html`.
 
