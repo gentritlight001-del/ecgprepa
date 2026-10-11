@@ -349,7 +349,7 @@ Demande type : « Fais la fiche HGG du jour sur … ».
   04 Les chiffres (4 chiffres sourcés + 2 ou 3 graphiques SVG), 05 Qui veut quoi ? (acteurs) ou
   équivalent (débats, héritiers, critiques), 06 Dans une copie (accroche, idée-force, sujets,
   références, erreurs à éviter ; les deux colonnes finissent alignées en bas, le CSS allonge le
-  dernier cadre de chacune, mais équilibrer aussi le contenu, par exemple en ajoutant un sujet), 07 Plus loin (liens du site + sources). **Pas** de frise, de
+  dernier cadre de chacune, mais équilibrer aussi le contenu, par exemple en ajoutant un sujet), 07 Plus loin (liens du site + sources), puis une fin de page sobre `.f-fin` (« ← Toutes les fiches » et bouton « J'ai lu cette fiche », pas de bandeau sombre ni de texte « Demain… »). **Pas** de frise, de
   glossaire (« Les mots pour le dire ») ni de quiz (« Testez-vous »).
 - **Vidéo** (si le propriétaire en donne une) : lien `.f-video` sous la définition du cartouche
   (« En vidéo », titre exact de la vidéo, chaîne), adresse courte sans paramètre de suivi
