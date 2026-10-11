@@ -1,5 +1,5 @@
 /* L'HGG au quotidien : comportements communs aux fiches et à l'index.
-   - fiche : sommaire actif + barre de progression, cartes à onglets et repères numérotés,
+   - fiche : cartes à onglets et repères numérotés,
      bouton « J'ai lu cette fiche ».
    - index : marque « Lue » sur les fiches déjà lues, compteur.
    Les fiches lues sont gardées dans le navigateur (localStorage). */
@@ -14,37 +14,6 @@
     try { localStorage.setItem(cle, JSON.stringify(val)); } catch (e) { /* navigation privée */ }
   }
   function slug() { return (location.pathname.split('/').pop() || '').replace(/\.html$/, ''); }
-
-  /* ─── Sommaire : section en cours + progression de lecture ─── */
-  function sommaire() {
-    var liens = [].slice.call(document.querySelectorAll('.f-sommaire a[href^="#"]'));
-    var barre = document.querySelector('.f-progres');
-    if (!liens.length && !barre) return;
-    function cibles(l) { return l.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); }); }
-    var secs = cibles(liens);
-    function actif(liste, elems) {
-      var i = -1;
-      elems.forEach(function (s, k) { if (s && s.getBoundingClientRect().top < 180) i = k; });
-      liste.forEach(function (a, k) { a.classList.toggle('actif', k === i); });
-      return i;
-    }
-    var attente = false;
-    function maj() {
-      attente = false;
-      var i = actif(liens, secs);
-      if (i >= 0 && liens[i]) {
-        var boite = liens[i].parentNode;
-        var x = liens[i].offsetLeft - boite.clientWidth / 2 + liens[i].clientWidth / 2;
-        if (Math.abs(boite.scrollLeft - x) > 40) boite.scrollTo({ left: x, behavior: 'smooth' });
-      }
-      if (barre) {
-        var h = document.documentElement.scrollHeight - innerHeight;
-        barre.style.width = (h > 0 ? Math.min(100, scrollY / h * 100) : 0) + '%';
-      }
-    }
-    addEventListener('scroll', function () { if (!attente) { attente = true; requestAnimationFrame(maj); } }, { passive: true });
-    maj();
-  }
 
   /* ─── Cartes : onglets et repères ─── */
   function cartes() {
@@ -133,5 +102,5 @@
     }
   }
 
-  sommaire(); cartes(); lue(); index();
+  cartes(); lue(); index();
 })();
