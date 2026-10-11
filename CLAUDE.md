@@ -258,8 +258,9 @@ page pays ou région :
   pastilles, nom de l'auteur en prune, **sans italique**. Garder cet habillage pour toutes les fiches (`auteur.css`,
   `auteur.js` ; fiches lues dans `localStorage` `ecg-humanite-auteurs-lues`). Supprimer de la copie les balises `og:`,
   `twitter:`, `canonical` et réécrire la description.
-- Structure : cartouche (portrait en paysage et fiche d'identité **courte**, 3 lignes : naissance, mort,
-  œuvres clés ; WebP dans `images/`), 01 L'essentiel, 02 Comprendre (mots expliqués au survol), 03 « <Auteur> et
+- Structure : cartouche (portrait en paysage et fiche d'identité **courte**, 4 lignes : naissance, mort,
+  œuvres clés, concepts ; pas de lieux et dates sous le titre ; vidéo `.f-video` sous la définition si le
+  propriétaire en donne une, adresse courte `https://youtu.be/<id>`, aussi en tête des sources ; WebP dans `images/`), 01 L'essentiel, 02 Comprendre (mots expliqués au survol), 03 « <Auteur> et
   l'humanité », 04 Avec et contre l'auteur, 05 Dans une copie, 06 Plus loin + sources. **Pas de schéma** ni de
   section « citations à placer ».
 - « <Auteur> et l'humanité » (`.f-args`) : 8 questions du thème de l'Humanité, et pour chacune **seulement**
