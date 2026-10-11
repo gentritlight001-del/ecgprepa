@@ -377,6 +377,30 @@ Demande type : « Fais la fiche HGG du jour sur … ».
 - Vérifier à 390 et 1280 px (pas de défilement horizontal, aucune erreur JS), puis mise en ligne.
   `outils/nouveautes.py` reprend les fiches toutes seules.
 
+**Sujets à venir** : `outils/hgg-quotidien-sujets.json`, une entrée par date (`date`, `sujet`, `type`,
+`video`, `consignes`, puis `fiche` = nom du fichier une fois faite). Quand le propriétaire donne un
+sujet à l'avance (« Sujet HGG de demain : … », « le 14 : … »), l'ajouter à ce fichier (date de Paris)
+et mettre en ligne tout de suite : la routine de minuit le lira.
+
+**Procédure d'une nouvelle fiche** (routine automatique tous les jours à 0 h, heure de Paris, ou
+demande directe), sans poser de question jusqu'à la mise en ligne :
+1. Date = `TZ=Europe/Paris date +%F`. Sujet = entrée de cette date dans `outils/hgg-quotidien-sujets.json`.
+   S'il n'y en a pas, ou si l'index a déjà une fiche `data-date` à cette date : ne rien faire.
+2. Recherches web poussées (plusieurs sources, chiffres datés, rien d'inventé). Type = champ `type`,
+   sinon le déduire (Lieu, Notion, Auteur, Ouvrage, Événement).
+3. Copier la dernière fiche en `<slug>.html` et tout réécrire selon les règles ci-dessus : n° = dernier
+   + 1, date, type, durée 10 min, nouvelle couleur (`--accent`/`--accent2` jamais déjà prises), titre,
+   cartouche, sections 01 à 07, 40 à 50 mots expliqués au survol, vidéo si `video` est rempli, sources.
+   Supprimer les balises `og:`, `twitter:`, `canonical` et réécrire la description.
+4. Illustrations regardées une à une ; repères des cartes vérifiés en capture.
+5. `index.html` de l'espace (carte `.i-une`, nouvelle carte en tête de `.i-grille`, compteur `0 / N`) et
+   carte « La fiche du jour » de `premiere_annee/hgg/index.html`. Remplir `fiche` dans l'entrée du jour.
+6. Contrôles Playwright à 390 et 1280 px : aucune erreur JS, pas de défilement horizontal, bulles qui
+   s'ouvrent, cadres de « Dans une copie » alignés en bas, aucun tiret cadratin hors `<title>`.
+7. Mise en ligne complète (section 2). La routine des langues tourne à la même heure : juste avant le
+   commit, repartir du `main` le plus récent ; en cas de conflit sur un fichier généré (`sitemap.xml`,
+   `nouveautes.js`, `outils/nouveautes-dates.json`), reprendre la version de `main` et relancer les scripts.
+
 ### Dossiers de langues (DS)
 
 - Page type `deuxieme_annee/langues/anglais/DS/ang-dsN.html` : seul le bloc
