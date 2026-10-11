@@ -474,7 +474,8 @@
   /* ─── Actualités : seul l'article le plus récent de chaque édition
      est gratuit, les autres sont Premium. L'article le plus récent est
      le premier de ACTU_DATA dans actualites/<code>/tous-<code>.html.
-     Même règle pour la culture générale (dernière entrée de CG_DATA).
+     Même règle pour la culture générale (dernière entrée de CG_DATA)
+     et pour les espaces « au quotidien » (voir infoActu).
      Un réglage manuel (ligne dans rubriques_verrouillage, posée par les
      boutons ✦ de l'admin) l'emporte toujours sur cette règle. ─── */
   var _dernierActu = {};
@@ -490,12 +491,29 @@
   function infoActu(id) {
     var m = /^actualites\/(en|es|de|monde)\/articles\/([^/]+?)(?:\.html)?$/.exec(id || '');
     if (m) return { code: m[1], slug: m[2] };
+    /* Espaces « au quotidien » (langues et HGG de 1re année) : seul le
+       dernier jour (ou la dernière fiche) est gratuit, celui vers lequel
+       pointe la carte du haut (.une ou .i-une) de l'index de l'espace. */
+    var q = /^premiere_annee\/(langues\/[^/]+|hgg)\/quotidien\/([^/]+?)(?:\.html)?$/.exec(id || '');
+    if (q && q[2] !== 'index') {
+      return { code: 'q-' + q[1], slug: q[2], quotidien: q[1] === 'hgg' ? 'fiche' : 'jour',
+               dossier: 'premiere_annee/' + q[1] + '/quotidien/' };
+    }
     /* Culture générale : un dossier par fiche, la dernière ajoutée
        est la dernière entrée de CG_DATA. */
     var c = /^culture-generale\/([^/]+?)(?:\.html)?$/.exec(id || '');
     return c ? { code: 'cg', slug: c[1] } : null;
   }
   function dernierActu(code) {
+    if (!_dernierActu[code] && code.indexOf('q-') === 0) {
+      _dernierActu[code] = fetch(BASE + 'premiere_annee/' + code.slice(2) + '/quotidien/index.html', { cache: 'no-cache' })
+        .then(function (r) { return r.ok ? r.text() : ''; })
+        .then(function (t) {
+          var m = /class="(?:i-)?une(?:\s[^"]*)?"\s+href="([^"\/]+?)(?:\.html)?"/.exec(t);
+          return m ? m[1] : null;
+        })
+        .catch(function () { return null; });
+    }
     if (!_dernierActu[code]) {
       var cg = code === 'cg';
       _dernierActu[code] = fetch(BASE + (cg ? 'culture-generale.html' : 'actualites/' + code + '/tous-' + code + '.html'), { cache: 'no-cache' })
@@ -1721,7 +1739,8 @@
     if (cheminActuel && prem[cheminActuel]) {
       var ia = infoActu(cheminActuel);
       rubPremium = { id: cheminActuel, niveau: 4, nom: null, groupe: null,
-                     retour: ia ? (ia.code === 'cg' ? 'culture-generale.html' : 'actualites/' + ia.code + '/tous-' + ia.code + '.html')
+                     retour: ia ? (ia.quotidien ? ia.dossier + 'index.html'
+                                 : ia.code === 'cg' ? 'culture-generale.html' : 'actualites/' + ia.code + '/tous-' + ia.code + '.html')
                                 : cheminActuel.replace(/[^/]*$/, 'index.html') };
     } else {
       var p = rubriquesActuelles.filter(function (rb) { return !!prem[rb.id]; });
@@ -1881,16 +1900,24 @@
   function refuserPremium(rub) {
     var prix = (OFFRES_PREMIUM[0] && OFFRES_PREMIUM[0].prix || 1.99).toFixed(2).replace('.', ',') + ' €';
     var actu = !rub.nom && infoActu(cheminActuel);
+    var quot = actu && actu.quotidien;
     var titre = rub.nom
       ? 'La rubrique « ' + rub.nom + (rub.niveau === 3 ? ' (' + rub.groupe + ')' : '') + ' » est réservée aux abonnés'
+      : quot === 'fiche' ? 'Cette fiche est réservée aux abonnés'
+      : quot ? 'Ce texte est réservé aux abonnés'
       : (actu ? 'Cet article est réservé aux abonnés' : 'Ce contenu est réservé aux abonnés');
-    var texte = actu
+    var texte = quot === 'fiche'
+      ? 'Seule la fiche du jour est gratuite. Avec Premium, tu retrouves toutes les fiches précédentes, à partir de ' + prix + ' par mois.'
+      : quot
+      ? 'Seul le texte du jour est gratuit. Avec Premium, tu retrouves tous les jours précédents, à partir de ' + prix + ' par mois.'
+      : actu
       ? 'Seul l\u2019article le plus récent est gratuit. Avec Premium, tu lis tous les autres, à partir de ' + prix + ' par mois.'
       : 'Avec Premium, tu accèdes à tous les contenus réservés, à partir de ' + prix + ' par mois.';
     ecranRefus(titre, texte,
       'Déjà abonné·e ? Recharge la page dans un instant.',
       TARIFS_URL + '?depuis=' + encodeURIComponent(location.pathname), 'Débloquer avec Premium',
-      { libelle: actu ? 'Retour aux articles' : 'Retour', url: BASE + rub.retour }, true);
+      { libelle: quot === 'fiche' ? 'Retour aux fiches' : quot ? 'Retour aux textes du jour' : actu ? 'Retour aux articles' : 'Retour',
+        url: BASE + rub.retour }, true);
   }
 
   /* Croix pour fermer le bandeau admin ; il reste fermé sur cette
