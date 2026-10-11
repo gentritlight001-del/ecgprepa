@@ -1,5 +1,5 @@
 /* Fiches auteurs (Cours Humanité) : comportements communs, repris de l'HGG au quotidien.
-   - fiche : schémas à onglets et repères numérotés, mots expliqués au survol,
+   - fiche : questions du thème à onglets, mots expliqués au survol,
      bouton « J'ai lu cette fiche ».
    - index (fiches-auteurs.html) : marque « Lue » sur les fiches déjà lues.
    Les fiches lues sont gardées dans le navigateur (localStorage). */
@@ -15,59 +15,34 @@
   }
   function slug() { return (location.pathname.split('/').pop() || '').replace(/\.html$/, ''); }
 
-  /* ─── Cartes : onglets et repères ─── */
-  function cartes() {
-    var onglets = [].slice.call(document.querySelectorAll('.f-onglets [role="tab"]'));
-    onglets.forEach(function (b) {
-      b.addEventListener('click', function () {
-        onglets.forEach(function (o) {
-          var on = o === b;
-          o.setAttribute('aria-selected', on ? 'true' : 'false');
-          var p = document.getElementById(o.getAttribute('aria-controls'));
-          if (p) p.classList.toggle('actif', on);
-        });
-        centrer();
+  /* ─── « <Auteur> et l'humanité » : une question à la fois ─── */
+  function questions() {
+    var bloc = document.querySelector('.f-q');
+    if (!bloc) return;
+    var onglets = [].slice.call(bloc.querySelectorAll('[role="tab"]'));
+    bloc.classList.add('js-q');
+    function choisir(b, focus) {
+      onglets.forEach(function (o) {
+        var on = o === b;
+        o.setAttribute('aria-selected', on ? 'true' : 'false');
+        o.setAttribute('tabindex', on ? '0' : '-1');
+        var p = document.getElementById(o.getAttribute('aria-controls'));
+        if (p) p.classList.toggle('actif', on);
       });
-    });
-    /* Sur petit écran, la carte défile horizontalement : on la centre au départ. */
-    function centrer() {
-      [].slice.call(document.querySelectorAll('.f-carte.actif .f-carte-defil')).forEach(function (d) {
-        if (d.scrollWidth > d.clientWidth && !d.dataset.centre) {
-          d.scrollLeft = (d.scrollWidth - d.clientWidth) / 2; d.dataset.centre = '1';
-        }
-      });
-    }
-    centrer();
-    addEventListener('load', centrer);
-    [].slice.call(document.querySelectorAll('.f-carte')).forEach(function (carte) {
-      var pins = [].slice.call(carte.querySelectorAll('.pin'));
-      var items = [].slice.call(carte.querySelectorAll('.f-reperes li'));
-      function choisir(id, defiler) {
-        pins.forEach(function (p) { p.classList.toggle('actif', p.getAttribute('data-r') === id); });
-        items.forEach(function (li) {
-          var on = li.getAttribute('data-r') === id;
-          li.classList.toggle('actif', on);
-          li.querySelector('button').setAttribute('aria-expanded', on ? 'true' : 'false');
-          if (on && defiler) {
-            var liste = li.parentNode;
-            liste.scrollTo({ top: li.offsetTop - liste.offsetTop - 8, behavior: 'smooth' });
-          }
-        });
+      if (focus) b.focus();
+      /* Sur petit écran, la question choisie s'affiche sous la liste : on y descend. */
+      if (innerWidth <= 760) {
+        var p = document.getElementById(b.getAttribute('aria-controls'));
+        if (p) p.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-      pins.forEach(function (p) {
-        p.setAttribute('tabindex', '0');
-        p.setAttribute('role', 'button');
-        p.addEventListener('click', function () { choisir(p.getAttribute('data-r'), true); });
-        p.addEventListener('keydown', function (e) {
-          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choisir(p.getAttribute('data-r'), true); }
-        });
+    }
+    onglets.forEach(function (b, i) {
+      b.setAttribute('tabindex', b.getAttribute('aria-selected') === 'true' ? '0' : '-1');
+      b.addEventListener('click', function () { choisir(b, false); });
+      b.addEventListener('keydown', function (e) {
+        var k = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
+        if (k) { e.preventDefault(); var n = onglets[(i + k + onglets.length) % onglets.length]; choisir(n, true); }
       });
-      items.forEach(function (li) {
-        li.querySelector('button').addEventListener('click', function () {
-          choisir(li.classList.contains('actif') ? '' : li.getAttribute('data-r'), false);
-        });
-      });
-      if (items[0]) choisir(items[0].getAttribute('data-r'), false);
     });
   }
 
@@ -139,5 +114,5 @@
     fiches.forEach(function (f) { if (l.indexOf(f.getAttribute('data-slug')) >= 0) f.classList.add('lue'); });
   }
 
-  cartes(); bulles(); lue(); index();
+  questions(); bulles(); lue(); index();
 })();

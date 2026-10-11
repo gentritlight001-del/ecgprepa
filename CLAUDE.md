@@ -259,10 +259,13 @@ page pays ou région :
   `auteur.js` ; fiches lues dans `localStorage` `ecg-humanite-auteurs-lues`). Supprimer de la copie les balises `og:`,
   `twitter:`, `canonical` et réécrire la description.
 - Structure : cartouche (portrait en paysage et fiche d'identité **courte**, 3 lignes : vie, œuvres clés,
-  concepts ; WebP dans `images/`), 01 L'essentiel, 02 Schéma commenté (SVG à repères cliquables), 03 Comprendre
-  (mots expliqués au survol), 04 « <Auteur> et l'humanité » (pas de section « citations à placer » : 8 cartes
-  `f-these`, une par question du thème de l'Humanité, avec la thèse de l'auteur, l'explication, une citation
-  qui la prouve et « À nuancer »), 05 Avec et contre l'auteur, 06 Dans une copie, 07 Plus loin + sources.
+  concepts ; WebP dans `images/`), 01 L'essentiel, 02 Comprendre (mots expliqués au survol), 03 « <Auteur> et
+  l'humanité », 04 Avec et contre l'auteur, 05 Dans une copie, 06 Plus loin + sources. **Pas de schéma** ni de
+  section « citations à placer ».
+- « <Auteur> et l'humanité » (`.f-q`, onglets gérés par `auteur.js`) : 8 questions du thème de l'Humanité en
+  sommaire à gauche, une seule affichée à la fois. Pour chacune : la thèse de l'auteur en une phrase, puis
+  **développée en 4 étapes d'argument** (titre court + 2 ou 3 phrases appuyées sur le texte), et sur le côté
+  « La preuve par le texte » (citation), « Dans la copie » (où la placer), « À nuancer » ; enfin « À retenir ».
 - **Citations vérifiées mot pour mot sur le texte original** (Wikisource), jamais de mémoire.
 
 ### Les langues au quotidien (1re année) : anglais, espagnol, allemand
