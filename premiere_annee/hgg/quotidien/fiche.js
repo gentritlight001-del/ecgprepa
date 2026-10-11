@@ -1,5 +1,5 @@
 /* L'HGG au quotidien : comportements communs aux fiches et à l'index.
-   - fiche : cartes à onglets et repères numérotés,
+   - fiche : cartes à onglets et repères numérotés, mots expliqués au survol,
      bouton « J'ai lu cette fiche ».
    - index : marque « Lue » sur les fiches déjà lues, compteur.
    Les fiches lues sont gardées dans le navigateur (localStorage). */
@@ -71,6 +71,48 @@
     });
   }
 
+  /* ─── Mots expliqués au survol (ou au toucher) ─── */
+  function bulles() {
+    var mots = [].slice.call(document.querySelectorAll('.gl[data-def]'));
+    if (!mots.length) return;
+    var b = document.createElement('div');
+    b.className = 'f-bulle'; b.setAttribute('role', 'tooltip'); b.id = 'f-bulle';
+    document.body.appendChild(b);
+    var courant = null;
+    function montrer(el) {
+      courant = el;
+      mots.forEach(function (m) { m.classList.toggle('ouvert', m === el); });
+      b.innerHTML = '<b>' + el.innerHTML + '</b>' + el.getAttribute('data-def');
+      el.setAttribute('aria-describedby', 'f-bulle');
+      b.classList.remove('vue', 'haut', 'bas');
+      var r = el.getClientRects()[0] || el.getBoundingClientRect();
+      var w = b.offsetWidth, h = b.offsetHeight, marge = 12;
+      var x = Math.max(marge, Math.min(innerWidth - w - marge, r.left + r.width / 2 - w / 2));
+      var dessus = r.top - h - 10 > 70;
+      b.style.left = x + 'px';
+      b.style.top = (dessus ? r.top - h - 10 : r.bottom + 10) + 'px';
+      b.style.setProperty('--fl', Math.max(14, Math.min(w - 14, r.left + r.width / 2 - x)) + 'px');
+      b.classList.add(dessus ? 'haut' : 'bas', 'vue');
+    }
+    function cacher() {
+      if (courant) { courant.classList.remove('ouvert'); courant.removeAttribute('aria-describedby'); }
+      courant = null; b.classList.remove('vue');
+    }
+    var tactile = false, dejaOuvert = false;
+    mots.forEach(function (el) {
+      el.addEventListener('touchstart', function () { tactile = true; dejaOuvert = courant === el; }, { passive: true });
+      el.addEventListener('mouseenter', function () { if (!tactile) montrer(el); });
+      el.addEventListener('mouseleave', function () { if (!tactile) cacher(); });
+      el.addEventListener('focus', function () { montrer(el); });
+      el.addEventListener('blur', cacher);
+      /* Au toucher : un premier appui ouvre la bulle, un second la ferme. */
+      el.addEventListener('click', function (e) { e.preventDefault(); if (tactile && dejaOuvert) { el.blur(); cacher(); dejaOuvert = false; } else montrer(el); });
+      el.addEventListener('keydown', function (e) { if (e.key === 'Escape') { el.blur(); cacher(); } });
+    });
+    addEventListener('scroll', cacher, { passive: true });
+    addEventListener('resize', cacher);
+  }
+
   /* ─── « J'ai lu cette fiche » ─── */
   function lue() {
     var b = document.querySelector('.f-lu');
@@ -102,5 +144,5 @@
     }
   }
 
-  cartes(); lue(); index();
+  cartes(); bulles(); lue(); index();
 })();
