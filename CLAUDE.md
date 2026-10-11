@@ -351,6 +351,9 @@ Demande type : « Fais la fiche HGG du jour sur … ».
   références, erreurs à éviter ; les deux colonnes finissent alignées en bas, le CSS allonge le
   dernier cadre de chacune, mais équilibrer aussi le contenu, par exemple en ajoutant un sujet), 07 Plus loin (liens du site + sources). **Pas** de frise, de
   glossaire (« Les mots pour le dire ») ni de quiz (« Testez-vous »).
+- **Vidéo** (si le propriétaire en donne une) : lien `.f-video` sous la définition du cartouche
+  (« En vidéo », titre exact de la vidéo, chaîne), adresse courte sans paramètre de suivi
+  (`https://youtu.be/<id>`), et la même vidéo en tête des sources (07).
 - **Mots expliqués au survol** dans « Comprendre » : chaque mot, lieu, personnage, sigle ou notion
   un peu difficile (première occurrence seulement, 40 à 50 par fiche) est balisé
   `<span class="gl" tabindex="0" data-def="…">mot</span>`. La définition fait une ou deux phrases
