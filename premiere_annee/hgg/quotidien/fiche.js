@@ -1,6 +1,6 @@
 /* L'HGG au quotidien : comportements communs aux fiches et à l'index.
    - fiche : sommaire actif + barre de progression, cartes à onglets et repères numérotés,
-     questions « Testez-vous » à dévoiler, bouton « J'ai lu cette fiche ».
+     bouton « J'ai lu cette fiche ».
    - index : marque « Lue » sur les fiches déjà lues, compteur.
    Les fiches lues sont gardées dans le navigateur (localStorage). */
 (function () {
@@ -18,11 +18,10 @@
   /* ─── Sommaire : section en cours + progression de lecture ─── */
   function sommaire() {
     var liens = [].slice.call(document.querySelectorAll('.f-sommaire a[href^="#"]'));
-    var plan = [].slice.call(document.querySelectorAll('.f-plan a[href^="#"]'));
     var barre = document.querySelector('.f-progres');
     if (!liens.length && !barre) return;
     function cibles(l) { return l.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); }); }
-    var secs = cibles(liens), parts = cibles(plan);
+    var secs = cibles(liens);
     function actif(liste, elems) {
       var i = -1;
       elems.forEach(function (s, k) { if (s && s.getBoundingClientRect().top < 180) i = k; });
@@ -33,7 +32,6 @@
     function maj() {
       attente = false;
       var i = actif(liens, secs);
-      actif(plan, parts);
       if (i >= 0 && liens[i]) {
         var boite = liens[i].parentNode;
         var x = liens[i].offsetLeft - boite.clientWidth / 2 + liens[i].clientWidth / 2;
@@ -104,38 +102,6 @@
     });
   }
 
-  /* ─── Testez-vous ─── */
-  function quiz() {
-    var qs = [].slice.call(document.querySelectorAll('.f-q'));
-    if (!qs.length) return;
-    var score = document.querySelector('.f-score');
-    var cle = 'ecg-hgg-quotidien-quiz-' + slug();
-    var etat = lire(cle, {});
-    function bilan() {
-      if (!score) return;
-      var vus = 0, ok = 0;
-      qs.forEach(function (q, i) { if (etat[i] != null) { vus++; if (etat[i]) ok++; } });
-      score.textContent = vus ? ok + ' bonne' + (ok > 1 ? 's' : '') + ' réponse' + (ok > 1 ? 's' : '') + ' sur ' + vus + ' question' + (vus > 1 ? 's' : '') + ' évaluée' + (vus > 1 ? 's' : '') + '.' : '';
-    }
-    qs.forEach(function (q, i) {
-      var voir = q.querySelector('.f-q-voir');
-      voir.addEventListener('click', function () {
-        var ouvert = q.classList.toggle('ouvert');
-        voir.setAttribute('aria-expanded', ouvert ? 'true' : 'false');
-        voir.firstElementChild.textContent = ouvert ? 'Masquer la réponse' : 'Voir la réponse';
-      });
-      [].slice.call(q.querySelectorAll('.f-q-auto button')).forEach(function (b) {
-        b.addEventListener('click', function () {
-          etat[i] = b.classList.contains('oui');
-          q.querySelectorAll('.f-q-auto button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-          ecrire(cle, etat); bilan();
-        });
-        if (etat[i] != null && b.classList.contains(etat[i] ? 'oui' : 'non')) b.setAttribute('aria-pressed', 'true');
-      });
-    });
-    bilan();
-  }
-
   /* ─── « J'ai lu cette fiche » ─── */
   function lue() {
     var b = document.querySelector('.f-lu');
@@ -167,5 +133,5 @@
     }
   }
 
-  sommaire(); cartes(); quiz(); lue(); index();
+  sommaire(); cartes(); lue(); index();
 })();

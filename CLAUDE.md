@@ -334,7 +334,7 @@ et illustrée sur un **lieu**, une **notion**, un **auteur**, un **ouvrage** ou 
 Demande type : « Fais la fiche HGG du jour sur … ».
 
 - Fichiers communs : `fiche.css` (gabarit « planche d'atlas », papier clair) et `fiche.js` (sommaire
-  actif, cartes à onglets et repères cliquables, quiz, bouton « J'ai lu cette fiche » gardé dans
+  actif, cartes à onglets et repères cliquables, bouton « J'ai lu cette fiche » gardé dans
   `localStorage` `ecg-hgg-quotidien-lues`). Ne pas les réécrire pour une fiche : les compléter si besoin.
 - Une fiche = `<slug>.html` (ex. `detroit-d-ormuz.html`), copiée de la dernière fiche. Sur `<body>` :
   `data-type="Lieu|Notion|Auteur|Ouvrage|Événement"` et la couleur propre de la fiche
@@ -342,14 +342,16 @@ Demande type : « Fais la fiche HGG du jour sur … ».
   `ECG Prépa — <Titre> · HGG au quotidien`. Supprimer de la copie les balises `og:`, `twitter:`,
   `canonical` et réécrire la description.
 - Structure (garder l'ordre, adapter le contenu au type) : cartouche (n°, type, date, durée, titre,
-  coordonnées ou dates, définition en 2 phrases, chapitres du programme liés, « Fiche d'identité »),
+  coordonnées ou dates, définition en 2 phrases, « Fiche d'identité » ; **pas** de « Au programme »),
   sommaire collant, puis 01 L'essentiel (3 idées), 02 Carte ou schéma commenté (repères numérotés
   cliquables ; pour un auteur ou une notion : schéma SVG, carte des lieux liés ou document),
-  03 Comprendre (4 à 5 parties avec plan latéral, citation, encadrés), 04 Les chiffres (4 chiffres
-  sourcés + 2 ou 3 graphiques SVG), 05 La frise, 06 Qui veut quoi ? (acteurs) ou équivalent (débats,
-  héritiers, critiques), 07 Dans une copie (accroche, idée-force, sujets, références, erreurs à
-  éviter), 08 Les mots (glossaire), 09 Testez-vous (6 questions), 10 Plus loin (liens du site + sources).
-- Faits vérifiés par recherche web, chiffres datés et sourcés, rien d'inventé ; sources listées en 10.
+  03 Comprendre (4 à 5 parties sur une colonne, **sans** plan latéral, avec citation et encadrés),
+  04 Les chiffres (4 chiffres sourcés + 2 ou 3 graphiques SVG), 05 Qui veut quoi ? (acteurs) ou
+  équivalent (débats, héritiers, critiques), 06 Dans une copie (accroche, idée-force, sujets,
+  références, erreurs à éviter), 07 Plus loin (liens du site + sources). **Pas** de frise, de
+  glossaire (« Les mots pour le dire ») ni de quiz (« Testez-vous »).
+- Titres (fiche et index) **sans italique** : pas de mot en `<em>` dans le `<h1>`.
+- Faits vérifiés par recherche web, chiffres datés et sourcés, rien d'inventé ; sources listées en 07.
 - Illustrations : images libres de droits stockées en WebP dans `images/` (1600 px maximum), par
   exemple les vues satellite NASA Worldview (`wvs.earthdata.nasa.gov/api/v1/snapshot`, couche
   `MODIS_Terra_CorrectedReflectance_TrueColor` ou `BlueMarble_ShadedRelief_Bathymetry`, projection
