@@ -350,7 +350,10 @@ Demande type : « Fais la fiche HGG du jour sur … ».
   équivalent (débats, héritiers, critiques), 06 Dans une copie (accroche, idée-force, sujets,
   références, erreurs à éviter), 07 Plus loin (liens du site + sources). **Pas** de frise, de
   glossaire (« Les mots pour le dire ») ni de quiz (« Testez-vous »).
-- Titres (fiche et index) **sans italique** : pas de mot en `<em>` dans le `<h1>`.
+- Titres (fiche et index) **sans italique** : la fin du titre garde la couleur de la fiche avec
+  `<span class="ac">` (ex. « Le détroit <span class="ac">d'Ormuz</span> »), jamais `<em>`.
+- Cartouche centré verticalement face à la « Fiche d'identité » ; texte de « Comprendre » en une
+  colonne centrée dans la page ; citations en taille modeste (style `f-citation` tel quel).
 - Faits vérifiés par recherche web, chiffres datés et sourcés, rien d'inventé ; sources listées en 07.
 - Illustrations : images libres de droits stockées en WebP dans `images/` (1600 px maximum), par
   exemple les vues satellite NASA Worldview (`wvs.earthdata.nasa.gov/api/v1/snapshot`, couche
