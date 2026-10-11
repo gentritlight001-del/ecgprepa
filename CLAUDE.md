@@ -262,10 +262,10 @@ page pays ou région :
   concepts ; WebP dans `images/`), 01 L'essentiel, 02 Comprendre (mots expliqués au survol), 03 « <Auteur> et
   l'humanité », 04 Avec et contre l'auteur, 05 Dans une copie, 06 Plus loin + sources. **Pas de schéma** ni de
   section « citations à placer ».
-- « <Auteur> et l'humanité » (`.f-q`, onglets gérés par `auteur.js`) : 8 questions du thème de l'Humanité en
-  sommaire à gauche, une seule affichée à la fois. Pour chacune : la thèse de l'auteur en une phrase, puis
-  **développée en 4 étapes d'argument** (titre court + 2 ou 3 phrases appuyées sur le texte), et sur le côté
-  « La preuve par le texte » (citation), « Dans la copie » (où la placer), « À nuancer » ; enfin « À retenir ».
+- « <Auteur> et l'humanité » (`.f-args`) : 8 questions du thème de l'Humanité, et pour chacune **seulement**
+  « L'argument » (un paragraphe prêt à mettre dans la copie : la thèse de l'auteur, expliquée, avec ses
+  citations et la référence de l'œuvre) et « Comment l'interpréter » (1 ou 2 phrases). Rien d'autre :
+  le propriétaire veut du concret, sans étapes, onglets ni encadrés en plus.
 - **Citations vérifiées mot pour mot sur le texte original** (Wikisource), jamais de mémoire.
 
 ### Les langues au quotidien (1re année) : anglais, espagnol, allemand

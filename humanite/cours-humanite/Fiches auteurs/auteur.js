@@ -1,5 +1,5 @@
 /* Fiches auteurs (Cours Humanité) : comportements communs, repris de l'HGG au quotidien.
-   - fiche : questions du thème à onglets, mots expliqués au survol,
+   - fiche : mots expliqués au survol,
      bouton « J'ai lu cette fiche ».
    - index (fiches-auteurs.html) : marque « Lue » sur les fiches déjà lues.
    Les fiches lues sont gardées dans le navigateur (localStorage). */
@@ -14,37 +14,6 @@
     try { localStorage.setItem(cle, JSON.stringify(val)); } catch (e) { /* navigation privée */ }
   }
   function slug() { return (location.pathname.split('/').pop() || '').replace(/\.html$/, ''); }
-
-  /* ─── « <Auteur> et l'humanité » : une question à la fois ─── */
-  function questions() {
-    var bloc = document.querySelector('.f-q');
-    if (!bloc) return;
-    var onglets = [].slice.call(bloc.querySelectorAll('[role="tab"]'));
-    bloc.classList.add('js-q');
-    function choisir(b, focus) {
-      onglets.forEach(function (o) {
-        var on = o === b;
-        o.setAttribute('aria-selected', on ? 'true' : 'false');
-        o.setAttribute('tabindex', on ? '0' : '-1');
-        var p = document.getElementById(o.getAttribute('aria-controls'));
-        if (p) p.classList.toggle('actif', on);
-      });
-      if (focus) b.focus();
-      /* Sur petit écran, la question choisie s'affiche sous la liste : on y descend. */
-      if (innerWidth <= 760) {
-        var p = document.getElementById(b.getAttribute('aria-controls'));
-        if (p) p.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }
-    onglets.forEach(function (b, i) {
-      b.setAttribute('tabindex', b.getAttribute('aria-selected') === 'true' ? '0' : '-1');
-      b.addEventListener('click', function () { choisir(b, false); });
-      b.addEventListener('keydown', function (e) {
-        var k = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
-        if (k) { e.preventDefault(); var n = onglets[(i + k + onglets.length) % onglets.length]; choisir(n, true); }
-      });
-    });
-  }
 
   /* ─── Mots expliqués au survol (ou au toucher) ─── */
   function bulles() {
@@ -114,5 +83,5 @@
     fiches.forEach(function (f) { if (l.indexOf(f.getAttribute('data-slug')) >= 0) f.classList.add('lue'); });
   }
 
-  questions(); bulles(); lue(); index();
+  bulles(); lue(); index();
 })();
