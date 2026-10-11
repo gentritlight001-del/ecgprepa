@@ -270,7 +270,8 @@ page pays ou région :
   `auteur.js` ; fiches lues dans `localStorage` `ecg-humanite-auteurs-lues`). Supprimer de la copie les balises `og:`,
   `twitter:`, `canonical` et réécrire la description.
 - Structure : cartouche (portrait en paysage et fiche d'identité **courte**, 4 lignes : naissance, mort,
-  œuvres clés, concepts ; pas de lieux et dates sous le titre ; vidéo `.f-video` sous la définition si le
+  œuvres clés, concepts, valeurs brèves qui tiennent si possible sur une ligne (titres sans dates) ; définition
+  d'environ 5 lignes à 1280 px, pour que le texte de gauche et la fiche d'identité aient des hauteurs proches ; pas de lieux et dates sous le titre ; vidéo `.f-video` sous la définition si le
   propriétaire en donne une, adresse courte `https://youtu.be/<id>`, aussi en tête des sources ; WebP dans `images/`), 01 L'essentiel, 02 Comprendre (mots expliqués au survol), 03 « <Auteur> et
   l'humanité », 04 Avec et contre l'auteur, 05 Dans une copie, 06 Plus loin + sources. **Pas de schéma** ni de
   section « citations à placer ».
