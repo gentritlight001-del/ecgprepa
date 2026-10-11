@@ -358,8 +358,10 @@ Demande type : « Fais la fiche HGG du jour sur … ».
   un peu difficile (première occurrence seulement, 40 à 50 par fiche) est balisé
   `<span class="gl" tabindex="0" data-def="…">mot</span>`. La définition fait une ou deux phrases
   vérifiées, sans tiret cadratin ; `fiche.js` affiche la bulle (survol, clavier, toucher sur mobile).
-- Titres (fiche et index) **sans italique** : la fin du titre garde la couleur de la fiche avec
-  `<span class="ac">` (ex. « Le détroit <span class="ac">d'Ormuz</span> »), jamais `<em>`.
+- Titres **sans italique**, jamais `<em>`. Titre d'une fiche : la fin garde la couleur de la fiche
+  avec `<span class="ac">` (ex. « Le détroit <span class="ac">d'Ormuz</span> »). Titre de l'index
+  (« L'HGG au quotidien ») : tout en noir.
+- Durée affichée (cartouche et carte de l'index) : 10 min.
 - Cartouche centré verticalement face à la « Fiche d'identité » ; texte de « Comprendre » en une
   colonne centrée dans la page ; citations en taille modeste (style `f-citation` tel quel).
 - Faits vérifiés par recherche web, chiffres datés et sourcés, rien d'inventé ; sources listées en 07.
