@@ -259,7 +259,7 @@ page pays ou région :
   que sur le `<body>` de sa fiche) au `<li>`, remplacer `.fr-initiale` par le portrait
   (`<img class="fr-visuel" src="images/<slug>.webp" …>`) et « Fiche à venir » par le lien
   `<a class="fr-bouton" href="<slug>.html">` + durée, comme pour Rousseau. **Aucun auteur n'est ouvert à
-  l'arrivée sur la page** (pas d'ouverture d'office). Les numéros sont recalculés par le script ;
+  l'arrivée sur la page** (pas d'ouverture d'office). Titre « Fiches auteurs » tout en noir. Les numéros sont recalculés par le script ;
   après une insertion, corriger aussi ceux écrits dans la page (`.fr-num`, `N° …` de `.fr-meta`) et le
   « Fiche auteur n° » des fiches déjà faites (`grep -n 'f-num' *.html`). Demande type : « Fais la fiche auteur de Kant ».
 - Une fiche = `<slug>.html`, copiée de `rousseau.html` (n° = rang chronologique dans la frise). Gabarit repris de
