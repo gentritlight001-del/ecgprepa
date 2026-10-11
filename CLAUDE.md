@@ -255,10 +255,11 @@ page pays ou région :
   `.fr-detail` (nom complet, époque, thèse en une phrase, œuvre de référence) qui s'ouvre au clic. Le
   script de la page place seul les époques, les années et les barres : ajouter un auteur = copier un `<li>`
   au bon endroit, rien d'autre (les époques d'avant 1450 sont resserrées). Une fiche faite : ajouter
-  `dispo` et `data-slug="<slug>"` au `<li>`, remplacer `.fr-initiale` par le portrait
+  `dispo`, `data-slug="<slug>"` et les deux couleurs de l'auteur (`style="--accent:…;--accent2:…"`, les mêmes
+  que sur le `<body>` de sa fiche) au `<li>`, remplacer `.fr-initiale` par le portrait
   (`<img class="fr-visuel" src="images/<slug>.webp" …>`) et « Fiche à venir » par le lien
-  `<a class="fr-bouton" href="<slug>.html">` + durée, comme pour Rousseau. La dernière fiche parue porte
-  `data-une` (à déplacer sur la nouvelle) et s'ouvre d'office. Les numéros sont recalculés par le script ;
+  `<a class="fr-bouton" href="<slug>.html">` + durée, comme pour Rousseau. **Aucun auteur n'est ouvert à
+  l'arrivée sur la page** (pas d'ouverture d'office). Les numéros sont recalculés par le script ;
   après une insertion, corriger aussi ceux écrits dans la page (`.fr-num`, `N° …` de `.fr-meta`) et le
   « Fiche auteur n° » des fiches déjà faites (`grep -n 'f-num' *.html`). Demande type : « Fais la fiche auteur de Kant ».
 - Une fiche = `<slug>.html`, copiée de `rousseau.html` (n° = rang chronologique dans la frise). Gabarit repris de
