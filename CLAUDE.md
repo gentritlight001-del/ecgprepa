@@ -263,8 +263,10 @@ page pays ou région :
   « Fiche auteur n° » des fiches déjà faites (`grep -n 'f-num' *.html`). Demande type : « Fais la fiche auteur de Kant ».
 - Une fiche = `<slug>.html`, copiée de `rousseau.html` (n° = rang chronologique dans la frise). Gabarit repris de
   l'HGG au quotidien mais habillé « sauge et prune », choisi par le propriétaire sur maquette : fond sauge
-  pâle sans quadrillage, prune `#6b2d5c` et olive `#55702f`, coins arrondis, numéros de section en
-  pastilles, nom de l'auteur en prune, **sans italique**. Garder cet habillage pour toutes les fiches (`auteur.css`,
+  pâle sans quadrillage, coins arrondis, numéros de section en
+  pastilles, nom de l'auteur dans la couleur de la fiche, **sans italique**. **Chaque auteur a ses deux couleurs**
+  (`--accent`, `--accent2` sur `<body>`, jamais déjà prises) : Rousseau prune `#6b2d5c` / olive `#55702f`,
+  Hobbes bleu ardoise `#1f4a6e` / ocre `#a35a1f`. Garder cet habillage pour toutes les fiches (`auteur.css`,
   `auteur.js` ; fiches lues dans `localStorage` `ecg-humanite-auteurs-lues`). Supprimer de la copie les balises `og:`,
   `twitter:`, `canonical` et réécrire la description.
 - Structure : cartouche (portrait en paysage et fiche d'identité **courte**, 4 lignes : naissance, mort,
