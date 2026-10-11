@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — L’ouragan Isaias frappe la Floride</title>
+<link rel="stylesheet" href="../../../fonts/fonts.css">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #b22234;
+    --text: #e8e6e0;
+    --text-dim: #8a8880;
+    --text-faint: #4a4845;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: 0.09; z-index: 0; }
+  .orb1 { width: 700px; height: 700px; background: #b22234; top: -300px; right: -250px; }
+  .orb2 { width: 600px; height: 600px; background: #3c3b6e; bottom: -250px; left: -250px; }
+  .orb3 { width: 400px; height: 400px; background: #b22234; top: 40%; left: 30%; opacity: 0.05; }
+
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: rgba(13,13,15,0.9); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #b22234; cursor: pointer; letter-spacing: 0.02em; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: #b22234; }
+  .breadcrumb .sep { color: var(--text-faint); }
+  .breadcrumb .current { color: var(--text); }
+  .ap-lang-btn { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.6); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.12em; padding:5px 14px; border-radius:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; }
+  .ap-lang-btn.active { background:#b22234; border-color:#b22234; color:#fff; }
+  .ap-lang-btn:hover:not(.active) { background:rgba(255,255,255,.15); color:#fff; }
+
+  /* Article styles */
+  .ap-band { position: relative; z-index: 1; background: #b5131f; text-align:center; padding:6px 0; font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; color:#fff; letter-spacing: 0.25em; }
+  .ap-back-bar { background: rgba(10,10,28,0.95); padding:12px 60px; border-bottom: 1px solid rgba(178,34,52,0.12); }
+  .ap-back-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.55); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px; padding:0; transition:color .2s; text-decoration:none; }
+  .ap-back-btn:hover { color:#e8c84a; }
+  .ap-back-btn::before { content:'←'; font-size:13px; }
+  .ap-main { max-width:1080px; margin:0 auto; padding:40px 36px 80px; position:relative; z-index:1; }
+  .ap-card { background: #13161f; border-radius: 12px; overflow: hidden; border: 1px solid rgba(178,34,52,0.2); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .ap-hero-img-wrap { width:100%; overflow:hidden; aspect-ratio: 16/7; position: relative; }
+  .ap-hero-img-wrap::after { content:''; position:absolute; inset:0; background: linear-gradient(to bottom, transparent 40%, rgba(19,22,31,0.85) 100%); }
+  .ap-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .ap-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ap-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .ap-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:3px; }
+  .ap-tag-red    { background:rgba(178,34,52,0.2);  color:#f08080; border:1px solid rgba(178,34,52,0.35); }
+  .ap-tag-navy   { background:rgba(60,59,110,0.4);   color:#8ab0d4; border:1px solid rgba(100,140,180,0.25); }
+  .ap-tag-gold   { background:rgba(180,146,42,0.15); color:#d4af5a; border:1px solid rgba(212,175,90,0.3); }
+  .ap-tag-teal   { background:rgba(0,105,92,0.2);   color:#4db6ac; border:1px solid rgba(77,182,172,0.3); }
+  .ap-tag-purple { background:rgba(106,27,154,0.2); color:#ce93d8; border:1px solid rgba(206,147,216,0.3); }
+  .ap-tag-blue   { background:rgba(21,101,192,0.2); color:#64b5f6; border:1px solid rgba(100,181,246,0.3); }
+  .ap-tag-green  { background:rgba(46,125,50,0.2);  color:#81c784; border:1px solid rgba(129,199,132,0.3); }
+  .ap-tag-orange { background:rgba(191,91,0,0.2);   color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+  .ap-date { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:12px; letter-spacing:0.08em; }
+  .ap-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; line-height:1.25; color:#e8e4d8; margin-bottom:16px; }
+  .ap-intro { font-family:'Georgia',serif; font-size:15px; color:rgba(232,228,216,0.65); line-height:1.7; font-style:italic; border-left:3px solid #e8c84a; padding-left:18px; }
+  .ap-body { padding:36px 40px 48px; }
+  .ap-body p { font-family:'Georgia',serif; font-size:14.5px; color:rgba(232,228,216,0.75); margin-bottom:14px; line-height:1.78; }
+  .ap-footer { background: rgba(5,8,14,0.8); color:rgba(255,255,255,.35); text-align:center; padding:22px 40px; font-family:'DM Mono',monospace; font-size:11px; border-top:1px solid rgba(178,34,52,0.12); letter-spacing:0.05em; }
+  .ap-footer strong { color:rgba(232,200,74,0.7); }
+
+  /* Rich components */
+  .ap-cols { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:30px; }
+  .ap-sub { font-family:'DM Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#e8c84a; margin:26px 0 10px; padding-bottom:8px; border-bottom:1px solid rgba(232,200,74,0.2); }
+  .ap-stats { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0; }
+  .ap-stat { background:linear-gradient(135deg,#071422,#0d2540); color:#fff; padding:16px 18px; border-radius:8px; text-align:center; flex:1; min-width:110px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+  .ap-stat.gold   { background:linear-gradient(135deg,#7a5c10,#b8922a); }
+  .ap-stat.red    { background:linear-gradient(135deg,#6b0000,#a01010); }
+  .ap-stat.green  { background:linear-gradient(135deg,#00430c,#00691c); }
+  .ap-stat.navy   { background:linear-gradient(135deg,#0e0e3a,#2a2870); }
+  .ap-stat-num  { font-size:22px; font-weight:700; font-family:'DM Mono',monospace; display:block; line-height:1.15; }
+  .ap-stat-desc { font-size:10px; opacity:.8; font-family:'DM Mono',monospace; margin-top:4px; display:block; line-height:1.4; }
+  .ap-quote { background:linear-gradient(135deg,rgba(178,34,52,0.06),rgba(178,34,52,0.02)); border-left:3px solid #e8c84a; padding:18px 22px; margin:20px 0; border-radius:0 8px 8px 0; border:1px solid rgba(232,200,74,0.12); }
+  .ap-quote p    { font-family:'Georgia',serif; font-size:14.5px; font-style:italic; color:rgba(232,228,216,0.8); margin:0 0 8px !important; line-height:1.65; }
+  .ap-quote cite { font-family:'DM Mono',monospace; font-size:10px; color:rgba(232,200,74,0.7); font-style:normal; letter-spacing:0.06em; }
+  .ap-ctx { background:linear-gradient(135deg,rgba(10,10,28,0.9),rgba(5,5,18,0.95)); color:#fff; border-radius:10px; padding:22px 24px; margin-top:24px; border:1px solid rgba(178,34,52,0.25); box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); }
+  .ap-ctx-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:#e8c84a; margin-bottom:10px; font-weight:700; }
+  .ap-ctx p     { font-family:'Georgia',serif; font-size:13.5px; color:rgba(255,255,255,.75); line-height:1.7; margin:0; }
+  .ap-info { background:rgba(178,34,52,0.06); border:1px solid rgba(178,34,52,0.15); border-radius:8px; padding:16px 20px; margin:18px 0; display:flex; align-items:flex-start; gap:14px; }
+  .ap-info-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+  .ap-info-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.7); line-height:1.65; }
+  .ap-info-text strong { color:#e8e4d8; }
+  .ap-tl { margin:16px 0; border-left:2px solid rgba(232,200,74,0.3); padding-left:20px; }
+  .ap-tl-item { margin-bottom:16px; position:relative; }
+  .ap-tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:8px; height:8px; border-radius:50%; background:#e8c84a; border:2px solid #13161f; box-shadow:0 0 0 2px rgba(232,200,74,0.4); }
+  .ap-tl-date { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#e8c84a; margin-bottom:3px; }
+  .ap-tl-text { font-family:'Georgia',serif; font-size:13.5px; color:rgba(232,228,216,0.65); line-height:1.6; margin:0; }
+  .ap-table { width:100%; border-collapse:collapse; margin:16px 0; font-family:'DM Mono',monospace; font-size:12px; border-radius:8px; overflow:hidden; }
+  .ap-table thead tr { background:rgba(10,10,28,0.95); }
+  .ap-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+  .ap-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .ap-table tbody tr:nth-child(even) { background:rgba(255,255,255,0.02); }
+  .ap-table tbody td { padding:9px 14px; color:rgba(232,228,216,0.7); }
+  .ap-cell-bold { font-weight:600; color:#e8e4d8; }
+  .ap-en-section { display:none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeUp 0.25s ease forwards; }
+
+  @media (max-width:768px) {
+    nav { padding: 14px 20px; }
+    .ap-cols { grid-template-columns:1fr; gap:0; }
+    .ap-back-bar { padding:10px 20px; }
+    .ap-main { padding:20px 12px 60px; }
+    .ap-header { padding:24px 20px; }
+    .ap-body { padding:24px 20px; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+<meta property="og:type" content="article">
+<meta property="og:title" content="L’ouragan Isaias frappe la Floride">
+<meta property="og:image" content="https://ecg-prepa.fr/partage/actualites/en-us-ouragan-isaias-2026.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="L’ouragan Isaias frappe la Floride">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ecg-prepa.fr/partage/actualites/en-us-ouragan-isaias-2026.jpg">
+<meta name="description" content="Le vendredi 9 octobre 2026 au soir, l&#x27;ouragan Isaias a touché terre près de Destin, en Floride, en catégorie 2 avec des vents de 105 miles à l&#x27;heure (170…">
+<link rel="canonical" href="https://ecg-prepa.fr/actualites/en/articles/us-ouragan-isaias-2026.html">
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<nav>
+  <div class="nav-left"><div class="nav-logo" onclick="window.location.href='../../../index.html'">ECG Prépa</div></div>
+  <div class="breadcrumb">
+    <a href="../../../index.html">Accueil</a>
+    <span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a>
+    <span class="sep">/</span>
+    <a href="../index-en.html">Anglais</a>
+    <span class="sep">/</span>
+    <a href="../etats-unis.html">États-Unis</a>
+    <span class="sep">/</span>
+    <span class="current">Ouragan Isaias</span>
+  </div>
+  <div class="nav-right"><div id="ap-lang-toggle" style="display:flex;gap:6px;align-items:center;">
+    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button id="ap-btn-en" class="ap-lang-btn" onclick="setLang('en')">🇺🇸 EN</button>
+  </div></div>
+</nav>
+
+<div id="ap-band" class="ap-band">🇺🇸 Ouragan Isaias</div>
+<div class="ap-back-bar">
+  <a href="../etats-unis.html" class="ap-back-btn">Retour aux articles</a>
+</div>
+
+<div class="ap-main fade-in">
+  <div class="ap-card">
+    <div class="ap-hero-img-wrap">
+      <img class="ap-hero-img" style="object-position:50% 10%" src="../images/us-ouragan-isaias-2026.webp" alt="Un drapeau américain flotte au-dessus d’un abri et d’un ponton en bord de mer, sous un ciel gris et une mer agitée" loading="lazy" onerror="this.parentElement.style.display='none'">
+    </div>
+
+    <!-- ══ SECTION FR ══ -->
+    <div class="ap-fr-section">
+      <div class="ap-header">
+        <div class="ap-tags"><span class="ap-tag ap-tag-red">🇺🇸 États-Unis</span><span class="ap-tag ap-tag-orange">Catastrophe naturelle</span><span class="ap-tag ap-tag-blue">Climat</span><span class="ap-tag ap-tag-gold">Énergie</span></div>
+        <div class="ap-date">Octobre 2026 — ECG Prépa · États-Unis</div>
+        <h1 class="ap-title">L'ouragan Isaias touche la Floride : au moins quatre morts et plus de 880 000 foyers privés d'électricité dans le Sud-Est</h1>
+        <p class="ap-intro">Le vendredi 9 octobre 2026 au soir, l'ouragan Isaias a touché terre près de Destin, en Floride, en catégorie 2 avec des vents de 105 miles à l'heure (170 km/h), avant de s'affaiblir en quelques heures et de devenir post-tropical au-dessus de l'Alabama. Il a fait au moins quatre morts, deux en Floride et deux en Alabama, et jusqu'à plus de 884 000 clients privés de courant. Trump a approuvé des déclarations d'urgence fédérales pour la Floride, l'Alabama et la Géorgie, tandis qu'environ 63 % de la production pétrolière du golfe du Mexique était suspendue.</p>
+      </div>
+      <div class="ap-body">
+        <div class="ap-stats"><div class="ap-stat red"><span class="ap-stat-num">Cat. 2</span><span class="ap-stat-desc">Intensité à l'arrivée<br>à terre, vents de 105 mph</span></div><div class="ap-stat gold"><span class="ap-stat-num">4 morts</span><span class="ap-stat-desc">Deux en Floride<br>et deux en Alabama</span></div><div class="ap-stat navy"><span class="ap-stat-num">> 884 000</span><span class="ap-stat-desc">Clients sans courant<br>au plus fort, le 10 octobre</span></div><div class="ap-stat "><span class="ap-stat-num">63 %</span><span class="ap-stat-desc">De la production pétrolière<br>du golfe du Mexique suspendue</span></div></div>
+        <div class="ap-cols">
+          <div>
+<div class="ap-sub">Un ouragan né en trois jours dans le golfe du Mexique</div>
+<p>Isaias est né le 6 octobre 2026 d'une zone de basse pression dans le sud-ouest du golfe du Mexique et a été baptisé le 7 octobre. Il est devenu le premier ouragan de la saison atlantique le 8 octobre, à égalité avec la date la plus tardive jamais relevée pour un premier ouragan depuis 1905, puis a atteint la catégorie 3 le 9 octobre, avec des vents de 120 miles à l'heure et une pression de 958 millibars. Il s'agit du neuvième système nommé de la saison, de son premier ouragan et de son premier ouragan majeur. La saison était restée inhabituellement calme à cause d'El Niño ; selon le climatologue Marc Alessi, des températures de surface record dans le golfe, liées au changement climatique, ont pu favoriser son intensification rapide.</p>
+<div class="ap-sub">L'arrivée à terre près de Destin</div>
+<p>Isaias a touché terre le vendredi soir près de Destin, en Floride, en catégorie 2, avec des vents de 105 miles à l'heure, à environ 165 kilomètres à l'ouest-nord-ouest de Panama City. C'est le premier ouragan à toucher le continent américain depuis deux ans. Il s'est affaibli en quelques heures et est devenu un cyclone post-tropical au-dessus de l'Alabama. La rafale la plus forte atteint 116 miles à l'heure à Santa Rosa Sound, en Floride. L'eau est montée de 4 pieds à Destin et de 5,6 pieds à Panama City, des chiffres qui incluent la marée.</p>
+<table class="ap-table"><thead><tr><th>Mesure</th><th>Valeur</th></tr></thead><tbody><tr><td class="ap-cell-bold">Pic d'intensité (9 octobre)</td><td>Catégorie 3, 120 mph, 958 mbar</td></tr><tr><td class="ap-cell-bold">Arrivée à terre (Destin)</td><td>Catégorie 2, 105 mph</td></tr><tr><td class="ap-cell-bold">Rafale maximale</td><td>116 mph (Santa Rosa Sound)</td></tr><tr><td class="ap-cell-bold">Surcote à Panama City</td><td>5,6 pieds</td></tr><tr><td class="ap-cell-bold">Pluie en 13 heures, Bellwood (Alabama)</td><td>> 1 pied</td></tr></tbody></table>
+<div class="ap-sub">Évacuations et états d'urgence</div>
+<p>Avant l'arrivée de la tempête, le gouverneur de Floride a déclaré l'état d'urgence dans 25 comtés et activé la Garde nationale, avec des évacuations obligatoires dans le comté d'Okaloosa et plusieurs îles-barrières. L'Alabama a décrété l'état d'urgence dans 40 comtés, Dauphin Island a ordonné l'évacuation et Mobile a imposé un couvre-feu. La Géorgie a aussi déclaré l'état d'urgence. Des dizaines de milliers de personnes ont évacué. Donald Trump a approuvé des déclarations d'urgence fédérales pour la Floride et l'Alabama le vendredi, pour la Géorgie le samedi, et annulé sa visite prévue samedi en Alabama.</p>
+<div class="ap-sub">Chronologie</div>
+<div class="ap-tl"><div class="ap-tl-item"><div class="ap-tl-date">11 octobre 2026</div><p class="ap-tl-text">Isaias, absorbé par un autre système, doit se dissiper ; risque d'inondations dans l'Est.</p></div><div class="ap-tl-item"><div class="ap-tl-date">10 octobre 2026</div><p class="ap-tl-text">Isaias, devenu post-tropical, remonte vers le Tennessee ; panne de courant maximale.</p></div><div class="ap-tl-item"><div class="ap-tl-date">9 octobre 2026</div><p class="ap-tl-text">Pic en catégorie 3 ; arrivée à terre près de Destin le soir en catégorie 2.</p></div><div class="ap-tl-item"><div class="ap-tl-date">8 octobre 2026</div><p class="ap-tl-text">Isaias devient le premier ouragan de la saison.</p></div><div class="ap-tl-item"><div class="ap-tl-date">7 octobre 2026</div><p class="ap-tl-text">La tempête est baptisée Isaias.</p></div><div class="ap-tl-item"><div class="ap-tl-date">6 octobre 2026</div><p class="ap-tl-text">Naissance d'une dépression dans le sud-ouest du golfe du Mexique.</p></div></div>
+</div>
+          <div>
+<div class="ap-sub">Quatre morts et des dégâts dans la région de Pensacola</div>
+<p>Au moins quatre personnes sont mortes. En Floride, dans le comté d'Escambia, une femme a été tuée par la chute d'un arbre sur sa maison, et un homme a été retrouvé mort dans un garage fermé où tournait un groupe électrogène, quatre membres de sa famille étant hospitalisés avec des blessures sans gravité. En Alabama, une personne est morte à Birmingham quand un arbre est tombé sur sa maison, et un deuxième décès a été confirmé dans le comté de Barbour, sans précision. Des toits de maisons, de résidences et de commerces ont été arrachés dans le nord-ouest de la Floride, le gymnase d'un lycée de Milton a été détruit et l'aéroport de Pensacola a subi des dégâts.</p>
+<div class="ap-quote"><p>« L'histoire des inondations n'est pas terminée. »</p><cite>— Ron DeSantis, gouverneur de Floride, 10 octobre 2026 (traduction)</cite></div>
+<div class="ap-sub">Des coupures de courant massives</div>
+<p>Les pannes ont dépassé 884 000 clients le samedi matin. À 14 h 21, plus de 700 000 foyers et entreprises étaient encore sans électricité, surtout en Floride (422 357) et en Alabama (200 930). La Géorgie a compté plus de 126 000 clients privés de courant, et une tornade a été confirmée dans le comté de Screven. Le comté de Houston, en Alabama, a fermé toutes ses routes à cause d'arbres et de lignes à terre.</p>
+<div class="ap-sub">Une menace d'inondations qui se déplace vers l'Est</div>
+<p>Isaias est devenu post-tropical mais reste dangereux : jusqu'à 8 pouces de pluie sont attendus dans le sud de l'Alabama, le Panhandle de Floride et le sud-ouest de la Géorgie, avec des cumuls locaux de 15 pouces. Les Appalaches pourraient recevoir jusqu'à 10 pouces, ce qui expose les collines et les montagnes à des crues soudaines, et un risque de tornades subsiste de la Géorgie aux Carolines. À Caney Creek, en Floride, il est déjà tombé 12,06 pouces en 24 heures. Les rafales pouvaient atteindre 60 à 70 miles à l'heure dans les Smoky Mountains. Plus tôt, le précurseur de la tempête, associé à un front froid, avait déjà provoqué des inondations dans les États mexicains de Tamaulipas et de Veracruz.</p>
+<div class="ap-sub">L'énergie, un choc de plus</div>
+<p>Environ 63 % de la production pétrolière du golfe du Mexique, soit 1,3 million de barils par jour, et 56 % de sa production de gaz ont été suspendus, et des plateformes de Chevron et de Shell ont été évacuées. Le département de l'Énergie a autorisé des échanges d'urgence de brut de la réserve stratégique pour maintenir les raffineries en marche, avec Exxon Mobil et BP America. Le choc s'ajoute à celui d'un diesel déjà à plus de six dollars le gallon, que Trump tente de faire baisser par <a href="us-trump-poutine-accord-diesel.html" style="color:rgba(232,228,216,0.75);text-decoration:underline;text-underline-offset:2px">son accord sur le diesel russe</a>.</p>
+<div class="ap-ctx"><div class="ap-ctx-label">Une tempête qui affaiblit vite, mais frappe longtemps</div><p>Isaias illustre le paradoxe des ouragans modernes : une intensification rapide au-dessus d'un golfe très chaud, une arrivée à terre brève, puis un affaiblissement tout aussi rapide, alors que l'essentiel des dégâts vient ensuite de la pluie, des arbres tombés et des pannes. Le bilan humain de quatre morts, dont deux par chute d'arbre et un par monoxyde de carbone probable d'un groupe électrogène, rappelle que les risques dépassent le vent.</p><p>Politiquement et économiquement, l'événement tombe mal : à trois semaines des élections de mi-mandat, la gestion de la crise par la Maison-Blanche et l'effet sur le marché pétrolier comptent autant que les dégâts. La vraie facture, ni chiffrée ni connue, dépendra de l'ampleur des inondations dans l'Est.</p></div>
+</div>
+        </div>
+      </div>
+    </div>
+    <!-- /ap-fr-section -->
+
+    <!-- ══ SECTION EN ══ -->
+    <div class="ap-en-section">
+      <div class="ap-header">
+        <div class="ap-tags"><span class="ap-tag ap-tag-red">🇺🇸 United States</span><span class="ap-tag ap-tag-orange">Natural Disaster</span><span class="ap-tag ap-tag-blue">Climate</span><span class="ap-tag ap-tag-gold">Energy</span></div>
+        <div class="ap-date">October 2026 — ECG Prépa · United States</div>
+        <h1 class="ap-title">Hurricane Isaias Hits Florida: At Least Four Dead and Over 880,000 Customers Without Power in the Southeast</h1>
+        <p class="ap-intro">On the evening of Friday, October 9, 2026, Hurricane Isaias made landfall near Destin, Florida, as a Category 2 storm with 105 mph winds, before weakening within hours and becoming post-tropical over Alabama. It killed at least four people, two in Florida and two in Alabama, and left more than 884,000 customers without power at the peak. Trump approved federal emergency declarations for Florida, Alabama and Georgia, while about 63% of Gulf of Mexico oil production was shut in.</p>
+      </div>
+      <div class="ap-body">
+        <div class="ap-stats"><div class="ap-stat red"><span class="ap-stat-num">Cat. 2</span><span class="ap-stat-desc">Intensity at landfall,<br>105 mph winds</span></div><div class="ap-stat gold"><span class="ap-stat-num">4 dead</span><span class="ap-stat-desc">Two in Florida<br>and two in Alabama</span></div><div class="ap-stat navy"><span class="ap-stat-num">> 884,000</span><span class="ap-stat-desc">Customers without power<br>at the peak, October 10</span></div><div class="ap-stat "><span class="ap-stat-num">63%</span><span class="ap-stat-desc">Of Gulf of Mexico oil<br>production shut in</span></div></div>
+        <div class="ap-cols">
+          <div>
+<div class="ap-sub">A Hurricane Born in Three Days in the Gulf of Mexico</div>
+<p>Isaias formed on October 6, 2026 from a low-pressure area in the southwestern Gulf of Mexico and was named on October 7. It became the first hurricane of the Atlantic season on October 8, tying the latest first-hurricane date on record since 1905, then reached Category 3 on October 9, with 120 mph winds and a pressure of 958 millibars. It is the season's ninth named storm, first hurricane and first major hurricane. The season had been unusually quiet because of El Niño; according to climatologist Marc Alessi, record surface temperatures in the Gulf, linked to climate change, may have helped its rapid intensification.</p>
+<div class="ap-sub">Landfall Near Destin</div>
+<p>Isaias came ashore on Friday evening near Destin, Florida, as a Category 2, with 105 mph winds, about 165 kilometers west-northwest of Panama City. It is the first hurricane to hit the American mainland in two years. It weakened within hours and became a post-tropical cyclone over Alabama. The strongest gust reached 116 mph at Santa Rosa Sound, Florida. Water rose 4 feet in Destin and 5.6 feet in Panama City, figures that include the tide.</p>
+<table class="ap-table"><thead><tr><th>Measure</th><th>Value</th></tr></thead><tbody><tr><td class="ap-cell-bold">Peak intensity (October 9)</td><td>Category 3, 120 mph, 958 mbar</td></tr><tr><td class="ap-cell-bold">Landfall (Destin)</td><td>Category 2, 105 mph</td></tr><tr><td class="ap-cell-bold">Peak gust</td><td>116 mph (Santa Rosa Sound)</td></tr><tr><td class="ap-cell-bold">Water level, Panama City</td><td>5.6 feet</td></tr><tr><td class="ap-cell-bold">Rain in 13 hours, Bellwood (Alabama)</td><td>> 1 foot</td></tr></tbody></table>
+<div class="ap-sub">Evacuations and States of Emergency</div>
+<p>Before the storm, Florida's governor declared a state of emergency in 25 counties and activated the National Guard, with mandatory evacuations in Okaloosa County and several barrier islands. Alabama declared a state of emergency in 40 counties, Dauphin Island ordered evacuations and Mobile imposed a curfew. Georgia also declared a state of emergency. Tens of thousands of people evacuated. Donald Trump approved federal emergency declarations for Florida and Alabama on Friday and for Georgia on Saturday, and canceled a planned Saturday visit to Alabama.</p>
+<div class="ap-sub">Timeline</div>
+<div class="ap-tl"><div class="ap-tl-item"><div class="ap-tl-date">October 11, 2026</div><p class="ap-tl-text">Isaias, absorbed by another system, is expected to dissipate; flood risk in the East.</p></div><div class="ap-tl-item"><div class="ap-tl-date">October 10, 2026</div><p class="ap-tl-text">Isaias, now post-tropical, moves toward Tennessee; peak power outage.</p></div><div class="ap-tl-item"><div class="ap-tl-date">October 9, 2026</div><p class="ap-tl-text">Peaks at Category 3; makes landfall near Destin in the evening as a Category 2.</p></div><div class="ap-tl-item"><div class="ap-tl-date">October 8, 2026</div><p class="ap-tl-text">Isaias becomes the season's first hurricane.</p></div><div class="ap-tl-item"><div class="ap-tl-date">October 7, 2026</div><p class="ap-tl-text">The storm is named Isaias.</p></div><div class="ap-tl-item"><div class="ap-tl-date">October 6, 2026</div><p class="ap-tl-text">A depression forms in the southwestern Gulf of Mexico.</p></div></div>
+</div>
+          <div>
+<div class="ap-sub">Four Dead and Damage Around Pensacola</div>
+<p>At least four people died. In Florida, in Escambia County, a woman was killed when a tree fell on her house, and a man was found dead in a closed garage where a generator was running, with four family members hospitalized with non-life-threatening injuries. In Alabama, one person died in Birmingham when a tree fell on their house, and a second death was confirmed in Barbour County, without details. Roofs were torn off homes, condos and businesses in the Florida Panhandle, a Milton high school gymnasium was destroyed and Pensacola's airport sustained damage.</p>
+<div class="ap-quote"><p>"The flooding story is not over."</p><cite>— Ron DeSantis, Governor of Florida, October 10, 2026</cite></div>
+<div class="ap-sub">Massive Power Outages</div>
+<p>Outages exceeded 884,000 customers on Saturday morning. At 2:21 p.m., more than 700,000 homes and businesses were still without electricity, mostly in Florida (422,357) and Alabama (200,930). Georgia counted more than 126,000 customers without power, and a tornado was confirmed in Screven County. Houston County, Alabama, closed all its roads because of downed trees and power lines.</p>
+<div class="ap-sub">A Flood Threat Moving East</div>
+<p>Isaias has become post-tropical but remains dangerous: up to 8 inches of rain are expected in southern Alabama, the Florida Panhandle and southwest Georgia, with local totals of 15 inches. The Appalachians could receive up to 10 inches, exposing hills and mountains to flash floods, and a tornado risk remains from Georgia to the Carolinas. At Caney Creek, Florida, 12.06 inches have already fallen in 24 hours. Gusts could reach 60 to 70 mph in the Smoky Mountains. Earlier, the storm's precursor, combined with a cold front, had already caused flooding in the Mexican states of Tamaulipas and Veracruz.</p>
+<div class="ap-sub">Energy, One More Shock</div>
+<p>About 63% of Gulf of Mexico oil production, or 1.3 million barrels a day, and 56% of its gas production were shut in, and Chevron and Shell platforms were evacuated. The Energy Department authorized emergency crude oil exchanges from the strategic reserve to keep refineries running, with Exxon Mobil and BP America. The shock comes on top of diesel already above six dollars a gallon, which Trump is trying to lower through <a href="us-trump-poutine-accord-diesel.html" style="color:rgba(232,228,216,0.75);text-decoration:underline;text-underline-offset:2px">his Russian diesel deal</a>.</p>
+<div class="ap-ctx"><div class="ap-ctx-label">A Storm That Weakens Fast but Strikes for Long</div><p>Isaias illustrates the paradox of modern hurricanes: rapid intensification over a very warm Gulf, a brief landfall, then an equally fast weakening, while most of the damage comes afterward from rain, fallen trees and outages. The human toll of four dead, including two from falling trees and one from probable carbon monoxide from a generator, is a reminder that the risks go beyond wind.</p><p>Politically and economically, the event comes at a bad moment: three weeks before the midterms, the White House's handling of the crisis and the effect on the oil market matter as much as the damage. The real bill, neither counted nor known, will depend on the scale of the flooding in the East.</p></div>
+</div>
+        </div>
+      </div>
+    </div>
+    <!-- /ap-en-section -->
+
+  </div>
+</div>
+
+<div class="ap-footer"><strong>ECG Prépa</strong> — États-Unis / Climat — Octobre 2026</div>
+
+<script>
+function setLang(lang) {
+  document.getElementById('ap-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('ap-btn-en').classList.toggle('active', lang === 'en');
+  const isEn = lang === 'en';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEn ? 'none' : 'block');
+  document.querySelectorAll('.ap-en-section').forEach(el => el.style.display = isEn ? 'block' : 'none');
+
+  const band = document.getElementById('ap-band');
+  if (band) band.textContent = isEn
+    ? '🇺🇸 Hurricane Isaias'
+    : '🇺🇸 Ouragan Isaias';
+}
+setLang('fr');
+</script>
+</body>
+</html>

@@ -4,6 +4,15 @@ window.ECG_NOUVEAUTES = [
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "États-Unis",
+"titre": "L'ouragan Isaias touche la Floride : au moins quatre morts et 880 000 clients sans électricité",
+"url": "actualites/en/articles/us-ouragan-isaias-2026.html",
+"image": "actualites/en/images/us-ouragan-isaias-2026.webp",
+"date": "2026-10-11T08:39:06+00:00"
+},
+{
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "États-Unis",
 "titre": "Trump annonce un accord avec Poutine sur des livraisons de diesel russe, sanctions suspendues",
 "url": "actualites/en/articles/us-trump-poutine-accord-diesel.html",
 "image": "actualites/en/images/us-trump-poutine-accord-diesel.webp",
@@ -1249,15 +1258,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Des émissaires de Trump rencontrent Poutine à Moscou avant une première visite historique à Kiev",
 "url": "actualites/en/articles/emissaires-americains-poutine-moscou-kiev-2026.html",
 "image": "actualites/en/images/emissaires-americains-poutine-moscou-kiev-2026.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "Royaume-Uni",
-"titre": "Reform UK x Rassemblement National : Farage et Bardella scellent un pacte anti-immigration à Birmingham",
-"url": "actualites/en/articles/uk-reformuk-rn-farage-bardella-2026.html",
-"image": "actualites/en/images/uk-reformuk-rn-farage-bardella-2026.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
