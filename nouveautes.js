@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "cg",
+"rubrique": "Culture générale",
+"meta": "Économie",
+"titre": "Le gaz naturel liquéfié : l'énergie qui voyage par bateau",
+"url": "Culture-Generale/gaz-naturel-liquefie.html",
+"image": "Culture-Generale/images/gaz-naturel-liquefie.webp",
+"date": "2026-10-11T11:12:37+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Inde",
@@ -1816,15 +1825,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Le FMI : gardien contesté de la stabilité financière mondiale",
 "url": "Culture-Generale/fmi.html",
 "image": "Culture-Generale/images/fmi.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Géopolitique",
-"titre": "Le piège de Thucydide : la guerre est-elle inévitable ?",
-"url": "Culture-Generale/piege-de-thucydide.html",
-"image": "Culture-Generale/images/piege-de-thucydide.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
