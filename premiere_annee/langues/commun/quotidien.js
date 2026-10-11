@@ -347,18 +347,6 @@
     fin.appendChild(ret);
     s5.appendChild(fin);
     main.appendChild(s5);
-
-    /* Étapes : surligne la section en cours */
-    var liensEtapes = document.querySelectorAll('.etapes a');
-    if ('IntersectionObserver' in window) {
-      var obs = new IntersectionObserver(function (entrees) {
-        entrees.forEach(function (e) {
-          if (!e.isIntersecting) return;
-          liensEtapes.forEach(function (a) { a.classList.toggle('actif', a.getAttribute('href') === '#' + e.target.id); });
-        });
-      }, { rootMargin: '-45% 0px -50% 0px' });
-      document.querySelectorAll('.bloc').forEach(function (b) { obs.observe(b); });
-    }
   }
 
   /* Index : jours terminés, compteurs, carte « Demain » */
@@ -385,18 +373,7 @@
     }
   }
 
-  /* La barre des étapes se colle juste sous la navigation, quelle que soit sa hauteur
-     (fil d'Ariane sur plusieurs lignes, avatar ajouté par auth.js). */
-  function caler() {
-    var nav = document.querySelector('nav.haut');
-    if (nav) document.documentElement.style.setProperty('--haut-nav', nav.offsetHeight + 'px');
-  }
-
   function demarrer() {
-    caler();
-    var nav = document.querySelector('nav.haut');
-    if (nav && 'ResizeObserver' in window) new ResizeObserver(caler).observe(nav);
-    else window.addEventListener('resize', caler);
     if (window.JOUR && document.getElementById('jour')) construireJour(window.JOUR);
     else if (document.querySelector('.jours-grid')) construireIndex();
   }

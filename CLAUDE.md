@@ -21,7 +21,12 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   (« 1 — … »). `quotidien-controle.py` et `newsletter/outils/controle.py` le vérifient. Le
   contenu déjà en ligne n'est pas à reprendre.
 - **Verrouillage** : ne jamais verrouiller une page ni la rendre Premium. Le propriétaire du
-  site le fait lui-même (`auth.js`).
+  site le fait lui-même (`auth.js`). Seule exception, automatique et voulue par le propriétaire
+  (`infoActu` / `dernierActu` dans `auth.js`) : dans les actualités, la culture générale et les
+  espaces « au quotidien » (langues et HGG de 1re année), seul le contenu le plus récent est
+  gratuit, tous les autres passent Premium d'eux-mêmes. Pour les espaces « au quotidien », le
+  plus récent est celui de la carte du haut de l'index (`.une` ou `.i-une`) : la mettre à jour
+  suffit, rien d'autre à faire.
 - Pages réservées à l'administrateur : `PAGES_ADMIN` dans `auth.js` (`admin.html`,
   `idees-articles.html`, `mes-newsletters.html`). Une nouvelle page admin s'ajoute à cette
   liste et au menu admin de `auth.js`, dans le même style que `idees-articles.html`.
@@ -267,7 +272,9 @@ travailler surtout la grammaire de 1re année. Demandes types : « Fais le texte
   **Pas de puces ni de texte qui résume la grammaire du jour** (index, cartes, en-tête du jour).
   Pas d'italique dans l'index ; dans la page du jour, les mots étrangers (`<em>`) restent en italique.
 - `jour-AAAA-MM-JJ.html` : une page par jour, construite par `quotidien.js` à partir du bloc
-  `<script id="donnees">`.
+  `<script id="donnees">`. **Pas de sommaire** (barre des étapes Lire / Grammaire / …) sous le
+  héros. Seul le jour le plus récent (carte `.une` de l'index) est gratuit ; les précédents
+  passent Premium automatiquement (voir section 1).
 - Le compteur « mots à revoir » de l'index mène à l'**espace flashcards**
   (`premiere_annee/langues/flashcards/index.html#<langue>`) : toutes les cartes de tous les jours,
   langue par langue (onglets Anglais, Espagnol, Allemand ; une langue s'ouvre dès qu'elle a des
@@ -375,6 +382,8 @@ Demande type : « Fais la fiche HGG du jour sur … ».
   `MODIS_Terra_CorrectedReflectance_TrueColor` ou `BlueMarble_ShadedRelief_Bathymetry`, projection
   EPSG:4326 : les repères SVG se placent alors par simple règle de trois sur la longitude et la
   latitude). Regarder chaque image avant de l'utiliser, vérifier la place des repères en capture.
+- Seule la fiche la plus récente (carte `.i-une` de l'index) est gratuite ; les précédentes passent
+  Premium automatiquement (voir section 1).
 - `index.html` : carte `.i-une` sur la nouvelle fiche, nouvelle carte `.i-fiche` (avec `data-slug` et
   `data-date`) **en tête** de `.i-grille`, compteur `0 / N` mis à jour. Carte « La fiche du jour »
   de l'index HGG de 1re année mise à jour.
