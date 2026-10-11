@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "cg",
 "rubrique": "Culture générale",
+"meta": "Entreprise",
+"titre": "Nestlé : le géant suisse de l'alimentation se recentre",
+"url": "Culture-Generale/nestle.html",
+"image": "Culture-Generale/images/nestle.webp",
+"date": "2026-10-11T11:15:42+00:00"
+},
+{
+"t": "cg",
+"rubrique": "Culture générale",
 "meta": "Économie",
 "titre": "Le gaz naturel liquéfié : l'énergie qui voyage par bateau",
 "url": "Culture-Generale/gaz-naturel-liquefie.html",
@@ -1816,15 +1825,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "L'Accord de Paris : dix ans de diplomatie du climat",
 "url": "Culture-Generale/accords-de-paris.html",
 "image": "Culture-Generale/images/accords-de-paris.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Organisations",
-"titre": "Le FMI : gardien contesté de la stabilité financière mondiale",
-"url": "Culture-Generale/fmi.html",
-"image": "Culture-Generale/images/fmi.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
