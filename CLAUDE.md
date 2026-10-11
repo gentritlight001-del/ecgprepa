@@ -375,7 +375,7 @@ Demande type : « Fais la fiche HGG du jour sur … ».
   de l'index HGG de 1re année mise à jour.
 - Liens vers les chapitres : vérifier (grep) que la section `id` visée traite bien le sujet.
 - Vérifier à 390 et 1280 px (pas de défilement horizontal, aucune erreur JS), puis mise en ligne.
-  `outils/nouveautes.py` reprend les fiches toutes seules.
+  Les fiches **n'apparaissent pas** dans les nouveautés (`outils/nouveautes.py` les ignore).
 
 **Sujets à venir** : `outils/hgg-quotidien-sujets.json`, une entrée par date (`date`, `sujet`, `type`,
 `video`, `consignes`, puis `fiche` = nom du fichier une fois faite). Quand le propriétaire donne un
