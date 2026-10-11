@@ -5,7 +5,7 @@ stockage sur Supabase). Ce fichier est relu au début de **chaque** conversation
 toutes les règles valables d'une conversation à l'autre sont ici.
 
 Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualité ·
-4. Cours (chapitres, colles, DS) · 5. Newsletters PDF
+4. Cours (chapitres, colles, HGG au quotidien, DS) · 5. Newsletters PDF
 
 ---
 
@@ -325,6 +325,42 @@ Contenu d'un jour (le bloc de données du 10 octobre 2026 sert de modèle) :
 - Pas de questions de compréhension.
 - Vérifier avec `outils/quotidien-controle.py` (aucune erreur JS, chaque exercice de grammaire rempli avec `r[0]` donne
   « parfait », listes à jour, renvois valides…). Typographie française gérée par `quotidien.js` pour les champs en français.
+
+### L'HGG au quotidien (fiches du jour)
+
+Un espace commun aux deux années : `premiere_annee/hgg/quotidien/`, accessible par le bouton et la
+carte « La fiche du jour » des index HGG de 1re **et** de 2e année. Chaque jour, une fiche développée
+et illustrée sur un **lieu**, une **notion**, un **auteur**, un **ouvrage** ou un **événement**.
+Demande type : « Fais la fiche HGG du jour sur … ».
+
+- Fichiers communs : `fiche.css` (gabarit « planche d'atlas », papier clair) et `fiche.js` (sommaire
+  actif, cartes à onglets et repères cliquables, quiz, bouton « J'ai lu cette fiche » gardé dans
+  `localStorage` `ecg-hgg-quotidien-lues`). Ne pas les réécrire pour une fiche : les compléter si besoin.
+- Une fiche = `<slug>.html` (ex. `detroit-d-ormuz.html`), copiée de la dernière fiche. Sur `<body>` :
+  `data-type="Lieu|Notion|Auteur|Ouvrage|Événement"` et la couleur propre de la fiche
+  (`--accent`, `--accent2`, différentes d'une fiche à l'autre). `<title>` :
+  `ECG Prépa — <Titre> · HGG au quotidien`. Supprimer de la copie les balises `og:`, `twitter:`,
+  `canonical` et réécrire la description.
+- Structure (garder l'ordre, adapter le contenu au type) : cartouche (n°, type, date, durée, titre,
+  coordonnées ou dates, définition en 2 phrases, chapitres du programme liés, « Fiche d'identité »),
+  sommaire collant, puis 01 L'essentiel (3 idées), 02 Carte ou schéma commenté (repères numérotés
+  cliquables ; pour un auteur ou une notion : schéma SVG, carte des lieux liés ou document),
+  03 Comprendre (4 à 5 parties avec plan latéral, citation, encadrés), 04 Les chiffres (4 chiffres
+  sourcés + 2 ou 3 graphiques SVG), 05 La frise, 06 Qui veut quoi ? (acteurs) ou équivalent (débats,
+  héritiers, critiques), 07 Dans une copie (accroche, idée-force, sujets, références, erreurs à
+  éviter), 08 Les mots (glossaire), 09 Testez-vous (6 questions), 10 Plus loin (liens du site + sources).
+- Faits vérifiés par recherche web, chiffres datés et sourcés, rien d'inventé ; sources listées en 10.
+- Illustrations : images libres de droits stockées en WebP dans `images/` (1600 px maximum), par
+  exemple les vues satellite NASA Worldview (`wvs.earthdata.nasa.gov/api/v1/snapshot`, couche
+  `MODIS_Terra_CorrectedReflectance_TrueColor` ou `BlueMarble_ShadedRelief_Bathymetry`, projection
+  EPSG:4326 : les repères SVG se placent alors par simple règle de trois sur la longitude et la
+  latitude). Regarder chaque image avant de l'utiliser, vérifier la place des repères en capture.
+- `index.html` : carte `.i-une` sur la nouvelle fiche, nouvelle carte `.i-fiche` (avec `data-slug` et
+  `data-date`) **en tête** de `.i-grille`, compteur `0 / N` mis à jour. Carte « La fiche du jour »
+  des deux index HGG mise à jour.
+- Liens vers les chapitres : vérifier (grep) que la section `id` visée traite bien le sujet.
+- Vérifier à 390 et 1280 px (pas de défilement horizontal, aucune erreur JS), puis mise en ligne.
+  `outils/nouveautes.py` reprend les fiches toutes seules.
 
 ### Dossiers de langues (DS)
 

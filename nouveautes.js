@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "cours",
+"rubrique": "Cours",
+"meta": "HGG au quotidien · Lieu",
+"titre": "Le détroit d'Ormuz",
+"url": "premiere_annee/hgg/quotidien/detroit-d-ormuz.html",
+"image": "premiere_annee/hgg/quotidien/images/detroit-d-ormuz-satellite.webp",
+"date": "2026-10-11T06:40:19+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "États-Unis",
@@ -2547,15 +2556,6 @@ window.ECG_NOUVEAUTES = [
 "meta": "HGG 1re année · chapitre 8",
 "titre": "Le Monde Actuel — Ordre et Désordre Mondial",
 "url": "premiere_annee/hgg/chapitre-8/chapitre-8-hgg.html",
-"image": "",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cours",
-"rubrique": "Cours",
-"meta": "HGG 1re année · chapitre 9",
-"titre": "La gouvernance mondiale",
-"url": "premiere_annee/hgg/chapitre-9/chapitre-9-hgg.html",
 "image": "",
 "date": "2026-09-11T19:03:33+00:00"
 }

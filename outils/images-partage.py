@@ -76,6 +76,13 @@ def fiche(rel, contenu):
         lab = "L'Humanité" + (' · ' + sous if sous else '')
         t = re.sub(r'^(Littérature|Cinéma)\s*[—-]\s*', '', t)
         return 'humanite/' + '-'.join(p)[:-5], lab, t or "L'Humanité", '#1c2433', '#e8e6e0', '#7c9ec9', 'accent'
+    if p[:3] == ['premiere_annee', 'hgg', 'quotidien'] and len(p) == 4:
+        lab = "L'HGG au quotidien"
+        t = re.sub(r'\s*·\s*HGG au quotidien$', '', t)
+        if stem != 'index':
+            d = re.search(r'<body[^>]*data-type="([^"]+)"', contenu)
+            lab += ' · ' + (d.group(1) if d else 'Fiche')
+        return 'cours/' + '-'.join(p)[:-5], lab, t or "L'HGG au quotidien", '#3D2B1F', '#F5F0E8', '#C9A84C', 'accent'
     if p[0] in ('premiere_annee', 'deuxieme_annee'):
         annee = '1re année' if p[0] == 'premiere_annee' else '2e année'
         mat, fond = MATIERES.get(p[1].lower(), (p[1].capitalize() if len(p) > 2 else 'Cours', '#2A3D5F')) if len(p) > 2 else ('Cours ECG', '#1A1208')
