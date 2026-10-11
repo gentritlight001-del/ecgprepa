@@ -252,9 +252,11 @@ page pays ou région :
   `auteur-card` ; une fiche faite = `<a class="auteur-card dispo" href="<slug>.html" data-slug="<slug>">`
   avec le badge « Lire la fiche → », les autres restent « à venir »). Demande type : « Fais la fiche
   auteur de Kant ».
-- Une fiche = `<slug>.html`, copiée de `rousseau.html` (n° de la carte de l'index, nouvelle couleur
-  `--accent`/`--accent2`). Gabarit « planche » repris de l'HGG au quotidien : `auteur.css`, `auteur.js`
-  (fiches lues dans `localStorage` `ecg-humanite-auteurs-lues`). Supprimer de la copie les balises `og:`,
+- Une fiche = `<slug>.html`, copiée de `rousseau.html` (n° de la carte de l'index). Gabarit repris de
+  l'HGG au quotidien mais habillé « sauge et prune », choisi par le propriétaire sur maquette : fond sauge
+  pâle sans quadrillage, prune `#6b2d5c` et olive `#55702f`, coins arrondis, numéros de section en
+  pastilles, nom de l'auteur en italique. Garder cet habillage pour toutes les fiches (`auteur.css`,
+  `auteur.js` ; fiches lues dans `localStorage` `ecg-humanite-auteurs-lues`). Supprimer de la copie les balises `og:`,
   `twitter:`, `canonical` et réécrire la description.
 - Structure : cartouche (portrait en paysage dans la fiche d'identité, WebP dans `images/`), 01 L'essentiel,
   02 Schéma commenté (SVG à repères cliquables), 03 Comprendre (mots expliqués au survol), 04 Citations à
