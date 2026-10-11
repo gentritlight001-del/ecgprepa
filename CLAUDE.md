@@ -378,7 +378,7 @@ Demande type : « Fais la fiche HGG du jour sur … ».
   Les fiches **n'apparaissent pas** dans les nouveautés (`outils/nouveautes.py` les ignore).
 
 **Sujets à venir** : `outils/hgg-quotidien-sujets.json`, une entrée par date (`date`, `sujet`, `type`,
-`video`, `consignes`, puis `fiche` = nom du fichier une fois faite). Quand le propriétaire donne un
+`video`, `video_titre`, `video_chaine`, `consignes`, puis `fiche` = nom du fichier une fois faite). Quand le propriétaire donne un
 sujet à l'avance (« Sujet HGG de demain : … », « le 14 : … »), l'ajouter à ce fichier (date de Paris)
 et mettre en ligne tout de suite : la routine de minuit le lira.
 
