@@ -45,6 +45,10 @@ directement après chaque modification, sans attendre un nouveau « mets en lign
    ne les remet qu'au passage suivant.
    Puis `python3 outils/referencement.py` : il ajoute la description et la balise canonical des
    pages qui n'en ont pas et régénère `sitemap.xml` (ne jamais modifier ce fichier à la main).
+   Puis `python3 outils/recherche.py` : il régénère `recherche-index.json`, l'index de la recherche
+   dans tout le site (`recherche.js`, chargé par `auth.js` : loupe à côté du badge, Ctrl+K ou « / »,
+   champ de recherche de l'accueil ; les mots cherchés sont surlignés à l'arrivée sur la page).
+   Ne jamais modifier ce fichier à la main.
    Puis `python3 outils/nouveautes.py` : il régénère `nouveautes.js`, la liste des derniers
    contenus (articles, dossiers de CG, fiches Humanité, chapitres) affichée sous les 4 cartes de
    l'accueil et dans la page `nouveautes.html`. Les dates de mise en ligne sont gardées dans
@@ -66,7 +70,8 @@ ne sont pas touchées. Conséquence : un fichier de **données générées charg
 (`nouveautes.js`) ne se met pas à jour avant 4 h sans Ctrl+Maj+R. `index.html` et
 `nouveautes.html` le chargent donc avec un paramètre qui change chaque minute
 (`nouveautes.js?v=<minute>`) : ne pas remettre un simple `<script src="nouveautes.js">`, et
-faire pareil pour tout nouveau fichier de données `.js`. Pour tous les autres `.js` et `.css`, c'est
+faire pareil pour tout nouveau fichier de données `.js`. `recherche-index.json` est lu par `fetch`
+avec `cache: 'no-cache'` (revalidé à chaque ouverture, 304 s'il n'a pas changé) : pas de paramètre. Pour tous les autres `.js` et `.css`, c'est
 `sw.js` qui règle le problème : il les redemande au serveur à chaque visite (`cache: 'no-cache'`, 304
 si inchangé) et réécrit leur en-tête en `no-cache` pour que Chrome ne les garde pas en mémoire. Ne
 pas retirer ce mécanisme (`sansCacheNavigateur`). Le vrai remède, côté tableau de bord
