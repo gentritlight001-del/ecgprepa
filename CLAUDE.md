@@ -248,11 +248,20 @@ page pays ou région :
 
 ### Fiches auteurs (Cours Humanité)
 
-- `humanite/cours-humanite/Fiches auteurs/` : index `fiches-auteurs.html` (liste de cartes
-  `auteur-card` ; une fiche faite = `<a class="auteur-card dispo" href="<slug>.html" data-slug="<slug>">`
-  avec le badge « Lire la fiche → », les autres restent « à venir »). Demande type : « Fais la fiche
-  auteur de Kant ».
-- Une fiche = `<slug>.html`, copiée de `rousseau.html` (n° de la carte de l'index). Gabarit repris de
+- `humanite/cours-humanite/Fiches auteurs/` : index `fiches-auteurs.html`, une **frise des siècles**
+  choisie par le propriétaire sur maquette : une ligne `<li class="auteur-card" data-nait data-mort>`
+  par auteur, **dans l'ordre des naissances** (auteur vivant : `data-mort=""`), **numérotée dans cet ordre
+  chronologique** (01 = le plus ancien), avec sa présentation
+  `.fr-detail` (nom complet, époque, thèse en une phrase, œuvre de référence) qui s'ouvre au clic. Le
+  script de la page place seul les époques, les années et les barres : ajouter un auteur = copier un `<li>`
+  au bon endroit, rien d'autre (les époques d'avant 1450 sont resserrées). Une fiche faite : ajouter
+  `dispo` et `data-slug="<slug>"` au `<li>`, remplacer `.fr-initiale` par le portrait
+  (`<img class="fr-visuel" src="images/<slug>.webp" …>`) et « Fiche à venir » par le lien
+  `<a class="fr-bouton" href="<slug>.html">` + durée, comme pour Rousseau. La dernière fiche parue porte
+  `data-une` (à déplacer sur la nouvelle) et s'ouvre d'office. Les numéros sont recalculés par le script ;
+  après une insertion, corriger aussi ceux écrits dans la page (`.fr-num`, `N° …` de `.fr-meta`) et le
+  « Fiche auteur n° » des fiches déjà faites (`grep -n 'f-num' *.html`). Demande type : « Fais la fiche auteur de Kant ».
+- Une fiche = `<slug>.html`, copiée de `rousseau.html` (n° = rang chronologique dans la frise). Gabarit repris de
   l'HGG au quotidien mais habillé « sauge et prune », choisi par le propriétaire sur maquette : fond sauge
   pâle sans quadrillage, coins arrondis, numéros de section en
   pastilles, nom de l'auteur dans la couleur de la fiche, **sans italique**. **Chaque auteur a ses deux couleurs**
