@@ -328,13 +328,13 @@ Contenu d'un jour (le bloc de données du 10 octobre 2026 sert de modèle) :
 
 ### L'HGG au quotidien (fiches du jour)
 
-Un espace commun aux deux années : `premiere_annee/hgg/quotidien/`, accessible par le bouton et la
-carte « La fiche du jour » des index HGG de 1re **et** de 2e année. Chaque jour, une fiche développée
+Un espace de **1re année seulement** : `premiere_annee/hgg/quotidien/`, accessible par le bouton et la
+carte « La fiche du jour » de `premiere_annee/hgg/index.html` (rien dans l'index HGG de 2e année). Chaque jour, une fiche développée
 et illustrée sur un **lieu**, une **notion**, un **auteur**, un **ouvrage** ou un **événement**.
 Demande type : « Fais la fiche HGG du jour sur … ».
 
-- Fichiers communs : `fiche.css` (gabarit « planche d'atlas », papier clair) et `fiche.js` (sommaire
-  actif, cartes à onglets et repères cliquables, bouton « J'ai lu cette fiche » gardé dans
+- Fichiers communs : `fiche.css` (gabarit « planche d'atlas », papier clair) et `fiche.js` (cartes à
+  onglets et repères cliquables, bouton « J'ai lu cette fiche » gardé dans
   `localStorage` `ecg-hgg-quotidien-lues`). Ne pas les réécrire pour une fiche : les compléter si besoin.
 - Une fiche = `<slug>.html` (ex. `detroit-d-ormuz.html`), copiée de la dernière fiche. Sur `<body>` :
   `data-type="Lieu|Notion|Auteur|Ouvrage|Événement"` et la couleur propre de la fiche
@@ -343,12 +343,13 @@ Demande type : « Fais la fiche HGG du jour sur … ».
   `canonical` et réécrire la description.
 - Structure (garder l'ordre, adapter le contenu au type) : cartouche (n°, type, date, durée, titre,
   coordonnées ou dates, définition en 2 phrases, « Fiche d'identité » ; **pas** de « Au programme »),
-  sommaire collant, puis 01 L'essentiel (3 idées), 02 Carte ou schéma commenté (repères numérotés
+  **pas** de sommaire sous le cartouche, puis 01 L'essentiel (3 idées), 02 Carte ou schéma commenté (repères numérotés
   cliquables ; pour un auteur ou une notion : schéma SVG, carte des lieux liés ou document),
   03 Comprendre (4 à 5 parties sur une colonne, **sans** plan latéral, avec citation et encadrés),
   04 Les chiffres (4 chiffres sourcés + 2 ou 3 graphiques SVG), 05 Qui veut quoi ? (acteurs) ou
   équivalent (débats, héritiers, critiques), 06 Dans une copie (accroche, idée-force, sujets,
-  références, erreurs à éviter), 07 Plus loin (liens du site + sources). **Pas** de frise, de
+  références, erreurs à éviter ; les deux colonnes finissent alignées en bas, le CSS allonge le
+  dernier cadre de chacune, mais équilibrer aussi le contenu, par exemple en ajoutant un sujet), 07 Plus loin (liens du site + sources). **Pas** de frise, de
   glossaire (« Les mots pour le dire ») ni de quiz (« Testez-vous »).
 - Titres (fiche et index) **sans italique** : la fin du titre garde la couleur de la fiche avec
   `<span class="ac">` (ex. « Le détroit <span class="ac">d'Ormuz</span> »), jamais `<em>`.
@@ -362,7 +363,7 @@ Demande type : « Fais la fiche HGG du jour sur … ».
   latitude). Regarder chaque image avant de l'utiliser, vérifier la place des repères en capture.
 - `index.html` : carte `.i-une` sur la nouvelle fiche, nouvelle carte `.i-fiche` (avec `data-slug` et
   `data-date`) **en tête** de `.i-grille`, compteur `0 / N` mis à jour. Carte « La fiche du jour »
-  des deux index HGG mise à jour.
+  de l'index HGG de 1re année mise à jour.
 - Liens vers les chapitres : vérifier (grep) que la section `id` visée traite bien le sujet.
 - Vérifier à 390 et 1280 px (pas de défilement horizontal, aucune erreur JS), puis mise en ligne.
   `outils/nouveautes.py` reprend les fiches toutes seules.
