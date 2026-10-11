@@ -7,8 +7,8 @@
 « Les nouveautés ») et par la page `nouveautes.html` (fil complet).
 
 Contenus suivis : articles d'actualité des quatre éditions (listes ACTU_DATA), dossiers de
-culture générale (CG_DATA), fiches et cours de l'Humanité (cinéma, littérature, cours) et chapitres de cours
-(chapitres et notions de philosophie, 1re et 2e année).
+culture générale (CG_DATA), fiches et cours de l'Humanité (cinéma, littérature, cours), chapitres de cours
+(chapitres et notions de philosophie, 1re et 2e année) et fiches de l'HGG au quotidien.
 
 La date de mise en ligne d'une page est retenue une fois pour toutes dans
 `outils/nouveautes-dates.json` : date du commit qui a ajouté le fichier, ou maintenant pour
@@ -139,6 +139,20 @@ def cours():
                'image': premiere_image(chemin, contenu)}
 
 
+def hgg_quotidien():
+    """Fiches de l'HGG au quotidien (premiere_annee/hgg/quotidien/<slug>.html)."""
+    for chemin in sorted(glob.glob(RACINE + 'premiere_annee/hgg/quotidien/*.html')):
+        chemin = chemin[len(RACINE):]
+        if os.path.basename(chemin) == 'index.html':
+            continue
+        contenu = lire(chemin)
+        t = re.search(r'<body[^>]*data-type="([^"]+)"', contenu)
+        titre = re.sub(r'\s*·\s*HGG au quotidien$', '', titre_page(contenu))
+        yield {'t': 'cours', 'rubrique': 'Cours',
+               'meta': 'HGG au quotidien' + (' · ' + t.group(1) if t else ''),
+               'titre': titre, 'url': chemin, 'image': premiere_image(chemin, contenu)}
+
+
 # ─── Dates de mise en ligne ───
 
 def dates_git():
@@ -167,7 +181,7 @@ def dates_git():
 
 
 def main():
-    elements = list(actualites()) + list(culture_generale()) + list(humanite()) + list(cours())
+    elements = list(actualites()) + list(culture_generale()) + list(humanite()) + list(cours()) + list(hgg_quotidien())
     try:
         with open(DATES, encoding='utf-8') as f:
             dates = json.load(f)
