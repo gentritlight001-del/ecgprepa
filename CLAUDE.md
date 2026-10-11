@@ -46,8 +46,8 @@ directement après chaque modification, sans attendre un nouveau « mets en lign
    Puis `python3 outils/referencement.py` : il ajoute la description et la balise canonical des
    pages qui n'en ont pas et régénère `sitemap.xml` (ne jamais modifier ce fichier à la main).
    Puis `python3 outils/recherche.py` : il régénère `recherche-index.json`, l'index de la recherche
-   dans tout le site (`recherche.js`, chargé par `auth.js` : loupe à côté du badge, Ctrl+K ou « / »,
-   champ de recherche de l'accueil ; les mots cherchés sont surlignés à l'arrivée sur la page).
+   dans tout le site (`recherche.js`, chargé par `auth.js` : loupe à côté du badge, Ctrl+K ou « / » ;
+   les mots cherchés sont surlignés à l'arrivée sur la page).
    Ne jamais modifier ce fichier à la main.
    Puis `python3 outils/nouveautes.py` : il régénère `nouveautes.js`, la liste des derniers
    contenus (articles, dossiers de CG, fiches Humanité, chapitres) affichée sous les 4 cartes de

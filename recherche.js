@@ -2,7 +2,7 @@
    ECG Prépa — Recherche dans tout le site
    Chargé sur toutes les pages par auth.js.
      - Fenêtre de recherche : loupe du menu, Ctrl+K (⌘K) ou « / »,
-       et tout élément [data-recherche] (champ de l'accueil…).
+       et tout élément [data-recherche].
      - Index : recherche-index.json, généré par outils/recherche.py
        (ne pas le modifier à la main). Téléchargé à la première
        ouverture seulement, puis revalidé (304 s'il n'a pas changé).
@@ -617,7 +617,7 @@
     if (el.tagName === 'INPUT') el.blur();
     ouvrir(v || '');
   });
-  /* Champ de recherche intégré à une page (accueil) : on ouvre la fenêtre dès qu'on tape. */
+  /* Champ de recherche intégré à une page : on ouvre la fenêtre dès qu'on tape. */
   document.addEventListener('input', function (e) {
     var el = e.target;
     if (!el.matches || !el.matches('input[data-recherche]')) return;

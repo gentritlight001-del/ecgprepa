@@ -4,7 +4,7 @@
     python3 outils/recherche.py
 
 Écrit `recherche-index.json`, lu par `recherche.js` (fenêtre de recherche ouverte par la loupe
-du menu, Ctrl+K ou « / », et champ de recherche de l'accueil).
+du menu, Ctrl+K ou « / »).
 
 Pour chaque page : titre, rubrique, description et titres des parties (avec l'ancre la plus
 proche, pour y mener directement). Le texte n'est pas recopié (il pèserait plus de 10 Mo) :
