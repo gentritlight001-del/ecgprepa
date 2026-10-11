@@ -255,12 +255,14 @@ page pays ou région :
 - Une fiche = `<slug>.html`, copiée de `rousseau.html` (n° de la carte de l'index). Gabarit repris de
   l'HGG au quotidien mais habillé « sauge et prune », choisi par le propriétaire sur maquette : fond sauge
   pâle sans quadrillage, prune `#6b2d5c` et olive `#55702f`, coins arrondis, numéros de section en
-  pastilles, nom de l'auteur en italique. Garder cet habillage pour toutes les fiches (`auteur.css`,
+  pastilles, nom de l'auteur en prune, **sans italique**. Garder cet habillage pour toutes les fiches (`auteur.css`,
   `auteur.js` ; fiches lues dans `localStorage` `ecg-humanite-auteurs-lues`). Supprimer de la copie les balises `og:`,
   `twitter:`, `canonical` et réécrire la description.
-- Structure : cartouche (portrait en paysage dans la fiche d'identité, WebP dans `images/`), 01 L'essentiel,
-  02 Schéma commenté (SVG à repères cliquables), 03 Comprendre (mots expliqués au survol), 04 Citations à
-  placer, 05 Avec et contre l'auteur, 06 Dans une copie, 07 Plus loin + sources.
+- Structure : cartouche (portrait en paysage et fiche d'identité **courte**, 3 lignes : vie, œuvres clés,
+  concepts ; WebP dans `images/`), 01 L'essentiel, 02 Schéma commenté (SVG à repères cliquables), 03 Comprendre
+  (mots expliqués au survol), 04 « <Auteur> et l'humanité » (pas de section « citations à placer » : 8 cartes
+  `f-these`, une par question du thème de l'Humanité, avec la thèse de l'auteur, l'explication, une citation
+  qui la prouve et « À nuancer »), 05 Avec et contre l'auteur, 06 Dans une copie, 07 Plus loin + sources.
 - **Citations vérifiées mot pour mot sur le texte original** (Wikisource), jamais de mémoire.
 
 ### Les langues au quotidien (1re année) : anglais, espagnol, allemand
