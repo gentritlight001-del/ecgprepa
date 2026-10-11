@@ -351,6 +351,10 @@ Demande type : « Fais la fiche HGG du jour sur … ».
   références, erreurs à éviter ; les deux colonnes finissent alignées en bas, le CSS allonge le
   dernier cadre de chacune, mais équilibrer aussi le contenu, par exemple en ajoutant un sujet), 07 Plus loin (liens du site + sources). **Pas** de frise, de
   glossaire (« Les mots pour le dire ») ni de quiz (« Testez-vous »).
+- **Mots expliqués au survol** dans « Comprendre » : chaque mot, lieu, personnage, sigle ou notion
+  un peu difficile (première occurrence seulement, 40 à 50 par fiche) est balisé
+  `<span class="gl" tabindex="0" data-def="…">mot</span>`. La définition fait une ou deux phrases
+  vérifiées, sans tiret cadratin ; `fiche.js` affiche la bulle (survol, clavier, toucher sur mobile).
 - Titres (fiche et index) **sans italique** : la fin du titre garde la couleur de la fiche avec
   `<span class="ac">` (ex. « Le détroit <span class="ac">d'Ormuz</span> »), jamais `<em>`.
 - Cartouche centré verticalement face à la « Fiche d'identité » ; texte de « Comprendre » en une
