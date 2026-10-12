@@ -1,6 +1,16 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Guernica",
+"url": "humanite/art/guernica.html",
+"image": "humanite/art/images/guernica-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-12T18:03:02+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Arabie saoudite",
@@ -2204,16 +2214,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Le Lambeau",
 "url": "humanite/litterature/le-lambeau.html",
 "image": "humanite/litterature/images/le-lambeau-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "Les Misérables",
-"url": "humanite/litterature/les-miserables.html",
-"image": "humanite/litterature/images/les-miserables-couverture.webp",
 "portrait": true,
 "date": "2026-09-11T19:03:33+00:00"
 },
