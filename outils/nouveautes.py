@@ -107,7 +107,8 @@ def humanite():
             contenu = lire(chemin)
             titre = re.sub(r'^(Cinéma|Littérature|Art|Musique)\s*[—-]\s*', '', titre_page(contenu))
             yield {'t': 'humanite', 'rubrique': 'Humanité', 'meta': nom, 'titre': titre,
-                   'url': chemin, 'image': premiere_image(chemin, contenu), 'portrait': True}
+                   'url': chemin, 'image': premiere_image(chemin, contenu),
+                   'portrait': rub in ('cinema', 'litterature')}  # affiches et couvertures, pas les œuvres d'art
     # cours de l'Humanité (humanite/cours-humanite/Cours/coursN.html)
     for chemin in sorted(glob.glob(RACINE + 'humanite/cours-humanite/Cours/cours[0-9]*.html')):
         chemin = chemin[len(RACINE):]

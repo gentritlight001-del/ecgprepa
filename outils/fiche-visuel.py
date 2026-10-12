@@ -3,6 +3,7 @@
 
     python3 outils/fiche-visuel.py humanite/cinema/robocop.html /chemin/affiche.jpg
     python3 outils/fiche-visuel.py humanite/litterature/la-peste.html /chemin/couverture.jpg
+    python3 outils/fiche-visuel.py humanite/art/guernica.html /chemin/oeuvre.jpg
 
 L'image est convertie en WebP (1600 px maximum) et rangée dans le dossier images/ de la
 rubrique ; le visuel et le fond flou du bandeau sont insérés dans la page. Pas de légende
@@ -27,14 +28,17 @@ html = page.read_text(encoding="utf-8")
 if '<div class="ch-hero-inner">' not in html:
     sys.exit("Cette page n'a pas le bandeau de fiche attendu (ch-hero-inner).")
 
-nom = page.stem + ("-affiche" if page.parent.name == "cinema" else "-couverture") + ".webp"
+SORTE = {"cinema": ("affiche", "Affiche : "), "litterature": ("couverture", "Couverture : "),
+         "art": ("oeuvre", "Œuvre : "), "musique": ("visuel", "Visuel : ")}
+suffixe, prefixe_alt = SORTE.get(page.parent.name, ("couverture", "Couverture : "))
+nom = page.stem + "-" + suffixe + ".webp"
 dossier = page.parent / "images"
 dossier.mkdir(exist_ok=True)
 im = Image.open(src).convert("RGB")
 im.thumbnail((1600, 1600))
 im.save(dossier / nom, "WEBP", quality=86)
 
-alt = ("Affiche : " if page.parent.name == "cinema" else "Couverture : ") + \
+alt = prefixe_alt + \
     re.search(r"<h1>(.*?)</h1>", html, re.S).group(1).strip()
 fond = f'<div class="ch-hero-fond" style="background-image:url(\'images/{nom}\')" aria-hidden="true"></div>\n  '
 fig = (f'<figure class="ch-hero-visuel"><img src="images/{nom}" alt="{alt}" loading="eager">'
