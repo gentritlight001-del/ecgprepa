@@ -99,13 +99,13 @@ def culture_generale():
 
 
 def humanite():
-    for rub, nom in (('cinema', 'Cinéma'), ('litterature', 'Littérature')):
+    for rub, nom in (('cinema', 'Cinéma'), ('litterature', 'Littérature'), ('art', 'Art'), ('musique', 'Musique'), ('jeux-video', 'Jeux vidéo')):
         for chemin in sorted(glob.glob(RACINE + 'humanite/%s/*.html' % rub)):
             chemin = chemin[len(RACINE):]
             if os.path.basename(chemin) in ('index.html', rub + '.html'):
                 continue
             contenu = lire(chemin)
-            titre = re.sub(r'^(Cinéma|Littérature)\s*[—-]\s*', '', titre_page(contenu))
+            titre = re.sub(r'^(Cinéma|Littérature|Art|Musique|Jeux vidéo)\s*[—-]\s*', '', titre_page(contenu))
             yield {'t': 'humanite', 'rubrique': 'Humanité', 'meta': nom, 'titre': titre,
                    'url': chemin, 'image': premiere_image(chemin, contenu), 'portrait': True}
     # cours de l'Humanité (humanite/cours-humanite/Cours/coursN.html)
