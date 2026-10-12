@@ -392,7 +392,10 @@ Demande type : « Fais la fiche HGG du jour sur … ».
 - Structure (garder l'ordre, adapter le contenu au type) : cartouche (n°, type, date, durée, titre,
   coordonnées ou dates, définition en 2 phrases, « Fiche d'identité » ; **pas** de « Au programme »),
   **pas** de sommaire sous le cartouche, puis 01 L'essentiel (3 idées), 02 Carte ou schéma commenté (repères numérotés
-  cliquables ; pour un auteur ou une notion : schéma SVG, carte des lieux liés ou document),
+  cliquables ; pour un auteur ou une notion : schéma SVG, carte des lieux liés ou document). **Un seul
+  schéma suffit** (pas d'onglets ni de second schéma sans vraie nécessité), et **seulement s'il est
+  pertinent** pour le sujet : sinon pas de section 02 et les suivantes sont renumérotées. Un schéma
+  enrichi (ex. le smart power ajouté aux ressources de la puissance) vaut mieux que deux schémas ;
   03 Comprendre (4 à 5 parties sur une colonne, **sans** plan latéral, avec citation et encadrés),
   04 Les chiffres (4 chiffres sourcés + 2 ou 3 graphiques SVG), 05 Qui veut quoi ? (acteurs) ou
   équivalent (débats, héritiers, critiques), 06 Dans une copie (accroche, idée-force, sujets,
@@ -413,6 +416,9 @@ Demande type : « Fais la fiche HGG du jour sur … ».
 - Cartouche centré verticalement face à la « Fiche d'identité » ; texte de « Comprendre » en une
   colonne centrée dans la page ; citations en taille modeste (style `f-citation` tel quel).
 - Faits vérifiés par recherche web, chiffres datés et sourcés, rien d'inventé ; sources listées en 07.
+  Attribuer chaque notion à son véritable auteur (ex. smart power : Suzanne Nossel, 2004, reprise par Nye).
+- Accroche de « Dans une copie » : un fait ou un chiffre actuel et vérifié qui pose la question du sujet,
+  plutôt qu'une anecdote célèbre mais attribuée de seconde main.
 - Illustrations : images libres de droits stockées en WebP dans `images/` (1600 px maximum), par
   exemple les vues satellite NASA Worldview (`wvs.earthdata.nasa.gov/api/v1/snapshot`, couche
   `MODIS_Terra_CorrectedReflectance_TrueColor` ou `BlueMarble_ShadedRelief_Bathymetry`, projection
