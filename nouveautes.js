@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Arabie saoudite",
+"titre": "Arabie saoudite : l'aéroport de Riyad frappé à plusieurs reprises par les Houthis, 13 morts",
+"url": "actualites/monde/articles/arabie-aeroport-riyad-attaque-houthie.html",
+"image": "actualites/monde/images/arabie-aeroport-riyad-attaque-houthie.webp",
+"date": "2026-10-12T04:59:25+00:00"
+},
+{
 "t": "cg",
 "rubrique": "Culture générale",
 "meta": "Entreprise",
@@ -970,15 +979,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "BRICS : l'adoption de la Déclaration de New Delhi",
 "url": "actualites/monde/articles/brics-declaration-new-delhi.html",
 "image": "actualites/monde/images/brics-declaration-new-delhi.webp",
-"date": "2026-09-18T20:00:18+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Monde",
-"titre": "Les dirigeants des grands laboratoires d'IA renforcent leurs appels à ralentir le développement",
-"url": "actualites/monde/articles/dirigeants-ia-appel-ralentissement.html",
-"image": "actualites/monde/images/dirigeants-ia-appel-ralentissement.webp",
 "date": "2026-09-18T20:00:18+00:00"
 },
 {
