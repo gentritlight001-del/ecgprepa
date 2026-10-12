@@ -430,6 +430,10 @@ Demande type : « Fais la fiche HGG du jour sur … ».
 - `index.html` : carte `.i-une` sur la nouvelle fiche, nouvelle carte `.i-fiche` (avec `data-slug` et
   `data-date`) **en tête** de `.i-grille`, compteur `0 / N` mis à jour. Carte « La fiche du jour »
   de l'index HGG de 1re année mise à jour.
+- « Plus loin », sur ECG Prépa : 8 à 10 liens **vraiment liés au sujet**, chercher dans les chapitres
+  d'HGG des **deux années** (ex. 2e année, chapitre 2 sur les États-Unis, pour la puissance) et dans les
+  dossiers de culture générale (`grep -il <mot> Culture-Generale/*.html`) ; jamais de lien de remplissage.
+  **Un même chapitre n'apparaît qu'une fois** : choisir sa section la plus proche du sujet.
 - Liens vers les chapitres : vérifier (grep) que la section `id` visée traite bien le sujet.
 - Vérifier à 390 et 1280 px (pas de défilement horizontal, aucune erreur JS), puis mise en ligne.
   Les fiches **n'apparaissent pas** dans les nouveautés (`outils/nouveautes.py` les ignore).
