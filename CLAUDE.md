@@ -21,7 +21,12 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   (« 1 — … »). `quotidien-controle.py` et `newsletter/outils/controle.py` le vérifient. Le
   contenu déjà en ligne n'est pas à reprendre.
 - **Verrouillage** : ne jamais verrouiller une page ni la rendre Premium. Le propriétaire du
-  site le fait lui-même (`auth.js`).
+  site le fait lui-même (`auth.js`). Seule exception, automatique et voulue par le propriétaire
+  (`infoActu` / `dernierActu` dans `auth.js`) : dans les actualités, la culture générale et les
+  espaces « au quotidien » (langues et HGG de 1re année), seul le contenu le plus récent est
+  gratuit, tous les autres passent Premium d'eux-mêmes. Pour les espaces « au quotidien », le
+  plus récent est celui de la carte du haut de l'index (`.une` ou `.i-une`) : la mettre à jour
+  suffit, rien d'autre à faire.
 - Pages réservées à l'administrateur : `PAGES_ADMIN` dans `auth.js` (`admin.html`,
   `idees-articles.html`, `mes-newsletters.html`). Une nouvelle page admin s'ajoute à cette
   liste et au menu admin de `auth.js`, dans le même style que `idees-articles.html`.
@@ -45,6 +50,10 @@ directement après chaque modification, sans attendre un nouveau « mets en lign
    ne les remet qu'au passage suivant.
    Puis `python3 outils/referencement.py` : il ajoute la description et la balise canonical des
    pages qui n'en ont pas et régénère `sitemap.xml` (ne jamais modifier ce fichier à la main).
+   Puis `python3 outils/recherche.py` : il régénère `recherche-index.json`, l'index de la recherche
+   dans tout le site (`recherche.js`, chargé par `auth.js` : loupe à côté du badge, Ctrl+K ou « / » ;
+   les mots cherchés sont surlignés à l'arrivée sur la page).
+   Ne jamais modifier ce fichier à la main.
    Puis `python3 outils/nouveautes.py` : il régénère `nouveautes.js`, la liste des derniers
    contenus (articles, dossiers de CG, fiches Humanité, chapitres) affichée sous les 4 cartes de
    l'accueil et dans la page `nouveautes.html`. Les dates de mise en ligne sont gardées dans
@@ -66,7 +75,8 @@ ne sont pas touchées. Conséquence : un fichier de **données générées charg
 (`nouveautes.js`) ne se met pas à jour avant 4 h sans Ctrl+Maj+R. `index.html` et
 `nouveautes.html` le chargent donc avec un paramètre qui change chaque minute
 (`nouveautes.js?v=<minute>`) : ne pas remettre un simple `<script src="nouveautes.js">`, et
-faire pareil pour tout nouveau fichier de données `.js`. Pour tous les autres `.js` et `.css`, c'est
+faire pareil pour tout nouveau fichier de données `.js`. `recherche-index.json` est lu par `fetch`
+avec `cache: 'no-cache'` (revalidé à chaque ouverture, 304 s'il n'a pas changé) : pas de paramètre. Pour tous les autres `.js` et `.css`, c'est
 `sw.js` qui règle le problème : il les redemande au serveur à chaque visite (`cache: 'no-cache'`, 304
 si inchangé) et réécrit leur en-tête en `no-cache` pour que Chrome ne les garde pas en mémoire. Ne
 pas retirer ce mécanisme (`sansCacheNavigateur`). Le vrai remède, côté tableau de bord
@@ -236,6 +246,42 @@ page pays ou région :
   WebP dans `images/` de la rubrique et ajoute le visuel et le fond flou. **Pas de légende** sous
   l'image. Sans visuel, le bandeau reste en texte seul.
 
+### Fiches auteurs (Cours Humanité)
+
+- `humanite/cours-humanite/Fiches auteurs/` : index `fiches-auteurs.html`, une **frise des siècles**
+  choisie par le propriétaire sur maquette : une ligne `<li class="auteur-card" data-nait data-mort>`
+  par auteur, **dans l'ordre des naissances** (auteur vivant : `data-mort=""`), **numérotée dans cet ordre
+  chronologique** (01 = le plus ancien), avec sa présentation
+  `.fr-detail` (nom complet, époque, thèse en une phrase, œuvre de référence) qui s'ouvre au clic. Le
+  script de la page place seul les époques, les années et les barres : ajouter un auteur = copier un `<li>`
+  au bon endroit, rien d'autre (les époques d'avant 1450 sont resserrées). Une fiche faite : ajouter
+  `dispo`, `data-slug="<slug>"` et les deux couleurs de l'auteur (`style="--accent:…;--accent2:…"`, les mêmes
+  que sur le `<body>` de sa fiche) au `<li>`, remplacer `.fr-initiale` par le portrait
+  (`<img class="fr-visuel" src="images/<slug>.webp" …>`) et « Fiche à venir » par le lien
+  `<a class="fr-bouton" href="<slug>.html">` + durée, comme pour Rousseau. **Aucun auteur n'est ouvert à
+  l'arrivée sur la page** (pas d'ouverture d'office). Titre « Fiches auteurs » tout en noir. Les numéros sont recalculés par le script ;
+  après une insertion, corriger aussi ceux écrits dans la page (`.fr-num`, `N° …` de `.fr-meta`) et le
+  « Fiche auteur n° » des fiches déjà faites (`grep -n 'f-num' *.html`). Demande type : « Fais la fiche auteur de Kant ».
+- Une fiche = `<slug>.html`, copiée de `rousseau.html` (n° = rang chronologique dans la frise). Gabarit repris de
+  l'HGG au quotidien mais habillé « sauge et prune », choisi par le propriétaire sur maquette : fond sauge
+  pâle sans quadrillage, coins arrondis, numéros de section en
+  pastilles, nom de l'auteur dans la couleur de la fiche, **sans italique**. **Chaque auteur a ses deux couleurs**
+  (`--accent`, `--accent2` sur `<body>`, jamais déjà prises) : Rousseau prune `#6b2d5c` / olive `#55702f`,
+  Hobbes bleu ardoise `#1f4a6e` / ocre `#a35a1f`. Garder cet habillage pour toutes les fiches (`auteur.css`,
+  `auteur.js` ; fiches lues dans `localStorage` `ecg-humanite-auteurs-lues`). Supprimer de la copie les balises `og:`,
+  `twitter:`, `canonical` et réécrire la description.
+- Structure : cartouche (portrait en paysage et fiche d'identité **courte**, 4 lignes : naissance, mort,
+  œuvres clés, concepts, valeurs brèves qui tiennent si possible sur une ligne (titres sans dates) ; définition
+  d'environ 5 lignes à 1280 px, pour que le texte de gauche et la fiche d'identité aient des hauteurs proches ; pas de lieux et dates sous le titre ; vidéo `.f-video` sous la définition si le
+  propriétaire en donne une, adresse courte `https://youtu.be/<id>`, aussi en tête des sources ; WebP dans `images/`), 01 L'essentiel, 02 Comprendre (mots expliqués au survol), 03 « <Auteur> et
+  l'humanité », 04 Avec et contre l'auteur, 05 Dans une copie, 06 Plus loin + sources. **Pas de schéma** ni de
+  section « citations à placer ».
+- « <Auteur> et l'humanité » (`.f-args`) : 8 questions du thème de l'Humanité, et pour chacune **seulement**
+  « L'argument » (un paragraphe prêt à mettre dans la copie : la thèse de l'auteur, expliquée, avec ses
+  citations et la référence de l'œuvre) et « Comment l'interpréter » (1 ou 2 phrases). Rien d'autre :
+  le propriétaire veut du concret, sans étapes, onglets ni encadrés en plus.
+- **Citations vérifiées mot pour mot sur le texte original** (Wikisource), jamais de mémoire.
+
 ### Les langues au quotidien (1re année) : anglais, espagnol, allemand
 
 Un « coin » de pratique par matière, comme les colles de maths de 2e année : pour chaque langue,
@@ -262,7 +308,9 @@ travailler surtout la grammaire de 1re année. Demandes types : « Fais le texte
   **Pas de puces ni de texte qui résume la grammaire du jour** (index, cartes, en-tête du jour).
   Pas d'italique dans l'index ; dans la page du jour, les mots étrangers (`<em>`) restent en italique.
 - `jour-AAAA-MM-JJ.html` : une page par jour, construite par `quotidien.js` à partir du bloc
-  `<script id="donnees">`.
+  `<script id="donnees">`. **Pas de sommaire** (barre des étapes Lire / Grammaire / …) sous le
+  héros. Seul le jour le plus récent (carte `.une` de l'index) est gratuit ; les précédents
+  passent Premium automatiquement (voir section 1).
 - Le compteur « mots à revoir » de l'index mène à l'**espace flashcards**
   (`premiere_annee/langues/flashcards/index.html#<langue>`) : toutes les cartes de tous les jours,
   langue par langue (onglets Anglais, Espagnol, Allemand ; une langue s'ouvre dès qu'elle a des
@@ -344,7 +392,11 @@ Demande type : « Fais la fiche HGG du jour sur … ».
 - Structure (garder l'ordre, adapter le contenu au type) : cartouche (n°, type, date, durée, titre,
   coordonnées ou dates, définition en 2 phrases, « Fiche d'identité » ; **pas** de « Au programme »),
   **pas** de sommaire sous le cartouche, puis 01 L'essentiel (3 idées), 02 Carte ou schéma commenté (repères numérotés
-  cliquables ; pour un auteur ou une notion : schéma SVG, carte des lieux liés ou document),
+  cliquables ; pour un auteur ou une notion : schéma SVG, carte des lieux liés ou document). Un schéma
+  **seulement s'il est pertinent** pour le sujet (sinon pas de section 02, et les suivantes sont
+  renumérotées). **Deux** cartes ou schémas (avec onglets) seulement quand le sujet s'y prête vraiment,
+  comme pour le détroit d'Ormuz (le détroit, puis la région) ; sinon un seul, quitte à l'enrichir (ex. le
+  smart power ajouté aux ressources de la puissance). Pas de formule ni de texte annexe sous le dessin ;
   03 Comprendre (4 à 5 parties sur une colonne, **sans** plan latéral, avec citation et encadrés),
   04 Les chiffres (4 chiffres sourcés + 2 ou 3 graphiques SVG), 05 Qui veut quoi ? (acteurs) ou
   équivalent (débats, héritiers, critiques), 06 Dans une copie (accroche, idée-force, sujets,
@@ -365,11 +417,16 @@ Demande type : « Fais la fiche HGG du jour sur … ».
 - Cartouche centré verticalement face à la « Fiche d'identité » ; texte de « Comprendre » en une
   colonne centrée dans la page ; citations en taille modeste (style `f-citation` tel quel).
 - Faits vérifiés par recherche web, chiffres datés et sourcés, rien d'inventé ; sources listées en 07.
+  Attribuer chaque notion à son véritable auteur (ex. smart power : Suzanne Nossel, 2004, reprise par Nye).
+- Accroche de « Dans une copie » : un fait ou un chiffre actuel et vérifié qui pose la question du sujet,
+  plutôt qu'une anecdote célèbre mais attribuée de seconde main.
 - Illustrations : images libres de droits stockées en WebP dans `images/` (1600 px maximum), par
   exemple les vues satellite NASA Worldview (`wvs.earthdata.nasa.gov/api/v1/snapshot`, couche
   `MODIS_Terra_CorrectedReflectance_TrueColor` ou `BlueMarble_ShadedRelief_Bathymetry`, projection
   EPSG:4326 : les repères SVG se placent alors par simple règle de trois sur la longitude et la
   latitude). Regarder chaque image avant de l'utiliser, vérifier la place des repères en capture.
+- Seule la fiche la plus récente (carte `.i-une` de l'index) est gratuite ; les précédentes passent
+  Premium automatiquement (voir section 1).
 - `index.html` : carte `.i-une` sur la nouvelle fiche, nouvelle carte `.i-fiche` (avec `data-slug` et
   `data-date`) **en tête** de `.i-grille`, compteur `0 / N` mis à jour. Carte « La fiche du jour »
   de l'index HGG de 1re année mise à jour.
