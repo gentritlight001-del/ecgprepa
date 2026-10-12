@@ -392,10 +392,11 @@ Demande type : « Fais la fiche HGG du jour sur … ».
 - Structure (garder l'ordre, adapter le contenu au type) : cartouche (n°, type, date, durée, titre,
   coordonnées ou dates, définition en 2 phrases, « Fiche d'identité » ; **pas** de « Au programme »),
   **pas** de sommaire sous le cartouche, puis 01 L'essentiel (3 idées), 02 Carte ou schéma commenté (repères numérotés
-  cliquables ; pour un auteur ou une notion : schéma SVG, carte des lieux liés ou document). **Un seul
-  schéma suffit** (pas d'onglets ni de second schéma sans vraie nécessité), et **seulement s'il est
-  pertinent** pour le sujet : sinon pas de section 02 et les suivantes sont renumérotées. Un schéma
-  enrichi (ex. le smart power ajouté aux ressources de la puissance) vaut mieux que deux schémas ;
+  cliquables ; pour un auteur ou une notion : schéma SVG, carte des lieux liés ou document). Un schéma
+  **seulement s'il est pertinent** pour le sujet (sinon pas de section 02, et les suivantes sont
+  renumérotées). **Deux** cartes ou schémas (avec onglets) seulement quand le sujet s'y prête vraiment,
+  comme pour le détroit d'Ormuz (le détroit, puis la région) ; sinon un seul, quitte à l'enrichir (ex. le
+  smart power ajouté aux ressources de la puissance). Pas de formule ni de texte annexe sous le dessin ;
   03 Comprendre (4 à 5 parties sur une colonne, **sans** plan latéral, avec citation et encadrés),
   04 Les chiffres (4 chiffres sourcés + 2 ou 3 graphiques SVG), 05 Qui veut quoi ? (acteurs) ou
   équivalent (débats, héritiers, critiques), 06 Dans une copie (accroche, idée-force, sujets,
