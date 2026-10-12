@@ -72,9 +72,9 @@ def fiche(rel, contenu):
         lab = 'Culture générale' + (' · Dossier n° ' + d.group(1) if d else '')
         return 'culture-generale/' + stem, lab, t or 'Culture générale', '#16161a', '#e8e6e0', '#5bbfa8', 'accent'
     if p[0] == 'humanite' or rel == 'humanite.html':
-        sous = {'cinema': 'Cinéma', 'litterature': 'Littérature', 'art': 'Art', 'musique': 'Musique', 'autre': 'Autre', 'cours-humanite': 'Cours'}.get(p[1] if len(p) > 2 else '', '')
+        sous = {'cinema': 'Cinéma', 'litterature': 'Littérature', 'art': 'Art', 'musique': 'Musique', 'cours-humanite': 'Cours'}.get(p[1] if len(p) > 2 else '', '')
         lab = "L'Humanité" + (' · ' + sous if sous else '')
-        t = re.sub(r'^(Littérature|Cinéma|Art|Musique|Autre)\s*[—-]\s*', '', t)
+        t = re.sub(r'^(Littérature|Cinéma|Art|Musique)\s*[—-]\s*', '', t)
         return 'humanite/' + '-'.join(p)[:-5], lab, t or "L'Humanité", '#1c2433', '#e8e6e0', '#7c9ec9', 'accent'
     if p[:3] == ['premiere_annee', 'hgg', 'quotidien'] and len(p) == 4:
         lab = "L'HGG au quotidien"
