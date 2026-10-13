@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "es",
 "rubrique": "Actu Espagnol",
+"meta": "Venezuela",
+"titre": "Venezuela : à la FAO, Delcy Rodríguez lance le plan « Venezuela Alimenta » contre la faim",
+"url": "actualites/es/articles/venezuela-plan-venezuela-alimenta-fao.html",
+"image": "actualites/es/images/venezuela-plan-venezuela-alimenta-fao.webp",
+"date": "2026-10-13T18:34:55+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
 "meta": "Espagne",
 "titre": "Espagne : une fête nationale sous tension, sifflets contre Sánchez et regards tournés vers Ceuta",
 "url": "actualites/es/articles/espagne-fete-nationale-hispanidad-2026.html",
@@ -1376,15 +1385,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Le Mexique et le Pérou rétablissent leurs relations diplomatiques",
 "url": "actualites/es/articles/mexique-perou-relations-diplomatiques.html",
 "image": "actualites/es/images/mexique-perou-relations-diplomatiques.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Espagne",
-"titre": "Vuelta a España 2026 : le Grand Départ inédit de Monaco lance la quête historique de Tadej Pogačar",
-"url": "actualites/es/articles/depart-vuelta-espana-2026.html",
-"image": "actualites/es/images/depart-vuelta-espana-2026.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
