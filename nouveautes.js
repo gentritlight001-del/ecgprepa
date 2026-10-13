@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Espagne",
+"titre": "Espagne : une fête nationale sous tension, sifflets contre Sánchez et regards tournés vers Ceuta",
+"url": "actualites/es/articles/espagne-fete-nationale-hispanidad-2026.html",
+"image": "actualites/es/images/espagne-fete-nationale-hispanidad-2026.webp",
+"date": "2026-10-13T18:28:46+00:00"
+},
+{
 "t": "humanite",
 "rubrique": "Humanité",
 "meta": "Art",
@@ -1376,15 +1385,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Vuelta a España 2026 : le Grand Départ inédit de Monaco lance la quête historique de Tadej Pogačar",
 "url": "actualites/es/articles/depart-vuelta-espana-2026.html",
 "image": "actualites/es/images/depart-vuelta-espana-2026.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Bolivie",
-"titre": "Bolivie : corruption, arrestations et rupture — la présidence Paz assiégée par les scandales",
-"url": "actualites/es/articles/bolivie-crise-corruption-paz.html",
-"image": "actualites/es/images/bolivie-crise-corruption-paz.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
