@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Hongrie",
+"titre": "Hongrie : le Parlement abroge les dispositions anti-LGBTQ de la loi de 2021 voulue par Orbán",
+"url": "actualites/monde/articles/hongrie-abrogation-loi-anti-lgbt.html",
+"image": "actualites/monde/images/hongrie-abrogation-loi-anti-lgbt.webp",
+"date": "2026-10-14T18:01:29+00:00"
+},
+{
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne",
@@ -1034,15 +1043,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Kosovo : Hashim Thaçi et trois anciens chefs de l'UÇK condamnés pour crimes de guerre à La Haye",
 "url": "actualites/monde/articles/kosovo-thaci-condamnation-uck.html",
 "image": "actualites/monde/images/kosovo-thaci-condamnation-uck.webp",
-"date": "2026-09-18T20:00:18+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Japon",
-"titre": "Japon : le pays franchit pour la première fois le seuil des 100 000 centenaires",
-"url": "actualites/monde/articles/japon-100000-centenaires.html",
-"image": "actualites/monde/images/japon-100000-centenaires.webp",
 "date": "2026-09-18T20:00:18+00:00"
 },
 {
