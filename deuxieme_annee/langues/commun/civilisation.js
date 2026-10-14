@@ -88,7 +88,20 @@
     return '';
   }
 
-  function blocs(liste) { return liste.map(bloc).join(''); }
+  /* Une image avec « avec: n » se place à côté des n blocs suivants, centrée en hauteur.
+     À réserver aux cas où ces blocs ont à peu près la hauteur de la photo. */
+  function blocs(liste) {
+    let html = '';
+    for (let i = 0; i < liste.length; i++) {
+      const b = liste[i];
+      if (b.t === 'image' && b.avec) {
+        const suite = liste.slice(i + 1, i + 1 + b.avec);
+        html += `<div class="b-duo ${b.format || 'droite'}"><div class="duo-texte">${suite.map(bloc).join('')}</div>${bloc({ ...b, format: '' })}</div>`;
+        i += b.avec;
+      } else html += bloc(b);
+    }
+    return html;
+  }
 
   function rendre() {
     const C = COURS, m = C.meta;
