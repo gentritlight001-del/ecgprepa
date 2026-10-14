@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "FMI",
+"titre": "Le FMI relève légèrement sa prévision de croissance mondiale pour 2026, à 3,1 %",
+"url": "actualites/monde/articles/fmi-perspectives-octobre-2026.html",
+"image": "actualites/monde/images/fmi-perspectives-octobre-2026.webp",
+"date": "2026-10-14T18:06:08+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Hongrie",
 "titre": "Hongrie : le Parlement abroge les dispositions anti-LGBTQ de la loi de 2021 voulue par Orbán",
 "url": "actualites/monde/articles/hongrie-abrogation-loi-anti-lgbt.html",
@@ -1034,15 +1043,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Union européenne – Canada : Ursula von der Leyen invite Ottawa à devenir le premier « membre associé » de l'UE",
 "url": "actualites/monde/articles/ue-canada-membre-associe.html",
 "image": "actualites/monde/images/ue-canada-membre-associe.webp",
-"date": "2026-09-18T20:00:18+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Kosovo",
-"titre": "Kosovo : Hashim Thaçi et trois anciens chefs de l'UÇK condamnés pour crimes de guerre à La Haye",
-"url": "actualites/monde/articles/kosovo-thaci-condamnation-uck.html",
-"image": "actualites/monde/images/kosovo-thaci-condamnation-uck.webp",
 "date": "2026-09-18T20:00:18+00:00"
 },
 {
