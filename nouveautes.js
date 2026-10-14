@@ -4,6 +4,15 @@ window.ECG_NOUVEAUTES = [
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "France",
+"titre": "Nvidia entre au capital de Doctolib pour accélérer l'intelligence artificielle médicale en Europe",
+"url": "actualites/monde/articles/nvidia-investit-doctolib.html",
+"image": "actualites/monde/images/nvidia-investit-doctolib.webp",
+"date": "2026-10-14T17:38:18+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "France",
 "titre": "France : une cyberattaque non revendiquée sabote les frigos de centaines de supermarchés",
 "url": "actualites/monde/articles/france-cyberattaque-frigos-supermarches.html",
 "image": "actualites/monde/images/france-cyberattaque-frigos-supermarches.webp",
@@ -1007,15 +1016,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Japon : le pays franchit pour la première fois le seuil des 100 000 centenaires",
 "url": "actualites/monde/articles/japon-100000-centenaires.html",
 "image": "actualites/monde/images/japon-100000-centenaires.webp",
-"date": "2026-09-18T20:00:18+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Finlande",
-"titre": "La Finlande rejoint l'initiative française de « dissuasion avancée »",
-"url": "actualites/monde/articles/finlande-parapluie-nucleaire-francais.html",
-"image": "actualites/monde/images/finlande-parapluie-nucleaire-francais.webp",
 "date": "2026-09-18T20:00:18+00:00"
 },
 {
