@@ -42,7 +42,6 @@
   function remplir(data) {
     if (!data.length) return;
 
-    /* Chiffres du bandeau */
     var cartes = Array.prototype.slice.call(document.querySelectorAll('.ia-pays'));
     var groupes = {};
     data.forEach(function (a) {
@@ -50,12 +49,6 @@
     });
     var actives = cartes.filter(function (c) { return groupes[c.getAttribute('data-cle')]; });
     var d = data[0];
-    var ch = document.querySelector('.ia-chiffres');
-    ch.innerHTML = '';
-    [['', data.length, ' articles · '], ['', actives.length, parRegion ? ' régions · ' : ' pays · ']].forEach(function (p) {
-      ch.appendChild(el('b', '', String(p[1]))); ch.appendChild(document.createTextNode(p[2]));
-    });
-    ch.appendChild(document.createTextNode('dernier ajout ' + MOIS[d.month] + ' ' + d.year));
     var n = document.querySelector('.ia-tous-n');
     if (n) n.textContent = data.length;
 
