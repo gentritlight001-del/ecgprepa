@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "es",
 "rubrique": "Actu Espagnol",
+"meta": "Costa Rica",
+"titre": "Costa Rica : Laura Fernández inaugure le CACCO, une méga-prison inspirée du modèle Bukele",
+"url": "actualites/es/articles/costa-rica-cacco-megaprison.html",
+"image": "actualites/es/images/costa-rica-cacco-megaprison.webp",
+"date": "2026-10-14T17:49:24+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
 "meta": "Espagne",
 "titre": "Espagne : Felipe VI et Letizia à Ceuta, première visite d'un roi depuis 2007",
 "url": "actualites/es/articles/espagne-reyes-visite-ceuta-2026.html",
@@ -1376,15 +1385,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Équateur : l'ex-président Lenín Moreno condamné à cinq ans de prison pour corruption",
 "url": "actualites/es/articles/equateur-moreno-condamne.html",
 "image": "actualites/es/images/equateur-moreno-condamne.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Argentine — Bolivie",
-"titre": "L'affaire Cerimedo : l'ex-stratège de Milei accusé de tentative de féminicide en Bolivie",
-"url": "actualites/es/articles/affaire-cerimedo.html",
-"image": "actualites/es/images/affaire-cerimedo.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
