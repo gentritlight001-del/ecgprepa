@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Prix Nobel",
+"titre": "Nobel d'économie 2026 : Robert Hall et Michael Woodford couronnés pour la stabilisation",
+"url": "actualites/monde/articles/nobel-economie-2026-hall-woodford.html",
+"image": "actualites/monde/images/nobel-economie-2026-hall-woodford.webp",
+"date": "2026-10-14T17:27:00+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "Royaume-Uni",
@@ -1007,15 +1016,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Nigeria : le groupe Dangote lance l'introduction en bourse de sa méga-raffinerie",
 "url": "actualites/monde/articles/nigeria-dangote-ipo.html",
 "image": "actualites/monde/images/nigeria-dangote-ipo.webp",
-"date": "2026-09-18T20:00:18+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Inde",
-"titre": "BRICS : l'adoption de la Déclaration de New Delhi",
-"url": "actualites/monde/articles/brics-declaration-new-delhi.html",
-"image": "actualites/monde/images/brics-declaration-new-delhi.webp",
 "date": "2026-09-18T20:00:18+00:00"
 },
 {
