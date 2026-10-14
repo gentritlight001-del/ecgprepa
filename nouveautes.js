@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Espagne",
+"titre": "Espagne : Felipe VI et Letizia à Ceuta, première visite d'un roi depuis 2007",
+"url": "actualites/es/articles/espagne-reyes-visite-ceuta-2026.html",
+"image": "actualites/es/images/espagne-reyes-visite-ceuta-2026.webp",
+"date": "2026-10-14T17:43:56+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "France",
@@ -1376,15 +1385,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "L'affaire Cerimedo : l'ex-stratège de Milei accusé de tentative de féminicide en Bolivie",
 "url": "actualites/es/articles/affaire-cerimedo.html",
 "image": "actualites/es/images/affaire-cerimedo.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Mexique — Pérou",
-"titre": "Le Mexique et le Pérou rétablissent leurs relations diplomatiques",
-"url": "actualites/es/articles/mexique-perou-relations-diplomatiques.html",
-"image": "actualites/es/images/mexique-perou-relations-diplomatiques.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
