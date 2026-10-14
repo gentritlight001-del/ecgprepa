@@ -193,6 +193,12 @@ page pays ou région :
 
 - Chaque matière a sa page d'index, par exemple `deuxieme_annee/maths/index.html`, qui
   liste les chapitres (`chapter-item`).
+- Index de 1re année (HGG, maths, ESH, philo, anglais, espagnol, allemand) : habillage « atlas
+  nocturne » choisi par le propriétaire (`cours-index.css`, `<body class="ci">`, fond noir, titres
+  Fraunces, un dessin au trait par matière, une seule liste sans parties ni suivi de lecture).
+  Ajouter un chapitre = copier une ligne `chapter-item` de `.ci-liste` et mettre à jour le compteur
+  `.ci-compte` et le nombre cité dans `.ci-intro`. Les cartes « fiche du jour » / « texte du jour »
+  (`colles-card`) sont dans l'en-tête et gardent leur balisage.
 - Un nouveau chapitre reprend la page du chapitre précédent. Par exemple
   `deuxieme_annee/maths/chapitre1.html` : palette sarcelle, titre du héros sur
   **2 lignes maximum** sur ordinateur.
