@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
+"titre": "Allemagne : après la démission de Bärbel Bas, Alexander Schweitzer devient ministre du Travail",
+"url": "actualites/de/articles/allemagne-schweitzer-ministre-travail.html",
+"image": "actualites/de/images/allemagne-schweitzer-ministre-travail.webp",
+"date": "2026-10-14T17:57:31+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Costa Rica",
@@ -1565,15 +1574,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "La crise automobile en Allemagne : quand le pilier de l'industrie vacille",
 "url": "actualites/de/articles/crise-automobile.html",
 "image": "actualites/de/images/crise-automobile.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "Merz à la chancellerie : la grande coalition face aux défis d'une Allemagne en mutation",
-"url": "actualites/de/articles/merz-politique.html",
-"image": "actualites/de/images/merz-politique.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
