@@ -193,7 +193,7 @@ page pays ou région :
 
 - Chaque matière a sa page d'index, par exemple `deuxieme_annee/maths/index.html`, qui
   liste les chapitres (`chapter-item`).
-- Index de 1re année (HGG, maths, ESH, philo, anglais, espagnol, allemand) et de 2e année (HGG, maths, ESH, philo ; pas les langues) : habillage « atlas
+- Index de 1re année (HGG, maths, ESH, philo, anglais, espagnol, allemand) et de 2e année (HGG, maths, ESH, philo ; pas les langues), et liste des cours d'Humanité (`humanite/cours-humanite/Cours/cours.html`, ligne grisée `.ci-prochain` « Prochain cours bientôt en ligne » à garder en fin de liste) : habillage « atlas
   nocturne » choisi par le propriétaire (`cours-index.css`, `<body class="ci">`, fond noir, titres
   Fraunces, un dessin au trait par matière, une seule liste sans parties ni suivi de lecture).
   Ajouter un chapitre = copier une ligne `chapter-item` de `.ci-liste` et mettre à jour le compteur
