@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "France",
+"titre": "France : une cyberattaque non revendiquée sabote les frigos de centaines de supermarchés",
+"url": "actualites/monde/articles/france-cyberattaque-frigos-supermarches.html",
+"image": "actualites/monde/images/france-cyberattaque-frigos-supermarches.webp",
+"date": "2026-10-14T17:33:09+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Prix Nobel",
 "titre": "Nobel d'économie 2026 : Robert Hall et Michael Woodford couronnés pour la stabilisation",
 "url": "actualites/monde/articles/nobel-economie-2026-hall-woodford.html",
@@ -1007,15 +1016,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "La Finlande rejoint l'initiative française de « dissuasion avancée »",
 "url": "actualites/monde/articles/finlande-parapluie-nucleaire-francais.html",
 "image": "actualites/monde/images/finlande-parapluie-nucleaire-francais.webp",
-"date": "2026-09-18T20:00:18+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Nigeria",
-"titre": "Nigeria : le groupe Dangote lance l'introduction en bourse de sa méga-raffinerie",
-"url": "actualites/monde/articles/nigeria-dangote-ipo.html",
-"image": "actualites/monde/images/nigeria-dangote-ipo.webp",
 "date": "2026-09-18T20:00:18+00:00"
 },
 {
