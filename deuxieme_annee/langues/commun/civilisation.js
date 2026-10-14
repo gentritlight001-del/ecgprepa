@@ -40,8 +40,8 @@
       case 'tl': return `<ol class="b-tl">${A(b.items).map(i => `<li><span class="d">${L(i.d)}</span><span class="c">${L(i.c)}</span></li>`).join('')}</ol>`;
       case 'stats': return `<div class="b-stats">${A(b.items).map(i => `<div class="stat ${ton(i.c)}"><b>${L(i.n)}</b><span>${L(i.d)}</span></div>`).join('')}</div>`;
       case 'image': return `<figure class="b-image ${b.format || ''}"><img src="${b.src}" alt="${L(b.alt)}" loading="lazy" width="${b.l || 1280}" height="${b.h || 853}">
-        <figcaption><span>${L(b.legende)}</span>${b.credit ? `<small>${b.credit}</small>` : ''}</figcaption></figure>`;
-      case 'images': return `<div class="b-images">${b.items.map(i => `<figure class="b-image"><img src="${i.src}" alt="${L(i.alt)}" loading="lazy" width="${i.l}" height="${i.h}"><figcaption><span>${L(i.legende)}</span>${i.credit ? `<small>${i.credit}</small>` : ''}</figcaption></figure>`).join('')}</div>`;
+        <figcaption>${b.titre ? `<b class="fig-titre">${L(b.titre)}</b>` : ''}<span>${L(b.legende)}</span></figcaption></figure>`;
+      case 'images': return `<div class="b-images">${b.items.map(i => `<figure class="b-image"><img src="${i.src}" alt="${L(i.alt)}" loading="lazy" width="${i.l}" height="${i.h}"><figcaption>${i.titre ? `<b class="fig-titre">${L(i.titre)}</b>` : ''}<span>${L(i.legende)}</span></figcaption></figure>`).join('')}</div>`;
       case 'schema': return `<figure class="b-schema"><figcaption class="b-schema-titre">${L(b.titre)}</figcaption>
         <div class="b-schema-svg">${R(b.svg)}</div><p class="b-glisser" aria-hidden="true">${lang === 'fr' ? 'Faire glisser le schéma →' : 'Swipe to see the diagram →'}</p>${b.legende ? `<p class="b-note">${L(b.legende)}</p>` : ''}</figure>`;
       case 'graphique': {
@@ -88,19 +88,7 @@
     return '';
   }
 
-  /* Une image avec « avec: n » se place à côté des n blocs suivants, centrée en hauteur. */
-  function blocs(liste) {
-    let html = '';
-    for (let i = 0; i < liste.length; i++) {
-      const b = liste[i];
-      if (b.t === 'image' && b.avec) {
-        const suite = liste.slice(i + 1, i + 1 + b.avec);
-        html += `<div class="b-duo ${b.format || 'droite'}"><div class="duo-texte">${suite.map(bloc).join('')}</div>${bloc({ ...b, format: '' })}</div>`;
-        i += b.avec;
-      } else html += bloc(b);
-    }
-    return html;
-  }
+  function blocs(liste) { return liste.map(bloc).join(''); }
 
   function rendre() {
     const C = COURS, m = C.meta;
@@ -150,7 +138,7 @@
         <div class="heros-in">
           <span class="heros-chap" aria-hidden="true">${String(m.chapitre || '').padStart(2, '0')}</span>
           <p class="heros-label"><span class="heros-drapeau" aria-hidden="true">${m.drapeau || ''}</span>${L(m.label)}</p>
-          <h1>${L(m.titre)}</h1>
+          <h1${R(m.titre).replace(/<[^>]+>/g, '').length > 18 ? ' class="long"' : ''}>${L(m.titre)}</h1>
           <p class="heros-sous">${L(m.sousTitre)}</p>
           <div class="heros-actions">
           ${m.video ? `<a class="heros-video" href="${m.video.url}" target="_blank" rel="noopener">
