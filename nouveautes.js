@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "Royaume-Uni",
+"titre": "Andy Burnham affirme que la Russie a interféré dans le Brexit et met en garde Berlin et Paris",
+"url": "actualites/en/articles/uk-burnham-russie-brexit-ingerence-2026.html",
+"image": "actualites/en/images/uk-burnham-russie-brexit-ingerence-2026.webp",
+"date": "2026-10-14T17:12:31+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Venezuela",
@@ -1295,15 +1304,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Crash d'un avion cargo Amazon à l'aéroport de Miami : au moins cinq morts et cinq blessés",
 "url": "actualites/en/articles/crash-avion-cargo-amazon-miami-2026.html",
 "image": "actualites/en/images/crash-avion-cargo-amazon-miami-2026.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "Des émissaires de Trump rencontrent Poutine à Moscou avant une première visite historique à Kiev",
-"url": "actualites/en/articles/emissaires-americains-poutine-moscou-kiev-2026.html",
-"image": "actualites/en/images/emissaires-americains-poutine-moscou-kiev-2026.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
