@@ -200,6 +200,8 @@ page pays ou région :
   `.ci-compte`. Sous-titre (`.ci-intro`) : une phrase de présentation de 2 lignes au plus, sans énumérer les cours ni « Les N chapitres… » (modèle : celui de l'HGG). Titre
   sur 2 lignes au plus (`ci-titre long` réduit la taille si besoin). Les cartes « fiche du jour » /
   « texte du jour » (`colles-card`) sont une pastille d'une ligne dans l'en-tête et gardent leur balisage.
+  Index d'HGG (1re et 2e année) : liste à vignettes (`body.ci-vignettes`, `.ci-vig`) : chaque ligne montre une
+  vignette de l'image du héros du chapitre (`vignettes/chapitre-N.webp`, 360 px, WebP), à créer pour tout nouveau chapitre.
 - Un nouveau chapitre reprend la page du chapitre précédent. Par exemple
   `deuxieme_annee/maths/chapitre1.html` : palette sarcelle, titre du héros sur
   **2 lignes maximum** sur ordinateur.
