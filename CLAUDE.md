@@ -474,7 +474,7 @@ demande directe), sans poser de question jusqu'à la mise en ligne :
 Les cours de civilisation (`deuxieme_annee/langues/<langue>/<pays>/civi-*.html`) passent un à un du vieux
 gabarit sombre (« TEMPLATE UNIVERSEL v1 ») au gabarit clair « Manuel », choisi par le propriétaire. Déjà
 faits : Royaume-Uni chapitres 1 (histoire), 2 (système politique) et 3 (Brexit) : s'en inspirer. Demande type :
-« Fais le chapitre sur … » (+ lien de vidéo).
+« Fais le chapitre sur … » + lien de la vidéo.
 
 - **Code commun** : `deuxieme_annee/langues/commun/civilisation.css` et `civilisation.js` (rendu du bloc
   `COURS`, bouton FR / langue étudiée). Ne pas les réécrire pour un chapitre : les compléter si besoin
@@ -482,9 +482,13 @@ faits : Royaume-Uni chapitres 1 (histoire), 2 (système politique) et 3 (Brexit)
   data-langue="anglais|espagnol|allemand">` donne les couleurs, barre avec fil d'Ariane centré, `<div
   id="cours">`, bloc `<script id="donnees">`). La nouvelle page **remplace l'ancienne sous le même nom** et
   garde ses balises `og:`, `twitter:`, description et canonical. Le texte de l'ancien cours sert de base.
-- **Structure** : héros (label, titre de 2 lignes au plus, sous-titre, lien vidéo `meta.video` si le
-  propriétaire en donne une, adresse courte `https://youtu.be/<id>` et titre exact de la vidéo, photo
-  `meta.image` avec légende, sans source affichée) ; « L'essentiel » + 4 chiffres ; les parties ; le
+- **Vidéo** : chaque chapitre a sa vidéo, donnée par le propriétaire avec la demande. Lien `meta.video`
+  dans le héros : adresse courte `https://youtu.be/<id>` (sans `?si=`, `?is=` ni autre paramètre), titre
+  exact et chaîne lus avec `curl -s "https://www.youtube.com/oembed?url=https://youtu.be/<id>&format=json"`,
+  et la même vidéo **en tête des sources** de « Pour aller plus loin ». Si aucun lien n'est donné, le
+  demander au propriétaire dans la réponse (et l'ajouter dès qu'il arrive).
+- **Structure** : héros (label, titre de 2 lignes au plus, sous-titre, lien vidéo, photo `meta.image` avec
+  légende, sans source affichée) ; « L'essentiel » + 4 chiffres ; les parties ; le
   lexique (**nombre pair** d'entrées, deux colonnes) ; « Pour aller plus loin » (`plusLoin` : « Sur ECG
   Prépa », 5 ou 6 liens vers d'autres chapitres et des articles d'actualité, et « Sources », avec les
   crédits des photos). **Pas** de chronologie latérale, d'acteurs clés, de débat, de sujets de dissertation,
@@ -510,9 +514,13 @@ faits : Royaume-Uni chapitres 1 (histoire), 2 (système politique) et 3 (Brexit)
   source dans la légende, et **toujours un paragraphe qui l'introduit** juste avant.
 - **Contenu** : relire tout le texte, corriger les chiffres faux ou datés, **actualiser jusqu'à la date du
   jour** par recherche web (élections, lois, nominations, débats récents) et proposer ces ajouts dans la
-  réponse ; rien d'inventé ; version anglaise (ou espagnole, allemande) au même niveau. Aucun tiret cadratin,
-  y compris dans le texte repris de l'ancien cours (le remplacer selon le sens). Liens vers les articles du
-  site posés directement sur le texte.
+  réponse ; rien d'inventé ; version anglaise (ou espagnole, allemande) au même niveau. Liens vers les
+  articles du site posés directement sur le texte.
+- **Tiret cadratin « — » banni, sans exception** dans ces pages : texte français et étranger, titres,
+  encadrés, légendes, lexique, sources et `<title>` (écrire « Le Brexit · Civilisation anglophone »). Le
+  vieux cours en contient beaucoup : les remplacer un par un selon le sens (deux-points, virgule,
+  parenthèses quand ils vont par paire, nouvelle phrase). Vérifier avant la mise en ligne :
+  `grep -c '—' <page>` doit donner 0.
 - Contrôles à 1280 et 390 px (aucune erreur JS, pas de défilement horizontal, images chargées, liens
   valides, titre du héros sur 2 lignes au plus), puis mise en ligne complète.
 
