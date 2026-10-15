@@ -469,6 +469,53 @@ demande directe), sans poser de question jusqu'à la mise en ligne :
    commit, repartir du `main` le plus récent ; en cas de conflit sur un fichier généré (`sitemap.xml`,
    `nouveautes.js`, `outils/nouveautes-dates.json`), reprendre la version de `main` et relancer les scripts.
 
+### Cours de civilisation (langues, 2e année) : gabarit « Manuel »
+
+Les cours de civilisation (`deuxieme_annee/langues/<langue>/<pays>/civi-*.html`) passent un à un du vieux
+gabarit sombre (« TEMPLATE UNIVERSEL v1 ») au gabarit clair « Manuel », choisi par le propriétaire. Déjà
+faits : Royaume-Uni chapitres 1 (histoire), 2 (système politique) et 3 (Brexit) : s'en inspirer. Demande type :
+« Fais le chapitre sur … » (+ lien de vidéo).
+
+- **Code commun** : `deuxieme_annee/langues/commun/civilisation.css` et `civilisation.js` (rendu du bloc
+  `COURS`, bouton FR / langue étudiée). Ne pas les réécrire pour un chapitre : les compléter si besoin
+  (tous les chapitres refaits en profitent). La page d'un chapitre = copie de `civi-uk-2.html` (`<html
+  data-langue="anglais|espagnol|allemand">` donne les couleurs, barre avec fil d'Ariane centré, `<div
+  id="cours">`, bloc `<script id="donnees">`). La nouvelle page **remplace l'ancienne sous le même nom** et
+  garde ses balises `og:`, `twitter:`, description et canonical. Le texte de l'ancien cours sert de base.
+- **Structure** : héros (label, titre de 2 lignes au plus, sous-titre, lien vidéo `meta.video` si le
+  propriétaire en donne une, adresse courte `https://youtu.be/<id>` et titre exact de la vidéo, photo
+  `meta.image` avec légende, sans source affichée) ; « L'essentiel » + 4 chiffres ; les parties ; le
+  lexique (**nombre pair** d'entrées, deux colonnes) ; « Pour aller plus loin » (`plusLoin` : « Sur ECG
+  Prépa », 5 ou 6 liens vers d'autres chapitres et des articles d'actualité, et « Sources », avec les
+  crédits des photos). **Pas** de chronologie latérale, d'acteurs clés, de débat, de sujets de dissertation,
+  d'« À retenir », de sommaire, de barre de recherche dans le lexique ni de fiche de synthèse.
+- **Blocs** : `p`, `encadre` (notion clé, analyse), `citation`, `def`, `liste`, `tableau`, `stats`, `tl`,
+  `image`, `images` (deux photos côte à côte), `schema` (SVG en ligne), `graphique` (barres empilées),
+  `comparaison` (deux barres par ligne, ex. voix et sièges), `periodes` (frise de durées), `echelle`.
+  **Pas de cases de faits** (`faits` : « Chef de l'État / Financement… ») : les transformer en paragraphe
+  explicatif.
+- **Photos** (6 à 9 par chapitre) : même méthode que les figures d'HGG (Wikimedia Commons, vignettes 1280
+  ou 960 px, requêtes espacées, **chaque photo regardée**, légende fidèle à ce qu'elle montre), ou photo d'un
+  article du site. Toujours en paysage (recadrer en 3:2 avec PIL si besoin), WebP dans `images/` du pays,
+  nommée `<prefixe-du-chapitre>-<sujet>.webp`. Champs : `titre` (court, ex. « La Chambre des lords »),
+  `legende`, `alt`, `format` (`droite` ou `gauche`). **Ni crédit ni licence sous la photo** : auteurs et
+  licences vont dans « Sources ». Les photos flottent **dans le texte**, qui les entoure puis continue
+  dessous ; `avec: 2` centre la photo face aux 2 paragraphes suivants, **seulement** quand ils ont à peu près
+  sa hauteur. Les encadrés, schémas et graphiques passent en pleine largeur sous les photos.
+- **Aucun blanc** autour d'une photo : mesurer avec Playwright, pour chaque photo flottante, l'écart entre le
+  bas de la photo et le bas du texte qui l'entoure avant le bloc suivant (il doit être négatif ou quasi nul),
+  et déplacer la photo (avant un autre paragraphe) sinon.
+- **Schémas et graphiques** : 2 à 4 par chapitre quand le sujet s'y prête (institutions, étapes, frise de
+  mandats ou de dynasties, résultats électoraux…), couleurs `var(--c1)`…`var(--c4)`, données vérifiées et
+  source dans la légende, et **toujours un paragraphe qui l'introduit** juste avant.
+- **Contenu** : relire tout le texte, corriger les chiffres faux ou datés, **actualiser jusqu'à la date du
+  jour** par recherche web (élections, lois, nominations, débats récents) et proposer ces ajouts dans la
+  réponse ; rien d'inventé ; version anglaise (ou espagnole, allemande) au même niveau. Aucun tiret cadratin,
+  y compris dans le texte repris de l'ancien cours (le remplacer selon le sens). Liens vers les articles du
+  site posés directement sur le texte.
+- Contrôles à 1280 et 390 px (aucune erreur JS, pas de défilement horizontal, images chargées, liens
+  valides, titre du héros sur 2 lignes au plus), puis mise en ligne complète.
+
 ### Dossiers de langues (DS)
 
 - Page type `deuxieme_annee/langues/anglais/DS/ang-dsN.html` : seul le bloc
