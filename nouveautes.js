@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "cours",
+"rubrique": "Cours",
+"meta": "HGG 2e année · chapitre 3",
+"titre": "L'Amérique latine, entre émergences et crises",
+"url": "deuxieme_annee/hgg/chapitre-3-hgg.html",
+"image": "deuxieme_annee/hgg/images/chancay-port-vue-projet.webp",
+"date": "2026-10-15T06:42:59+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "FMI",
@@ -2547,15 +2556,6 @@ window.ECG_NOUVEAUTES = [
 "meta": "HGG 1re année · chapitre 8",
 "titre": "Le Monde Actuel — Ordre et Désordre Mondial",
 "url": "premiere_annee/hgg/chapitre-8/chapitre-8-hgg.html",
-"image": "",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cours",
-"rubrique": "Cours",
-"meta": "HGG 1re année · chapitre 9",
-"titre": "La gouvernance mondiale",
-"url": "premiere_annee/hgg/chapitre-9/chapitre-9-hgg.html",
 "image": "",
 "date": "2026-09-11T19:03:33+00:00"
 }
