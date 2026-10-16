@@ -12,8 +12,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-10-16",
+  "maj": "2026-10-17",
   "parties": [
+   {
+    "id": "2026-10-17",
+    "nom": "Jour 7 · The Pentagon Plans to Livestream a Military Execution",
+    "n": 30,
+    "date": "2026-10-17"
+   },
    {
     "id": "2026-10-16",
     "nom": "Jour 6 · Burnham in Berlin as the Kensington Treaty Takes Effect",
@@ -29,19 +35,19 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-13",
     "nom": "Jour 4 · Four Animals for the Next Bank of England Notes",
-    "n": 29,
+    "n": 28,
     "date": "2026-10-13"
    },
    {
     "id": "2026-10-12",
     "nom": "Jour 3 · Hurricane Isaias Hits Florida",
-    "n": 30,
+    "n": 29,
     "date": "2026-10-12"
    },
    {
     "id": "2026-10-11",
     "nom": "Jour 2 · Trump Strikes a Diesel Deal with Putin",
-    "n": 30,
+    "n": 29,
     "date": "2026-10-11"
    },
    {
@@ -51,8 +57,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 178,
-  "v": "609a24e1c4"
+  "n": 205,
+  "v": "67b34693b6"
  },
  {
   "id": "espagnol",
@@ -66,8 +72,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Espagnol",
   "lien": "premiere_annee/langues/espagnol/quotidien/index.html",
   "revoir": "ecg-espagnol-quotidien-a-revoir",
-  "maj": "2026-10-16",
+  "maj": "2026-10-17",
   "parties": [
+   {
+    "id": "2026-10-17",
+    "nom": "Jour 7 · Venezuela: Delcy Rodríguez lleva a la FAO el plan «Venezuela Alimenta»",
+    "n": 30,
+    "date": "2026-10-17"
+   },
    {
     "id": "2026-10-16",
     "nom": "Jour 6 · España: Felipe VI y Letizia, una visita histórica a Ceuta",
@@ -77,7 +89,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-15",
     "nom": "Jour 5 · Costa Rica: el CACCO, una megacárcel al estilo Bukele",
-    "n": 30,
+    "n": 29,
     "date": "2026-10-15"
    },
    {
@@ -105,8 +117,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 173,
-  "v": "d796e07c95"
+  "n": 202,
+  "v": "74727bb6a7"
  },
  {
   "id": "allemand",
@@ -120,8 +132,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Allemand",
   "lien": "premiere_annee/langues/allemand/quotidien/index.html",
   "revoir": "ecg-allemand-quotidien-a-revoir",
-  "maj": "2026-10-16",
+  "maj": "2026-10-17",
   "parties": [
+   {
+    "id": "2026-10-17",
+    "nom": "Jour 7 · Ein Extremjahr für die Gletscher",
+    "n": 32,
+    "date": "2026-10-17"
+   },
    {
     "id": "2026-10-16",
     "nom": "Jour 6 · Bremen feiert die Deutsche Einheit",
@@ -149,7 +167,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-11",
     "nom": "Jour 2 · Die deutsche Wirtschaft wächst wieder",
-    "n": 28,
+    "n": 27,
     "date": "2026-10-11"
    },
    {
@@ -159,8 +177,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 177,
-  "v": "24ed178072"
+  "n": 208,
+  "v": "79afbb2d1c"
  },
  {
   "id": "hgg1-ch1",
