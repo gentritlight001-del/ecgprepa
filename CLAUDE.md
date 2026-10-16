@@ -315,7 +315,7 @@ travailler surtout la grammaire de 1re année. Demandes types : « Fais le texte
   version, traduction du thème), quelle que soit la langue.
 - Habillage « noir et gris », choisi par le propriétaire sur maquette (`quotidien.css`, un seul accent
   bleu, pas de marron ni de doré, pas de fond clair) : index = titre + compteurs, grande carte « texte du jour »
-  (photo à sa taille, 3:2, sans recadrage ; titre et `une-chapo` : le chapeau du jour ; pas de liste d'étapes), liste des jours à gauche, calendrier du mois + série de jours de
+  (photo en 3:2, titre, bouton ; **pas de sous-titre ni de liste d'étapes**), liste des jours à gauche, calendrier du mois + série de jours de
   suite + record à droite (`<aside id="cote">`, rempli par `quotidien.js`) ; page du jour = hero (texte + photo),
   puis une colonne : texte, grammaire en pastilles (un point à la fois), vocabulaire, traduction (énoncé à gauche,
   réponse à droite), bilan. **Pas de sommaire latéral.** Le hero montre la photo de l'article : champ `image` du bloc
@@ -351,7 +351,7 @@ jusqu'à la mise en ligne :
    scripts de l'étape 5 les recréent pour la nouvelle page.
 4. `index.html` de la langue : la carte `.une` pointe sur le nouveau jour (lien, image de
    l'article `../../../../actualites/<code>/images/<image>` et un `aria-label` qui décrit ce que la
-   photo montre vraiment, « Jour N · <Jour> <date> », titre, `une-chapo` = `chapo` du jour) ; nouvelle carte en tête de
+   photo montre vraiment, « Jour N · <Jour> <date> », titre) ; nouvelle carte en tête de
    `jours-grid`. Carte « Le texte du jour » de `premiere_annee/langues/<langue>/index.html` mise à jour.
 5. Scripts de la mise en ligne (étape 0, dont `outils/flashcards.py`), puis
    `python3 outils/quotidien-controle.py premiere_annee/langues/<langue>/quotidien/jour-<date>.html` :
@@ -382,7 +382,7 @@ Contenu d'un jour (le bloc de données du 10 octobre 2026 sert de modèle) :
   **français → langue étudiée** seulement. Les cartes ratées vont dans le paquet « À revoir », gardé
   dans le navigateur d'un jour à l'autre.
 - **Traduction** : version de 3 phrases du texte, thème de **3 phrases** construites avec les
-  mots du vocabulaire du jour et la grammaire étudiée (l'indice rappelle les mots à placer),
+  mots du vocabulaire du jour et la grammaire étudiée (**pas d'indice** pour le thème : champ `indice` non affiché),
   chacune avec traduction proposée et 2 ou 3 remarques.
 - **Durées** : une par étape dans `DUREES` (`quotidien.js`) ; le total en tête est leur somme
   (30 min, chiffre rond à garder).
