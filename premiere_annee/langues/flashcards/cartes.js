@@ -1,5 +1,6 @@
-/* Cartes de vocabulaire (français → langue étrangère), communes à la page du jour
-   (quotidien/jour-*.html) et à l'espace flashcards (flashcards/index.html).
+/* Cartes de vocabulaire (français → langue étrangère) du module « Mémoriser » des pages du jour
+   (quotidien/jour-*.html). L'espace flashcards du site (flashcards/, à la racine) a son propre
+   moteur et partage avec ce module le paquet « À revoir » (cleRevoir).
 
    ECGCartes.creer({
      titre: 'Mémoriser · français → anglais',

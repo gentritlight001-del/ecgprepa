@@ -381,7 +381,7 @@
       var r = lireRevoir().length;
       nr.querySelector('b').textContent = r;
       nr.querySelector('span').textContent = (r > 1 ? 'mots à revoir' : 'mot à revoir') + ' →';
-      nr.href = '../../flashcards/index.html#' + LANGUE;
+      nr.href = '../../../../flashcards/index.html#' + LANGUE;
     }
     var grille = document.querySelector('.jours-grid');
     if (grille && cartes.length) {
