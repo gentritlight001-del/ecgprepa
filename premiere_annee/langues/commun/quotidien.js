@@ -228,7 +228,7 @@
       onglets2.appendChild(onglet);
       cartesG.push({ carte: c, onglet: onglet });
       c.appendChild(el('h3', 'g-titre', typo(g.titre)));
-      var cols = el('div', 'g-cols' + (g.exercice ? '' : ' seule'));
+      var cols = el('div', 'g-cols seule');
       var gauche = el('div', 'g-gauche');
       var cit = el('div', 'citation', '<span class="guillemet" aria-hidden="true">“</span><div class="cit-txt">' + g.citation + '</div>');
       var vers = el('button', 'vers-texte', '↑ dans le texte'); vers.type = 'button';
@@ -249,7 +249,6 @@
       });
       gauche.appendChild(liens);
       cols.appendChild(gauche);
-      if (g.exercice) { var droite = el('div', 'g-droite'); droite.appendChild(exercice(g.exercice)); cols.appendChild(droite); }
       c.appendChild(cols);
       s2.appendChild(c);
     });
@@ -388,18 +387,7 @@
     if (grille && cartes.length) {
       grille.appendChild(el('div', 'jour-card a-venir', '<span class="j-num">' + (cartes.length + 1) + '</span><span>Demain, un nouveau texte</span>'));
     }
-    etapesUne();
     calendrier(faits, cartes);
-  }
-
-  /* Index : les 4 étapes dans la carte « Le texte du jour » */
-  function etapesUne() {
-    var txt = document.querySelector('.une-txt');
-    if (!txt || txt.querySelector('.une-etapes')) return;
-    var noms = [['Lire', DUREES.texte], ['Grammaire', DUREES.grammaire], ['Vocabulaire', DUREES.vocabulaire], ['Traduire', DUREES.traduction]];
-    var ol = el('ol', 'une-etapes', noms.map(function (n) { return '<li>' + n[0] + '<span>' + n[1] + ' min</span></li>'; }).join(''));
-    var bas = txt.querySelector('.une-bas');
-    txt.insertBefore(ol, bas);
   }
 
   /* Index : calendrier du mois du dernier texte, série de jours de suite et record */
