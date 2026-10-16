@@ -746,13 +746,14 @@
     new MutationObserver(function (muts) {
       var neuf = muts.some(function (m) {
         return Array.prototype.some.call(m.addedNodes, function (n) {
-          return n.nodeType === 1 && n.classList && n.classList.contains('actu-card');
+          return n.nodeType === 1 && n.classList &&
+            (n.classList.contains('actu-card') || !!(n.querySelector && n.querySelector('.actu-card')));
         });
       });
       if (!neuf) return;
       clearTimeout(t);
       t = setTimeout(appliquerVerrouillageCartes, 120);
-    }).observe(grille, { childList: true });
+    }).observe(grille, { childList: true, subtree: true });
   });
 
   function agent() { return (navigator.userAgent || '').slice(0, 400); }
