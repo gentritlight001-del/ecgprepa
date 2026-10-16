@@ -313,7 +313,14 @@ travailler surtout la grammaire de 1re année. Demandes types : « Fais le texte
   langue existante, ajouter le bouton et la carte « Le texte du jour » à l'index de la langue.
 - Dans les données, les champs `en` désignent toujours **la langue étudiée** (mot, phrase de
   version, traduction du thème), quelle que soit la langue.
-- `index.html` : la carte « Le texte du jour » (`.une` : image, « Jour N · <jour> <date> », titre)
+- Habillage « noir et gris », choisi par le propriétaire sur maquette (`quotidien.css`, un seul accent
+  bleu, pas de marron ni de doré, pas de fond clair) : index = titre + compteurs, grande carte « texte du jour »
+  (les 4 étapes y sont ajoutées par `quotidien.js`), liste des jours à gauche, calendrier du mois + série de jours de
+  suite + record à droite (`<aside id="cote">`, rempli par `quotidien.js`) ; page du jour = hero (texte + photo),
+  puis une colonne : texte, grammaire en pastilles (un point à la fois), vocabulaire, traduction (énoncé à gauche,
+  réponse à droite), bilan. **Pas de sommaire latéral.** Le hero montre la photo de l'article : champ `image` du bloc
+  de données (`../../../../actualites/<code>/images/<fichier>`, la même que la carte `.une`).
+  `index.html` : la carte « Le texte du jour » (`.une` : image, « Jour N · <jour> <date> », titre)
   et la grille `jours-grid` (le nouveau jour **en tête**, avec `data-date` ; la carte « Demain »
   et les compteurs « jours terminés » / « mots à revoir » sont ajoutés par `quotidien.js`).
   **Pas de puces ni de texte qui résume la grammaire du jour** (index, cartes, en-tête du jour).
@@ -338,7 +345,7 @@ jusqu'à la mise en ligne :
 2. Article : le premier de `ACTU_DATA` de l'édition source (tableau ci-dessus) qui n'a pas encore
    servi (`grep -ho 'actualites/<code>/articles/[^"]*' premiere_annee/langues/<langue>/quotidien/jour-*.html`).
    S'il n'y a aucun nouvel article, prendre le plus récent qui n'a pas servi, même plus ancien.
-3. Numéro = numéro du dernier jour + 1. Copier la page du dernier jour, réécrire `<title>`,
+3. Numéro = numéro du dernier jour + 1. Copier la page du dernier jour, réécrire `<title>`, le champ `image` (photo de l’article choisi),
    description, « Jour N » du fil d'Ariane et tout le bloc de données (règles ci-dessous).
    **Supprimer de la copie les balises `og:`, `twitter:` et `canonical`** de la veille : les
    scripts de l'étape 5 les recréent pour la nouvelle page.

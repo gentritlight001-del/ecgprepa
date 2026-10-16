@@ -164,11 +164,14 @@
     dateTxt = dateTxt.charAt(0).toUpperCase() + dateTxt.slice(1);
 
     /* En-tête */
-    document.getElementById('hero').innerHTML =
-      '<div class="hero-sur mono"><span>Jour ' + J.numero + '</span><span class="point">·</span><span>' + dateTxt +
+    var hero = document.getElementById('hero');
+    hero.classList.toggle('sans-image', !J.image);
+    hero.innerHTML =
+      '<div class="hero-txt"><div class="hero-sur mono"><span>Jour ' + J.numero + '</span><span class="point">·</span><span>' + dateTxt +
       '</span><span class="point">·</span><span>' + total + ' min</span></div>' +
       '<h1>' + J.titre + '</h1>' +
-      '<p>' + typo(J.chapo) + '</p>';
+      '<p>' + typo(J.chapo) + '</p></div>' +
+      (J.image ? '<div class="hero-img" role="img" aria-label="' + (J.alt || '').replace(/"/g, '&quot;') + '" style="background-image:url(\'' + J.image + '\')"></div>' : '');
 
     var main = document.getElementById('jour');
 
@@ -202,20 +205,31 @@
     });
     main.appendChild(s1);
 
-    /* 2. La grammaire : accordéon, le premier point ouvert */
+    /* 2. La grammaire : un point à la fois (pastilles) */
     var s2 = enteteBloc('grammaire', '2', 'La grammaire du texte', DUREES.grammaire);
+    var onglets2 = el('div', 'g-onglets'); onglets2.setAttribute('role', 'tablist');
+    s2.appendChild(onglets2);
+    var cartesG = [];
     function ouvrir(c, oui) {
-      c.classList.toggle('ouvert', oui);
-      c.querySelector('.g-tete').setAttribute('aria-expanded', oui ? 'true' : 'false');
+      if (!oui) return;
+      cartesG.forEach(function (x) {
+        var sel = x.carte === c;
+        x.carte.classList.toggle('ouvert', sel);
+        x.onglet.setAttribute('aria-selected', sel ? 'true' : 'false');
+      });
     }
     J.grammaire.forEach(function (g, i) {
       var n = i + 1;
       var c = el('article', 'g-carte'); c.id = 'g' + n;
-      var tete = el('button', 'g-tete', '<span class="g-num">' + n + '</span><span class="g-titre">' + typo(g.titre) + '</span>' + CHEVRON);
-      tete.type = 'button';
-      tete.addEventListener('click', function () { ouvrir(c, !c.classList.contains('ouvert')); });
-      c.appendChild(tete);
-      var corps = el('div', 'g-corps');
+      var court = g.titre.split(' : ')[0];
+      var onglet = el('button', 'g-onglet', '<i>' + n + '</i><span>' + typo(court) + '</span>');
+      onglet.type = 'button'; onglet.setAttribute('role', 'tab'); onglet.title = g.titre.replace(/<[^>]+>/g, '');
+      onglet.addEventListener('click', function () { ouvrir(c, true); });
+      onglets2.appendChild(onglet);
+      cartesG.push({ carte: c, onglet: onglet });
+      c.appendChild(el('h3', 'g-titre', typo(g.titre)));
+      var cols = el('div', 'g-cols' + (g.exercice ? '' : ' seule'));
+      var gauche = el('div', 'g-gauche');
       var cit = el('div', 'citation', '<span class="guillemet" aria-hidden="true">“</span><div class="cit-txt">' + g.citation + '</div>');
       var vers = el('button', 'vers-texte', '↑ dans le texte'); vers.type = 'button';
       vers.addEventListener('click', function () {
@@ -224,21 +238,22 @@
         span.scrollIntoView({ behavior: 'smooth', block: 'center' }); flash(span);
       });
       cit.appendChild(vers);
-      corps.appendChild(cit);
-      corps.appendChild(el('div', 'rappel', typo(g.rappel)));
-      if (g.piege) corps.appendChild(el('div', 'encadre piege', '<div class="encadre-titre">Piège</div>' + typo(g.piege)));
+      gauche.appendChild(cit);
+      gauche.appendChild(el('div', 'rappel', typo(g.rappel)));
+      if (g.piege) gauche.appendChild(el('div', 'encadre piege', '<div class="encadre-titre">Piège</div>' + typo(g.piege)));
       var liens = el('div', 'liens-lecon');
       (g.liens || [{ lecon: g.lecon, ancre: g.ancre }]).forEach(function (l) {
         var a = el('a', 'lien-lecon', 'Revoir la leçon ' + l.lecon + ' · ' + typo(l.libelle || LECONS[l.lecon]) + ' →');
         a.href = '../lecon' + l.lecon + '.html' + (l.ancre ? '#' + l.ancre : '');
         liens.appendChild(a);
       });
-      corps.appendChild(liens);
-      if (g.exercice) corps.appendChild(exercice(g.exercice));
-      c.appendChild(corps);
-      ouvrir(c, i === 0);
+      gauche.appendChild(liens);
+      cols.appendChild(gauche);
+      if (g.exercice) { var droite = el('div', 'g-droite'); droite.appendChild(exercice(g.exercice)); cols.appendChild(droite); }
+      c.appendChild(cols);
       s2.appendChild(c);
     });
+    ouvrir(cartesG[0].carte, true);
     if (J.aussi && J.aussi.length) {
       s2.appendChild(el('h3', 'sous-titre', 'Et aussi dans le texte'));
       var liste = el('div', 'aussi');
@@ -301,8 +316,10 @@
           var vue = r.classList.toggle('vue');
           bv.textContent = vue ? 'Masquer la proposition' : 'Voir la proposition';
         });
-        b.appendChild(bv);
-        b.appendChild(r);
+        var act = el('div', 'trad-actions');
+        act.appendChild(bv);
+        act.appendChild(r);
+        b.appendChild(act);
         p.appendChild(b);
       });
       return p;
@@ -369,8 +386,62 @@
     }
     var grille = document.querySelector('.jours-grid');
     if (grille && cartes.length) {
-      grille.appendChild(el('div', 'jour-card a-venir', '<span class="j-num">' + (cartes.length + 1) + '</span><span>Demain</span>'));
+      grille.appendChild(el('div', 'jour-card a-venir', '<span class="j-num">' + (cartes.length + 1) + '</span><span>Demain, un nouveau texte</span>'));
     }
+    etapesUne();
+    calendrier(faits, cartes);
+  }
+
+  /* Index : les 4 étapes dans la carte « Le texte du jour » */
+  function etapesUne() {
+    var txt = document.querySelector('.une-txt');
+    if (!txt || txt.querySelector('.une-etapes')) return;
+    var noms = [['Lire', DUREES.texte], ['Grammaire', DUREES.grammaire], ['Vocabulaire', DUREES.vocabulaire], ['Traduire', DUREES.traduction]];
+    var ol = el('ol', 'une-etapes', noms.map(function (n) { return '<li>' + n[0] + '<span>' + n[1] + ' min</span></li>'; }).join(''));
+    var bas = txt.querySelector('.une-bas');
+    txt.insertBefore(ol, bas);
+  }
+
+  /* Index : calendrier du mois du dernier texte, série de jours de suite et record */
+  function calendrier(faits, cartes) {
+    var cote = document.getElementById('cote');
+    if (!cote || !cartes.length) return;
+    var dispo = {};
+    cartes.forEach(function (c) { dispo[c.getAttribute('data-date')] = c.getAttribute('href'); });
+    var dates = Object.keys(dispo).sort();
+    var dernier = dates[dates.length - 1];
+    var an = +dernier.slice(0, 4), mois = +dernier.slice(5, 7);
+    var nbJours = new Date(an, mois, 0).getDate();
+    var decal = (new Date(an, mois - 1, 1).getDay() + 6) % 7;  /* semaine du lundi au dimanche */
+    var nomMois = new Date(an, mois - 1, 1).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+    var nbFaitsMois = 0;
+    var h = ['L', 'M', 'M', 'J', 'V', 'S', 'D'].map(function (j) { return '<div class="sem">' + j + '</div>'; }).join('');
+    for (var i = 0; i < decal; i++) h += '<div class="cal-j vide"></div>';
+    for (var d = 1; d <= nbJours; d++) {
+      var iso = an + '-' + ('0' + mois).slice(-2) + '-' + ('0' + d).slice(-2);
+      var f = faits.indexOf(iso) !== -1;
+      if (f) nbFaitsMois++;
+      var cls = 'cal-j' + (f ? ' fait' : dispo[iso] ? ' dispo' : '') + (iso === dernier ? ' dernier' : '');
+      h += dispo[iso] ? '<a class="' + cls + '" href="' + dispo[iso] + '" aria-label="Jour du ' + d + '">' + d + '</a>' : '<div class="' + cls + '">' + d + '</div>';
+    }
+    /* série : jours terminés sur des dates qui se suivent */
+    var suite = faits.slice().sort(), record = 0, run = 0, prec = null, serie = 0;
+    suite.forEach(function (iso) {
+      var t = Date.parse(iso + 'T12:00:00Z');
+      run = (prec !== null && Math.round((t - prec) / 86400000) === 1) ? run + 1 : 1;
+      if (run > record) record = run;
+      prec = t;
+      serie = run;
+    });
+    if (suite.length) {
+      var ecart = Math.round((Date.parse(dernier + 'T12:00:00Z') - prec) / 86400000);
+      if (ecart > 1) serie = 0;
+    }
+    cote.innerHTML =
+      '<div class="cal"><div class="cal-tete"><b>' + nomMois + '</b><span class="mono">' + nbFaitsMois + ' terminé' + (nbFaitsMois > 1 ? 's' : '') + '</span></div>' +
+      '<div class="cal-grille">' + h + '</div>' +
+      '<div class="cal-leg"><span><i style="background:var(--accent3)"></i>Terminé</span><span><i style="border:1px solid var(--text-faint)"></i>À faire</span></div></div>' +
+      '<div class="serie"><div><b>' + serie + '</b><span>' + (serie > 1 ? 'jours de suite' : 'jour de suite') + '</span></div><div><b>' + record + '</b><span>record</span></div></div>';
   }
 
   function demarrer() {
