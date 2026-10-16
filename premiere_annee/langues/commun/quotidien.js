@@ -302,7 +302,7 @@
         var b = el('div', 'trad');
         var src = sens === 'version' ? t.en : typo(t.fr);
         b.appendChild(el('div', 'trad-source', '<span class="t-num">' + prefixe + (i + 1) + '</span><div>' + src + '</div>'));
-        if (t.indice) b.appendChild(el('div', 'trad-indice', typo('Indice : ' + t.indice)));
+        if (t.indice && sens === 'version') b.appendChild(el('div', 'trad-indice', typo('Indice : ' + t.indice)));
         var lab = el('label', null, 'Votre traduction');
         var ta = el('textarea'); ta.rows = 2;
         lab.appendChild(ta);
