@@ -58,8 +58,8 @@ directement après chaque modification, sans attendre un nouveau « mets en lign
    contenus (articles, dossiers de CG, fiches Humanité, chapitres) affichée sous les 4 cartes de
    l'accueil et dans la page `nouveautes.html`. Les dates de mise en ligne sont gardées dans
    `outils/nouveautes-dates.json` (ne jamais modifier ces deux fichiers à la main).
-   Puis `python3 outils/flashcards.py` : il régénère les données de l'espace flashcards
-   (`premiere_annee/langues/flashcards/*.js`) à partir des pages du jour de langues.
+   Puis `python3 outils/flashcards.py` : il régénère la bibliothèque de l'espace flashcards
+   (`flashcards/donnees/*.js`) à partir des pages du jour de langues et des cartes des chapitres.
 1. Commit sur la branche de travail de la session, puis `git push -u origin <branche>`.
 2. Créer la PR vers `main` et la merger (outils GitHub MCP).
 3. Remettre la branche à jour sur `main` :
@@ -308,8 +308,8 @@ travailler surtout la grammaire de 1re année. Demandes types : « Fais le texte
 
 - Code commun : `premiere_annee/langues/commun/quotidien.js` et `quotidien.css` (la langue se lit
   dans l'adresse ; titres des leçons et sens des cartes dans `LANGUES`) ; cartes :
-  `premiere_annee/langues/flashcards/cartes.js` et `cartes.css`. Nouvelle langue : l'ajouter à
-  `LANGUES` de `quotidien.js` et à `LANGUES` de `flashcards/index.html`, copier l'index d'une
+  `premiere_annee/langues/flashcards/cartes.js` et `cartes.css` (module « Mémoriser » de la page du jour). Nouvelle langue : l'ajouter à
+  `LANGUES` de `quotidien.js` et à `LANGUES` de `outils/flashcards.py`, copier l'index d'une
   langue existante, ajouter le bouton et la carte « Le texte du jour » à l'index de la langue.
 - Dans les données, les champs `en` désignent toujours **la langue étudiée** (mot, phrase de
   version, traduction du thème), quelle que soit la langue.
@@ -329,13 +329,11 @@ travailler surtout la grammaire de 1re année. Demandes types : « Fais le texte
   `<script id="donnees">`. **Pas de sommaire** (barre des étapes Lire / Grammaire / …) sous le
   héros. Seul le jour le plus récent (carte `.une` de l'index) est gratuit ; les précédents
   passent Premium automatiquement (voir section 1).
-- Le compteur « mots à revoir » de l'index mène à l'**espace flashcards**
-  (`premiere_annee/langues/flashcards/index.html#<langue>`) : toutes les cartes de tous les jours,
-  langue par langue (onglets Anglais, Espagnol, Allemand ; une langue s'ouvre dès qu'elle a des
-  pages du jour). Ses données (`<langue>.js`, `langues.js`) sont générées par
-  `python3 outils/flashcards.py` : à lancer à chaque nouveau jour (voir « Mise en ligne »), ne
-  jamais les modifier à la main. Paquet « À revoir » : `localStorage`
-  `ecg-<langue>-quotidien-a-revoir`, commun à la page du jour et à l'espace.
+- Le compteur « mots à revoir » de l'index mène au paquet de la langue dans l'**espace flashcards**
+  (`flashcards/index.html#<langue>`, voir « Espace flashcards » plus bas) : toutes les cartes de tous
+  les jours. `python3 outils/flashcards.py` est à lancer à chaque nouveau jour (voir « Mise en ligne »).
+  Paquet « À revoir » : `localStorage` `ecg-<langue>-quotidien-a-revoir`, commun à la page du jour et
+  à l'espace (une carte ratée y entre, une carte sue en sort).
 
 **Procédure d'un nouveau jour**, pour une langue (demande ci-dessus, ou routine automatique tous
 les jours à 0 h, heure de Paris, qui fait l'anglais, puis l'espagnol, puis l'allemand), sans poser de question
@@ -533,6 +531,30 @@ faits : Royaume-Uni chapitres 1 (histoire), 2 (système politique) et 3 (Brexit)
   `grep -c '—' <page>` doit donner 0.
 - Contrôles à 1280 et 390 px (aucune erreur JS, pas de défilement horizontal, images chargées, liens
   valides, titre du héros sur 2 lignes au plus), puis mise en ligne complète.
+
+### Espace flashcards
+
+Une application de flashcards à la racine : `flashcards/index.html` (`flashcards.js`, `flashcards.css`),
+ouverte par « Mes flashcards » dans le menu du compte (`auth.js`, avec la pastille des cartes à réviser
+du jour). L'ancienne adresse `premiere_annee/langues/flashcards/index.html` renvoie vers elle (ancre gardée).
+
+- **Mes paquets** : paquets de la bibliothèque ajoutés par l'élève et paquets perso (cartes créées une à
+  une, liste importée : tabulation, `;` ou `|`, copie d'un paquet tout fait). Une carte d'un paquet tout
+  fait peut être ignorée. Révision espacée façon Anki (À revoir / Difficile / Bien / Facile, étapes de 1 et
+  10 min puis intervalles en jours, 20 nouvelles cartes par jour et par paquet par défaut), entraînement
+  libre, sens inversable et réponse tapée pour le vocabulaire, parties ou jours à cocher, export Anki /
+  Quizlet, sauvegarde et restauration en fichier. Données dans `localStorage`
+  `ecg-flashcards:v1:<e-mail>`.
+- **Bibliothèque** : générée par `python3 outils/flashcards.py` dans `flashcards/donnees/` (`catalogue.js`
+  + un fichier par paquet, chargé à la demande ; ne jamais les modifier à la main). Il lit le vocabulaire
+  des pages du jour de langues (un paquet par langue, une partie par jour) et le tableau `const DECK`
+  (+ `const PARTS`) de toute page de `premiere_annee/`, `deuxieme_annee/` et `humanite/` (cartes
+  « prêtes à l'emploi » des chapitres d'HGG et du cours d'Humanité). Un chapitre d'ESH, de maths ou de
+  philo qui reçoit un `DECK` (même format : `[partie, rubrique, question, réponse]`) entre seul dans la
+  bibliothèque ; ces matières y sont affichées « Bientôt » tant qu'elles n'en ont pas. Les cartes perso
+  créées dans un chapitre (« + Ma carte ») rejoignent le paquet du chapitre.
+- `donnees/catalogue.js` est chargé avec `?v=<minute>` ; les fichiers de paquet avec l'empreinte de
+  leur contenu (`?v=<v du catalogue>`), qui change à chaque modification (voir la section 2).
 
 ### Dossiers de langues (DS)
 

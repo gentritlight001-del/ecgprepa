@@ -132,8 +132,8 @@ def main():
           'Ce jour en tête de la grille « Tous les jours »', premiere.group(0) if premiere else 'grille vide')
     accueil = (langue_dir / 'index.html').read_text(encoding='utf-8')
     regle(('quotidien/' + page.name) in accueil, 'Carte « Le texte du jour » de la page %s à jour' % langue)
-    flash = RACINE / 'premiere_annee/langues/flashcards' / (langue + '.js')
-    regle(flash.exists() and ('"date":"%s"' % date) in flash.read_text(encoding='utf-8'),
+    flash = RACINE / 'flashcards/donnees/catalogue.js'
+    regle(flash.exists() and ('"date": "%s"' % date) in flash.read_text(encoding='utf-8'),
           'Flashcards régénérées (python3 outils/flashcards.py)')
     regle('og:image' in html and 'rel="canonical"' in html, 'Balises og: et canonical (images-partage.py, referencement.py)')
 

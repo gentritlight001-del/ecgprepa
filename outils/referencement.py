@@ -19,7 +19,7 @@ SITE = 'https://ecg-prepa.fr/'
 
 PERIMETRE = ['actualites/**/*.html', 'Culture-Generale/*.html', 'culture-generale.html',
              'humanite.html', 'humanite/**/*.html', 'premiere_annee/**/*.html',
-             'deuxieme_annee/**/*.html', 'newsletters.html']
+             'deuxieme_annee/**/*.html', 'newsletters.html', 'flashcards/index.html']
 PUBLIQUES = ['accueil.html', 'nouveautes.html', 'tarifs.html', 'login.html', 'contact.html', 'cgu.html', 'cgv.html',
              'mentions-legales.html', 'confidentialite.html']
 IGNORER = ('hors-ligne.html', '404.html')

@@ -2066,7 +2066,7 @@
       '#ecg-menu button.admin{color:#7c9ec9}' +
       '#ecg-menu .sep{height:1px;background:#2a2a35;margin:6px 0}' +
       '#ecg-menu .titre-admin{padding:6px 14px 2px;font-family:"DM Mono",monospace;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:#7c9ec9}' +
-      '#ecg-fav-count{display:none;margin-left:8px;background:rgba(200,169,110,.16);color:#c8a96e;' +
+      '#ecg-fav-count,#ecg-fc-count{display:none;margin-left:8px;background:rgba(200,169,110,.16);color:#c8a96e;' +
       'font-family:"DM Mono",monospace;font-size:.66rem;padding:2px 7px;border-radius:20px;vertical-align:1px}' +
       '@media (max-width:640px){#ecg-account-badge{top:10px;right:10px;gap:6px}#ecg-avatar,#ecg-loupe{width:34px;height:34px;font-size:.72rem}}' +
       '@media (prefers-reduced-motion:reduce){#ecg-avatar,#ecg-loupe,#ecg-menu{transition:none}}';
@@ -2081,6 +2081,7 @@
       '<div id="ecg-menu" role="menu">' +
       '<div class="ecg-who"><b></b><span></span>' + (admin ? '<i>Administrateur</i>' : '') + '</div>' +
       '<button type="button" id="ecg-favoris" role="menuitem">Mes favoris<span id="ecg-fav-count"></span></button>' +
+      '<button type="button" id="ecg-flashcards" role="menuitem">Mes flashcards<span id="ecg-fc-count" title="Cartes à réviser aujourd\'hui"></span></button>' +
       '<button type="button" id="ecg-newsletter" role="menuitem">Ma newsletter</button>' +
       '<button type="button" id="ecg-abonnement" role="menuitem">Mon abonnement</button>' +
       '<button type="button" id="ecg-contact" role="menuitem">Contact</button>' +
@@ -2126,6 +2127,7 @@
     });
     wrap.querySelector('#ecg-home').addEventListener('click', function () { location.href = ACCUEIL_URL; });
     wrap.querySelector('#ecg-favoris').addEventListener('click', function () { location.href = BASE + 'favoris.html'; });
+    wrap.querySelector('#ecg-flashcards').addEventListener('click', function () { location.href = BASE + 'flashcards/index.html'; });
     wrap.querySelector('#ecg-newsletter').addEventListener('click', function () { location.href = BASE + 'newsletter.html'; });
     wrap.querySelector('#ecg-abonnement').addEventListener('click', function () { location.href = BASE + 'abonnement.html'; });
 
@@ -2161,5 +2163,28 @@
     }
     rafraichir();
     document.addEventListener('ecg:favoris', rafraichir);
+
+    /* Pastille « Mes flashcards » : cartes déjà vues dont la révision tombe aujourd'hui
+       (données de flashcards/flashcards.js). */
+    var pastilleFc = wrap.querySelector('#ecg-fc-count');
+    function aReviser() {
+      var n = 0;
+      try {
+        var d = JSON.parse(localStorage.getItem('ecg-flashcards:v1:' + s.email) || 'null');
+        if (d && d.srs && Array.isArray(d.mes)) {
+          var fin = new Date(); fin.setHours(23, 59, 59, 999); fin = fin.getTime();
+          var mes = {};
+          d.mes.forEach(function (id) { mes[id] = 1; });
+          Object.keys(d.srs).forEach(function (k) {
+            var st = d.srs[k];
+            if (st && st.s && st.d <= fin && mes[k.split('/')[0]] && !(d.ign && d.ign[k])) n++;
+          });
+        }
+      } catch (e) {}
+      pastilleFc.textContent = n ? String(n) : '';
+      pastilleFc.style.display = n ? 'inline-block' : 'none';
+    }
+    aReviser();
+    btn.addEventListener('click', aReviser);
   }
 })();
