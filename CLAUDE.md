@@ -315,7 +315,7 @@ travailler surtout la grammaire de 1re année. Demandes types : « Fais le texte
   version, traduction du thème), quelle que soit la langue.
 - Habillage « noir et gris », choisi par le propriétaire sur maquette (`quotidien.css`, un seul accent
   bleu, pas de marron ni de doré, pas de fond clair) : index = titre + compteurs, grande carte « texte du jour »
-  (les 4 étapes y sont ajoutées par `quotidien.js`), liste des jours à gauche, calendrier du mois + série de jours de
+  (photo à sa taille, 3:2, sans recadrage ; titre et `une-chapo` : le chapeau du jour ; pas de liste d'étapes), liste des jours à gauche, calendrier du mois + série de jours de
   suite + record à droite (`<aside id="cote">`, rempli par `quotidien.js`) ; page du jour = hero (texte + photo),
   puis une colonne : texte, grammaire en pastilles (un point à la fois), vocabulaire, traduction (énoncé à gauche,
   réponse à droite), bilan. **Pas de sommaire latéral.** Le hero montre la photo de l'article : champ `image` du bloc
@@ -351,7 +351,7 @@ jusqu'à la mise en ligne :
    scripts de l'étape 5 les recréent pour la nouvelle page.
 4. `index.html` de la langue : la carte `.une` pointe sur le nouveau jour (lien, image de
    l'article `../../../../actualites/<code>/images/<image>` et un `aria-label` qui décrit ce que la
-   photo montre vraiment, « Jour N · <Jour> <date> », titre) ; nouvelle carte en tête de
+   photo montre vraiment, « Jour N · <Jour> <date> », titre, `une-chapo` = `chapo` du jour) ; nouvelle carte en tête de
    `jours-grid`. Carte « Le texte du jour » de `premiere_annee/langues/<langue>/index.html` mise à jour.
 5. Scripts de la mise en ligne (étape 0, dont `outils/flashcards.py`), puis
    `python3 outils/quotidien-controle.py premiere_annee/langues/<langue>/quotidien/jour-<date>.html` :
@@ -365,8 +365,8 @@ Contenu d'un jour (le bloc de données du 10 octobre 2026 sert de modèle) :
   `{mot|traduction}` = aide au vocabulaire (8 à 15 mots).
 - **Grammaire** : 5 ou 6 cartes, une par repère : titre, citation (forme en `<mark>`), rappel
   court, piège du francophone, leçon et ancre (`lecon` + `ancre` = `id` d'une `<section>` de
-  `../lecon<N>.html`), exercice de 3 ou 4 phrases à trous (`___`, réponses acceptées dans
-  `r`). Une carte qui traite deux points renvoie vers deux sections avec
+  `../lecon<N>.html`). **Pas d'exercice** (choix du propriétaire : `quotidien.js` n'affiche plus les
+  `exercice` des anciens jours, ne pas en écrire). Une carte qui traite deux points renvoie vers deux sections avec
   `liens: [{ lecon, ancre, libelle }, …]`. Puis `aussi` (« Et aussi dans le texte ») : 4 à 8 points courts, **une ligne
   chacune**, groupés par catégorie (`cat` : constructions verbales, noms et articles,
   comparaison, dates et chiffres, liens logiques…), avec l'extrait (`ext`, forme en `<mark>`),
@@ -389,8 +389,7 @@ Contenu d'un jour (le bloc de données du 10 octobre 2026 sert de modèle) :
 - **Chapeau** (`chapo`) : une phrase qui dit le sujet, sans annoncer la grammaire.
 - **Bilan** : 4 ou 5 phrases, sans liens vers les leçons (ils sont déjà dans la grammaire).
 - Pas de questions de compréhension.
-- Vérifier avec `outils/quotidien-controle.py` (aucune erreur JS, chaque exercice de grammaire rempli avec `r[0]` donne
-  « parfait », listes à jour, renvois valides…). Typographie française gérée par `quotidien.js` pour les champs en français.
+- Vérifier avec `outils/quotidien-controle.py` (aucune erreur JS, listes à jour, renvois valides…). Typographie française gérée par `quotidien.js` pour les champs en français.
 
 ### L'HGG au quotidien (fiches du jour)
 

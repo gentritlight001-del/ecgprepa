@@ -67,17 +67,6 @@ def main():
             if largeur == 1280:
                 J = pg.evaluate('window.JOUR')
                 regle(not erreurs, 'Aucune erreur JavaScript', '; '.join(erreurs[:3]))
-                scores = pg.evaluate("""() => {
-                  document.querySelectorAll('.g-carte').forEach(c => c.classList.add('ouvert'));
-                  return [...document.querySelectorAll('.exo')].map((ex, i) => {
-                    ex.querySelectorAll('.trou').forEach((t, k) => t.value = window.JOUR.grammaire[i].exercice.items[k].r[0]);
-                    ex.querySelector('.bouton.plein').click();
-                    return ex.querySelector('.score').textContent;
-                  });
-                }""")
-                mauvais = [i + 1 for i, sc in enumerate(scores) if 'parfait' not in sc]
-                regle(scores and not mauvais, 'Chaque exercice rempli avec r[0] donne « parfait »',
-                      'cartes ' + ', '.join(map(str, mauvais)) if mauvais else 'aucun exercice')
                 reperes = pg.evaluate("[...new Set([...document.querySelectorAll('.texte .g')].map(g => +g.dataset.g))]")
                 attendus = list(range(1, len(J['grammaire']) + 1))
                 regle(sorted(reperes) == attendus, 'Un repère [n|…] dans le texte pour chaque carte de grammaire',
@@ -91,7 +80,6 @@ def main():
     # Contenu
     g = J['grammaire']
     regle(5 <= len(g) <= 6, '5 ou 6 cartes de grammaire', str(len(g)))
-    regle(all(3 <= len(c['exercice']['items']) <= 4 for c in g), '3 ou 4 phrases par exercice')
     regle(4 <= len(J.get('aussi', [])) <= 8, '4 à 8 points dans « Et aussi »', str(len(J.get('aussi', []))))
     ess, th = J['vocabulaire']['essentiels'], J['vocabulaire']['theme']['mots']
     regle(12 <= len(ess) <= 14 and len(ess) % 2 == 0, '12 à 14 essentiels, nombre pair', str(len(ess)))
