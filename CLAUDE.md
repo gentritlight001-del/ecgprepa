@@ -272,8 +272,8 @@ page pays ou région :
   **Pas de section « Aujourd'hui »** (retirée à la demande du propriétaire).
 - **Langues** : une seule ligne par année, sans pastilles de langue ; elle mène à la page de choix de la langue,
   `premiere_annee/langues/index.html` (grammaire) ou `deuxieme_annee/langues/index.html` (civilisation), même
-  habillage avec un dessin à droite du titre (bulles « Hello / Hola / Hallo » en 1re année, trois monuments au trait
-  en 2e : pyramide maya, Big Ben, porte de Brandebourg), une ligne par langue vers son index (`<langue>/index.html`).
+  habillage avec un dessin à droite du titre (bulles « Hello / Hola / Hallo » en 1re année, valise et trois étiquettes de bagage
+  EN / ES / DE en 2e), une ligne par langue vers son index (`<langue>/index.html`).
 - Rien à y mettre à jour : les scripts lisent le `.ci-compte` et le `.ci-titre` de chaque index de matière (et,
   pour les langues, les leçons de 1re année et le nombre de pays `.ix-pays-tete` de 2e année) et `nouveautes.js`.
   Une nouvelle matière s'ajoute en copiant une ligne `.matiere`, une nouvelle langue en copiant une ligne `.langue`.
