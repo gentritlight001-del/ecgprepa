@@ -7,9 +7,111 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ECG Prépa — Culture Générale</title>
 <link rel="stylesheet" href="fonts/fonts.css">
-<link rel="stylesheet" href="actualites/index-actu.css">
-<link rel="stylesheet" href="actualites/tous-actu.css">
+<style>
+  /* Culture générale : « Les archives », choisi par le propriétaire sur maquette (papier kraft, machine à
+     écrire, tampon rouge, comme les dossiers eux-mêmes). Le dernier dossier versé en chemise ouverte, puis le
+     registre de tous les dossiers (filtre par thème, recherche). Tout vient de CG_DATA, plus bas : une nouvelle
+     fiche s'ajoute à la fin de CG_DATA, rien d'autre. Les lignes gardent .actu-card / .actu-card-title
+     (badge Premium d'auth.js, étoile de favoris.js). */
+  :root {
+    --kraft: #e6dcc3;
+    --papier: #f4ecd8;
+    --papier2: #ece0c4;
+    --encre: #2b2013;
+    --encre-douce: #5c5138;
+    --filet: #b3a077;
+    --tampon: #8a3324;
+    --titre: 'Fraunces', Georgia, serif;
+    --texte: 'Newsreader', Georgia, serif;
+    --mono: 'IBM Plex Mono', monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--kraft); color: var(--encre); font-family: var(--texte); min-height: 100vh; overflow-x: hidden; }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; }
+  mark { background: #f2d58a; color: inherit; padding: 0 1px; }
 
+  nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 48px;
+    background: rgba(230,220,195,0.95); border-bottom: 1px solid var(--filet); position: sticky; top: 0; z-index: 100;
+    font-family: var(--mono); font-size: 0.8125rem; }
+  .nav-logo { font-family: var(--titre); font-weight: 700; font-size: 1.2rem; color: var(--tampon); white-space: nowrap; }
+  .breadcrumb { display: flex; gap: 8px; color: var(--encre-douce); white-space: nowrap; }
+  .breadcrumb a:hover, .breadcrumb .current { color: var(--encre); }
+
+  .archives { max-width: 1180px; margin: 0 auto; padding: 0 24px 80px; }
+  .mono { font-family: var(--mono); }
+
+  /* Page de garde */
+  .garde { padding: 56px 0 40px; display: flex; flex-wrap: wrap; gap: 32px 40px; align-items: flex-end; }
+  .garde-texte { flex: 999 1 520px; min-width: 0; }
+  .garde-sur { margin-bottom: 18px; font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--tampon); }
+  h1 { font-family: var(--titre); font-weight: 800; font-size: clamp(3.2rem, 8vw, 6.25rem); line-height: 0.95; letter-spacing: -0.025em; }
+  .garde-intro { margin-top: 22px; max-width: 560px; font-size: 1.3rem; line-height: 1.55; color: var(--encre-douce); }
+  .cherche { flex: 1 1 320px; min-width: 0; padding: 18px 20px; background: var(--papier); border: 1px solid var(--filet); display: flex; flex-direction: column; gap: 8px; font-family: var(--mono); }
+  .cherche label { font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--encre-douce); }
+  .cherche-champ { position: relative; }
+  .cherche input { width: 100%; min-height: 44px; padding: 0 36px 0 2px; border: 0; border-bottom: 2px solid var(--encre); background: transparent; font: 400 0.95rem var(--mono); color: var(--encre); outline: none; }
+  .cherche input:focus { border-bottom-color: var(--tampon); }
+  .efface { position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; border: 0; background: none; font-size: 1.3rem; color: var(--encre-douce); cursor: pointer; }
+
+  /* Dernier dossier versé : une chemise ouverte */
+  .chemise { position: relative; padding-top: 30px; }
+  .onglet { position: absolute; top: 0; left: 0; height: 31px; padding: 0 18px; display: flex; align-items: center; background: var(--papier);
+    border: 1px solid var(--filet); border-bottom: 0; font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--encre-douce); }
+  .chemise .actu-card { display: flex; flex-wrap: wrap; background: var(--papier); border: 1px solid var(--filet); }
+  .chemise img { flex: 1 1 420px; min-width: 0; height: 320px; object-fit: cover; }
+  .chemise-texte { flex: 1 1 380px; min-width: 0; padding: 32px 34px 30px; display: flex; flex-direction: column; gap: 16px; position: relative; }
+  .classe { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.1em; color: var(--encre-douce); }
+  .classe strong { color: var(--tampon); font-weight: 600; }
+  .chemise .actu-card-title { font-family: var(--titre); font-weight: 700; font-size: 2.1rem; line-height: 1.12; padding-right: 40px; }
+  .ouvrir { margin-top: auto; align-self: flex-start; display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border: 1.5px solid var(--encre); font-family: var(--mono); font-size: 0.875rem; transition: background 0.2s, color 0.2s; }
+  .chemise .actu-card:hover .ouvrir { background: var(--encre); color: var(--papier); }
+  .tampon { position: absolute; right: 26px; bottom: 26px; width: 84px; height: 84px; border: 2px solid var(--tampon); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; text-align: center; transform: rotate(-12deg);
+    font-family: var(--mono); font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.08em; line-height: 1.3; color: var(--tampon); text-transform: uppercase; opacity: 0.85; pointer-events: none; }
+
+  /* Le registre */
+  .registre { padding-top: 56px; }
+  .registre-tete { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 14px; }
+  h2 { font-family: var(--titre); font-weight: 700; font-size: 2rem; }
+  .compte { font-family: var(--mono); font-size: 0.8125rem; color: var(--encre-douce); }
+  .themes { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: -1px; position: relative; z-index: 1; }
+  .themes button { min-height: 38px; padding: 0 14px; border: 1px solid var(--filet); border-bottom: 0; background: var(--papier2); font: 400 0.8125rem var(--mono); color: var(--encre); cursor: pointer; transition: background 0.2s; }
+  .themes button span { color: var(--tampon); margin-left: 4px; }
+  .themes button:hover { background: var(--papier); }
+  .themes button[aria-pressed="true"] { background: var(--papier); font-weight: 600; box-shadow: inset 0 3px 0 var(--tampon); }
+  .feuille { background: var(--papier); border: 1px solid var(--filet); font-family: var(--mono); }
+  .ligne-tete, .feuille .actu-card { display: grid; grid-template-columns: 76px 64px minmax(0, 1fr) 150px; gap: 16px; align-items: center; padding: 10px 120px 10px 18px; }
+  .ligne-tete { border-bottom: 2px solid var(--encre); font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--encre-douce); padding-top: 12px; padding-bottom: 12px; }
+  .feuille .actu-card { position: relative; border-bottom: 1px dashed var(--filet); transition: background 0.15s; }
+  .feuille .actu-card:last-child { border-bottom: 0; }
+  .feuille .actu-card:hover { background: #fbf5e6; }
+  .feuille .vignette { width: 76px; height: 50px; object-fit: cover; background: var(--papier2); border: 1px solid var(--filet); }
+  .num { color: var(--tampon); font-size: 0.9375rem; }
+  .feuille .actu-card-title { font-family: var(--titre); font-weight: 600; font-size: 1.125rem; line-height: 1.3; }
+  .feuille .theme { font-size: 0.8125rem; color: var(--encre-douce); }
+  .vide { padding: 36px 18px; text-align: center; font-family: var(--mono); color: var(--encre-douce); }
+  .vide button { margin-top: 12px; min-height: 40px; padding: 0 16px; border: 1.5px solid var(--encre); background: none; font: inherit; color: var(--encre); cursor: pointer; }
+
+  @media (max-width: 760px) { .breadcrumb { display: none; } }
+  @media (max-width: 640px) {
+    nav { padding: 14px 16px; }
+    .archives { padding: 0 16px 56px; }
+    .garde { padding: 36px 0 28px; }
+    .garde-intro { font-size: 1.12rem; }
+    .chemise img { height: 200px; }
+    .chemise-texte { padding: 22px 20px 24px; }
+    .chemise .actu-card-title { font-size: 1.55rem; }
+    .tampon { width: 66px; height: 66px; font-size: 0.5625rem; right: 16px; bottom: 18px; }
+    .ligne-tete { display: none; }
+    .feuille .actu-card { grid-template-columns: 64px minmax(0, 1fr); grid-template-rows: auto auto; gap: 4px 14px; padding: 12px 14px; }
+    .feuille .vignette { grid-row: 1 / 3; width: 64px; height: 64px; }
+    .num { font-size: 0.75rem; }
+    .num::after { content: attr(data-theme); margin-left: 8px; color: var(--encre-douce); }
+    .feuille .theme { display: none; }
+    .feuille .actu-card-title { grid-column: 2; font-size: 1rem; padding-right: 36px; }
+  }
+</style>
 <meta property="og:type" content="article">
 <meta property="og:title" content="Culture Générale">
 <meta property="og:image" content="https://ecg-prepa.fr/partage/culture-generale/culture-generale.jpg">
@@ -21,37 +123,46 @@
 <meta name="description" content="Les dossiers de culture générale pour la prépa ECG : fiches thématiques sur les grands sujets de société, d&#x27;économie et de géopolitique.">
 <link rel="canonical" href="https://ecg-prepa.fr/culture-generale.html">
 </head>
-<body class="ia" style="--bandeau:#3D2448;--sur:#E8C37A">
-<header class="ia-bandeau">
-  <nav class="ia-haut">
-    <a class="ia-logo" href="index.html">ECG Prépa</a>
-    <div class="ia-fil" aria-label="Fil d'Ariane">
-      <a href="index.html">Accueil</a><span aria-hidden="true">/</span>
-      <span aria-current="page">Culture générale</span>
-    </div>
-    <div class="nav-right"></div>
-  </nav>
-  <div class="ia-in ta-tete">
-    <div class="ia-titre">
-      <div class="ia-sur">Dossiers de culture générale</div>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">ECG Prépa</a>
+  <div class="breadcrumb">
+    <a href="index.html">Accueil</a>
+    <span aria-hidden="true">/</span>
+    <span class="current">Culture générale</span>
+  </div>
+</nav>
+
+<main class="archives">
+  <header class="garde">
+    <div class="garde-texte">
+      <p class="garde-sur">Fonds documentaire · <span id="nbDossiers">55</span> dossiers classés</p>
       <h1>Culture générale</h1>
+      <p class="garde-intro">Un personnage, un événement, une idée ou une entreprise par dossier&nbsp;: les faits vérifiés, les chiffres et les références à sortir le jour de l'épreuve.</p>
     </div>
-    <label class="ta-cherche">
-      <svg viewBox="0 0 24 24" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-      <input id="ta-q" type="text" placeholder="Rechercher un dossier, un nom, un mot…" autocomplete="off" aria-label="Rechercher dans les dossiers">
-      <button type="button" class="ta-efface" id="ta-efface" aria-label="Effacer la recherche" hidden>×</button>
-    </label>
-  </div>
-</header>
+    <div class="cherche" role="search">
+      <label for="q">Chercher dans le registre</label>
+      <div class="cherche-champ">
+        <input id="q" type="search" placeholder="Un nom, une date, un mot" autocomplete="off">
+        <button type="button" class="efface" id="efface" aria-label="Effacer la recherche" hidden>×</button>
+      </div>
+    </div>
+  </header>
 
-<div class="ta-outils">
-  <div class="ia-in">
-    <div class="ta-themes" id="ta-themes" role="group" aria-label="Filtrer par thème"></div>
-  </div>
-</div>
+  <section class="chemise" aria-label="Dernier dossier versé" id="chemise"></section>
 
-<main class="ia-in ta-corps">
-  <div class="actu-grid" id="cg-grid"></div>
+  <section class="registre" aria-labelledby="t-registre">
+    <div class="registre-tete">
+      <h2 id="t-registre">Le registre</h2>
+      <span class="compte" id="compte"></span>
+    </div>
+    <div class="themes" id="themes" role="group" aria-label="Filtrer par thème"></div>
+    <div class="feuille">
+      <div class="ligne-tete" aria-hidden="true"><span></span><span>N°</span><span>Intitulé</span><span>Classé sous</span></div>
+      <div id="registre"></div>
+    </div>
+  </section>
 </main>
 
 <script>
@@ -618,20 +729,12 @@ const CG_DATA = [
   //   month: 9, year: 2025
   // },
 ];
-
-/* Les 3 dossiers les plus récents en grand, puis tous les autres dans
-   l'ordre (du plus récent au plus ancien). Les nouvelles fiches sont
-   ajoutées à la fin de CG_DATA. Cartes actu-card + .actu-card-title :
-   auth.js y pose le badge Premium, favoris.js l'étoile. */
+/* Le dernier dossier (dernière entrée de CG_DATA) en chemise ouverte, puis le registre de tous les dossiers,
+   du plus récent au plus ancien, avec filtre par thème et recherche. */
 (function () {
-  var THEMES = {
-    philosophie: '#9A7A2E', politique: '#3F5F8F', economie: '#A8862A', societe: '#9A4C74',
-    histoire: '#B05A24', geopolitique: '#3F7D4B', culture: '#7F4F99', sciences: '#23827A',
-    sport: '#1F7A45', environnement: '#2D8F80', organisations: '#5B5FAE', entreprise: '#AD6430',
-    lieux: '#2F7EA3', pays: '#A3801A'
-  };
+  'use strict';
   var etat = { q: '', th: '' };
-  var $ = function (id) { return document.getElementById(id); };
+  function $(id) { return document.getElementById(id); }
   function norm(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function surligne(t) {
@@ -640,54 +743,68 @@ const CG_DATA = [
     if (i < 0) return esc(t);
     return esc(t.slice(0, i)) + '<mark>' + esc(t.slice(i, i + etat.q.length)) + '</mark>' + esc(t.slice(i + etat.q.length));
   }
-  var DOSSIERS = CG_DATA.map(function (a, i) { return { a: a, n: i + 1 }; }).reverse();
+  function numero(n) { return ('00' + n).slice(-3); }
+
+  var DOSSIERS = CG_DATA.filter(function (a) { return a && a.externalUrl; })
+    .map(function (a, i) { return { a: a, n: i + 1 }; }).reverse();
+  $('nbDossiers').textContent = DOSSIERS.length;
+
+  // Dernier dossier versé
+  var d = DOSSIERS[0];
+  if (d) {
+    $('chemise').innerHTML =
+      '<span class="onglet">Dossier n°&nbsp;' + numero(d.n) + ' · dernier versé</span>' +
+      '<a class="actu-card" href="' + esc(d.a.externalUrl) + '">' +
+        (d.a.image ? '<img src="' + esc(d.a.image) + '" alt="">' : '') +
+        '<span class="chemise-texte">' +
+          '<span class="classe">Classé sous · <strong>' + esc(d.a.theme) + '</strong></span>' +
+          '<span class="actu-card-title">' + esc(d.a.titre) + '</span>' +
+          '<span class="ouvrir">Ouvrir le dossier →</span>' +
+          '<span class="tampon" aria-hidden="true">Fiche<br>vérifiée</span>' +
+        '</span>' +
+      '</a>';
+  }
 
   function filtre(sansTheme) {
     var q = norm(etat.q);
-    return DOSSIERS.filter(function (d) {
-      return (sansTheme || !etat.th || d.a.domain === etat.th) &&
-             (!q || norm(d.a.titre + ' ' + d.a.theme).indexOf(q) >= 0);
+    return DOSSIERS.filter(function (x) {
+      return (sansTheme || !etat.th || x.a.domain === etat.th) &&
+             (!q || norm(x.a.titre + ' ' + x.a.theme + ' ' + numero(x.n)).indexOf(q) >= 0);
     });
   }
   function themes() {
     var T = filtre(true), c = {}, lib = {};
-    T.forEach(function (d) { c[d.a.domain] = (c[d.a.domain] || 0) + 1; lib[d.a.domain] = d.a.theme; });
-    $('ta-themes').innerHTML = '<button type="button" class="ta-th" data-d="" aria-pressed="' + !etat.th + '">Tous les thèmes <span>' + T.length + '</span></button>' +
-      Object.keys(c).sort(function (x, y) { return c[y] - c[x]; }).map(function (d) {
-        return '<button type="button" class="ta-th" data-d="' + esc(d) + '" style="--t:' + (THEMES[d] || '#888') + '" aria-pressed="' + (etat.th === d) + '"><i></i>' + esc(lib[d]) + ' <span>' + c[d] + '</span></button>';
+    T.forEach(function (x) { c[x.a.domain] = (c[x.a.domain] || 0) + 1; lib[x.a.domain] = x.a.theme; });
+    $('themes').innerHTML = '<button type="button" data-d="" aria-pressed="' + !etat.th + '">Tous<span>' + T.length + '</span></button>' +
+      Object.keys(c).sort(function (a, b) { return c[b] - c[a] || lib[a].localeCompare(lib[b]); }).map(function (k) {
+        return '<button type="button" data-d="' + esc(k) + '" aria-pressed="' + (etat.th === k) + '">' + esc(lib[k]) + '<span>' + c[k] + '</span></button>';
       }).join('');
   }
-  function carte(d) {
-    var a = d.a, n = ('00' + d.n).slice(-3);
+  function ligne(x) {
+    var a = x.a;
     return '<a class="actu-card" href="' + esc(a.externalUrl) + '">' +
-      '<img class="ta-img" src="' + esc(a.image) + '" alt="" loading="lazy">' +
-      '<div class="ta-tx"><div class="ta-meta"><span class="ia-lieu">Dossier n° ' + n + '</span>' +
-      '<span class="ia-theme" style="--t:' + (THEMES[a.domain] || '#888') + '">' + esc(a.theme) + '</span></div>' +
-      '<div class="actu-card-title">' + surligne(a.titre) + '</div></div></a>';
+      (a.image ? '<img class="vignette" src="' + esc(a.image) + '" alt="" loading="lazy">' : '<span class="vignette"></span>') +
+      '<span class="num" data-theme="' + esc(a.theme) + '">' + numero(x.n) + '</span>' +
+      '<span class="actu-card-title">' + surligne(a.titre) + '</span>' +
+      '<span class="theme">' + esc(a.theme) + '</span></a>';
   }
   function rendu() {
     themes();
-    var l = filtre(), actif = etat.q || etat.th, h = '';
+    var l = filtre();
+    $('compte').textContent = (etat.q || etat.th) ? l.length + ' sur ' + DOSSIERS.length + ' dossiers' : DOSSIERS.length + ' dossiers, du plus récent au plus ancien';
     if (!l.length) {
-      $('cg-grid').innerHTML = '<div class="ta-vide"><h2>Aucun dossier</h2><p>Aucun dossier ne correspond.</p><button type="button" id="ta-raz">Tout afficher</button></div>';
-      $('ta-raz').onclick = function () { etat = { q: '', th: '' }; $('ta-q').value = ''; $('ta-efface').hidden = true; rendu(); };
+      $('registre').innerHTML = '<div class="vide">Aucun dossier ne correspond.<br><button type="button" id="raz">Tout afficher</button></div>';
+      $('raz').onclick = function () { etat = { q: '', th: '' }; $('q').value = ''; $('efface').hidden = true; rendu(); };
       return;
     }
-    if (actif) {
-      h = '<p class="ta-resume"><b>' + l.length + '</b> dossier' + (l.length > 1 ? 's' : '') + (etat.q ? ' · « ' + esc(etat.q) + ' »' : '') + '</p>' +
-        '<section class="ta-bloc"><div class="ta-grille">' + l.map(carte).join('') + '</div></section>';
-    } else {
-      h = '<section class="ta-bloc"><h2>Les plus récents</h2><div class="ta-recents">' + l.slice(0, 3).map(carte).join('') + '</div></section>' +
-        '<section class="ta-bloc"><h2>Tous les dossiers</h2><div class="ta-grille">' + l.slice(3).map(carte).join('') + '</div></section>';
-    }
-    $('cg-grid').innerHTML = h;
+    $('registre').innerHTML = l.map(ligne).join('');
   }
-  $('ta-q').addEventListener('input', function (e) { etat.q = e.target.value.trim(); $('ta-efface').hidden = !etat.q; rendu(); });
-  $('ta-efface').addEventListener('click', function () { $('ta-q').value = ''; etat.q = ''; $('ta-efface').hidden = true; rendu(); $('ta-q').focus(); });
-  $('ta-themes').addEventListener('click', function (e) {
-    var b = e.target.closest('.ta-th');
+  $('q').addEventListener('input', function (e) { etat.q = e.target.value.trim(); $('efface').hidden = !etat.q; rendu(); });
+  $('efface').addEventListener('click', function () { $('q').value = ''; etat.q = ''; $('efface').hidden = true; rendu(); $('q').focus(); });
+  $('themes').addEventListener('click', function (e) {
+    var b = e.target.closest('button');
     if (!b) return;
-    etat.th = b.getAttribute('data-d');
+    etat.th = b.getAttribute('data-d') === etat.th ? '' : b.getAttribute('data-d');
     rendu();
   });
   rendu();

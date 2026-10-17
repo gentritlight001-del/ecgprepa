@@ -282,6 +282,16 @@ page pays ou région :
   Littérature, Cinéma et Art, la frise de `fiches-auteurs.html` et `nouveautes.js`. Seuls restent écrits à la
   main : la carte du cours (nouveau cours) et les totaux « 8 œuvres d'art » et « 6 musiques ».
 
+### Index de la culture générale (`culture-generale.html`)
+
+- Habillage « Les archives », choisi par le propriétaire sur maquette (papier kraft `#e6dcc3`, Fraunces + IBM Plex
+  Mono, tampon rouge `#8a3324`, comme les dossiers) : page de garde + recherche, le dernier dossier versé en
+  chemise ouverte, puis **le registre de tous les dossiers** (vignette, n°, intitulé, classé sous ; onglets de
+  thème et recherche). Pas de « tiroirs » par thème (refusés par le propriétaire).
+- Tout vient de `CG_DATA` (même format qu'avant, lu aussi par `auth.js`, `outils/nouveautes.py` et la
+  newsletter) : un nouveau dossier s'ajoute **à la fin** de `CG_DATA`, rien d'autre. Les lignes gardent
+  `.actu-card` / `.actu-card-title` (badge Premium, étoile des favoris).
+
 ### Fiches de l'Humanité (cinéma, littérature)
 
 - Mise en page commune (`humanite/cinema/`, `humanite/litterature/`) : bandeau compact, bande
