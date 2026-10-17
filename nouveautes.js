@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "es",
 "rubrique": "Actu Espagnol",
+"meta": "Chili",
+"titre": "Chili : José Antonio Kast à La Paz, première visite officielle d'un chef d'État chilien en 71 ans",
+"url": "actualites/es/articles/chili-kast-visite-la-paz-2026.html",
+"image": "actualites/es/images/chili-kast-visite-la-paz-2026.webp",
+"date": "2026-10-17T18:51:33+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
 "meta": "Argentine",
 "titre": "Argentine : cinquième marche universitaire pour exiger que Milei applique la loi de financement",
 "url": "actualites/es/articles/argentine-marche-universitaire-2026.html",
@@ -1394,15 +1403,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Javier Milei réaffirme la revendication argentine sur les îles Malouines",
 "url": "actualites/es/articles/malouines-milei-revendication.html",
 "image": "actualites/es/images/malouines-milei-revendication.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Espagne",
-"titre": "El Granado, 45,7°C : l'Andalousie égale son record de chaleur pour un mois de septembre",
-"url": "actualites/es/articles/record-chaleur-andalousie.html",
-"image": "actualites/es/images/record-chaleur-andalousie.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
