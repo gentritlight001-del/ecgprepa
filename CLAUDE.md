@@ -173,8 +173,8 @@ im = Image.open(src).convert("RGB"); im.thumbnail((1600, 1600)); im.save(dst, "W
 
 « Le kiosque », choisi par le propriétaire sur maquette : fond **noir** (`#0b0b0c`), titre « Actualité », puis
 seulement les quatre éditions, chacune en petit journal crème posé de travers (titre de l'édition dans sa langue,
-nombre d'articles, la une avec photo, 2 brèves). **Chaque journal entier est un seul lien vers « Tous les
-articles » de son édition** (`<code>/tous-<code>.html`), sans lien à l'intérieur. Le script lit `ACTU_DATA` de
+nombre d'articles, la une avec photo, 2 brèves). **Chaque journal entier est un seul lien vers la page d'accueil
+de son édition** (`<code>/index-<code>.html` : « Le monde », « English-speaking world »…), sans lien à l'intérieur. Le script lit `ACTU_DATA` de
 chaque `tous-<code>.html` : rien à mettre à jour à la main.
 
 ### Carte dans les listes
