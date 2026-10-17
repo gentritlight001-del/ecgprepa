@@ -8,11 +8,16 @@ relancer le script après chaque nouvel article ou nouveau cours.
 
     python3 outils/images-partage.py            # toutes les pages concernées
     python3 outils/images-partage.py <fichier>  # une ou plusieurs pages précises
+    python3 outils/images-partage.py --refaire <fichier>  # refait l'image d'une page qui en a
+                                                          # déjà une (adresse changée : ?v=<date>)
+
+Articles d'actualité au gabarit « a-page » : panneau noir (logo, pays, titre) et photo
+de une à droite, filet rouge en bas. Autres pages : aplat de couleur et titre.
 
 Prérequis : playwright (voir newsletter/outils/installer.sh). Le chemin de Chromium
 peut être donné avec la variable CHROMIUM_PATH.
 """
-import glob, html, os, re, sys, tempfile
+import datetime, glob, html, os, re, sys, tempfile
 
 RACINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + '/'
 SITE = 'https://ecg-prepa.fr/'
@@ -46,6 +51,37 @@ body{width:1200px;height:630px;overflow:hidden}
 <div id="c"><div class="top"><div id="label"></div><div id="logo">ECG Prépa</div></div>
 <div><div id="bar"></div><div id="title"></div></div>
 <div id="url">ecg-prepa.fr</div></div></body></html>"""
+
+# Articles au gabarit « a-page » : panneau noir à gauche, photo de une à droite.
+GABARIT_PHOTO = """<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<link rel="stylesheet" href="file://%(racine)sfonts/fonts.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1200px;height:630px;overflow:hidden;background:#0b0b0c}
+#p{position:absolute;inset:0 auto 0 0;width:640px;padding:58px 56px 64px 64px;display:flex;flex-direction:column;justify-content:space-between}
+#logo{font-family:'Playfair Display',serif;font-weight:700;font-size:32px;color:#f3efe4}
+#label{display:flex;align-items:center;gap:14px;margin-bottom:22px;font-family:'IBM Plex Mono',monospace;font-size:20px;letter-spacing:.14em;text-transform:uppercase;color:#bdbdb8}
+#label:before{content:"";width:14px;height:14px;background:#b5131f}
+#title{font-family:'Fraunces',serif;font-weight:600;line-height:1.1;color:#f3efe4;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5;overflow:hidden}
+#url{font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.16em;text-transform:uppercase;color:#8a8a85}
+#img{position:absolute;top:0;right:0;width:560px;height:624px;object-fit:cover}
+#filet{position:absolute;left:0;right:0;bottom:0;height:6px;background:#b5131f}
+</style></head><body>
+<img id="img" alt=""><div id="p"><div id="logo">ECG Prépa</div>
+<div><div id="label"></div><div id="title"></div></div><div id="url">ecg-prepa.fr</div></div>
+<div id="filet"></div></body></html>"""
+
+
+def photo_de(rel, contenu):
+    """Article « a-page » : (pays, chemin absolu de la photo de une), sinon None."""
+    if 'class="a-page"' not in contenu:
+        return None
+    img = re.search(r'<img class="a-hero-img" src="([^"]+)"', contenu)
+    pays = re.search(r'<span class="a-tag t0">([^<]+)</span>', contenu)
+    if not img:
+        return None
+    chemin = os.path.normpath(os.path.join(RACINE, os.path.dirname(rel), img.group(1)))
+    return (html.unescape(pays.group(1)) if pays else ''), chemin
 
 
 def titre_de(contenu):
@@ -112,8 +148,11 @@ def balises(titre, url):
 
 def main():
     from playwright.sync_api import sync_playwright
-    if len(sys.argv) > 1:
-        pages = [os.path.relpath(os.path.abspath(a), RACINE) for a in sys.argv[1:]]
+    args = sys.argv[1:]
+    refaire = '--refaire' in args
+    args = [a for a in args if a != '--refaire']
+    if args:
+        pages = [os.path.relpath(os.path.abspath(a), RACINE) for a in args]
     else:
         pages = sorted({os.path.relpath(f, RACINE) for g in PERIMETRE for f in glob.glob(RACINE + g, recursive=True)})
     travail = []
@@ -122,7 +161,7 @@ def main():
             contenu = open(RACINE + rel, encoding='utf-8').read()
         except OSError:
             continue
-        if 'og:image' in contenu or '</head>' not in contenu:
+        if ('og:image' in contenu and not refaire) or '</head>' not in contenu:
             continue
         f = fiche(rel, contenu)
         if f:
@@ -132,29 +171,52 @@ def main():
         return
     gab = tempfile.NamedTemporaryFile('w', suffix='.html', delete=False, encoding='utf-8')
     gab.write(GABARIT % {'racine': RACINE}); gab.close()
+    gab_photo = tempfile.NamedTemporaryFile('w', suffix='.html', delete=False, encoding='utf-8')
+    gab_photo.write(GABARIT_PHOTO % {'racine': RACINE}); gab_photo.close()
     with sync_playwright() as pw:
         chemin = os.environ.get('CHROMIUM_PATH') or ('/opt/pw-browsers/chromium' if os.path.exists('/opt/pw-browsers/chromium') else None)
         nav = pw.chromium.launch(executable_path=chemin) if chemin else pw.chromium.launch()
         page = nav.new_page(viewport={'width': 1200, 'height': 630})
         page.goto('file://' + gab.name)
         page.evaluate('document.fonts.ready')
+        page_photo = nav.new_page(viewport={'width': 1200, 'height': 630})
+        page_photo.goto('file://' + gab_photo.name)
+        page_photo.evaluate('document.fonts.ready')
         for rel, contenu, (cle, lab, titre, fond, fg, accent, logo) in travail:
-            taille = 72 if len(titre) <= 55 else 62 if len(titre) <= 85 else 54 if len(titre) <= 110 else 46
-            page.evaluate("""([lab, titre, fond, fg, accent, logo, taille]) => {
-              const c = document.getElementById('c'); c.style.background = fond; c.style.color = fg;
-              const l = document.getElementById('label'); l.textContent = lab; l.style.color = accent;
-              document.getElementById('logo').style.color = logo === 'blanc' ? '#fff' : accent;
-              document.getElementById('bar').style.background = accent;
-              const t = document.getElementById('title'); t.textContent = titre; t.style.fontSize = taille + 'px';
-              document.getElementById('url').style.color = fg; }""",
-                          [lab, titre, fond, fg, accent, logo, taille])
             sortie = 'partage/' + cle + '.jpg'
             os.makedirs(os.path.dirname(RACINE + sortie), exist_ok=True)
-            page.screenshot(path=RACINE + sortie, type='jpeg', quality=68)
-            nouveau = contenu.replace('</head>', balises(titre, SITE + sortie) + '\n</head>', 1)
+            photo = photo_de(rel, contenu)
+            if photo:
+                pays, img = photo
+                taille = 54 if len(titre) <= 50 else 48 if len(titre) <= 75 else 42 if len(titre) <= 100 else 36
+                page_photo.evaluate("""([lab, titre, img, taille]) => new Promise(ok => {
+                  document.getElementById('label').textContent = lab;
+                  const t = document.getElementById('title'); t.textContent = titre; t.style.fontSize = taille + 'px';
+                  const i = document.getElementById('img'); i.onload = i.onerror = () => ok(); i.src = img; })""",
+                                    ['Actualité' + (' · ' + pays if pays else ''), titre, 'file://' + img, taille])
+                page_photo.screenshot(path=RACINE + sortie, type='jpeg', quality=80)
+            else:
+                taille = 72 if len(titre) <= 55 else 62 if len(titre) <= 85 else 54 if len(titre) <= 110 else 46
+                page.evaluate("""([lab, titre, fond, fg, accent, logo, taille]) => {
+                  const c = document.getElementById('c'); c.style.background = fond; c.style.color = fg;
+                  const l = document.getElementById('label'); l.textContent = lab; l.style.color = accent;
+                  document.getElementById('logo').style.color = logo === 'blanc' ? '#fff' : accent;
+                  document.getElementById('bar').style.background = accent;
+                  const t = document.getElementById('title'); t.textContent = titre; t.style.fontSize = taille + 'px';
+                  document.getElementById('url').style.color = fg; }""",
+                              [lab, titre, fond, fg, accent, logo, taille])
+                page.screenshot(path=RACINE + sortie, type='jpeg', quality=68)
+            if 'og:image' in contenu:
+                # Image refaite : nouvelle adresse, sinon les réseaux gardent l'ancienne en cache.
+                v = datetime.date.today().strftime('%Y%m%d')
+                nouveau = re.sub(r'(<meta (?:property="og:image"|name="twitter:image") content=")[^"?]*(?:\?v=\d+)?"',
+                                 lambda m: m.group(1) + SITE + sortie + '?v=' + v + '"', contenu)
+            else:
+                nouveau = contenu.replace('</head>', balises(titre, SITE + sortie) + '\n</head>', 1)
             open(RACINE + rel, 'w', encoding='utf-8').write(nouveau)
         nav.close()
     os.unlink(gab.name)
+    os.unlink(gab_photo.name)
     print('%d image(s) de partage créée(s) dans partage/.' % len(travail))
 
 
