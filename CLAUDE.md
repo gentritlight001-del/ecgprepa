@@ -248,6 +248,15 @@ page pays ou région :
     3 sarcelle, 4 prune, 5 terre cuite.
   - Mettre à jour la carte « Colle de la semaine » de `deuxieme_annee/maths/index.html`.
 
+### Index des cours (`cours-ecg.html`)
+
+- Habillage « atlas nocturne » des index de matières, choisi par le propriétaire sur maquette : héros, « Aujourd'hui »
+  (fiche HGG du jour, textes du jour des trois langues, colle de la semaine), les deux années côte à côte (une ligne
+  par matière, à sa couleur), derniers chapitres, accès aux flashcards.
+- Rien à y mettre à jour : le script lit le `.ci-compte` et le `.ci-titre` de chaque index de matière, la carte du
+  haut des espaces « au quotidien » (`.une`, `.i-une`), la `.colles-card` de `deuxieme_annee/maths/index.html` et
+  `nouveautes.js`. Une nouvelle matière ou langue s'ajoute en copiant une ligne `.matiere`.
+
 ### Index de l'Humanité (`humanite.html`)
 
 - Habillage « cabinet clair » choisi par le propriétaire sur maquette (fond papier, Bricolage Grotesque et
