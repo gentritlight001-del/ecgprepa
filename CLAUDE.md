@@ -140,8 +140,8 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   4. `<article class="a-carte a-article">` : `a-chiffres` (4 chiffres vérifiés, le plus marquant en
      `rouge`), chapô `a-chapo`, puis **6 à 8 sections** `a-sec` numérotées (`a-h2` + `a-num` 01, 02…) :
      un titre court et 1 ou 2 paragraphes `a-p` chacune.
-  5. Entre les sections : **1 ou 2 schémas** `a-schema`, **une citation** `a-citation`, au plus **une photo**
-     `a-photo` qui flotte à droite dans une section.
+  5. Entre les sections : **1 ou 2 schémas** `a-schema`, **une citation** `a-citation`, et **0 à 2 photos**
+     `a-photo` (une par section au plus), qui flottent à droite en tête de leur section.
   6. Chronologie `a-chrono-bloc` après la dernière section : frise horizontale de 6 dates, **la plus
      récente à gauche** (`li.recent`, en rouge). Tout tableau avec des dates : le plus récent en haut.
   7. Analyse `a-analyse`, puis « Dans une copie » `a-copie` à l'intérieur (voir plus bas).
@@ -171,7 +171,11 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
     avec ce qui est raconté. **Ne pas la chercher soi-même : la demander directement au propriétaire**
     dans la réponse, en disant précisément laquelle (personne, lieu, moment) et pour quelle section.
     Sans photo fournie, pas de photo dans le corps. Une photo reçue est **regardée avant usage**, avec
-    une légende fidèle à ce qu'elle montre. Jamais la photo de une une seconde fois.
+    une légende fidèle à ce qu'elle montre : si sa date ou son lieu ne sont pas sûrs, ne pas les écrire
+    (seulement la personne et sa fonction, par exemple « Sir Ken McCallum, directeur général du MI5, au
+    pupitre. »). Fichier `<slug>-<sujet>.webp`. Pas de blanc sous la photo : le texte de la section doit
+    descendre au moins jusqu'au bas de la légende (mesurer avec Playwright). Jamais la photo de une une
+    seconde fois.
 - **Analyse** (`a-analyse`) : étiquette « L'analyse » (« Analysis »…), titre d'analyse original (jamais
   « Conclusion »), 2 paragraphes sans ton scolaire, en deux colonnes `a-analyse-corps` avec lettrine.
   **Les deux colonnes ont la même hauteur** à 1280, 1440 et 1920 px, dans chaque langue : mesurer avec
