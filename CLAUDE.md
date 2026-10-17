@@ -164,9 +164,14 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
     exemple établi / estimé / jamais démontré), `a-axe` (positions des acteurs sur un axe), ou un autre
     schéma dans le même style s'il éclaire mieux le sujet (barres, tableau). Données vérifiées et
     sourcées.
-  - Photo dans le corps (`a-photo`, en paysage 3:2) : libre de droits (Commons, même méthode que les
-    figures d'HGG) ou photo d'un autre article du site, **regardée avant usage**, légende fidèle à ce
-    qu'elle montre. Jamais la photo de une une seconde fois.
+  - Photo dans le corps (`a-photo`, en paysage 3:2) : **une image concrète de l'événement décrit**,
+    c'est-à-dire la personne, le lieu, le bâtiment ou le document dont parle la section (par exemple le
+    chef du MI5 dans la section sur son discours, l'immeuble de l'usine à trolls dans celle sur les
+    trolls). Jamais une image générique ou symbolique (drapeau, monument, vue de ville) sans lien direct
+    avec ce qui est raconté. **Ne pas la chercher soi-même : la demander directement au propriétaire**
+    dans la réponse, en disant précisément laquelle (personne, lieu, moment) et pour quelle section.
+    Sans photo fournie, pas de photo dans le corps. Une photo reçue est **regardée avant usage**, avec
+    une légende fidèle à ce qu'elle montre. Jamais la photo de une une seconde fois.
 - **Analyse** (`a-analyse`) : étiquette « L'analyse » (« Analysis »…), titre d'analyse original (jamais
   « Conclusion »), 2 paragraphes sans ton scolaire, en deux colonnes `a-analyse-corps` avec lettrine.
   **Les deux colonnes ont la même hauteur** à 1280, 1440 et 1920 px, dans chaque langue : mesurer avec
