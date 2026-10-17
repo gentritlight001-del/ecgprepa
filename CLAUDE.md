@@ -38,9 +38,8 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   fichier** (jamais de copie à côté), pour que tous les liens et fils d'Ariane du site restent bons. Une
   ancienne page intermédiaire devenue inutile n'est pas supprimée : elle devient une page de renvoi
   (`noindex`, `location.replace` + `meta refresh`, comme `premiere_annee/langues/flashcards/index.html`) vers
-  la nouvelle page, avec une ancre si besoin. Déjà en renvoi : `premiere_annee/index.html` et
-  `premiere_annee/langues/index.html` → `cours-ecg.html#premiere`, `deuxieme_annee/index.html` et
-  `deuxieme_annee/langues/index.html` → `cours-ecg.html#deuxieme`, `humanite/cours-humanite/cours-humanite.html`
+  la nouvelle page, avec une ancre si besoin. Déjà en renvoi : `premiere_annee/index.html` → `cours-ecg.html#premiere`,
+  `deuxieme_annee/index.html` → `cours-ecg.html#deuxieme`, `humanite/cours-humanite/cours-humanite.html`
   → `humanite.html#cours`.
 
 ## 2. Mise en ligne
@@ -266,12 +265,15 @@ page pays ou région :
 
 ### Index des cours (`cours-ecg.html`)
 
-- Habillage « atlas nocturne » des index de matières, choisi par le propriétaire sur maquette : héros, « Aujourd'hui »
-  (fiche HGG du jour, textes du jour des trois langues, colle de la semaine), les deux années côte à côte (une ligne
-  par matière, à sa couleur), derniers chapitres, accès aux flashcards.
-- Rien à y mettre à jour : le script lit le `.ci-compte` et le `.ci-titre` de chaque index de matière, la carte du
-  haut des espaces « au quotidien » (`.une`, `.i-une`), la `.colles-card` de `deuxieme_annee/maths/index.html` et
-  `nouveautes.js`. Une nouvelle matière ou langue s'ajoute en copiant une ligne `.matiere`.
+- Habillage « atlas nocturne » des index de matières, choisi par le propriétaire sur maquette : héros, les deux
+  années côte à côte (une ligne cliquable par matière, à sa couleur), derniers chapitres, accès aux flashcards.
+  **Pas de section « Aujourd'hui »** (retirée à la demande du propriétaire).
+- **Langues** : une seule ligne par année, sans pastilles de langue ; elle mène à la page de choix de la langue,
+  `premiere_annee/langues/index.html` (grammaire) ou `deuxieme_annee/langues/index.html` (civilisation), même
+  habillage, une ligne par langue vers son index (`<langue>/index.html`).
+- Rien à y mettre à jour : les scripts lisent le `.ci-compte` et le `.ci-titre` de chaque index de matière (et,
+  pour les langues, les leçons de 1re année et le nombre de pays `.ix-pays-tete` de 2e année) et `nouveautes.js`.
+  Une nouvelle matière s'ajoute en copiant une ligne `.matiere`, une nouvelle langue en copiant une ligne `.langue`.
 
 ### Index de l'Humanité (`humanite.html`)
 
