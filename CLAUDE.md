@@ -248,6 +248,15 @@ page pays ou région :
     3 sarcelle, 4 prune, 5 terre cuite.
   - Mettre à jour la carte « Colle de la semaine » de `deuxieme_annee/maths/index.html`.
 
+### Index de l'Humanité (`humanite.html`)
+
+- Habillage « cabinet clair » choisi par le propriétaire sur maquette (fond papier, Bricolage Grotesque et
+  Newsreader, accent rouge brique) : héros + « Votre parcours », 01 le cours, 02 les auteurs, 03 les œuvres,
+  04 entrer par une notion, 05 dernières fiches.
+- Rien à y mettre à jour quand une fiche s'ajoute : le script de la page lit les tableaux `OEUVRES` des index
+  Littérature, Cinéma et Art, la frise de `fiches-auteurs.html` et `nouveautes.js`. Seuls restent écrits à la
+  main : la carte du cours (nouveau cours) et les totaux « 8 œuvres d'art » et « 6 musiques ».
+
 ### Fiches de l'Humanité (cinéma, littérature)
 
 - Mise en page commune (`humanite/cinema/`, `humanite/litterature/`) : bandeau compact, bande
