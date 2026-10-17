@@ -191,7 +191,10 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
     une légende fidèle à ce qu'elle montre : si sa date ou son lieu ne sont pas sûrs, ne pas les écrire
     (seulement la personne et sa fonction, par exemple « Sir Ken McCallum, directeur général du MI5, au
     pupitre. »). Fichier `<slug>-<sujet>.webp`. Pas de blanc sous la photo : le texte de la section doit
-    descendre au moins jusqu'au bas de la légende (mesurer avec Playwright). Jamais la photo de une une
+    descendre au moins jusqu'au bas de la légende, à 1100, 1280, 1440 et 1920 px et dans chaque langue
+    (mesurer avec Playwright ; sinon ajouter une courte phrase vérifiée à la section). La photo flotte sur
+    42 % de la largeur au plus ; sous 1000 px, elle passe au-dessus du texte (CSS du gabarit), pour ne
+    jamais laisser une colonne de texte étroite. Jamais la photo de une une
     seconde fois.
 - **Analyse** (`a-analyse`) : étiquette « L'analyse » (« Analysis »…), titre d'analyse original (jamais
   « Conclusion »), 2 paragraphes sans ton scolaire, en deux colonnes `a-analyse-corps` avec lettrine.
