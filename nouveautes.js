@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "en",
 "rubrique": "Actu Anglais",
+"meta": "États-Unis",
+"titre": "Maison-Blanche : la porte-parole Katie Zacharia quitte son poste après seulement cinq jours",
+"url": "actualites/en/articles/us-zacharia-porte-parole-cinq-jours-2026.html",
+"image": "actualites/en/images/us-zacharia-porte-parole-cinq-jours-2026.webp",
+"date": "2026-10-17T20:39:43+00:00"
+},
+{
+"t": "en",
+"rubrique": "Actu Anglais",
 "meta": "Royaume-Uni",
 "titre": "Zelensky à Londres : Andy Burnham réaffirme un soutien « indéfectible » à l'Ukraine",
 "url": "actualites/en/articles/uk-burnham-zelensky-londres-2026.html",
@@ -1358,15 +1367,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Cisjordanie : Londres provoque une crise diplomatique inédite avec Israël",
 "url": "actualites/en/articles/uk-israel-diplomatic-crisis-2026.html",
 "image": "actualites/en/images/uk-israel-diplomatic-crisis-2026.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "Golfe d'Amérique, Mont McKinley, Lake America : quand Trump redessine la carte à coups de décrets",
-"url": "actualites/en/articles/trump-renommages-cartes-provocatrices-2026.html",
-"image": "actualites/en/images/trump-renommages-cartes-provocatrices-2026.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
