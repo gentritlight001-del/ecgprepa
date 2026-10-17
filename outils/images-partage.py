@@ -54,7 +54,8 @@ body{width:1200px;height:630px;overflow:hidden}
 <div id="url">ecg-prepa.fr</div></div></body></html>"""
 
 # Articles au gabarit « a-page » (maquette B choisie par le propriétaire) : photo de une en
-# plein cadre, assombrie à gauche, pastille rouge du pays, titre blanc, filet rouge en bas.
+# plein cadre, assombrie à gauche, pastille du pays, titre blanc, filet en bas. Pastille et
+# filet prennent la couleur d'accent de l'article (--accent dans son :root), rouge sinon.
 GABARIT_PHOTO = """<!doctype html><html lang="fr"><head><meta charset="utf-8">
 <link rel="stylesheet" href="file://%(racine)sfonts/fonts.css">
 <style>
@@ -75,7 +76,7 @@ body{width:1200px;height:630px;overflow:hidden;position:relative;background:#0b0
 
 
 def photo_de(rel, contenu):
-    """Article « a-page » : (pays, chemin absolu de la photo de une), sinon None."""
+    """Article « a-page » : (pays, chemin absolu de la photo de une, couleur d'accent), sinon None."""
     if 'class="a-page"' not in contenu:
         return None
     img = re.search(r'<img class="a-hero-img" src="([^"]+)"', contenu)
@@ -83,7 +84,8 @@ def photo_de(rel, contenu):
     if not img:
         return None
     chemin = os.path.normpath(os.path.join(RACINE, os.path.dirname(rel), img.group(1)))
-    return (html.unescape(pays.group(1)) if pays else ''), chemin
+    accent = re.search(r'--accent:\s*(#[0-9a-fA-F]{3,8})', contenu)
+    return (html.unescape(pays.group(1)) if pays else ''), chemin, (accent.group(1) if accent else '#b5131f')
 
 
 def titre_de(contenu):
@@ -189,13 +191,14 @@ def main():
             os.makedirs(os.path.dirname(RACINE + sortie), exist_ok=True)
             photo = photo_de(rel, contenu)
             if photo:
-                pays, img = photo
+                pays, img, accent = photo
                 taille = 60 if len(titre) <= 50 else 54 if len(titre) <= 75 else 46 if len(titre) <= 100 else 40
-                page_photo.evaluate("""([lab, titre, img, taille]) => new Promise(ok => {
-                  document.getElementById('label').textContent = lab;
+                page_photo.evaluate("""([lab, titre, img, taille, accent]) => new Promise(ok => {
+                  const l = document.getElementById('label'); l.textContent = lab; l.style.background = accent;
+                  document.getElementById('filet').style.background = accent;
                   const t = document.getElementById('title'); t.textContent = titre; t.style.fontSize = taille + 'px';
                   const i = document.getElementById('img'); i.onload = i.onerror = () => ok(); i.src = img; })""",
-                                    [pays or 'Actualité', titre, 'file://' + img, taille])
+                                    [pays or 'Actualité', titre, 'file://' + img, taille, accent])
                 page_photo.screenshot(path=RACINE + sortie, type='jpeg', quality=80)
             else:
                 taille = 72 if len(titre) <= 55 else 62 if len(titre) <= 85 else 54 if len(titre) <= 110 else 46

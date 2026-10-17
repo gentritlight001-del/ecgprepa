@@ -62,8 +62,8 @@ directement après chaque modification, sans attendre un nouveau « mets en lign
    déjà faites : on peut le relancer sans risque. Il a besoin de playwright (voir section 5).
    Les articles au gabarit `a-page` ont leur propre modèle, la **maquette B** choisie par le
    propriétaire : photo de une en plein cadre, assombrie à gauche, logo « ECG Prépa » en haut, pastille
-   rouge du pays (`a-tag t0`), titre blanc en Fraunces (celui du `<title>`), « ecg-prepa.fr · Actualité »
-   en bas et filet rouge. Les autres pages gardent un aplat de couleur. Regarder l'image produite : si le
+   du pays (`a-tag t0`), titre blanc en Fraunces (celui du `<title>`), « ecg-prepa.fr · Actualité »
+   en bas et filet ; pastille et filet à la couleur d'accent de l'article (`--accent`). Les autres pages gardent un aplat de couleur. Regarder l'image produite : si le
    visage ou le sujet de la photo passe sous le titre, le signaler au propriétaire.
    Pour **refaire** l'image d'une page qui en a déjà une (photo ou titre changés) :
    `python3 outils/images-partage.py --refaire <page>` (l'adresse prend `?v=<date et heure>`, sinon
@@ -157,6 +157,14 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   8. Hors de l'article : « Pour aller plus loin » `a-carte a-plus` (voir plus bas).
   9. `a-fin` : « ← Tous les articles », bouton « Partager l'article » (`partager(this)`), page du pays ou
      de la région « → ».
+- **Palette : une par article.** Le rouge du gabarit est remplacé à chaque article par une couleur d'accent
+  propre, choisie selon le sujet : trois variables dans le `:root` du `<style>`, `--accent` (assez foncée pour
+  du texte sur fond blanc), `--accent-fonce` (texte sur fond pâle) et `--accent-pale` (fonds), et rien d'autre à
+  changer (tout le CSS passe par elles ; les classes `rouge` des chiffres et étiquettes désignent l'accent).
+  Jamais deux fois la même : vérifier avec `grep -rh -- '--accent:' actualites/*/articles/`. Déjà prises :
+  Burnham et le Brexit rouge `#b5131f` / `#8e0f19` / `#fbe9ea` ; Colombie à Jérusalem bleu cobalt `#1d4fa0` /
+  `#143a78` / `#e6edf9`. La barre du haut garde son filet rouge (`barre-section.css`) ; l'image de partage
+  prend l'accent de l'article.
 - **Langue** : éditions de langue **bilingues** (`ap-fr-section` et `ap-<code>-section`, la seconde
   cachée), avec le petit interrupteur de la barre `.a-langues` : deux boutons `ap-lang-btn` « FR » et
   « EN » / « ES » / « DE » (`id="ap-btn-fr"`, `id="ap-btn-<code>"`, `aria-label` avec le nom de la
