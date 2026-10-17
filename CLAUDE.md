@@ -60,6 +60,11 @@ directement après chaque modification, sans attendre un nouveau « mets en lign
    de partage 1200 × 630 px (`partage/`) et ajoute les balises `og:` dans le `<head>` des pages
    qui n'en ont pas encore (aperçu des liens sur WhatsApp, Discord, etc.). Il ignore les pages
    déjà faites : on peut le relancer sans risque. Il a besoin de playwright (voir section 5).
+   Les articles au gabarit `a-page` ont leur propre modèle (panneau noir avec logo, « Actualité · pays »
+   et titre, photo de une à droite, filet rouge en bas) ; les autres pages, un aplat de couleur.
+   Pour **refaire** l'image d'une page qui en a déjà une (photo ou titre changés) :
+   `python3 outils/images-partage.py --refaire <page>` (l'adresse prend `?v=<date>`, sinon WhatsApp
+   et Discord gardent l'ancienne en cache).
    **Lancer ces scripts en dernier**, après la dernière régénération ou modification de la page :
    recréer une page depuis un gabarit efface ses balises `og:` et sa description, et le script
    ne les remet qu'au passage suivant.
