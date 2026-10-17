@@ -9,10 +9,11 @@ relancer le script après chaque nouvel article ou nouveau cours.
     python3 outils/images-partage.py            # toutes les pages concernées
     python3 outils/images-partage.py <fichier>  # une ou plusieurs pages précises
     python3 outils/images-partage.py --refaire <fichier>  # refait l'image d'une page qui en a
-                                                          # déjà une (adresse changée : ?v=<date>)
+                                                          # déjà une (adresse changée : ?v=<date et heure>)
 
-Articles d'actualité au gabarit « a-page » : panneau noir (logo, pays, titre) et photo
-de une à droite, filet rouge en bas. Autres pages : aplat de couleur et titre.
+Articles d'actualité au gabarit « a-page » (maquette B) : photo de une en plein cadre,
+assombrie à gauche, pastille rouge du pays, titre blanc, filet rouge en bas. Autres pages :
+aplat de couleur et titre.
 
 Prérequis : playwright (voir newsletter/outils/installer.sh). Le chemin de Chromium
 peut être donné avec la variable CHROMIUM_PATH.
@@ -52,24 +53,25 @@ body{width:1200px;height:630px;overflow:hidden}
 <div><div id="bar"></div><div id="title"></div></div>
 <div id="url">ecg-prepa.fr</div></div></body></html>"""
 
-# Articles au gabarit « a-page » : panneau noir à gauche, photo de une à droite.
+# Articles au gabarit « a-page » (maquette B choisie par le propriétaire) : photo de une en
+# plein cadre, assombrie à gauche, pastille rouge du pays, titre blanc, filet rouge en bas.
 GABARIT_PHOTO = """<!doctype html><html lang="fr"><head><meta charset="utf-8">
 <link rel="stylesheet" href="file://%(racine)sfonts/fonts.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{width:1200px;height:630px;overflow:hidden;background:#0b0b0c}
-#p{position:absolute;inset:0 auto 0 0;width:640px;padding:58px 56px 64px 64px;display:flex;flex-direction:column;justify-content:space-between}
-#logo{font-family:'Playfair Display',serif;font-weight:700;font-size:32px;color:#f3efe4}
-#label{display:flex;align-items:center;gap:14px;margin-bottom:22px;font-family:'IBM Plex Mono',monospace;font-size:20px;letter-spacing:.14em;text-transform:uppercase;color:#bdbdb8}
-#label:before{content:"";width:14px;height:14px;background:#b5131f}
-#title{font-family:'Fraunces',serif;font-weight:600;line-height:1.1;color:#f3efe4;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5;overflow:hidden}
-#url{font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.16em;text-transform:uppercase;color:#8a8a85}
-#img{position:absolute;top:0;right:0;width:560px;height:624px;object-fit:cover}
-#filet{position:absolute;left:0;right:0;bottom:0;height:6px;background:#b5131f}
+body{width:1200px;height:630px;overflow:hidden;position:relative;background:#0b0b0c}
+#img{position:absolute;inset:0;width:100%%;height:100%%;object-fit:cover;object-position:60%% 30%%}
+#voile{position:absolute;inset:0;background:linear-gradient(90deg,rgba(11,11,12,.92) 0%%,rgba(11,11,12,.75) 42%%,rgba(11,11,12,0) 75%%)}
+#c{position:absolute;inset:0;width:760px;padding:56px 64px;display:flex;flex-direction:column;justify-content:space-between}
+#logo{font-family:'Playfair Display',serif;font-weight:700;font-size:32px;color:#fff}
+#label{display:inline-block;margin-bottom:20px;padding:8px 14px;background:#b5131f;color:#fff;font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:18px;letter-spacing:.14em;text-transform:uppercase}
+#title{font-family:'Fraunces',serif;font-weight:600;line-height:1.08;color:#fff;text-shadow:0 2px 20px rgba(0,0,0,.4);display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden}
+#url{font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.16em;text-transform:uppercase;color:#d6d6d0}
+#filet{position:absolute;left:0;right:0;bottom:0;height:8px;background:#b5131f}
 </style></head><body>
-<img id="img" alt=""><div id="p"><div id="logo">ECG Prépa</div>
-<div><div id="label"></div><div id="title"></div></div><div id="url">ecg-prepa.fr</div></div>
-<div id="filet"></div></body></html>"""
+<img id="img" alt=""><div id="voile"></div>
+<div id="c"><div id="logo">ECG Prépa</div><div><span id="label"></span><div id="title"></div></div>
+<div id="url">ecg-prepa.fr · Actualité</div></div><div id="filet"></div></body></html>"""
 
 
 def photo_de(rel, contenu):
@@ -188,12 +190,12 @@ def main():
             photo = photo_de(rel, contenu)
             if photo:
                 pays, img = photo
-                taille = 54 if len(titre) <= 50 else 48 if len(titre) <= 75 else 42 if len(titre) <= 100 else 36
+                taille = 60 if len(titre) <= 50 else 54 if len(titre) <= 75 else 46 if len(titre) <= 100 else 40
                 page_photo.evaluate("""([lab, titre, img, taille]) => new Promise(ok => {
                   document.getElementById('label').textContent = lab;
                   const t = document.getElementById('title'); t.textContent = titre; t.style.fontSize = taille + 'px';
                   const i = document.getElementById('img'); i.onload = i.onerror = () => ok(); i.src = img; })""",
-                                    ['Actualité' + (' · ' + pays if pays else ''), titre, 'file://' + img, taille])
+                                    [pays or 'Actualité', titre, 'file://' + img, taille])
                 page_photo.screenshot(path=RACINE + sortie, type='jpeg', quality=80)
             else:
                 taille = 72 if len(titre) <= 55 else 62 if len(titre) <= 85 else 54 if len(titre) <= 110 else 46
@@ -208,7 +210,7 @@ def main():
                 page.screenshot(path=RACINE + sortie, type='jpeg', quality=68)
             if 'og:image' in contenu:
                 # Image refaite : nouvelle adresse, sinon les réseaux gardent l'ancienne en cache.
-                v = datetime.date.today().strftime('%Y%m%d')
+                v = datetime.datetime.now().strftime('%Y%m%d%H%M')
                 nouveau = re.sub(r'(<meta (?:property="og:image"|name="twitter:image") content=")[^"?]*(?:\?v=\d+)?"',
                                  lambda m: m.group(1) + SITE + sortie + '?v=' + v + '"', contenu)
             else:
