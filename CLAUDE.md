@@ -148,9 +148,8 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   4. `<article class="a-carte a-article">` : `a-chiffres` (4 chiffres vérifiés, le plus marquant en
      `rouge`), chapô `a-chapo`, puis **6 à 8 sections** `a-sec` numérotées (`a-h2` + `a-num` 01, 02…) :
      un titre court et 1 ou 2 paragraphes `a-p` chacune.
-  5. Entre les sections : **1 ou 2 schémas** `a-schema`, **une citation** `a-citation`, et **0 à 3 photos**
-     (une par section au plus), en tête de leur section, **en alternant les côtés** : la 1re à droite
-     (`a-photo`), la 2e à gauche (`a-photo gauche`), la 3e à droite.
+  5. Entre les sections : **1 ou 2 schémas** `a-schema` et **une citation** `a-citation`. **Plus aucune
+     photo dans le corps** (décision du propriétaire, octobre 2026) : seule la photo de une `a-hero-img`.
   6. Chronologie `a-chrono-bloc` après la dernière section : frise horizontale de 6 dates, **la plus
      récente à gauche** (`li.recent`, en rouge). Tout tableau avec des dates : le plus récent en haut.
   7. Analyse `a-analyse`, puis « Dans une copie » `a-copie` à l'intérieur (voir plus bas).
@@ -174,28 +173,21 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
 - **Citation** (`a-citation`) : filet rouge à gauche, taille de lecture, jamais un grand bloc sombre.
   Citation courte dans sa langue d'origine ; dessous `<b>Nom</b>, fonction, source, date`, et dans la
   version française sa traduction en `<span class="a-trad">`.
-- **Schémas et images : tous pertinents.** Chaque schéma et chaque photo montre précisément ce que dit
-  la section où il est placé : rien de décoratif, rien de « pour remplir ». Sans schéma ou sans photo
-  vraiment utile, on n'en met pas.
-  - Schémas (`a-schema`, titre `a-schema-t`, source en `a-src`) : `a-etapes` (chaîne d'étapes, par
-    exemple établi / estimé / jamais démontré), `a-axe` (positions des acteurs sur un axe), ou un autre
-    schéma dans le même style s'il éclaire mieux le sujet (barres, tableau). Données vérifiées et
-    sourcées.
-  - Photo dans le corps (`a-photo`, en paysage 3:2) : **une image concrète de l'événement décrit**,
-    c'est-à-dire la personne, le lieu, le bâtiment ou le document dont parle la section (par exemple le
-    chef du MI5 dans la section sur son discours, l'immeuble de l'usine à trolls dans celle sur les
-    trolls). Jamais une image générique ou symbolique (drapeau, monument, vue de ville) sans lien direct
-    avec ce qui est raconté. **Ne pas la chercher soi-même : la demander directement au propriétaire**
-    dans la réponse, en disant précisément laquelle (personne, lieu, moment) et pour quelle section.
-    Sans photo fournie, pas de photo dans le corps. Une photo reçue est **regardée avant usage**, avec
-    une légende fidèle à ce qu'elle montre : si sa date ou son lieu ne sont pas sûrs, ne pas les écrire
-    (seulement la personne et sa fonction, par exemple « Sir Ken McCallum, directeur général du MI5, au
-    pupitre. »). Fichier `<slug>-<sujet>.webp`. Pas de blanc sous la photo : le texte de la section doit
-    descendre au moins jusqu'au bas de la légende, à 1100, 1280, 1440 et 1920 px et dans chaque langue
-    (mesurer avec Playwright ; sinon ajouter une courte phrase vérifiée à la section). La photo flotte sur
-    42 % de la largeur au plus ; sous 1000 px, elle passe au-dessus du texte (CSS du gabarit), pour ne
-    jamais laisser une colonne de texte étroite. Jamais la photo de une une
-    seconde fois.
+- **Schémas : tous pertinents, et variés.** Chaque schéma montre précisément ce que dit la section où il
+  est placé : rien de décoratif, rien de « pour remplir ». Sans schéma vraiment utile, on n'en met pas.
+  **Pas de photo dans le corps** des articles : ne pas en chercher, ne pas en demander au propriétaire
+  (les articles déjà en ligne gardent les leurs, et le CSS `a-photo` du gabarit reste en place).
+  - Schémas (`a-schema`, titre `a-schema-t`, source en `a-src`) : **diversifier les structures d'un
+    article à l'autre et choisir celle qui sert le sujet**, au lieu de reprendre toujours les mêmes.
+    Modèles existants : `a-etapes` (chaîne d'étapes, par exemple établi / estimé / jamais démontré, ou
+    voté / suspendu / confirmé), `a-axe` (positions des acteurs sur un axe). Autres formes bienvenues,
+    dans le même style (couleurs `--accent`, `--marine`, bords et fonds du gabarit) : barres
+    comparatives, tableau avant / après, arbre ou schéma de circuit (qui décide, qui finance), carte
+    simplifiée, courbe ou frise de chiffres, double colonne « ce que dit le camp A / le camp B ».
+    Ne pas mettre deux schémas de la même forme dans un même article, et regarder les derniers articles
+    publiés (`grep -l 'a-etapes\|a-axe' actualites/*/articles/*.html`) pour ne pas répéter la forme
+    de l'article précédent. Données vérifiées et sourcées ; un nouveau type de bloc s'ajoute au
+    `<style>` de l'article, jamais à la place de celui du gabarit.
 - **Analyse** (`a-analyse`) : étiquette « L'analyse » (« Analysis »…), titre d'analyse original (jamais
   « Conclusion »), 2 paragraphes sans ton scolaire, en deux colonnes `a-analyse-corps` avec lettrine.
   **Les deux colonnes ont la même hauteur** à 1280, 1440 et 1920 px, dans chaque langue : mesurer avec
@@ -234,8 +226,7 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
 
 ### Image
 
-Enregistrer la photo fournie en WebP sous `actualites/<code>/images/<slug>.webp` (une photo du corps :
-`<slug>-<sujet>.webp`), en largeur 1600 px maximum :
+Enregistrer la photo de une fournie en WebP sous `actualites/<code>/images/<slug>.webp`, en largeur 1600 px maximum :
 
 ```python
 from PIL import Image
