@@ -265,12 +265,15 @@ page pays ou région :
 
 ### Index des cours (`cours-ecg.html`)
 
-- Habillage « atlas nocturne » des index de matières, choisi par le propriétaire sur maquette : héros, les deux
-  années côte à côte (une ligne cliquable par matière, à sa couleur), derniers chapitres, accès aux flashcards.
+- Habillage « atlas nocturne » des index de matières, choisi par le propriétaire sur maquette : héros (titre,
+  sous-titre de **2 lignes au plus**, dessin au trait à droite : un livre ouvert aux marque-pages des couleurs des
+  matières ; **pas de légende de couleurs**), les deux années côte à côte, **sans compteur ni mention sous le nom de
+  l'année** (une ligne cliquable par matière, à sa couleur), derniers chapitres, accès aux flashcards.
   **Pas de section « Aujourd'hui »** (retirée à la demande du propriétaire).
 - **Langues** : une seule ligne par année, sans pastilles de langue ; elle mène à la page de choix de la langue,
   `premiere_annee/langues/index.html` (grammaire) ou `deuxieme_annee/langues/index.html` (civilisation), même
-  habillage, une ligne par langue vers son index (`<langue>/index.html`).
+  habillage avec un dessin à droite du titre (bulles « Hello / Hola / Hallo » en 1re année, globe et trois repères
+  en 2e), une ligne par langue vers son index (`<langue>/index.html`).
 - Rien à y mettre à jour : les scripts lisent le `.ci-compte` et le `.ci-titre` de chaque index de matière (et,
   pour les langues, les leçons de 1re année et le nombre de pays `.ix-pays-tete` de 2e année) et `nouveautes.js`.
   Une nouvelle matière s'ajoute en copiant une ligne `.matiere`, une nouvelle langue en copiant une ligne `.langue`.
