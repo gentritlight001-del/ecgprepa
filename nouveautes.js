@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Groenland",
+"titre": "Groenland : Trump annonce une « exploration massive » de pétrole, de gaz et de minéraux, Nuuk tempère",
+"url": "actualites/monde/articles/groenland-trump-exploration-massive-2026.html",
+"image": "actualites/monde/images/groenland-trump-exploration-massive-2026.webp",
+"date": "2026-10-17T20:23:58+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Chili",
@@ -1070,15 +1079,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Soudan : effondrement meurtrier d'une mine d'or au Kordofan occidental",
 "url": "actualites/monde/articles/soudan-mine-or-kordofan.html",
 "image": "actualites/monde/images/soudan-mine-or-kordofan.webp",
-"date": "2026-09-18T20:00:18+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "UE / Canada",
-"titre": "Union européenne – Canada : Ursula von der Leyen invite Ottawa à devenir le premier « membre associé » de l'UE",
-"url": "actualites/monde/articles/ue-canada-membre-associe.html",
-"image": "actualites/monde/images/ue-canada-membre-associe.webp",
 "date": "2026-09-18T20:00:18+00:00"
 },
 {
