@@ -41,6 +41,14 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   la nouvelle page, avec une ancre si besoin. Déjà en renvoi : `premiere_annee/index.html` → `cours-ecg.html#premiere`,
   `deuxieme_annee/index.html` → `cours-ecg.html#deuxieme`, `humanite/cours-humanite/cours-humanite.html`
   → `humanite.html#cours`.
+- **Barre du haut : une par grande section**, choisie par le propriétaire sur maquette (`barre-section.css`).
+  Partout : 60 px, logo « ECG Prépa » en Playfair Display gras 20 px à gauche, fil d'Ariane au centre
+  (sous la barre sur téléphone, en une ligne qui défile), loupe et compte à droite. Couleurs : Cours ECG
+  (`sn-cours`, noir, filet à la couleur de la matière : `sn-maths`, `sn-hgg`…), Actualité (`sn-actu`, noir,
+  filet rouge, fil en capitales), Culture générale (`sn-cg`, kraft, logo rouge tampon), L'Humanité (`sn-hum`,
+  blanc, filet rouge brique). Une nouvelle page copiée d'une page existante garde sa barre ; sinon,
+  `python3 outils/barre-section.py` marque la `<nav>` (classes `sn`, `sn-logo`, `sn-fil`, `.nav-right`) et
+  relie la feuille. Ne pas restyler la barre dans la page.
 
 ## 2. Mise en ligne
 
