@@ -69,6 +69,95 @@
     (document.head || document.documentElement).appendChild(scriptRecherche);
   } catch (e) {}
 
+  /* ─── Drapeaux emoji sous Windows ────────────────────────────
+     La police d'emoji de Windows n'a pas de drapeaux : Chrome, Edge,
+     Opera y affichent « GB » à la place de 🇬🇧. Dans ce cas seulement,
+     on charge une police qui ne contient que les drapeaux
+     (fonts/TwemojiCountryFlags.woff2, Twemoji, licence CC-BY 4.0) et
+     chaque drapeau du texte passe dans un <span class="emoji-drapeau">,
+     y compris dans le contenu ajouté ensuite par les scripts.
+     Mac, iPhone, Android et Firefox ne téléchargent rien. */
+  (function drapeaux() {
+    try {
+      var POLICES_EMOJI = '"Twemoji Mozilla","Apple Color Emoji","Segoe UI Emoji",' +
+        '"Segoe UI Symbol","Noto Color Emoji","EmojiOne Color","Android Emoji",sans-serif';
+      /* Un emoji en couleur garde sa couleur quel que soit fillStyle. */
+      var enCouleur = function (txt) {
+        var c = document.createElement('canvas');
+        c.width = c.height = 1;
+        var ctx = c.getContext('2d', { willReadFrequently: true });
+        ctx.textBaseline = 'top';
+        ctx.font = '100px ' + POLICES_EMOJI;
+        ctx.scale(0.01, 0.01);
+        var pixel = function (couleur) {
+          ctx.clearRect(0, 0, 100, 100);
+          ctx.fillStyle = couleur;
+          ctx.fillText(txt, 0, 0);
+          return ctx.getImageData(0, 0, 1, 1).data.join(',');
+        };
+        var noir = pixel('#000');
+        return noir === pixel('#fff') && noir.indexOf('0,0,0,') !== 0;
+      };
+      if (!enCouleur('\u{1F60A}') || enCouleur('\u{1F1E8}\u{1F1ED}')) return;
+
+      var st = document.createElement('style');
+      st.textContent =
+        '@font-face{font-family:"Twemoji Country Flags";font-display:swap;' +
+        'src:url("' + BASE + 'fonts/TwemojiCountryFlags.woff2") format("woff2");' +
+        'unicode-range:U+1F1E6-1F1FF,U+1F3F4,U+E0062-E0063,U+E0065,U+E0067,' +
+        'U+E006C,U+E006E,U+E0073-E0074,U+E0077,U+E007F}' +
+        '.emoji-drapeau{font-family:"Twemoji Country Flags","Segoe UI Emoji",sans-serif;' +
+        'font-style:normal;letter-spacing:0;font-variant-ligatures:normal}';
+      (document.head || document.documentElement).appendChild(st);
+
+      var DRAPEAU = /[\u{1F1E6}-\u{1F1FF}]{2}|\u{1F3F4}[\u{E0061}-\u{E007A}]+\u{E007F}/gu;
+      var INDICE = /\uD83C[\uDDE6-\uDDFF\uDFF4]/;
+      var EXCLUS = /^(SCRIPT|STYLE|TEXTAREA|OPTION|SELECT|TITLE|NOSCRIPT)$/;
+      var XHTML = 'http://www.w3.org/1999/xhtml';
+
+      var remplacer = function (t) {
+        var p = t.parentNode;
+        if (!p || p.namespaceURI !== XHTML || EXCLUS.test(p.nodeName) ||
+            p.isContentEditable || p.classList.contains('emoji-drapeau')) return;
+        var s = t.nodeValue, frag = document.createDocumentFragment(), fin = 0, m;
+        DRAPEAU.lastIndex = 0;
+        while ((m = DRAPEAU.exec(s))) {
+          if (m.index > fin) frag.appendChild(document.createTextNode(s.slice(fin, m.index)));
+          var sp = document.createElement('span');
+          sp.className = 'emoji-drapeau';
+          sp.textContent = m[0];
+          frag.appendChild(sp);
+          fin = DRAPEAU.lastIndex;
+        }
+        if (!fin) return;
+        if (fin < s.length) frag.appendChild(document.createTextNode(s.slice(fin)));
+        p.replaceChild(frag, t);
+      };
+      var traiter = function (racine) {
+        if (racine.nodeType === 3) {
+          if (INDICE.test(racine.nodeValue)) remplacer(racine);
+          return;
+        }
+        if (racine.nodeType !== 1 || !INDICE.test(racine.textContent)) return;
+        var w = document.createTreeWalker(racine, NodeFilter.SHOW_TEXT), n, liste = [];
+        while ((n = w.nextNode())) if (INDICE.test(n.nodeValue)) liste.push(n);
+        liste.forEach(remplacer);
+      };
+
+      var demarrer = function () {
+        traiter(document.body);
+        new MutationObserver(function (mutations) {
+          mutations.forEach(function (mu) {
+            if (mu.type === 'characterData') traiter(mu.target);
+            else for (var i = 0; i < mu.addedNodes.length; i++) traiter(mu.addedNodes[i]);
+          });
+        }).observe(document.body, { childList: true, subtree: true, characterData: true });
+      };
+      if (document.body) demarrer();
+      else document.addEventListener('DOMContentLoaded', demarrer);
+    } catch (e) {}
+  })();
+
   /* ─── Navigation rapide entre les pages ──────────────────────
      1. Transition en fondu entre deux pages (Chrome, Edge, Safari
         récents ; ignoré ailleurs, sans rien casser).
