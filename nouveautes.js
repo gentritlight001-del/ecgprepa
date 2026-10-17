@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Colombie",
+"titre": "Colombie : De la Espriella ouvre une ambassade à Jérusalem et renoue avec Israël",
+"url": "actualites/es/articles/colombie-ambassade-jerusalem.html",
+"image": "actualites/es/images/colombie-ambassade-jerusalem.webp",
+"date": "2026-10-17T17:55:09+00:00"
+},
+{
 "t": "cours",
 "rubrique": "Cours",
 "meta": "HGG 2e année · chapitre 3",
@@ -1394,15 +1403,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Accord pétrolier Venezuela–États-Unis : l'or noir au cœur de la refondation post-Maduro",
 "url": "actualites/es/articles/accord-petrolier-venezuela-usa.html",
 "image": "actualites/es/images/accord-petrolier-venezuela-usa.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Équateur",
-"titre": "Équateur : l'ex-président Lenín Moreno condamné à cinq ans de prison pour corruption",
-"url": "actualites/es/articles/equateur-moreno-condamne.html",
-"image": "actualites/es/images/equateur-moreno-condamne.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
