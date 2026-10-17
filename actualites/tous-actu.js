@@ -1,11 +1,13 @@
-/* Pages « Tous les articles » : construit la liste à partir de ACTU_DATA
-   (défini plus haut dans la page). Les 3 articles les plus récents en
-   grand, puis tous les autres rangés par mois ; recherche, thèmes et pays.
+/* Pages « Tous les articles » et pages pays / région (data-page="pays") :
+   construit la liste à partir de ACTU_DATA (défini plus haut dans la page).
+   Les 3 articles les plus récents en grand, puis tous les autres rangés par
+   mois ; recherche, thèmes et pays (menu caché s'il n'y a qu'un pays).
    Les cartes gardent la classe actu-card et le titre .actu-card-title :
    auth.js y pose le badge Premium, favoris.js l'étoile. */
 (function () {
   var code = document.body.getAttribute('data-code');
-  var parRegion = code === 'monde';
+  var pagePays = document.body.getAttribute('data-page') === 'pays';
+  var parRegion = code === 'monde' && !pagePays;
   var MOIS = ['', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
   var COURT = ['', 'janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
   var THEMES = {
@@ -55,6 +57,7 @@
     T.forEach(function (a) { c[a.domain] = (c[a.domain] || 0) + 1; libTh[a.domain] = a.theme; });
     if (etat.pays && !n[etat.pays]) { n[etat.pays] = 0; ordre.push(etat.pays); }
     ordre.sort(function (x, y) { return n[y] - n[x]; });
+    $('ta-pays').parentNode.hidden = ordre.length < 2;
     $('ta-pays').innerHTML = '<option value="">' + (parRegion ? 'Toutes les régions' : 'Tous les pays') + ' (' + P.length + ')</option>' +
       ordre.map(function (k) { return '<option value="' + esc(k) + '"' + (etat.pays === k ? ' selected' : '') + '>' + esc(nom(k)) + ' (' + n[k] + ')</option>'; }).join('');
     $('ta-themes').innerHTML = '<button type="button" class="ta-th" data-d="" aria-pressed="' + !etat.th + '">Tous les thèmes <span>' + T.length + '</span></button>' +
