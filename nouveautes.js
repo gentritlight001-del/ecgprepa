@@ -1,10 +1,19 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "Royaume-Uni",
+"titre": "Zelensky à Londres : Andy Burnham réaffirme un soutien « indéfectible » à l'Ukraine",
+"url": "actualites/en/articles/uk-burnham-zelensky-londres-2026.html",
+"image": "actualites/en/images/uk-burnham-zelensky-londres-2026.webp",
+"date": "2026-10-17T20:32:10+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Groenland",
-"titre": "Groenland : Trump annonce une « exploration massive » de pétrole, de gaz et de minéraux, Nuuk tempère",
+"titre": "Groenland : Trump annonce une « exploration massive » de pétrole, gaz et minéraux, Nuuk tempère",
 "url": "actualites/monde/articles/groenland-trump-exploration-massive-2026.html",
 "image": "actualites/monde/images/groenland-trump-exploration-massive-2026.webp",
 "date": "2026-10-17T20:23:58+00:00"
@@ -1358,15 +1367,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Golfe d'Amérique, Mont McKinley, Lake America : quand Trump redessine la carte à coups de décrets",
 "url": "actualites/en/articles/trump-renommages-cartes-provocatrices-2026.html",
 "image": "actualites/en/images/trump-renommages-cartes-provocatrices-2026.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "Crash d'un avion cargo Amazon à l'aéroport de Miami : au moins cinq morts et cinq blessés",
-"url": "actualites/en/articles/crash-avion-cargo-amazon-miami-2026.html",
-"image": "actualites/en/images/crash-avion-cargo-amazon-miami-2026.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
