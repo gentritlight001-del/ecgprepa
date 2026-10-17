@@ -12,8 +12,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-10-17",
+  "maj": "2026-10-18",
   "parties": [
+   {
+    "id": "2026-10-18",
+    "nom": "Jour 8 · The White House Press Secretary Who Lasted Five Days",
+    "n": 30,
+    "date": "2026-10-18"
+   },
    {
     "id": "2026-10-17",
     "nom": "Jour 7 · The Pentagon Plans to Livestream a Military Execution",
@@ -23,7 +29,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-16",
     "nom": "Jour 6 · Burnham in Berlin as the Kensington Treaty Takes Effect",
-    "n": 30,
+    "n": 29,
     "date": "2026-10-16"
    },
    {
@@ -57,8 +63,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 205,
-  "v": "67b34693b6"
+  "n": 234,
+  "v": "b90b0dfe24"
  },
  {
   "id": "espagnol",
@@ -72,18 +78,24 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Espagnol",
   "lien": "premiere_annee/langues/espagnol/quotidien/index.html",
   "revoir": "ecg-espagnol-quotidien-a-revoir",
-  "maj": "2026-10-17",
+  "maj": "2026-10-18",
   "parties": [
+   {
+    "id": "2026-10-18",
+    "nom": "Jour 8 · Chile y Bolivia: Kast en La Paz, primera visita oficial en 71 años",
+    "n": 32,
+    "date": "2026-10-18"
+   },
    {
     "id": "2026-10-17",
     "nom": "Jour 7 · Venezuela: Delcy Rodríguez lleva a la FAO el plan «Venezuela Alimenta»",
-    "n": 30,
+    "n": 29,
     "date": "2026-10-17"
    },
    {
     "id": "2026-10-16",
     "nom": "Jour 6 · España: Felipe VI y Letizia, una visita histórica a Ceuta",
-    "n": 30,
+    "n": 29,
     "date": "2026-10-16"
    },
    {
@@ -117,8 +129,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 202,
-  "v": "74727bb6a7"
+  "n": 232,
+  "v": "84ebfd19c8"
  },
  {
   "id": "allemand",
@@ -132,8 +144,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Allemand",
   "lien": "premiere_annee/langues/allemand/quotidien/index.html",
   "revoir": "ecg-allemand-quotidien-a-revoir",
-  "maj": "2026-10-17",
+  "maj": "2026-10-18",
   "parties": [
+   {
+    "id": "2026-10-18",
+    "nom": "Jour 8 · BioNTech schließt drei Standorte",
+    "n": 32,
+    "date": "2026-10-18"
+   },
    {
     "id": "2026-10-17",
     "nom": "Jour 7 · Ein Extremjahr für die Gletscher",
@@ -143,7 +161,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-16",
     "nom": "Jour 6 · Bremen feiert die Deutsche Einheit",
-    "n": 30,
+    "n": 29,
     "date": "2026-10-16"
    },
    {
@@ -167,7 +185,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-11",
     "nom": "Jour 2 · Die deutsche Wirtschaft wächst wieder",
-    "n": 27,
+    "n": 26,
     "date": "2026-10-11"
    },
    {
@@ -177,8 +195,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 208,
-  "v": "79afbb2d1c"
+  "n": 238,
+  "v": "ed6f204fd1"
  },
  {
   "id": "hgg1-ch1",
