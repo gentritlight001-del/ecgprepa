@@ -34,6 +34,14 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   `/opt/pw-browsers/chromium`. Remplacer `auth.js` par un script vide (sinon redirection
   vers la connexion).
 - Fichiers temporaires dans le scratchpad de la session, jamais dans le dépôt.
+- **Refonte d'une page : homogénéiser.** La nouvelle version remplace l'ancienne **sous le même nom de
+  fichier** (jamais de copie à côté), pour que tous les liens et fils d'Ariane du site restent bons. Une
+  ancienne page intermédiaire devenue inutile n'est pas supprimée : elle devient une page de renvoi
+  (`noindex`, `location.replace` + `meta refresh`, comme `premiere_annee/langues/flashcards/index.html`) vers
+  la nouvelle page, avec une ancre si besoin. Déjà en renvoi : `premiere_annee/index.html` et
+  `premiere_annee/langues/index.html` → `cours-ecg.html#premiere`, `deuxieme_annee/index.html` et
+  `deuxieme_annee/langues/index.html` → `cours-ecg.html#deuxieme`, `humanite/cours-humanite/cours-humanite.html`
+  → `humanite.html#cours`.
 
 ## 2. Mise en ligne
 
@@ -165,8 +173,9 @@ im = Image.open(src).convert("RGB"); im.thumbnail((1600, 1600)); im.save(dst, "W
 
 « Le kiosque », choisi par le propriétaire sur maquette : fond **noir** (`#0b0b0c`), titre « Actualité », puis
 seulement les quatre éditions, chacune en petit journal crème posé de travers (titre de l'édition dans sa langue,
-nombre d'articles, la une avec photo, 2 brèves, « Ouvrir l'édition → »). Le script lit `ACTU_DATA` de chaque
-`tous-<code>.html` : rien à mettre à jour à la main.
+nombre d'articles, la une avec photo, 2 brèves). **Chaque journal entier est un seul lien vers « Tous les
+articles » de son édition** (`<code>/tous-<code>.html`), sans lien à l'intérieur. Le script lit `ACTU_DATA` de
+chaque `tous-<code>.html` : rien à mettre à jour à la main.
 
 ### Carte dans les listes
 
