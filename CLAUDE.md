@@ -113,7 +113,8 @@ Cloudflare (que seul le propriétaire peut régler) : Caching → Configuration 
 
 **Avant d'écrire un article, lire `actualites/prompts-articles-ecg-prepa.pdf`** (outil Read,
 pages 1 à 4 : prompts n°1 à 4 = articles EN, ES, DE, MONDE). C'est la « Bibliothèque de
-prompts » du propriétaire : elle fait foi, et les règles ci-dessous la complètent. Une demande
+prompts » du propriétaire : elle fait foi pour le contenu, et les règles ci-dessous la complètent
+(pour la mise en page, c'est le gabarit ci-dessous qui compte). Une demande
 type est « Rédige un article d'actualité sur le sujet suivant : … » + photo : tout doit être
 parfait du premier coup (faits vérifiés, mise en page, listes, mise en ligne). Les prompts
 n°5 à 9 (pages 5 à 7) sont les newsletters : voir la section 5.
@@ -122,54 +123,90 @@ Plusieurs articles à la fois : un sous-agent par article, chacun avec **son pro
 travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichiers partagés
 (`tous-<code>.html`, pages pays) sont modifiés par une seule personne, à la fin.
 
-- Partir d'un article récent de la même édition et garder sa structure :
-  `ap-band`, `ap-header`, `ap-hero-img`, `ap-stats` (4 chiffres), `ap-tl`
-  (chronologie), `ap-quote`, `ap-ctx`, `ap-info`, `ap-tags`.
-- **Pas de cartes de faits** (`ap-facts`, les 4 cartes Lieu / Date / Belligérants / Enjeu) dans
-  les nouveaux articles : ne pas les écrire, ni leur CSS.
-- Éditions de langue : article **bilingue**, avec `ap-fr-section` et `ap-<langue>-section`
-  et le bouton `setLang`. Le CSS du toggle (`.nav-left`, `.nav-right`, `.ap-lang-btn`,
-  `.ap-lang-btn.active`, `.ap-<langue>-section { display:none; }`) doit être présent : le copier
-  d'un article de référence de la même édition. Le bouton bascule le texte sans recharger la page.
-  Mondiale : français seulement, un seul bloc de contenu, **sans** bouton de langue ni section
+- **Gabarit** (choisi par le propriétaire, octobre 2026) : copier
+  `actualites/en/articles/uk-burnham-russie-brexit-ingerence-2026.html` (`<body class="a-page">`). Pour
+  la mise en page, c'est lui qui fait foi, avant le PDF et les anciens articles (`ap-band`, `ap-cols`,
+  `ap-facts`, `ap-ctx` : ne plus les écrire ; les anciens articles restent tels quels). Garder son
+  `<style>` tel quel (ne le compléter que pour un nouveau type de bloc) et les classes `ap-title`,
+  `ap-sub`, `ap-intro` (lues par les scripts). Supprimer de la copie les balises `og:`, `twitter:`,
+  `canonical` et la description.
+- **Ordre des blocs**, dans chaque langue :
+  1. Barre `sn sn-actu` (fil d'Ariane : Accueil / Actualité / édition / pays / sujet court), puis `a-filet`.
+  2. Héros `a-hero` : tags `a-tag` (`t0` le pays, `t1` le thème, puis 1 ou 2 mots-clés), titre `a-titre`,
+     sous-titre `a-sous-titre` = le même titre dans l'autre langue (avec `lang`), `a-meta`
+     « Mois année · Pays · N min de lecture », photo `a-hero-img` (la photo fournie, sans légende ni texte
+     par-dessus).
+  3. `a-essentiel` « L'essentiel en 30 secondes » : 3 points de 2 à 3 lignes, mots clés en `<strong>`.
+  4. `<article class="a-carte a-article">` : `a-chiffres` (4 chiffres vérifiés, le plus marquant en
+     `rouge`), chapô `a-chapo`, puis **6 à 8 sections** `a-sec` numérotées (`a-h2` + `a-num` 01, 02…) :
+     un titre court et 1 ou 2 paragraphes `a-p` chacune.
+  5. Entre les sections : **1 ou 2 schémas** `a-schema`, **une citation** `a-citation`, au plus **une photo**
+     `a-photo` qui flotte à droite dans une section.
+  6. Chronologie `a-chrono-bloc` après la dernière section : frise horizontale de 6 dates, **la plus
+     récente à gauche** (`li.recent`, en rouge). Tout tableau avec des dates : le plus récent en haut.
+  7. Analyse `a-analyse`, puis « Dans une copie » `a-copie` à l'intérieur (voir plus bas).
+  8. Hors de l'article : « Pour aller plus loin » `a-carte a-plus` (voir plus bas).
+  9. `a-fin` : « ← Tous les articles », bouton « Partager l'article » (`partager(this)`), page du pays ou
+     de la région « → ».
+- **Langue** : éditions de langue **bilingues** (`ap-fr-section` et `ap-<code>-section`, la seconde
+  cachée), avec le petit interrupteur de la barre `.a-langues` : deux boutons `ap-lang-btn` « FR » et
+  « EN » / « ES » / « DE » (`id="ap-btn-fr"`, `id="ap-btn-<code>"`, `aria-label` avec le nom de la
+  langue), et la fonction `setLang` du gabarit, adaptée au code de la langue. Jamais de gros boutons
+  « Français / English ». Mondiale : français seulement, un seul bloc, **sans** interrupteur ni section
   cachée.
-- **Bandeau du haut toujours rouge uni** :
-  `.ap-band { position: relative; z-index: 1; background: #b5131f; … }`
-  (pas de dégradé, pas d'autre couleur). Titre du bandeau **court, sans date**.
-- Image de une : la photo fournie, **sans** emoji ni libellé de secours par-dessus, **sans
-  légende** dessous. Aucune autre image dans le corps de l'article.
-- **Deux colonnes** (`ap-cols`) de hauteurs presque égales : écart de **110 px au plus** à
-  1280 px, pour chaque langue. Déplacer des blocs entiers (titre + paragraphes, citation,
-  tableau, chronologie) d'une colonne à l'autre, sans toucher aux polices ni aux marges.
-  Mesurer avec Playwright (bas du dernier élément de chaque colonne).
-- **Longueur** : **1 100 à 1 300 mots par langue** (version française comprise ; comme les anciens
-  articles du site, qui font en moyenne ~1 200 mots), avec **3 à 4 rubriques (`ap-sub`) par
-  colonne** : contexte et historique, chiffres clés, réactions et enjeux, un tableau, une
-  chronologie, et un encadré de fin `ap-ctx` développé. Un article de moins de 1 000 mots est
-  trop court. Pour équilibrer les colonnes, **ajouter ou déplacer des blocs des deux côtés**
-  plutôt que couper du contenu. Compter les mots du bloc `ap-body` de la version française
-  avant de mettre en ligne. Une recherche web plus poussée (plusieurs sources par article) est
-  nécessaire pour atteindre cette longueur sans rien inventer.
-- **Chaque colonne s'ouvre sur un titre (`ap-sub`) suivi de texte** : jamais sur la
-  chronologie, une citation, un tableau ou un encadré.
-- **Chronologie** (`ap-tl`) : soit **tout en bas de la colonne gauche**, soit **incrustée dans la
-  colonne droite** ; jamais au milieu de la colonne gauche. **Ordre décroissant : le plus récent
-  en haut** (chronologie, et tout tableau avec une colonne de dates). L'encadré de fin `ap-ctx` reste le
-  dernier élément de la colonne droite.
-- **Encadré de fin** (`ap-ctx`, bas de la 2e colonne) : titre d'analyse original, jamais
-  « Conclusion », et pas de ton scolaire (pas de « pour les concours », « enjeu de dissertation »).
+- **Citation** (`a-citation`) : filet rouge à gauche, taille de lecture, jamais un grand bloc sombre.
+  Citation courte dans sa langue d'origine ; dessous `<b>Nom</b>, fonction, source, date`, et dans la
+  version française sa traduction en `<span class="a-trad">`.
+- **Schémas et images : tous pertinents.** Chaque schéma et chaque photo montre précisément ce que dit
+  la section où il est placé : rien de décoratif, rien de « pour remplir ». Sans schéma ou sans photo
+  vraiment utile, on n'en met pas.
+  - Schémas (`a-schema`, titre `a-schema-t`, source en `a-src`) : `a-etapes` (chaîne d'étapes, par
+    exemple établi / estimé / jamais démontré), `a-axe` (positions des acteurs sur un axe), ou un autre
+    schéma dans le même style s'il éclaire mieux le sujet (barres, tableau). Données vérifiées et
+    sourcées.
+  - Photo dans le corps (`a-photo`, en paysage 3:2) : libre de droits (Commons, même méthode que les
+    figures d'HGG) ou photo d'un autre article du site, **regardée avant usage**, légende fidèle à ce
+    qu'elle montre. Jamais la photo de une une seconde fois.
+- **Analyse** (`a-analyse`) : étiquette « L'analyse » (« Analysis »…), titre d'analyse original (jamais
+  « Conclusion »), 2 paragraphes sans ton scolaire, en deux colonnes `a-analyse-corps` avec lettrine.
+  **Les deux colonnes ont la même hauteur** à 1280, 1440 et 1920 px, dans chaque langue : mesurer avec
+  Playwright (bas des lignes de chaque colonne, via `Range.getClientRects`) et, s'il y a une ligne
+  d'écart, **ajouter une phrase dans la colonne de gauche ou en supprimer une à droite**. Pas de script
+  d'égalisation, pas de retouche d'espacement, de police ni de marge.
+- **Dans une copie** (`a-copie`, dans l'analyse, sous les colonnes ; « In an essay », « En una
+  redacción », « Im Aufsatz » dans la version étrangère) :
+  - « Accroche » (`a-accroche`) : un paragraphe prêt à recopier, qui part d'un fait daté et vérifié de
+    l'article et finit sur la question qu'il pose. Pas de bouton « Copier ».
+  - « Idée-force » : l'argument que l'article permet de défendre.
+  - « Sujets où la placer » : 3 sujets de dissertation plausibles (HGG, culture générale, langue).
+  - « Piège à éviter » (`a-piege`, fond rose) : l'erreur de fait ou d'interprétation à ne pas commettre,
+    avec le bon chiffre.
+  C'est le seul endroit de l'article où le ton scolaire est permis.
+- **Pour aller plus loin** (`a-plus`) :
+  - « Réviser le cours » (`a-cours`) : le chapitre du site le plus proche du sujet (civilisation, HGG,
+    ESH, dossier de culture générale…) avec sa photo (`meta.image` ou héros du chapitre), kicker
+    « Réviser le cours · matière · année », titre, sous-titre du chapitre, bouton « Ouvrir le chapitre ».
+    Sans chapitre vraiment proche, pas de carte.
+  - « Lire aussi » (`a-lire`) : **4 articles** du site, les plus proches du sujet, en vignettes : image de
+    l'article, kicker « Pays · Mois année », son `cardTitle` (traduit dans la version étrangère).
+  - « Sources » (`a-sources`, numérotées) : média en `<b>`, titre en lien, date. 4 à 6 sources.
+- **Longueur** : **1 100 à 1 300 mots de texte courant** (chapô, sections, analyse, hors chiffres,
+  schémas, chronologie et « Dans une copie ») dans la version française ; la version étrangère suit
+  le même contenu. Compter avant de mettre en ligne. Une recherche web poussée (plusieurs sources par
+  article) est nécessaire pour atteindre cette longueur sans rien inventer.
 - Dans la liste du mois, l'article passe **en premier**.
-- **Renvois vers d'autres articles** : pas de « Lire notre article ». Le lien se met
-  directement sur le texte concerné, par exemple « l'attentat de Leipzig » renvoie vers
-  l'article sur l'attentat :
-  `<a href="slug.html" style="color:<couleur du texte>;text-decoration:underline;text-underline-offset:2px">…</a>`
+- **Renvois vers d'autres articles** : pas de « Lire notre article ». Le lien se met directement sur le
+  texte concerné (`<a href="slug.html" class="a-lien">l'attentat de Leipzig</a>`).
 - Faits vérifiés par recherche web, sans rien inventer.
 - Pas de tiret cadratin « — » dans le texte, même dans les versions étrangères (voir section 1).
+- **Contrôles** avec Playwright à 1280 et 390 px, dans chaque langue : aucune erreur JS, pas de
+  défilement horizontal, toutes les images chargées (faire défiler la page : elles sont en
+  `loading="lazy"`), titre du héros lisible, colonnes de l'analyse égales.
 
 ### Image
 
-Enregistrer la photo fournie en WebP sous `actualites/<code>/images/<slug>.webp`, en
-largeur 1600 px maximum :
+Enregistrer la photo fournie en WebP sous `actualites/<code>/images/<slug>.webp` (une photo du corps :
+`<slug>-<sujet>.webp`), en largeur 1600 px maximum :
 
 ```python
 from PIL import Image
