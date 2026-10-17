@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "es",
 "rubrique": "Actu Espagnol",
+"meta": "Argentine",
+"titre": "Argentine : cinquième marche universitaire pour exiger que Milei applique la loi de financement",
+"url": "actualites/es/articles/argentine-marche-universitaire-2026.html",
+"image": "actualites/es/images/argentine-marche-universitaire-2026.webp",
+"date": "2026-10-17T18:35:05+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
 "meta": "Colombie",
 "titre": "Colombie : De la Espriella ouvre une ambassade à Jérusalem et renoue avec Israël",
 "url": "actualites/es/articles/colombie-ambassade-jerusalem.html",
@@ -1394,15 +1403,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "El Granado, 45,7°C : l'Andalousie égale son record de chaleur pour un mois de septembre",
 "url": "actualites/es/articles/record-chaleur-andalousie.html",
 "image": "actualites/es/images/record-chaleur-andalousie.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Venezuela",
-"titre": "Accord pétrolier Venezuela–États-Unis : l'or noir au cœur de la refondation post-Maduro",
-"url": "actualites/es/articles/accord-petrolier-venezuela-usa.html",
-"image": "actualites/es/images/accord-petrolier-venezuela-usa.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
