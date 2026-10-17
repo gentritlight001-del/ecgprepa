@@ -161,6 +161,12 @@ from PIL import Image
 im = Image.open(src).convert("RGB"); im.thumbnail((1600, 1600)); im.save(dst, "WEBP", quality=86)
 ```
 
+### Accueil de l'actualité (`actualites/actualites.html`)
+
+Une première page de journal (papier crème, Playfair Display, rouge `#b5131f`), choisie par le propriétaire :
+seulement les quatre éditions en colonnes (nom, nombre d'articles, la une avec photo + 3 brèves, « Toute
+l'édition → »). Le script lit `ACTU_DATA` de chaque `tous-<code>.html` : rien à mettre à jour à la main.
+
 ### Carte dans les listes
 
 Ajouter l'entrée **en tête** de `ACTU_DATA`, dans `tous-<code>.html` **et** dans la
