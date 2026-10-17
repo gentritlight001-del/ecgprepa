@@ -163,9 +163,10 @@ im = Image.open(src).convert("RGB"); im.thumbnail((1600, 1600)); im.save(dst, "W
 
 ### Accueil de l'actualité (`actualites/actualites.html`)
 
-Une première page de journal (papier crème, Playfair Display, rouge `#b5131f`), choisie par le propriétaire :
-seulement les quatre éditions en colonnes (nom, nombre d'articles, la une avec photo + 3 brèves, « Toute
-l'édition → »). Le script lit `ACTU_DATA` de chaque `tous-<code>.html` : rien à mettre à jour à la main.
+« Le kiosque », choisi par le propriétaire sur maquette : fond **noir** (`#0b0b0c`), titre « Actualité », puis
+seulement les quatre éditions, chacune en petit journal crème posé de travers (titre de l'édition dans sa langue,
+nombre d'articles, la une avec photo, 2 brèves, « Ouvrir l'édition → »). Le script lit `ACTU_DATA` de chaque
+`tous-<code>.html` : rien à mettre à jour à la main.
 
 ### Carte dans les listes
 
