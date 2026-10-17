@@ -134,14 +134,15 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   1. Barre `sn sn-actu` (fil d'Ariane : Accueil / Actualité / édition / pays / sujet court), puis `a-filet`.
   2. Héros `a-hero` : tags `a-tag` (`t0` le pays, `t1` le thème, puis 1 ou 2 mots-clés), titre `a-titre`,
      sous-titre `a-sous-titre` = le même titre dans l'autre langue (avec `lang`), `a-meta`
-     « Mois année · Pays · N min de lecture », photo `a-hero-img` (la photo fournie, sans légende ni texte
+     « Mois année · Pays · 5 min de lecture » (« 5 min read »…), photo `a-hero-img` (la photo fournie, sans légende ni texte
      par-dessus).
   3. `a-essentiel` « L'essentiel en 30 secondes » : 3 points de 2 à 3 lignes, mots clés en `<strong>`.
   4. `<article class="a-carte a-article">` : `a-chiffres` (4 chiffres vérifiés, le plus marquant en
      `rouge`), chapô `a-chapo`, puis **6 à 8 sections** `a-sec` numérotées (`a-h2` + `a-num` 01, 02…) :
      un titre court et 1 ou 2 paragraphes `a-p` chacune.
-  5. Entre les sections : **1 ou 2 schémas** `a-schema`, **une citation** `a-citation`, et **0 à 2 photos**
-     `a-photo` (une par section au plus), qui flottent à droite en tête de leur section.
+  5. Entre les sections : **1 ou 2 schémas** `a-schema`, **une citation** `a-citation`, et **0 à 3 photos**
+     (une par section au plus), en tête de leur section, **en alternant les côtés** : la 1re à droite
+     (`a-photo`), la 2e à gauche (`a-photo gauche`), la 3e à droite.
   6. Chronologie `a-chrono-bloc` après la dernière section : frise horizontale de 6 dates, **la plus
      récente à gauche** (`li.recent`, en rouge). Tout tableau avec des dates : le plus récent en haut.
   7. Analyse `a-analyse`, puis « Dans une copie » `a-copie` à l'intérieur (voir plus bas).
