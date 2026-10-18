@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Brésil",
+"titre": "Brésil : la déforestation en Amazonie tombe à 3 335 km², son plus bas niveau depuis 1988",
+"url": "actualites/monde/articles/bresil-deforestation-amazonie-plus-bas-2026.html",
+"image": "actualites/monde/images/bresil-deforestation-amazonie-plus-bas-2026.webp",
+"date": "2026-10-18T06:44:07+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Astronomie",
 "titre": "Astronomie : la première étoile verte connue est une naine blanche, à 280 années-lumière",
 "url": "actualites/monde/articles/astronomie-etoile-verte-naine-blanche-2026.html",
@@ -945,15 +954,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/de/articles/retrait-candidature-jo-berlin.html",
 "image": "actualites/de/images/retrait-candidature-jo-berlin.webp",
 "date": "2026-09-26T15:06:19+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Éthiopie",
-"titre": "Éthiopie : le TPLF s'empare des aéroports du Tigré",
-"url": "actualites/monde/articles/ethiopie-tplf-aeroports-tigre.html",
-"image": "actualites/monde/images/ethiopie-tplf-aeroports-tigre.webp",
-"date": "2026-09-24T20:25:41+00:00"
 },
 {
 "t": "en",
