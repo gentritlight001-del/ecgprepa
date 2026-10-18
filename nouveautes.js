@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Astronomie",
+"titre": "Astronomie : la première étoile verte connue est une naine blanche, à 280 années-lumière",
+"url": "actualites/monde/articles/astronomie-etoile-verte-naine-blanche-2026.html",
+"image": "actualites/monde/images/astronomie-etoile-verte-naine-blanche-2026.webp",
+"date": "2026-10-18T06:37:27+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Chine / Corée du Nord",
 "titre": "Chine – Corée du Nord : le nouveau pont sur le Yalou ouvre enfin, douze ans après son achèvement",
 "url": "actualites/monde/articles/chine-coree-nord-pont-yalou-2026.html",
@@ -1053,15 +1062,6 @@ window.ECG_NOUVEAUTES = [
 "url": "deuxieme_annee/hgg/chapitre-1-hgg.html",
 "image": "deuxieme_annee/hgg/images/paraisopolis-tuca-vieira-2004.webp",
 "date": "2026-09-21T19:18:06+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Groenland",
-"titre": "Groenland : Washington obtient un accord de « contrôle permanent » sur la sécurité du territoire",
-"url": "actualites/monde/articles/groenland-accord-securite-usa.html",
-"image": "actualites/monde/images/groenland-accord-securite-usa.jpg",
-"date": "2026-09-20T07:05:53+00:00"
 },
 {
 "t": "en",
