@@ -165,7 +165,7 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   Jamais deux fois la même : vérifier avec `grep -rh -- '--accent:' actualites/*/articles/`. Déjà prises :
   Burnham et le Brexit rouge `#b5131f` / `#8e0f19` / `#fbe9ea` ; Colombie à Jérusalem bleu cobalt `#1d4fa0` /
   `#143a78` / `#e6edf9` ; émeutes de Tirana indigo `#4a3f8f` / `#352c6e` / `#ecebf7` ; pont du Yalou bleu
-  fleuve `#0a6486` / `#074b66` / `#e1f1f7` ; étoile verte vert chartreuse `#5f7a0a` / `#465a07` / `#f0f5dc` ; déforestation de l'Amazonie brun terre brûlée `#7b4a26` / `#5c3519` / `#f5ebe1`. La barre du haut garde son filet rouge (`barre-section.css`) ; l'image de partage
+  fleuve `#0a6486` / `#074b66` / `#e1f1f7` ; étoile verte vert chartreuse `#5f7a0a` / `#465a07` / `#f0f5dc` ; déforestation de l'Amazonie brun terre brûlée `#7b4a26` / `#5c3519` / `#f5ebe1` ; grève du secteur public irlandais bordeaux `#6e1d3a` / `#52132b` / `#f6e8ed`. La barre du haut garde son filet rouge (`barre-section.css`) ; l'image de partage
   prend l'accent de l'article.
 - **Langue** : éditions de langue **bilingues** (`ap-fr-section` et `ap-<code>-section`, la seconde
   cachée), avec le petit interrupteur de la barre `.a-langues` : deux boutons `ap-lang-btn` « FR » et
