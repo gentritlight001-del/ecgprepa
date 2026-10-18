@@ -137,7 +137,10 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   `ap-facts`, `ap-ctx` : ne plus les écrire ; les anciens articles restent tels quels). Garder son
   `<style>` tel quel (ne le compléter que pour un nouveau type de bloc) et les classes `ap-title`,
   `ap-sub`, `ap-intro` (lues par les scripts). Supprimer de la copie les balises `og:`, `twitter:`,
-  `canonical` et la description.
+  `canonical` et la description, **mais garder** `<link rel="stylesheet" href="../../../barre-section.css">`
+  (juste après le `</style>`) : sans elle, la barre du haut perd son habillage noir et son filet. Le
+  lien « ← Tous les articles » de `a-fin` mène à `tous-<code>.html` de l'édition (le gabarit de
+  Groenland pointe par erreur vers `tous-es.html` : le corriger).
 - **Ordre des blocs**, dans chaque langue :
   1. Barre `sn sn-actu` (fil d'Ariane : Accueil / Actualité / édition / pays / sujet court), puis `a-filet`.
   2. Héros `a-hero` : tags `a-tag` (`t0` le pays, `t1` le thème, puis 1 ou 2 mots-clés), titre `a-titre`,
@@ -162,7 +165,8 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   changer (tout le CSS passe par elles ; les classes `rouge` des chiffres et étiquettes désignent l'accent).
   Jamais deux fois la même : vérifier avec `grep -rh -- '--accent:' actualites/*/articles/`. Déjà prises :
   Burnham et le Brexit rouge `#b5131f` / `#8e0f19` / `#fbe9ea` ; Colombie à Jérusalem bleu cobalt `#1d4fa0` /
-  `#143a78` / `#e6edf9`. La barre du haut garde son filet rouge (`barre-section.css`) ; l'image de partage
+  `#143a78` / `#e6edf9` ; émeutes de Tirana indigo `#4a3f8f` / `#352c6e` / `#ecebf7` ; pont du Yalou bleu
+  fleuve `#0a6486` / `#074b66` / `#e1f1f7`. La barre du haut garde son filet rouge (`barre-section.css`) ; l'image de partage
   prend l'accent de l'article.
 - **Langue** : éditions de langue **bilingues** (`ap-fr-section` et `ap-<code>-section`, la seconde
   cachée), avec le petit interrupteur de la barre `.a-langues` : deux boutons `ap-lang-btn` « FR » et
@@ -184,6 +188,13 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
     dans le même style (couleurs `--accent`, `--marine`, bords et fonds du gabarit) : barres
     comparatives, tableau avant / après, arbre ou schéma de circuit (qui décide, qui finance), carte
     simplifiée, courbe ou frise de chiffres, double colonne « ce que dit le camp A / le camp B ».
+    **Le schéma s'adapte au sujet** : on part de ce que la section doit montrer (un lieu : carte ; un
+    flux ou des passages : circuit ; des chiffres de deux sources : tableau ; des affirmations à contrôler :
+    `a-verif`), jamais d'une forme choisie d'avance. `a-etapes` et `a-axe` ne sont **pas** des valeurs par
+    défaut (déjà pris par Burnham, Colombie, Albanie) : ne les reprendre que si le sujet s'y prête vraiment.
+    Exemple de schéma sur mesure : le circuit des deux ponts du Yalou (`a-circuit`, en HTML et CSS dans le
+    `<style>` de l'article, lisible à 390 px). Les deux schémas d'un article n'ont pas la même forme, et
+    aucun ne reprend la forme des deux articles précédents.
     Ne pas mettre deux schémas de la même forme dans un même article, et regarder les derniers articles
     publiés (`grep -l 'a-etapes\|a-axe' actualites/*/articles/*.html`) pour ne pas répéter la forme
     de l'article précédent. Données vérifiées et sourcées ; un nouveau type de bloc s'ajoute au
@@ -216,8 +227,10 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   le même contenu. Compter avant de mettre en ligne. Une recherche web poussée (plusieurs sources par
   article) est nécessaire pour atteindre cette longueur sans rien inventer.
 - Dans la liste du mois, l'article passe **en premier**.
-- **Renvois vers d'autres articles** : pas de « Lire notre article ». Le lien se met directement sur le
-  texte concerné (`<a href="slug.html" class="a-lien">l'attentat de Leipzig</a>`).
+- **Renvois vers d'autres articles** : pas de « Lire notre article », ni de « comme nous l'avons raconté
+  dans notre article de juin », ni de « notre article précédent ». Le lien se met directement sur les mots
+  qui portent l'information renvoyée (`<a href="slug.html" class="a-lien">l'attentat de Leipzig</a>`,
+  `<a href="…" class="a-lien">une plage de la zone protégée de Vjosa-Narta</a>`).
 - Faits vérifiés par recherche web, sans rien inventer.
 - Pas de tiret cadratin « — » dans le texte, même dans les versions étrangères (voir section 1).
 - **Contrôles** avec Playwright à 1280 et 390 px, dans chaque langue : aucune erreur JS, pas de
