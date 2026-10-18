@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "France",
+"titre": "France : 550 000 manifestants contre la vie chère, l'hôtel de ville de Limoges détruit",
+"url": "actualites/monde/articles/france-17-octobre-mobilisation-limoges-2026.html",
+"image": "actualites/monde/images/france-17-octobre-mobilisation-limoges-2026.webp",
+"date": "2026-10-18T08:12:16+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Brésil",
 "titre": "Brésil : à une semaine du second tour, Lula multiplie les mesures sociales et fiscales",
 "url": "actualites/monde/articles/bresil-lula-mesures-electorales-second-tour-2026.html",
@@ -945,15 +954,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/monde/articles/serbie-vucic-demission.html",
 "image": "actualites/monde/images/serbie-vucic-demission.webp",
 "date": "2026-09-28T19:28:07+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "ONU",
-"titre": "Allemagne-Russie : premier entretien entre ministres des Affaires étrangères depuis 2022",
-"url": "actualites/monde/articles/allemagne-russie-lavrov-wadephul.html",
-"image": "actualites/monde/images/allemagne-russie-lavrov-wadephul.webp",
-"date": "2026-09-27T16:38:01+00:00"
 },
 {
 "t": "de",
