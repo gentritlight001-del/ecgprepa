@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Venezuela",
+"titre": "Venezuela : la diaspora manifeste dans au moins 17 pays pour exiger un calendrier électoral",
+"url": "actualites/es/articles/venezuela-diaspora-save-the-date-2026.html",
+"image": "actualites/es/images/venezuela-diaspora-save-the-date-2026.webp",
+"date": "2026-10-18T07:44:57+00:00"
+},
+{
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne / France",
@@ -1412,15 +1421,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "PISA 2025 : énorme alerte autour du niveau scolaire en Espagne",
 "url": "actualites/es/articles/alerte-pisa-espagne.html",
 "image": "actualites/es/images/alerte-pisa-espagne.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Argentine",
-"titre": "Javier Milei réaffirme la revendication argentine sur les îles Malouines",
-"url": "actualites/es/articles/malouines-milei-revendication.html",
-"image": "actualites/es/images/malouines-milei-revendication.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
