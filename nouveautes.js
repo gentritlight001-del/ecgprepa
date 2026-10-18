@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
+"titre": "Santé : le Bundestag adopte une réforme de la médecine d'urgence après trois tentatives avortées",
+"url": "actualites/de/articles/allemagne-reforme-medecine-urgence-2026.html",
+"image": "actualites/de/images/allemagne-reforme-medecine-urgence-2026.webp",
+"date": "2026-10-18T07:06:13+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "Royaume-Uni",
@@ -1574,15 +1583,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Boris Pistorius, l'homme qui veut faire de l'Allemagne une puissance militaire",
 "url": "actualites/de/articles/pistorius-defense.html",
 "image": "actualites/de/images/pistorius-defense.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "La crise automobile en Allemagne : quand le pilier de l'industrie vacille",
-"url": "actualites/de/articles/crise-automobile.html",
-"image": "actualites/de/images/crise-automobile.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
