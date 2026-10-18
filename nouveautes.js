@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "es",
 "rubrique": "Actu Espagnol",
+"meta": "Costa Rica",
+"titre": "Costa Rica : Laura Fernández signe avec Bukele un accord contre le crime transnational",
+"url": "actualites/es/articles/costa-rica-salvador-accord-crime-transnational-2026.html",
+"image": "actualites/es/images/costa-rica-salvador-accord-crime-transnational-2026.webp",
+"date": "2026-10-18T07:59:54+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
 "meta": "Colombie",
 "titre": "Colombie : De la Espriella retire 30 œuvres du Musée national, une « contrarrevolución cultural »",
 "url": "actualites/es/articles/colombie-musee-national-contrarrevolucion-culturelle-2026.html",
@@ -1412,15 +1421,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Équateur : Marco Rubio annonce une nouvelle offensive contre les narcotrafiquants",
 "url": "actualites/es/articles/equateur-rubio-offensive-narcotrafiquants.html",
 "image": "actualites/es/images/equateur-rubio-offensive-narcotrafiquants.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Colombie",
-"titre": "Virage sécuritaire encore plus marqué — port d'armes, épandage aérien et méga-prisons",
-"url": "actualites/es/articles/colombie-virage-securitaire.html",
-"image": "actualites/es/images/colombie-virage-securitaire.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
