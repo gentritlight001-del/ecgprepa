@@ -1,13 +1,22 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
-"t": "monde",
-"rubrique": "Actu Monde",
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "États-Unis",
+"titre": "États-Unis : le mouvement « No Kings » appelle à voter tôt avant les élections de mi-mandat",
+"url": "actualites/en/articles/us-no-kings-vote-early-2026.html",
+"image": "actualites/en/images/us-no-kings-vote-early-2026.webp",
+"date": "2026-10-18T08:28:47+00:00"
+},
+{
+"t": "en",
+"rubrique": "Actu Anglais",
 "meta": "États-Unis",
 "titre": "États-Unis : Trump suspend un large paquet de sanctions et de droits de douane contre la Russie",
-"url": "actualites/monde/articles/etats-unis-trump-suspend-sanctions-russie-2026.html",
-"image": "actualites/monde/images/etats-unis-trump-suspend-sanctions-russie-2026.webp",
-"date": "2026-10-18T08:19:31+00:00"
+"url": "actualites/en/articles/us-trump-suspend-sanctions-russie-2026.html",
+"image": "actualites/en/images/us-trump-suspend-sanctions-russie-2026.webp",
+"date": "2026-10-18T08:28:47+00:00"
 },
 {
 "t": "monde",
@@ -956,6 +965,15 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-10-01T13:52:44+00:00"
 },
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Serbie",
+"titre": "Serbie : Aleksandar Vučić démissionne de la présidence pour briguer le poste de Premier ministre",
+"url": "actualites/monde/articles/serbie-vucic-demission.html",
+"image": "actualites/monde/images/serbie-vucic-demission.webp",
+"date": "2026-09-28T19:28:07+00:00"
+},
+{
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Suisse",
@@ -1350,24 +1368,6 @@ window.ECG_NOUVEAUTES = [
 "url": "Culture-Generale/nicaragua.html",
 "image": "Culture-Generale/images/nicaragua.webp",
 "date": "2026-09-12T19:52:51+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "25 ans du 11-Septembre : l'Amérique commémore l'attentat, entre recueillement et exigence de vérité",
-"url": "actualites/en/articles/25-ans-11-septembre-2026.html",
-"image": "actualites/en/images/25-ans-11-septembre-2026.webp",
-"date": "2026-09-12T10:40:02+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "« Le dividende Trump » : 5 000 dollars promis à chaque Américain si les républicains gagnent les midterms",
-"url": "actualites/en/articles/trump-dividende-5000-dollars-midterms-2026.html",
-"image": "actualites/en/images/trump-dividende-5000-dollars-midterms-2026.webp",
-"date": "2026-09-12T10:40:02+00:00"
 },
 {
 "t": "es",
