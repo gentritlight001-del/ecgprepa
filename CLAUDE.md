@@ -139,8 +139,7 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   `ap-sub`, `ap-intro` (lues par les scripts). Supprimer de la copie les balises `og:`, `twitter:`,
   `canonical` et la description, **mais garder** `<link rel="stylesheet" href="../../../barre-section.css">`
   (juste après le `</style>`) : sans elle, la barre du haut perd son habillage noir et son filet. Le
-  lien « ← Tous les articles » de `a-fin` mène à `tous-<code>.html` de l'édition (le gabarit de
-  Groenland pointe par erreur vers `tous-es.html` : le corriger).
+  lien « ← Tous les articles » de `a-fin` mène à `tous-<code>.html` de l'édition.
 - **Ordre des blocs**, dans chaque langue :
   1. Barre `sn sn-actu` (fil d'Ariane : Accueil / Actualité / édition / pays / sujet court), puis `a-filet`.
   2. Héros `a-hero` : tags `a-tag` (`t0` le pays, `t1` le thème, puis 1 ou 2 mots-clés), titre `a-titre`,
