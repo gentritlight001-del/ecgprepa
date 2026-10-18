@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Albanie",
+"titre": "Albanie : cinq jours d'émeutes à Tirana, des étudiants exigent le départ d'Edi Rama",
+"url": "actualites/monde/articles/albanie-emeutes-tirana-2026.html",
+"image": "actualites/monde/images/albanie-emeutes-tirana-2026.webp",
+"date": "2026-10-18T06:07:37+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "États-Unis",
@@ -1088,15 +1097,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Suède : la gauche de Magdalena Andersson l'emporte de justesse aux législatives",
 "url": "actualites/monde/articles/suede-elections-legislatives.html",
 "image": "actualites/monde/images/suede-elections-legislatives.webp",
-"date": "2026-09-18T20:00:18+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Soudan",
-"titre": "Soudan : effondrement meurtrier d'une mine d'or au Kordofan occidental",
-"url": "actualites/monde/articles/soudan-mine-or-kordofan.html",
-"image": "actualites/monde/images/soudan-mine-or-kordofan.webp",
 "date": "2026-09-18T20:00:18+00:00"
 },
 {
