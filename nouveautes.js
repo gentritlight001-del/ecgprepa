@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "États-Unis",
+"titre": "États-Unis : Trump suspend un large paquet de sanctions et de droits de douane contre la Russie",
+"url": "actualites/monde/articles/etats-unis-trump-suspend-sanctions-russie-2026.html",
+"image": "actualites/monde/images/etats-unis-trump-suspend-sanctions-russie-2026.webp",
+"date": "2026-10-18T08:19:31+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "France",
 "titre": "France : 550 000 manifestants contre la vie chère, l'hôtel de ville de Limoges détruit",
 "url": "actualites/monde/articles/france-17-octobre-mobilisation-limoges-2026.html",
@@ -945,15 +954,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/de/articles/biontech-fermeture-sites-allemagne.html",
 "image": "actualites/de/images/biontech-fermeture-sites-allemagne.webp",
 "date": "2026-10-01T13:52:44+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Serbie",
-"titre": "Serbie : Aleksandar Vučić démissionne de la présidence pour briguer le poste de Premier ministre",
-"url": "actualites/monde/articles/serbie-vucic-demission.html",
-"image": "actualites/monde/images/serbie-vucic-demission.webp",
-"date": "2026-09-28T19:28:07+00:00"
 },
 {
 "t": "de",
