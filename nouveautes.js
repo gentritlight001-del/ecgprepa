@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Chine / Corée du Nord",
+"titre": "Chine – Corée du Nord : le nouveau pont sur le Yalou ouvre enfin, douze ans après son achèvement",
+"url": "actualites/monde/articles/chine-coree-nord-pont-yalou-2026.html",
+"image": "actualites/monde/images/chine-coree-nord-pont-yalou-2026.webp",
+"date": "2026-10-18T06:21:40+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Albanie",
 "titre": "Albanie : cinq jours d'émeutes à Tirana, des étudiants exigent le départ d'Edi Rama",
 "url": "actualites/monde/articles/albanie-emeutes-tirana-2026.html",
@@ -1089,15 +1098,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/es/articles/bolivie-nouveau-felin-leopardus-tilcayo.html",
 "image": "actualites/es/images/bolivie-nouveau-felin-leopardus-tilcayo.jpg",
 "date": "2026-09-20T07:05:53+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Suède",
-"titre": "Suède : la gauche de Magdalena Andersson l'emporte de justesse aux législatives",
-"url": "actualites/monde/articles/suede-elections-legislatives.html",
-"image": "actualites/monde/images/suede-elections-legislatives.webp",
-"date": "2026-09-18T20:00:18+00:00"
 },
 {
 "t": "en",
