@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "Irlande",
+"titre": "Irlande : plus de 300 000 agents publics en grève, la plus grande mobilisation depuis 2009",
+"url": "actualites/en/articles/ireland-public-sector-strike-2026.html",
+"image": "actualites/en/images/ireland-public-sector-strike-2026.webp",
+"date": "2026-10-18T06:52:56+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Brésil",
@@ -1358,15 +1367,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "11-Septembre : Mamdani dévoile 170 000 pages d'archives sur la toxicité de l'air à Ground Zero",
 "url": "actualites/en/articles/mamdani-toxicite-11-septembre-2026.html",
 "image": "actualites/en/images/mamdani-toxicite-11-septembre-2026.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "Royaume-Uni",
-"titre": "Cisjordanie : Londres provoque une crise diplomatique inédite avec Israël",
-"url": "actualites/en/articles/uk-israel-diplomatic-crisis-2026.html",
-"image": "actualites/en/images/uk-israel-diplomatic-crisis-2026.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
