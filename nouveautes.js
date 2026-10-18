@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Brésil",
+"titre": "Brésil : à une semaine du second tour, Lula multiplie les mesures sociales et fiscales",
+"url": "actualites/monde/articles/bresil-lula-mesures-electorales-second-tour-2026.html",
+"image": "actualites/monde/images/bresil-lula-mesures-electorales-second-tour-2026.webp",
+"date": "2026-10-18T08:05:39+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Costa Rica",
@@ -972,15 +981,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/es/articles/manifestation-madrid-ceuta-elections.html",
 "image": "actualites/es/images/manifestation-madrid-ceuta-elections.webp",
 "date": "2026-09-27T12:59:31+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "France",
-"titre": "France : Léon XIV, premier voyage officiel d'un pape depuis 2008, entre laïcité, Europe et espérance",
-"url": "actualites/monde/articles/pape-leon-xiv-france.html",
-"image": "actualites/monde/images/pape-leon-xiv-france.webp",
-"date": "2026-09-27T12:49:02+00:00"
 },
 {
 "t": "cg",
