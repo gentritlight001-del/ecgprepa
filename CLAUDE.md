@@ -191,6 +191,8 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
     flux ou des passages : circuit ; des chiffres de deux sources : tableau ; des affirmations à contrôler :
     `a-verif`), jamais d'une forme choisie d'avance. `a-etapes` et `a-axe` ne sont **pas** des valeurs par
     défaut (déjà pris par Burnham, Colombie, Albanie) : ne les reprendre que si le sujet s'y prête vraiment.
+    Un `a-tableau` doit tenir à 390 px sans défilement : ajouter dans le `<style>` de l'article
+    `@media (max-width: 520px) { .a-tableau { min-width: 0; font-size: .82rem; } .a-tableau th, .a-tableau td { padding: 9px 8px; } .a-tableau td:first-child { white-space: normal; } }`.
     Exemple de schéma sur mesure : le circuit des deux ponts du Yalou (`a-circuit`, en HTML et CSS dans le
     `<style>` de l'article, lisible à 390 px). Les deux schémas d'un article n'ont pas la même forme, et
     aucun ne reprend la forme des deux articles précédents.
@@ -209,7 +211,10 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   - « Accroche » (`a-accroche`) : un paragraphe prêt à recopier, qui part d'un fait daté et vérifié de
     l'article et finit sur la question qu'il pose. Pas de bouton « Copier ».
   - « Idée-force » : l'argument que l'article permet de défendre.
-  - « Sujets où la placer » : 3 sujets de dissertation plausibles (HGG, culture générale, langue).
+  - « Sujets où la placer » : 3 sujets de dissertation plausibles, chacun suivi entre parenthèses de la
+    **matière du cours** en rapport avec son thème : HGG, ESH, philo, Humanité, anglais, espagnol ou
+    allemand. **Jamais « culture générale »** : c'est trop vague, il faut dire dans quelle matière le sujet
+    tombe (on varie les matières d'un sujet à l'autre quand le thème s'y prête).
   - « Piège à éviter » (`a-piege`, fond rose) : l'erreur de fait ou d'interprétation à ne pas commettre,
     avec le bon chiffre.
   C'est le seul endroit de l'article où le ton scolaire est permis.
