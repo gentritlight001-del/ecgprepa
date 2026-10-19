@@ -45,7 +45,7 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   Partout : 60 px, logo « ECG Prépa » en Playfair Display gras 20 px à gauche, fil d'Ariane au centre
   (sous la barre sur téléphone, en une ligne qui défile), loupe et compte à droite. Couleurs : Cours ECG
   (`sn-cours`, noir, filet à la couleur de la matière : `sn-maths`, `sn-hgg`…), Actualité (`sn-actu`, noir,
-  filet rouge, fil en capitales), Culture générale (`sn-cg`, kraft, logo rouge tampon), L'Humanité (`sn-hum`,
+  filet rouge, fil en capitales), Culture générale (`sn-cg`, pleine couleur du dossier, encre sur l'index), L'Humanité (`sn-hum`,
   blanc, filet rouge brique). Une nouvelle page copiée d'une page existante garde sa barre ; sinon,
   `python3 outils/barre-section.py` marque la `<nav>` (classes `sn`, `sn-logo`, `sn-fil`, `.nav-right`) et
   relie la feuille. Ne pas restyler la barre dans la page.
@@ -379,14 +379,18 @@ page pays ou région :
 
 ### Index de la culture générale (`culture-generale.html`)
 
-- Habillage « Les archives », choisi par le propriétaire sur maquette (papier kraft `#e6dcc3`, Fraunces + IBM Plex
-  Mono, tampon rouge `#8a3324`, comme les dossiers) : page de garde + recherche, le dernier dossier versé en
-  chemise ouverte, puis **le registre de tous les dossiers** (vignette, n°, intitulé, classé sous ; onglets de
-  thème et recherche). Pas de « tiroirs » par thème (refusés par le propriétaire).
-- Tout vient de `CG_DATA` (même format qu'avant, lu aussi par `auth.js`, `outils/nouveautes.py` et la
-  newsletter) : un nouveau dossier s'ajoute **à la fin** de `CG_DATA`, rien d'autre. Les lignes gardent
-  `.actu-card` / `.actu-card-title` (badge Premium, étoile des favoris).
-- Les dossiers eux-mêmes passent un à un au gabarit « bento » : voir « Dossiers de culture générale » juste après.
+- Habillage « mosaïque », choisi par le propriétaire sur maquette (octobre 2026), cohérent avec les dossiers bento :
+  fond clair `#f3efec`, Bricolage Grotesque, cartes arrondies. En haut, l'en-tête (titre, trois chiffres) et la
+  **une** : le dernier dossier en grande carte photo (pastille « Nouveau »), les deux précédents à côté. Dessous,
+  recherche, pastilles de thèmes avec compteurs, puis la **grille de tous les dossiers** (photo 3:2, n°, titre, thème,
+  filet à la couleur du dossier), du plus récent au plus ancien. Pas de « tiroirs » par thème.
+- Tout vient de `CG_DATA` (lu aussi par `auth.js`, `favoris.js`, `outils/nouveautes.py` et la newsletter) : un
+  nouveau dossier s'ajoute **à la fin** de `CG_DATA`, avec ses deux couleurs `g` et `g2` (les `--g` et `--g2` du
+  `:root` de sa page), rien d'autre. Les cartes gardent `.actu-card` / `.actu-card-title` (badge Premium, étoile des
+  favoris).
+- Barre du haut `sn-cg` : **pleine couleur du dossier** (maquette D, `barre-section.css`) ; elle lit `--g` dans le
+  `:root` de la page, encre `#1e1610` sur l'index.
+- Les dossiers eux-mêmes sont tous au gabarit « bento » : voir « Dossiers de culture générale » juste après.
 
 ### Dossiers de culture générale (gabarit « bento »)
 
@@ -405,7 +409,7 @@ Procédure de A à Z, sans poser de question jusqu'à la mise en ligne :
    | sort | tail -1`, dernier connu : 055 Nestlé). Fichier `Culture-Generale/<slug>.html`, image
    `Culture-Generale/images/<slug>.webp` (WebP, 1600 px maximum, **la plus grande photo libre qu'on trouve** : la
    largeur médiane des images actuelles est de 687 px, 46 sur 55 font moins de 800 px), entrée **à la fin** de
-   `CG_DATA` dans `culture-generale.html` (`id`, `jour` = dernier + 1, `titre`, `theme`/`domain`, `image`,
+   `CG_DATA` dans `culture-generale.html` (`id`, `jour` = dernier + 1, `titre`, `theme`/`domain`, `g`/`g2`, `image`,
    `externalUrl`, `month`, `year`). Une refonte ne touche pas `CG_DATA`.
 2. **Page.** Copier `farc.html` (ou `developpement-durable.html`). Le `<head>` garde, dans cet ordre :
    `../auth.js`, `../favoris.js`, charset, viewport, `<title>ECG Prépa — <titre></title>`, `../fonts/fonts.css`, le
