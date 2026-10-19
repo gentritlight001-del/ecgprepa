@@ -5,7 +5,7 @@ stockage sur Supabase). Ce fichier est relu au début de **chaque** conversation
 toutes les règles valables d'une conversation à l'autre sont ici.
 
 Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualité ·
-4. Cours (chapitres, colles, HGG au quotidien, DS) · 5. Newsletters PDF
+4. Cours (chapitres, colles, HGG au quotidien, DS, dossiers de culture générale) · 5. Newsletters PDF
 
 ---
 
@@ -87,6 +87,14 @@ directement après chaque modification, sans attendre un nouveau « mets en lign
 2. Créer la PR vers `main` et la merger (outils GitHub MCP).
 3. Remettre la branche à jour sur `main` :
    `git fetch origin main && git checkout -B <branche> origin/main && git push -u origin <branche> --force-with-lease`
+
+**Clone « shallow » et fichiers générés.** Dans un clone tronqué (`git rev-parse --is-shallow-repository` donne
+`true`), `outils/referencement.py` date des pages à la date du clone : ne pas committer son `sitemap.xml`
+(`git checkout sitemap.xml` avant le commit). Si la fusion de la PR échoue pour conflit, c'est presque toujours
+sur un fichier généré (`recherche-index.json`, `sitemap.xml`, `nouveautes.js`) : fusionner `origin/main` dans la
+branche, prendre la version de `main` (`git checkout --theirs <fichier>`), relancer les scripts, committer, pousser.
+Chaque fusion sur `main` = un build Cloudflare Pages (compté dans la limite mensuelle du plan) : une modification
+qui ne touche que `CLAUDE.md` ou `outils/` peut être fusionnée avec `[CI Skip]` dans le message de fusion.
 
 Cloudflare Pages redéploie `main` automatiquement. Le service worker est « réseau
 d'abord » et `_headers` désactive le cache : pas de numéro de version à changer.
@@ -378,6 +386,118 @@ page pays ou région :
 - Tout vient de `CG_DATA` (même format qu'avant, lu aussi par `auth.js`, `outils/nouveautes.py` et la
   newsletter) : un nouveau dossier s'ajoute **à la fin** de `CG_DATA`, rien d'autre. Les lignes gardent
   `.actu-card` / `.actu-card-title` (badge Premium, étoile des favoris).
+- Les dossiers eux-mêmes passent un à un au gabarit « bento » : voir « Dossiers de culture générale » juste après.
+
+### Dossiers de culture générale (gabarit « bento »)
+
+Gabarit **« bento »**, choisi par le propriétaire sur maquette (octobre 2026) pour les dossiers
+`Culture-Generale/<slug>.html` : cartes arrondies sur une grille de 12 colonnes, **une palette propre à chaque
+dossier**. **Déjà refaits** (ils servent de modèles) : FARC (n° 052, `farc.html`, palette brique) et
+développement durable (n° 051, `developpement-durable.html`, palette verte). Les autres dossiers gardent l'ancien
+habillage « archives » (carte kraft, `<nav class="sn sn-cg sn-dossier">`, `mackinder.html` en est un exemple)
+jusqu'à ce que le propriétaire demande de les refaire, un à un, **sous le même nom de fichier** (règle de refonte,
+section 1). Demandes types : « Refais le dossier sur X au nouveau gabarit », « Fais un dossier de culture générale
+sur Y » (nouveau dossier). **`python3 outils/cg-controle.py Culture-Generale/<slug>.html`** vérifie toutes les
+règles ci-dessous (une ligne ✅/❌ par règle, code de sortie 1 s'il reste un ❌, comme `quotidien-controle.py`).
+Procédure de A à Z, sans poser de question jusqu'à la mise en ligne :
+
+1. **Données** (nouveau dossier seulement). N° = dernier + 1 (`grep -ho 'Dossier n° [0-9]*' Culture-Generale/*.html
+   | sort | tail -1`, dernier connu : 055 Nestlé). Fichier `Culture-Generale/<slug>.html`, image
+   `Culture-Generale/images/<slug>.webp` (WebP, 1600 px maximum, **la plus grande photo libre qu'on trouve** : la
+   largeur médiane des images actuelles est de 687 px, 46 sur 55 font moins de 800 px), entrée **à la fin** de
+   `CG_DATA` dans `culture-generale.html` (`id`, `jour` = dernier + 1, `titre`, `theme`/`domain`, `image`,
+   `externalUrl`, `month`, `year`). Une refonte ne touche pas `CG_DATA`.
+2. **Page.** Copier `farc.html` (ou `developpement-durable.html`). Le `<head>` garde, dans cet ordre :
+   `../auth.js`, `../favoris.js`, charset, viewport, `<title>ECG Prépa — <titre></title>`, `../fonts/fonts.css`, le
+   `<style>` du gabarit (ne se complète que pour un nouveau type de bloc, **à la fin**), les balises
+   `og:`/`twitter:`/description/canonical, puis `../barre-section.css`. **Refonte** : reprendre ces balises, le
+   titre et le texte de l'ancienne page (corrigé et actualisé). **Nouveau dossier** : retirer celles de la copie,
+   `outils/images-partage.py` et `outils/referencement.py` les recréent. Barre : `<nav class="sn sn-cg">`
+   **sans `sn-dossier`** (le `body` du gabarit n'a pas de marge), fil Accueil / Culture Générale / titre court du
+   dossier ; ne pas la restyler.
+3. **Palette.** Une par dossier, **jamais deux fois la même** (`grep -ho -- '--g:#[0-9a-f]*' Culture-Generale/*.html`) :
+   choisir selon le sujet. Elle est dans `:root` (`--g` principale foncée, `--g2` fond pâle, `--g3` ton moyen, `--y`
+   accent clair, `--r` alerte, `--bg` fond de page, `--line` filets, `--ink` encre, `--dim` gris) et dans quelques
+   valeurs écrites en dur : remplacer **dans tout le fichier** les valeurs de la copie par celles du nouveau
+   dossier (valeurs FARC → exemple du développement durable) : `#7a2a1c` → `#2d6a3e` (`--g`) · `#f6e3dc` →
+   `#e3f0e5` (`--g2`) · `#e3b3a5` → `#a9d1b2` (`--g3`) · `#f2c230` → `#e9c64a` (`--y`) · `#b3261e` → `#c0532b`
+   (`--r`) · `#5c1d12` → `#1f4a2c` (survol des boutons) · `rgba(122,42,28,.2)` → `rgba(45,106,62,.2)` ·
+   `rgba(242,194,48,.22)` → `rgba(233,198,74,.22)` · `#e0782f` → `#8bbf5a` · `#17110e` → `#10201a` (encre) ·
+   `#f5f0ea` → `#eef2ea` (fond) · `#e6ddd3` → `#dbe3d6` (filets) · `#33292a` → `#27352b` (texte) · `#6a5a56` →
+   `#566358` (gris). Palettes prises : FARC brique `#7a2a1c`, développement durable vert `#2d6a3e`.
+4. **Ordre des blocs** (les classes sont dans le `<style>` du gabarit ; tout est dans `<div class="grid">`) :
+   - **Titre et photo** : `header.b.title3` (kicker « Dossier n° 0XX · Fiche <type> », boutons Favori et Partager, `h1`
+     = titre du dossier, ligne `.meta` « Thème · Thème · 10 min ») et `figure.b.img3.cover` (la photo). **Ni tags, ni
+     sous-titre, ni légende sous la photo.** Titre en 7 colonnes, photo en 5, même hauteur.
+   - `.ess` « L'essentiel en 30 secondes » (3 points, mots clés en `<strong>`) et `.st` (4 chiffres vérifiés, le 2e en
+     `--r`).
+   - **4 à 6 sections numérotées** (`.lab` avec `<i>01</i>`), chacune une carte de texte `.txt` en `.c5`/`.c6`/`.c7`,
+     **appariée dans sa rangée à une carte visuelle** (7 + 5 ou 6 + 6 colonnes) : mots clés `.gl` (4 définitions
+     courtes, nombre pair), schéma `.vis`, chronologie `.tlv`, ou schéma pleine largeur `.sch` / `.camps` / `.duo`.
+   - Une **citation en bandeau** `blockquote.b.quote.band` entre deux sections (la plus parlante du dossier, avec sa
+     source en capitales dans `<cite>`).
+   - Une **chronologie** `.tlv` à côté d'une section : **la plus récente en haut** (`li.cur`, en `--r`).
+   - **Analyse** `.analyse` : titre original (jamais « Conclusion »), 2 paragraphes en deux colonnes `.cols2` avec
+     lettrine (la première lettre se met seule, `:first-child:first-letter`).
+   - **Dans une copie** `.cop` (voir plus bas).
+   - **Pour aller plus loin** `.plus.p3` (3 cartes `.carte`) et **Sources** `.src.s4` (3 sources), puis `.fin`
+     (« ← Tous les dossiers » et « Partager le dossier »).
+5. **Schémas.** Tous pertinents et **variés** (même règle que les articles d'actualité : on part de ce que la section
+   doit montrer, jamais d'une forme choisie d'avance), 2 à 4 par dossier, jamais deux de la même forme dans un
+   dossier. Formes déjà dans le gabarit : barres comparatives `.bars` (+ `.mini` pour deux chiffres), chaîne d'étapes à
+   statuts `.flux`, 5 cases numérotées `.pts5`, arbre `.racine` + `.branches`, frise verticale `.etat`, diagramme de
+   Venn en SVG `.venn`, deux cartes en vis-à-vis `.duo`, barre empilée `.pile` + légende `.pleg`, cases `.tuiles`,
+   donut `.dn`, trois lectures `.cp`. Une nouvelle forme s'ajoute à la fin du `<style>` de la page (couleurs par les
+   variables). Données sourcées ; une valeur déduite ou approchée est dite sous le schéma (« proportions
+   approximatives… »). **Jamais de pastilles de mots isolés sans phrase qui dit ce qu'ils sont** (refusé par le
+   propriétaire) : une liste numérotée avec un titre et un sous-titre explicatif.
+6. **Contenu.** Faits vérifiés par recherche web (chiffres datés, rien d'inventé). Ce qui ne vient ni du dossier
+   d'origine ni d'une recherche (connaissance générale, phrase ajoutée pour égaliser des colonnes, sujets d'une
+   copie, sources génériques quand l'ancienne page n'en avait pas) est **signalé au propriétaire dans la réponse**.
+   - **Dans une copie** (`.cop`, deux colonnes) : à gauche « Accroche » (`.accroche` : un fait daté et vérifié du
+     dossier, puis la question qu'il pose, **4 lignes**) et « Idée-force » (`.idee`) ; à droite « Sujets où la
+     placer » (3 sujets, chacun avec **la matière** en pastille : HGG, ESH, philo, Humanité, anglais… **jamais
+     « culture générale »**) et `.tip` « Piège à éviter » (l'erreur de fait ou d'interprétation, avec le bon chiffre).
+   - **Pour aller plus loin** : 3 cartes **réelles** (autres dossiers de culture générale avec leur vignette
+     `images/<slug>.webp`, ou articles d'actualité du site avec leur image), kicker « Dossier n° 0XX » ou « Pays ·
+     Mois année » **sur une seule ligne**, jamais de lien de remplissage ni de lien `#`. Pas de carte « Réviser le
+     cours » sans chapitre vraiment proche.
+   - **Sources** : média ou institution en `<b>`, puis titre et date, 3 sources.
+7. **Mise en page, mesurée** (le propriétaire regarde ligne par ligne ; `cg-controle.py` mesure, mais regarder aussi
+   des captures Playwright à 1280 et 390 px) :
+   - Titre du héros **3 lignes maximum**. Photo **jamais agrandie** : `cover` (qui la fait remplir toute la hauteur
+     de la carte, légèrement rognée sur les côtés) seulement si elle fait au moins 560 px de large ; en dessous,
+     retirer `cover` : elle reste à sa taille sur le fond flou `.fill`. `alt` qui dit ce que montre la photo.
+   - Citation en bandeau : **2 lignes maximum** à 1280 px et plus.
+   - **Analyse : les deux colonnes de même hauteur** (ajouter une phrase dans la colonne de gauche ou en retirer une
+     à droite). Mesurer avec la **hauteur du paragraphe divisée par son `line-height`** : un comptage par rectangles
+     de texte compte la lettrine comme une ligne et se trompe.
+   - **Dans une copie** : l'idée-force et le cadre « Piège à éviter » **finissent à la même ligne**, et le cadre rose
+     épouse son texte (marge de 23 px, pas de vide dessous) : régler la longueur de l'accroche.
+   - **Cartes en rangée** (`.pts5`, `.branches`, `.cp`) : titres **sur une ligne**, descriptions du même nombre
+     de lignes (rédiger les textes à longueur égale, la grille partagée `subgrid` aligne le reste ; 5, 3 ou 1 colonne
+     selon la largeur).
+   - **Pas de grand blanc** : sous le texte d'une carte de récit, 90 px au plus ; si une carte visuelle est plus haute
+     que son texte, ajouter au texte une phrase utile (par exemple un paragraphe qui explique le schéma voisin) ou
+     un élément pertinent à la carte visuelle, **jamais du remplissage**. Chaque graphique a son petit titre
+     (`.lab`) juste au-dessus.
+   - Typographie française (espace insécable avant `: ; ! ? »` et après `«`) et **pas de tiret cadratin** (sauf le
+     `<title>`). Chronologies et tableaux : le plus récent en premier.
+8. **Boutons.** « Favori » branché sur `ECGFav` (objet `ITEM` du script : `id: 'cg:<slug>'`, `titre`, `url`, `image`,
+   `theme`, `section: 'cg'`, comme dans `CG_DATA`), visible seulement si l'élève est connecté ; « Partager »
+   (`partager(this)` : copie le lien ou ouvre le partage du téléphone). Le script est celui du gabarit : n'adapter que
+   `ITEM`. **Pas de sommaire collant, pas de barre de progression** (essayés puis retirés à la demande du
+   propriétaire).
+9. **Contrôles.** `python3 outils/cg-controle.py Culture-Generale/<slug>.html` (46 règles, à 1920, 1440, 1280, 1000 et
+   390 px, `auth.js` remplacé par un script vide) : corriger jusqu'à ce que tout soit ✅. Pièges déjà rencontrés :
+   un nettoyage de CSS par `^\.bar` qui supprime aussi `.bars` (comparer les sélecteurs de la page avec ceux du
+   gabarit) ; une même classe (`.p3`) donnée à un segment de graphique et à la section « plus loin » ; un
+   `style="grid-column:…"` en ligne qui l'emporte sur la media query mobile (utiliser des classes) ; la barre du
+   site fait 60 px sur ordinateur et environ 90 px sur téléphone (fil d'Ariane sous la barre).
+10. **Mise en ligne** : la séquence de la section 2 (dont le clone « shallow » et les conflits sur fichiers générés).
+    `outils/images-partage.py` ne fait rien pour une refonte (l'image de partage des dossiers est un aplat de
+    couleur, déjà faite) ; relancer `outils/recherche.py` (l'index change pour ce dossier) et ne pas committer
+    `sitemap.xml` d'un clone tronqué.
 
 ### Fiches de l'Humanité (cinéma, littérature)
 
