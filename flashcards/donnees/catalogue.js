@@ -12,8 +12,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-10-19",
+  "maj": "2026-10-20",
   "parties": [
+   {
+    "id": "2026-10-20",
+    "nom": "Jour 10 · Trump Waives New Sanctions on Russia",
+    "n": 30,
+    "date": "2026-10-20"
+   },
    {
     "id": "2026-10-19",
     "nom": "Jour 9 · “No Kings” Swaps Marches for Early Voting",
@@ -29,13 +35,13 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-17",
     "nom": "Jour 7 · The Pentagon Plans to Livestream a Military Execution",
-    "n": 29,
+    "n": 28,
     "date": "2026-10-17"
    },
    {
     "id": "2026-10-16",
     "nom": "Jour 6 · Burnham in Berlin as the Kensington Treaty Takes Effect",
-    "n": 29,
+    "n": 27,
     "date": "2026-10-16"
    },
    {
@@ -59,18 +65,18 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-11",
     "nom": "Jour 2 · Trump Strikes a Diesel Deal with Putin",
-    "n": 29,
+    "n": 27,
     "date": "2026-10-11"
    },
    {
     "id": "2026-10-10",
     "nom": "Jour 1 · Trump Renames AI “Super Intelligence”",
-    "n": 29,
+    "n": 28,
     "date": "2026-10-10"
    }
   ],
-  "n": 261,
-  "v": "2a63da83c8"
+  "n": 285,
+  "v": "d62536d72b"
  },
  {
   "id": "espagnol",
@@ -84,8 +90,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Espagnol",
   "lien": "premiere_annee/langues/espagnol/quotidien/index.html",
   "revoir": "ecg-espagnol-quotidien-a-revoir",
-  "maj": "2026-10-19",
+  "maj": "2026-10-20",
   "parties": [
+   {
+    "id": "2026-10-20",
+    "nom": "Jour 10 · Colombia: De la Espriella retira treinta obras del Museo Nacional",
+    "n": 30,
+    "date": "2026-10-20"
+   },
    {
     "id": "2026-10-19",
     "nom": "Jour 9 · Costa Rica y El Salvador: un acuerdo contra el crimen transnacional",
@@ -95,7 +107,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-18",
     "nom": "Jour 8 · Chile y Bolivia: Kast en La Paz, primera visita oficial en 71 años",
-    "n": 32,
+    "n": 31,
     "date": "2026-10-18"
    },
    {
@@ -125,7 +137,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-12",
     "nom": "Jour 3 · España: Maricarmen, símbolo de la crisis de la vivienda",
-    "n": 30,
+    "n": 29,
     "date": "2026-10-12"
    },
    {
@@ -141,8 +153,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 255,
-  "v": "b6f4bc206c"
+  "n": 283,
+  "v": "92663a9f3d"
  },
  {
   "id": "allemand",
@@ -156,12 +168,18 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Allemand",
   "lien": "premiere_annee/langues/allemand/quotidien/index.html",
   "revoir": "ecg-allemand-quotidien-a-revoir",
-  "maj": "2026-10-19",
+  "maj": "2026-10-20",
   "parties": [
+   {
+    "id": "2026-10-20",
+    "nom": "Jour 10 · Der Bundestag beschließt die Notfallreform",
+    "n": 30,
+    "date": "2026-10-20"
+   },
    {
     "id": "2026-10-19",
     "nom": "Jour 9 · Merz und Macron lockern das Verbrenner-Aus",
-    "n": 30,
+    "n": 29,
     "date": "2026-10-19"
    },
    {
@@ -213,8 +231,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 265,
-  "v": "e1e6f090b4"
+  "n": 294,
+  "v": "63effa99e7"
  },
  {
   "id": "hgg1-ch1",
