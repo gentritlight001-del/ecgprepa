@@ -12,18 +12,24 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-10-18",
+  "maj": "2026-10-19",
   "parties": [
+   {
+    "id": "2026-10-19",
+    "nom": "Jour 9 · “No Kings” Swaps Marches for Early Voting",
+    "n": 30,
+    "date": "2026-10-19"
+   },
    {
     "id": "2026-10-18",
     "nom": "Jour 8 · The White House Press Secretary Who Lasted Five Days",
-    "n": 30,
+    "n": 29,
     "date": "2026-10-18"
    },
    {
     "id": "2026-10-17",
     "nom": "Jour 7 · The Pentagon Plans to Livestream a Military Execution",
-    "n": 30,
+    "n": 29,
     "date": "2026-10-17"
    },
    {
@@ -35,7 +41,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-15",
     "nom": "Jour 5 · Burnham Says Russia Meddled in the Brexit Vote",
-    "n": 30,
+    "n": 29,
     "date": "2026-10-15"
    },
    {
@@ -63,8 +69,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 234,
-  "v": "b90b0dfe24"
+  "n": 261,
+  "v": "2a63da83c8"
  },
  {
   "id": "espagnol",
@@ -78,8 +84,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Espagnol",
   "lien": "premiere_annee/langues/espagnol/quotidien/index.html",
   "revoir": "ecg-espagnol-quotidien-a-revoir",
-  "maj": "2026-10-18",
+  "maj": "2026-10-19",
   "parties": [
+   {
+    "id": "2026-10-19",
+    "nom": "Jour 9 · Costa Rica y El Salvador: un acuerdo contra el crimen transnacional",
+    "n": 30,
+    "date": "2026-10-19"
+   },
    {
     "id": "2026-10-18",
     "nom": "Jour 8 · Chile y Bolivia: Kast en La Paz, primera visita oficial en 71 años",
@@ -101,7 +113,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-15",
     "nom": "Jour 5 · Costa Rica: el CACCO, una megacárcel al estilo Bukele",
-    "n": 29,
+    "n": 24,
     "date": "2026-10-15"
    },
    {
@@ -119,18 +131,18 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-11",
     "nom": "Jour 2 · Panamá: un terremoto de magnitud 7,7 sacude el país",
-    "n": 29,
+    "n": 28,
     "date": "2026-10-11"
    },
    {
     "id": "2026-10-10",
     "nom": "Jour 1 · México: las madres buscadoras, certificadas",
-    "n": 27,
+    "n": 26,
     "date": "2026-10-10"
    }
   ],
-  "n": 232,
-  "v": "84ebfd19c8"
+  "n": 255,
+  "v": "b6f4bc206c"
  },
  {
   "id": "allemand",
@@ -144,8 +156,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Allemand",
   "lien": "premiere_annee/langues/allemand/quotidien/index.html",
   "revoir": "ecg-allemand-quotidien-a-revoir",
-  "maj": "2026-10-18",
+  "maj": "2026-10-19",
   "parties": [
+   {
+    "id": "2026-10-19",
+    "nom": "Jour 9 · Merz und Macron lockern das Verbrenner-Aus",
+    "n": 30,
+    "date": "2026-10-19"
+   },
    {
     "id": "2026-10-18",
     "nom": "Jour 8 · BioNTech schließt drei Standorte",
@@ -155,7 +173,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-17",
     "nom": "Jour 7 · Ein Extremjahr für die Gletscher",
-    "n": 32,
+    "n": 30,
     "date": "2026-10-17"
    },
    {
@@ -185,7 +203,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-11",
     "nom": "Jour 2 · Die deutsche Wirtschaft wächst wieder",
-    "n": 26,
+    "n": 25,
     "date": "2026-10-11"
    },
    {
@@ -195,8 +213,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 238,
-  "v": "ed6f204fd1"
+  "n": 265,
+  "v": "e1e6f090b4"
  },
  {
   "id": "hgg1-ch1",
