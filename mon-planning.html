@@ -123,6 +123,12 @@
   .el.fait { opacity: .45; }
   .el.fait .el-titre { text-decoration: line-through; }
   .el.type-note { background: transparent; border-style: dashed; border-left-style: solid; }
+  .el.avec-img { flex-wrap: wrap; padding-top: 9px; }
+  .el-img { flex: 0 0 100%; aspect-ratio: 16 / 9; border-radius: 7px; overflow: hidden; background: var(--surface2); margin-bottom: 2px; }
+  .el-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .el.fait .el-img { filter: grayscale(.7); }
+  .bac .el-img { aspect-ratio: 5 / 2; }
+  .site-item .si-img { width: 52px; height: 40px; border-radius: 6px; object-fit: cover; flex-shrink: 0; background: var(--surface2); }
   .el-case {
     width: 18px; height: 18px; border-radius: 5px; border: 2px solid var(--c); flex-shrink: 0; margin-top: 1px;
     background: transparent; cursor: pointer; color: #0d0d0f; font-size: 11px; line-height: 1; display: flex; align-items: center; justify-content: center; padding: 0;
@@ -590,8 +596,12 @@
   }
   function duJour(s) { return visibles().filter(function (x) { return x.date === s; }).sort(trier); }
 
+  /* Image d'une page du site : celle de l'index (recherche-index.json, 7e champ). */
+  var images = {};
+  function imageDe(site) { return site && (site.image || images[site.url]) || ''; }
+
   function carte(x, avecDate) {
-    var cat = CATS[x.cat] || CATS.autre;
+    var cat = CATS[x.cat] || CATS.autre, img = imageDe(x.site);
     var gauche = x.type === 'tache'
       ? '<button class="el-case" data-a="cocher" aria-label="' + (x.fait ? 'Décocher' : 'Cocher') + '">' + (x.fait ? '✓' : '') + '</button>'
       : '<span class="el-pastille" aria-hidden="true"></span>';
@@ -604,7 +614,8 @@
     if (x.rep) meta.push('<span>↻ ' + { jour: 'chaque jour', semaine: 'chaque semaine', mois: 'chaque mois' }[x.rep] + '</span>');
     if (x.note) meta.push('<span title="' + esc(x.note) + '">✎</span>');
     if (x.site) meta.push('<a class="el-site" href="' + esc(x.site.url) + '" style="--sec:' + (SECS[x.site.sec] || SECS.autre) + '" data-a="lien">↗ ' + esc(x.site.rub || 'Ouvrir la page') + '</a>');
-    return '<div class="el type-' + x.type + (x.fait ? ' fait' : '') + (x.prio === 'haute' ? ' prio-haute' : '') + '" draggable="true" data-id="' + x.id + '" style="--c:' + cat.c + '">' +
+    return '<div class="el type-' + x.type + (x.fait ? ' fait' : '') + (x.prio === 'haute' ? ' prio-haute' : '') + (img ? ' avec-img' : '') + '" draggable="true" data-id="' + x.id + '" style="--c:' + cat.c + '">' +
+      (img ? '<div class="el-img"><img src="' + esc(img) + '" alt="" loading="lazy" draggable="false"></div>' : '') +
       gauche + '<div class="el-corps"><div class="el-titre">' + esc(x.titre) + '</div>' +
       (meta.length ? '<div class="el-meta">' + meta.join('') + '</div>' : '') + '</div></div>';
   }
@@ -776,7 +787,10 @@
     if (pages) return Promise.resolve(pages);
     return fetch('recherche-index.json', { cache: 'no-cache' }).then(function (r) { return r.json(); })
       .then(function (d) {
-        pages = (d.pages || []).map(function (p) { return { url: p[0], titre: p[1], rub: p[2], sec: p[3], cle: sansAccents(p[1] + ' ' + p[2] + ' ' + p[0]) }; });
+        pages = (d.pages || []).map(function (p) {
+          if (p[6]) images[p[0]] = p[6];
+          return { url: p[0], titre: p[1], rub: p[2], sec: p[3], image: p[6] || '', cle: sansAccents(p[1] + ' ' + p[2] + ' ' + p[0]) };
+        });
         return pages;
       }).catch(function () { pages = []; return pages; });
   }
@@ -790,6 +804,7 @@
       $('#site-aide').hidden = true;
       $('#site-res').innerHTML = resultats.length ? resultats.map(function (p, i) {
         return '<div class="site-item" draggable="true" data-p="' + i + '" style="--sec:' + (SECS[p.sec] || SECS.autre) + '">' +
+          (p.image ? '<img class="si-img" src="' + esc(p.image) + '" alt="" loading="lazy" draggable="false">' : '') +
           '<div class="si-txt"><b>' + esc(p.titre) + '</b><span>' + esc(p.rub) + '</span></div>' +
           '<button data-a="envoyer" aria-label="Ajouter à « À planifier »" title="Ajouter à « À planifier »">+</button></div>';
       }).join('') : '<p class="vide">Aucune page trouvée.</p>';
@@ -797,7 +812,7 @@
   }
   $('#site-q').addEventListener('input', chercher);
   function depuisPage(p, date) {
-    var x = nouvelElement({ titre: p.titre, cat: 'site', date: date || '', site: { url: p.url, titre: p.titre, rub: p.rub, sec: p.sec } });
+    var x = nouvelElement({ titre: p.titre, cat: 'site', date: date || '', site: { url: p.url, titre: p.titre, rub: p.rub, sec: p.sec, image: p.image || '' } });
     etat.items.push(x); enregistrer(); rendre();
     toast(date ? 'Ajouté au ' + jourLong(date) : 'Ajouté à « À planifier »');
   }
@@ -880,6 +895,8 @@
   $('#rapide-cat').innerHTML = opts; $('#f-cat').innerHTML = opts;
   if (viderFile()) enregistrer();
   rendre();
+  /* Les images des pages ajoutées depuis le menu du compte viennent de l'index. */
+  if (etat.items.some(function (x) { return x.site && !x.site.image; })) chargerPages().then(rendre);
 
   function demarrerSync() {
     var A = window.ECGAuth;
@@ -890,10 +907,10 @@
   /* Retour sur l'onglet : pages ajoutées entre-temps et modifications faites sur un autre appareil. */
   document.addEventListener('visibilitychange', function () {
     if (document.visibilityState !== 'visible') return;
-    if (viderFile()) { enregistrer(); rendre(); }
+    if (viderFile()) { enregistrer(); rendre(); chargerPages().then(rendre); }
     tirer();
   });
-  window.addEventListener('storage', function (e) { if (e.key === K_FILE && e.newValue && viderFile()) { enregistrer(); rendre(); } });
+  window.addEventListener('storage', function (e) { if (e.key === K_FILE && e.newValue && viderFile()) { enregistrer(); chargerPages().then(rendre); } });
 })();
 </script>
 </body>

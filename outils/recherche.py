@@ -14,7 +14,7 @@ dont le contenu est construit par un script (cours de civilisation, DS de langue
 langues…) sont lues dans leur bloc `<script id="donnees">`.
 
 Format : {"pages": [[adresse, titre, rubrique, catégorie, description, [[titre de partie,
-ancre], …]], …], "mots": "mot1 mot2 …" (sans accents, en minuscules, triés), "p": [pages de
+ancre], …], image (depuis la racine, "" s'il n'y en a pas)], …], "mots": "mot1 mot2 …" (sans accents, en minuscules, triés), "p": [pages de
 chaque mot : écarts entre numéros de page, moins 1, en base 36, séparés par des points]}.
 
 Relançable sans risque : à lancer avant chaque mise en ligne (ne jamais modifier
@@ -208,8 +208,42 @@ def lire_page(rel):
         if p[0] and sans_accents(p[0]) in sans_accents(titre):
             p[0] = ''
     cat, lib = rubrique(rel)
-    return {'u': rel, 't': titre, 'c': cat, 'r': lib, 'd': desc,
+    return {'u': rel, 't': titre, 'c': cat, 'r': lib, 'd': desc, 'i': image_de(rel, c),
             'parties': [[t, a, mots(t + ' ' + texte)] for t, a, texte in parties]}
+
+
+def image_de(rel, c):
+    """Photo de la page (héros, couverture…) : première image locale du corps, sinon le champ
+    « image » d'un bloc de données ou un fond CSS. Lue par mon-planning.html."""
+    d = os.path.dirname(rel)
+    corps = c.split('<body', 1)[-1]
+    cands = re.findall(r'<img\b[^>]*?\bsrc="([^"]+)"', corps)
+    cands += re.findall(r'''["']?image["']?\s*:\s*["']([^"']+\.(?:webp|jpe?g|png))["']''', c)
+    cands += re.findall(r'url\(["\']?([^"\')]+\.(?:webp|jpe?g|png))', corps)
+    for src in cands:
+        if src.startswith(('http', 'data:', '//')) or src.endswith('.svg') or 'logo' in src or 'icon' in src:
+            continue
+        chemin = os.path.normpath(os.path.join(d, src.split('?')[0]))
+        if os.path.isfile(RACINE + chemin):
+            return chemin.replace(os.sep, '/')
+    return ''
+
+
+def vignettes(lues):
+    """Image d'un lien à vignette d'une page (index des chapitres…) → image de la page visée."""
+    v = {}
+    for pg in lues:
+        c = open(RACINE + pg['u'], encoding='utf-8').read()
+        d = os.path.dirname(pg['u'])
+        for href, dedans in re.findall(r'<a\b[^>]*?\bhref="([^"#?]+\.html)[^"]*"[^>]*>(.*?)</a>', c, re.S):
+            m = re.search(r'<img\b[^>]*?\bsrc="([^"]+\.(?:webp|jpe?g|png))"', dedans)
+            if not m or m.group(1).startswith('http'):
+                continue
+            cible = os.path.normpath(os.path.join(d, href)).replace(os.sep, '/')
+            img = os.path.normpath(os.path.join(d, m.group(1))).replace(os.sep, '/')
+            if os.path.isfile(RACINE + img):
+                v.setdefault(cible, img)
+    return v
 
 
 def base36(n):
@@ -227,9 +261,10 @@ def main():
     pages = [p for p in pages if os.path.basename(p) not in IGNORER]
     lues = [x for x in (lire_page(p) for p in pages) if x]
     liste, index = [], {}
+    vig = vignettes(lues)
     for n, pg in enumerate(lues):
         titres = [[t, a] for t, a, _ in pg['parties'] if t]
-        liste.append([pg['u'], pg['t'], pg['r'], pg['c'], pg['d'], titres])
+        liste.append([pg['u'], pg['t'], pg['r'], pg['c'], pg['d'], titres, pg['i'] or vig.get(pg['u'], '')])
         for m in set().union(*(ms for _, _, ms in pg['parties'])) | mots(pg['t']):
             index.setdefault(m, []).append(n)
     vocab = sorted(index)
