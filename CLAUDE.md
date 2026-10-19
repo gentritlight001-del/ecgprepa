@@ -382,7 +382,7 @@ page pays ou région :
 - Habillage « mosaïque », choisi par le propriétaire sur maquette (octobre 2026), cohérent avec les dossiers bento :
   fond clair `#f3efec`, Bricolage Grotesque, cartes arrondies. En haut, l'en-tête (titre, trois chiffres) et la
   **une** : le dernier dossier en grande carte photo (pastille « Nouveau »), les deux précédents à côté. Dessous,
-  recherche, pastilles de thèmes avec compteurs, puis la **grille de tous les dossiers** (photo 3:2, n°, titre, thème,
+  recherche, pastilles de thèmes avec compteurs, puis la **grille de tous les dossiers** (3 par ligne au maximum, photos toutes de même taille en 16:10, n°, titre, thème,
   filet à la couleur du dossier), du plus récent au plus ancien. Pas de « tiroirs » par thème.
 - Tout vient de `CG_DATA` (lu aussi par `auth.js`, `favoris.js`, `outils/nouveautes.py` et la newsletter) : un
   nouveau dossier s'ajoute **à la fin** de `CG_DATA`, avec ses deux couleurs `g` et `g2` (les `--g` et `--g2` du
