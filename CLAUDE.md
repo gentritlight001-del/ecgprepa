@@ -392,11 +392,11 @@ page pays ou région :
 
 Gabarit **« bento »**, choisi par le propriétaire sur maquette (octobre 2026) pour les dossiers
 `Culture-Generale/<slug>.html` : cartes arrondies sur une grille de 12 colonnes, **une palette propre à chaque
-dossier**. **Déjà refaits** (ils servent de modèles) : FARC (n° 052, `farc.html`, palette brique) et
-développement durable (n° 051, `developpement-durable.html`, palette verte). Les autres dossiers gardent l'ancien
-habillage « archives » (carte kraft, `<nav class="sn sn-cg sn-dossier">`, `mackinder.html` en est un exemple)
-jusqu'à ce que le propriétaire demande de les refaire, un à un, **sous le même nom de fichier** (règle de refonte,
-section 1). Demandes types : « Refais le dossier sur X au nouveau gabarit », « Fais un dossier de culture générale
+dossier**. **Les 55 dossiers sont refaits** (octobre 2026, FARC n° 052 et développement durable n° 051 ayant servi de
+modèles) : plus aucun n'a l'ancien habillage « archives ». Pour modifier un dossier, partir de sa page actuelle ; pour un
+nouveau, copier le plus proche par la forme. Demandes types : « Mets à jour le dossier sur X » (nouvelles données vérifiées par recherche web, mêmes règles de mise en page, `cg-controle.py` jusqu'à 23 ✅), « Fais un dossier de culture générale sur Y » (nouveau dossier). Règle de refonte éventuelle :
+**même nom de fichier** (section 1). Palettes (`--g`) déjà prises, à ne pas reprendre : voir
+`grep -ho -- '--g:#[0-9a-f]*' Culture-Generale/*.html`. section 1). Demandes types : « Refais le dossier sur X au nouveau gabarit », « Fais un dossier de culture générale
 sur Y » (nouveau dossier). **`python3 outils/cg-controle.py Culture-Generale/<slug>.html`** vérifie toutes les
 règles ci-dessous (une ligne ✅/❌ par règle, code de sortie 1 s'il reste un ❌, comme `quotidien-controle.py`).
 Procédure de A à Z, sans poser de question jusqu'à la mise en ligne :
@@ -447,7 +447,7 @@ Procédure de A à Z, sans poser de question jusqu'à la mise en ligne :
    dossier. Formes déjà dans le gabarit : barres comparatives `.bars` (+ `.mini` pour deux chiffres), chaîne d'étapes à
    statuts `.flux`, 5 cases numérotées `.pts5`, arbre `.racine` + `.branches`, frise verticale `.etat`, diagramme de
    Venn en SVG `.venn`, deux cartes en vis-à-vis `.duo`, barre empilée `.pile` + légende `.pleg`, cases `.tuiles`,
-   donut `.dn`, trois lectures `.cp`. Une nouvelle forme s'ajoute à la fin du `<style>` de la page (couleurs par les
+   donut `.dn`, trois lectures `.cp`, tableau `.tab`, histogramme vertical `.vbars`, courbe SVG, secteurs `.pie`, trois cartes de couleur `.camps`. Une nouvelle forme s'ajoute à la fin du `<style>` de la page (couleurs par les
    variables). Données sourcées ; une valeur déduite ou approchée est dite sous le schéma (« proportions
    approximatives… »). **Jamais de pastilles de mots isolés sans phrase qui dit ce qu'ils sont** (refusé par le
    propriétaire) : une liste numérotée avec un titre et un sous-titre explicatif.
@@ -466,7 +466,7 @@ Procédure de A à Z, sans poser de question jusqu'à la mise en ligne :
 7. **Mise en page, mesurée** (le propriétaire regarde ligne par ligne ; `cg-controle.py` mesure, mais regarder aussi
    des captures Playwright à 1280 et 390 px) :
    - Titre du héros **3 lignes maximum**. Photo **jamais agrandie** : `cover` (qui la fait remplir toute la hauteur
-     de la carte, légèrement rognée sur les côtés) seulement si elle fait au moins 560 px de large ; en dessous,
+     de la carte, légèrement rognée sur les côtés) seulement si elle fait au moins 480 px de large et 320 px de haut (la règle « aucune image agrandie » de `cg-controle.py` tranche) ; en dessous,
      retirer `cover` : elle reste à sa taille sur le fond flou `.fill`. `alt` qui dit ce que montre la photo.
    - Citation en bandeau : **2 lignes maximum** à 1280 px et plus.
    - **Analyse : les deux colonnes de même hauteur** (ajouter une phrase dans la colonne de gauche ou en retirer une
@@ -488,7 +488,7 @@ Procédure de A à Z, sans poser de question jusqu'à la mise en ligne :
    (`partager(this)` : copie le lien ou ouvre le partage du téléphone). Le script est celui du gabarit : n'adapter que
    `ITEM`. **Pas de sommaire collant, pas de barre de progression** (essayés puis retirés à la demande du
    propriétaire).
-9. **Contrôles.** `python3 outils/cg-controle.py Culture-Generale/<slug>.html` (46 règles, à 1920, 1440, 1280, 1000 et
+9. **Contrôles.** `python3 outils/cg-controle.py Culture-Generale/<slug>.html` (23 règles, à 1920, 1440, 1280, 1000 et
    390 px, `auth.js` remplacé par un script vide) : corriger jusqu'à ce que tout soit ✅. Pièges déjà rencontrés :
    un nettoyage de CSS par `^\.bar` qui supprime aussi `.bars` (comparer les sélecteurs de la page avec ceux du
    gabarit) ; une même classe (`.p3`) donnée à un segment de graphique et à la section « plus loin » ; un
