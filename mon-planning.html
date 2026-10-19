@@ -8,376 +8,384 @@
 <title>ECG Prépa — Mon planning</title>
 <link rel="stylesheet" href="fonts/fonts.css">
 <style>
+  /* Habillage « carnet pointillé » (maquette A) sur la mise en page « grille horaire » (maquette C),
+     choisis par le propriétaire. */
   :root {
-    --bg: #0d0d0f;
-    --surface: #16161a;
-    --surface2: #1e1e24;
-    --border: #2a2a35;
-    --accent: #c8a96e;
-    --accent2: #7c9ec9;
-    --accent3: #9ecba0;
-    --accent4: #c97c9e;
-    --text: #e8e6e0;
-    --text-dim: #a9a79f;
-    --text-faint: #6a6862;
-    --rouge: #e08a8a;
+    --papier: #f4f1ea;
+    --points: #cfc8b8;
+    --blanc: #fffdf8;
+    --encre: #1d2a5c;
+    --texte: #24283a;
+    --gris: #6b6556;
+    --filet: #d9d2c2;
+    --tomate: #d9482b;
+    --tomate-texte: #b33a20;
+    --heure: 48px;
+    --serif: 'Instrument Serif', Georgia, serif;
+    --sans: 'IBM Plex Sans', system-ui, sans-serif;
+    --mono: 'IBM Plex Mono', ui-monospace, monospace;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
-  button { font-family: inherit; }
-
-  .bg-orb { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; opacity: .08; z-index: 0; }
-  .orb1 { width: 700px; height: 700px; background: var(--accent); top: -300px; right: -250px; }
-  .orb2 { width: 600px; height: 600px; background: var(--accent2); bottom: -250px; left: -250px; }
+  html { background: var(--papier); }
+  body {
+    background-color: var(--papier);
+    background-image: radial-gradient(var(--points) 1px, transparent 1.2px);
+    background-size: 22px 22px;
+    color: var(--texte); font-family: var(--sans); min-height: 100vh; overflow-x: hidden;
+  }
+  button, input, select, textarea { font-family: inherit; color: inherit; }
+  [hidden] { display: none !important; }
 
   nav {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 18px 48px; border-bottom: 1px solid var(--border);
-    background: rgba(13,13,15,.9); backdrop-filter: blur(16px);
-    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    height: 60px; padding: 0 32px; border-bottom: 1.5px solid var(--encre);
+    background: var(--papier); position: sticky; top: 0; z-index: 100;
   }
-  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--accent); cursor: pointer; }
-  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: .8rem; color: var(--text-dim); }
+  .nav-logo { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 20px; color: var(--encre); cursor: pointer; }
+  .breadcrumb { display: flex; gap: 8px; font-family: var(--mono); font-size: 12px; color: var(--gris); }
   .breadcrumb a { color: inherit; text-decoration: none; }
-  .breadcrumb a:hover { color: var(--accent); }
-  .breadcrumb .sep { color: var(--text-faint); }
-  .breadcrumb .current { color: var(--text); }
+  .breadcrumb a:hover { color: var(--tomate-texte); }
+  .breadcrumb .current { color: var(--encre); }
   .nav-right { display: flex; align-items: center; }
 
-  /* EN-TÊTE */
-  .page-header {
-    padding: 48px 48px 28px; position: relative; z-index: 1;
-    display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap;
-  }
-  .page-eyebrow { font-size: .75rem; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-family: 'DM Mono', monospace; }
-  .page-title { font-family: 'Playfair Display', serif; font-size: clamp(2.2rem, 4.5vw, 3.4rem); font-weight: 900; line-height: 1.05; }
-  .page-subtitle { font-size: 1rem; color: var(--text-dim); margin-top: 10px; font-weight: 300; }
-  .header-stats { display: flex; gap: 32px; }
-  .stat { text-align: right; }
-  .stat-num { font-family: 'Playfair Display', serif; font-size: 2.3rem; font-weight: 900; color: var(--accent); line-height: 1; }
-  .stat-num.alerte { color: var(--rouge); }
-  .stat-label { font-size: .8rem; color: var(--text-faint); margin-top: 6px; }
-  .sync { font-family: 'DM Mono', monospace; font-size: .68rem; color: var(--text-faint); margin-top: 14px; display: flex; align-items: center; gap: 7px; }
-  .sync i { width: 7px; height: 7px; border-radius: 50%; background: var(--text-faint); display: inline-block; }
-  .sync.ok i { background: var(--accent3); }
-  .sync.en-cours i { background: var(--accent); }
-  .sync.err i { background: var(--rouge); }
+  /* ─── Mise en page : colonne latérale + agenda ─── */
+  .page { display: grid; grid-template-columns: 300px minmax(0, 1fr); min-height: calc(100vh - 60px); }
+  .rail { border-right: 1.5px solid var(--encre); padding: 28px 24px 40px; display: flex; flex-direction: column; gap: 28px; }
+  .agenda { padding: 28px 32px 40px; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
 
-  /* MISE EN PAGE */
-  .main { display: grid; grid-template-columns: 320px minmax(0, 1fr); position: relative; z-index: 1; border-top: 1px solid var(--border); }
-  .sidebar { border-right: 1px solid var(--border); padding: 28px 22px 40px; display: flex; flex-direction: column; gap: 30px; }
-  .bloc-titre {
-    font-size: .72rem; letter-spacing: .18em; text-transform: uppercase; color: var(--text-faint);
-    font-family: 'DM Mono', monospace; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: baseline;
-  }
-  .bloc-titre em { font-style: normal; color: var(--text-dim); letter-spacing: 0; }
-  .aide { font-size: .78rem; color: var(--text-faint); line-height: 1.5; margin-top: 8px; }
+  .petit { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--gris); }
+  .titre-bloc { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .titre-bloc em { font-style: normal; color: var(--tomate-texte); letter-spacing: 0; }
+  .vide { font-size: 13px; color: var(--gris); line-height: 1.5; }
 
-  input[type="text"], input[type="date"], input[type="time"], select, textarea {
-    width: 100%; background: var(--surface2); border: 1px solid var(--border); color: var(--text);
-    font-family: 'DM Sans', sans-serif; font-size: .95rem; padding: 11px 15px; border-radius: 12px; outline: none;
-    transition: border-color .2s; resize: vertical;
-  }
-  input:focus, select:focus, textarea:focus { border-color: var(--accent); }
-  input::placeholder, textarea::placeholder { color: var(--text-faint); }
-  input[type="date"], input[type="time"] { color-scheme: dark; }
-  select option { background: var(--surface2); }
+  /* Rail : titre, compteurs, mini-mois */
+  .rail-tete h1 { font-family: var(--serif); font-weight: 400; font-size: 52px; line-height: .95; color: var(--encre); margin-top: 4px; }
+  .rail-tete h1 em { color: var(--tomate); }
+  .compteurs { display: flex; gap: 18px; margin-top: 16px; }
+  .compteurs div { display: flex; flex-direction: column; }
+  .compteurs b { font-family: var(--serif); font-weight: 400; font-size: 34px; line-height: 1; color: var(--encre); }
+  .compteurs b.alerte { color: var(--tomate); }
+  .compteurs span { font-size: 12px; color: var(--gris); margin-top: 2px; }
+  .sync { display: flex; align-items: center; gap: 7px; margin-top: 14px; font-family: var(--mono); font-size: 11px; color: var(--gris); }
+  .sync i { width: 7px; height: 7px; border-radius: 50%; background: var(--points); }
+  .sync.ok i { background: #3f8a5f; }
+  .sync.en-cours i { background: #c99a2e; }
+  .sync.err i { background: var(--tomate); }
 
-  .rapide { display: flex; flex-direction: column; gap: 10px; }
-  .rapide-ligne { display: flex; gap: 8px; }
-  .rapide-ligne select { flex: 1; }
-  .btn-or {
-    background: var(--accent); color: #0d0d0f; border: 0; border-radius: 999px; padding: 11px 18px;
-    font-size: .95rem; font-weight: 500; cursor: pointer; transition: background .2s, transform .2s; white-space: nowrap;
+  .mini-tete { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .mini-tete b { font-family: var(--serif); font-weight: 400; font-size: 22px; color: var(--encre); }
+  .mini-tete div { display: flex; gap: 4px; }
+  .mini { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); text-align: center; }
+  .mini span { font-family: var(--mono); font-size: 10px; color: var(--gris); padding-bottom: 4px; }
+  .mini button {
+    border: 0; background: transparent; height: 32px; font-family: var(--mono); font-size: 12px; cursor: pointer;
+    position: relative; color: var(--texte);
   }
-  .btn-or:hover { background: #e0bf80; transform: translateY(-1px); }
-  .btn-ligne {
-    background: transparent; color: var(--text-dim); border: 1px solid var(--border); border-radius: 999px;
-    padding: 8px 14px; font-size: .85rem; cursor: pointer; transition: all .15s; white-space: nowrap;
-  }
-  .btn-ligne:hover { color: var(--text); border-color: var(--text-dim); }
-  .btn-ligne.on { background: rgba(200,169,110,.12); border-color: var(--accent); color: var(--accent); }
+  .mini button:hover { background: rgba(29,42,92,.07); }
+  .mini button.hors { color: #b0a999; }
+  .mini button.sem { background: rgba(29,42,92,.08); }
+  .mini button.auj { background: var(--tomate); color: #fff; }
+  .mini button i { position: absolute; left: 50%; bottom: 3px; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: var(--encre); }
+  .mini button.auj i { background: #fff; }
 
-  /* RÉSULTATS « DEPUIS LE SITE » */
-  .site-res { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; max-height: 340px; overflow-y: auto; }
-  .site-item {
-    display: flex; align-items: center; gap: 10px; padding: 9px 10px 9px 12px; border-radius: 10px;
-    background: var(--surface); border: 1px solid var(--border); cursor: grab; position: relative;
+  /* Champs « carnet » */
+  .champ-l { width: 100%; height: 44px; border: 1.5px solid var(--encre); background: var(--blanc); padding: 0 12px; font-size: 15px; outline: none; border-radius: 0; }
+  .champ-l:focus { box-shadow: 3px 3px 0 var(--encre); }
+  .champ-l::placeholder { color: #8f887a; }
+  .rangee { display: flex; gap: 8px; margin-top: 8px; }
+  .rangee select { flex: 1; }
+  .btn {
+    height: 44px; padding: 0 16px; border: 1.5px solid var(--encre); background: transparent; color: var(--encre);
+    font-family: var(--mono); font-size: 13px; cursor: pointer; white-space: nowrap; border-radius: 0;
   }
-  .site-item:hover { border-color: var(--sec, var(--border)); }
-  .site-item .si-txt { flex: 1; min-width: 0; }
-  .site-item b { display: block; font-size: .82rem; font-weight: 500; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-  .site-item span { font-size: .68rem; color: var(--sec, var(--text-faint)); font-family: 'DM Mono', monospace; }
-  .site-item button { flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border); background: transparent; color: var(--text-dim); cursor: pointer; font-size: 1rem; line-height: 1; }
-  .site-item button:hover { border-color: var(--accent); color: var(--accent); }
+  .btn:hover { background: rgba(29,42,92,.07); }
+  .btn.plein { background: var(--encre); color: var(--papier); }
+  .btn.plein:hover { background: #2a3a78; }
+  .btn.petit-b { height: 34px; padding: 0 12px; font-size: 12px; }
+  .btn.rond { width: 34px; padding: 0; height: 34px; }
+  .aide { font-size: 12px; color: var(--gris); line-height: 1.5; margin-top: 8px; }
 
-  /* ÉLÉMENTS (cartes du planning) */
-  .el {
-    --c: var(--text-dim);
-    background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--c);
-    border-radius: 10px; padding: 9px 10px 9px 11px; display: flex; gap: 9px; align-items: flex-start;
-    cursor: pointer; transition: background .15s, border-color .15s, opacity .2s; position: relative;
+  /* Recherche « Depuis le site » */
+  .site-res { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; max-height: 330px; overflow-y: auto; padding: 2px; }
+  .site-item { display: flex; gap: 10px; align-items: center; padding: 6px; background: var(--blanc); box-shadow: 0 1px 0 var(--filet), 0 4px 10px rgba(40,30,10,.08); cursor: grab; }
+  .si-img { width: 54px; height: 40px; object-fit: cover; flex-shrink: 0; }
+  .si-txt { flex: 1; min-width: 0; }
+  .si-txt b { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 13px; font-weight: 500; line-height: 1.3; }
+  .si-txt span { font-family: var(--mono); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--sec, var(--gris)); }
+  .site-item button { width: 30px; height: 30px; border: 1.5px solid var(--encre); background: transparent; color: var(--encre); cursor: pointer; flex-shrink: 0; font-size: 16px; }
+
+  /* « À planifier » et retards : post-it et polaroïds */
+  .bac { display: flex; flex-direction: column; gap: 14px; min-height: 60px; padding: 4px 2px; }
+  .bac.cible, .retard.cible { outline: 1.5px dashed var(--encre); outline-offset: 4px; }
+  .retard { display: flex; flex-direction: column; gap: 2px; }
+
+  /* ─── En-tête de l'agenda ─── */
+  .agenda-tete { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .periode { font-family: var(--serif); font-weight: 400; font-size: 46px; line-height: 1; color: var(--encre); }
+  .periode em { color: var(--tomate); }
+  .commandes { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .onglets { display: flex; border: 1.5px solid var(--encre); }
+  .onglets button { height: 34px; padding: 0 14px; border: 0; background: transparent; font-family: var(--mono); font-size: 12px; color: var(--encre); cursor: pointer; }
+  .onglets button + button { border-left: 1.5px solid var(--encre); }
+  .onglets button.on { background: var(--encre); color: var(--papier); }
+  .filtres { display: flex; gap: 6px; flex-wrap: wrap; }
+  .filtre { height: 30px; padding: 0 11px; border: 1px solid var(--filet); background: var(--blanc); font-family: var(--mono); font-size: 11px; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; }
+  .filtre i { width: 8px; height: 8px; border-radius: 50%; }
+  .filtre.on { border-color: var(--encre); background: var(--encre); color: var(--papier); }
+
+  /* ─── Semaine : grille horaire ─── */
+  .sem { border: 1.5px solid var(--encre); background: rgba(255,253,248,.55); }
+  .sem-ligne { display: grid; grid-template-columns: 52px repeat(7, minmax(0, 1fr)); }
+  .sem-tete { border-bottom: 1px solid var(--filet); position: sticky; top: 60px; z-index: 5; background: var(--papier); }
+  .jt { padding: 10px 10px 8px; border-left: 1px solid var(--filet); display: flex; align-items: baseline; gap: 8px; border-top: 3px solid transparent; }
+  .jt .jn { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--gris); }
+  .jt .jd { font-family: var(--serif); font-size: 32px; line-height: 1; color: var(--encre); }
+  .jt.auj { border-top-color: var(--tomate); background: rgba(217,72,43,.06); }
+  .jt.auj .jn { color: var(--tomate-texte); }
+  .jt.auj .jd { color: var(--tomate); }
+  .sem-libre { border-bottom: 1.5px solid var(--encre); }
+  .lib-h { font-family: var(--mono); font-size: 10px; color: var(--gris); text-align: right; padding: 10px 8px 0 0; line-height: 1.3; }
+  .libre { border-left: 1px solid var(--filet); padding: 8px 8px 6px; display: flex; flex-direction: column; gap: 6px; min-height: 64px; min-width: 0; }
+  .libre.auj { background: rgba(217,72,43,.06); }
+  .libre.cible, .col.cible, .case.cible, .jour-c.cible, .groupe.cible { background: rgba(29,42,92,.08); }
+  .ajout { width: 100%; border: 0; border-bottom: 1px dashed var(--filet); background: transparent; font-size: 12px; padding: 4px 2px; outline: none; margin-top: auto; }
+  .ajout:focus { border-bottom: 1.5px solid var(--encre); }
+  .ajout::placeholder { color: #9b9485; }
+  .heures { position: relative; }
+  .heures span { position: absolute; right: 8px; transform: translateY(-7px); font-family: var(--mono); font-size: 10px; color: var(--gris); }
+  .col {
+    position: relative; border-left: 1px solid var(--filet); cursor: copy;
+    background-image: linear-gradient(var(--filet) 1px, transparent 1px), linear-gradient(rgba(217,210,194,.5) 1px, transparent 1px);
+    background-size: 100% var(--heure), 100% calc(var(--heure) / 2);
   }
-  .el:hover { background: var(--surface2); }
+  .col.auj { background-color: rgba(217,72,43,.05); }
+  .col.passe, .libre.passe { background-color: rgba(107,101,86,.05); }
+  .maintenant { position: absolute; left: -1px; right: 0; height: 2px; background: var(--tomate); z-index: 3; pointer-events: none; }
+  .maintenant::before { content: ''; position: absolute; left: -5px; top: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--tomate); }
+
+  /* ─── Éléments ─── */
+  .el { --c: var(--gris); cursor: pointer; position: relative; }
   .el.glisse { opacity: .35; }
-  .el.fait { opacity: .45; }
-  .el.fait .el-titre { text-decoration: line-through; }
-  .el.type-note { background: transparent; border-style: dashed; border-left-style: solid; }
-  .el.avec-img { flex-wrap: wrap; padding-top: 9px; }
-  .el-img { flex: 0 0 100%; aspect-ratio: 16 / 9; border-radius: 7px; overflow: hidden; background: var(--surface2); margin-bottom: 2px; }
-  .el-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .el.fait .el-img { filter: grayscale(.7); }
-  .bac .el-img { aspect-ratio: 5 / 2; }
-  .site-item .si-img { width: 52px; height: 40px; border-radius: 6px; object-fit: cover; flex-shrink: 0; background: var(--surface2); }
-  .el-case {
-    width: 18px; height: 18px; border-radius: 5px; border: 2px solid var(--c); flex-shrink: 0; margin-top: 1px;
-    background: transparent; cursor: pointer; color: #0d0d0f; font-size: 11px; line-height: 1; display: flex; align-items: center; justify-content: center; padding: 0;
+  /* Bloc horaire */
+  .bloc {
+    position: absolute; padding: 4px 6px 4px 8px; background: var(--blanc); border: 1px solid var(--encre); border-left: 4px solid var(--c);
+    overflow: hidden; display: flex; flex-direction: column; gap: 2px; font-size: 12px; line-height: 1.25; z-index: 2;
   }
-  .el.fait .el-case { background: var(--c); }
-  .el-pastille { width: 8px; height: 8px; border-radius: 50%; background: var(--c); flex-shrink: 0; margin-top: 6px; }
-  .el-corps { flex: 1; min-width: 0; }
-  .el-titre { font-size: .86rem; line-height: 1.35; overflow-wrap: break-word; hyphens: auto; }
-  .jour .el-titre { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-  .el.prio-haute .el-titre { font-weight: 600; }
-  .el-meta { display: flex; flex-wrap: wrap; gap: 4px 8px; margin-top: 4px; font-size: .68rem; color: var(--text-faint); font-family: 'DM Mono', monospace; }
-  .el-meta .h { color: var(--c); }
-  .el-meta .p { color: var(--rouge); }
-  .el-site { display: inline-flex; align-items: center; gap: 4px; color: var(--sec, var(--accent2)); text-decoration: none; }
-  .el-site:hover { text-decoration: underline; }
+  .bloc:hover { z-index: 4; box-shadow: 3px 3px 0 var(--encre); }
+  .bloc.type-rdv { background: var(--encre); color: var(--papier); border-color: var(--encre); border-left-color: var(--c); }
+  .bloc.type-note { border-style: dashed; border-left-style: solid; background: rgba(255,253,248,.8); }
+  .bloc.fait { opacity: .5; }
+  .bloc.fait .t { text-decoration: line-through; }
+  .bloc .t { font-weight: 500; overflow-wrap: break-word; display: flex; gap: 6px; align-items: flex-start; }
+  .bloc .h { font-family: var(--mono); font-size: 10px; opacity: .75; }
+  .bloc img { width: calc(100% + 14px); margin: -4px -6px 2px -8px; height: 36px; flex-shrink: 0; object-fit: cover; display: block; }
+  .case-c { width: 13px; height: 13px; border: 1.5px solid currentColor; background: transparent; flex-shrink: 0; margin-top: 1px; cursor: pointer; padding: 0; font-size: 9px; line-height: 1; }
+  .fait .case-c { background: currentColor; }
+  /* Ligne de carnet (sans heure, retards, liste) */
+  .ligne { display: flex; gap: 8px; align-items: baseline; font-size: 13px; line-height: 1.4; padding: 1px 0; overflow-wrap: break-word; }
+  .ligne .puce { font-family: var(--mono); font-size: 13px; width: 13px; flex-shrink: 0; color: var(--c); border: 0; background: none; padding: 0; cursor: pointer; text-align: center; }
+  .ligne .txt { flex: 1; min-width: 0; }
+  .ligne .h { font-family: var(--mono); font-size: 11px; color: var(--tomate-texte); margin-right: 4px; }
+  .ligne .q { font-family: var(--mono); font-size: 10px; color: var(--gris); margin-left: 4px; }
+  .ligne.fait .txt { color: #9a9384; text-decoration: line-through; }
+  .ligne.type-note .txt { color: var(--gris); font-style: italic; }
+  .ligne.prio-haute .txt { font-weight: 600; }
+  /* Polaroïd (page du site avec image) */
+  .polaroid { background: #fff; padding: 6px 6px 8px; box-shadow: 0 1px 0 var(--filet), 0 6px 14px rgba(40,30,10,.12); display: flex; flex-direction: column; gap: 5px; margin: 6px 2px 4px; }
+  .polaroid:nth-child(odd) { transform: rotate(-1.5deg); }
+  .polaroid:nth-child(even) { transform: rotate(1.2deg); }
+  .polaroid:hover { transform: none; }
+  .polaroid::before { content: ''; position: absolute; top: -8px; left: 50%; width: 46px; height: 14px; margin-left: -23px; background: color-mix(in srgb, var(--c) 30%, transparent); }
+  .polaroid img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; }
+  .polaroid .rub { font-family: var(--mono); font-size: 9.5px; letter-spacing: .07em; text-transform: uppercase; color: var(--sec, var(--tomate-texte)); text-decoration: none; }
+  .polaroid .rub:hover { text-decoration: underline; }
+  .polaroid .t { font-size: 12px; line-height: 1.3; display: flex; gap: 6px; align-items: flex-start; }
+  .polaroid .t span { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .polaroid.fait { opacity: .5; }
+  .polaroid.fait .t span { text-decoration: line-through; }
+  /* Post-it (« À planifier ») */
+  .postit { background: var(--p, #f6dd7a); padding: 11px 13px; font-size: 14px; line-height: 1.4; box-shadow: 0 5px 12px rgba(60,50,10,.12); display: flex; gap: 8px; align-items: flex-start; }
+  .postit:nth-child(odd) { transform: rotate(1.2deg); }
+  .postit:nth-child(even) { transform: rotate(-1deg); }
+  .postit:hover { transform: none; }
+  .postit .txt { flex: 1; min-width: 0; overflow-wrap: break-word; }
+  .postit.fait .txt { text-decoration: line-through; opacity: .6; }
+  .lien-site { font-family: var(--mono); font-size: 10px; color: var(--sec, var(--tomate-texte)); text-decoration: none; display: block; margin-top: 3px; letter-spacing: .04em; }
 
-  /* CONTENU */
-  .content { padding: 26px 32px 48px; min-width: 0; }
-  .barre-vue { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
-  .periode { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; margin-right: auto; }
-  .fleche { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--border); background: transparent; color: var(--text); cursor: pointer; font-size: 1.1rem; }
-  .fleche:hover { border-color: var(--accent); color: var(--accent); }
-  .onglets { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 3px; }
-  .onglets button { border: 0; background: transparent; color: var(--text-dim); padding: 7px 15px; border-radius: 999px; font-size: .85rem; cursor: pointer; }
-  .onglets button.on { background: var(--accent); color: #0d0d0f; }
-  .filtres { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
-  .filtres .btn-ligne i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 7px; vertical-align: 1px; }
+  /* ─── Mois ─── */
+  .mois { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border-top: 1.5px solid var(--encre); border-left: 1.5px solid var(--encre); }
+  .mois-nom { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--gris); padding: 8px 10px; border-right: 1px solid var(--filet); border-bottom: 1.5px solid var(--encre); }
+  .mois-nom:nth-child(7) { border-right: 1.5px solid var(--encre); }
+  .case { min-height: 118px; padding: 6px 8px; border-right: 1px solid var(--filet); border-bottom: 1px solid var(--filet); background: rgba(255,253,248,.5); cursor: pointer; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .case:nth-child(7n) { border-right: 1.5px solid var(--encre); }
+  .case:hover { background: rgba(255,253,248,.9); }
+  .case.hors { opacity: .45; }
+  .case-num { font-family: var(--serif); font-size: 24px; line-height: 1; color: var(--encre); }
+  .case.auj .case-num { color: var(--tomate); }
+  .case.auj { box-shadow: inset 0 3px 0 var(--tomate); }
+  .puce-m { font-size: 11.5px; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .puce-m b { font-family: var(--mono); font-weight: 400; color: var(--c); margin-right: 4px; }
+  .puce-m.fait { color: #9a9384; text-decoration: line-through; }
+  .plus { font-family: var(--mono); font-size: 10px; color: var(--gris); }
 
-  /* SEMAINE */
-  .semaine { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; }
-  .jour {
-    background: rgba(22,22,26,.55); border: 1px solid var(--border); border-radius: 14px;
-    padding: 12px 10px 10px; min-height: 380px; display: flex; flex-direction: column; gap: 7px; transition: border-color .15s, background .15s;
-  }
-  .jour.auj { border-color: var(--accent); background: rgba(200,169,110,.05); }
-  .jour.passe { opacity: .72; }
-  .jour.cible { border-color: var(--accent2); background: rgba(124,158,201,.08); }
-  .jour-tete { display: flex; align-items: baseline; justify-content: space-between; padding: 0 2px 6px; border-bottom: 1px solid var(--border); margin-bottom: 3px; }
-  .jour-nom { font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-dim); font-family: 'DM Mono', monospace; }
-  .jour-num { font-family: 'Playfair Display', serif; font-size: 1.45rem; font-weight: 700; }
-  .jour.auj .jour-nom, .jour.auj .jour-num { color: var(--accent); }
-  .jour-prog { height: 3px; border-radius: 3px; background: var(--border); overflow: hidden; margin: -2px 2px 4px; }
-  .jour-prog b { display: block; height: 100%; background: var(--accent3); }
-  .jour-liste { display: flex; flex-direction: column; gap: 7px; flex: 1; }
-  .jour-ajout { margin-top: auto; }
-  .jour-ajout input { font-size: .82rem; padding: 8px 11px; border-radius: 9px; background: transparent; border-style: dashed; }
-  .jour-ajout input:focus { background: var(--surface2); border-style: solid; }
+  /* ─── Liste et semaine compacte (téléphone) ─── */
+  .groupe, .jour-c { padding: 12px 0 14px; border-top: 1px solid var(--filet); display: flex; flex-direction: column; gap: 4px; }
+  .groupe h3, .jour-c h3 { font-family: var(--serif); font-weight: 400; font-size: 26px; line-height: 1.1; color: var(--encre); display: flex; gap: 10px; align-items: baseline; margin-bottom: 4px; }
+  .groupe h3 small, .jour-c h3 small { font-family: var(--mono); font-size: 11px; color: var(--gris); }
+  .jour-c.auj h3 { color: var(--tomate); }
+  .groupe .polaroid, .jour-c .polaroid { max-width: 260px; }
 
-  /* MOIS */
-  .mois { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
-  .mois-nom { font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); font-family: 'DM Mono', monospace; text-align: center; padding-bottom: 4px; }
-  .case {
-    background: rgba(22,22,26,.55); border: 1px solid var(--border); border-radius: 10px; min-height: 112px;
-    padding: 7px; display: flex; flex-direction: column; gap: 4px; cursor: pointer; transition: border-color .15s;
-  }
-  .case:hover { border-color: var(--text-faint); }
-  .case.hors { opacity: .35; }
-  .case.auj { border-color: var(--accent); }
-  .case.cible { border-color: var(--accent2); background: rgba(124,158,201,.08); }
-  .case-num { font-size: .8rem; font-family: 'DM Mono', monospace; color: var(--text-dim); }
-  .case.auj .case-num { color: var(--accent); font-weight: 500; }
-  .puce { font-size: .72rem; line-height: 1.3; padding: 2px 6px; border-radius: 5px; background: var(--surface2); border-left: 2px solid var(--c); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .puce.fait { opacity: .45; text-decoration: line-through; }
-  .plus { font-size: .7rem; color: var(--text-faint); font-family: 'DM Mono', monospace; }
+  .legende { display: flex; gap: 18px; flex-wrap: wrap; font-family: var(--mono); font-size: 11px; color: var(--gris); border-top: 1px solid var(--filet); padding-top: 12px; }
 
-  /* LISTE */
-  .liste-groupe { margin-bottom: 26px; }
-  .liste-groupe h3 { font-family: 'Playfair Display', serif; font-size: 1.15rem; margin-bottom: 10px; display: flex; gap: 10px; align-items: baseline; }
-  .liste-groupe h3 small { font-family: 'DM Mono', monospace; font-size: .7rem; color: var(--text-faint); font-weight: 400; }
-  .liste-groupe .jour-liste { max-width: 760px; }
-  .vide { color: var(--text-faint); font-size: .85rem; padding: 6px 2px; }
-
-  /* BAC « À PLANIFIER » ET RETARDS */
-  .bac { display: flex; flex-direction: column; gap: 7px; min-height: 54px; border-radius: 12px; transition: background .15s; }
-  .bac.cible { background: rgba(124,158,201,.08); outline: 1px dashed var(--accent2); outline-offset: 4px; }
-  .retard-actions { display: flex; gap: 8px; margin-top: 10px; }
-
-  /* FENÊTRE D'ÉDITION */
-  .voile {
-    position: fixed; inset: 0; background: rgba(0,0,0,.72); z-index: 500; backdrop-filter: blur(4px);
-    display: flex; align-items: center; justify-content: center; padding: 16px;
-    opacity: 0; pointer-events: none; transition: opacity .2s;
-  }
+  /* ─── Fenêtre d'édition ─── */
+  .voile { position: fixed; inset: 0; z-index: 500; background: rgba(29,42,92,.35); display: flex; align-items: center; justify-content: center; padding: 16px; opacity: 0; pointer-events: none; transition: opacity .15s; }
   .voile.open { opacity: 1; pointer-events: auto; }
   .fenetre {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 28px;
-    width: 540px; max-width: 100%; max-height: calc(100vh - 32px); overflow-y: auto;
-    display: flex; flex-direction: column; gap: 14px; transform: translateY(14px); transition: transform .2s;
+    background: var(--papier); border: 1.5px solid var(--encre); box-shadow: 8px 8px 0 var(--encre);
+    width: 540px; max-width: 100%; max-height: calc(100vh - 32px); overflow-y: auto; padding: 26px; display: flex; flex-direction: column; gap: 14px;
   }
-  .voile.open .fenetre { transform: none; }
-  .fenetre h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; }
-  .champ label { display: block; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; font-family: 'DM Mono', monospace; }
-  .deux { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .fenetre h2 { font-family: var(--serif); font-weight: 400; font-size: 34px; color: var(--encre); line-height: 1; }
+  .fenetre label.e { display: block; font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--gris); margin-bottom: 5px; }
+  .fenetre textarea.champ-l { height: auto; padding: 10px 12px; resize: vertical; }
+  .deux, .trois { display: grid; gap: 12px; }
+  .deux { grid-template-columns: 1fr 1fr; }
+  .trois { grid-template-columns: 1.3fr 1fr 1fr; }
   .types { display: flex; gap: 6px; flex-wrap: wrap; }
-  .lien-site { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 12px; font-size: .85rem; }
-  .lien-site a { color: var(--accent2); flex: 1; min-width: 0; overflow-wrap: anywhere; }
-  .fenetre-actions { display: flex; gap: 10px; align-items: center; margin-top: 4px; }
-  .fenetre-actions .suppr { margin-right: auto; color: var(--rouge); border-color: transparent; }
-  .fenetre-actions .suppr:hover { border-color: var(--rouge); color: var(--rouge); }
+  .types .btn.on { background: var(--encre); color: var(--papier); }
+  .site-lie { display: flex; gap: 10px; align-items: center; padding: 8px; background: #fff; box-shadow: 0 1px 0 var(--filet); font-size: 13px; }
+  .site-lie img { width: 60px; height: 42px; object-fit: cover; }
+  .site-lie a { flex: 1; min-width: 0; color: var(--encre); }
+  .actions { display: flex; gap: 8px; align-items: center; margin-top: 4px; }
+  .actions .suppr { margin-right: auto; border-color: transparent; color: var(--tomate-texte); }
+  .actions .suppr:hover { border-color: var(--tomate-texte); background: transparent; }
 
-  .toast {
-    position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); background: var(--surface2);
-    border: 1px solid var(--border); border-radius: 999px; padding: 10px 18px; font-size: .88rem; z-index: 600;
-    opacity: 0; pointer-events: none; transition: all .2s; display: flex; gap: 14px; align-items: center;
-  }
+  .toast { position: fixed; left: 50%; bottom: 22px; transform: translate(-50%, 16px); z-index: 600; background: var(--encre); color: var(--papier); padding: 10px 16px; font-size: 14px; display: flex; gap: 14px; align-items: center; opacity: 0; pointer-events: none; transition: all .2s; max-width: calc(100vw - 32px); }
   .toast.open { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
-  .toast button { background: none; border: 0; color: var(--accent); cursor: pointer; font-size: .88rem; }
+  .toast button { border: 0; background: none; color: #f6dd7a; font-family: var(--mono); font-size: 13px; cursor: pointer; }
 
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-  @media (max-width: 1500px) {
-    .semaine { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  @media (max-width: 1100px) {
+    .page { grid-template-columns: minmax(0, 1fr); }
+    .rail { order: 2; border-right: 0; border-top: 1.5px solid var(--encre); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
   }
-  @media (max-width: 1000px) {
-    .main { grid-template-columns: minmax(0, 1fr); }
-    .sidebar { border-right: 0; border-top: 1px solid var(--border); order: 2; }
-    .semaine { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  }
-  @media (max-width: 640px) {
-    nav { padding: 14px 16px; }
+  @media (max-width: 760px) {
+    nav { padding: 0 16px; }
     .breadcrumb { display: none; }
-    .page-header { padding: 32px 16px 22px; }
-    .header-stats { gap: 22px; width: 100%; justify-content: flex-start; }
-    .stat { text-align: left; }
-    .sidebar { padding: 22px 16px 28px; }
-    .content { padding: 20px 16px 40px; }
-    .semaine { grid-template-columns: minmax(0, 1fr); }
-    .jour { min-height: 0; }
-    .mois { gap: 3px; }
-    .case { min-height: 62px; padding: 4px; }
-    .puce { font-size: 0; padding: 0; height: 5px; border-left: 0; background: var(--c); }
-    .periode { font-size: 1.2rem; width: 100%; }
-    .deux { grid-template-columns: 1fr; }
-    .fenetre { padding: 22px 18px; }
+    .agenda { padding: 22px 16px 32px; }
+    .rail { padding: 24px 16px 32px; grid-template-columns: minmax(0, 1fr); }
+    .periode { font-size: 34px; width: 100%; }
+    .case { min-height: 60px; padding: 4px; }
+    .case-num { font-size: 17px; }
+    .puce-m { font-size: 0; height: 4px; background: var(--c); }
+    .puce-m b { display: none; }
+    .deux, .trois { grid-template-columns: 1fr; }
+    .astuce { display: none; }
+    .fenetre { padding: 20px 16px; box-shadow: 5px 5px 0 var(--encre); }
   }
 </style>
-<link rel="stylesheet" href="admin-refonte.css">
 </head>
 <body>
-<div class="bg-orb orb1"></div>
-<div class="bg-orb orb2"></div>
-
 <nav>
   <div class="nav-logo" onclick="location.href='index.html'">ECG Prépa</div>
   <div class="breadcrumb">
-    <a href="index.html">Accueil</a>
-    <span class="sep">/</span>
-    <a href="admin.html">Administration</a>
-    <span class="sep">/</span>
-    <span class="current">Mon planning</span>
+    <a href="index.html">Accueil</a><span>/</span><a href="admin.html">Administration</a><span>/</span><span class="current">Mon planning</span>
   </div>
   <div class="nav-right"></div>
 </nav>
 
-<div class="page-header">
-  <div>
-    <div class="page-eyebrow">🗓️ Agenda personnel</div>
-    <div class="page-title">Mon planning</div>
-    <div class="page-subtitle">Les pages du site à faire et tout le reste, jour par jour.</div>
-    <div class="sync" id="sync"><i></i><span>Enregistré sur cet appareil</span></div>
-  </div>
-  <div class="header-stats">
-    <div class="stat"><div class="stat-num" id="st-auj">0</div><div class="stat-label">reste aujourd'hui</div></div>
-    <div class="stat"><div class="stat-num" id="st-sem">0</div><div class="stat-label">reste cette semaine</div></div>
-    <div class="stat"><div class="stat-num" id="st-retard">0</div><div class="stat-label">en retard</div></div>
-  </div>
-</div>
-
-<div class="main">
-  <aside class="sidebar">
-    <section>
-      <div class="bloc-titre">Ajout rapide</div>
-      <div class="rapide">
-        <input type="text" id="rapide-titre" placeholder="Ex : Relire le chapitre 3 demain 14h">
-        <div class="rapide-ligne">
-          <select id="rapide-cat" aria-label="Catégorie"></select>
-          <button class="btn-or" id="rapide-ok">Ajouter</button>
-        </div>
+<div class="page">
+  <aside class="rail">
+    <section class="rail-tete">
+      <span class="petit" style="color:var(--tomate-texte)">Mon planning</span>
+      <h1 id="rail-mois"></h1>
+      <div class="compteurs">
+        <div><b id="st-auj">0</b><span>aujourd'hui</span></div>
+        <div><b id="st-sem">0</b><span>cette semaine</span></div>
+        <div><b id="st-retard">0</b><span>en retard</span></div>
       </div>
-      <p class="aide">« aujourd'hui », « demain », « lundi »… et « 14h » sont compris. Sans date, l'élément va dans « À planifier ».</p>
+      <div class="sync" id="sync"><i></i><span>Enregistré sur cet appareil</span></div>
     </section>
 
     <section>
-      <div class="bloc-titre">Depuis le site</div>
-      <input type="text" id="site-q" placeholder="Article, dossier, chapitre, fiche…">
+      <div class="mini-tete"><b id="mini-titre"></b><div><button class="btn rond" id="mini-prec" aria-label="Mois précédent">‹</button><button class="btn rond" id="mini-suiv" aria-label="Mois suivant">›</button></div></div>
+      <div class="mini" id="mini"></div>
+    </section>
+
+    <section>
+      <div class="titre-bloc"><span class="petit">Écrire une ligne</span></div>
+      <input class="champ-l" type="text" id="rapide-titre" placeholder="Relire le chapitre 3 demain 14h" aria-label="Ajouter un élément">
+      <div class="rangee">
+        <select class="champ-l" id="rapide-cat" aria-label="Catégorie"></select>
+        <button class="btn plein" id="rapide-ok">Ajouter</button>
+      </div>
+      <p class="aide">« aujourd'hui », « demain », « lundi », « le 24 » et « 14h » sont compris. Sans date, la ligne va dans « À planifier ».</p>
+    </section>
+
+    <section>
+      <div class="titre-bloc"><span class="petit">Depuis le site</span></div>
+      <input class="champ-l" type="text" id="site-q" placeholder="Article, dossier, chapitre, fiche…" aria-label="Chercher une page du site">
       <div class="site-res" id="site-res"></div>
-      <p class="aide" id="site-aide">Glisser une page sur un jour, ou « + » pour l'envoyer dans « À planifier ». Sur n'importe quelle page, le menu du compte propose aussi « Ajouter cette page au planning ».</p>
+      <p class="aide" id="site-aide">Glisser une page sur un jour ou une heure, ou « + » pour la mettre dans « À planifier ». Sur toutes les pages, le menu du compte propose aussi « Ajouter cette page au planning ».</p>
     </section>
 
     <section id="bloc-retard" hidden>
-      <div class="bloc-titre">En retard <em id="nb-retard"></em></div>
-      <div class="bac" id="retard"></div>
-      <div class="retard-actions"><button class="btn-ligne" id="retard-auj">Tout reporter à aujourd'hui</button></div>
+      <div class="titre-bloc"><span class="petit">En retard</span><em class="petit" id="nb-retard"></em></div>
+      <div class="retard" id="retard"></div>
+      <button class="btn petit-b" id="retard-auj" style="margin-top:10px">&gt; Tout reporter à aujourd'hui</button>
     </section>
 
     <section>
-      <div class="bloc-titre">À planifier <em id="nb-bac"></em></div>
-      <div class="bac" id="bac" data-date=""></div>
+      <div class="titre-bloc"><span class="petit">À planifier</span><em class="petit" id="nb-bac"></em></div>
+      <div class="bac" id="bac"></div>
     </section>
   </aside>
 
-  <main class="content">
-    <div class="barre-vue">
-      <div class="periode" id="periode"></div>
-      <button class="fleche" id="prec" aria-label="Période précédente">‹</button>
-      <button class="btn-ligne" id="auj">Aujourd'hui</button>
-      <button class="fleche" id="suiv" aria-label="Période suivante">›</button>
-      <div class="onglets" id="onglets">
-        <button data-v="semaine" class="on">Semaine</button>
-        <button data-v="mois">Mois</button>
-        <button data-v="liste">Liste</button>
+  <main class="agenda">
+    <div class="agenda-tete">
+      <h2 class="periode" id="periode"></h2>
+      <div class="commandes">
+        <button class="btn petit-b" id="prec" aria-label="Période précédente">‹</button>
+        <button class="btn petit-b" id="auj">Aujourd'hui</button>
+        <button class="btn petit-b" id="suiv" aria-label="Période suivante">›</button>
+        <div class="onglets" id="onglets">
+          <button data-v="semaine">Semaine</button><button data-v="mois">Mois</button><button data-v="liste">Liste</button>
+        </div>
       </div>
     </div>
     <div class="filtres" id="filtres"></div>
     <div id="vue"></div>
+    <div class="legende"><span>• à faire</span><span>× fait</span><span>○ rendez-vous</span><span>– note</span><span class="astuce">Cliquer dans la grille pour ajouter à cette heure</span></div>
   </main>
 </div>
 
 <div class="voile" id="voile">
-  <div class="fenetre" role="dialog" aria-modal="true" aria-labelledby="f-titre-h">
-    <h2 id="f-titre-h">Modifier</h2>
-    <div class="champ"><label for="f-titre">Titre</label><input type="text" id="f-titre"></div>
-    <div class="champ"><label>Type</label>
+  <div class="fenetre" role="dialog" aria-modal="true" aria-labelledby="f-h">
+    <h2 id="f-h">Modifier</h2>
+    <div><label class="e" for="f-titre">Titre</label><input class="champ-l" type="text" id="f-titre"></div>
+    <div><span class="e" style="display:block;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gris);margin-bottom:5px">Type</span>
       <div class="types" id="f-types">
-        <button class="btn-ligne" data-t="tache">☐ À faire</button>
-        <button class="btn-ligne" data-t="rdv">◷ Rendez-vous</button>
-        <button class="btn-ligne" data-t="note">✎ Note</button>
+        <button class="btn petit-b" data-t="tache">• À faire</button>
+        <button class="btn petit-b" data-t="rdv">○ Rendez-vous</button>
+        <button class="btn petit-b" data-t="note">– Note</button>
       </div>
     </div>
-    <div class="deux">
-      <div class="champ"><label for="f-date">Date</label><input type="date" id="f-date"></div>
-      <div class="champ"><label for="f-heure">Heure</label><input type="time" id="f-heure"></div>
-    </div>
-    <div class="deux">
-      <div class="champ"><label for="f-cat">Catégorie</label><select id="f-cat"></select></div>
-      <div class="champ"><label for="f-prio">Priorité</label>
-        <select id="f-prio"><option value="haute">Haute</option><option value="normale">Normale</option><option value="basse">Basse</option></select>
+    <div class="trois">
+      <div><label class="e" for="f-date">Date</label><input class="champ-l" type="date" id="f-date"></div>
+      <div><label class="e" for="f-heure">Heure</label><input class="champ-l" type="time" id="f-heure"></div>
+      <div><label class="e" for="f-duree">Durée</label>
+        <select class="champ-l" id="f-duree"><option value="15">15 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60">1 h</option><option value="90">1 h 30</option><option value="120">2 h</option><option value="180">3 h</option><option value="240">4 h</option></select>
       </div>
     </div>
-    <div class="champ"><label for="f-rep">Répétition</label>
-      <select id="f-rep"><option value="">Aucune</option><option value="jour">Chaque jour</option><option value="semaine">Chaque semaine</option><option value="mois">Chaque mois</option></select>
+    <div class="trois">
+      <div><label class="e" for="f-cat">Catégorie</label><select class="champ-l" id="f-cat"></select></div>
+      <div><label class="e" for="f-prio">Priorité</label><select class="champ-l" id="f-prio"><option value="haute">Haute</option><option value="normale">Normale</option><option value="basse">Basse</option></select></div>
+      <div><label class="e" for="f-rep">Répétition</label><select class="champ-l" id="f-rep"><option value="">Aucune</option><option value="jour">Chaque jour</option><option value="semaine">Chaque semaine</option><option value="mois">Chaque mois</option></select></div>
     </div>
-    <div class="champ" id="f-site-champ" hidden><label>Page du site</label><div class="lien-site" id="f-site"></div></div>
-    <div class="champ"><label for="f-note">Note</label><textarea id="f-note" rows="3" placeholder="Détails, liens, idées…"></textarea></div>
-    <div class="fenetre-actions">
-      <button class="btn-ligne suppr" id="f-suppr">Supprimer</button>
-      <button class="btn-ligne" id="f-annuler">Annuler</button>
-      <button class="btn-or" id="f-ok">Enregistrer</button>
+    <div id="f-site-champ" hidden><span style="display:block;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gris);margin-bottom:5px">Page du site</span><div class="site-lie" id="f-site"></div></div>
+    <div><label class="e" for="f-note">Note</label><textarea class="champ-l" id="f-note" rows="3" placeholder="Détails, liens, idées…"></textarea></div>
+    <div class="actions">
+      <button class="btn suppr" id="f-suppr">Supprimer</button>
+      <button class="btn" id="f-annuler">Annuler</button>
+      <button class="btn plein" id="f-ok">Enregistrer</button>
     </div>
   </div>
 </div>
@@ -394,24 +402,28 @@
   var K_LOCAL = 'ecg-planning:v1', K_FILE = 'ecg-planning-file';
   var BUCKET = 'newsletters', CHEMIN = 'planning/planning.json';
 
+  /* c : encre de la catégorie (puces, filets), p : couleur du post-it. */
   var CATS = {
-    site:   { nom: 'Site',            c: '#c8a96e' },
-    prepa:  { nom: 'Prépa',           c: '#7c9ec9' },
-    perso:  { nom: 'Perso',           c: '#9ecba0' },
-    rdv:    { nom: 'Rendez-vous',     c: '#c97c9e' },
-    admin:  { nom: 'Admin & argent',  c: '#d9a066' },
-    autre:  { nom: 'Autre',           c: '#8a8880' }
+    site:  { nom: 'Site',           c: '#d9482b', p: '#f6dd7a' },
+    prepa: { nom: 'Prépa',          c: '#1d2a5c', p: '#cfd9f2' },
+    perso: { nom: 'Perso',          c: '#2f7a55', p: '#bfe0d4' },
+    rdv:   { nom: 'Rendez-vous',    c: '#7a3f8f', p: '#e5d3ee' },
+    admin: { nom: 'Admin & argent', c: '#a8661a', p: '#f7d6ae' },
+    autre: { nom: 'Autre',          c: '#6b6556', p: '#e6e0d3' }
   };
-  /* Couleur d'une page du site selon sa partie (recherche-index.json, 4e champ). */
-  var SECS = { actu: '#e07a6a', cg: '#b89be0', cours: '#7c9ec9', langues: '#9ecba0', humanite: '#d08a6a', autre: '#c8a96e' };
+  /* Couleur de la rubrique d'une page du site (recherche-index.json, 4e champ). */
+  var SECS = { actu: '#b33a20', cg: '#6a4c9c', cours: '#1d2a5c', langues: '#2f7a55', humanite: '#9a4a1f', autre: '#6b6556' };
   var JOURS = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
   var MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+  var MOIS_C = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
   var PRIO = { haute: 0, normale: 1, basse: 2 };
+  var HEURE_PX = 48;
 
   function $(s) { return document.querySelector(s); }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function sansAccents(s) { return String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
   function nouvelId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+  function maj1(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
   /* ─── Dates (chaînes AAAA-MM-JJ, heure locale) ─── */
   function iso(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
@@ -419,8 +431,11 @@
   function ajoute(s, n) { var d = versDate(s); d.setDate(d.getDate() + n); return iso(d); }
   function lundi(s) { var d = versDate(s); return ajoute(s, -((d.getDay() + 6) % 7)); }
   function aujourdhui() { return iso(new Date()); }
-  function jourCourt(s) { var d = versDate(s); return JOURS[(d.getDay() + 6) % 7].slice(0, 3) + ' ' + d.getDate() + ' ' + MOIS[d.getMonth()].slice(0, 4).replace(/\.$/, ''); }
+  function jourCourt(s) { var d = versDate(s); return JOURS[(d.getDay() + 6) % 7].slice(0, 3) + ' ' + d.getDate() + ' ' + MOIS_C[d.getMonth()]; }
   function jourLong(s) { var d = versDate(s); return JOURS[(d.getDay() + 6) % 7] + ' ' + d.getDate() + ' ' + MOIS[d.getMonth()]; }
+  function minutes(h) { var p = h.split(':'); return +p[0] * 60 + +p[1]; }
+  function hhmm(m) { return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); }
+  function heureLisible(h) { var p = h.split(':'); return +p[0] + ' h' + (p[1] !== '00' ? ' ' + p[1] : ''); }
 
   /* ─── Données ───
      Chaque élément porte sa date de modification (m) et les suppressions sont gardées
@@ -512,13 +527,13 @@
   function nouvelElement(o) {
     return {
       id: nouvelId(), titre: o.titre || 'Sans titre', type: o.type || 'tache', date: o.date || '', heure: o.heure || '',
-      cat: o.cat || 'site', prio: o.prio || 'normale', note: o.note || '', site: o.site || null, rep: o.rep || '',
+      duree: o.duree || 60, cat: o.cat || 'site', prio: o.prio || 'normale', note: o.note || '', site: o.site || null, rep: o.rep || '',
       fait: false, cree: Date.now(), ordre: Date.now(), m: Date.now()
     };
   }
   function trouver(id) { return etat.items.filter(function (x) { return x.id === id; })[0]; }
 
-  /* Un élément répété cochée : il reste fait à sa date et réapparaît à l'échéance suivante. */
+  /* Un élément répété coché : il reste fait à sa date et réapparaît à l'échéance suivante. */
   function prochaine(x) {
     if (x.rep === 'jour') return ajoute(x.date, 1);
     if (x.rep === 'semaine') return ajoute(x.date, 7);
@@ -529,7 +544,7 @@
     return iso(d);
   }
   function cocher(id) {
-    var x = trouver(id); if (!x) return;
+    var x = trouver(id); if (!x || x.type !== 'tache') return;
     x.fait = !x.fait;
     if (x.fait && x.rep && x.date) {
       var suite = nouvelElement(x);
@@ -583,8 +598,9 @@
   function retirer(t, s, r) { return t.slice(0, r.index) + ' ' + t.slice(r.index + r[0].length); }
 
   /* ─── Rendu ─── */
-  var vue = 'semaine', curseur = aujourdhui(), filtreCat = '';
+  var vue = 'semaine', curseur = aujourdhui(), filtreCat = '', moisMini = null;
   try { vue = localStorage.getItem('ecg-planning-vue') || 'semaine'; } catch (e) {}
+  var etroit = window.matchMedia('(max-width: 760px)');
 
   function visibles() { return etat.items.filter(function (x) { return !filtreCat || x.cat === filtreCat; }); }
   function trier(a, b) {
@@ -600,57 +616,162 @@
   var images = {};
   function imageDe(site) { return site && (site.image || images[site.url]) || ''; }
 
-  function carte(x, avecDate) {
-    var cat = CATS[x.cat] || CATS.autre, img = imageDe(x.site);
-    var gauche = x.type === 'tache'
-      ? '<button class="el-case" data-a="cocher" aria-label="' + (x.fait ? 'Décocher' : 'Cocher') + '">' + (x.fait ? '✓' : '') + '</button>'
-      : '<span class="el-pastille" aria-hidden="true"></span>';
-    var meta = [];
-    if (avecDate && x.date) meta.push('<span>' + jourCourt(x.date) + '</span>');
-    if (x.heure) meta.push('<span class="h">' + x.heure.replace(':', 'h') + '</span>');
-    if (x.type === 'rdv') meta.push('<span>Rendez-vous</span>');
-    if (x.type === 'note') meta.push('<span>Note</span>');
-    if (x.prio === 'haute') meta.push('<span class="p">Priorité</span>');
-    if (x.rep) meta.push('<span>↻ ' + { jour: 'chaque jour', semaine: 'chaque semaine', mois: 'chaque mois' }[x.rep] + '</span>');
-    if (x.note) meta.push('<span title="' + esc(x.note) + '">✎</span>');
-    if (x.site) meta.push('<a class="el-site" href="' + esc(x.site.url) + '" style="--sec:' + (SECS[x.site.sec] || SECS.autre) + '" data-a="lien">↗ ' + esc(x.site.rub || 'Ouvrir la page') + '</a>');
-    return '<div class="el type-' + x.type + (x.fait ? ' fait' : '') + (x.prio === 'haute' ? ' prio-haute' : '') + (img ? ' avec-img' : '') + '" draggable="true" data-id="' + x.id + '" style="--c:' + cat.c + '">' +
-      (img ? '<div class="el-img"><img src="' + esc(img) + '" alt="" loading="lazy" draggable="false"></div>' : '') +
-      gauche + '<div class="el-corps"><div class="el-titre">' + esc(x.titre) + '</div>' +
-      (meta.length ? '<div class="el-meta">' + meta.join('') + '</div>' : '') + '</div></div>';
+  function cat(x) { return CATS[x.cat] || CATS.autre; }
+  function classes(x, base) { return base + ' el type-' + x.type + (x.fait ? ' fait' : '') + (x.prio === 'haute' ? ' prio-haute' : ''); }
+  function attrs(x) { return ' draggable="true" data-id="' + x.id + '" style="--c:' + cat(x).c + (x.site ? ';--sec:' + (SECS[x.site.sec] || SECS.autre) : '') + (x.cat ? ';--p:' + cat(x).p : '') + '"'; }
+  function puce(x) {
+    if (x.type === 'tache') return '<button class="puce" data-a="cocher" aria-label="' + (x.fait ? 'Décocher' : 'Cocher') + '">' + (x.fait ? '×' : '•') + '</button>';
+    return '<span class="puce" aria-hidden="true">' + (x.type === 'rdv' ? '○' : '–') + '</span>';
+  }
+  function caseC(x) { return x.type === 'tache' ? '<button class="case-c" data-a="cocher" aria-label="' + (x.fait ? 'Décocher' : 'Cocher') + '">' + (x.fait ? '✓' : '') + '</button>' : ''; }
+  function lienSite(x) { return x.site ? '<a class="lien-site" href="' + esc(x.site.url) + '" data-a="lien">↗ ' + esc(x.site.rub || 'Ouvrir la page') + '</a>' : ''; }
+  function extras(x) {
+    var q = [];
+    if (x.rep) q.push('↻');
+    if (x.note) q.push('✎');
+    return q.length ? '<span class="q" title="' + esc(x.note || '') + '">' + q.join(' ') + '</span>' : '';
   }
 
-  function rendreSemaine() {
-    var debut = lundi(curseur), auj = aujourdhui(), html = '';
-    var fin = ajoute(debut, 6), d1 = versDate(debut), d2 = versDate(fin);
-    $('#periode').textContent = d1.getMonth() === d2.getMonth()
-      ? 'Du ' + d1.getDate() + ' au ' + d2.getDate() + ' ' + MOIS[d2.getMonth()] + ' ' + d2.getFullYear()
-      : 'Du ' + d1.getDate() + ' ' + MOIS[d1.getMonth()] + ' au ' + d2.getDate() + ' ' + MOIS[d2.getMonth()] + ' ' + d2.getFullYear();
-    for (var i = 0; i < 7; i++) {
-      var s = ajoute(debut, i), liste = duJour(s), d = versDate(s);
-      var taches = liste.filter(function (x) { return x.type === 'tache'; }), faites = taches.filter(function (x) { return x.fait; }).length;
-      html += '<div class="jour' + (s === auj ? ' auj' : s < auj ? ' passe' : '') + '" data-date="' + s + '">' +
-        '<div class="jour-tete"><span class="jour-nom">' + JOURS[i].slice(0, 3) + '</span><span class="jour-num">' + d.getDate() + '</span></div>' +
-        (taches.length ? '<div class="jour-prog" title="' + faites + ' sur ' + taches.length + ' fait' + (faites > 1 ? 's' : '') + '"><b style="width:' + Math.round(100 * faites / taches.length) + '%"></b></div>' : '') +
-        '<div class="jour-liste">' + liste.map(carte).join('') + '</div>' +
-        '<div class="jour-ajout"><input type="text" data-ajout="' + s + '" placeholder="+ Ajouter" aria-label="Ajouter le ' + jourLong(s) + '"></div>' +
-        '</div>';
-    }
-    $('#vue').innerHTML = '<div class="semaine">' + html + '</div>';
+  /* Page du site avec image : polaroïd scotché. */
+  function polaroid(x, avecDate) {
+    var img = imageDe(x.site);
+    return '<div class="' + classes(x, 'polaroid') + '"' + attrs(x) + '>' +
+      '<img src="' + esc(img) + '" alt="" loading="lazy" draggable="false">' +
+      '<a class="rub" href="' + esc(x.site.url) + '" data-a="lien">' + (avecDate && x.date ? jourCourt(x.date) + ' · ' : '') + (x.heure ? heureLisible(x.heure) + ' · ' : '') + esc(x.site.rub || 'Page du site') + '</a>' +
+      '<div class="t">' + caseC(x) + '<span>' + esc(x.titre) + '</span></div></div>';
   }
+  /* Ligne de carnet : puce, heure, texte. */
+  function ligne(x, avecDate) {
+    if (x.site && imageDe(x.site)) return polaroid(x, avecDate);
+    return '<div class="' + classes(x, 'ligne') + '"' + attrs(x) + '>' + puce(x) +
+      '<span class="txt">' + (avecDate && x.date ? '<span class="h">' + jourCourt(x.date) + '</span>' : '') +
+      (x.heure ? '<span class="h">' + heureLisible(x.heure) + '</span>' : '') + esc(x.titre) + extras(x) + lienSite(x) + '</span></div>';
+  }
+  /* « À planifier » : post-it, ou polaroïd pour une page du site. */
+  function postit(x) {
+    if (x.site && imageDe(x.site)) return polaroid(x);
+    return '<div class="' + classes(x, 'postit') + '"' + attrs(x) + '>' + caseC(x) +
+      '<span class="txt">' + esc(x.titre) + extras(x) + lienSite(x) + '</span></div>';
+  }
+  /* Bloc de la grille horaire. */
+  function bloc(x, haut, hauteur, voie, voies) {
+    var img = imageDe(x.site), fin = minutes(x.heure) + (x.duree || 60);
+    return '<div class="' + classes(x, 'bloc') + '"' + attrs(x).replace('style="', 'style="top:' + haut + 'px;height:' + hauteur + 'px;left:calc(' + (100 * voie / voies) + '% + 3px);width:calc(' + (100 / voies) + '% - 6px);') + '>' +
+      (img && hauteur >= 78 ? '<img src="' + esc(img) + '" alt="" loading="lazy" draggable="false">' : '') +
+      '<div class="t">' + caseC(x) + '<span>' + esc(x.titre) + '</span></div>' +
+      (hauteur >= 40 ? '<span class="h">' + heureLisible(x.heure) + ' – ' + heureLisible(hhmm(Math.min(fin, 1439))) + (x.site ? ' · ' + esc(x.site.rub || '') : '') + '</span>' : '') +
+      '</div>';
+  }
+
+  /* Plage horaire affichée : 8 h à 21 h, élargie si un élément de la semaine en sort. */
+  function plage(jours) {
+    var debut = 8, fin = 21;
+    jours.forEach(function (l) {
+      l.forEach(function (x) {
+        if (!x.heure) return;
+        var m = minutes(x.heure);
+        debut = Math.min(debut, Math.floor(m / 60));
+        fin = Math.max(fin, Math.min(24, Math.ceil((m + (x.duree || 60)) / 60)));
+      });
+    });
+    return [debut, fin];
+  }
+  /* Éléments qui se chevauchent : côte à côte, en voies. */
+  function voies(liste) {
+    var res = [], groupe = [], finGroupe = -1;
+    function clore() { var n = 0; groupe.forEach(function (g) { n = Math.max(n, g.voie + 1); }); groupe.forEach(function (g) { g.voies = n; }); groupe = []; }
+    liste.slice().sort(function (a, b) { return minutes(a.heure) - minutes(b.heure); }).forEach(function (x) {
+      var d = minutes(x.heure), f = d + Math.max(x.duree || 60, 30);
+      if (d >= finGroupe) { clore(); finGroupe = -1; }
+      var prises = groupe.filter(function (g) { return g.fin > d; }).map(function (g) { return g.voie; });
+      var v = 0; while (prises.indexOf(v) !== -1) v++;
+      var r = { x: x, debut: d, fin: f, voie: v };
+      groupe.push(r); res.push(r);
+      finGroupe = Math.max(finGroupe, f);
+    });
+    clore();
+    return res;
+  }
+
+  function titrePeriode(debut) {
+    var fin = ajoute(debut, 6), d1 = versDate(debut), d2 = versDate(fin);
+    $('#periode').innerHTML = d1.getMonth() === d2.getMonth()
+      ? 'Du ' + d1.getDate() + ' au <em>' + d2.getDate() + ' ' + MOIS[d2.getMonth()] + '</em>'
+      : 'Du ' + d1.getDate() + ' ' + MOIS[d1.getMonth()] + ' au <em>' + d2.getDate() + ' ' + MOIS[d2.getMonth()] + '</em>';
+  }
+
+  var heureDebut = 8;
+  function rendreSemaine() {
+    var debut = lundi(curseur), auj = aujourdhui();
+    titrePeriode(debut);
+    var jours = [], dates = [];
+    for (var i = 0; i < 7; i++) { dates.push(ajoute(debut, i)); jours.push(duJour(dates[i])); }
+
+    if (etroit.matches) {
+      $('#vue').innerHTML = dates.map(function (s, i) {
+        var d = versDate(s);
+        return '<div class="jour-c' + (s === auj ? ' auj' : '') + '" data-date="' + s + '"><h3>' + maj1(JOURS[i]) + ' ' + d.getDate() + (s === auj ? ' <small>aujourd\'hui</small>' : '') + '</h3>' +
+          jours[i].map(function (x) { return ligne(x); }).join('') +
+          '<input class="ajout" type="text" data-ajout="' + s + '" placeholder="+ ajouter" aria-label="Ajouter le ' + jourLong(s) + '"></div>';
+      }).join('');
+      return;
+    }
+
+    var p = plage(jours); heureDebut = p[0];
+    var hauteur = (p[1] - p[0]) * HEURE_PX;
+    var classe = function (s) { return s === auj ? ' auj' : s < auj ? ' passe' : ''; };
+    var html = '<div class="sem"><div class="sem-ligne sem-tete"><span></span>' +
+      dates.map(function (s, i) { return '<div class="jt' + classe(s) + '"><span class="jn">' + JOURS[i].slice(0, 3) + '</span><span class="jd">' + versDate(s).getDate() + '</span></div>'; }).join('') +
+      '</div><div class="sem-ligne sem-libre"><span class="lib-h">sans<br>heure</span>' +
+      dates.map(function (s, i) {
+        return '<div class="libre' + classe(s) + '" data-date="' + s + '">' +
+          jours[i].filter(function (x) { return !x.heure; }).map(function (x) { return ligne(x); }).join('') +
+          '<input class="ajout" type="text" data-ajout="' + s + '" placeholder="+ ajouter" aria-label="Ajouter le ' + jourLong(s) + '"></div>';
+      }).join('') +
+      '</div><div class="sem-ligne" style="height:' + hauteur + 'px"><div class="heures">';
+    for (var h = p[0] + 1; h < p[1]; h++) html += '<span style="top:' + ((h - p[0]) * HEURE_PX) + 'px">' + h + ' h</span>';
+    html += '</div>';
+    dates.forEach(function (s, i) {
+      html += '<div class="col' + classe(s) + '" data-date="' + s + '">';
+      voies(jours[i].filter(function (x) { return x.heure; })).forEach(function (r) {
+        var haut = (r.debut - p[0] * 60) * HEURE_PX / 60;
+        var bas = Math.min(r.debut + (r.x.duree || 60), p[1] * 60);
+        html += bloc(r.x, haut, Math.max(22, (bas - r.debut) * HEURE_PX / 60 - 2), r.voie, r.voies);
+      });
+      if (s === auj) html += '<div class="maintenant" id="maintenant"></div>';
+      html += '</div>';
+    });
+    html += '</div></div>';
+    $('#vue').innerHTML = html;
+    placerMaintenant(p);
+  }
+  function placerMaintenant(p) {
+    var m = $('#maintenant'); if (!m) return;
+    var n = new Date(), mn = n.getHours() * 60 + n.getMinutes();
+    m.hidden = mn < p[0] * 60 || mn > p[1] * 60;
+    m.style.top = ((mn - p[0] * 60) * HEURE_PX / 60) + 'px';
+    m.dataset.p = p.join(',');
+  }
+  setInterval(function () {
+    var m = $('#maintenant'); if (m) placerMaintenant(m.dataset.p.split(',').map(Number));
+    if (aujourdhui() !== dernierJour) { dernierJour = aujourdhui(); rendre(); }
+  }, 60000);
+  var dernierJour = aujourdhui();
 
   function rendreMois() {
     var d = versDate(curseur), premier = iso(new Date(d.getFullYear(), d.getMonth(), 1));
     var debut = lundi(premier), auj = aujourdhui(), html = '';
-    $('#periode').textContent = MOIS[d.getMonth()].charAt(0).toUpperCase() + MOIS[d.getMonth()].slice(1) + ' ' + d.getFullYear();
+    $('#periode').innerHTML = maj1(MOIS[d.getMonth()]) + ' <em>' + d.getFullYear() + '</em>';
     JOURS.forEach(function (j) { html += '<div class="mois-nom">' + j.slice(0, 3) + '</div>'; });
     var semaines = Math.ceil(((versDate(premier).getDay() + 6) % 7 + new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate()) / 7);
     for (var i = 0; i < semaines * 7; i++) {
       var s = ajoute(debut, i), liste = duJour(s), dd = versDate(s);
       html += '<div class="case' + (dd.getMonth() !== d.getMonth() ? ' hors' : '') + (s === auj ? ' auj' : '') + '" data-date="' + s + '" data-a="jour">' +
         '<span class="case-num">' + dd.getDate() + '</span>' +
-        liste.slice(0, 3).map(function (x) { return '<div class="puce' + (x.fait ? ' fait' : '') + '" style="--c:' + (CATS[x.cat] || CATS.autre).c + '">' + esc(x.titre) + '</div>'; }).join('') +
-        (liste.length > 3 ? '<span class="plus">+' + (liste.length - 3) + '</span>' : '') +
+        liste.slice(0, 4).map(function (x) {
+          return '<div class="puce-m' + (x.fait ? ' fait' : '') + '" style="--c:' + cat(x).c + '"><b>' + (x.type === 'tache' ? (x.fait ? '×' : '•') : x.type === 'rdv' ? '○' : '–') + (x.heure ? ' ' + heureLisible(x.heure) : '') + '</b>' + esc(x.titre) + '</div>';
+        }).join('') +
+        (liste.length > 4 ? '<span class="plus">+' + (liste.length - 4) + '</span>' : '') +
         '</div>';
     }
     $('#vue').innerHTML = '<div class="mois">' + html + '</div>';
@@ -658,34 +779,52 @@
 
   function rendreListe() {
     var auj = aujourdhui();
-    $('#periode').textContent = 'À venir';
-    var futurs = visibles().filter(function (x) { return x.date && x.date >= auj && !(x.fait && x.date < auj); });
+    $('#periode').innerHTML = 'À <em>venir</em>';
+    var futurs = visibles().filter(function (x) { return x.date && x.date >= auj; });
     var dates = {};
     futurs.forEach(function (x) { (dates[x.date] = dates[x.date] || []).push(x); });
     var cles = Object.keys(dates).sort();
     var html = cles.length ? '' : '<p class="vide">Rien de prévu pour l\'instant.</p>';
     cles.forEach(function (s) {
       var l = dates[s].sort(trier), reste = l.filter(function (x) { return x.type === 'tache' && !x.fait; }).length;
-      var etiquette = s === auj ? 'Aujourd\'hui' : s === ajoute(auj, 1) ? 'Demain' : jourLong(s).charAt(0).toUpperCase() + jourLong(s).slice(1);
-      html += '<div class="liste-groupe"><h3>' + etiquette + ' <small>' + (s === auj || s === ajoute(auj, 1) ? jourCourt(s) + ' · ' : '') + (reste ? reste + ' à faire' : 'rien à faire') + '</small></h3>' +
-        '<div class="jour-liste" data-date="' + s + '">' + l.map(carte).join('') + '</div></div>';
+      var etiquette = s === auj ? 'Aujourd\'hui' : s === ajoute(auj, 1) ? 'Demain' : maj1(jourLong(s));
+      html += '<div class="groupe" data-date="' + s + '"><h3>' + etiquette + ' <small>' + (s === auj || s === ajoute(auj, 1) ? jourCourt(s) + ' · ' : '') + (reste ? reste + ' à faire' : 'rien à faire') + '</small></h3>' +
+        l.map(function (x) { return ligne(x); }).join('') + '</div>';
     });
     $('#vue').innerHTML = html;
+  }
+
+  function rendreMini() {
+    var ref = versDate(moisMini || curseur), auj = aujourdhui();
+    var premier = iso(new Date(ref.getFullYear(), ref.getMonth(), 1)), debut = lundi(premier);
+    var semDebut = lundi(curseur), semFin = ajoute(semDebut, 6);
+    $('#mini-titre').textContent = maj1(MOIS[ref.getMonth()]) + ' ' + ref.getFullYear();
+    var compte = {};
+    etat.items.forEach(function (x) { if (x.date && !x.fait) compte[x.date] = 1; });
+    var html = 'LMMJVSD'.split('').map(function (c) { return '<span>' + c + '</span>'; }).join('');
+    for (var i = 0; i < 42; i++) {
+      var s = ajoute(debut, i), d = versDate(s);
+      if (i === 35 && d.getMonth() !== ref.getMonth()) break;
+      html += '<button class="' + (d.getMonth() !== ref.getMonth() ? 'hors ' : '') + (s === auj ? 'auj ' : '') + (vue === 'semaine' && s >= semDebut && s <= semFin ? 'sem' : '') + '" data-mini="' + s + '" aria-label="' + jourLong(s) + '">' + d.getDate() + (compte[s] ? '<i></i>' : '') + '</button>';
+    }
+    $('#mini').innerHTML = html;
+    var c = versDate(curseur);
+    $('#rail-mois').innerHTML = maj1(MOIS[c.getMonth()]) + ' <em>' + c.getFullYear() + '</em>';
   }
 
   function rendreCote() {
     var auj = aujourdhui();
     var bac = visibles().filter(function (x) { return !x.date && !x.fait; }).sort(trier);
     var faitsBac = visibles().filter(function (x) { return !x.date && x.fait; });
-    $('#bac').innerHTML = bac.length ? bac.map(carte).join('') : '<p class="vide">Rien en attente. Les éléments sans date arrivent ici.</p>';
-    if (faitsBac.length) $('#bac').innerHTML += '<button class="btn-ligne" id="purger" style="align-self:flex-start">' + (faitsBac.length > 1 ? 'Effacer les ' + faitsBac.length + ' éléments faits' : 'Effacer l\'élément fait') + '</button>';
+    $('#bac').innerHTML = (bac.length ? bac.map(postit).join('') : '<p class="vide">Rien en attente. Les éléments sans date arrivent ici.</p>') +
+      (faitsBac.length ? '<button class="btn petit-b" id="purger" style="align-self:flex-start">' + (faitsBac.length > 1 ? 'Effacer les ' + faitsBac.length + ' éléments faits' : 'Effacer l\'élément fait') + '</button>' : '');
     $('#nb-bac').textContent = bac.length || '';
     var retard = visibles().filter(function (x) { return x.date && x.date < auj && x.type === 'tache' && !x.fait; }).sort(function (a, b) { return a.date < b.date ? -1 : 1; });
     $('#bloc-retard').hidden = !retard.length;
     $('#nb-retard').textContent = retard.length || '';
-    $('#retard').innerHTML = retard.map(function (x) { return carte(x, true); }).join('');
+    $('#retard').innerHTML = retard.map(function (x) { return ligne(x, true); }).join('');
 
-    var tous = etat.items, lun = lundi(auj), dim = ajoute(lun, 6);
+    var tous = etat.items, dim = ajoute(lundi(auj), 6);
     var aFaire = function (x) { return x.type === 'tache' && !x.fait; };
     $('#st-auj').textContent = tous.filter(function (x) { return x.date === auj && aFaire(x); }).length;
     $('#st-sem').textContent = tous.filter(function (x) { return x.date >= auj && x.date <= dim && aFaire(x); }).length;
@@ -695,11 +834,11 @@
   }
 
   function rendreFiltres() {
-    var html = '<button class="btn-ligne' + (!filtreCat ? ' on' : '') + '" data-cat="">Tout</button>';
+    var html = '<button class="filtre' + (!filtreCat ? ' on' : '') + '" data-cat="">Tout</button>';
     Object.keys(CATS).forEach(function (k) {
       var n = etat.items.filter(function (x) { return x.cat === k && !x.fait; }).length;
       if (!n && filtreCat !== k) return;
-      html += '<button class="btn-ligne' + (filtreCat === k ? ' on' : '') + '" data-cat="' + k + '"><i style="background:' + CATS[k].c + '"></i>' + CATS[k].nom + '</button>';
+      html += '<button class="filtre' + (filtreCat === k ? ' on' : '') + '" data-cat="' + k + '"><i style="background:' + CATS[k].c + '"></i>' + CATS[k].nom + '</button>';
     });
     $('#filtres').innerHTML = html;
   }
@@ -708,9 +847,11 @@
     document.querySelectorAll('#onglets button').forEach(function (b) { b.classList.toggle('on', b.dataset.v === vue); });
     ['#prec', '#suiv', '#auj'].forEach(function (s) { $(s).hidden = vue === 'liste'; });
     if (vue === 'mois') rendreMois(); else if (vue === 'liste') rendreListe(); else rendreSemaine();
+    rendreMini();
     rendreCote();
     rendreFiltres();
   }
+  etroit.addEventListener('change', rendre);
 
   /* ─── Toast avec « Annuler » ─── */
   var toastMin = null, annulerAction = null;
@@ -722,16 +863,24 @@
   }
   $('#toast button').addEventListener('click', function () { if (annulerAction) annulerAction(); $('#toast').classList.remove('open'); });
 
-  /* ─── Fenêtre d'édition ─── */
+  /* ─── Fenêtre d'édition (aussi pour un nouvel élément, depuis la grille) ─── */
   var enCours = null, typeChoisi = 'tache';
   function choisirType(t) { typeChoisi = t; document.querySelectorAll('#f-types button').forEach(function (b) { b.classList.toggle('on', b.dataset.t === t); }); }
   function ouvrir(x) {
     enCours = x;
-    $('#f-titre').value = x.titre; $('#f-date').value = x.date; $('#f-heure').value = x.heure;
+    var nouveau = !trouver(x.id);
+    $('#f-h').textContent = nouveau ? 'Nouvelle ligne' : 'Modifier';
+    $('#f-suppr').hidden = nouveau;
+    $('#f-titre').value = nouveau ? '' : x.titre; $('#f-date').value = x.date; $('#f-heure').value = x.heure;
+    $('#f-duree').value = String(x.duree || 60);
+    if (!$('#f-duree').value) $('#f-duree').value = '60';
     $('#f-cat').value = x.cat; $('#f-prio').value = x.prio; $('#f-note').value = x.note; $('#f-rep').value = x.rep || '';
     choisirType(x.type);
     $('#f-site-champ').hidden = !x.site;
-    if (x.site) $('#f-site').innerHTML = '<a href="' + esc(x.site.url) + '">' + esc(x.site.titre) + '</a><button class="btn-ligne" id="f-site-retirer">Détacher</button>';
+    if (x.site) {
+      var img = imageDe(x.site);
+      $('#f-site').innerHTML = (img ? '<img src="' + esc(img) + '" alt="">' : '') + '<a href="' + esc(x.site.url) + '">' + esc(x.site.titre) + '</a><button class="btn petit-b" id="f-site-retirer">Détacher</button>';
+    }
     $('#voile').classList.add('open');
     setTimeout(function () { $('#f-titre').focus(); }, 50);
   }
@@ -743,8 +892,10 @@
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && enCours) fermer(); });
   $('#f-ok').addEventListener('click', function () {
     var x = enCours; if (!x) return;
-    x.titre = $('#f-titre').value.trim() || x.titre;
-    x.date = $('#f-date').value; x.heure = $('#f-heure').value; x.cat = $('#f-cat').value;
+    var titre = $('#f-titre').value.trim();
+    if (!titre && !trouver(x.id)) { $('#f-titre').focus(); return; }
+    x.titre = titre || x.titre;
+    x.date = $('#f-date').value; x.heure = $('#f-heure').value; x.duree = +$('#f-duree').value || 60; x.cat = $('#f-cat').value;
     x.prio = $('#f-prio').value; x.note = $('#f-note').value.trim(); x.type = typeChoisi;
     x.rep = x.date ? $('#f-rep').value : '';
     if (x._detacher) x.site = null;
@@ -768,7 +919,7 @@
     var x = nouvelElement({ titre: a.titre, date: dateForcee != null ? (a.date || dateForcee) : a.date, heure: a.heure, cat: $('#rapide-cat').value });
     etat.items.push(x);
     enregistrer(); rendre();
-    toast(x.date ? 'Ajouté au ' + jourLong(x.date) + (x.heure ? ' à ' + x.heure.replace(':', 'h') : '') : 'Ajouté à « À planifier »');
+    toast(x.date ? 'Ajouté au ' + jourLong(x.date) + (x.heure ? ' à ' + heureLisible(x.heure) : '') : 'Ajouté à « À planifier »');
   }
   $('#rapide-ok').addEventListener('click', function () { var i = $('#rapide-titre'); ajouterRapide(i.value); i.value = ''; i.focus(); });
   $('#rapide-titre').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('#rapide-ok').click(); });
@@ -811,17 +962,23 @@
     });
   }
   $('#site-q').addEventListener('input', chercher);
-  function depuisPage(p, date) {
-    var x = nouvelElement({ titre: p.titre, cat: 'site', date: date || '', site: { url: p.url, titre: p.titre, rub: p.rub, sec: p.sec, image: p.image || '' } });
+  function depuisPage(p, date, heure) {
+    var x = nouvelElement({ titre: p.titre, cat: 'site', date: date || '', heure: heure || '', site: { url: p.url, titre: p.titre, rub: p.rub, sec: p.sec, image: p.image || '' } });
     etat.items.push(x); enregistrer(); rendre();
-    toast(date ? 'Ajouté au ' + jourLong(date) : 'Ajouté à « À planifier »');
+    toast(date ? 'Ajouté au ' + jourLong(date) + (heure ? ' à ' + heureLisible(heure) : '') : 'Ajouté à « À planifier »');
   }
   $('#site-res').addEventListener('click', function (e) {
     var it = e.target.closest('.site-item'); if (!it) return;
     depuisPage(resultats[+it.dataset.p], '');
   });
 
-  /* ─── Clics sur les éléments ─── */
+  /* Heure visée dans une colonne de la grille, à la demi-heure. */
+  function heureDans(col, y) {
+    var m = heureDebut * 60 + Math.floor((y - col.getBoundingClientRect().top) / HEURE_PX * 2) * 30;
+    return hhmm(Math.max(0, Math.min(23 * 60 + 30, m)));
+  }
+
+  /* ─── Clics ─── */
   document.addEventListener('click', function (e) {
     var el = e.target.closest('.el');
     if (el && !e.target.closest('[data-a="lien"]')) {
@@ -829,11 +986,18 @@
       var x = trouver(el.dataset.id); if (x) ouvrir(x);
       return;
     }
+    var col = e.target.closest('.col');
+    if (col && e.target === col) {
+      ouvrir(nouvelElement({ date: col.dataset.date, heure: heureDans(col, e.clientY), cat: $('#rapide-cat').value }));
+      return;
+    }
+    var mini = e.target.closest('[data-mini]');
+    if (mini) { curseur = mini.dataset.mini; moisMini = null; if (vue === 'liste') vue = 'semaine'; memoVue(); rendre(); return; }
     var c = e.target.closest('[data-a="jour"]');
     if (c) { curseur = c.dataset.date; vue = 'semaine'; memoVue(); rendre(); return; }
     if (e.target.id === 'purger') {
       var avant = etat.items.slice();
-      etat.items = etat.items.filter(function (x) { return x.date || !x.fait; });
+      etat.items = etat.items.filter(function (y) { return y.date || !y.fait; });
       enregistrer(); rendre(); toast('Éléments faits effacés', function () { etat.items = avant; enregistrer(); rendre(); });
     }
   });
@@ -843,13 +1007,16 @@
     enregistrer(); rendre();
     toast('Reporté à aujourd\'hui', function () { etat.items = JSON.parse(avant); enregistrer(); rendre(); });
   });
+  function moisDecale(sens) { var d = versDate(moisMini || curseur); moisMini = iso(new Date(d.getFullYear(), d.getMonth() + sens, 1)); rendreMini(); }
+  $('#mini-prec').addEventListener('click', function () { moisDecale(-1); });
+  $('#mini-suiv').addEventListener('click', function () { moisDecale(1); });
 
-  /* ─── Glisser-déposer (jours, cases du mois, « À planifier ») ─── */
+  /* ─── Glisser-déposer : heure de la grille, bande « sans heure », jour, « À planifier » ─── */
   var glisse = null;
   document.addEventListener('dragstart', function (e) {
     var el = e.target.closest && e.target.closest('.el, .site-item');
     if (!el) return;
-    glisse = el.classList.contains('el') ? { id: el.dataset.id } : { page: resultats[+el.dataset.p] };
+    glisse = el.classList.contains('site-item') ? { page: resultats[+el.dataset.p] } : { id: el.dataset.id };
     el.classList.add('glisse');
     try { e.dataTransfer.setData('text/plain', 'planning'); e.dataTransfer.effectAllowed = 'move'; } catch (er) {}
   });
@@ -858,7 +1025,7 @@
     document.querySelectorAll('.cible').forEach(function (c) { c.classList.remove('cible'); });
     glisse = null;
   });
-  function zone(e) { return e.target.closest && e.target.closest('.jour, .case, .bac#bac, .liste-groupe .jour-liste'); }
+  function zone(e) { return e.target.closest && e.target.closest('.col, .libre, .case, #bac, .groupe, .jour-c'); }
   document.addEventListener('dragover', function (e) {
     var z = glisse && zone(e); if (!z) return;
     e.preventDefault();
@@ -869,10 +1036,17 @@
     var z = glisse && zone(e); if (!z) return;
     e.preventDefault();
     var date = z.dataset.date || '';
-    if (glisse.page) depuisPage(glisse.page, date);
+    /* Grille : l'heure du point de dépôt ; bande « sans heure » et « À planifier » : plus d'heure ;
+       jour du mois ou de la liste : l'heure reste. */
+    var heure = z.classList.contains('col') ? heureDans(z, e.clientY) : (z.classList.contains('libre') || z.id === 'bac') ? '' : null;
+    if (glisse.page) depuisPage(glisse.page, date, heure || '');
     else {
       var x = trouver(glisse.id);
-      if (x) { x.date = date; if (!date) x.rep = ''; x.ordre = Date.now(); enregistrer(); rendre(); }
+      if (x) {
+        x.date = date; if (heure !== null) x.heure = heure;
+        if (!date) { x.rep = ''; x.heure = ''; }
+        x.ordre = Date.now(); enregistrer(); rendre();
+      }
     }
     glisse = null;
   });
@@ -882,11 +1056,11 @@
   function decaler(sens) {
     if (vue === 'mois') { var d = versDate(curseur); curseur = iso(new Date(d.getFullYear(), d.getMonth() + sens, 1)); }
     else curseur = ajoute(curseur, 7 * sens);
-    rendre();
+    moisMini = null; rendre();
   }
   $('#prec').addEventListener('click', function () { decaler(-1); });
   $('#suiv').addEventListener('click', function () { decaler(1); });
-  $('#auj').addEventListener('click', function () { curseur = aujourdhui(); rendre(); });
+  $('#auj').addEventListener('click', function () { curseur = aujourdhui(); moisMini = null; rendre(); });
   $('#onglets').addEventListener('click', function (e) { var b = e.target.closest('[data-v]'); if (b) { vue = b.dataset.v; memoVue(); rendre(); } });
   $('#filtres').addEventListener('click', function (e) { var b = e.target.closest('[data-cat]'); if (b) { filtreCat = b.dataset.cat; rendre(); } });
 
