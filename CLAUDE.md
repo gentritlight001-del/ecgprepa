@@ -520,6 +520,7 @@ Procédure de A à Z, sans poser de question jusqu'à la mise en ligne :
 - **Fiches d'art** (`humanite/art/`, copiées de `guernica.html`) : le cadre « À rapprocher » met en parallèle
   **une seule autre œuvre**, de n'importe quel genre (tableau, film, roman, photo…) et pas forcément du site (ex. *Tres de mayo* de Goya pour *Guernica*, *Le Négrier* de
   Turner pour *Le Radeau de la Méduse*) : ressemblances, puis la différence qui éclaire l'œuvre de la fiche.
+  Le texte sous le nom de l'auteur dans le bandeau (`.pitch`) fait **3 lignes** à 1280, 1440 et 1920 px, jamais 4.
 
 ### Fiches auteurs (Cours Humanité)
 
