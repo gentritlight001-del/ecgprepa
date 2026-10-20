@@ -175,6 +175,17 @@
   /* ─── Semaine : grille horaire ─── */
   .sem { border: 1.5px solid var(--encre); background: rgba(255,253,248,.55); }
   .sem-ligne { display: grid; grid-template-columns: 52px repeat(7, minmax(0, 1fr)); }
+  /* Vue Jour : la même grille, une seule colonne. */
+  .sem.un .sem-ligne { grid-template-columns: 64px minmax(0, 1fr); }
+  .sem.un .jt { display: none; }
+  .sem.un .sem-tete { display: none; }
+  .sem.un .libre { flex-direction: row; flex-wrap: wrap; align-items: flex-start; gap: 6px 22px; min-height: 52px; }
+  .sem.un .libre .polaroid { width: 200px; }
+  .sem.un .libre .ajout { flex: 1 0 100%; }
+  .sem.un .bloc { font-size: 14px; padding: 6px 10px 6px 12px; }
+  .sem.un .bloc img { width: 120px; height: auto; aspect-ratio: 16 / 10; margin: 0; position: absolute; right: 6px; top: 6px; }
+  .sem.un .bloc .t, .sem.un .bloc .h { padding-right: 130px; }
+  .sem.un .bloc.court .t, .sem.un .bloc.court .h { padding-right: 0; }
   .sem-tete { border-bottom: 1px solid var(--filet); position: sticky; top: 60px; z-index: 5; background: var(--papier); }
   .jt { padding: 10px 10px 8px; border-left: 1px solid var(--filet); display: flex; align-items: baseline; gap: 8px; border-top: 3px solid transparent; }
   .jt .jn { color: var(--gris); }
@@ -385,7 +396,7 @@
       <input class="champ-l" type="text" id="site-q" placeholder="Article, dossier, chapitre, fiche…" aria-label="Chercher une page du site">
       <button class="lien-afaire" id="voir-afaire" type="button">Contenus à créer<span id="nb-afaire"></span></button>
       <div class="site-res" id="site-res"></div>
-      <p class="aide" id="site-aide">Glisser une page sur un jour ou une heure, ou «&nbsp;+&nbsp;» pour la mettre dans «&nbsp;À planifier&nbsp;». «&nbsp;Contenus à créer&nbsp;» liste ce qui est annoncé sur le site mais pas encore fait. Sur toutes les pages, le menu du compte propose aussi «&nbsp;Ajouter cette page au planning&nbsp;».</p>
+      <p class="aide" id="site-aide">Glisser une page sur un jour ou une heure, ou «&nbsp;+&nbsp;» pour la mettre dans «&nbsp;À planifier&nbsp;». «&nbsp;Contenus à créer&nbsp;» liste ce qui est annoncé sur le site mais pas encore fait.</p>
     </section>
 
     <section id="bloc-retard" hidden>
@@ -408,7 +419,7 @@
         <button class="btn petit-b" id="auj">Aujourd’hui</button>
         <button class="btn petit-b" id="suiv" aria-label="Période suivante">›</button>
         <div class="onglets" id="onglets">
-          <button data-v="semaine">Semaine</button><button data-v="mois">Mois</button><button data-v="liste">Liste</button>
+          <button data-v="jour">Jour</button><button data-v="semaine">Semaine</button><button data-v="mois">Mois</button><button data-v="liste">Liste</button>
         </div>
       </div>
     </div>
@@ -458,9 +469,8 @@
   'use strict';
 
   /* Stockage : copie locale immédiate, puis fichier planning/planning.json du bucket privé
-     « newsletters » (réservé aux administrateurs), pour retrouver le planning sur tous les appareils.
-     Les pages ajoutées depuis le menu du compte arrivent par la file « ecg-planning-file ». */
-  var K_LOCAL = 'ecg-planning:v1', K_FILE = 'ecg-planning-file';
+     « newsletters » (réservé aux administrateurs), pour retrouver le planning sur tous les appareils. */
+  var K_LOCAL = 'ecg-planning:v1';
   var BUCKET = 'newsletters', CHEMIN = 'planning/planning.json';
 
   /* c : encre de la catégorie (puces, filets), p : couleur du post-it. */
@@ -595,19 +605,6 @@
       .catch(syncErr);
   }
 
-  /* Pages envoyées par « Ajouter cette page au planning » (menu du compte). */
-  function viderFile() {
-    var file = [];
-    try { file = JSON.parse(localStorage.getItem(K_FILE) || '[]'); } catch (e) {}
-    if (!file.length) return 0;
-    file.forEach(function (p) {
-      if (etat.items.some(function (x) { return x.site && x.site.url === p.url && !x.fait; })) return;
-      etat.items.push(nouvelElement({ titre: p.titre, cat: 'site', site: { url: p.url, titre: p.titre, rub: p.rub || '', sec: p.sec || 'autre' } }));
-    });
-    try { localStorage.removeItem(K_FILE); } catch (e) {}
-    return file.length;
-  }
-
   function nouvelElement(o) {
     return {
       id: nouvelId(), titre: o.titre || 'Sans titre', type: o.type || 'tache', date: o.date || '', heure: o.heure || '',
@@ -708,7 +705,7 @@
     if (vue === 'mois') {
       var d = versDate(curseur), n = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
       for (var i = 1; i <= n; i++) l.push(iso(new Date(d.getFullYear(), d.getMonth(), i)));
-    } else if (unJour()) { l.push(curseur); }
+    } else if (unJour() || vue === 'jour') { l.push(curseur); }
     else if (vue === 'liste') { for (var j = 0; j < 14; j++) l.push(ajoute(auj, j)); }
     else { var lun = lundi(curseur); for (var k = 0; k < 7; k++) l.push(ajoute(lun, k)); }
     if (l.indexOf(auj) === -1) l.push(auj);
@@ -871,13 +868,19 @@
   }
 
   var heureDebut = 8;
-  function rendreSemaine() {
+  function rendreSemaine(unSeul) {
     var debut = lundi(curseur), auj = aujourdhui();
-    titrePeriode(debut);
     var jours = [], dates = [];
-    for (var i = 0; i < 7; i++) { dates.push(ajoute(debut, i)); jours.push(duJour(dates[i])); }
+    if (unSeul) {
+      var dj = versDate(curseur);
+      $('#periode').innerHTML = '<span class="lie">' + JOURS[(dj.getDay() + 6) % 7] + '</span>' + dj.getDate() + '&nbsp;<em>' + MOIS[dj.getMonth()] + '</em>';
+      dates.push(curseur); jours.push(duJour(curseur));
+    } else {
+      titrePeriode(debut);
+      for (var i = 0; i < 7; i++) { dates.push(ajoute(debut, i)); jours.push(duJour(dates[i])); }
+    }
 
-    if (etroit.matches) {
+    if (etroit.matches && !unSeul) {
       $('#vue').innerHTML = dates.map(function (s, i) {
         var d = versDate(s);
         return '<div class="jour-c' + (s === auj ? ' auj' : '') + '" data-date="' + s + '"><h3>' + maj1(JOURS[i]) + ' ' + d.getDate() + (s === auj ? ' <small>aujourd’hui</small>' : '') + '</h3>' +
@@ -890,8 +893,8 @@
     var p = plage(jours); heureDebut = p[0];
     var hauteur = (p[1] - p[0]) * HEURE_PX;
     var classe = function (s) { return s === auj ? ' auj' : s < auj ? ' passe' : ''; };
-    var html = '<div class="sem"><div class="sem-ligne sem-tete"><span></span>' +
-      dates.map(function (s, i) { return '<div class="jt' + classe(s) + '"><span class="jn">' + JOURS[i].slice(0, 3) + '</span><span class="jd">' + versDate(s).getDate() + '</span></div>'; }).join('') +
+    var html = '<div class="sem' + (unSeul ? ' un' : '') + '"><div class="sem-ligne sem-tete"><span></span>' +
+      dates.map(function (s) { return '<div class="jt' + classe(s) + '"><span class="jn">' + JOURS[(versDate(s).getDay() + 6) % 7].slice(0, 3) + '</span><span class="jd">' + versDate(s).getDate() + '</span></div>'; }).join('') +
       '</div><div class="sem-ligne sem-libre"><span class="lib-h">sans<br>heure</span>' +
       dates.map(function (s, i) {
         return '<div class="libre' + classe(s) + '" data-date="' + s + '">' +
@@ -986,7 +989,7 @@
     for (var i = 0; i < 42; i++) {
       var s = ajoute(debut, i), d = versDate(s);
       if (i === 35 && d.getMonth() !== ref.getMonth()) break;
-      html += '<button class="' + (d.getMonth() !== ref.getMonth() ? 'hors ' : '') + (s === auj ? 'auj ' : '') + ((vue === 'semaine' && s >= semDebut && s <= semFin) || (unJour() && s === curseur) ? 'sem' : '') + '" data-mini="' + s + '" aria-label="' + jourLong(s) + '">' + d.getDate() + (compte[s] ? '<i></i>' : '') + '</button>';
+      html += '<button class="' + (d.getMonth() !== ref.getMonth() ? 'hors ' : '') + (s === auj ? 'auj ' : '') + ((vue === 'semaine' && s >= semDebut && s <= semFin) || ((unJour() || vue === 'jour') && s === curseur) ? 'sem' : '') + '" data-mini="' + s + '" aria-label="' + jourLong(s) + '">' + d.getDate() + (compte[s] ? '<i></i>' : '') + '</button>';
     }
     $('#mini').innerHTML = html;
     var c = versDate(curseur);
@@ -1028,10 +1031,10 @@
     assurerQuotidien();
     document.querySelectorAll('#onglets button').forEach(function (b) { b.classList.toggle('on', b.dataset.v === vue); });
     ['#prec', '#suiv', '#auj'].forEach(function (s) { $(s).hidden = vue === 'liste' && !unJour(); });
-    var astuce = document.querySelector('.astuce'); if (astuce) astuce.hidden = vue !== 'semaine';
-    $('#prec').setAttribute('aria-label', unJour() ? 'Jour précédent' : 'Période précédente');
-    $('#suiv').setAttribute('aria-label', unJour() ? 'Jour suivant' : 'Période suivante');
-    if (vue === 'mois') rendreMois(); else if (vue === 'liste') rendreListe(); else rendreSemaine();
+    var astuce = document.querySelector('.astuce'); if (astuce) astuce.hidden = vue !== 'semaine' && vue !== 'jour';
+    $('#prec').setAttribute('aria-label', unJour() || vue === 'jour' ? 'Jour précédent' : 'Période précédente');
+    $('#suiv').setAttribute('aria-label', unJour() || vue === 'jour' ? 'Jour suivant' : 'Période suivante');
+    if (vue === 'mois') rendreMois(); else if (vue === 'liste') rendreListe(); else if (vue === 'jour') rendreSemaine(true); else rendreSemaine();
     rendreMini();
     rendreQuotidien();
     rendreCote();
@@ -1262,7 +1265,7 @@
   function memoVue() { try { localStorage.setItem('ecg-planning-vue', vue); localStorage.setItem('ecg-planning-liste', listeMode); } catch (e) {} }
   function decaler(sens) {
     if (vue === 'mois') { var d = versDate(curseur); curseur = iso(new Date(d.getFullYear(), d.getMonth() + sens, 1)); }
-    else curseur = ajoute(curseur, (unJour() ? 1 : 7) * sens);
+    else curseur = ajoute(curseur, (unJour() || vue === 'jour' ? 1 : 7) * sens);
     moisMini = null; rendre();
   }
   $('#prec').addEventListener('click', function () { decaler(-1); });
@@ -1274,9 +1277,8 @@
   /* ─── Démarrage ─── */
   var opts = Object.keys(CATS).map(function (k) { return '<option value="' + k + '">' + CATS[k].nom + '</option>'; }).join('');
   $('#rapide-cat').innerHTML = opts; $('#f-cat').innerHTML = opts;
-  if (viderFile()) enregistrer();
   rendre();
-  /* Les images des pages ajoutées depuis le menu du compte viennent de l'index. */
+  /* Les images des pages du site viennent de l'index. */
   if (etat.items.some(function (x) { return x.site && !x.site.image; }) || Object.keys(etat.reglages.quotidien).some(function (k) { return etat.reglages.quotidien[k]; })) chargerPages().then(rendre);
   if (etat.reglages.quotidien.hgg) chargerFichesHgg().then(rendre);
   fetch('a-faire.json', { cache: 'no-cache' }).then(function (r) { return r.json(); })
@@ -1291,10 +1293,8 @@
   /* Retour sur l'onglet : pages ajoutées entre-temps et modifications faites sur un autre appareil. */
   document.addEventListener('visibilitychange', function () {
     if (document.visibilityState !== 'visible') return;
-    if (viderFile()) { enregistrer(); rendre(); chargerPages().then(rendre); }
     tirer();
   });
-  window.addEventListener('storage', function (e) { if (e.key === K_FILE && e.newValue && viderFile()) { enregistrer(); chargerPages().then(rendre); } });
 })();
 </script>
 </body>

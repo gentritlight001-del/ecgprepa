@@ -2179,7 +2179,6 @@
       (admin ? '<button type="button" id="ecg-idees" class="admin" role="menuitem">Idées pour le site</button>' : '') +
       (admin ? '<button type="button" id="ecg-mes-nl" class="admin" role="menuitem">Mes newsletters</button>' : '') +
       (admin ? '<button type="button" id="ecg-planning" class="admin" role="menuitem">Mon planning</button>' : '') +
-      (admin && file !== 'mon-planning.html' ? '<button type="button" id="ecg-planning-ajout" class="admin" role="menuitem">+ Ajouter cette page au planning</button>' : '') +
       '<div class="sep"></div>' +
       '<button type="button" id="ecg-home" role="menuitem">Retour à l\'accueil</button>' +
       '<button type="button" id="ecg-logout" class="danger" role="menuitem">Se déconnecter</button>' +
@@ -2244,22 +2243,6 @@
     if (admin) wrap.querySelector('#ecg-idees').addEventListener('click', function () { location.href = BASE + 'idees-articles.html'; });
     if (admin) wrap.querySelector('#ecg-mes-nl').addEventListener('click', function () { location.href = BASE + 'mes-newsletters.html'; });
     if (admin) wrap.querySelector('#ecg-planning').addEventListener('click', function () { location.href = BASE + 'mon-planning.html'; });
-    /* La page rejoint la file lue par mon-planning.html (« À planifier »). */
-    var ajoutPlanning = wrap.querySelector('#ecg-planning-ajout');
-    if (ajoutPlanning) ajoutPlanning.addEventListener('click', function () {
-      var url = location.href.split('#')[0].split('?')[0];
-      if (BASE && url.indexOf(BASE) === 0) url = url.slice(BASE.length);
-      var titre = (document.title || url).replace(/^ECG Prépa\s*[—·|-]\s*/, '').replace(/\s*[—|]\s*ECG Prépa$/, '');
-      var sec = /^actualites\//.test(url) ? 'actu' : /^Culture-Generale\//.test(url) ? 'cg' : /^humanite/.test(url) ? 'humanite' :
-        /langues\//.test(url) ? 'langues' : /_annee\//.test(url) ? 'cours' : 'autre';
-      var rub = { actu: 'Actualité', cg: 'Culture générale', humanite: 'Humanité', langues: 'Langues', cours: 'Cours', autre: 'ECG Prépa' }[sec];
-      var fileP = [];
-      try { fileP = JSON.parse(localStorage.getItem('ecg-planning-file') || '[]'); } catch (e) {}
-      if (!fileP.some(function (p) { return p.url === url; })) fileP.push({ url: url, titre: titre, rub: rub, sec: sec });
-      try { localStorage.setItem('ecg-planning-file', JSON.stringify(fileP)); } catch (e) {}
-      ajoutPlanning.textContent = '✓ Ajoutée au planning';
-      setTimeout(function () { ajoutPlanning.textContent = '+ Ajouter cette page au planning'; }, 2200);
-    });
     wrap.querySelector('#ecg-logout').addEventListener('click', function () { Auth.logout(); });
 
     var compteur = wrap.querySelector('#ecg-fav-count');
