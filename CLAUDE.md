@@ -30,7 +30,7 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
 - Pages réservées à l'administrateur : `PAGES_ADMIN` dans `auth.js` (`admin.html`,
   `idees-articles.html`, `mes-newsletters.html`, `mon-planning.html`). `mon-planning.html` : agenda
   personnel du propriétaire (habillage « carnet pointillé » + grille horaire, **pas d'italique**),
-  synchronisé dans `planning/planning.json` du bucket privé `newsletters` ; interrupteurs « Au quotidien »
+  synchronisé dans `planning/planning.json` du bucket privé `newsletters` (photos attachées dans `planning/photos/`) ; interrupteurs « Au quotidien »
   (anglais, espagnol, allemand, fiche HGG) qui ajoutent une ligne par jour. Sa recherche « Depuis le site » lit
   `recherche-index.json` (7e champ : image de la page) et `a-faire.json` (« Contenus à créer » : liens vers des pages
   qui n'existent pas encore, œuvres `a-venir`, fiches auteurs sans fiche…), tous deux écrits par `outils/recherche.py`

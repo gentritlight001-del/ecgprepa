@@ -320,6 +320,17 @@
   .site-lie { display: flex; gap: 10px; align-items: center; padding: 8px; background: #fff; box-shadow: 0 1px 0 var(--filet); font-size: 13px; }
   .site-lie img { width: 60px; height: 42px; object-fit: cover; }
   .site-lie a { flex: 1; min-width: 0; color: var(--encre); }
+  .joints { align-items: start; }
+  .f-res { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; max-height: 210px; overflow-y: auto; }
+  .f-res button { all: unset; display: flex; gap: 8px; align-items: center; padding: 5px 6px; background: #fff; box-shadow: 0 1px 0 var(--filet); cursor: pointer; font-size: 13px; line-height: 1.3; }
+  .f-res button:hover, .f-res button:focus-visible { outline: 1.5px solid var(--encre); }
+  .f-res img { width: 40px; height: 30px; object-fit: cover; flex-shrink: 0; }
+  .f-res small { display: block; font-size: 10.5px; color: var(--gris); }
+  .photo-lie { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+  .photo-lie img { width: 100%; max-height: 150px; object-fit: cover; box-shadow: 0 1px 0 var(--filet), 0 4px 10px rgba(40,30,10,.1); background: #fff; padding: 5px; }
+  .depot { display: inline-flex; align-items: center; cursor: pointer; }
+  .depot input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  .depot:focus-within { outline: 2px solid var(--tomate); outline-offset: 2px; }
   .actions { display: flex; gap: 8px; align-items: center; margin-top: 4px; }
   .actions .suppr { margin-right: auto; border-color: transparent; color: var(--tomate-texte); }
   .actions .suppr:hover { border-color: var(--tomate-texte); background: transparent; }
@@ -452,7 +463,17 @@
       <div><label class="e" for="f-prio">Priorité</label><select class="champ-l" id="f-prio"><option value="haute">Haute</option><option value="normale">Normale</option><option value="basse">Basse</option></select></div>
       <div><label class="e" for="f-rep">Répétition</label><select class="champ-l" id="f-rep"><option value="">Aucune</option><option value="jour">Chaque jour</option><option value="semaine">Chaque semaine</option><option value="mois">Chaque mois</option></select></div>
     </div>
-    <div id="f-site-champ" hidden><span class="e">Page du site</span><div class="site-lie" id="f-site"></div></div>
+    <div class="deux joints">
+      <div><span class="e">Page du site</span>
+        <div class="site-lie" id="f-site" hidden></div>
+        <div id="f-site-choix"><input class="champ-l" type="text" id="f-site-q" placeholder="Chercher une page…" aria-label="Chercher une page du site à attacher"><div class="f-res" id="f-site-res"></div></div>
+      </div>
+      <div><span class="e">Photo</span>
+        <div class="photo-lie" id="f-photo" hidden><img id="f-photo-img" alt=""><button class="btn petit-b" id="f-photo-retirer" type="button">Retirer</button></div>
+        <label class="btn petit-b depot" id="f-photo-choix"><input type="file" id="f-photo-fichier" accept="image/*">Choisir une photo</label>
+        <p class="aide" id="f-photo-etat"></p>
+      </div>
+    </div>
     <div><label class="e" for="f-note">Note</label><textarea class="champ-l" id="f-note" rows="3" placeholder="Détails, liens, idées…"></textarea></div>
     <div class="actions">
       <button class="btn suppr" id="f-suppr">Supprimer</button>
@@ -772,13 +793,35 @@
   /* Image d'une page du site : celle de l'index (recherche-index.json, 7e champ). */
   var images = {};
   function imageDe(site) { return site && (site.image || images[site.url]) || ''; }
+  /* Photos attachées : fichier planning/photos/… du bucket privé (lien signé, valable un jour),
+     ou image réduite gardée dans l'élément quand l'envoi est impossible. */
+  var liensPhotos = {}, photosEnAttente = false;
+  function photoDe(x) {
+    if (!x.photo) return '';
+    if (x.photo.data) return x.photo.data;
+    if (liensPhotos[x.photo.chemin]) return liensPhotos[x.photo.chemin];
+    demanderPhotos();
+    return '';
+  }
+  function demanderPhotos() {
+    if (photosEnAttente || !client) return;
+    var chemins = etat.items.filter(function (x) { return x.photo && x.photo.chemin && !liensPhotos[x.photo.chemin]; }).map(function (x) { return x.photo.chemin; });
+    if (!chemins.length) return;
+    photosEnAttente = true;
+    client.storage.from(BUCKET).createSignedUrls(chemins, 86400).then(function (r) {
+      photosEnAttente = false;
+      (r.data || []).forEach(function (d) { if (d.signedUrl) liensPhotos[d.path] = d.signedUrl; });
+      rendre();
+    }).catch(function () { photosEnAttente = false; });
+  }
+  function imgDe(x) { return x.q ? '' : (photoDe(x) || imageDe(x.site)); }
 
   function cat(x) {
     var c = CATS[x.cat] || CATS.autre;
     return x.q && ESPACES[x.q] ? { nom: c.nom, c: ESPACES[x.q].c, p: c.p } : c;
   }
   function classes(x, base) { return base + ' el type-' + x.type + (x.fait ? ' fait' : '') + (x.prio === 'haute' ? ' prio-haute' : ''); }
-  function attrs(x) { return ' draggable="true" data-id="' + x.id + '" style="--c:' + cat(x).c + (x.site ? ';--sec:' + (SECS[x.site.sec] || SECS.autre) : '') + (x.cat ? ';--p:' + cat(x).p : '') + '"'; }
+  function attrs(x) { return ' draggable="true" data-id="' + x.id + '" style="--c:' + cat(x).c + (x.site ? ';--sec:' + (SECS[x.site.sec] || SECS.autre) : '') + '' + '"'; }
   function puce(x) {
     if (x.type === 'tache') return '<button class="puce" data-a="cocher" aria-label="' + (x.fait ? 'Décocher' : 'Cocher') + '">' + (x.fait ? '×' : '•') + '</button>';
     return '<span class="puce" aria-hidden="true">' + (x.type === 'rdv' ? '○' : '–') + '</span>';
@@ -794,10 +837,11 @@
 
   /* Page du site avec image : polaroïd scotché. */
   function polaroid(x, avecDate) {
-    var img = imageDe(x.site);
+    var img = imgDe(x), avant = (avecDate && x.date ? jourCourt(x.date) + ' · ' : '') + (x.heure ? heureLisible(x.heure) + ' · ' : '');
     return '<div class="' + classes(x, 'polaroid') + '"' + attrs(x) + '>' +
       '<img src="' + esc(img) + '" alt="" loading="lazy" draggable="false">' +
-      '<a class="rub" href="' + esc(x.site.url) + '" data-a="lien">' + (avecDate && x.date ? jourCourt(x.date) + ' · ' : '') + (x.heure ? heureLisible(x.heure) + ' · ' : '') + esc(x.site.rub || 'Page du site') + '</a>' +
+      (x.site ? '<a class="rub" href="' + esc(x.site.url) + '" data-a="lien">' + avant + esc(x.site.rub || 'Page du site') + '</a>'
+              : '<span class="rub" style="--sec:' + cat(x).c + '">' + avant + esc(cat(x).nom) + '</span>') +
       '<div class="t">' + caseC(x) + '<span>' + tx(x.titre) + '</span></div></div>';
   }
   /* Ligne de carnet : puce, heure, texte. */
@@ -809,20 +853,24 @@
         '<span class="txt">' + (avecDate && x.date ? '<span class="h">' + jourCourt(x.date) + '</span>' : '') +
         (x.heure ? '<span class="h">' + heureLisible(x.heure) + '</span>' : '') + esc(ESPACES[x.q].court) + lien + '</span></div>';
     }
-    if (x.site && !x.q && imageDe(x.site)) return polaroid(x, avecDate);
+    if (imgDe(x)) return polaroid(x, avecDate);
     return '<div class="' + classes(x, 'ligne') + '"' + attrs(x) + '>' + puce(x) +
       '<span class="txt">' + (avecDate && x.date ? '<span class="h">' + jourCourt(x.date) + '</span>' : '') +
       (x.heure ? '<span class="h">' + heureLisible(x.heure) + '</span>' : '') + tx(x.titre) + extras(x) + lienSite(x) + '</span></div>';
   }
   /* « À planifier » : post-it, ou polaroïd pour une page du site. */
+  /* Post-it : une couleur différente de ses voisins (la suite repart au début après la dernière). */
+  var COULEURS_POSTIT = ['#f6dd7a', '#bfe0d4', '#f4c3bb', '#cfd9f2', '#e2d4f2', '#f7d2a8', '#d9e8a6', '#f2cfe3'];
+  var rangPostit = 0;
   function postit(x) {
-    if (x.site && !x.q && imageDe(x.site)) return polaroid(x);
-    return '<div class="' + classes(x, 'postit') + '"' + attrs(x) + '>' + caseC(x) +
+    if (imgDe(x)) return polaroid(x);
+    var coul = COULEURS_POSTIT[rangPostit++ % COULEURS_POSTIT.length];
+    return '<div class="' + classes(x, 'postit') + '"' + attrs(x).replace('style="', 'style="--p:' + coul + ';') + '>' + caseC(x) +
       '<span class="txt">' + tx(x.titre) + extras(x) + lienSite(x) + '</span></div>';
   }
   /* Bloc de la grille horaire. */
   function bloc(x, haut, hauteur, voie, voies) {
-    var img = x.q ? '' : imageDe(x.site), fin = minutes(x.heure) + (x.duree || 60);
+    var img = imgDe(x), fin = minutes(x.heure) + (x.duree || 60);
     return '<div class="' + classes(x, 'bloc' + (hauteur < 60 ? ' court' : '')) + '"' + attrs(x).replace('style="', 'style="top:' + haut + 'px;height:' + hauteur + 'px;left:calc(' + (100 * voie / voies) + '% + 3px);width:calc(' + (100 / voies) + '% - 6px);') + '>' +
       (img && hauteur >= 78 ? '<img src="' + esc(img) + '" alt="" loading="lazy" draggable="false">' : '') +
       '<div class="t">' + caseC(x) + '<span>' + tx(x.titre) + '</span></div>' +
@@ -1000,7 +1048,8 @@
     var auj = aujourdhui();
     var bac = visibles().filter(function (x) { return !x.date && !x.fait; }).sort(trier);
     var faitsBac = visibles().filter(function (x) { return !x.date && x.fait; });
-    $('#bac').innerHTML = (bac.length ? bac.map(postit).join('') : '<p class="vide">Rien en attente. Les éléments sans date arrivent ici.</p>') +
+    rangPostit = 0;
+    $('#bac').innerHTML = (bac.length ? bac.map(function (x) { return postit(x); }).join('') : '<p class="vide">Rien en attente. Les éléments sans date arrivent ici.</p>') +
       (faitsBac.length ? '<button class="btn petit-b" id="purger" style="align-self:flex-start">' + (faitsBac.length > 1 ? 'Effacer les ' + faitsBac.length + ' éléments faits' : 'Effacer l’élément fait') + '</button>' : '');
     $('#nb-bac').textContent = bac.length || '';
     var retard = visibles().filter(function (x) { return x.date && x.date < auj && x.type === 'tache' && !x.fait && !x.q; }).sort(function (a, b) { return a.date < b.date ? -1 : 1; });
@@ -1065,17 +1114,88 @@
     if (!$('#f-duree').value) $('#f-duree').value = '60';
     $('#f-cat').value = x.cat; $('#f-prio').value = x.prio; $('#f-note').value = x.note; $('#f-rep').value = x.rep || '';
     choisirType(x.type);
-    $('#f-site-champ').hidden = !x.site;
-    if (x.site) {
-      var img = imageDe(x.site);
-      $('#f-site').innerHTML = (img ? '<img src="' + esc(img) + '" alt="">' : '') + '<a href="' + esc(x.site.url) + '">' + tx(x.site.titre) + '</a><button class="btn petit-b" id="f-site-retirer">Détacher</button>';
-    }
+    choixSite = x.site || null; choixPhoto = x.photo || null; photoNouvelle = null;
+    $('#f-site-q').value = ''; $('#f-site-res').innerHTML = ''; $('#f-photo-etat').textContent = '';
+    montrerJoints();
     $('#voile').classList.add('open');
     setTimeout(function () { $('#f-titre').focus(); }, 50);
   }
   function fermer() { $('#voile').classList.remove('open'); enCours = null; }
+
+  /* Page du site et photo attachées (appliquées à l'enregistrement). */
+  var choixSite = null, choixPhoto = null, photoNouvelle = null, resF = [];
+  function montrerJoints() {
+    var s = choixSite;
+    $('#f-site').hidden = !s; $('#f-site-choix').hidden = !!s;
+    if (s) {
+      var img = imageDe(s);
+      $('#f-site').innerHTML = (img ? '<img src="' + esc(img) + '" alt="">' : '') + '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + tx(s.titre) + '</a><button class="btn petit-b" id="f-site-retirer" type="button">Détacher</button>';
+    }
+    var src = photoNouvelle ? photoNouvelle.apercu : choixPhoto ? (choixPhoto.data || liensPhotos[choixPhoto.chemin] || '') : '';
+    $('#f-photo').hidden = !(photoNouvelle || choixPhoto);
+    $('#f-photo-choix').hidden = !!(photoNouvelle || choixPhoto);
+    if (src) $('#f-photo-img').src = src;
+  }
+  $('#f-site-q').addEventListener('input', function () {
+    var q = sansAccents(this.value.trim());
+    if (!q) { $('#f-site-res').innerHTML = ''; return; }
+    chargerPages().then(function (ps) {
+      var mots = q.split(/\s+/);
+      resF = ps.concat(aFaire).filter(function (p) { return mots.every(function (m) { return p.cle.indexOf(m) !== -1; }); }).slice(0, 12);
+      $('#f-site-res').innerHTML = resF.length ? resF.map(function (p, i) {
+        return '<button type="button" data-f="' + i + '">' + (p.image ? '<img src="' + esc(p.image) + '" alt="">' : '') + '<span>' + tx(p.titre) + '<small>' + (p.aCreer ? 'À créer · ' : '') + esc(p.rub) + '</small></span></button>';
+      }).join('') : '<p class="vide">Aucune page trouvée.</p>';
+    });
+  });
+  $('#f-site-res').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-f]'); if (!b) return;
+    var p = resF[+b.dataset.f];
+    choixSite = { url: p.url, titre: p.titre, rub: p.rub, sec: p.sec, image: p.image || '' };
+    montrerJoints();
+  });
+  $('#f-site').addEventListener('click', function (e) { if (e.target.id === 'f-site-retirer') { choixSite = null; montrerJoints(); } });
+  $('#f-photo-retirer').addEventListener('click', function () { choixPhoto = null; photoNouvelle = null; $('#f-photo-fichier').value = ''; montrerJoints(); });
+  /* Photo réduite dans le navigateur (1200 px de large au plus, WebP) avant l'envoi. */
+  function reduire(fichier, max, qualite) {
+    return new Promise(function (ok, ko) {
+      var img = new Image(), url = URL.createObjectURL(fichier);
+      img.onload = function () {
+        var r = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement('canvas');
+        c.width = Math.round(img.width * r); c.height = Math.round(img.height * r);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        c.toBlob(function (b) { b ? ok({ blob: b, apercu: c.toDataURL('image/webp', .7), canvas: c }) : ko(new Error('image')); }, 'image/webp', qualite);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); ko(new Error('image')); };
+      img.src = url;
+    });
+  }
+  $('#f-photo-fichier').addEventListener('change', function () {
+    var f = this.files && this.files[0]; if (!f) return;
+    $('#f-photo-etat').textContent = 'Préparation de la photo…';
+    reduire(f, 1200, .85).then(function (r) { photoNouvelle = r; $('#f-photo-etat').textContent = ''; montrerJoints(); })
+      .catch(function () { $('#f-photo-etat').textContent = 'Image illisible : essaie un autre fichier.'; });
+  });
+  /* Envoi de la nouvelle photo au moment d'enregistrer ; sans connexion, une version réduite reste dans l'élément. */
+  function envoyerPhoto(x) {
+    if (!photoNouvelle) return Promise.resolve(choixPhoto);
+    var ancien = x.photo && x.photo.chemin;
+    if (!client) {
+      var c = photoNouvelle.canvas, r = Math.min(1, 480 / Math.max(c.width, c.height)), p = document.createElement('canvas');
+      p.width = Math.round(c.width * r); p.height = Math.round(c.height * r);
+      p.getContext('2d').drawImage(c, 0, 0, p.width, p.height);
+      return Promise.resolve({ data: p.toDataURL('image/webp', .75) });
+    }
+    var chemin = 'planning/photos/' + x.id + '-' + Date.now() + '.webp';
+    return client.storage.from(BUCKET).upload(chemin, photoNouvelle.blob, { contentType: 'image/webp', upsert: true })
+      .then(function (r) {
+        if (r.error) throw r.error;
+        liensPhotos[chemin] = photoNouvelle.apercu;
+        if (ancien) client.storage.from(BUCKET).remove([ancien]).catch(function () {});
+        return { chemin: chemin };
+      });
+  }
   $('#f-types').addEventListener('click', function (e) { var b = e.target.closest('[data-t]'); if (b) choisirType(b.dataset.t); });
-  $('#f-site').addEventListener('click', function (e) { if (e.target.id === 'f-site-retirer' && enCours) { enCours._detacher = true; $('#f-site-champ').hidden = true; } });
   $('#f-annuler').addEventListener('click', fermer);
   $('#voile').addEventListener('click', function (e) { if (e.target.id === 'voile') fermer(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && enCours) fermer(); });
@@ -1087,10 +1207,19 @@
     x.date = $('#f-date').value; x.heure = $('#f-heure').value; x.duree = +$('#f-duree').value || 60; x.cat = $('#f-cat').value;
     x.prio = $('#f-prio').value; x.note = $('#f-note').value.trim(); x.type = typeChoisi;
     x.rep = x.date ? $('#f-rep').value : '';
-    if (x._detacher) x.site = null;
-    delete x._detacher;
-    if (!trouver(x.id)) etat.items.push(x);
-    enregistrer(); fermer(); rendre();
+    x.site = choixSite;
+    var bouton = $('#f-ok'); bouton.disabled = true;
+    if (photoNouvelle) $('#f-photo-etat').textContent = 'Envoi de la photo…';
+    envoyerPhoto(x).then(function (ph) {
+      if (x.photo && x.photo.chemin && !ph && client) client.storage.from(BUCKET).remove([x.photo.chemin]).catch(function () {});
+      if (ph) x.photo = ph; else delete x.photo;
+      if (!trouver(x.id)) etat.items.push(x);
+      bouton.disabled = false;
+      enregistrer(); fermer(); rendre();
+    }).catch(function () {
+      bouton.disabled = false;
+      $('#f-photo-etat').textContent = 'La photo n’a pas pu être envoyée. Réessaie, ou retire-la pour enregistrer.';
+    });
   });
   $('#f-titre').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('#f-ok').click(); });
   $('#f-suppr').addEventListener('click', function () {
@@ -1287,7 +1416,7 @@
   function demarrerSync() {
     var A = window.ECGAuth;
     if (!A || !A.client) return;
-    A.client().then(function (c) { if (!c) return; client = c; tirer(); }).catch(function () {});
+    A.client().then(function (c) { if (!c) return; client = c; tirer(); demanderPhotos(); }).catch(function () {});
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrerSync); else demarrerSync();
   /* Retour sur l'onglet : pages ajoutées entre-temps et modifications faites sur un autre appareil. */
