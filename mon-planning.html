@@ -63,6 +63,10 @@
   /* ─── Mise en page : colonne latérale + agenda ─── */
   .page { display: grid; grid-template-columns: 300px minmax(0, 1fr); min-height: calc(100vh - 60px); }
   .rail { border-right: 1.5px solid var(--encre); padding: 28px 24px 40px; display: flex; flex-direction: column; gap: 28px; }
+  /* Sur ordinateur, la colonne défile seule : on peut glisser une page vers n'importe quel jour. */
+  @media (min-width: 1101px) {
+    .rail { position: sticky; top: 60px; height: calc(100vh - 60px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+  }
   .agenda { padding: 28px 32px 40px; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
 
   .petit { color: var(--gris); }
@@ -139,6 +143,13 @@
   .si-txt b { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 13.5px; font-weight: 500; line-height: 1.3; }
   .si-txt span { font-size: 10.5px; color: var(--sec, var(--gris)); }
   .site-item button { width: 30px; height: 30px; border: 1.5px solid var(--encre); background: transparent; color: var(--encre); cursor: pointer; flex-shrink: 0; font-size: 16px; }
+
+  .lien-afaire { display: inline-flex; gap: 6px; align-items: baseline; margin-top: 8px; border: 0; background: none; padding: 2px 0; font-size: 13px; font-weight: 500; color: var(--encre); text-decoration: underline; text-decoration-color: var(--filet); text-underline-offset: 4px; cursor: pointer; }
+  .lien-afaire:hover, .lien-afaire.on { text-decoration-color: var(--encre); }
+  .lien-afaire.on { font-weight: 600; }
+  .lien-afaire span { font-size: 12px; color: var(--gris); font-variant-numeric: tabular-nums; }
+  .site-item.a-creer { background: transparent; box-shadow: none; border: 1.5px dashed var(--filet); }
+  .site-item.a-creer .si-txt span::before { content: 'À créer · '; color: var(--tomate-texte); }
 
   /* « À planifier » et retards : post-it et polaroïds */
   .bac { display: flex; flex-direction: column; gap: 14px; min-height: 60px; padding: 4px 2px; }
@@ -372,8 +383,9 @@
     <section>
       <div class="titre-bloc"><span class="petit">Depuis le site</span></div>
       <input class="champ-l" type="text" id="site-q" placeholder="Article, dossier, chapitre, fiche…" aria-label="Chercher une page du site">
+      <button class="lien-afaire" id="voir-afaire" type="button">Contenus à créer<span id="nb-afaire"></span></button>
       <div class="site-res" id="site-res"></div>
-      <p class="aide" id="site-aide">Glisser une page sur un jour ou une heure, ou «&nbsp;+&nbsp;» pour la mettre dans «&nbsp;À planifier&nbsp;». Sur toutes les pages, le menu du compte propose aussi «&nbsp;Ajouter cette page au planning&nbsp;».</p>
+      <p class="aide" id="site-aide">Glisser une page sur un jour ou une heure, ou «&nbsp;+&nbsp;» pour la mettre dans «&nbsp;À planifier&nbsp;». «&nbsp;Contenus à créer&nbsp;» liste ce qui est annoncé sur le site mais pas encore fait. Sur toutes les pages, le menu du compte propose aussi «&nbsp;Ajouter cette page au planning&nbsp;».</p>
     </section>
 
     <section id="bloc-retard" hidden>
@@ -1107,28 +1119,42 @@
   });
 
   /* ─── Recherche dans les pages du site (recherche-index.json) ─── */
-  var pages = null;
+  /* Pages du site (recherche-index.json) et contenus annoncés mais pas encore faits (a-faire.json,
+     écrit par outils/recherche.py) : chapitres de civilisation, fiches auteurs, œuvres « à venir »… */
+  var pages = null, aFaire = [], modeAfaire = false;
   function chargerPages() {
     if (pages) return Promise.resolve(pages);
-    return fetch('recherche-index.json', { cache: 'no-cache' }).then(function (r) { return r.json(); })
+    var index = fetch('recherche-index.json', { cache: 'no-cache' }).then(function (r) { return r.json(); })
       .then(function (d) {
-        pages = (d.pages || []).map(function (p) {
+        return (d.pages || []).map(function (p) {
           if (p[6]) images[p[0]] = p[6];
           return { url: p[0], titre: p[1], rub: p[2], sec: p[3], image: p[6] || '', cle: sansAccents(p[1] + ' ' + p[2] + ' ' + p[0]) };
         });
-        return pages;
-      }).catch(function () { pages = []; return pages; });
+      }).catch(function () { return []; });
+    var afaire = fetch('a-faire.json', { cache: 'no-cache' }).then(function (r) { return r.json(); })
+      .then(function (d) {
+        return (d.pages || []).map(function (p) {
+          return { url: p[0], titre: p[1], rub: p[2], sec: p[3], image: '', aCreer: true, cle: sansAccents('a creer ' + p[1] + ' ' + p[2]) };
+        });
+      }).catch(function () { return []; });
+    return Promise.all([index, afaire]).then(function (r) {
+      pages = r[0]; aFaire = r[1];
+      $('#nb-afaire').textContent = aFaire.length ? '(' + aFaire.length + ')' : '';
+      return pages;
+    });
   }
   var resultats = [];
   function chercher() {
     var q = sansAccents($('#site-q').value.trim());
-    if (!q) { $('#site-res').innerHTML = ''; $('#site-aide').hidden = false; return; }
+    $('#voir-afaire').classList.toggle('on', modeAfaire);
+    if (!q && !modeAfaire) { $('#site-res').innerHTML = ''; $('#site-aide').hidden = false; return; }
     chargerPages().then(function (ps) {
-      var mots = q.split(/\s+/);
-      resultats = ps.filter(function (p) { return mots.every(function (m) { return p.cle.indexOf(m) !== -1; }); }).slice(0, 30);
+      var mots = q ? q.split(/\s+/) : [];
+      var base = modeAfaire ? aFaire : ps.concat(aFaire);
+      resultats = base.filter(function (p) { return mots.every(function (m) { return p.cle.indexOf(m) !== -1; }); }).slice(0, modeAfaire ? 200 : 30);
       $('#site-aide').hidden = true;
       $('#site-res').innerHTML = resultats.length ? resultats.map(function (p, i) {
-        return '<div class="site-item" draggable="true" data-p="' + i + '" style="--sec:' + (SECS[p.sec] || SECS.autre) + '">' +
+        return '<div class="site-item' + (p.aCreer ? ' a-creer' : '') + '" draggable="true" data-p="' + i + '" style="--sec:' + (SECS[p.sec] || SECS.autre) + '">' +
           (p.image ? '<img class="si-img" src="' + esc(p.image) + '" alt="" loading="lazy" draggable="false">' : '') +
           '<div class="si-txt"><b>' + tx(p.titre) + '</b><span>' + esc(p.rub) + '</span></div>' +
           '<button data-a="envoyer" aria-label="Ajouter à « À planifier »" title="Ajouter à « À planifier »">+</button></div>';
@@ -1136,8 +1162,11 @@
     });
   }
   $('#site-q').addEventListener('input', chercher);
+  $('#voir-afaire').addEventListener('click', function () { modeAfaire = !modeAfaire; chercher(); });
   function depuisPage(p, date, heure) {
-    var x = nouvelElement({ titre: p.titre, cat: 'site', date: date || '', heure: heure || '', site: { url: p.url, titre: p.titre, rub: p.rub, sec: p.sec, image: p.image || '' } });
+    /* Un contenu à créer devient une tâche « À créer : … » qui mène à la page où il est annoncé. */
+    var x = nouvelElement({ titre: (p.aCreer ? 'À créer : ' : '') + p.titre, cat: 'site', date: date || '', heure: heure || '',
+      site: { url: p.url, titre: p.titre, rub: p.rub, sec: p.sec, image: p.image || '' } });
     etat.items.push(x); enregistrer(); rendre();
     toast(date ? 'Ajouté au\u00a0' + jourLong(date) + (heure ? ' à ' + heureLisible(heure) : '') : 'Ajouté à «\u00a0À planifier\u00a0»');
   }
@@ -1250,6 +1279,8 @@
   /* Les images des pages ajoutées depuis le menu du compte viennent de l'index. */
   if (etat.items.some(function (x) { return x.site && !x.site.image; }) || Object.keys(etat.reglages.quotidien).some(function (k) { return etat.reglages.quotidien[k]; })) chargerPages().then(rendre);
   if (etat.reglages.quotidien.hgg) chargerFichesHgg().then(rendre);
+  fetch('a-faire.json', { cache: 'no-cache' }).then(function (r) { return r.json(); })
+    .then(function (d) { if (!pages && d.pages) $('#nb-afaire').textContent = '(' + d.pages.length + ')'; }).catch(function () {});
 
   function demarrerSync() {
     var A = window.ECGAuth;
