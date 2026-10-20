@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Musique — Nuit et brouillard</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<style>
+  :root {
+    --c: #4a3f35;          /* couleur de la fiche */
+    --c-soft: #f1ece6;
+    --fond: #f5f4f0;
+    --carte: #ffffff;
+    --encre: #18181b;
+    --texte: #3f3f46;
+    --discret: #52525b;
+    --ligne: #e4e2dc;
+    --titre: 'Bricolage Grotesque', system-ui, sans-serif;
+    --corps: 'Newsreader', Georgia, serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--fond); color: var(--encre); font-family: var(--corps); font-size: 1.125rem; line-height: 1.65; min-height: 100vh; }
+  strong { font-weight: 600; color: var(--encre); }
+  a { color: inherit; }
+
+  /* ─── Barre du haut ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 14px 48px; background: var(--carte); border-bottom: 1px solid var(--ligne);
+    position: sticky; top: 0; z-index: 100; font-family: var(--titre);
+  }
+  .nav-logo { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em; }
+  .nav-logo a { color: var(--encre); text-decoration: none; }
+  .breadcrumb { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: calc(100% - 420px); display: flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; overflow: hidden; font-size: 0.85rem; color: var(--discret); }
+  .breadcrumb .current { overflow: hidden; text-overflow: ellipsis; }
+  .breadcrumb a { text-decoration: none; }
+  .breadcrumb a:hover { color: var(--c); }
+  .breadcrumb .sep { color: #a1a1aa; }
+  .breadcrumb .current { color: var(--encre); }
+
+  /* ─── Bandeau ─── */
+  .ch-hero { position: relative; background: var(--c); color: #fff; padding: 56px 48px 84px; overflow: hidden; }
+  .ch-hero-fond { display: none; }
+  .ch-hero-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 40px 56px; }
+  .ch-hero-texte { flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+  .chap-label { display: flex; flex-wrap: wrap; gap: 8px; font-family: var(--titre); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .chap-label span { background: rgba(255,255,255,0.18); padding: 6px 12px; border-radius: 999px; }
+  .ch-hero h1 { font-family: var(--titre); font-weight: 800; font-size: calc(var(--t, 1) * clamp(3rem, 8vw, 6rem)); line-height: 0.95; letter-spacing: -0.02em; }
+  .ch-hero .meta { font-family: var(--titre); font-size: 1.2rem; font-weight: 500; opacity: 0.92; }
+  .ch-hero .pitch { max-width: 620px; font-size: 1.3rem; line-height: 1.5; }
+  .ch-hero-visuel { flex: 0 0 240px; max-width: 100%; aspect-ratio: 2 / 3; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+  .ch-hero-visuel.paysage { flex: 1 1 420px; aspect-ratio: auto; }
+  .ch-hero-visuel.paysage img { height: auto; }
+  .ch-hero-visuel img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  /* ─── L'essentiel ─── */
+  .essentiel {
+    position: relative; max-width: 1040px; margin: -44px auto 0; background: var(--carte); border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(24,24,27,0.10); padding: 28px 32px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 20px 40px;
+  }
+  .essentiel-wrap { padding: 0 48px; }
+  .essentiel-these { flex: 999 1 420px; min-width: 0; }
+  .etiquette { font-family: var(--titre); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c); }
+  .essentiel-these p { margin-top: 6px; font-size: 1.35rem; line-height: 1.4; font-weight: 600; }
+  .notions { flex: 1 1 300px; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+  .notions li { font-family: var(--titre); font-size: 0.92rem; font-weight: 500; padding: 8px 14px; border-radius: 999px; background: var(--c-soft); color: var(--c); }
+
+  /* ─── Corps ─── */
+  .page { max-width: 820px; margin: 0 auto; padding: 64px 48px 72px; }
+
+  .content { display: flex; flex-direction: column; gap: 64px; }
+  .hgg-part { scroll-margin-top: 90px; }
+  .hgg-part-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 20px; }
+  .hgg-part-num { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; color: var(--c); }
+  .hgg-part-title { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; letter-spacing: -0.01em; }
+  .hgg-section { margin-top: 32px; scroll-margin-top: 90px; }
+  .hgg-section-title { font-family: var(--titre); font-weight: 700; font-size: 1.35rem; line-height: 1.25; margin-bottom: 12px; }
+  .hgg-section-title .num { color: var(--c); margin-right: 6px; }
+  .content p { color: var(--texte); margin-bottom: 16px; }
+  .content p:last-child { margin-bottom: 0; }
+
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 8px 0 24px; }
+  .hgg-stat-cell { background: var(--carte); border-radius: 12px; padding: 18px 20px; }
+  .hgg-stat-num { display: block; font-family: var(--titre); font-weight: 800; font-size: 2.2rem; line-height: 1; color: var(--c); }
+  .hgg-stat-label { margin-top: 6px; font-family: var(--titre); font-size: 0.88rem; color: var(--discret); }
+
+  .carte { background: var(--carte); border-radius: 14px; padding: 22px 26px; margin: 20px 0; }
+  .carte h3 { font-family: var(--titre); font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+  .carte p { font-size: 1.05rem; }
+  .carte .etiquette { margin-bottom: 8px; }
+  .surligne { background: var(--c-soft); border-radius: 14px; padding: 20px 24px; margin: 20px 0; color: #2a1d12; font-size: 1.08rem; }
+  .duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 20px 0; }
+  .duo .carte { margin: 0; }
+  .duo .carte.pleine { background: var(--c); }
+  .duo .carte.pleine h3, .duo .carte.pleine p { color: #fff; }
+  .sujets { background: var(--carte); border-radius: 16px; margin-top: 16px; overflow: hidden; }
+  .sujet + .sujet { border-top: 1px solid var(--ligne); }
+  .sujet summary { list-style: none; display: flex; gap: 14px; align-items: baseline; padding: 16px 22px; cursor: pointer; font-family: var(--titre); font-weight: 700; font-size: 1.08rem; line-height: 1.35; }
+  .sujet summary::-webkit-details-marker { display: none; }
+  .sujet summary .n { flex: 0 0 auto; font-weight: 800; color: var(--c); }
+  .sujet summary .q { flex: 1; }
+  .sujet summary::after { content: '+'; flex: 0 0 auto; font-size: 1.3rem; line-height: 1; color: var(--c); transition: transform 0.2s; }
+  .sujet[open] summary::after { transform: rotate(45deg); }
+  .sujet summary:hover .q { color: var(--c); }
+  .sujet-corps { padding: 0 22px 18px 58px; }
+  .sujet-corps p { font-size: 1.02rem; margin-bottom: 10px; }
+  .sujet-corps .reperes { font-family: var(--titre); font-size: 0.88rem; line-height: 1.5; color: var(--discret); display: flex; flex-direction: column; gap: 4px; }
+  .sujet-corps .reperes b { color: var(--c); font-weight: 700; }
+  .sujet a { color: var(--c); text-decoration: underline; text-underline-offset: 2px; }
+
+  .copie { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 8px; }
+  .copie .carte { margin: 0; }
+  .retenir { flex: 1 1 100%; min-width: 0; }
+  .retenir ol { padding-left: 22px; display: flex; flex-direction: column; gap: 10px; font-size: 1.05rem; color: var(--texte); }
+  .rapprocher { flex: 1 1 100%; min-width: 0; background: var(--c) !important; }
+  .rapprocher .etiquette, .rapprocher p, .rapprocher em { color: #fff; }
+  .rapprocher .etiquette { opacity: 0.85; }
+  .rapprocher strong, .rapprocher a, .duo .carte.pleine strong { color: #fff; }
+
+  /* ─── Fin de page ─── */
+  .fin { border-top: 1px solid var(--ligne); background: var(--carte); padding: 24px 48px; }
+  .fin-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; font-family: var(--titre); font-size: 0.95rem; }
+  .fin a { text-decoration: none; padding: 12px 0; }
+  .fin a:hover { color: var(--c); }
+  .bouton-lu { font: 700 0.95rem var(--titre); color: #fff; background: var(--c); border: 1.5px solid var(--c); border-radius: 999px; padding: 12px 22px; min-height: 44px; cursor: pointer; }
+  .bouton-lu.fait { background: transparent; color: var(--c); }
+
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--encre); color: #fff; border: none; border-radius: 50%; font-size: 1.1rem; cursor: pointer; opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 99; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+  }
+  @media (max-width: 760px) {
+    .breadcrumb { display: none; }
+  }
+  @media (max-width: 640px) {
+    nav { padding: 12px 16px; }
+    .breadcrumb { display: none; }
+    .ch-hero { padding: 36px 16px 72px; }
+    .ch-hero-visuel { flex-basis: 160px; }
+    .essentiel-wrap { padding: 0 16px; }
+    .essentiel { padding: 22px 20px; }
+    .page { padding: 40px 16px 56px; }
+    .fin { padding: 20px 16px; }
+    .sujet summary { padding: 14px 16px; }
+    .sujet-corps { padding: 0 16px 16px; }
+    .hgg-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .hgg-stat-cell { padding: 14px 12px; }
+    .hgg-stat-num { font-size: 1.6rem; }
+  }
+
+  @media print {
+    .sujet-corps { display: block !important; }
+    @page { size: A4; margin: 16mm 14mm; }
+    nav, .back-to-top, .fin, .ch-hero-visuel { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: #fff; font-size: 10pt; }
+    .ch-hero { padding: 1rem 1.2rem; }
+    .ch-hero h1 { font-size: 22pt; }
+    .essentiel { margin: 0.6rem 0; box-shadow: none; border: 1pt solid var(--ligne); }
+    .page { display: block; padding: 0.6rem 0; }
+    .content { gap: 1.2rem; }
+    .carte, .hgg-stat-cell { border: 1pt solid var(--ligne); break-inside: avoid; }
+    .surligne, .duo, .sujet { break-inside: avoid; }
+  }
+</style>
+<link rel="stylesheet" href="../../barre-section.css">
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="sn sn-hum">
+  <div class="nav-logo sn-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb sn-fil">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">›</span>
+    <a href="../../humanite.html"><span>L'Humanité</span></a>
+    <span class="sep">›</span>
+    <a href="musique.html"><span>Musique</span></a>
+    <span class="sep">›</span>
+    <span class="current">Nuit et brouillard</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="ch-hero-inner">
+    <div class="ch-hero-texte">
+      <div class="chap-label"><span>Musique</span><span>L'Humanité</span></div>
+      <h1 style="--t: 0.72">Nuit et brouillard</h1>
+      <p class="meta">Jean Ferrat · 1963 · Chanson sur la déportation</p>
+      <p class="pitch">Vingt ans après la mort de son père à Auschwitz, Jean Ferrat chante les déportés dans une chanson que la télévision ne veut pas diffuser&nbsp;: pour que les enfants sachent qui ils étaient.</p>
+    </div>
+    <figure class="ch-hero-visuel" style="aspect-ratio: 1 / 1"><img src="images/nuit-et-brouillard-visuel.webp" alt="Pochette du disque Nuit et brouillard de Jean Ferrat chez Barclay : le chanteur souriant, en pull rouge, assis sur fond noir, à côté de la liste des titres" loading="eager" onerror="this.closest('.ch-hero-visuel').remove()"></figure>
+  </div>
+</div>
+
+<!-- L'ESSENTIEL -->
+<div class="essentiel-wrap">
+  <section class="essentiel" aria-label="L'essentiel">
+    <div class="essentiel-these">
+      <div class="etiquette">L'essentiel en une phrase</div>
+      <p>Les nazis voulaient faire disparaître les déportés sans laisser de trace&nbsp;: en les chantant, Ferrat refuse cet effacement et fait de la mémoire un devoir, contre l'oubli et contre ceux qui voudraient tourner la page.</p>
+    </div>
+    <ul class="notions" aria-label="Notions du thème">
+      <li>Mémoire</li>
+      <li>Crime contre l'humanité</li>
+      <li>Transmission</li>
+    </ul>
+  </section>
+</div>
+
+<div class="page">
+
+<div class="content">
+
+<section class="hgg-part" id="intro">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">1.</span><span class="hgg-part-title">Présentation de l'œuvre</span></h2>
+
+    <p><strong>Nuit et brouillard</strong> est une chanson écrite, composée et chantée par <strong>Jean Ferrat</strong> (1930-2010), parue en <strong>décembre 1963</strong> sur l'album du même nom. Elle rend hommage aux victimes de la <strong>déportation</strong> dans les camps nazis. Ferrat y pense à son propre père, juif émigré de Russie, déporté à <strong>Auschwitz</strong> en 1942, où il est mort.</p>
+  <div class="hgg-stats">
+<div class="hgg-stat-cell"><span class="hgg-stat-num">1942</span><div class="hgg-stat-label">Déportation du père de Ferrat à Auschwitz, où il meurt</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">12 ans</span><div class="hgg-stat-label">Âge de Jean Ferrat quand son père est déporté</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">1963</span><div class="hgg-stat-label">Sortie, et Grand Prix du disque de l'Académie Charles-Cros</div></div>
+</div>
+    <p>Écartée des ondes à sa sortie, la chanson est pourtant devenue l'une des plus connues de Ferrat. Elle pose une question centrale pour le thème de l'Humanité&nbsp;: que doit-on aux victimes d'un crime qui a voulu nier jusqu'à leur existence, et comment transmettre leur mémoire&nbsp;?</p>
+</section>
+
+<section class="hgg-part" id="p1">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">2.</span><span class="hgg-part-title">Genèse et description</span></h2>
+
+  <div class="hgg-section" id="s1-1">
+    <h3 class="hgg-section-title"><span class="num">2.1</span>Un titre venu des nazis</h3>
+
+    <p>Le titre reprend le nom d'une directive allemande de décembre 1941, <strong>«&nbsp;Nacht und Nebel&nbsp;»</strong> («&nbsp;Nuit et brouillard&nbsp;»). Elle visait les opposants des pays occupés&nbsp;: ils devaient disparaître sans laisser de trace, leurs familles ne devant jamais savoir ce qu'ils étaient devenus. L'expression a ensuite désigné l'ensemble de la déportation.</p>
+    <p>Jean Ferrat, de son vrai nom Jean Tenenbaum, a 12 ans quand son père est arrêté et déporté. Il a lui-même été caché pendant la guerre. Vingt ans plus tard, devenu chanteur, il écrit cette chanson, sans jamais y parler directement de sa famille.</p>
+    <div class="surligne">Les nazis voulaient que les victimes disparaissent dans la <strong>nuit et le brouillard</strong>&nbsp;; la chanson reprend leur formule pour les en faire sortir.</div>
+  </div>
+
+  <div class="hgg-section" id="s1-2">
+    <h3 class="hgg-section-title"><span class="num">2.2</span>Une chanson écartée des ondes</h3>
+
+    <p>En 1963, la France préfère tourner la page. Le directeur de l'ORTF, la radio-télévision publique, déconseille la diffusion de la chanson, sous l'influence, dit-on, de l'Élysée&nbsp;: on est en pleine réconciliation franco-allemande, scellée par le traité de l'Élysée en janvier 1963. Ferrat parvient pourtant à la chanter à la télévision, dans l'émission <em>Discorama</em>, et le disque reçoit le Grand Prix de l'Académie Charles-Cros.</p>
+    <div class="carte">
+      <div class="etiquette">Ce qu'on reproche à la chanson</div>
+      <p>Elle ne dit pas que la plupart des victimes étaient juives. Interrogé en 2005, Ferrat répondra qu'il regrettait plutôt de ne pas avoir cité d'autres victimes, handicapés, homosexuels, Tsiganes&nbsp;: il voulait chanter <strong>tous</strong> les déportés.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s1-3">
+    <h3 class="hgg-section-title"><span class="num">2.3</span>Écouter Nuit et brouillard</h3>
+
+    <p>La chanson est simple, portée par une mélodie lente et un rythme qui avance comme un train. Elle suit les déportés, puis se tourne vers ceux qui l'écoutent.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le nombre</h3>
+        <p>«&nbsp;Ils étaient vingt et cent, ils étaient des milliers&nbsp;»&nbsp;: la chanson s'ouvre sur une foule sans nom, nus, maigres, entassés dans les wagons plombés.</p>
+      </div>
+      <div class="carte">
+        <h3>Les visages</h3>
+        <p>Puis elle les rend singuliers&nbsp;: chacun avait une vie, une prière, un espoir. Le nombre redevient des personnes.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le refus de se taire</h3>
+        <p>On dit au chanteur que ces mots «&nbsp;n'ont plus cours&nbsp;», qu'il vaudrait mieux chanter l'amour. Il répond qu'il chantera quand même.</p>
+      </div>
+      <div class="carte">
+        <h3>Les enfants</h3>
+        <p>Il irait jusqu'à «&nbsp;twister&nbsp;» les mots, à la mode des yéyés, pour que les enfants sachent un jour qui étaient ces morts.</p>
+      </div>
+    </div>
+    <div class="surligne">La chanson assume d'être <strong>populaire</strong>&nbsp;: pour transmettre la mémoire, elle accepte la forme qu'écoute la jeunesse de 1963.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p2">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">3.</span><span class="hgg-part-title">Le devoir de mémoire</span></h2>
+
+  <div class="hgg-section" id="s2-1">
+    <h3 class="hgg-section-title"><span class="num">3.1</span>Effacer les hommes</h3>
+
+    <p>Les camps ne visaient pas seulement à tuer&nbsp;: ils voulaient effacer les victimes, leur nom, leur visage, jusqu'au souvenir de leur existence. C'est ce qui fait de la déportation un <strong>crime contre l'humanité</strong>&nbsp;: on nie à des hommes le droit même d'avoir existé. Se souvenir d'eux, c'est donc défaire, après coup, une partie de ce crime.</p>
+    <div class="carte">
+      <div class="etiquette">Du nombre au nom</div>
+      <p>La chanson passe des «&nbsp;milliers&nbsp;» à des êtres singuliers. Rendre aux victimes leur <strong>individualité</strong>, c'est leur rendre ce que les bourreaux voulaient leur ôter.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-2">
+    <h3 class="hgg-section-title"><span class="num">3.2</span>Contre l'oubli volontaire</h3>
+
+    <p>En 1963, beaucoup veulent oublier&nbsp;: la réconciliation avec l'Allemagne, la reconstruction, la jeunesse yéyé. La chanson refuse ce silence. Elle rappelle que l'oubli n'est pas toujours naturel&nbsp;: il peut être une <strong>décision</strong>, politique ou collective, et qu'il faut parfois aller contre elle pour être fidèle aux morts.</p>
+    <div class="surligne">Écarter une chanson des ondes pour ne pas troubler une réconciliation, c'est montrer que la mémoire <strong>dérange</strong> encore, vingt ans après.</div>
+  </div>
+
+  <div class="hgg-section" id="s2-3">
+    <h3 class="hgg-section-title"><span class="num">3.3</span>Transmettre aux enfants</h3>
+
+    <p>Ferrat écrit pour ceux qui n'ont pas connu la guerre. La chanson a été apprise par des générations d'élèves et reprise par Isabelle Aubret, Hubert-Félix Thiéfaine ou Renaud. Elle montre que la mémoire ne se garde pas seule&nbsp;: elle se <strong>transmet</strong>, et la chanson, qu'on retient et qu'on fredonne, en est un moyen puissant.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le document</h3>
+        <p>Une chanson de 1963, écrite par le fils d'un déporté&nbsp;: <strong>Nuit et brouillard témoigne</strong> de la mémoire de la Shoah et de sa difficulté en France.</p>
+      </div>
+      <div class="carte pleine">
+        <h3>Le symbole</h3>
+        <p>Des milliers de victimes sans nom&nbsp;: <strong>la chanson universalise</strong>. Elle parle pour tous ceux qu'un pouvoir a voulu effacer.</p>
+      </div>
+    </div>
+    <div class="surligne">Chanter les morts, c'est les faire <strong>exister</strong> encore dans la voix des vivants&nbsp;: la mémoire est une manière de leur rendre leur humanité.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p3">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">4.</span><span class="hgg-part-title">Pistes pour la dissertation</span></h2>
+
+  <div class="hgg-section" id="s3-1">
+    <h3 class="hgg-section-title">Nuit et brouillard face à cinq sujets sur l'Humanité</h3>
+    <p>Cliquez sur un sujet pour l'argument à développer, le passage à citer et sa place dans le plan.</p>
+
+    <div class="sujets">
+      <details class="sujet">
+        <summary><span class="n">01</span><span class="q">Le devoir de mémoire est-il un devoir&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>En 1963, l'ORTF déconseille la diffusion de Nuit et brouillard&nbsp;: la France veut tourner la page de la guerre et se réconcilier avec l'Allemagne. Ferrat, dont le père est mort à Auschwitz, refuse ce silence. Se souvenir est un devoir envers les victimes, que les bourreaux voulaient effacer, et envers les vivants, pour que le crime ne se reproduise pas.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> «&nbsp;Je twisterais les mots s'il fallait les twister&nbsp;».</span><span><b>Dans le plan&nbsp;:</b> En première partie&nbsp;: se souvenir pour rendre justice aux morts.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">02</span><span class="q">Qu'est-ce qu'un crime contre l'humanité&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Le titre reprend la directive nazie «&nbsp;Nacht und Nebel&nbsp;»&nbsp;: faire disparaître des hommes sans laisser de trace. Le crime contre l'humanité ne tue pas seulement&nbsp;: il nie à des hommes le droit d'avoir existé, il efface leur nom et leur visage. La chanson montre que la mémoire répond précisément à ce crime, en rendant aux victimes leur existence.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> La directive «&nbsp;Nacht und Nebel&nbsp;» de décembre 1941.</span><span><b>Dans le plan&nbsp;:</b> Sur le crime contre l'humanité&nbsp;: effacer l'homme.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">03</span><span class="q">Faut-il savoir oublier&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>En 1963, l'oubli semble nécessaire à la réconciliation franco-allemande&nbsp;: c'est pourquoi la chanson dérange. On peut défendre l'oubli pour vivre ensemble et ne pas entretenir la haine. Mais Nuit et brouillard distingue l'oubli de la haine et l'oubli des victimes&nbsp;: on peut pardonner aux peuples sans effacer le souvenir de ceux qui sont morts.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> Les mots qui «&nbsp;n'ont plus cours&nbsp;», qu'on demande au chanteur de taire.</span><span><b>Dans le plan&nbsp;:</b> En partie critique&nbsp;: réconciliation et mémoire.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">04</span><span class="q">Comment transmettre l'expérience de l'inhumain&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Ferrat écrit pour les enfants qui n'ont pas connu la guerre. Il choisit la forme la plus populaire, une chanson qu'on retient et qu'on fredonne, prêt à «&nbsp;twister&nbsp;» les mots pour être entendu. La chanson a été apprise par des générations d'élèves&nbsp;: l'art transmet ce que les chiffres ne font pas ressentir.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> Le souhait que les enfants sachent un jour qui étaient les déportés.</span><span><b>Dans le plan&nbsp;:</b> En partie de dépassement&nbsp;: l'art comme passeur de mémoire.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">05</span><span class="q">Une victime est-elle un nombre&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>La chanson s'ouvre sur une foule sans nom, «&nbsp;vingt et cent&nbsp;», puis «&nbsp;des milliers&nbsp;», avant de rendre à chacun une vie, une prière, un espoir. Les bourreaux réduisaient les déportés à des numéros&nbsp;; la mémoire doit au contraire les rendre singuliers. Derrière chaque chiffre, il y a une personne.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> «&nbsp;Ils étaient vingt et cent, ils étaient des milliers&nbsp;».</span><span><b>Dans le plan&nbsp;:</b> Sur la dignité&nbsp;: du nombre au nom.</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s3-2">
+    <div class="copie">
+      <div class="carte retenir">
+        <div class="etiquette">Idées à retenir</div>
+        <ol>
+          <li>Parue en <strong>décembre 1963</strong>, écrite par Ferrat, dont le père est mort à <strong>Auschwitz</strong> en 1942.</li>
+          <li>Le titre reprend la directive nazie <strong>«&nbsp;Nacht und Nebel&nbsp;»</strong>&nbsp;: faire disparaître sans trace.</li>
+          <li>Écartée des ondes en pleine <strong>réconciliation</strong> franco-allemande&nbsp;: la mémoire dérange.</li>
+          <li>Elle rend aux victimes leur <strong>singularité</strong> et transmet leur mémoire aux enfants.</li>
+        </ol>
+      </div>
+      <div class="carte rapprocher">
+        <div class="etiquette">À rapprocher</div>
+        <p><strong>Alain Resnais, <em>Nuit et Brouillard</em> (1956)</strong>&nbsp;: ce court documentaire, sur un texte de Jean Cayrol, ancien déporté, mêle des images d'archives des camps et des plans en couleur des lieux vides, dix ans après. Comme la chanson, il porte le même titre, lutte contre l'oubli et a lui aussi subi la censure. Mais le film montre l'horreur en images, pour que personne ne puisse dire qu'il ne savait pas&nbsp;; la chanson ne montre rien, elle donne une voix et une mélodie que l'on peut garder en soi et transmettre.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /content -->
+</div><!-- /page -->
+<footer class="fin">
+  <div class="fin-inner">
+    <a href="musique.html">← Toutes les fiches de musique</a>
+    <button type="button" class="bouton-lu" id="boutonLu">J'ai lu cette fiche</button>
+  </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
+
+<script>
+  // « J'ai lu cette fiche », gardé dans le navigateur
+  const CLE = 'ecg-humanite-fiches-lues';
+  const ID = 'musique/nuit-et-brouillard';
+  const lu = document.getElementById('boutonLu');
+  function lire() { try { return JSON.parse(localStorage.getItem(CLE)) || []; } catch (e) { return []; } }
+  function majLu() {
+    const fait = lire().includes(ID);
+    lu.classList.toggle('fait', fait);
+    lu.textContent = fait ? '✓ Fiche lue' : "J'ai lu cette fiche";
+  }
+  lu.addEventListener('click', () => {
+    let l = lire();
+    l = l.includes(ID) ? l.filter(x => x !== ID) : l.concat(ID);
+    try { localStorage.setItem(CLE, JSON.stringify(l)); } catch (e) {}
+    majLu();
+  });
+  majLu();
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>
