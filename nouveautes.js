@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Cuba",
+"titre": "Cuba : un juge de Miami délivre un mandat d'arrêt sans caution contre Raúl Castro",
+"url": "actualites/es/articles/cuba-raul-castro-mandat-arret-miami-2026.html",
+"image": "actualites/es/images/cuba-raul-castro-mandat-arret-miami-2026.webp",
+"date": "2026-10-20T18:46:30+00:00"
+},
+{
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne",
@@ -1784,15 +1793,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Le Pérou rejoint l'« Escudo de las Américas » et réclame la révision de ses tarifs douaniers",
 "url": "actualites/es/articles/perou-escudo-americas.html",
 "image": "actualites/es/images/perou-escudo-americas.webp",
-"date": "2026-09-12T10:40:02+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Colombie",
-"titre": "Fin des dialogues avec l'ELN : De la Espriella clôt la « paix totale »",
-"url": "actualites/es/articles/colombie-fin-dialogues-eln.html",
-"image": "actualites/es/images/colombie-fin-dialogues-eln.webp",
 "date": "2026-09-12T10:40:02+00:00"
 },
 {
