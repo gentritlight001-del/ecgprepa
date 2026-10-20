@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Musique — Le Sacre du printemps</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<style>
+  :root {
+    --c: #8a3b12;          /* couleur de la fiche */
+    --c-soft: #f7e9df;
+    --fond: #f5f4f0;
+    --carte: #ffffff;
+    --encre: #18181b;
+    --texte: #3f3f46;
+    --discret: #52525b;
+    --ligne: #e4e2dc;
+    --titre: 'Bricolage Grotesque', system-ui, sans-serif;
+    --corps: 'Newsreader', Georgia, serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--fond); color: var(--encre); font-family: var(--corps); font-size: 1.125rem; line-height: 1.65; min-height: 100vh; }
+  strong { font-weight: 600; color: var(--encre); }
+  a { color: inherit; }
+
+  /* ─── Barre du haut ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 14px 48px; background: var(--carte); border-bottom: 1px solid var(--ligne);
+    position: sticky; top: 0; z-index: 100; font-family: var(--titre);
+  }
+  .nav-logo { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em; }
+  .nav-logo a { color: var(--encre); text-decoration: none; }
+  .breadcrumb { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: calc(100% - 420px); display: flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; overflow: hidden; font-size: 0.85rem; color: var(--discret); }
+  .breadcrumb .current { overflow: hidden; text-overflow: ellipsis; }
+  .breadcrumb a { text-decoration: none; }
+  .breadcrumb a:hover { color: var(--c); }
+  .breadcrumb .sep { color: #a1a1aa; }
+  .breadcrumb .current { color: var(--encre); }
+
+  /* ─── Bandeau ─── */
+  .ch-hero { position: relative; background: var(--c); color: #fff; padding: 56px 48px 84px; overflow: hidden; }
+  .ch-hero-fond { display: none; }
+  .ch-hero-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 40px 56px; }
+  .ch-hero-texte { flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+  .chap-label { display: flex; flex-wrap: wrap; gap: 8px; font-family: var(--titre); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .chap-label span { background: rgba(255,255,255,0.18); padding: 6px 12px; border-radius: 999px; }
+  .ch-hero h1 { font-family: var(--titre); font-weight: 800; font-size: calc(var(--t, 1) * clamp(3rem, 8vw, 6rem)); line-height: 0.95; letter-spacing: -0.02em; }
+  .ch-hero .meta { font-family: var(--titre); font-size: 1.2rem; font-weight: 500; opacity: 0.92; }
+  .ch-hero .pitch { max-width: 620px; font-size: 1.3rem; line-height: 1.5; }
+  .ch-hero-visuel { flex: 0 0 240px; max-width: 100%; aspect-ratio: 2 / 3; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+  .ch-hero-visuel.paysage { flex: 1 1 420px; aspect-ratio: auto; }
+  .ch-hero-visuel.paysage img { height: auto; }
+  .ch-hero-visuel img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  /* ─── L'essentiel ─── */
+  .essentiel {
+    position: relative; max-width: 1040px; margin: -44px auto 0; background: var(--carte); border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(24,24,27,0.10); padding: 28px 32px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 20px 40px;
+  }
+  .essentiel-wrap { padding: 0 48px; }
+  .essentiel-these { flex: 999 1 420px; min-width: 0; }
+  .etiquette { font-family: var(--titre); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c); }
+  .essentiel-these p { margin-top: 6px; font-size: 1.35rem; line-height: 1.4; font-weight: 600; }
+  .notions { flex: 1 1 300px; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+  .notions li { font-family: var(--titre); font-size: 0.92rem; font-weight: 500; padding: 8px 14px; border-radius: 999px; background: var(--c-soft); color: var(--c); }
+
+  /* ─── Corps ─── */
+  .page { max-width: 820px; margin: 0 auto; padding: 64px 48px 72px; }
+
+  .content { display: flex; flex-direction: column; gap: 64px; }
+  .hgg-part { scroll-margin-top: 90px; }
+  .hgg-part-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 20px; }
+  .hgg-part-num { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; color: var(--c); }
+  .hgg-part-title { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; letter-spacing: -0.01em; }
+  .hgg-section { margin-top: 32px; scroll-margin-top: 90px; }
+  .hgg-section-title { font-family: var(--titre); font-weight: 700; font-size: 1.35rem; line-height: 1.25; margin-bottom: 12px; }
+  .hgg-section-title .num { color: var(--c); margin-right: 6px; }
+  .content p { color: var(--texte); margin-bottom: 16px; }
+  .content p:last-child { margin-bottom: 0; }
+
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 8px 0 24px; }
+  .hgg-stat-cell { background: var(--carte); border-radius: 12px; padding: 18px 20px; }
+  .hgg-stat-num { display: block; font-family: var(--titre); font-weight: 800; font-size: 2.2rem; line-height: 1; color: var(--c); }
+  .hgg-stat-label { margin-top: 6px; font-family: var(--titre); font-size: 0.88rem; color: var(--discret); }
+
+  .carte { background: var(--carte); border-radius: 14px; padding: 22px 26px; margin: 20px 0; }
+  .carte h3 { font-family: var(--titre); font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+  .carte p { font-size: 1.05rem; }
+  .carte .etiquette { margin-bottom: 8px; }
+  .surligne { background: var(--c-soft); border-radius: 14px; padding: 20px 24px; margin: 20px 0; color: #2a1d12; font-size: 1.08rem; }
+  .duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 20px 0; }
+  .duo .carte { margin: 0; }
+  .duo .carte.pleine { background: var(--c); }
+  .duo .carte.pleine h3, .duo .carte.pleine p { color: #fff; }
+  .sujets { background: var(--carte); border-radius: 16px; margin-top: 16px; overflow: hidden; }
+  .sujet + .sujet { border-top: 1px solid var(--ligne); }
+  .sujet summary { list-style: none; display: flex; gap: 14px; align-items: baseline; padding: 16px 22px; cursor: pointer; font-family: var(--titre); font-weight: 700; font-size: 1.08rem; line-height: 1.35; }
+  .sujet summary::-webkit-details-marker { display: none; }
+  .sujet summary .n { flex: 0 0 auto; font-weight: 800; color: var(--c); }
+  .sujet summary .q { flex: 1; }
+  .sujet summary::after { content: '+'; flex: 0 0 auto; font-size: 1.3rem; line-height: 1; color: var(--c); transition: transform 0.2s; }
+  .sujet[open] summary::after { transform: rotate(45deg); }
+  .sujet summary:hover .q { color: var(--c); }
+  .sujet-corps { padding: 0 22px 18px 58px; }
+  .sujet-corps p { font-size: 1.02rem; margin-bottom: 10px; }
+  .sujet-corps .reperes { font-family: var(--titre); font-size: 0.88rem; line-height: 1.5; color: var(--discret); display: flex; flex-direction: column; gap: 4px; }
+  .sujet-corps .reperes b { color: var(--c); font-weight: 700; }
+  .sujet a { color: var(--c); text-decoration: underline; text-underline-offset: 2px; }
+
+  .copie { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 8px; }
+  .copie .carte { margin: 0; }
+  .retenir { flex: 1 1 100%; min-width: 0; }
+  .retenir ol { padding-left: 22px; display: flex; flex-direction: column; gap: 10px; font-size: 1.05rem; color: var(--texte); }
+  .rapprocher { flex: 1 1 100%; min-width: 0; background: var(--c) !important; }
+  .rapprocher .etiquette, .rapprocher p, .rapprocher em { color: #fff; }
+  .rapprocher .etiquette { opacity: 0.85; }
+  .rapprocher strong, .rapprocher a, .duo .carte.pleine strong { color: #fff; }
+
+  /* ─── Fin de page ─── */
+  .fin { border-top: 1px solid var(--ligne); background: var(--carte); padding: 24px 48px; }
+  .fin-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; font-family: var(--titre); font-size: 0.95rem; }
+  .fin a { text-decoration: none; padding: 12px 0; }
+  .fin a:hover { color: var(--c); }
+  .bouton-lu { font: 700 0.95rem var(--titre); color: #fff; background: var(--c); border: 1.5px solid var(--c); border-radius: 999px; padding: 12px 22px; min-height: 44px; cursor: pointer; }
+  .bouton-lu.fait { background: transparent; color: var(--c); }
+
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--encre); color: #fff; border: none; border-radius: 50%; font-size: 1.1rem; cursor: pointer; opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 99; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+  }
+  @media (max-width: 760px) {
+    .breadcrumb { display: none; }
+  }
+  @media (max-width: 640px) {
+    nav { padding: 12px 16px; }
+    .breadcrumb { display: none; }
+    .ch-hero { padding: 36px 16px 72px; }
+    .ch-hero-visuel { flex-basis: 160px; }
+    .essentiel-wrap { padding: 0 16px; }
+    .essentiel { padding: 22px 20px; }
+    .page { padding: 40px 16px 56px; }
+    .fin { padding: 20px 16px; }
+    .sujet summary { padding: 14px 16px; }
+    .sujet-corps { padding: 0 16px 16px; }
+    .hgg-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .hgg-stat-cell { padding: 14px 12px; }
+    .hgg-stat-num { font-size: 1.6rem; }
+  }
+
+  @media print {
+    .sujet-corps { display: block !important; }
+    @page { size: A4; margin: 16mm 14mm; }
+    nav, .back-to-top, .fin, .ch-hero-visuel { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: #fff; font-size: 10pt; }
+    .ch-hero { padding: 1rem 1.2rem; }
+    .ch-hero h1 { font-size: 22pt; }
+    .essentiel { margin: 0.6rem 0; box-shadow: none; border: 1pt solid var(--ligne); }
+    .page { display: block; padding: 0.6rem 0; }
+    .content { gap: 1.2rem; }
+    .carte, .hgg-stat-cell { border: 1pt solid var(--ligne); break-inside: avoid; }
+    .surligne, .duo, .sujet { break-inside: avoid; }
+  }
+</style>
+<link rel="stylesheet" href="../../barre-section.css">
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="sn sn-hum">
+  <div class="nav-logo sn-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb sn-fil">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">›</span>
+    <a href="../../humanite.html"><span>L'Humanité</span></a>
+    <span class="sep">›</span>
+    <a href="musique.html"><span>Musique</span></a>
+    <span class="sep">›</span>
+    <span class="current">Le Sacre du printemps</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="ch-hero-inner">
+    <div class="ch-hero-texte">
+      <div class="chap-label"><span>Musique</span><span>L'Humanité</span></div>
+      <h1 style="--t: 0.62">Le Sacre du printemps</h1>
+      <p class="meta">Igor Stravinsky · 1913 · Ballet</p>
+      <p class="pitch">À Paris, en 1913, un ballet sur une jeune fille qui danse jusqu'à la mort pour le dieu du printemps fait scandale&nbsp;: la musique moderne naît en faisant entendre ce que l'homme a de primitif.</p>
+    </div>
+    <figure class="ch-hero-visuel" style="aspect-ratio: 1 / 1"><img src="images/le-sacre-du-printemps-visuel.webp" alt="Pochette du Sacre du printemps de Stravinsky dirigé par Colin Davis chez Decca : des danseurs au corps peint lèvent les bras vers une danseuse portée à l'horizontale au-dessus d'eux" loading="eager" onerror="this.closest('.ch-hero-visuel').remove()"></figure>
+  </div>
+</div>
+
+<!-- L'ESSENTIEL -->
+<div class="essentiel-wrap">
+  <section class="essentiel" aria-label="L'essentiel">
+    <div class="essentiel-these">
+      <div class="etiquette">L'essentiel en une phrase</div>
+      <p>Une communauté sacrifie l'une des siennes pour que revienne le printemps&nbsp;: le Sacre montre, sous la civilisation, la violence des rites collectifs, et ce qu'une foule est prête à faire d'un seul être.</p>
+    </div>
+    <ul class="notions" aria-label="Notions du thème">
+      <li>Sacrifice</li>
+      <li>Civilisation et barbarie</li>
+      <li>L'individu et le groupe</li>
+    </ul>
+  </section>
+</div>
+
+<div class="page">
+
+<div class="content">
+
+<section class="hgg-part" id="intro">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">1.</span><span class="hgg-part-title">Présentation de l'œuvre</span></h2>
+
+    <p><strong>Le Sacre du printemps</strong> est un ballet du compositeur russe <strong>Igor Stravinsky</strong> (1882-1971), créé à Paris le <strong>29 mai 1913</strong>, au Théâtre des Champs-Élysées, par les <strong>Ballets russes</strong> de Serge Diaghilev. Sous-titré «&nbsp;Tableaux de la Russie païenne en deux parties&nbsp;», il montre un rite imaginaire&nbsp;: pour célébrer le retour du printemps, une tribu choisit une jeune fille, l'Élue, qui danse jusqu'à en mourir.</p>
+  <div class="hgg-stats">
+<div class="hgg-stat-cell"><span class="hgg-stat-num">1913</span><div class="hgg-stat-label">Création à Paris, un an avant la Première Guerre mondiale</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">40</span><div class="hgg-stat-label">Spectateurs environ expulsés de la salle le soir de la première</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">35 min</span><div class="hgg-stat-label">Durée de l'œuvre, en deux parties</div></div>
+</div>
+    <p>Sa musique, faite de rythmes brutaux et de dissonances, est considérée comme l'une des premières grandes œuvres de la <strong>modernité</strong>. Elle pose une question centrale pour le thème de l'Humanité&nbsp;: la civilisation a-t-elle vraiment dépassé la violence des premiers rites, ou la porte-t-elle encore en elle&nbsp;?</p>
+</section>
+
+<section class="hgg-part" id="p1">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">2.</span><span class="hgg-part-title">Genèse et description</span></h2>
+
+  <div class="hgg-section" id="s1-1">
+    <h3 class="hgg-section-title"><span class="num">2.1</span>Une vision de sacrifice</h3>
+
+    <p>Stravinsky raconte que l'idée lui est venue d'une vision&nbsp;: des vieux sages assis en cercle regardent une jeune fille danser jusqu'à la mort, pour se concilier le dieu du printemps. Il élabore l'argument avec le peintre <strong>Nicolas Roerich</strong>, spécialiste de la Russie ancienne, qui dessine aussi les décors et les costumes.</p>
+    <p>La chorégraphie est confiée au danseur vedette des Ballets russes, <strong>Vaslav Nijinski</strong>. Il rompt avec la grâce du ballet classique&nbsp;: pieds tournés en dedans, corps courbés, sauts lourds qui retombent sur la terre. La musique emprunte des airs au folklore russe, mais les brise par des rythmes irréguliers.</p>
+    <div class="surligne">Le ballet classique élevait le corps vers le ciel&nbsp;; le Sacre le <strong>ramène vers la terre</strong>, lourd, collectif, presque animal.</div>
+  </div>
+
+  <div class="hgg-section" id="s1-2">
+    <h3 class="hgg-section-title"><span class="num">2.2</span>Le scandale du 29 mai 1913</h3>
+
+    <p>Dès les premières mesures, une partie du public rit, siffle, crie. Le chahut couvre bientôt l'orchestre dirigé par Pierre Monteux&nbsp;; Nijinski, debout sur une chaise en coulisse, hurle les temps aux danseurs qui n'entendent plus la musique. Stravinsky quitte la salle pour rejoindre les coulisses. Une quarantaine de spectateurs sont expulsés, mais la représentation va jusqu'au bout.</p>
+    <p>Le ballet n'est joué que cinq autres fois en 1913, et la chorégraphie de Nijinski disparaît pour des décennies. Puccini juge la musique «&nbsp;cacophonique&nbsp;». Mais en concert, sans la danse, l'œuvre triomphe dès 1914&nbsp;: le public ne la siffle plus, il l'acclame.</p>
+    <div class="carte">
+      <div class="etiquette">Un mythe à nuancer</div>
+      <p>On parle souvent d'une «&nbsp;émeute&nbsp;». Les témoins décrivent surtout un vacarme et des disputes entre partisans et adversaires&nbsp;; le mot d'émeute vient de récits écrits <strong>plus de dix ans après</strong>. Le scandale a ensuite fait la légende de l'œuvre.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s1-3">
+    <h3 class="hgg-section-title"><span class="num">2.3</span>Écouter le Sacre</h3>
+
+    <p>L'œuvre suit le déroulement du rite, en deux parties&nbsp;: <strong>L'Adoration de la terre</strong>, puis <strong>Le Sacrifice</strong>.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>L'Introduction</h3>
+        <p>Un basson seul, dans un registre si aigu qu'on ne le reconnaît pas. Puis d'autres instruments s'ajoutent, comme une nature qui s'éveille, désordonnée.</p>
+      </div>
+      <div class="carte">
+        <h3>Les Augures printaniers</h3>
+        <p>Un même accord dissonant, martelé par les cordes, avec des accents placés au hasard en apparence&nbsp;: le rythme devient une force brute qui frappe le corps.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le Cercle des adolescentes</h3>
+        <p>Au début du Sacrifice, une musique plus lente et mystérieuse&nbsp;: les jeunes filles tournent en rond, et l'une d'elles sera désignée.</p>
+      </div>
+      <div class="carte">
+        <h3>La Danse sacrale</h3>
+        <p>L'Élue danse seule, devant tous, sur des mesures qui changent sans cesse, jusqu'à s'effondrer. Le groupe la soulève&nbsp;: le sacrifice est accompli.</p>
+      </div>
+    </div>
+    <div class="surligne">La musique ne raconte pas le sacrifice de l'extérieur&nbsp;: par son rythme, elle <strong>entraîne</strong> l'auditeur dans la transe du groupe.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p2">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">3.</span><span class="hgg-part-title">Sous la civilisation, le rite</span></h2>
+
+  <div class="hgg-section" id="s2-1">
+    <h3 class="hgg-section-title"><span class="num">3.1</span>Le sacrifice d'un seul pour tous</h3>
+
+    <p>Le Sacre met en scène un mécanisme très ancien&nbsp;: la communauté se rassemble autour d'une victime et la sacrifie pour assurer sa survie, ici le retour du printemps et des récoltes. L'Élue n'a commis aucune faute&nbsp;; elle est choisie. Sa mort est une <strong>fête</strong> pour les autres. Le ballet ne juge pas&nbsp;: il montre, avec une force qui fascine autant qu'elle dérange.</p>
+    <div class="carte">
+      <div class="etiquette">L'individu face au groupe</div>
+      <p>Pendant tout le ballet, on danse en masse. Une seule danse est solitaire&nbsp;: celle de l'Élue, qui meurt. Être <strong>distingué</strong> du groupe, dans ce monde, c'est être condamné.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-2">
+    <h3 class="hgg-section-title"><span class="num">3.2</span>Le primitif au cœur du moderne</h3>
+
+    <p>Le public de 1913 se croit raffiné, civilisé, loin des peuples «&nbsp;primitifs&nbsp;». Le Sacre lui renvoie une image de l'homme avant la civilisation, et le fait avec les moyens les plus modernes. C'est peut-être ce qui choque&nbsp;: découvrir que la <strong>sauvagerie</strong> n'est pas seulement chez les autres, ni seulement dans le passé.</p>
+    <div class="surligne">Un an après la création, l'Europe civilisée entre en guerre&nbsp;: on a souvent lu le Sacre, après coup, comme le <strong>pressentiment</strong> d'un sacrifice de masse.</div>
+  </div>
+
+  <div class="hgg-section" id="s2-3">
+    <h3 class="hgg-section-title"><span class="num">3.3</span>Du scandale au classique</h3>
+
+    <p>Sifflée en 1913, l'œuvre est aujourd'hui l'une des plus jouées et enregistrées du répertoire. Walt Disney l'utilise dès 1940 dans <em>Fantasia</em> pour illustrer la naissance de la vie sur Terre&nbsp;; de grands chorégraphes la réinventent, comme Maurice Béjart en 1959 ou Pina Bausch en 1975, sur une scène couverte de terre. Ce qui semblait barbare est devenu un modèle.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le document</h3>
+        <p>Une soirée de mai 1913, un public qui siffle, un art qui rompt avec la tradition&nbsp;: <strong>le Sacre témoigne</strong> de la naissance de la modernité.</p>
+      </div>
+      <div class="carte pleine">
+        <h3>Le symbole</h3>
+        <p>Une victime choisie par la foule&nbsp;: <strong>le Sacre universalise</strong>. Il montre la violence collective dont toute société reste capable.</p>
+      </div>
+    </div>
+    <div class="surligne">Le scandale de 1913 rappelle que le nouveau choque d'abord&nbsp;: ce qui paraît <strong>inhumain</strong> à une époque peut devenir le chef-d'œuvre de la suivante.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p3">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">4.</span><span class="hgg-part-title">Pistes pour la dissertation</span></h2>
+
+  <div class="hgg-section" id="s3-1">
+    <h3 class="hgg-section-title">Le Sacre face à cinq sujets sur l'Humanité</h3>
+    <p>Cliquez sur un sujet pour l'argument à développer, le passage à citer et sa place dans le plan.</p>
+
+    <div class="sujets">
+      <details class="sujet">
+        <summary><span class="n">01</span><span class="q">La civilisation a-t-elle supprimé la barbarie&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Le Sacre montre une tribu qui sacrifie une jeune fille pour faire revenir le printemps. Le public parisien de 1913, qui se croit civilisé, siffle cette image d'un homme primitif&nbsp;; un an plus tard, l'Europe entre dans une guerre qui sacrifie des millions de jeunes hommes. La barbarie n'appartient pas au passé&nbsp;: la civilisation la recouvre sans la faire disparaître.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> La Danse sacrale de l'Élue, qui danse jusqu'à la mort.</span><span><b>Dans le plan&nbsp;:</b> En partie critique&nbsp;: la violence sous le vernis de la civilisation.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">02</span><span class="q">Le groupe fait-il disparaître l'individu&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Dans le Sacre, presque toutes les danses sont collectives&nbsp;: les corps bougent ensemble, au même rythme martelé. La seule danse solitaire est celle de l'Élue, et elle se termine par sa mort. Le ballet montre comment le groupe, dans la transe du rite, absorbe les individus et fait de celui qu'il distingue une victime.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> Le Cercle des adolescentes, où l'Élue est désignée.</span><span><b>Dans le plan&nbsp;:</b> Sur la foule&nbsp;: l'individu dissous ou sacrifié.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">03</span><span class="q">Pourquoi les hommes ont-ils besoin de rites&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Le Sacre imagine un rite païen qui célèbre le retour du printemps et la fécondité de la terre. Les rites relient les hommes à la nature, aux saisons, et les uns aux autres&nbsp;: ils donnent une forme aux moments où la vie de la communauté se joue. Mais le Sacre en montre aussi le prix&nbsp;: un rite peut exiger une victime.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> L'Adoration de la terre, première partie du ballet.</span><span><b>Dans le plan&nbsp;:</b> En première partie&nbsp;: le rite comme lien de la communauté.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">04</span><span class="q">Une œuvre doit-elle choquer&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Le 29 mai 1913, une partie du public siffle et crie, une quarantaine de spectateurs sont expulsés. Un an plus tard, en concert, l'œuvre triomphe&nbsp;; elle est aujourd'hui un classique. Le scandale ne fait pas la valeur d'une œuvre, mais il signale souvent qu'elle bouscule une manière de voir, et qu'il faut du temps pour qu'on la comprenne.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> Le chahut de la première, au Théâtre des Champs-Élysées.</span><span><b>Dans le plan&nbsp;:</b> Sur l'art&nbsp;: le choc comme condition du nouveau.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">05</span><span class="q">L'homme est-il un animal comme les autres&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>La chorégraphie de Nijinski montre des corps lourds, courbés, tournés vers la terre, comme ceux d'animaux. Mais ces corps dansent un rite, obéissent à des croyances, donnent un sens à la mort&nbsp;: aucun animal ne sacrifie l'un des siens pour faire revenir le printemps. Le Sacre montre l'homme au plus près de la nature, et pourtant déjà séparé d'elle par le symbole.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> Les pieds tournés en dedans et les sauts lourds de la chorégraphie de Nijinski.</span><span><b>Dans le plan&nbsp;:</b> En partie de dépassement&nbsp;: le propre de l'homme jusque dans sa violence.</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s3-2">
+    <div class="copie">
+      <div class="carte retenir">
+        <div class="etiquette">Idées à retenir</div>
+        <ol>
+          <li>Créé le <strong>29 mai 1913</strong> à Paris par les Ballets russes, sur une chorégraphie de Nijinski, dans un célèbre scandale.</li>
+          <li>Il montre un rite où une communauté <strong>sacrifie</strong> une jeune fille pour le retour du printemps.</li>
+          <li>Seule danse solitaire, celle de l'Élue est une mort&nbsp;: le groupe <strong>écrase</strong> celui qu'il distingue.</li>
+          <li>Sifflé, puis acclamé, il est devenu un <strong>classique</strong> de la modernité.</li>
+        </ol>
+      </div>
+      <div class="carte rapprocher">
+        <div class="etiquette">À rapprocher</div>
+        <p><strong>Shirley Jackson, <em>La Loterie</em> (1948)</strong>&nbsp;: dans cette nouvelle, les habitants d'un paisible village américain se réunissent chaque été pour un tirage au sort&nbsp;; la personne désignée est lapidée par tous, ses proches compris, pour que la récolte soit bonne. Comme le Sacre, la nouvelle montre une communauté qui sacrifie l'un des siens selon un rite que personne ne questionne. Mais Jackson place le rite dans l'Amérique de son temps, parmi des gens ordinaires&nbsp;: la barbarie n'est plus dans une Russie païenne lointaine, elle est chez nous.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /content -->
+</div><!-- /page -->
+<footer class="fin">
+  <div class="fin-inner">
+    <a href="musique.html">← Toutes les fiches de musique</a>
+    <button type="button" class="bouton-lu" id="boutonLu">J'ai lu cette fiche</button>
+  </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
+
+<script>
+  // « J'ai lu cette fiche », gardé dans le navigateur
+  const CLE = 'ecg-humanite-fiches-lues';
+  const ID = 'musique/le-sacre-du-printemps';
+  const lu = document.getElementById('boutonLu');
+  function lire() { try { return JSON.parse(localStorage.getItem(CLE)) || []; } catch (e) { return []; } }
+  function majLu() {
+    const fait = lire().includes(ID);
+    lu.classList.toggle('fait', fait);
+    lu.textContent = fait ? '✓ Fiche lue' : "J'ai lu cette fiche";
+  }
+  lu.addEventListener('click', () => {
+    let l = lire();
+    l = l.includes(ID) ? l.filter(x => x !== ID) : l.concat(ID);
+    try { localStorage.setItem(CLE, JSON.stringify(l)); } catch (e) {}
+    majLu();
+  });
+  majLu();
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>
