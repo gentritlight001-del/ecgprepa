@@ -4,6 +4,66 @@ window.ECG_NOUVEAUTES = [
 "t": "humanite",
 "rubrique": "Humanité",
 "meta": "Art",
+"titre": "La fillette au napalm",
+"url": "humanite/art/fillette-au-napalm.html",
+"image": "humanite/art/images/fillette-au-napalm-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T08:24:47+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Migrant Mother",
+"url": "humanite/art/migrant-mother.html",
+"image": "humanite/art/images/migrant-mother-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T08:21:07+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Girl with Balloon",
+"url": "humanite/art/girl-with-balloon.html",
+"image": "humanite/art/images/girl-with-balloon-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T08:17:58+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Le Penseur",
+"url": "humanite/art/le-penseur.html",
+"image": "humanite/art/images/le-penseur-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T07:58:58+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Le Cri",
+"url": "humanite/art/le-cri.html",
+"image": "humanite/art/images/le-cri-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T07:50:19+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Les Désastres de la guerre",
+"url": "humanite/art/desastres-de-la-guerre.html",
+"image": "humanite/art/images/desastres-de-la-guerre-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T07:29:32+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
 "titre": "Le Radeau de la Méduse",
 "url": "humanite/art/radeau-de-la-meduse.html",
 "image": "humanite/art/images/radeau-de-la-meduse-oeuvre.webp",
@@ -2163,66 +2223,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "L'Homme qui rit",
 "url": "humanite/litterature/homme-qui-rit.html",
 "image": "humanite/litterature/images/homme-qui-rit-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "L'Homme révolté",
-"url": "humanite/litterature/homme-revolte.html",
-"image": "humanite/litterature/images/homme-revolte-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "L'Étrange Cas du docteur Jekyll et de M. Hyde",
-"url": "humanite/litterature/jekyll-et-hyde.html",
-"image": "humanite/litterature/images/jekyll-et-hyde-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "La Peste",
-"url": "humanite/litterature/la-peste.html",
-"image": "humanite/litterature/images/la-peste-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "La Route",
-"url": "humanite/litterature/la-route.html",
-"image": "humanite/litterature/images/la-route-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "Lambeaux",
-"url": "humanite/litterature/lambeaux.html",
-"image": "humanite/litterature/images/lambeaux-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "Le Horla",
-"url": "humanite/litterature/le-horla.html",
-"image": "humanite/litterature/images/le-horla-couverture.webp",
 "portrait": true,
 "date": "2026-09-11T19:03:33+00:00"
 },
