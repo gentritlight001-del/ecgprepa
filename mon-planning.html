@@ -277,12 +277,6 @@
   .groupe h3 button { all: unset; cursor: pointer; }
   .groupe h3 button:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 5px; }
   .groupe h3 button:focus-visible { outline: 2px solid var(--tomate); outline-offset: 2px; }
-  .un-jour { border-top: 0; padding-top: 4px; gap: 2px; max-width: 760px; }
-  .un-jour .ligne { font-size: 15.5px; padding: 6px 0; border-bottom: 1px solid rgba(217,210,194,.6); }
-  .un-jour .ligne .h { font-size: 13px; }
-  .un-jour .polaroid { max-width: 320px; margin: 10px 2px 8px; }
-  .un-jour .sous-titre { font-size: 12.5px; color: var(--gris); margin: 14px 0 4px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
-  .un-jour .ajout { font-size: 15px; padding: 8px 2px; margin-top: 10px; }
   .legende { display: flex; gap: 20px; flex-wrap: wrap; font-size: 12.5px; color: var(--gris); border-top: 1px solid var(--filet); padding-top: 12px; }
 
   /* ─── Fenêtre d'édition ─── */
@@ -944,19 +938,17 @@
   function sousOnglets() {
     return '<div class="sous-onglets" role="group" aria-label="Contenu de la liste"><button data-lm="avenir" class="' + (listeMode === 'avenir' ? 'on' : '') + '">À venir</button><button data-lm="jour" class="' + (listeMode === 'jour' ? 'on' : '') + '">Un jour</button></div>';
   }
+  /* « Un jour » : la même présentation que « À venir », pour ce seul jour. */
+  function groupeJour(s, l) {
+    var auj = aujourdhui(), reste = l.filter(function (x) { return x.type === 'tache' && !x.fait; }).length;
+    var etiquette = s === auj ? 'Aujourd’hui' : s === ajoute(auj, 1) ? 'Demain' : maj1(jourLong(s));
+    return '<div class="groupe" data-date="' + s + '"><h3><button data-jour="' + s + '" title="Voir ce jour seul">' + etiquette + '</button> <small>' + (s === auj || s === ajoute(auj, 1) ? jourCourt(s) + ' · ' : '') + (reste ? reste + ' à faire' : 'rien à faire') + '</small></h3>' +
+      l.map(function (x) { return ligne(x); }).join('') + '</div>';
+  }
   function rendreJour() {
-    var s = curseur, auj = aujourdhui(), d = versDate(s);
+    var d = versDate(curseur);
     $('#periode').innerHTML = '<span class="lie">' + JOURS[(d.getDay() + 6) % 7] + '</span>' + d.getDate() + '&nbsp;<em>' + MOIS[d.getMonth()] + '</em>';
-    var l = duJour(s), avec = l.filter(function (x) { return x.heure; }), sans = l.filter(function (x) { return !x.heure; });
-    var taches = l.filter(function (x) { return x.type === 'tache'; }), faites = taches.filter(function (x) { return x.fait; }).length;
-    var resume = s === auj ? 'Aujourd’hui · ' : s === ajoute(auj, 1) ? 'Demain · ' : s === ajoute(auj, -1) ? 'Hier · ' : '';
-    resume += taches.length ? faites + ' sur ' + taches.length + ' fait' + (faites > 1 ? 's' : '') : 'rien à cocher';
-    $('#vue').innerHTML = sousOnglets() +
-      '<div class="groupe un-jour" data-date="' + s + '"><p class="sous-titre" style="margin-top:6px">' + resume + '</p>' +
-      (avec.length ? '<p class="sous-titre">Avec une heure</p>' + avec.map(function (x) { return ligne(x); }).join('') : '') +
-      (sans.length ? '<p class="sous-titre">Dans la journée</p>' + sans.map(function (x) { return ligne(x); }).join('') : '') +
-      (l.length ? '' : '<p class="vide" style="margin-top:12px">Rien de prévu ce jour-là.</p>') +
-      '<input class="ajout" type="text" data-ajout="' + s + '" placeholder="+ ajouter à ce jour (« 14h » pour une heure)" aria-label="Ajouter le ' + jourLong(s) + '"></div>';
+    $('#vue').innerHTML = sousOnglets() + groupeJour(curseur, duJour(curseur));
   }
   function rendreListe() {
     if (listeMode === 'jour') { rendreJour(); return; }
@@ -967,12 +959,7 @@
     futurs.forEach(function (x) { (dates[x.date] = dates[x.date] || []).push(x); });
     var cles = Object.keys(dates).sort();
     var html = cles.length ? '' : '<p class="vide">Rien de prévu pour l’instant.</p>';
-    cles.forEach(function (s) {
-      var l = dates[s].sort(trier), reste = l.filter(function (x) { return x.type === 'tache' && !x.fait; }).length;
-      var etiquette = s === auj ? 'Aujourd’hui' : s === ajoute(auj, 1) ? 'Demain' : maj1(jourLong(s));
-      html += '<div class="groupe" data-date="' + s + '"><h3><button data-jour="' + s + '" title="Voir ce jour seul">' + etiquette + '</button> <small>' + (s === auj || s === ajoute(auj, 1) ? jourCourt(s) + ' · ' : '') + (reste ? reste + ' à faire' : 'rien à faire') + '</small></h3>' +
-        l.map(function (x) { return ligne(x); }).join('') + '</div>';
-    });
+    cles.forEach(function (s) { html += groupeJour(s, dates[s].sort(trier)); });
     $('#vue').innerHTML = sousOnglets() + html;
   }
 
