@@ -181,6 +181,7 @@
   .sem.un .sem-tete { display: none; }
   .sem.un .libre { flex-direction: row; flex-wrap: wrap; align-items: flex-start; gap: 6px 22px; min-height: 52px; }
   .sem.un .libre .polaroid { width: 200px; }
+  .sem.un .libre .postit { width: 220px; }
   .sem.un .libre .ajout { flex: 1 0 100%; }
   .sem.un .bloc { font-size: 14px; padding: 6px 10px 6px 12px; }
   .sem.un .bloc img { width: 120px; height: auto; aspect-ratio: 16 / 10; margin: 0; position: absolute; right: 6px; top: 6px; }
@@ -264,6 +265,9 @@
   .postit:nth-child(odd) { transform: rotate(1.2deg); }
   .postit:nth-child(even) { transform: rotate(-1deg); }
   .postit:hover { transform: none; }
+  /* Post-it dans la bande « sans heure » : plus compacts. */
+  .libre .postit { font-size: 13px; padding: 8px 9px; gap: 6px; box-shadow: 0 3px 8px rgba(60,50,10,.12); }
+  .libre .postit .case-c { margin-top: 2px; }
   .postit .txt { flex: 1; min-width: 0; overflow-wrap: break-word; }
   .postit.fait .txt { text-decoration: line-through; opacity: .6; }
   .lien-site { font-size: 10px; color: var(--sec, var(--tomate-texte)); text-decoration: none; display: block; margin-top: 4px; }
@@ -289,6 +293,7 @@
   .groupe h3, .jour-c h3 { font-family: var(--serif); font-weight: 420; font-size: 30px; letter-spacing: -.025em; line-height: 1.1; color: var(--encre); display: flex; gap: 10px; align-items: baseline; margin-bottom: 4px; }
   .groupe h3 small, .jour-c h3 small { font-family: var(--sans); font-size: 12.5px; color: var(--gris); letter-spacing: 0; }
   .jour-c.auj h3 { color: var(--tomate); }
+  .jour-c .postit { max-width: 320px; margin: 3px 0; }
   .groupe .polaroid, .jour-c .polaroid { max-width: 260px; }
 
   /* Liste : « À venir » ou un seul jour */
@@ -936,7 +941,7 @@
       $('#vue').innerHTML = dates.map(function (s, i) {
         var d = versDate(s);
         return '<div class="jour-c' + (s === auj ? ' auj' : '') + '" data-date="' + s + '"><h3>' + maj1(JOURS[i]) + ' ' + d.getDate() + (s === auj ? ' <small>aujourd’hui</small>' : '') + '</h3>' +
-          jours[i].map(function (x) { return ligne(x); }).join('') +
+          jours[i].map(function (x) { return x.heure || x.q ? ligne(x) : postit(x); }).join('') +
           '<input class="ajout" type="text" data-ajout="' + s + '" placeholder="+ ajouter" aria-label="Ajouter le ' + jourLong(s) + '"></div>';
       }).join('');
       return;
@@ -950,7 +955,7 @@
       '</div><div class="sem-ligne sem-libre"><span class="lib-h">sans<br>heure</span>' +
       dates.map(function (s, i) {
         return '<div class="libre' + classe(s) + '" data-date="' + s + '">' +
-          jours[i].filter(function (x) { return !x.heure; }).map(function (x) { return ligne(x); }).join('') +
+          jours[i].filter(function (x) { return !x.heure; }).map(function (x) { return x.q ? ligne(x) : postit(x); }).join('') +
           '<input class="ajout" type="text" data-ajout="' + s + '" placeholder="+ ajouter" aria-label="Ajouter le ' + jourLong(s) + '"></div>';
       }).join('') +
       '</div><div class="sem-ligne" style="height:' + hauteur + 'px"><div class="heures">';
@@ -1081,7 +1086,7 @@
   }
 
   function rendre() {
-    rangScotch = 0;
+    rangScotch = 0; rangPostit = 0;
     assurerQuotidien();
     document.querySelectorAll('#onglets button').forEach(function (b) { b.classList.toggle('on', b.dataset.v === vue); });
     ['#prec', '#suiv', '#auj'].forEach(function (s) { $(s).hidden = vue === 'liste' && !unJour(); });
