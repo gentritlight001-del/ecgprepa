@@ -754,7 +754,7 @@
     etat.items.forEach(function (x) {
       if (!x.q || x.fait || x.date < auj || !ESPACES[x.q]) return;
       var l = lienQuotidien(x.q, x.date);
-      if (!x.site || x.site.url !== l.url || x.site.rub !== l.rub) { x.site = l; change = true; }
+      if (!x.site || x.site.url !== l.url || x.site.rub !== l.rub || x.site.titre !== l.titre) { x.site = l; change = true; }
     });
     if (change) enregistrer();
   }
@@ -766,6 +766,7 @@
       etat.items = etat.items.filter(function (x) { return !(x.q === k && !x.fait && x.date >= auj); });
     }
     enregistrer(); rendre();
+    if (oui) chargerPages().then(rendre);
     if (oui && ESPACES[k].fiches) chargerFichesHgg().then(rendre);
   }
   function rendreQuotidien() {
@@ -819,7 +820,11 @@
       rendre();
     }).catch(function () { photosEnAttente = false; });
   }
-  function imgDe(x) { return x.q ? '' : (photoDe(x) || imageDe(x.site)); }
+  /* Ligne « au quotidien » : la photo du texte ou de la fiche du jour, quand la page existe. */
+  function imgDe(x) {
+    if (x.q) return photoDe(x) || (x.site && !/index\.html$/.test(x.site.url) ? imageDe(x.site) : '');
+    return photoDe(x) || imageDe(x.site);
+  }
 
   function cat(x) {
     var c = CATS[x.cat] || CATS.autre;
@@ -846,15 +851,23 @@
   function polaroid(x, avecDate) {
     var scotch = COULEURS_POSTIT[rangScotch++ % COULEURS_POSTIT.length];
     var img = imgDe(x), avant = (avecDate && x.date ? jourCourt(x.date) + ' · ' : '') + (x.heure ? heureLisible(x.heure) + ' · ' : '');
+    var titre = tx(x.titre), rub = x.site ? esc(x.site.rub || 'Page du site') : '';
+    if (x.q && ESPACES[x.q]) {
+      /* « Anglais · Jour 10 », puis le sujet du jour (titre de la page sans « Daily English, jour 10 : »). */
+      rub = esc(ESPACES[x.q].court) + (x.site && x.site.rub ? ' · ' + tx(x.site.rub) : '');
+      var sujet = x.site && x.site.titre && x.site.titre !== ESPACES[x.q].nom ? x.site.titre.replace(/^[^:]*:\s*/, '') : '';
+      titre = sujet ? tx(maj1(sujet)) : esc(ESPACES[x.q].nom);
+    }
     return '<div class="' + classes(x, 'polaroid') + '"' + attrs(x).replace('style="', 'style="--scotch:' + scotch + ';') + '>' +
       '<img src="' + esc(img) + '" alt="" loading="lazy" draggable="false">' +
-      (x.site ? '<a class="rub" href="' + esc(x.site.url) + '" data-a="lien">' + avant + esc(x.site.rub || 'Page du site') + '</a>'
+      (x.site ? '<a class="rub" href="' + esc(x.site.url) + '" data-a="lien">' + avant + rub + '</a>'
               : '<span class="rub" style="--sec:' + cat(x).c + '">' + avant + esc(cat(x).nom) + '</span>') +
-      '<div class="t">' + caseC(x) + '<span>' + tx(x.titre) + '</span></div></div>';
+      '<div class="t">' + caseC(x) + '<span>' + titre + '</span></div></div>';
   }
   /* Ligne de carnet : puce, heure, texte. */
   function ligne(x, avecDate) {
     /* Ligne du quotidien : nom court, lien vers le texte ou la fiche du jour quand elle existe. */
+    if (x.q && ESPACES[x.q] && imgDe(x)) return polaroid(x, avecDate);
     if (x.q && ESPACES[x.q]) {
       var lien = x.site && !/index\.html$/.test(x.site.url) ? ' <a class="q-lien" href="' + esc(x.site.url) + '" data-a="lien">' + tx(x.site.rub) + '&nbsp;↗</a>' : '';
       return '<div class="' + classes(x, 'ligne') + ' quotidien"' + attrs(x) + '>' + puce(x) +
