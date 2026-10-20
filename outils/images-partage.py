@@ -12,8 +12,8 @@ relancer le script après chaque nouvel article ou nouveau cours.
                                                           # déjà une (adresse changée : ?v=<date et heure>)
 
 Articles d'actualité au gabarit « a-page » (maquette B) : photo de une en plein cadre,
-assombrie à gauche, pastille rouge du pays, titre blanc, filet rouge en bas. Fiches d'œuvres de
-l'Humanité avec visuel : visuel flou en fond, visuel net à droite, pastille et filet à la couleur
+assombrie à gauche, pastille rouge du pays, titre blanc, filet rouge en bas. Fiches d'œuvres et
+fiches auteurs de l'Humanité avec visuel : visuel flou en fond, visuel net à droite, pastille et filet à la couleur
 de la fiche. Autres pages : aplat de couleur et titre.
 
 Prérequis : playwright (voir newsletter/outils/installer.sh). Le chemin de Chromium
@@ -119,6 +119,21 @@ def visuel_de(rel, contenu):
     meta = re.search(r'<p class="meta">(.*?)</p>', contenu)
     m = html.unescape(re.sub(r'<[^>]+>', '', meta.group(1))).split(' · ')[:2] if meta else []
     return RUBRIQUES[p[1]], chemin, (c.group(1) if c else '#a83a2e'), '\u00a0· '.join(m)
+
+
+def auteur_de(rel, contenu):
+    """Fiche auteur de l'Humanité : (« Fiche auteur », portrait, couleur, « naissance – mort »), sinon None."""
+    if '/Fiches auteurs/' not in rel or 'class="f-portrait"' not in contenu:
+        return None
+    img = re.search(r'<figure class="f-portrait">\s*<img src="([^"]+)"', contenu)
+    if not img:
+        return None
+    chemin = os.path.normpath(os.path.join(RACINE, os.path.dirname(rel), img.group(1)))
+    c = re.search(r'--accent:\s*(#[0-9a-fA-F]{3,8})', contenu)
+    ans = [re.search(r'\b(\d{3,4})\b', html.unescape(x)) for x in
+           re.findall(r'<dt>(?:Naissance|Mort)</dt><dd>([^<]*)</dd>', contenu)]
+    dates = '\u00a0– '.join(a.group(1) for a in ans if a)
+    return 'Fiche auteur', chemin, (c.group(1) if c else '#a83a2e'), dates
 
 
 def insecables(t):
@@ -246,9 +261,12 @@ def main():
             sortie = 'partage/' + cle + '.jpg'
             os.makedirs(os.path.dirname(RACINE + sortie), exist_ok=True)
             photo = photo_de(rel, contenu)
-            visuel = None if photo else visuel_de(rel, contenu)
+            visuel = None if photo else (visuel_de(rel, contenu) or auteur_de(rel, contenu))
             if visuel:
                 rub, img, couleur, meta = visuel
+                if rub == 'Fiche auteur':
+                    h1 = re.search(r'<h1[^>]*>(.*?)</h1>', contenu, re.S)
+                    if h1: titre = html.unescape(re.sub(r'<[^>]+>', '', h1.group(1))).strip()
                 titre = insecables(titre); meta = insecables(meta)
                 taille = 64 if len(titre) <= 30 else 56 if len(titre) <= 50 else 48 if len(titre) <= 75 else 42
                 page_visuel.evaluate("""([rub, titre, img, taille, couleur, meta]) => new Promise(ok => {
