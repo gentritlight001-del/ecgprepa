@@ -3,6 +3,66 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "humanite",
 "rubrique": "Humanité",
+"meta": "Musique",
+"titre": "Le Chant des partisans",
+"url": "humanite/musique/le-chant-des-partisans.html",
+"image": "humanite/musique/images/le-chant-des-partisans-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T15:12:12+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "Le Sacre du printemps",
+"url": "humanite/musique/le-sacre-du-printemps.html",
+"image": "humanite/musique/images/le-sacre-du-printemps-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T15:09:57+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "Imagine",
+"url": "humanite/musique/imagine.html",
+"image": "humanite/musique/images/imagine-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T15:07:02+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "Strange Fruit",
+"url": "humanite/musique/strange-fruit.html",
+"image": "humanite/musique/images/strange-fruit-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T15:01:41+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "Requiem",
+"url": "humanite/musique/requiem.html",
+"image": "humanite/musique/images/requiem-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T14:58:12+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "Symphonie n° 9",
+"url": "humanite/musique/symphonie-n-9.html",
+"image": "humanite/musique/images/symphonie-n-9-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T14:53:04+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
 "meta": "Art",
 "titre": "La Leçon d'anatomie du docteur Tulp",
 "url": "humanite/art/la-lecon-d-anatomie.html",
@@ -2163,66 +2223,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Edward aux mains d'argent",
 "url": "humanite/cinema/edward-aux-mains-dargent.html",
 "image": "humanite/cinema/images/edward-aux-mains-dargent-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "Freaks, la monstrueuse parade",
-"url": "humanite/cinema/freaks-la-monstrueuse-parade.html",
-"image": "humanite/cinema/images/freaks-la-monstrueuse-parade-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "Her",
-"url": "humanite/cinema/her.html",
-"image": "humanite/cinema/images/her-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "La Liste de Schindler",
-"url": "humanite/cinema/la-liste-de-schindler.html",
-"image": "humanite/cinema/images/la-liste-de-schindler-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "La vie est belle",
-"url": "humanite/cinema/la-vie-est-belle.html",
-"image": "humanite/cinema/images/la-vie-est-belle-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "Le Nouveau Monde",
-"url": "humanite/cinema/le-nouveau-monde.html",
-"image": "humanite/cinema/images/le-nouveau-monde-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "L'Enfant sauvage",
-"url": "humanite/cinema/lenfant-sauvage.html",
-"image": "humanite/cinema/images/lenfant-sauvage-affiche.webp",
 "portrait": true,
 "date": "2026-09-11T19:03:33+00:00"
 },
