@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Art — Rhythm 0</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<style>
+  :root {
+    --c: #4b3f5c;          /* couleur de la fiche */
+    --c-soft: #ece9f1;
+    --fond: #f5f4f0;
+    --carte: #ffffff;
+    --encre: #18181b;
+    --texte: #3f3f46;
+    --discret: #52525b;
+    --ligne: #e4e2dc;
+    --titre: 'Bricolage Grotesque', system-ui, sans-serif;
+    --corps: 'Newsreader', Georgia, serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--fond); color: var(--encre); font-family: var(--corps); font-size: 1.125rem; line-height: 1.65; min-height: 100vh; }
+  strong { font-weight: 600; color: var(--encre); }
+  a { color: inherit; }
+
+  /* ─── Barre du haut ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 14px 48px; background: var(--carte); border-bottom: 1px solid var(--ligne);
+    position: sticky; top: 0; z-index: 100; font-family: var(--titre);
+  }
+  .nav-logo { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em; }
+  .nav-logo a { color: var(--encre); text-decoration: none; }
+  .breadcrumb { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: calc(100% - 420px); display: flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; overflow: hidden; font-size: 0.85rem; color: var(--discret); }
+  .breadcrumb .current { overflow: hidden; text-overflow: ellipsis; }
+  .breadcrumb a { text-decoration: none; }
+  .breadcrumb a:hover { color: var(--c); }
+  .breadcrumb .sep { color: #a1a1aa; }
+  .breadcrumb .current { color: var(--encre); }
+
+  /* ─── Bandeau ─── */
+  .ch-hero { position: relative; background: var(--c); color: #fff; padding: 56px 48px 84px; overflow: hidden; }
+  .ch-hero-fond { display: none; }
+  .ch-hero-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 40px 56px; }
+  .ch-hero-texte { flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+  .chap-label { display: flex; flex-wrap: wrap; gap: 8px; font-family: var(--titre); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .chap-label span { background: rgba(255,255,255,0.18); padding: 6px 12px; border-radius: 999px; }
+  .ch-hero h1 { font-family: var(--titre); font-weight: 800; font-size: calc(var(--t, 1) * clamp(3rem, 8vw, 6rem)); line-height: 0.95; letter-spacing: -0.02em; }
+  .ch-hero .meta { font-family: var(--titre); font-size: 1.2rem; font-weight: 500; opacity: 0.92; }
+  .ch-hero .pitch { max-width: 620px; font-size: 1.3rem; line-height: 1.5; }
+  .ch-hero-visuel { flex: 0 0 240px; max-width: 100%; aspect-ratio: 2 / 3; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+  .ch-hero-visuel.paysage { flex: 1 1 420px; aspect-ratio: auto; }
+  .ch-hero-visuel.paysage img { height: auto; }
+  .ch-hero-visuel img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  /* ─── L'essentiel ─── */
+  .essentiel {
+    position: relative; max-width: 1040px; margin: -44px auto 0; background: var(--carte); border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(24,24,27,0.10); padding: 28px 32px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 20px 40px;
+  }
+  .essentiel-wrap { padding: 0 48px; }
+  .essentiel-these { flex: 999 1 420px; min-width: 0; }
+  .etiquette { font-family: var(--titre); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c); }
+  .essentiel-these p { margin-top: 6px; font-size: 1.35rem; line-height: 1.4; font-weight: 600; }
+  .notions { flex: 1 1 300px; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+  .notions li { font-family: var(--titre); font-size: 0.92rem; font-weight: 500; padding: 8px 14px; border-radius: 999px; background: var(--c-soft); color: var(--c); }
+
+  /* ─── Corps ─── */
+  .page { max-width: 820px; margin: 0 auto; padding: 64px 48px 72px; }
+
+  .content { display: flex; flex-direction: column; gap: 64px; }
+  .hgg-part { scroll-margin-top: 90px; }
+  .hgg-part-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 20px; }
+  .hgg-part-num { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; color: var(--c); }
+  .hgg-part-title { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; letter-spacing: -0.01em; }
+  .hgg-section { margin-top: 32px; scroll-margin-top: 90px; }
+  .hgg-section-title { font-family: var(--titre); font-weight: 700; font-size: 1.35rem; line-height: 1.25; margin-bottom: 12px; }
+  .hgg-section-title .num { color: var(--c); margin-right: 6px; }
+  .content p { color: var(--texte); margin-bottom: 16px; }
+  .content p:last-child { margin-bottom: 0; }
+
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 8px 0 24px; }
+  .hgg-stat-cell { background: var(--carte); border-radius: 12px; padding: 18px 20px; }
+  .hgg-stat-num { display: block; font-family: var(--titre); font-weight: 800; font-size: 2.2rem; line-height: 1; color: var(--c); }
+  .hgg-stat-label { margin-top: 6px; font-family: var(--titre); font-size: 0.88rem; color: var(--discret); }
+
+  .carte { background: var(--carte); border-radius: 14px; padding: 22px 26px; margin: 20px 0; }
+  .carte h3 { font-family: var(--titre); font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+  .carte p { font-size: 1.05rem; }
+  .carte .etiquette { margin-bottom: 8px; }
+  .surligne { background: var(--c-soft); border-radius: 14px; padding: 20px 24px; margin: 20px 0; color: #2a1d12; font-size: 1.08rem; }
+  .duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 20px 0; }
+  .duo .carte { margin: 0; }
+  .duo .carte.pleine { background: var(--c); }
+  .duo .carte.pleine h3, .duo .carte.pleine p { color: #fff; }
+  .sujets { background: var(--carte); border-radius: 16px; margin-top: 16px; overflow: hidden; }
+  .sujet + .sujet { border-top: 1px solid var(--ligne); }
+  .sujet summary { list-style: none; display: flex; gap: 14px; align-items: baseline; padding: 16px 22px; cursor: pointer; font-family: var(--titre); font-weight: 700; font-size: 1.08rem; line-height: 1.35; }
+  .sujet summary::-webkit-details-marker { display: none; }
+  .sujet summary .n { flex: 0 0 auto; font-weight: 800; color: var(--c); }
+  .sujet summary .q { flex: 1; }
+  .sujet summary::after { content: '+'; flex: 0 0 auto; font-size: 1.3rem; line-height: 1; color: var(--c); transition: transform 0.2s; }
+  .sujet[open] summary::after { transform: rotate(45deg); }
+  .sujet summary:hover .q { color: var(--c); }
+  .sujet-corps { padding: 0 22px 18px 58px; }
+  .sujet-corps p { font-size: 1.02rem; margin-bottom: 10px; }
+  .sujet-corps .reperes { font-family: var(--titre); font-size: 0.88rem; line-height: 1.5; color: var(--discret); display: flex; flex-direction: column; gap: 4px; }
+  .sujet-corps .reperes b { color: var(--c); font-weight: 700; }
+  .sujet a { color: var(--c); text-decoration: underline; text-underline-offset: 2px; }
+
+  .copie { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 8px; }
+  .copie .carte { margin: 0; }
+  .retenir { flex: 1 1 100%; min-width: 0; }
+  .retenir ol { padding-left: 22px; display: flex; flex-direction: column; gap: 10px; font-size: 1.05rem; color: var(--texte); }
+  .rapprocher { flex: 1 1 100%; min-width: 0; background: var(--c) !important; }
+  .rapprocher .etiquette, .rapprocher p, .rapprocher em { color: #fff; }
+  .rapprocher .etiquette { opacity: 0.85; }
+  .rapprocher strong, .rapprocher a, .duo .carte.pleine strong { color: #fff; }
+
+  /* ─── Fin de page ─── */
+  .fin { border-top: 1px solid var(--ligne); background: var(--carte); padding: 24px 48px; }
+  .fin-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; font-family: var(--titre); font-size: 0.95rem; }
+  .fin a { text-decoration: none; padding: 12px 0; }
+  .fin a:hover { color: var(--c); }
+  .bouton-lu { font: 700 0.95rem var(--titre); color: #fff; background: var(--c); border: 1.5px solid var(--c); border-radius: 999px; padding: 12px 22px; min-height: 44px; cursor: pointer; }
+  .bouton-lu.fait { background: transparent; color: var(--c); }
+
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--encre); color: #fff; border: none; border-radius: 50%; font-size: 1.1rem; cursor: pointer; opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 99; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+  }
+  @media (max-width: 760px) {
+    .breadcrumb { display: none; }
+  }
+  @media (max-width: 640px) {
+    nav { padding: 12px 16px; }
+    .breadcrumb { display: none; }
+    .ch-hero { padding: 36px 16px 72px; }
+    .ch-hero-visuel { flex-basis: 160px; }
+    .essentiel-wrap { padding: 0 16px; }
+    .essentiel { padding: 22px 20px; }
+    .page { padding: 40px 16px 56px; }
+    .fin { padding: 20px 16px; }
+    .sujet summary { padding: 14px 16px; }
+    .sujet-corps { padding: 0 16px 16px; }
+    .hgg-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .hgg-stat-cell { padding: 14px 12px; }
+    .hgg-stat-num { font-size: 1.6rem; }
+  }
+
+  @media print {
+    .sujet-corps { display: block !important; }
+    @page { size: A4; margin: 16mm 14mm; }
+    nav, .back-to-top, .fin, .ch-hero-visuel { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: #fff; font-size: 10pt; }
+    .ch-hero { padding: 1rem 1.2rem; }
+    .ch-hero h1 { font-size: 22pt; }
+    .essentiel { margin: 0.6rem 0; box-shadow: none; border: 1pt solid var(--ligne); }
+    .page { display: block; padding: 0.6rem 0; }
+    .content { gap: 1.2rem; }
+    .carte, .hgg-stat-cell { border: 1pt solid var(--ligne); break-inside: avoid; }
+    .surligne, .duo, .sujet { break-inside: avoid; }
+  }
+</style>
+<link rel="stylesheet" href="../../barre-section.css">
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="sn sn-hum">
+  <div class="nav-logo sn-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb sn-fil">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">›</span>
+    <a href="../../humanite.html"><span>L'Humanité</span></a>
+    <span class="sep">›</span>
+    <a href="art.html"><span>Art</span></a>
+    <span class="sep">›</span>
+    <span class="current">Rhythm 0</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="ch-hero-inner">
+    <div class="ch-hero-texte">
+      <div class="chap-label"><span>Art</span><span>L'Humanité</span></div>
+      <h1>Rhythm 0</h1>
+      <p class="meta">Marina Abramović · 1974 · Performance</p>
+      <p class="pitch">Six heures immobile face au public, avec 72 objets, d'une rose à un pistolet chargé, à sa disposition&nbsp;: l'artiste se fait objet, et le public révèle ce dont il est capable.</p>
+    </div>
+    <figure class="ch-hero-visuel paysage"><img src="images/rhythm-0-oeuvre.webp" alt="La table des objets de Rhythm 0 reconstituée lors d'une exposition : sur une nappe blanche, une hache, une scie, un marteau, un fouet, des chaînes, un pistolet, un boa de plumes, un chapeau, des chaussures ; au mur, une photographie de Marina Abramović pendant la performance" loading="eager" onerror="this.closest('.ch-hero-visuel').remove()"></figure>
+  </div>
+</div>
+
+<!-- L'ESSENTIEL -->
+<div class="essentiel-wrap">
+  <section class="essentiel" aria-label="L'essentiel">
+    <div class="essentiel-these">
+      <div class="etiquette">L'essentiel en une phrase</div>
+      <p>Quand une personne devient un objet et que rien n'est interdit, des gens ordinaires glissent vers la cruauté&nbsp;: l'inhumain n'est pas ailleurs, il attend en chacun l'absence de limites.</p>
+    </div>
+    <ul class="notions" aria-label="Notions du thème">
+      <li>Cruauté ordinaire</li>
+      <li>Liberté et responsabilité</li>
+      <li>Personne et objet</li>
+    </ul>
+  </section>
+</div>
+
+<div class="page">
+
+<div class="content">
+
+<section class="hgg-part" id="intro">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">1.</span><span class="hgg-part-title">Présentation de l'œuvre</span></h2>
+
+    <p><strong>Rhythm 0</strong> est une <strong>performance</strong> de l'artiste serbe <strong>Marina Abramović</strong> (née en 1946 à Belgrade), réalisée en <strong>1974</strong> à la galerie Studio Morra, à <strong>Naples</strong>. Pendant <strong>six heures</strong>, de 20 heures à 2 heures du matin, l'artiste reste immobile&nbsp;; sur une table, <strong>72 objets</strong> sont mis à la disposition du public, qui peut les utiliser sur elle comme il le souhaite. L'œuvre n'existe plus que par les récits, les photographies et la table des objets, parfois reconstituée dans des expositions, comme sur l'image de cette fiche.</p>
+  <div class="hgg-stats">
+<div class="hgg-stat-cell"><span class="hgg-stat-num">72</span><div class="hgg-stat-label">Objets sur la table, d'une rose à un pistolet</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">6 h</span><div class="hgg-stat-label">De performance, de 20 h à 2 h du matin</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">1974</span><div class="hgg-stat-label">À Naples, galerie Studio Morra</div></div>
+</div>
+    <p>Il n'y a ni tableau ni sculpture&nbsp;: l'œuvre, c'est ce qui s'est passé ce soir-là entre une femme immobile et des visiteurs libres de tout faire. Les gestes de ce soir-là font de Rhythm 0 l'une des performances les plus célèbres et les plus dérangeantes de l'histoire de l'art. Elle pose une question centrale pour le thème de l'Humanité&nbsp;: que devient l'homme quand il a tout pouvoir sur un autre, sans interdit ni sanction&nbsp;?</p>
+</section>
+
+<section class="hgg-part" id="p1">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">2.</span><span class="hgg-part-title">Genèse et description</span></h2>
+
+  <div class="hgg-section" id="s1-1">
+    <h3 class="hgg-section-title"><span class="num">2.1</span>L'art de la performance</h3>
+
+    <p>Dans les années 1970, des artistes cherchent à sortir de l'objet d'art, tableau ou sculpture, pour faire de leur propre corps le matériau de l'œuvre. C'est la <strong>performance</strong>&nbsp;: une action réelle, vécue devant un public, souvent risquée, qui ne peut pas être répétée à l'identique. Marina Abramović en devient l'une des figures majeures. Rhythm 0 clôt une série de performances, les <em>Rhythms</em>, où elle met son corps à l'épreuve jusqu'à la perte de contrôle.</p>
+    <p>Dans les performances précédentes, c'est elle qui agissait sur son corps. Dans Rhythm 0, elle renverse le dispositif&nbsp;: elle ne fait plus rien, et laisse le <strong>public</strong> agir. L'expérience ne porte plus sur ses propres limites, mais sur celles des autres.</p>
+    <div class="carte">
+      <div class="etiquette">Les instructions</div>
+      <p>Un texte posé près de la table annonce la règle&nbsp;: il y a 72 objets que l'on peut utiliser sur elle comme on le souhaite&nbsp;; elle est l'objet&nbsp;; pendant la durée de la performance, elle en prend l'entière <strong>responsabilité</strong>. Autrement dit&nbsp;: tout est permis, et personne ne sera puni.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s1-2">
+    <h3 class="hgg-section-title"><span class="num">2.2</span>Six heures</h3>
+
+    <p>Au début, le public est timide et doux&nbsp;: on lui offre une rose, on l'embrasse, on déplace ses bras. Puis, à mesure que les heures passent, les gestes changent. Des visiteurs découpent ses vêtements avec des lames, lui entaillent la peau, lui plantent des épines de rose dans le ventre. Selon le critique Thomas McEvilley, présent ce soir-là, quelqu'un place le <strong>pistolet chargé</strong> contre sa tête. Une bagarre éclate, et un petit groupe finit par se former pour la protéger.</p>
+    <p>Au bout de six heures exactement, Abramović se remet à bouger et s'avance vers le public. Les visiteurs <strong>s'enfuient</strong>&nbsp;: ils ne supportent pas de faire face à la personne qu'ils traitaient comme une chose. L'artiste en tirera une conclusion glaçante&nbsp;: si on laisse faire le public, il peut vous tuer.</p>
+    <div class="surligne">Le basculement le plus frappant est le dernier&nbsp;: tant qu'elle était immobile, on pouvait tout lui faire&nbsp;; dès qu'elle redevient <strong>une personne qui regarde</strong>, personne ne peut soutenir son regard.</div>
+  </div>
+
+  <div class="hgg-section" id="s1-3">
+    <h3 class="hgg-section-title"><span class="num">2.3</span>Lire l'œuvre</h3>
+
+    <p>Ce qui reste de Rhythm 0, c'est surtout la <strong>table</strong>. Disposés côte à côte sur une nappe blanche, les objets racontent à eux seuls l'éventail des possibles&nbsp;: le soin, le jeu, la séduction, la douleur, la mort.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Les objets du plaisir</h3>
+        <p>Une rose, une plume, du miel, du pain, du vin, du parfum&nbsp;: de quoi caresser, nourrir, célébrer. Le public commence par eux.</p>
+      </div>
+      <div class="carte">
+        <h3>Les objets de la douleur</h3>
+        <p>Des ciseaux, un scalpel, des clous, une barre de métal, un fouet, des chaînes&nbsp;: de quoi blesser. Ils sont sur la même table, à portée de la même main.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le pistolet et la balle</h3>
+        <p>Posés séparément&nbsp;: il faut un geste volontaire pour charger l'arme. Quelqu'un l'a fait. La mort de l'artiste dépendait d'une seule personne du public.</p>
+      </div>
+      <div class="carte">
+        <h3>L'appareil photo</h3>
+        <p>Parmi les objets, un appareil Polaroid&nbsp;: on peut aussi photographier, transformer la personne en image. Le regard est déjà une manière d'agir sur l'autre.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le corps immobile</h3>
+        <p>L'artiste ne résiste pas, ne parle pas, ne réagit pas. En s'interdisant toute réaction, elle supprime ce qui retient habituellement la violence&nbsp;: la réponse de l'autre.</p>
+      </div>
+      <div class="carte">
+        <h3>Le public</h3>
+        <p>C'est lui le vrai sujet de l'œuvre. Des visiteurs d'une galerie d'art, des gens cultivés et ordinaires, et non des criminels.</p>
+      </div>
+    </div>
+    <div class="surligne">La table met sur le même plan la rose et le scalpel. Ce que chacun choisit d'en faire ne dépend que de lui&nbsp;: l'œuvre est un <strong>test de la liberté humaine</strong>.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p2">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">3.</span><span class="hgg-part-title">Quand tout est permis</span></h2>
+
+  <div class="hgg-section" id="s2-1">
+    <h3 class="hgg-section-title"><span class="num">3.1</span>La cruauté ordinaire</h3>
+
+    <p>Les visiteurs de Naples n'étaient ni des soldats ni des bourreaux, mais des amateurs d'art. Il a suffi de quelques heures, d'une autorisation et de l'absence de sanction pour que certains blessent une femme sans défense. Rhythm 0 rejoint ainsi ce que l'histoire du XXe siècle a montré à grande échelle&nbsp;: l'inhumain n'est pas le fait de monstres exceptionnels, mais une possibilité de <strong>gens ordinaires</strong> placés dans certaines conditions.</p>
+    <div class="carte">
+      <div class="etiquette">Un effet de groupe</div>
+      <p>La violence monte progressivement, chacun allant un peu plus loin que le précédent. Dans la foule, la responsabilité se dilue&nbsp;: personne ne se sent seul auteur de ce que le groupe fait. C'est aussi un groupe, pourtant, qui finit par protéger l'artiste.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-2">
+    <h3 class="hgg-section-title"><span class="num">3.2</span>Une personne réduite à un objet</h3>
+
+    <p>«&nbsp;Je suis l'objet&nbsp;»&nbsp;: la consigne fait d'une personne une chose. Or c'est précisément ce que fait toute entreprise de déshumanisation&nbsp;: retirer à l'autre son statut de sujet, de visage qui répond. Tant qu'Abramović reste immobile et muette, on peut lui faire n'importe quoi. Dès qu'elle bouge et regarde, elle redevient quelqu'un, et le public fuit. L'œuvre montre que le respect d'autrui tient à la <strong>reconnaissance</strong> de son visage et de sa capacité à répondre.</p>
+    <div class="surligne">La fuite finale du public est un aveu&nbsp;: on ne peut pas regarder en face, comme une personne, celle qu'on vient de traiter <strong>comme une chose</strong>.</div>
+  </div>
+
+  <div class="hgg-section" id="s2-3">
+    <h3 class="hgg-section-title"><span class="num">3.3</span>Liberté et responsabilité</h3>
+
+    <p>Abramović déclare qu'elle prend toute la responsabilité de ce qui arrivera. Ce faisant, elle en décharge le public, et l'expérience montre ce qui se passe quand on se croit <strong>irresponsable</strong>. Mais certains visiteurs ont choisi de la protéger&nbsp;: la même liberté totale a produit la cruauté chez les uns, le soin chez les autres. Rhythm 0 ne dit pas que l'homme est mauvais&nbsp;; il dit que, sans règle, tout dépend de ce que chacun décide.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le document</h3>
+        <p>Une galerie de Naples, une soirée de 1974, des gestes réels&nbsp;: <strong>la performance témoigne</strong> de ce qu'un public a réellement fait.</p>
+      </div>
+      <div class="carte pleine">
+        <h3>Le symbole</h3>
+        <p>Une personne sans défense et des objets à disposition&nbsp;: <strong>l'œuvre universalise</strong>. Elle devient l'image de tout pouvoir absolu sur autrui.</p>
+      </div>
+    </div>
+    <div class="surligne">L'artiste a mis sa vie entre les mains d'inconnus pour une soirée. Ce qu'elle a montré dépasse l'art&nbsp;: c'est une <strong>expérience sur l'humanité</strong> elle-même.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p3">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">4.</span><span class="hgg-part-title">Pistes pour la dissertation</span></h2>
+
+  <div class="hgg-section" id="s3-1">
+    <h3 class="hgg-section-title">Rhythm 0 face à cinq sujets sur l'Humanité</h3>
+    <p>Cliquez sur un sujet pour l'argument à développer, le détail à citer et sa place dans le plan.</p>
+
+    <div class="sujets">
+      <details class="sujet">
+        <summary><span class="n">01</span><span class="q">L'homme est-il naturellement bon&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>En 1974, à Naples, Marina Abramović met 72 objets à la disposition du public et s'interdit toute réaction pendant six heures. Les premiers gestes sont doux, une rose, un baiser&nbsp;; puis viennent les lames, les épines, le pistolet chargé contre sa tête. Mais un groupe finit aussi par la protéger. La performance ne tranche pas entre Rousseau et Hobbes&nbsp;: elle montre que, sans règle, chacun choisit, et que la cruauté comme le soin sont des possibilités humaines.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> La rose et le scalpel posés sur la même table.</span><span><b>Dans le plan&nbsp;:</b> En partie de dépassement&nbsp;: ni bon ni mauvais par nature, l'homme se révèle dans ses choix.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">02</span><span class="q">Faut-il des lois pour être humain&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>La consigne de Rhythm 0 supprime tout interdit&nbsp;: l'artiste prend sur elle toute la responsabilité. En quelques heures, des visiteurs cultivés découpent ses vêtements, la blessent, lui pointent une arme sur la tête. L'expérience suggère que la loi n'est pas seulement une contrainte extérieure&nbsp;: elle protège l'humanité de chacun contre la tentation de l'abus. Sans règle, la dignité d'autrui ne repose plus que sur la conscience de chacun, qui ne suffit pas toujours.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Les instructions&nbsp;: «&nbsp;je suis l'objet&nbsp;», et la responsabilité que l'artiste prend sur elle.</span><span><b>Dans le plan&nbsp;:</b> En première partie&nbsp;: la loi comme garde-fou de l'humanité.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">03</span><span class="q">Peut-on traiter autrui comme une chose&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>«&nbsp;Je suis l'objet&nbsp;»&nbsp;: Abramović se réduit volontairement à une chose, et le public la traite comme telle. Mais à la fin des six heures, elle se remet à bouger et marche vers les visiteurs, qui s'enfuient. Ils ne supportent pas le regard de la personne qu'ils viennent de blesser. Kant demandait de toujours traiter autrui comme une fin et jamais seulement comme un moyen&nbsp;: la fuite finale montre que chacun le sait, au fond, face à un visage.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> La fuite du public quand l'artiste s'avance vers lui.</span><span><b>Dans le plan&nbsp;:</b> En partie critique&nbsp;: la réification et la force du visage.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">04</span><span class="q">La foule nous rend-elle moins humains&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>La violence de Rhythm 0 ne surgit pas d'un coup&nbsp;: elle monte par étapes, chacun allant un peu plus loin que le précédent. Dans le groupe, la responsabilité se dilue, et personne ne se sent l'auteur de ce qui arrive. Pourtant, c'est aussi un petit groupe qui se forme pour protéger l'artiste. La foule peut entraîner vers le pire, mais elle peut aussi faire naître la solidarité&nbsp;: tout dépend de ceux qui osent briser l'élan collectif.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> La bagarre autour du pistolet et le groupe qui protège l'artiste.</span><span><b>Dans le plan&nbsp;:</b> En deuxième partie&nbsp;: la dilution de la responsabilité dans le groupe.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">05</span><span class="q">L'art peut-il être une expérience sur l'homme&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Rhythm 0 n'est ni tableau ni sculpture&nbsp;: c'est une situation créée par l'artiste, dont le vrai sujet est le public. Abramović met sa propre vie en jeu pour révéler ce que des gens ordinaires font quand tout est permis. L'art devient une expérience presque scientifique sur la nature humaine. Mais il pose aussi une question éthique&nbsp;: jusqu'où un artiste peut-il aller, et peut-il exposer les autres à leur propre violence&nbsp;?</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> La phrase de l'artiste&nbsp;: si on laisse faire le public, il peut vous tuer.</span><span><b>Dans le plan&nbsp;:</b> Sur l'art&nbsp;: la performance comme révélateur de l'humain.</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s3-2">
+    <div class="copie">
+      <div class="carte retenir">
+        <div class="etiquette">Idées à retenir</div>
+        <ol>
+          <li>En 1974, à Naples, Abramović reste <strong>6 heures immobile</strong> avec <strong>72 objets</strong> à la disposition du public.</li>
+          <li>Des <strong>gens ordinaires</strong> glissent progressivement vers la cruauté&nbsp;: l'inhumain est une possibilité de chacun.</li>
+          <li>Le public <strong>fuit</strong> quand l'artiste redevient une personne qui regarde&nbsp;: on ne peut traiter en face un visage comme une chose.</li>
+          <li>La même liberté produit la <strong>cruauté et le soin</strong>&nbsp;: tout dépend de la responsabilité de chacun.</li>
+        </ol>
+      </div>
+      <div class="carte rapprocher">
+        <div class="etiquette">À rapprocher</div>
+        <p><strong>Hannah Arendt, <em>Eichmann à Jérusalem</em> (1963)</strong>&nbsp;: en suivant le procès d'un organisateur de la Shoah, Arendt découvre non un monstre, mais un fonctionnaire ordinaire, et parle de la «&nbsp;banalité du mal&nbsp;». Comme Rhythm 0, son livre montre que le pire peut venir de gens normaux qui cessent de penser à ce qu'ils font. Mais Eichmann obéissait à des ordres et se cachait derrière eux&nbsp;; à Naples, personne n'a rien ordonné&nbsp;: une simple permission a suffi.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /content -->
+</div><!-- /page -->
+
+<footer class="fin">
+  <div class="fin-inner">
+    <a href="art.html">← Toutes les fiches d'art</a>
+    <button type="button" class="bouton-lu" id="boutonLu">J'ai lu cette fiche</button>
+  </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
+
+<script>
+  // « J'ai lu cette fiche », gardé dans le navigateur
+  const CLE = 'ecg-humanite-fiches-lues';
+  const ID = 'art/rhythm-0';
+  const lu = document.getElementById('boutonLu');
+  function lire() { try { return JSON.parse(localStorage.getItem(CLE)) || []; } catch (e) { return []; } }
+  function majLu() {
+    const fait = lire().includes(ID);
+    lu.classList.toggle('fait', fait);
+    lu.textContent = fait ? '✓ Fiche lue' : "J'ai lu cette fiche";
+  }
+  lu.addEventListener('click', () => {
+    let l = lire();
+    l = l.includes(ID) ? l.filter(x => x !== ID) : l.concat(ID);
+    try { localStorage.setItem(CLE, JSON.stringify(l)); } catch (e) {}
+    majLu();
+  });
+  majLu();
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>
