@@ -4,6 +4,216 @@ window.ECG_NOUVEAUTES = [
 "t": "humanite",
 "rubrique": "Humanité",
 "meta": "Art",
+"titre": "La Leçon d'anatomie du docteur Tulp",
+"url": "humanite/art/la-lecon-d-anatomie.html",
+"image": "humanite/art/images/la-lecon-d-anatomie-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T11:14:22+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Vietnam Veterans Memorial",
+"url": "humanite/art/vietnam-veterans-memorial.html",
+"image": "humanite/art/images/vietnam-veterans-memorial-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T11:11:41+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Un enterrement à Ornans",
+"url": "humanite/art/un-enterrement-a-ornans.html",
+"image": "humanite/art/images/un-enterrement-a-ornans-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T11:09:09+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Les photographies du Sonderkommando",
+"url": "humanite/art/photographies-du-sonderkommando.html",
+"image": "humanite/art/images/photographies-du-sonderkommando-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T11:06:40+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Étude d'après le portrait du pape Innocent X",
+"url": "humanite/art/etude-pape-innocent-x.html",
+"image": "humanite/art/images/etude-pape-innocent-x-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T11:03:32+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "La Liberté guidant le peuple",
+"url": "humanite/art/la-liberte-guidant-le-peuple.html",
+"image": "humanite/art/images/la-liberte-guidant-le-peuple-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T11:00:23+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Personnes",
+"url": "humanite/art/personnes.html",
+"image": "humanite/art/images/personnes-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T10:55:15+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "La Création d'Adam",
+"url": "humanite/art/la-creation-d-adam.html",
+"image": "humanite/art/images/la-creation-d-adam-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T10:52:28+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Plus jamais la guerre !",
+"url": "humanite/art/plus-jamais-la-guerre.html",
+"image": "humanite/art/images/plus-jamais-la-guerre-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T10:49:45+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "La Colonne brisée",
+"url": "humanite/art/la-colonne-brisee.html",
+"image": "humanite/art/images/la-colonne-brisee-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T10:46:51+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Portrait d'Edmond de Belamy",
+"url": "humanite/art/portrait-d-edmond-de-belamy.html",
+"image": "humanite/art/images/portrait-d-edmond-de-belamy-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T10:44:16+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Les Glaneuses",
+"url": "humanite/art/les-glaneuses.html",
+"image": "humanite/art/images/les-glaneuses-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T10:33:24+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "La fillette et le vautour",
+"url": "humanite/art/la-fillette-et-le-vautour.html",
+"image": "humanite/art/images/la-fillette-et-le-vautour-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T10:30:49+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "L'Homme de Vitruve",
+"url": "humanite/art/l-homme-de-vitruve.html",
+"image": "humanite/art/images/l-homme-de-vitruve-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T10:27:44+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Rhythm 0",
+"url": "humanite/art/rhythm-0.html",
+"image": "humanite/art/images/rhythm-0-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T10:18:09+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Olympia",
+"url": "humanite/art/olympia.html",
+"image": "humanite/art/images/olympia-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T10:12:44+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "L'Homme qui marche",
+"url": "humanite/art/l-homme-qui-marche.html",
+"image": "humanite/art/images/l-homme-qui-marche-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T10:09:13+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Law of the Journey",
+"url": "humanite/art/law-of-the-journey.html",
+"image": "humanite/art/images/law-of-the-journey-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T09:59:20+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Les Ambassadeurs",
+"url": "humanite/art/les-ambassadeurs.html",
+"image": "humanite/art/images/les-ambassadeurs-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T09:45:01+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Tank Man",
+"url": "humanite/art/tank-man.html",
+"image": "humanite/art/images/tank-man-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T09:39:29+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "D'où venons-nous ? Que sommes-nous ? Où allons-nous ?",
+"url": "humanite/art/d-ou-venons-nous.html",
+"image": "humanite/art/images/d-ou-venons-nous-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T08:43:46+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
 "titre": "La fillette au napalm",
 "url": "humanite/art/fillette-au-napalm.html",
 "image": "humanite/art/images/fillette-au-napalm-oeuvre.webp",
@@ -2013,216 +2223,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "L'Enfant sauvage",
 "url": "humanite/cinema/lenfant-sauvage.html",
 "image": "humanite/cinema/images/lenfant-sauvage-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "Les Habitants",
-"url": "humanite/cinema/les-habitants.html",
-"image": "humanite/cinema/images/les-habitants-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "Metropolis",
-"url": "humanite/cinema/metropolis.html",
-"image": "humanite/cinema/images/metropolis-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "Minority Report",
-"url": "humanite/cinema/minority-report.html",
-"image": "humanite/cinema/images/minority-report-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "2001 : L'Odyssée de l'espace",
-"url": "humanite/cinema/odyssee-de-lespace.html",
-"image": "humanite/cinema/images/odyssee-de-lespace-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "Robocop",
-"url": "humanite/cinema/robocop.html",
-"image": "humanite/cinema/images/robocop-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "S21, la machine de mort khmère rouge",
-"url": "humanite/cinema/s21-la-machine-de-mort-khmere-rouge.html",
-"image": "humanite/cinema/images/s21-la-machine-de-mort-khmere-rouge-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "Seul au monde",
-"url": "humanite/cinema/seul-au-monde.html",
-"image": "humanite/cinema/images/seul-au-monde-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "Les Temps modernes",
-"url": "humanite/cinema/temps-modernes.html",
-"image": "humanite/cinema/images/temps-modernes-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "Valse avec Bachir",
-"url": "humanite/cinema/valse-avec-bachir.html",
-"image": "humanite/cinema/images/valse-avec-bachir-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "1984",
-"url": "humanite/litterature/1984.html",
-"image": "humanite/litterature/images/1984-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "Alceste",
-"url": "humanite/litterature/alceste.html",
-"image": "humanite/litterature/images/alceste-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "Aucun de nous ne reviendra",
-"url": "humanite/litterature/aucun-de-nous-ne-reviendra.html",
-"image": "humanite/litterature/images/aucun-de-nous-ne-reviendra-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "La Belle et la Bête",
-"url": "humanite/litterature/belle-et-la-bete.html",
-"image": "humanite/litterature/images/belle-et-la-bete-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "Condition de l'homme moderne",
-"url": "humanite/litterature/condition-homme-moderne.html",
-"image": "humanite/litterature/images/condition-homme-moderne-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "Très brève relation de la destruction des Indes",
-"url": "humanite/litterature/destruction-des-indes.html",
-"image": "humanite/litterature/images/destruction-des-indes-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "Discours sur l'origine de l'inégalité",
-"url": "humanite/litterature/discours-inegalite.html",
-"image": "humanite/litterature/images/discours-inegalite-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "Les Essais",
-"url": "humanite/litterature/essais-montaigne.html",
-"image": "humanite/litterature/images/essais-montaigne-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "L'existentialisme est un humanisme",
-"url": "humanite/litterature/existentialisme-humanisme.html",
-"image": "humanite/litterature/images/existentialisme-humanisme-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "Fahrenheit 451",
-"url": "humanite/litterature/fahrenheit-451.html",
-"image": "humanite/litterature/images/fahrenheit-451-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "Frankenstein",
-"url": "humanite/litterature/frankenstein.html",
-"image": "humanite/litterature/images/frankenstein-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "L'Homme qui rit",
-"url": "humanite/litterature/homme-qui-rit.html",
-"image": "humanite/litterature/images/homme-qui-rit-couverture.webp",
 "portrait": true,
 "date": "2026-09-11T19:03:33+00:00"
 },
