@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Espagne",
+"titre": "Espagne : la DANA Adam déverse plus de 700 litres d'eau par m² sur le littoral méditerranéen",
+"url": "actualites/es/articles/espagne-dana-adam-inondations-2026.html",
+"image": "actualites/es/images/espagne-dana-adam-inondations-2026.webp",
+"date": "2026-10-20T17:59:25+00:00"
+},
+{
 "t": "humanite",
 "rubrique": "Humanité",
 "meta": "Musique",
@@ -1794,15 +1803,6 @@ window.ECG_NOUVEAUTES = [
 "url": "Culture-Generale/amazon.html",
 "image": "Culture-Generale/images/amazon.webp",
 "date": "2026-09-12T10:40:02+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Équateur",
-"titre": "Équateur : Marco Rubio annonce une nouvelle offensive contre les narcotrafiquants",
-"url": "actualites/es/articles/equateur-rubio-offensive-narcotrafiquants.html",
-"image": "actualites/es/images/equateur-rubio-offensive-narcotrafiquants.webp",
-"date": "2026-09-11T19:03:33+00:00"
 },
 {
 "t": "de",
