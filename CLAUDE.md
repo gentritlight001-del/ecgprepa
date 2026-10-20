@@ -518,7 +518,7 @@ Procédure de A à Z, sans poser de question jusqu'à la mise en ligne :
   WebP dans `images/` de la rubrique et ajoute le visuel et le fond flou. **Pas de légende** sous
   l'image. Sans visuel, le bandeau reste en texte seul.
 - **Fiches d'art** (`humanite/art/`, copiées de `guernica.html`) : le cadre « À rapprocher » met en parallèle
-  **une seule autre œuvre**, pas forcément du site (ex. *Tres de mayo* de Goya pour *Guernica*, *Le Négrier* de
+  **une seule autre œuvre**, de n'importe quel genre (tableau, film, roman, photo…) et pas forcément du site (ex. *Tres de mayo* de Goya pour *Guernica*, *Le Négrier* de
   Turner pour *Le Radeau de la Méduse*) : ressemblances, puis la différence qui éclaire l'œuvre de la fiche.
 
 ### Fiches auteurs (Cours Humanité)
