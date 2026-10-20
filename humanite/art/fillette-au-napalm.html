@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Art — La fillette au napalm</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<style>
+  :root {
+    --c: #4a4e52;          /* couleur de la fiche */
+    --c-soft: #eceef0;
+    --fond: #f5f4f0;
+    --carte: #ffffff;
+    --encre: #18181b;
+    --texte: #3f3f46;
+    --discret: #52525b;
+    --ligne: #e4e2dc;
+    --titre: 'Bricolage Grotesque', system-ui, sans-serif;
+    --corps: 'Newsreader', Georgia, serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--fond); color: var(--encre); font-family: var(--corps); font-size: 1.125rem; line-height: 1.65; min-height: 100vh; }
+  strong { font-weight: 600; color: var(--encre); }
+  a { color: inherit; }
+
+  /* ─── Barre du haut ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 14px 48px; background: var(--carte); border-bottom: 1px solid var(--ligne);
+    position: sticky; top: 0; z-index: 100; font-family: var(--titre);
+  }
+  .nav-logo { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em; }
+  .nav-logo a { color: var(--encre); text-decoration: none; }
+  .breadcrumb { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: calc(100% - 420px); display: flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; overflow: hidden; font-size: 0.85rem; color: var(--discret); }
+  .breadcrumb .current { overflow: hidden; text-overflow: ellipsis; }
+  .breadcrumb a { text-decoration: none; }
+  .breadcrumb a:hover { color: var(--c); }
+  .breadcrumb .sep { color: #a1a1aa; }
+  .breadcrumb .current { color: var(--encre); }
+
+  /* ─── Bandeau ─── */
+  .ch-hero { position: relative; background: var(--c); color: #fff; padding: 56px 48px 84px; overflow: hidden; }
+  .ch-hero-fond { display: none; }
+  .ch-hero-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 40px 56px; }
+  .ch-hero-texte { flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+  .chap-label { display: flex; flex-wrap: wrap; gap: 8px; font-family: var(--titre); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .chap-label span { background: rgba(255,255,255,0.18); padding: 6px 12px; border-radius: 999px; }
+  .ch-hero h1 { font-family: var(--titre); font-weight: 800; font-size: calc(var(--t, 1) * clamp(3rem, 8vw, 6rem)); line-height: 0.95; letter-spacing: -0.02em; }
+  .ch-hero .meta { font-family: var(--titre); font-size: 1.2rem; font-weight: 500; opacity: 0.92; }
+  .ch-hero .pitch { max-width: 620px; font-size: 1.3rem; line-height: 1.5; }
+  .ch-hero-visuel { flex: 0 0 240px; max-width: 100%; aspect-ratio: 2 / 3; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+  .ch-hero-visuel.paysage { flex: 1 1 420px; aspect-ratio: auto; }
+  .ch-hero-visuel.paysage img { height: auto; }
+  .ch-hero-visuel img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  /* ─── L'essentiel ─── */
+  .essentiel {
+    position: relative; max-width: 1040px; margin: -44px auto 0; background: var(--carte); border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(24,24,27,0.10); padding: 28px 32px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 20px 40px;
+  }
+  .essentiel-wrap { padding: 0 48px; }
+  .essentiel-these { flex: 999 1 420px; min-width: 0; }
+  .etiquette { font-family: var(--titre); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c); }
+  .essentiel-these p { margin-top: 6px; font-size: 1.35rem; line-height: 1.4; font-weight: 600; }
+  .notions { flex: 1 1 300px; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+  .notions li { font-family: var(--titre); font-size: 0.92rem; font-weight: 500; padding: 8px 14px; border-radius: 999px; background: var(--c-soft); color: var(--c); }
+
+  /* ─── Corps ─── */
+  .page { max-width: 820px; margin: 0 auto; padding: 64px 48px 72px; }
+
+  .content { display: flex; flex-direction: column; gap: 64px; }
+  .hgg-part { scroll-margin-top: 90px; }
+  .hgg-part-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 20px; }
+  .hgg-part-num { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; color: var(--c); }
+  .hgg-part-title { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; letter-spacing: -0.01em; }
+  .hgg-section { margin-top: 32px; scroll-margin-top: 90px; }
+  .hgg-section-title { font-family: var(--titre); font-weight: 700; font-size: 1.35rem; line-height: 1.25; margin-bottom: 12px; }
+  .hgg-section-title .num { color: var(--c); margin-right: 6px; }
+  .content p { color: var(--texte); margin-bottom: 16px; }
+  .content p:last-child { margin-bottom: 0; }
+
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 8px 0 24px; }
+  .hgg-stat-cell { background: var(--carte); border-radius: 12px; padding: 18px 20px; }
+  .hgg-stat-num { display: block; font-family: var(--titre); font-weight: 800; font-size: 2.2rem; line-height: 1; color: var(--c); }
+  .hgg-stat-label { margin-top: 6px; font-family: var(--titre); font-size: 0.88rem; color: var(--discret); }
+
+  .carte { background: var(--carte); border-radius: 14px; padding: 22px 26px; margin: 20px 0; }
+  .carte h3 { font-family: var(--titre); font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+  .carte p { font-size: 1.05rem; }
+  .carte .etiquette { margin-bottom: 8px; }
+  .surligne { background: var(--c-soft); border-radius: 14px; padding: 20px 24px; margin: 20px 0; color: #2a1d12; font-size: 1.08rem; }
+  .duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 20px 0; }
+  .duo .carte { margin: 0; }
+  .duo .carte.pleine { background: var(--c); }
+  .duo .carte.pleine h3, .duo .carte.pleine p { color: #fff; }
+  .sujets { background: var(--carte); border-radius: 16px; margin-top: 16px; overflow: hidden; }
+  .sujet + .sujet { border-top: 1px solid var(--ligne); }
+  .sujet summary { list-style: none; display: flex; gap: 14px; align-items: baseline; padding: 16px 22px; cursor: pointer; font-family: var(--titre); font-weight: 700; font-size: 1.08rem; line-height: 1.35; }
+  .sujet summary::-webkit-details-marker { display: none; }
+  .sujet summary .n { flex: 0 0 auto; font-weight: 800; color: var(--c); }
+  .sujet summary .q { flex: 1; }
+  .sujet summary::after { content: '+'; flex: 0 0 auto; font-size: 1.3rem; line-height: 1; color: var(--c); transition: transform 0.2s; }
+  .sujet[open] summary::after { transform: rotate(45deg); }
+  .sujet summary:hover .q { color: var(--c); }
+  .sujet-corps { padding: 0 22px 18px 58px; }
+  .sujet-corps p { font-size: 1.02rem; margin-bottom: 10px; }
+  .sujet-corps .reperes { font-family: var(--titre); font-size: 0.88rem; line-height: 1.5; color: var(--discret); display: flex; flex-direction: column; gap: 4px; }
+  .sujet-corps .reperes b { color: var(--c); font-weight: 700; }
+  .sujet a { color: var(--c); text-decoration: underline; text-underline-offset: 2px; }
+
+  .copie { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 8px; }
+  .copie .carte { margin: 0; }
+  .retenir { flex: 1 1 100%; min-width: 0; }
+  .retenir ol { padding-left: 22px; display: flex; flex-direction: column; gap: 10px; font-size: 1.05rem; color: var(--texte); }
+  .rapprocher { flex: 1 1 100%; min-width: 0; background: var(--c) !important; }
+  .rapprocher .etiquette, .rapprocher p, .rapprocher em { color: #fff; }
+  .rapprocher .etiquette { opacity: 0.85; }
+  .rapprocher strong, .rapprocher a, .duo .carte.pleine strong { color: #fff; }
+
+  /* ─── Fin de page ─── */
+  .fin { border-top: 1px solid var(--ligne); background: var(--carte); padding: 24px 48px; }
+  .fin-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; font-family: var(--titre); font-size: 0.95rem; }
+  .fin a { text-decoration: none; padding: 12px 0; }
+  .fin a:hover { color: var(--c); }
+  .bouton-lu { font: 700 0.95rem var(--titre); color: #fff; background: var(--c); border: 1.5px solid var(--c); border-radius: 999px; padding: 12px 22px; min-height: 44px; cursor: pointer; }
+  .bouton-lu.fait { background: transparent; color: var(--c); }
+
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--encre); color: #fff; border: none; border-radius: 50%; font-size: 1.1rem; cursor: pointer; opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 99; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+  }
+  @media (max-width: 760px) {
+    .breadcrumb { display: none; }
+  }
+  @media (max-width: 640px) {
+    nav { padding: 12px 16px; }
+    .breadcrumb { display: none; }
+    .ch-hero { padding: 36px 16px 72px; }
+    .ch-hero-visuel { flex-basis: 160px; }
+    .essentiel-wrap { padding: 0 16px; }
+    .essentiel { padding: 22px 20px; }
+    .page { padding: 40px 16px 56px; }
+    .fin { padding: 20px 16px; }
+    .sujet summary { padding: 14px 16px; }
+    .sujet-corps { padding: 0 16px 16px; }
+    .hgg-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .hgg-stat-cell { padding: 14px 12px; }
+    .hgg-stat-num { font-size: 1.6rem; }
+  }
+
+  @media print {
+    .sujet-corps { display: block !important; }
+    @page { size: A4; margin: 16mm 14mm; }
+    nav, .back-to-top, .fin, .ch-hero-visuel { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: #fff; font-size: 10pt; }
+    .ch-hero { padding: 1rem 1.2rem; }
+    .ch-hero h1 { font-size: 22pt; }
+    .essentiel { margin: 0.6rem 0; box-shadow: none; border: 1pt solid var(--ligne); }
+    .page { display: block; padding: 0.6rem 0; }
+    .content { gap: 1.2rem; }
+    .carte, .hgg-stat-cell { border: 1pt solid var(--ligne); break-inside: avoid; }
+    .surligne, .duo, .sujet { break-inside: avoid; }
+  }
+</style>
+<link rel="stylesheet" href="../../barre-section.css">
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="sn sn-hum">
+  <div class="nav-logo sn-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb sn-fil">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">›</span>
+    <a href="../../humanite.html"><span>L'Humanité</span></a>
+    <span class="sep">›</span>
+    <a href="art.html"><span>Art</span></a>
+    <span class="sep">›</span>
+    <span class="current">La fillette au napalm</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="ch-hero-inner">
+    <div class="ch-hero-texte">
+      <div class="chap-label"><span>Art</span><span>L'Humanité</span></div>
+      <h1 style="--t: 0.72">La fillette au napalm</h1>
+      <p class="meta">Nick Ut (attribution contestée) · 1972 · Photographie de presse</p>
+      <p class="pitch">Le 8 juin 1972, au Sud-Vietnam, une fillette brûlée par le napalm court nue sur une route en hurlant&nbsp;: la photo montre au monde ce que la guerre fait aux enfants.</p>
+    </div>
+    <figure class="ch-hero-visuel paysage"><img src="images/fillette-au-napalm-oeuvre.webp" alt="La fillette au napalm : sur une route, des enfants vietnamiens courent en pleurant vers l'objectif, dont une fillette nue aux bras écartés, suivis de soldats qui marchent devant un nuage de fumée noire" loading="eager" onerror="this.closest('.ch-hero-visuel').remove()"></figure>
+  </div>
+</div>
+
+<!-- L'ESSENTIEL -->
+<div class="essentiel-wrap">
+  <section class="essentiel" aria-label="L'essentiel">
+    <div class="essentiel-these">
+      <div class="etiquette">L'essentiel en une phrase</div>
+      <p>Un enfant qui court, nu et brûlé, suffit à rendre la guerre insupportable&nbsp;: montrer la souffrance, c'est refuser qu'elle reste abstraite, même au prix d'exposer une victime.</p>
+    </div>
+    <ul class="notions" aria-label="Notions du thème">
+      <li>Guerre et enfance</li>
+      <li>Montrer l'horreur</li>
+      <li>Victime et témoin</li>
+    </ul>
+  </section>
+</div>
+
+<div class="page">
+
+<div class="content">
+
+<section class="hgg-part" id="intro">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">1.</span><span class="hgg-part-title">Présentation de l'œuvre</span></h2>
+
+    <p><strong>La fillette au napalm</strong>, de son titre officiel <em>The Terror of War</em> («&nbsp;la terreur de la guerre&nbsp;»), est une photographie de presse prise le <strong>8 juin 1972</strong> près de <strong>Trảng Bàng</strong>, au Sud-Vietnam, pendant la guerre du Vietnam. Elle montre <strong>Phan Thị Kim Phúc</strong>, 9 ans, qui fuit un bombardement au napalm. Diffusée par l'agence Associated Press (AP) sous le nom de <strong>Nick Ut</strong>, elle reçoit le <strong>prix Pulitzer</strong> en 1973. Son auteur est aujourd'hui contesté.</p>
+  <div class="hgg-stats">
+<div class="hgg-stat-cell"><span class="hgg-stat-num">9 ans</span><div class="hgg-stat-label">Âge de Kim Phúc le jour du bombardement</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">30-35&nbsp;%</span><div class="hgg-stat-label">De son corps brûlé au troisième degré</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">1973</span><div class="hgg-stat-label">Prix Pulitzer et World Press Photo de l'année</div></div>
+</div>
+    <p>Des enfants courent vers l'objectif, la bouche ouverte, tandis que derrière eux des soldats marchent tranquillement devant une fumée noire. Au centre, une fillette nue, les bras écartés, la peau brûlée. L'image est devenue l'une des plus célèbres du XXe siècle. Elle pose une question centrale pour le thème de l'Humanité&nbsp;: peut-on, doit-on tout montrer de la souffrance humaine&nbsp;?</p>
+</section>
+
+<section class="hgg-part" id="p1">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">2.</span><span class="hgg-part-title">Genèse et description</span></h2>
+
+  <div class="hgg-section" id="s1-1">
+    <h3 class="hgg-section-title"><span class="num">2.1</span>Une erreur de bombardement</h3>
+
+    <p>En juin 1972, les troupes nord-vietnamiennes affrontent l'armée sud-vietnamienne, soutenue par les États-Unis, autour du village de Trảng Bàng, au nord-ouest de Saïgon. Des civils se sont réfugiés dans un temple caodaïste. Quand ils en sortent avec des soldats sud-vietnamiens, un avion de l'aviation <strong>sud-vietnamienne</strong> les prend pour l'ennemi et largue du <strong>napalm</strong>, une essence gélifiée qui colle à la peau en brûlant.</p>
+    <p>Deux cousins de Kim Phúc sont tués. La fillette, dont les vêtements ont pris feu, les arrache et court sur la route en criant que ça brûle. Brûlée au troisième degré sur 30 à 35&nbsp;% du corps, elle est conduite à l'hôpital, où elle survit contre toute attente&nbsp;; il lui faudra ensuite des années de soins et de nombreuses opérations.</p>
+    <div class="surligne">Un piège fréquent&nbsp;: ce ne sont pas des avions américains qui ont largué ce napalm, mais un avion <strong>sud-vietnamien</strong>, allié des États-Unis, par erreur. La photo n'en est pas moins devenue l'image de la guerre américaine au Vietnam.</div>
+  </div>
+
+  <div class="hgg-section" id="s1-2">
+    <h3 class="hgg-section-title"><span class="num">2.2</span>Publier ou non</h3>
+
+    <p>À l'agence AP de Saïgon, la photo fait débat&nbsp;: une règle tacite interdit de publier la nudité frontale d'un enfant. Le chef du service photo, <strong>Horst Faas</strong>, décide de la transmettre malgré tout, jugeant que la vérité de la guerre l'emporte. Elle paraît dans la presse du monde entier. Le président Richard Nixon, enregistré dans son bureau, se demande si elle n'a pas été truquée. En 1973, elle reçoit le <strong>prix Pulitzer</strong> de la photographie d'actualité et le titre de <strong>World Press Photo</strong> de l'année.</p>
+    <div class="carte">
+      <div class="etiquette">Qui a pris la photo&nbsp;?</div>
+      <p>Pendant cinquante ans, elle a été attribuée à <strong>Nick Ut</strong> (Huỳnh Công Út), photographe de l'AP de 21 ans. En 2025, le documentaire <em>The Stringer</em> affirme qu'elle serait de <strong>Nguyễn Thành Nghệ</strong>, un photographe pigiste. World Press Photo a <strong>suspendu</strong> l'attribution à Nick Ut, jugeant le doute trop important&nbsp;; l'AP, après sa propre enquête, a maintenu son crédit, en admettant des questions sans réponse. Nick Ut conteste le film en justice, et Kim Phúc le soutient.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s1-3">
+    <h3 class="hgg-section-title"><span class="num">2.3</span>Lire la photographie</h3>
+
+    <p>La photo oppose deux rythmes. Au premier plan, des <strong>enfants qui courent</strong> et hurlent, en désordre. Derrière eux, des <strong>soldats qui marchent</strong>, l'arme à la main, sans hâte. Entre les deux, la route, qui mène droit vers le spectateur.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Kim Phúc</h3>
+        <p>Au centre, nue, les bras écartés pour que rien ne touche ses brûlures, la bouche ouverte sur un cri. Elle n'est pas couchée en victime&nbsp;: elle court vers nous.</p>
+      </div>
+      <div class="carte">
+        <h3>Le garçon qui hurle</h3>
+        <p>À gauche, au premier plan, son frère, le visage déformé par les pleurs. Son cri, plus proche de l'objectif, dit la terreur de tous.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>Les enfants qui se tiennent</h3>
+        <p>À droite, un garçon et une fille courent main dans la main. Au milieu de la panique, un geste de protection entre enfants.</p>
+      </div>
+      <div class="carte">
+        <h3>Les soldats</h3>
+        <p>Casqués, armés, ils avancent au pas. Leur calme contraste avec la course des enfants&nbsp;: pour eux, c'est un jour de guerre comme un autre.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>La fumée noire</h3>
+        <p>Elle bouche tout l'horizon&nbsp;: c'est le napalm qui brûle encore le village. Les enfants fuient littéralement l'enfer qui se trouve dans leur dos.</p>
+      </div>
+      <div class="carte">
+        <h3>Le photographe à droite</h3>
+        <p>Un homme casqué manipule son appareil. La presse est sur place&nbsp;: l'horreur se déroule sous les objectifs, et c'est ainsi qu'elle parvient au monde.</p>
+      </div>
+    </div>
+    <div class="surligne">La photographie ne montre ni l'avion, ni le pilote, ni l'ennemi. Comme dans <a href="guernica.html" style="color:inherit;text-decoration:underline;text-underline-offset:2px"><em>Guernica</em></a>, la violence vient du ciel, et seules ses victimes sont visibles&nbsp;: <strong>la guerre se réduit à ce qu'elle fait aux enfants</strong>.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p2">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">3.</span><span class="hgg-part-title">Que peut une photo contre la guerre&nbsp;?</span></h2>
+
+  <div class="hgg-section" id="s2-1">
+    <h3 class="hgg-section-title"><span class="num">3.1</span>L'enfant, victime absolue</h3>
+
+    <p>Un soldat peut être vu comme un combattant, un ennemi, un coupable. Un enfant de 9 ans, non. En montrant une fillette brûlée, la photo ôte à la guerre toutes ses justifications&nbsp;: stratégie, idéologie, camp du bien. Il ne reste que <strong>la souffrance d'un être innocent</strong>, que nul ne peut regarder sans se sentir concerné. L'enfant devient la mesure de l'humanité d'une guerre, ou de son inhumanité.</p>
+    <div class="carte">
+      <div class="etiquette">Une photo n'a pas arrêté la guerre</div>
+      <p>On dit souvent que cette image a mis fin à la guerre du Vietnam. C'est faux&nbsp;: les troupes américaines se retiraient déjà, les accords de Paris sont signés en janvier 1973, et la guerre continue entre Vietnamiens jusqu'à la chute de Saïgon en <strong>1975</strong>. La photo a renforcé l'opposition à la guerre&nbsp;; elle ne l'a pas terminée.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-2">
+    <h3 class="hgg-section-title"><span class="num">3.2</span>Montrer la nudité, montrer la vérité</h3>
+
+    <p>Publier la photo, c'était exposer au monde entier le corps nu d'une enfant blessée, sans qu'elle ait pu y consentir. Ne pas la publier, c'était cacher la réalité du napalm. Les éditeurs de 1972 ont choisi la <strong>vérité</strong> contre la pudeur. Le débat n'est pas clos&nbsp;: en 2016, Facebook a supprimé la photo pour nudité, avant de la rétablir face aux protestations, notamment en Norvège.</p>
+    <div class="surligne">La photo pose le dilemme de toute image de souffrance&nbsp;: la <strong>dignité de la victime</strong> exige la retenue, la <strong>dignité de toutes les victimes futures</strong> exige peut-être qu'on montre.</div>
+  </div>
+
+  <div class="hgg-section" id="s2-3">
+    <h3 class="hgg-section-title"><span class="num">3.3</span>De la victime à la témoin</h3>
+
+    <p>Longtemps, Kim Phúc a voulu échapper à cette image qui la réduisait à son pire jour, et dont le régime vietnamien se servait pour sa propagande. Réfugiée au Canada en 1992, elle décide d'en faire un instrument de paix&nbsp;: nommée ambassadrice de bonne volonté de l'UNESCO en 1997, elle crée une fondation pour les enfants victimes de la guerre et dit avoir pardonné. La victime photographiée est devenue un <strong>sujet</strong> qui parle.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le document</h3>
+        <p>Une date, un lieu, une enfant nommée&nbsp;: <strong>la photo témoigne</strong> d'un bombardement précis, le 8 juin 1972.</p>
+      </div>
+      <div class="carte pleine">
+        <h3>Le symbole</h3>
+        <p>Un enfant qui fuit le feu&nbsp;: <strong>la photo universalise</strong>. Elle devient l'image de tous les enfants pris dans les guerres.</p>
+      </div>
+    </div>
+    <div class="surligne">L'histoire de l'image a même rattrapé son auteur&nbsp;: cinquante ans après, on ne sait plus avec certitude qui l'a prise. Mais on sait qui y figure, et c'est elle qui lui a donné son sens.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p3">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">4.</span><span class="hgg-part-title">Pistes pour la dissertation</span></h2>
+
+  <div class="hgg-section" id="s3-1">
+    <h3 class="hgg-section-title">La fillette au napalm face à cinq sujets sur l'Humanité</h3>
+    <p>Cliquez sur un sujet pour l'argument à développer, le détail à citer et sa place dans le plan.</p>
+
+    <div class="sujets">
+      <details class="sujet">
+        <summary><span class="n">01</span><span class="q">Faut-il tout montrer de la souffrance humaine&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>En 1972, à l'agence AP de Saïgon, une règle interdit de publier la nudité frontale d'un enfant. Horst Faas passe outre&nbsp;: la vérité du napalm l'emporte sur la pudeur. Sans cette décision, le monde n'aurait pas vu ce que la guerre fait à une fillette de 9 ans. Mais Kim Phúc n'a jamais pu consentir à cette exposition, et a longtemps souffert d'être réduite à son pire jour. Montrer est parfois nécessaire&nbsp;; cela ne dispense jamais de penser à la personne montrée.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Le débat à l'AP sur la nudité, puis la suppression par Facebook en 2016.</span><span><b>Dans le plan&nbsp;:</b> En partie critique&nbsp;: la tension entre la vérité due à tous et la dignité due à la victime.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">02</span><span class="q">Une image peut-elle changer l'histoire&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>On répète que cette photo a mis fin à la guerre du Vietnam. Les faits disent autre chose&nbsp;: les troupes américaines partaient déjà, les accords de Paris datent de janvier 1973, et les combats durent jusqu'en 1975. La photo n'a pas arrêté la guerre, mais elle a changé la manière dont on la voyait&nbsp;: elle a rendu impossible de la penser comme une affaire abstraite de stratégie. Une image agit sur les consciences plus que sur les événements.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Nixon qui se demande, sur ses enregistrements, si la photo a été truquée.</span><span><b>Dans le plan&nbsp;:</b> En partie de nuance&nbsp;: le pouvoir réel mais limité des images.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">03</span><span class="q">L'enfant est-il la mesure de notre humanité&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Sur la route de Trảng Bàng, ce sont des enfants qui courent et hurlent, tandis que des soldats marchent derrière eux sans se presser. L'enfant ne combat pas, ne choisit pas de camp&nbsp;: sa souffrance ôte à la guerre toutes ses justifications. Une société, une armée, une cause se jugent à la manière dont elles traitent les plus faibles. La photo fait de Kim Phúc le critère qui condamne la guerre.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Le contraste entre les enfants qui courent et les soldats qui marchent.</span><span><b>Dans le plan&nbsp;:</b> En première partie&nbsp;: la vulnérabilité de l'enfant comme critère de l'inhumain.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">04</span><span class="q">Pardonner, est-ce le propre de l'homme&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Brûlée sur un tiers du corps, opérée de nombreuses fois, Kim Phúc aurait pu s'enfermer dans la haine. Réfugiée au Canada en 1992, elle choisit de faire de sa photo un message de paix, devient ambassadrice de l'UNESCO en 1997 et dit avoir pardonné. Le pardon ne nie pas le mal subi&nbsp;: il refuse qu'il ait le dernier mot. La victime se relève en sujet libre, capable de rompre le cycle de la violence.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Le parcours de Kim Phúc, de la route de Trảng Bàng à l'UNESCO.</span><span><b>Dans le plan&nbsp;:</b> En partie de dépassement&nbsp;: le pardon comme réponse proprement humaine à l'inhumain.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">05</span><span class="q">À qui appartient l'image de la souffrance&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>La photo a valu un prix Pulitzer à Nick Ut, a servi la propagande du régime vietnamien, a été censurée par Facebook, et son auteur est contesté depuis 2025, au point que World Press Photo a suspendu son attribution. Au milieu de ces disputes, une seule personne est certaine&nbsp;: Kim Phúc. Elle a fini par reprendre possession de son image en en faisant un témoignage. L'image de la souffrance devrait d'abord appartenir à celle qui l'a vécue.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> La suspension de l'attribution par World Press Photo en 2025, et la parole de Kim Phúc.</span><span><b>Dans le plan&nbsp;:</b> Sur l'éthique de l'image&nbsp;: rendre la victime maîtresse de son histoire.</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s3-2">
+    <div class="copie">
+      <div class="carte retenir">
+        <div class="etiquette">Idées à retenir</div>
+        <ol>
+          <li>Le napalm est largué par erreur par un avion <strong>sud-vietnamien</strong>&nbsp;: la photo n'accuse pas un camp, elle montre ce que la guerre fait aux enfants.</li>
+          <li>Publier la photo, c'est choisir <strong>la vérité contre la pudeur</strong>, au prix d'exposer une enfant qui n'a pas pu consentir.</li>
+          <li>La photo <strong>n'a pas arrêté la guerre</strong> (qui dure jusqu'en 1975)&nbsp;: elle a changé le regard porté sur elle.</li>
+          <li>Kim Phúc passe de <strong>victime à témoin</strong>&nbsp;: réfugiée au Canada, ambassadrice de l'UNESCO, elle fait de son image un message de paix.</li>
+        </ol>
+      </div>
+      <div class="carte rapprocher">
+        <div class="etiquette">À rapprocher</div>
+        <p><strong>Isao Takahata, <em>Le Tombeau des lucioles</em> (1988)</strong>&nbsp;: ce film d'animation japonais suit un adolescent et sa petite sœur après le bombardement de leur ville, Kobe, par des bombes incendiaires américaines en 1945. Comme la photo du Vietnam, il montre la guerre par les yeux d'enfants qui fuient le feu venu du ciel, et dont personne ne prend soin. Mais là où la photo fige un instant de terreur, le film prend le temps de raconter la lente agonie qui suit, loin des bombes&nbsp;: l'abandon, la faim, l'indifférence des adultes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /content -->
+</div><!-- /page -->
+
+<footer class="fin">
+  <div class="fin-inner">
+    <a href="art.html">← Toutes les fiches d'art</a>
+    <button type="button" class="bouton-lu" id="boutonLu">J'ai lu cette fiche</button>
+  </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
+
+<script>
+  // « J'ai lu cette fiche », gardé dans le navigateur
+  const CLE = 'ecg-humanite-fiches-lues';
+  const ID = 'art/fillette-au-napalm';
+  const lu = document.getElementById('boutonLu');
+  function lire() { try { return JSON.parse(localStorage.getItem(CLE)) || []; } catch (e) { return []; } }
+  function majLu() {
+    const fait = lire().includes(ID);
+    lu.classList.toggle('fait', fait);
+    lu.textContent = fait ? '✓ Fiche lue' : "J'ai lu cette fiche";
+  }
+  lu.addEventListener('click', () => {
+    let l = lire();
+    l = l.includes(ID) ? l.filter(x => x !== ID) : l.concat(ID);
+    try { localStorage.setItem(CLE, JSON.stringify(l)); } catch (e) {}
+    majLu();
+  });
+  majLu();
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>
