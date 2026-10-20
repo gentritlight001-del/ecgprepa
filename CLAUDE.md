@@ -381,7 +381,7 @@ page pays ou région :
   04 entrer par une notion, 05 dernières fiches.
 - Rien à y mettre à jour quand une fiche s'ajoute : le script de la page lit les tableaux `OEUVRES` des index
   Littérature, Cinéma et Art, la frise de `fiches-auteurs.html` et `nouveautes.js`. Seuls restent écrits à la
-  main : la carte du cours (nouveau cours) et les totaux « 29 œuvres d'art » et « 6 musiques ».
+  main : la carte du cours (nouveau cours) et les totaux « 29 œuvres d'art » et « 16 musiques ».
 
 ### Index de la culture générale (`culture-generale.html`)
 
