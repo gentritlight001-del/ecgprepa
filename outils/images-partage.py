@@ -12,8 +12,9 @@ relancer le script après chaque nouvel article ou nouveau cours.
                                                           # déjà une (adresse changée : ?v=<date et heure>)
 
 Articles d'actualité au gabarit « a-page » (maquette B) : photo de une en plein cadre,
-assombrie à gauche, pastille rouge du pays, titre blanc, filet rouge en bas. Autres pages :
-aplat de couleur et titre.
+assombrie à gauche, pastille rouge du pays, titre blanc, filet rouge en bas. Fiches d'œuvres de
+l'Humanité avec visuel : visuel flou en fond, visuel net à droite, pastille et filet à la couleur
+de la fiche. Autres pages : aplat de couleur et titre.
 
 Prérequis : playwright (voir newsletter/outils/installer.sh). Le chemin de Chromium
 peut être donné avec la variable CHROMIUM_PATH.
@@ -73,6 +74,51 @@ body{width:1200px;height:630px;overflow:hidden;position:relative;background:#0b0
 <img id="img" alt=""><div id="voile"></div>
 <div id="c"><div id="logo">ECG Prépa</div><div><span id="label"></span><div id="title"></div></div>
 <div id="url">ecg-prepa.fr · Actualité</div></div><div id="filet"></div></body></html>"""
+
+
+# Fiches d'œuvres de l'Humanité (cinéma, littérature, art, musique) qui ont un visuel (affiche,
+# couverture, œuvre, pochette) : même esprit que la maquette B des articles. Le visuel flou et
+# assombri remplit le fond, le visuel net est posé à droite ; à gauche le logo, la pastille de la
+# rubrique, le titre blanc en Fraunces et la ligne « auteur · année ». Pastille et filet à la
+# couleur de la fiche (--c dans son :root).
+GABARIT_VISUEL = """<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<link rel="stylesheet" href="file://%(racine)sfonts/fonts.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1200px;height:630px;overflow:hidden;position:relative;background:#0b0b0c}
+#fond{position:absolute;inset:-60px;width:calc(100%% + 120px);height:calc(100%% + 120px);object-fit:cover;filter:blur(34px) brightness(.55) saturate(1.1)}
+#voile{position:absolute;inset:0;background:linear-gradient(90deg,rgba(11,11,12,.9) 0%%,rgba(11,11,12,.7) 50%%,rgba(11,11,12,.25) 100%%)}
+#vis{position:absolute;right:72px;top:50%%;transform:translateY(-50%%);max-width:380px;max-height:470px;border-radius:10px;box-shadow:0 24px 60px rgba(0,0,0,.55)}
+#c{position:absolute;top:0;bottom:0;left:0;width:700px;padding:56px 64px;display:flex;flex-direction:column;justify-content:space-between}
+#logo{font-family:'Playfair Display',serif;font-weight:700;font-size:32px;color:#fff}
+#label{display:inline-block;margin-bottom:20px;padding:8px 14px;color:#fff;font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:18px;letter-spacing:.14em;text-transform:uppercase}
+#title{font-family:'Fraunces',serif;font-weight:600;line-height:1.08;color:#fff;text-shadow:0 2px 20px rgba(0,0,0,.4);display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden}
+#meta{margin-top:18px;font-family:'IBM Plex Mono',monospace;font-size:20px;letter-spacing:.06em;color:#e4e4dc}
+#url{font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.16em;text-transform:uppercase;color:#d6d6d0}
+#filet{position:absolute;left:0;right:0;bottom:0;height:8px}
+</style></head><body>
+<img id="fond" alt=""><div id="voile"></div><img id="vis" alt="">
+<div id="c"><div id="logo">ECG Prépa</div><div><span id="label"></span><div id="title"></div><div id="meta"></div></div>
+<div id="url">ecg-prepa.fr · L'Humanité</div></div><div id="filet"></div></body></html>"""
+
+RUBRIQUES = {'cinema': 'Cinéma', 'litterature': 'Littérature', 'art': 'Art', 'musique': 'Musique'}
+
+
+def visuel_de(rel, contenu):
+    """Fiche d'œuvre de l'Humanité avec visuel : (rubrique, image, couleur, « auteur · année »), sinon None."""
+    p = rel.split('/')
+    if len(p) != 3 or p[0] != 'humanite' or p[1] not in RUBRIQUES:
+        return None
+    img = re.search(r'<figure class="ch-hero-visuel[^"]*"[^>]*>\s*<img src="([^"]+)"', contenu)
+    if not img:
+        return None
+    chemin = os.path.normpath(os.path.join(RACINE, os.path.dirname(rel), img.group(1)))
+    if not os.path.exists(chemin):
+        return None
+    c = re.search(r'--c:\s*(#[0-9a-fA-F]{3,8})', contenu)
+    meta = re.search(r'<p class="meta">([^<]*)</p>', contenu)
+    m = html.unescape(meta.group(1)).split(' · ')[:2] if meta else []
+    return RUBRIQUES[p[1]], chemin, (c.group(1) if c else '#a83a2e'), ' · '.join(m)
 
 
 def photo_de(rel, contenu):
@@ -177,6 +223,8 @@ def main():
     gab.write(GABARIT % {'racine': RACINE}); gab.close()
     gab_photo = tempfile.NamedTemporaryFile('w', suffix='.html', delete=False, encoding='utf-8')
     gab_photo.write(GABARIT_PHOTO % {'racine': RACINE}); gab_photo.close()
+    gab_visuel = tempfile.NamedTemporaryFile('w', suffix='.html', delete=False, encoding='utf-8')
+    gab_visuel.write(GABARIT_VISUEL % {'racine': RACINE}); gab_visuel.close()
     with sync_playwright() as pw:
         chemin = os.environ.get('CHROMIUM_PATH') or ('/opt/pw-browsers/chromium' if os.path.exists('/opt/pw-browsers/chromium') else None)
         nav = pw.chromium.launch(executable_path=chemin) if chemin else pw.chromium.launch()
@@ -186,11 +234,27 @@ def main():
         page_photo = nav.new_page(viewport={'width': 1200, 'height': 630})
         page_photo.goto('file://' + gab_photo.name)
         page_photo.evaluate('document.fonts.ready')
+        page_visuel = nav.new_page(viewport={'width': 1200, 'height': 630})
+        page_visuel.goto('file://' + gab_visuel.name)
+        page_visuel.evaluate('document.fonts.ready')
         for rel, contenu, (cle, lab, titre, fond, fg, accent, logo) in travail:
             sortie = 'partage/' + cle + '.jpg'
             os.makedirs(os.path.dirname(RACINE + sortie), exist_ok=True)
             photo = photo_de(rel, contenu)
-            if photo:
+            visuel = None if photo else visuel_de(rel, contenu)
+            if visuel:
+                rub, img, couleur, meta = visuel
+                taille = 64 if len(titre) <= 30 else 56 if len(titre) <= 50 else 48 if len(titre) <= 75 else 42
+                page_visuel.evaluate("""([rub, titre, img, taille, couleur, meta]) => new Promise(ok => {
+                  const l = document.getElementById('label'); l.textContent = rub; l.style.background = couleur;
+                  document.getElementById('filet').style.background = couleur;
+                  const t = document.getElementById('title'); t.textContent = titre; t.style.fontSize = taille + 'px';
+                  document.getElementById('meta').textContent = meta;
+                  let n = 0; const fini = () => { if (++n === 2) ok(); };
+                  for (const id of ['fond', 'vis']) { const i = document.getElementById(id); i.onload = i.onerror = fini; i.src = img; } })""",
+                                     [rub, titre, 'file://' + img, taille, couleur, meta])
+                page_visuel.screenshot(path=RACINE + sortie, type='jpeg', quality=82)
+            elif photo:
                 pays, img, accent = photo
                 taille = 60 if len(titre) <= 50 else 54 if len(titre) <= 75 else 46 if len(titre) <= 100 else 40
                 page_photo.evaluate("""([lab, titre, img, taille, accent]) => new Promise(ok => {
@@ -222,6 +286,7 @@ def main():
         nav.close()
     os.unlink(gab.name)
     os.unlink(gab_photo.name)
+    os.unlink(gab_visuel.name)
     print('%d image(s) de partage créée(s) dans partage/.' % len(travail))
 
 

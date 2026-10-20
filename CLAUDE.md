@@ -69,7 +69,10 @@ directement après chaque modification, sans attendre un nouveau « mets en lign
    Les articles au gabarit `a-page` ont leur propre modèle, la **maquette B** choisie par le
    propriétaire : photo de une en plein cadre, assombrie à gauche, logo « ECG Prépa » en haut, pastille
    du pays (`a-tag t0`), titre blanc en Fraunces (celui du `<title>`), « ecg-prepa.fr · Actualité »
-   en bas et filet ; pastille et filet à la couleur d'accent de l'article (`--accent`). Les autres pages gardent un aplat de couleur. Regarder l'image produite : si le
+   en bas et filet ; pastille et filet à la couleur d'accent de l'article (`--accent`). Les fiches d'œuvres de
+   l'Humanité qui ont un visuel (`ch-hero-visuel` : affiche, couverture, œuvre, pochette) suivent le même esprit :
+   visuel flou et assombri en fond, visuel net à droite, pastille de la rubrique, titre, « auteur · année » (`.meta`),
+   « ecg-prepa.fr · L'Humanité », pastille et filet à la couleur de la fiche (`--c`). Les autres pages gardent un aplat de couleur. Regarder l'image produite : si le
    visage ou le sujet de la photo passe sous le titre, le signaler au propriétaire.
    Pour **refaire** l'image d'une page qui en a déjà une (photo ou titre changés) :
    `python3 outils/images-partage.py --refaire <page>` (l'adresse prend `?v=<date et heure>`, sinon
