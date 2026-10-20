@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Art — Personnes</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<style>
+  :root {
+    --c: #5e7f63;          /* couleur de la fiche */
+    --c-soft: #e9f0ea;
+    --fond: #f5f4f0;
+    --carte: #ffffff;
+    --encre: #18181b;
+    --texte: #3f3f46;
+    --discret: #52525b;
+    --ligne: #e4e2dc;
+    --titre: 'Bricolage Grotesque', system-ui, sans-serif;
+    --corps: 'Newsreader', Georgia, serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--fond); color: var(--encre); font-family: var(--corps); font-size: 1.125rem; line-height: 1.65; min-height: 100vh; }
+  strong { font-weight: 600; color: var(--encre); }
+  a { color: inherit; }
+
+  /* ─── Barre du haut ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 14px 48px; background: var(--carte); border-bottom: 1px solid var(--ligne);
+    position: sticky; top: 0; z-index: 100; font-family: var(--titre);
+  }
+  .nav-logo { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em; }
+  .nav-logo a { color: var(--encre); text-decoration: none; }
+  .breadcrumb { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: calc(100% - 420px); display: flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; overflow: hidden; font-size: 0.85rem; color: var(--discret); }
+  .breadcrumb .current { overflow: hidden; text-overflow: ellipsis; }
+  .breadcrumb a { text-decoration: none; }
+  .breadcrumb a:hover { color: var(--c); }
+  .breadcrumb .sep { color: #a1a1aa; }
+  .breadcrumb .current { color: var(--encre); }
+
+  /* ─── Bandeau ─── */
+  .ch-hero { position: relative; background: var(--c); color: #fff; padding: 56px 48px 84px; overflow: hidden; }
+  .ch-hero-fond { display: none; }
+  .ch-hero-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 40px 56px; }
+  .ch-hero-texte { flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+  .chap-label { display: flex; flex-wrap: wrap; gap: 8px; font-family: var(--titre); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .chap-label span { background: rgba(255,255,255,0.18); padding: 6px 12px; border-radius: 999px; }
+  .ch-hero h1 { font-family: var(--titre); font-weight: 800; font-size: calc(var(--t, 1) * clamp(3rem, 8vw, 6rem)); line-height: 0.95; letter-spacing: -0.02em; }
+  .ch-hero .meta { font-family: var(--titre); font-size: 1.2rem; font-weight: 500; opacity: 0.92; }
+  .ch-hero .pitch { max-width: 620px; font-size: 1.3rem; line-height: 1.5; }
+  .ch-hero-visuel { flex: 0 0 240px; max-width: 100%; aspect-ratio: 2 / 3; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+  .ch-hero-visuel.paysage { flex: 1 1 420px; aspect-ratio: auto; }
+  .ch-hero-visuel.paysage img { height: auto; }
+  .ch-hero-visuel img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  /* ─── L'essentiel ─── */
+  .essentiel {
+    position: relative; max-width: 1040px; margin: -44px auto 0; background: var(--carte); border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(24,24,27,0.10); padding: 28px 32px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 20px 40px;
+  }
+  .essentiel-wrap { padding: 0 48px; }
+  .essentiel-these { flex: 999 1 420px; min-width: 0; }
+  .etiquette { font-family: var(--titre); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c); }
+  .essentiel-these p { margin-top: 6px; font-size: 1.35rem; line-height: 1.4; font-weight: 600; }
+  .notions { flex: 1 1 300px; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+  .notions li { font-family: var(--titre); font-size: 0.92rem; font-weight: 500; padding: 8px 14px; border-radius: 999px; background: var(--c-soft); color: var(--c); }
+
+  /* ─── Corps ─── */
+  .page { max-width: 820px; margin: 0 auto; padding: 64px 48px 72px; }
+
+  .content { display: flex; flex-direction: column; gap: 64px; }
+  .hgg-part { scroll-margin-top: 90px; }
+  .hgg-part-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 20px; }
+  .hgg-part-num { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; color: var(--c); }
+  .hgg-part-title { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; letter-spacing: -0.01em; }
+  .hgg-section { margin-top: 32px; scroll-margin-top: 90px; }
+  .hgg-section-title { font-family: var(--titre); font-weight: 700; font-size: 1.35rem; line-height: 1.25; margin-bottom: 12px; }
+  .hgg-section-title .num { color: var(--c); margin-right: 6px; }
+  .content p { color: var(--texte); margin-bottom: 16px; }
+  .content p:last-child { margin-bottom: 0; }
+
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 8px 0 24px; }
+  .hgg-stat-cell { background: var(--carte); border-radius: 12px; padding: 18px 20px; }
+  .hgg-stat-num { display: block; font-family: var(--titre); font-weight: 800; font-size: 2.2rem; line-height: 1; color: var(--c); }
+  .hgg-stat-label { margin-top: 6px; font-family: var(--titre); font-size: 0.88rem; color: var(--discret); }
+
+  .carte { background: var(--carte); border-radius: 14px; padding: 22px 26px; margin: 20px 0; }
+  .carte h3 { font-family: var(--titre); font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+  .carte p { font-size: 1.05rem; }
+  .carte .etiquette { margin-bottom: 8px; }
+  .surligne { background: var(--c-soft); border-radius: 14px; padding: 20px 24px; margin: 20px 0; color: #2a1d12; font-size: 1.08rem; }
+  .duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 20px 0; }
+  .duo .carte { margin: 0; }
+  .duo .carte.pleine { background: var(--c); }
+  .duo .carte.pleine h3, .duo .carte.pleine p { color: #fff; }
+  .sujets { background: var(--carte); border-radius: 16px; margin-top: 16px; overflow: hidden; }
+  .sujet + .sujet { border-top: 1px solid var(--ligne); }
+  .sujet summary { list-style: none; display: flex; gap: 14px; align-items: baseline; padding: 16px 22px; cursor: pointer; font-family: var(--titre); font-weight: 700; font-size: 1.08rem; line-height: 1.35; }
+  .sujet summary::-webkit-details-marker { display: none; }
+  .sujet summary .n { flex: 0 0 auto; font-weight: 800; color: var(--c); }
+  .sujet summary .q { flex: 1; }
+  .sujet summary::after { content: '+'; flex: 0 0 auto; font-size: 1.3rem; line-height: 1; color: var(--c); transition: transform 0.2s; }
+  .sujet[open] summary::after { transform: rotate(45deg); }
+  .sujet summary:hover .q { color: var(--c); }
+  .sujet-corps { padding: 0 22px 18px 58px; }
+  .sujet-corps p { font-size: 1.02rem; margin-bottom: 10px; }
+  .sujet-corps .reperes { font-family: var(--titre); font-size: 0.88rem; line-height: 1.5; color: var(--discret); display: flex; flex-direction: column; gap: 4px; }
+  .sujet-corps .reperes b { color: var(--c); font-weight: 700; }
+  .sujet a { color: var(--c); text-decoration: underline; text-underline-offset: 2px; }
+
+  .copie { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 8px; }
+  .copie .carte { margin: 0; }
+  .retenir { flex: 1 1 100%; min-width: 0; }
+  .retenir ol { padding-left: 22px; display: flex; flex-direction: column; gap: 10px; font-size: 1.05rem; color: var(--texte); }
+  .rapprocher { flex: 1 1 100%; min-width: 0; background: var(--c) !important; }
+  .rapprocher .etiquette, .rapprocher p, .rapprocher em { color: #fff; }
+  .rapprocher .etiquette { opacity: 0.85; }
+  .rapprocher strong, .rapprocher a, .duo .carte.pleine strong { color: #fff; }
+
+  /* ─── Fin de page ─── */
+  .fin { border-top: 1px solid var(--ligne); background: var(--carte); padding: 24px 48px; }
+  .fin-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; font-family: var(--titre); font-size: 0.95rem; }
+  .fin a { text-decoration: none; padding: 12px 0; }
+  .fin a:hover { color: var(--c); }
+  .bouton-lu { font: 700 0.95rem var(--titre); color: #fff; background: var(--c); border: 1.5px solid var(--c); border-radius: 999px; padding: 12px 22px; min-height: 44px; cursor: pointer; }
+  .bouton-lu.fait { background: transparent; color: var(--c); }
+
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--encre); color: #fff; border: none; border-radius: 50%; font-size: 1.1rem; cursor: pointer; opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 99; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+  }
+  @media (max-width: 760px) {
+    .breadcrumb { display: none; }
+  }
+  @media (max-width: 640px) {
+    nav { padding: 12px 16px; }
+    .breadcrumb { display: none; }
+    .ch-hero { padding: 36px 16px 72px; }
+    .ch-hero-visuel { flex-basis: 160px; }
+    .essentiel-wrap { padding: 0 16px; }
+    .essentiel { padding: 22px 20px; }
+    .page { padding: 40px 16px 56px; }
+    .fin { padding: 20px 16px; }
+    .sujet summary { padding: 14px 16px; }
+    .sujet-corps { padding: 0 16px 16px; }
+    .hgg-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .hgg-stat-cell { padding: 14px 12px; }
+    .hgg-stat-num { font-size: 1.6rem; }
+  }
+
+  @media print {
+    .sujet-corps { display: block !important; }
+    @page { size: A4; margin: 16mm 14mm; }
+    nav, .back-to-top, .fin, .ch-hero-visuel { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: #fff; font-size: 10pt; }
+    .ch-hero { padding: 1rem 1.2rem; }
+    .ch-hero h1 { font-size: 22pt; }
+    .essentiel { margin: 0.6rem 0; box-shadow: none; border: 1pt solid var(--ligne); }
+    .page { display: block; padding: 0.6rem 0; }
+    .content { gap: 1.2rem; }
+    .carte, .hgg-stat-cell { border: 1pt solid var(--ligne); break-inside: avoid; }
+    .surligne, .duo, .sujet { break-inside: avoid; }
+  }
+</style>
+<link rel="stylesheet" href="../../barre-section.css">
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="sn sn-hum">
+  <div class="nav-logo sn-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb sn-fil">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">›</span>
+    <a href="../../humanite.html"><span>L'Humanité</span></a>
+    <span class="sep">›</span>
+    <a href="art.html"><span>Art</span></a>
+    <span class="sep">›</span>
+    <span class="current">Personnes</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="ch-hero-inner">
+    <div class="ch-hero-texte">
+      <div class="chap-label"><span>Art</span><span>L'Humanité</span></div>
+      <h1>Personnes</h1>
+      <p class="meta">Christian Boltanski · 2010 · Installation, Grand Palais</p>
+      <p class="pitch">Une montagne de vêtements usagés, une grue qui en saisit au hasard, des battements de cœur dans l'air glacé&nbsp;: Boltanski fait sentir l'absence de ceux qui les portaient.</p>
+    </div>
+    <figure class="ch-hero-visuel paysage"><img src="images/personnes-oeuvre.webp" alt="Personnes de Boltanski au Grand Palais : sous la verrière, une immense montagne de vêtements colorés, au-dessus de laquelle une grue rouge soulève quelques habits ; autour, des rectangles de vêtements posés au sol entre des poteaux, et des visiteurs" loading="eager" onerror="this.closest('.ch-hero-visuel').remove()"></figure>
+  </div>
+</div>
+
+<!-- L'ESSENTIEL -->
+<div class="essentiel-wrap">
+  <section class="essentiel" aria-label="L'essentiel">
+    <div class="essentiel-these">
+      <div class="etiquette">L'essentiel en une phrase</div>
+      <p>Chaque vêtement a été porté par quelqu'un d'unique, et tous finissent dans le même tas&nbsp;: l'œuvre fait sentir à la fois la singularité de chaque vie et le hasard qui l'efface.</p>
+    </div>
+    <ul class="notions" aria-label="Notions du thème">
+      <li>Mémoire et oubli</li>
+      <li>Individu et masse</li>
+      <li>Mort et hasard</li>
+    </ul>
+  </section>
+</div>
+
+<div class="page">
+
+<div class="content">
+
+<section class="hgg-part" id="intro">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">1.</span><span class="hgg-part-title">Présentation de l'œuvre</span></h2>
+
+    <p><strong>Personnes</strong> est une installation de l'artiste français <strong>Christian Boltanski</strong> (1944-2021), présentée du <strong>13 janvier au 21 février 2010</strong> sous la verrière du <strong>Grand Palais</strong>, à Paris, dans le cadre de Monumenta, qui invitait un artiste à occuper seul cette immense nef. Elle réunissait une montagne de vêtements usagés, une grue qui y puisait sans fin, des rectangles d'habits posés au sol et le son de milliers de battements de cœur. À la fin de l'exposition, tous les vêtements ont été recyclés.</p>
+  <div class="hgg-stats">
+<div class="hgg-stat-cell"><span class="hgg-stat-num">2010</span><div class="hgg-stat-label">Monumenta, au Grand Palais, en janvier et février</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">6</span><div class="hgg-stat-label">Semaines d'exposition, dans une nef non chauffée</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">0</span><div class="hgg-stat-label">Œuvre conservée&nbsp;: tous les vêtements ont été recyclés</div></div>
+</div>
+    <p>Le titre joue sur un double sens&nbsp;: «&nbsp;personnes&nbsp;», ce sont des êtres humains, mais c'est aussi «&nbsp;personne&nbsp;», l'absence de tout le monde. Ces vêtements ont été portés par des hommes, des femmes, des enfants, qui ne sont plus là. L'installation pose une question centrale pour le thème de l'Humanité&nbsp;: comment garder la trace de chaque vie singulière, quand la mort et l'oubli finissent par tout confondre&nbsp;?</p>
+</section>
+
+<section class="hgg-part" id="p1">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">2.</span><span class="hgg-part-title">Genèse et description</span></h2>
+
+  <div class="hgg-section" id="s1-1">
+    <h3 class="hgg-section-title"><span class="num">2.1</span>L'artiste de la mémoire</h3>
+
+    <p>Christian Boltanski naît à Paris en 1944, à la Libération. Son père, d'origine juive, a passé une partie de l'Occupation caché dans l'appartement familial pour échapper aux rafles. Toute son œuvre tourne autour de la <strong>mémoire</strong>, de la disparition et de la Shoah, même quand il ne la nomme pas&nbsp;: photographies d'inconnus, boîtes de biscuits rouillées, archives, vêtements.</p>
+    <p>Depuis 2005, Boltanski enregistre les <strong>battements de cœur</strong> de personnes du monde entier pour ses <em>Archives du cœur</em>, conservées sur l'île japonaise de Teshima. À Paris, en 2010, les visiteurs peuvent faire enregistrer le leur. Ce sont ces battements qui résonnent dans le Grand Palais.</p>
+    <div class="surligne">Boltanski ne montre jamais directement la mort&nbsp;: il montre ce que les gens laissent derrière eux, des <strong>traces</strong> qui disent qu'ils ont existé et qu'ils ne sont plus là.</div>
+  </div>
+
+  <div class="hgg-section" id="s1-2">
+    <h3 class="hgg-section-title"><span class="num">2.2</span>Une installation à traverser</h3>
+
+    <p>À l'entrée, le visiteur longe un haut mur de boîtes métalliques rouillées. Puis il découvre la nef&nbsp;: des dizaines de rectangles de vêtements étalés au sol, délimités par des poteaux et éclairés de néons, comme des parcelles ou des tombes. Au fond, une montagne de vêtements, au-dessus de laquelle une grue rouge descend sans cesse, saisit quelques habits au hasard, les soulève, puis les relâche.</p>
+    <div class="carte">
+      <div class="etiquette">Le froid et le son</div>
+      <p>L'exposition a lieu en hiver, dans une nef non chauffée&nbsp;: le visiteur a froid. Partout, des milliers de battements de cœur résonnent, déformés par l'immense volume. L'œuvre ne se regarde pas seulement&nbsp;: elle se vit avec le <strong>corps</strong>, comme une expérience physique de l'absence.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s1-3">
+    <h3 class="hgg-section-title"><span class="num">2.3</span>Lire l'installation</h3>
+
+    <p>L'installation fonctionne par <strong>évocation</strong>&nbsp;: rien n'est montré directement, tout est suggéré. Les vêtements remplacent les corps, la grue remplace le destin, les battements remplacent les vivants.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Les vêtements</h3>
+        <p>Usagés, de toutes tailles, d'enfants comme d'adultes&nbsp;: chacun a été porté par quelqu'un. Ils sont l'empreinte de corps absents.</p>
+      </div>
+      <div class="carte">
+        <h3>La montagne</h3>
+        <p>Tous les vêtements y sont mêlés, indistincts. Ce qui était singulier devient un amas&nbsp;: l'image de la mort qui confond tout.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>La grue</h3>
+        <p>Elle saisit quelques habits au hasard, les élève, puis les laisse retomber. Boltanski y voyait la main du destin ou de Dieu, qui choisit sans raison.</p>
+      </div>
+      <div class="carte">
+        <h3>Les rectangles au sol</h3>
+        <p>Des vêtements alignés, comme des corps couchés, dans des parcelles éclairées. On pense aux tombes, mais aussi aux camps.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>Les battements de cœur</h3>
+        <p>Chaque cœur est unique, chaque battement est celui d'une vie singulière. Le son rend présents des êtres que l'on ne voit pas.</p>
+      </div>
+      <div class="carte">
+        <h3>Le mur de boîtes</h3>
+        <p>Des boîtes rouillées, toutes semblables, comme des casiers d'archives ou des urnes&nbsp;: la mémoire rangée, mais rongée par le temps.</p>
+      </div>
+    </div>
+    <div class="surligne">Boltanski oppose deux échelles&nbsp;: <strong>l'unique</strong> (chaque vêtement, chaque cœur) et <strong>la masse</strong> (la montagne, le hasard de la grue). Toute l'œuvre tient dans cette tension.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p2">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">3.</span><span class="hgg-part-title">Chacun et tous</span></h2>
+
+  <div class="hgg-section" id="s2-1">
+    <h3 class="hgg-section-title"><span class="num">3.1</span>Le souvenir des disparus</h3>
+
+    <p>Des tas de vêtements, des chaussures, des valises&nbsp;: pour un visiteur européen, ces images évoquent immédiatement les <strong>camps d'extermination</strong>, où les déportés étaient dépouillés de leurs affaires. Boltanski ne le dit pas, mais il le laisse sentir. L'œuvre rappelle que les crimes de masse ont transformé des millions de personnes en tas, en chiffres, en objets, et que le devoir de mémoire consiste à se souvenir que chacun était quelqu'un.</p>
+    <div class="carte">
+      <div class="etiquette">Pas seulement la Shoah</div>
+      <p>L'œuvre ne se réduit pas à une allusion historique. Elle parle aussi de la mort de chacun, ordinaire et inévitable&nbsp;: nos propres vêtements finiront un jour dans un tas semblable. La <strong>condition mortelle</strong> est partagée par tous.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-2">
+    <h3 class="hgg-section-title"><span class="num">3.2</span>Le hasard qui choisit</h3>
+
+    <p>La grue saisit des vêtements au hasard, sans raison. Pourquoi l'un et pas l'autre&nbsp;? Boltanski y montre l'<strong>arbitraire</strong> de la mort, des catastrophes, des persécutions&nbsp;: on survit ou on meurt souvent par hasard, sans que cela dise rien de ce qu'on était. Cette absence de justice dans le destin est l'une des expériences les plus vertigineuses de la condition humaine.</p>
+    <div class="surligne">Face à la grue aveugle, le visiteur se demande&nbsp;: et moi, pourquoi suis-je <strong>encore là</strong>&nbsp;? L'œuvre fait de lui un survivant provisoire.</div>
+  </div>
+
+  <div class="hgg-section" id="s2-3">
+    <h3 class="hgg-section-title"><span class="num">3.3</span>Une œuvre qui disparaît</h3>
+
+    <p>À la fin de l'exposition, les vêtements ont été recyclés&nbsp;: l'œuvre elle-même n'existe plus, sauf dans les photographies et le souvenir de ceux qui l'ont vue. Boltanski accepte que son œuvre soit <strong>éphémère</strong>, comme les vies qu'elle évoque. Il ne reste que la mémoire, et c'est justement ce qu'elle voulait faire vivre.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le document</h3>
+        <p>Un lieu, des dates, une exposition en 2010&nbsp;: <strong>l'œuvre témoigne</strong> du travail de mémoire d'un artiste marqué par la Shoah.</p>
+      </div>
+      <div class="carte pleine">
+        <h3>Le symbole</h3>
+        <p>Des vêtements sans corps, un hasard qui choisit&nbsp;: <strong>l'œuvre universalise</strong>. Elle devient l'image de toute disparition humaine.</p>
+      </div>
+    </div>
+    <div class="surligne">«&nbsp;Personnes&nbsp;»&nbsp;: des êtres uniques, et <strong>personne</strong>. Le titre résume la condition humaine, entre singularité et effacement.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p3">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">4.</span><span class="hgg-part-title">Pistes pour la dissertation</span></h2>
+
+  <div class="hgg-section" id="s3-1">
+    <h3 class="hgg-section-title">Personnes face à cinq sujets sur l'Humanité</h3>
+    <p>Cliquez sur un sujet pour l'argument à développer, le détail à citer et sa place dans le plan.</p>
+
+    <div class="sujets">
+      <details class="sujet">
+        <summary><span class="n">01</span><span class="q">Le devoir de mémoire est-il un devoir d'humanité&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>En 2010, au Grand Palais, Boltanski entasse des vêtements usagés en une montagne, dans une nef glacée où résonnent des battements de cœur. L'image évoque les camps, où les déportés étaient dépouillés de leurs affaires et réduits à des tas. Se souvenir, c'est refuser que des personnes deviennent des objets ou des chiffres. Le devoir de mémoire n'est pas seulement historique&nbsp;: il est la reconnaissance, après coup, de l'humanité singulière de chaque victime.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> La montagne de vêtements, où chaque habit a été porté par quelqu'un.</span><span><b>Dans le plan&nbsp;:</b> En première partie&nbsp;: la mémoire comme reconnaissance des disparus.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">02</span><span class="q">Chaque vie humaine est-elle unique&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Boltanski enregistre depuis 2005 des battements de cœur pour ses <em>Archives du cœur</em>&nbsp;: chacun est différent, signe d'une vie singulière. Mais au Grand Palais, ils se mêlent en un bruit unique, comme les vêtements se mêlent dans la montagne. L'œuvre affirme à la fois la singularité irremplaçable de chaque existence et la facilité avec laquelle elle se perd dans la masse. Reconnaître l'humanité, c'est tenir les deux ensemble.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Les battements de cœur, uniques et pourtant confondus.</span><span><b>Dans le plan&nbsp;:</b> En partie de dépassement&nbsp;: l'unique et le commun dans la condition humaine.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">03</span><span class="q">Le hasard gouverne-t-il nos vies&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Au-dessus de la montagne, une grue saisit des vêtements au hasard, les élève, les relâche. Boltanski y voyait la main du destin, qui choisit sans raison qui vit et qui meurt. Né en 1944, fils d'un homme qui a survécu caché à l'Occupation, il sait que la survie tient souvent à la chance. L'œuvre confronte le visiteur à cet arbitraire&nbsp;: la valeur d'une vie ne dit rien de sa durée.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> La grue rouge qui puise dans la montagne sans choisir.</span><span><b>Dans le plan&nbsp;:</b> En partie critique&nbsp;: la condition humaine soumise au hasard.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">04</span><span class="q">Que reste-t-il de nous après la mort&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Des vêtements, des photos, des battements de cœur enregistrés&nbsp;: Boltanski fait de ces traces le matériau de son œuvre. Elles disent que quelqu'un a existé, sans pouvoir le rendre présent. À la fin de l'exposition, les vêtements ont été recyclés, et l'œuvre a disparu. Il ne reste de nous que ce que les autres gardent en mémoire&nbsp;: notre survie dépend de ceux qui se souviennent.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Le recyclage des vêtements à la fin de l'exposition.</span><span><b>Dans le plan&nbsp;:</b> Sur la mort et la mémoire&nbsp;: la trace et le souvenir des autres.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">05</span><span class="q">L'art doit-il durer&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Personnes n'existe plus&nbsp;: ses vêtements ont été recyclés après six semaines d'exposition. Boltanski accepte que son œuvre soit éphémère, comme les vies qu'elle évoque. Il rompt avec l'idée d'un art fait pour durer et être conservé au musée. Une œuvre peut agir par le souvenir qu'elle laisse plutôt que par sa matière&nbsp;: c'est l'expérience vécue par le visiteur qui en est le vrai lieu.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> L'expérience physique du froid et du son, qu'aucune photo ne restitue.</span><span><b>Dans le plan&nbsp;:</b> Sur l'art&nbsp;: l'œuvre comme expérience plutôt que comme objet.</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s3-2">
+    <div class="copie">
+      <div class="carte retenir">
+        <div class="etiquette">Idées à retenir</div>
+        <ol>
+          <li>Des <strong>vêtements sans corps</strong>&nbsp;: Boltanski montre l'absence de ceux qui les portaient.</li>
+          <li>La montagne et les rectangles évoquent les <strong>camps</strong> et le devoir de mémoire, sans les nommer.</li>
+          <li>La grue qui puise au hasard dit l'<strong>arbitraire</strong> de la mort et du destin.</li>
+          <li>«&nbsp;Personnes&nbsp;» et «&nbsp;personne&nbsp;»&nbsp;: chaque vie est <strong>unique</strong>, et chacune peut s'effacer.</li>
+        </ol>
+      </div>
+      <div class="carte rapprocher">
+        <div class="etiquette">À rapprocher</div>
+        <p><strong>Georges Perec, <em>W ou le souvenir d'enfance</em> (1975)</strong>&nbsp;: Perec, dont la mère a été déportée à Auschwitz quand il était enfant, tente de reconstituer ses souvenirs à partir de traces minuscules, de photos, de détails incertains, en alternant avec un récit inventé qui mène à l'image d'un camp. Comme Boltanski, il parle de la disparition par des traces et des objets, et laisse l'horreur se deviner sans la montrer. Mais Perec reconstruit patiemment une vie singulière, la sienne et celle de ses parents&nbsp;; Boltanski, lui, mêle toutes les vies dans une même montagne anonyme.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /content -->
+</div><!-- /page -->
+
+<footer class="fin">
+  <div class="fin-inner">
+    <a href="art.html">← Toutes les fiches d'art</a>
+    <button type="button" class="bouton-lu" id="boutonLu">J'ai lu cette fiche</button>
+  </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
+
+<script>
+  // « J'ai lu cette fiche », gardé dans le navigateur
+  const CLE = 'ecg-humanite-fiches-lues';
+  const ID = 'art/personnes';
+  const lu = document.getElementById('boutonLu');
+  function lire() { try { return JSON.parse(localStorage.getItem(CLE)) || []; } catch (e) { return []; } }
+  function majLu() {
+    const fait = lire().includes(ID);
+    lu.classList.toggle('fait', fait);
+    lu.textContent = fait ? '✓ Fiche lue' : "J'ai lu cette fiche";
+  }
+  lu.addEventListener('click', () => {
+    let l = lire();
+    l = l.includes(ID) ? l.filter(x => x !== ID) : l.concat(ID);
+    try { localStorage.setItem(CLE, JSON.stringify(l)); } catch (e) {}
+    majLu();
+  });
+  majLu();
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>
