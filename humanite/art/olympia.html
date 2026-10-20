@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Art — Olympia</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<style>
+  :root {
+    --c: #8a4a52;          /* couleur de la fiche */
+    --c-soft: #f6ebec;
+    --fond: #f5f4f0;
+    --carte: #ffffff;
+    --encre: #18181b;
+    --texte: #3f3f46;
+    --discret: #52525b;
+    --ligne: #e4e2dc;
+    --titre: 'Bricolage Grotesque', system-ui, sans-serif;
+    --corps: 'Newsreader', Georgia, serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--fond); color: var(--encre); font-family: var(--corps); font-size: 1.125rem; line-height: 1.65; min-height: 100vh; }
+  strong { font-weight: 600; color: var(--encre); }
+  a { color: inherit; }
+
+  /* ─── Barre du haut ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 14px 48px; background: var(--carte); border-bottom: 1px solid var(--ligne);
+    position: sticky; top: 0; z-index: 100; font-family: var(--titre);
+  }
+  .nav-logo { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em; }
+  .nav-logo a { color: var(--encre); text-decoration: none; }
+  .breadcrumb { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: calc(100% - 420px); display: flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; overflow: hidden; font-size: 0.85rem; color: var(--discret); }
+  .breadcrumb .current { overflow: hidden; text-overflow: ellipsis; }
+  .breadcrumb a { text-decoration: none; }
+  .breadcrumb a:hover { color: var(--c); }
+  .breadcrumb .sep { color: #a1a1aa; }
+  .breadcrumb .current { color: var(--encre); }
+
+  /* ─── Bandeau ─── */
+  .ch-hero { position: relative; background: var(--c); color: #fff; padding: 56px 48px 84px; overflow: hidden; }
+  .ch-hero-fond { display: none; }
+  .ch-hero-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 40px 56px; }
+  .ch-hero-texte { flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+  .chap-label { display: flex; flex-wrap: wrap; gap: 8px; font-family: var(--titre); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .chap-label span { background: rgba(255,255,255,0.18); padding: 6px 12px; border-radius: 999px; }
+  .ch-hero h1 { font-family: var(--titre); font-weight: 800; font-size: calc(var(--t, 1) * clamp(3rem, 8vw, 6rem)); line-height: 0.95; letter-spacing: -0.02em; }
+  .ch-hero .meta { font-family: var(--titre); font-size: 1.2rem; font-weight: 500; opacity: 0.92; }
+  .ch-hero .pitch { max-width: 620px; font-size: 1.3rem; line-height: 1.5; }
+  .ch-hero-visuel { flex: 0 0 240px; max-width: 100%; aspect-ratio: 2 / 3; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+  .ch-hero-visuel.paysage { flex: 1 1 420px; aspect-ratio: auto; }
+  .ch-hero-visuel.paysage img { height: auto; }
+  .ch-hero-visuel img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  /* ─── L'essentiel ─── */
+  .essentiel {
+    position: relative; max-width: 1040px; margin: -44px auto 0; background: var(--carte); border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(24,24,27,0.10); padding: 28px 32px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 20px 40px;
+  }
+  .essentiel-wrap { padding: 0 48px; }
+  .essentiel-these { flex: 999 1 420px; min-width: 0; }
+  .etiquette { font-family: var(--titre); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c); }
+  .essentiel-these p { margin-top: 6px; font-size: 1.35rem; line-height: 1.4; font-weight: 600; }
+  .notions { flex: 1 1 300px; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+  .notions li { font-family: var(--titre); font-size: 0.92rem; font-weight: 500; padding: 8px 14px; border-radius: 999px; background: var(--c-soft); color: var(--c); }
+
+  /* ─── Corps ─── */
+  .page { max-width: 820px; margin: 0 auto; padding: 64px 48px 72px; }
+
+  .content { display: flex; flex-direction: column; gap: 64px; }
+  .hgg-part { scroll-margin-top: 90px; }
+  .hgg-part-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 20px; }
+  .hgg-part-num { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; color: var(--c); }
+  .hgg-part-title { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; letter-spacing: -0.01em; }
+  .hgg-section { margin-top: 32px; scroll-margin-top: 90px; }
+  .hgg-section-title { font-family: var(--titre); font-weight: 700; font-size: 1.35rem; line-height: 1.25; margin-bottom: 12px; }
+  .hgg-section-title .num { color: var(--c); margin-right: 6px; }
+  .content p { color: var(--texte); margin-bottom: 16px; }
+  .content p:last-child { margin-bottom: 0; }
+
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 8px 0 24px; }
+  .hgg-stat-cell { background: var(--carte); border-radius: 12px; padding: 18px 20px; }
+  .hgg-stat-num { display: block; font-family: var(--titre); font-weight: 800; font-size: 2.2rem; line-height: 1; color: var(--c); }
+  .hgg-stat-label { margin-top: 6px; font-family: var(--titre); font-size: 0.88rem; color: var(--discret); }
+
+  .carte { background: var(--carte); border-radius: 14px; padding: 22px 26px; margin: 20px 0; }
+  .carte h3 { font-family: var(--titre); font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+  .carte p { font-size: 1.05rem; }
+  .carte .etiquette { margin-bottom: 8px; }
+  .surligne { background: var(--c-soft); border-radius: 14px; padding: 20px 24px; margin: 20px 0; color: #2a1d12; font-size: 1.08rem; }
+  .duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 20px 0; }
+  .duo .carte { margin: 0; }
+  .duo .carte.pleine { background: var(--c); }
+  .duo .carte.pleine h3, .duo .carte.pleine p { color: #fff; }
+  .sujets { background: var(--carte); border-radius: 16px; margin-top: 16px; overflow: hidden; }
+  .sujet + .sujet { border-top: 1px solid var(--ligne); }
+  .sujet summary { list-style: none; display: flex; gap: 14px; align-items: baseline; padding: 16px 22px; cursor: pointer; font-family: var(--titre); font-weight: 700; font-size: 1.08rem; line-height: 1.35; }
+  .sujet summary::-webkit-details-marker { display: none; }
+  .sujet summary .n { flex: 0 0 auto; font-weight: 800; color: var(--c); }
+  .sujet summary .q { flex: 1; }
+  .sujet summary::after { content: '+'; flex: 0 0 auto; font-size: 1.3rem; line-height: 1; color: var(--c); transition: transform 0.2s; }
+  .sujet[open] summary::after { transform: rotate(45deg); }
+  .sujet summary:hover .q { color: var(--c); }
+  .sujet-corps { padding: 0 22px 18px 58px; }
+  .sujet-corps p { font-size: 1.02rem; margin-bottom: 10px; }
+  .sujet-corps .reperes { font-family: var(--titre); font-size: 0.88rem; line-height: 1.5; color: var(--discret); display: flex; flex-direction: column; gap: 4px; }
+  .sujet-corps .reperes b { color: var(--c); font-weight: 700; }
+  .sujet a { color: var(--c); text-decoration: underline; text-underline-offset: 2px; }
+
+  .copie { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 8px; }
+  .copie .carte { margin: 0; }
+  .retenir { flex: 1 1 100%; min-width: 0; }
+  .retenir ol { padding-left: 22px; display: flex; flex-direction: column; gap: 10px; font-size: 1.05rem; color: var(--texte); }
+  .rapprocher { flex: 1 1 100%; min-width: 0; background: var(--c) !important; }
+  .rapprocher .etiquette, .rapprocher p, .rapprocher em { color: #fff; }
+  .rapprocher .etiquette { opacity: 0.85; }
+  .rapprocher strong, .rapprocher a, .duo .carte.pleine strong { color: #fff; }
+
+  /* ─── Fin de page ─── */
+  .fin { border-top: 1px solid var(--ligne); background: var(--carte); padding: 24px 48px; }
+  .fin-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; font-family: var(--titre); font-size: 0.95rem; }
+  .fin a { text-decoration: none; padding: 12px 0; }
+  .fin a:hover { color: var(--c); }
+  .bouton-lu { font: 700 0.95rem var(--titre); color: #fff; background: var(--c); border: 1.5px solid var(--c); border-radius: 999px; padding: 12px 22px; min-height: 44px; cursor: pointer; }
+  .bouton-lu.fait { background: transparent; color: var(--c); }
+
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--encre); color: #fff; border: none; border-radius: 50%; font-size: 1.1rem; cursor: pointer; opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 99; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+  }
+  @media (max-width: 760px) {
+    .breadcrumb { display: none; }
+  }
+  @media (max-width: 640px) {
+    nav { padding: 12px 16px; }
+    .breadcrumb { display: none; }
+    .ch-hero { padding: 36px 16px 72px; }
+    .ch-hero-visuel { flex-basis: 160px; }
+    .essentiel-wrap { padding: 0 16px; }
+    .essentiel { padding: 22px 20px; }
+    .page { padding: 40px 16px 56px; }
+    .fin { padding: 20px 16px; }
+    .sujet summary { padding: 14px 16px; }
+    .sujet-corps { padding: 0 16px 16px; }
+    .hgg-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .hgg-stat-cell { padding: 14px 12px; }
+    .hgg-stat-num { font-size: 1.6rem; }
+  }
+
+  @media print {
+    .sujet-corps { display: block !important; }
+    @page { size: A4; margin: 16mm 14mm; }
+    nav, .back-to-top, .fin, .ch-hero-visuel { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: #fff; font-size: 10pt; }
+    .ch-hero { padding: 1rem 1.2rem; }
+    .ch-hero h1 { font-size: 22pt; }
+    .essentiel { margin: 0.6rem 0; box-shadow: none; border: 1pt solid var(--ligne); }
+    .page { display: block; padding: 0.6rem 0; }
+    .content { gap: 1.2rem; }
+    .carte, .hgg-stat-cell { border: 1pt solid var(--ligne); break-inside: avoid; }
+    .surligne, .duo, .sujet { break-inside: avoid; }
+  }
+</style>
+<link rel="stylesheet" href="../../barre-section.css">
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="sn sn-hum">
+  <div class="nav-logo sn-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb sn-fil">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">›</span>
+    <a href="../../humanite.html"><span>L'Humanité</span></a>
+    <span class="sep">›</span>
+    <a href="art.html"><span>Art</span></a>
+    <span class="sep">›</span>
+    <span class="current">Olympia</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="ch-hero-inner">
+    <div class="ch-hero-texte">
+      <div class="chap-label"><span>Art</span><span>L'Humanité</span></div>
+      <h1>Olympia</h1>
+      <p class="meta">Édouard Manet · 1863 · Huile sur toile, réalisme</p>
+      <p class="pitch">Une femme nue sur un lit regarde le spectateur droit dans les yeux, tandis qu'une servante noire lui tend un bouquet&nbsp;: au Salon de 1865, le tableau fait scandale.</p>
+    </div>
+    <figure class="ch-hero-visuel paysage"><img src="images/olympia-oeuvre.webp" alt="Olympia de Manet : une jeune femme nue, allongée sur des draps blancs, regarde le spectateur ; derrière elle, une servante noire en robe rose tient un bouquet ; un chat noir se tient au pied du lit" loading="eager" onerror="this.closest('.ch-hero-visuel').remove()"></figure>
+  </div>
+</div>
+
+<!-- L'ESSENTIEL -->
+<div class="essentiel-wrap">
+  <section class="essentiel" aria-label="L'essentiel">
+    <div class="essentiel-these">
+      <div class="etiquette">L'essentiel en une phrase</div>
+      <p>Celle qu'on regarde comme un objet regarde à son tour&nbsp;: rendre son regard à une personne, c'est lui rendre son humanité, et obliger le spectateur à se voir lui-même.</p>
+    </div>
+    <ul class="notions" aria-label="Notions du thème">
+      <li>Regard et domination</li>
+      <li>Corps et dignité</li>
+      <li>Invisibles de l'histoire</li>
+    </ul>
+  </section>
+</div>
+
+<div class="page">
+
+<div class="content">
+
+<section class="hgg-part" id="intro">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">1.</span><span class="hgg-part-title">Présentation de l'œuvre</span></h2>
+
+    <p><strong>Olympia</strong> est une huile sur toile d'<strong>Édouard Manet</strong> (1832-1883), peinte en <strong>1863</strong> et présentée au <strong>Salon de 1865</strong>, où elle provoque un scandale. Elle mesure environ 130 × 190 cm et est conservée au <strong>musée d'Orsay</strong>, à Paris. Elle représente une femme nue allongée sur un lit, une servante noire qui lui apporte un bouquet, et un chat noir. La jeune femme a pour modèle <strong>Victorine Meurent</strong>&nbsp;; la servante, une femme nommée <strong>Laure</strong>.</p>
+  <div class="hgg-stats">
+<div class="hgg-stat-cell"><span class="hgg-stat-num">1865</span><div class="hgg-stat-label">Salon où le tableau fait scandale</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">19 415</span><div class="hgg-stat-label">Francs réunis par souscription en 1890 pour l'offrir à l'État</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">1986</span><div class="hgg-stat-label">Entrée au musée d'Orsay</div></div>
+</div>
+    <p>Le nu féminin est l'un des sujets les plus anciens de la peinture. Mais Manet le rend insupportable à son public&nbsp;: sa femme nue n'est pas une déesse, elle a un nom, un métier, un regard qui juge. Le tableau pose une question centrale pour le thème de l'Humanité&nbsp;: que devient une personne quand on la regarde comme un objet, et que se passe-t-il quand elle regarde à son tour&nbsp;?</p>
+</section>
+
+<section class="hgg-part" id="p1">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">2.</span><span class="hgg-part-title">Genèse et description</span></h2>
+
+  <div class="hgg-section" id="s1-1">
+    <h3 class="hgg-section-title"><span class="num">2.1</span>Une Vénus devenue réelle</h3>
+
+    <p>Manet reprend la composition d'un chef-d'œuvre de la Renaissance, la <strong>Vénus d'Urbin</strong> de Titien (1538), qu'il avait copiée à Florence&nbsp;: une femme nue allongée sur un lit, une main posée sur le bas-ventre, des servantes au fond. Mais il en change le sens. Chez Titien, le nu est sublimé par le mythe ou par le mariage&nbsp;; chez Manet, il n'y a ni mythe ni excuse. Le nom d'Olympia, à l'époque, évoque une <strong>courtisane</strong>, et le bouquet ressemble au cadeau d'un client.</p>
+    <p>Pour modèle, Manet choisit Victorine Meurent, qui posait souvent pour lui et deviendra plus tard peintre elle-même. Le corps n'est pas idéalisé&nbsp;: il est plat, éclairé de face, sans modelé savant. Manet disait rendre aussi simplement que possible les choses qu'il voyait.</p>
+    <div class="surligne">Le scandale ne vient pas de la nudité, omniprésente dans les Salons de l'époque, mais de son <strong>actualité</strong>&nbsp;: ce n'est plus une déesse, c'est une femme de Paris, et chacun sait ce qu'elle vend.</div>
+  </div>
+
+  <div class="hgg-section" id="s1-2">
+    <h3 class="hgg-section-title"><span class="num">2.2</span>Le scandale de 1865</h3>
+
+    <p>Au Salon de 1865, le public et la critique se déchaînent. On se moque, on s'indigne, des visiteurs auraient même tenté de frapper la toile avec leurs cannes ou leurs parapluies, si bien qu'elle est raccrochée plus haut, hors de portée. Seuls quelques écrivains défendent Manet, dont Baudelaire et surtout Émile Zola, qui voit en lui un peintre de la vérité.</p>
+    <div class="carte">
+      <div class="etiquette">De l'injure au musée</div>
+      <p>Après la mort de Manet, Claude Monet organise une <strong>souscription</strong> pour acheter le tableau à sa veuve et l'offrir à l'État&nbsp;: 19&nbsp;415 francs sont réunis en 1890. Le tableau entre au musée du Luxembourg, puis au Louvre, avant de rejoindre le musée d'Orsay en 1986. L'œuvre scandaleuse est devenue un symbole de la peinture moderne.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s1-3">
+    <h3 class="hgg-section-title"><span class="num">2.3</span>Lire le tableau</h3>
+
+    <p>Le tableau est construit sur des <strong>contrastes</strong>&nbsp;: le blanc des draps et de la peau contre le fond sombre, la femme blanche nue contre la servante noire habillée, la lumière crue contre l'ombre. Rien n'adoucit les formes&nbsp;: Manet peint à plat, presque sans ombres.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le regard d'Olympia</h3>
+        <p>Elle fixe le spectateur, calme, sans pudeur ni séduction. Ce regard transforme le visiteur du Salon en client&nbsp;: c'est lui qu'elle juge.</p>
+      </div>
+      <div class="carte">
+        <h3>La main posée</h3>
+        <p>Chez Titien, la main de Vénus est abandonnée. Ici, elle est ferme, presque plaquée&nbsp;: Olympia décide de ce qu'elle montre et de ce qu'elle cache.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>La servante, Laure</h3>
+        <p>Elle tend le bouquet, le regard tourné vers Olympia. Longtemps ignorée par la critique, elle est pourtant au centre de la composition.</p>
+      </div>
+      <div class="carte">
+        <h3>Le bouquet</h3>
+        <p>Enveloppé de papier, il vient de l'extérieur, d'un visiteur qu'on ne voit pas. Il signale une transaction plutôt qu'une déclaration d'amour.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le chat noir</h3>
+        <p>Au pied du lit, dos arrondi, queue dressée. Chez Titien, un petit chien endormi symbolisait la fidélité&nbsp;; le chat, ici, évoque l'indépendance et le désir.</p>
+      </div>
+      <div class="carte">
+        <h3>Les accessoires</h3>
+        <p>Un ruban noir au cou, un bracelet, une fleur dans les cheveux, une mule à un pied&nbsp;: des détails de la vie moderne, qui ancrent le nu dans le Paris de 1863.</p>
+      </div>
+    </div>
+    <div class="surligne">Le tableau n'est pas fait pour être regardé tranquillement&nbsp;: c'est <strong>Olympia qui regarde</strong>, et le spectateur se découvre regardé, pris en flagrant délit de désir ou de jugement.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p2">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">3.</span><span class="hgg-part-title">Le regard et l'humanité</span></h2>
+
+  <div class="hgg-section" id="s2-1">
+    <h3 class="hgg-section-title"><span class="num">3.1</span>De l'objet au sujet</h3>
+
+    <p>Le nu traditionnel est un corps offert au regard, souvent les yeux baissés ou tournés ailleurs&nbsp;: une femme réduite à un <strong>objet de contemplation</strong>. Olympia renverse ce rapport. En regardant le spectateur, elle devient un sujet, une conscience qui juge. Le scandale de 1865 dit bien ce que le public ne supportait pas&nbsp;: qu'une femme qu'il voulait regarder comme une chose le regarde comme un homme.</p>
+    <div class="carte">
+      <div class="etiquette">Un regard qui rend humain</div>
+      <p>Ce qui fait l'humanité d'une personne, c'est notamment sa capacité à <strong>rendre le regard</strong>. Tant qu'on ne regarde que son corps, on la réduit à une marchandise&nbsp;; dès qu'elle nous regarde, elle redevient quelqu'un, et nous oblige à répondre de notre propre regard.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-2">
+    <h3 class="hgg-section-title"><span class="num">3.2</span>La servante oubliée</h3>
+
+    <p>Pendant plus d'un siècle, les commentaires ont parlé d'Olympia et presque jamais de la servante. On la désignait par sa couleur de peau, comme un élément exotique du décor, sans nom. On sait aujourd'hui qu'elle s'appelait <strong>Laure</strong>, grâce à un carnet de Manet. En 2019, l'exposition <em>Le Modèle noir</em>, au musée d'Orsay, a mis en lumière ces modèles noirs effacés de l'histoire de l'art.</p>
+    <div class="surligne">Le tableau contient deux humanités inégalement regardées&nbsp;: celle d'Olympia, dont le regard a scandalisé, et celle de Laure, que le regard des spectateurs <strong>n'a pas vue</strong>. La France venait d'abolir l'esclavage en 1848.</div>
+  </div>
+
+  <div class="hgg-section" id="s2-3">
+    <h3 class="hgg-section-title"><span class="num">3.3</span>La vérité contre l'idéal</h3>
+
+    <p>Manet refuse de cacher la réalité sous le mythe. La prostitution existe à Paris&nbsp;; les Salons sont remplis de Vénus qui en sont la version flatteuse. En peignant une femme réelle, il met la société face à ce qu'elle consomme et refuse de nommer. Le scandale n'est pas moral, il est social&nbsp;: le tableau montre ce que l'idéal servait à recouvrir.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le document</h3>
+        <p>Une courtisane parisienne, un modèle et une servante réels&nbsp;: <strong>le tableau témoigne</strong> de la société du Second Empire.</p>
+      </div>
+      <div class="carte pleine">
+        <h3>Le symbole</h3>
+        <p>Un regard de femme qui refuse d'être objet&nbsp;: <strong>le tableau universalise</strong>. Il devient l'image de toute dignité qui se relève.</p>
+      </div>
+    </div>
+    <div class="surligne">De la Vénus de Titien à Olympia, le sujet est le même&nbsp;; seul le regard a changé. Et c'est ce changement de regard qui a fait d'un nu une <strong>question d'humanité</strong>.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p3">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">4.</span><span class="hgg-part-title">Pistes pour la dissertation</span></h2>
+
+  <div class="hgg-section" id="s3-1">
+    <h3 class="hgg-section-title">Olympia face à cinq sujets sur l'Humanité</h3>
+    <p>Cliquez sur un sujet pour l'argument à développer, le détail à citer et sa place dans le plan.</p>
+
+    <div class="sujets">
+      <details class="sujet">
+        <summary><span class="n">01</span><span class="q">Peut-on réduire un être humain à son corps&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Le nu traditionnel offre un corps au regard, les yeux baissés. Olympia, elle, fixe le spectateur&nbsp;: la femme qu'on voulait regarder comme un objet devient une conscience qui juge. Le scandale du Salon de 1865 montre ce que le public ne supportait pas&nbsp;: être regardé en retour. Un être humain ne se réduit pas à son corps, parce qu'il peut toujours rendre le regard qu'on porte sur lui.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Le regard direct d'Olympia vers le spectateur.</span><span><b>Dans le plan&nbsp;:</b> En partie critique&nbsp;: la réification et la résistance du regard.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">02</span><span class="q">L'histoire oublie-t-elle certains hommes&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Pendant plus d'un siècle, la servante d'Olympia n'a eu ni nom ni place dans les commentaires&nbsp;: un élément de décor exotique. Un carnet de Manet révèle qu'elle s'appelait Laure, et l'exposition <em>Le Modèle noir</em>, en 2019 au musée d'Orsay, lui rend sa visibilité. Ce tableau célèbre contient donc une figure oubliée. L'humanité de certains n'a pas été niée par la violence, mais par l'indifférence du regard.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Laure, au centre de la composition, ignorée par la critique.</span><span><b>Dans le plan&nbsp;:</b> Sur la mémoire&nbsp;: rendre leur nom aux invisibles.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">03</span><span class="q">L'art doit-il idéaliser&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Manet reprend la Vénus d'Urbin de Titien, mais lui retire le mythe&nbsp;: la déesse devient une courtisane parisienne, le petit chien fidèle un chat noir, le corps idéal un corps plat éclairé de face. Le public de 1865 s'indigne, parce que l'idéal servait à ne pas voir ce qu'il consommait. En refusant d'idéaliser, Manet fait de la peinture un outil de vérité sur la société.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Le chat noir à la place du chien endormi de Titien.</span><span><b>Dans le plan&nbsp;:</b> Sur l'art et le réel&nbsp;: la vérité contre l'embellissement.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">04</span><span class="q">Le regard d'autrui me constitue-t-il&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Devant Olympia, le spectateur cesse d'être un regard invisible&nbsp;: il est vu, jugé, placé dans la position du client. Comme chez Sartre, le regard d'autrui me révèle à moi-même et me fait éprouver ce que je suis pour les autres. Le tableau montre que la relation humaine passe par la réciprocité du regard&nbsp;: être humain, c'est voir et être vu.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Le visiteur du Salon transformé en client par le regard d'Olympia.</span><span><b>Dans le plan&nbsp;:</b> En partie de dépassement&nbsp;: la reconnaissance mutuelle par le regard.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">05</span><span class="q">Le scandale est-il nécessaire au progrès&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>En 1865, Olympia est raillée, menacée, accrochée hors de portée du public. En 1890, une souscription de Monet réunit 19&nbsp;415 francs pour l'offrir à l'État&nbsp;; le tableau entre au Louvre puis au musée d'Orsay. Ce qui choquait est devenu un symbole de la modernité. Le scandale révèle souvent une vérité que la société n'est pas encore prête à voir, et qu'elle finira par reconnaître.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> La souscription organisée par Monet en 1890.</span><span><b>Dans le plan&nbsp;:</b> Sur l'histoire des idées&nbsp;: du scandale à la reconnaissance.</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s3-2">
+    <div class="copie">
+      <div class="carte retenir">
+        <div class="etiquette">Idées à retenir</div>
+        <ol>
+          <li>Manet reprend la <strong>Vénus d'Urbin</strong> de Titien mais lui retire le mythe&nbsp;: la déesse devient une courtisane de Paris.</li>
+          <li>Le <strong>regard</strong> d'Olympia fait d'un objet de contemplation un sujet qui juge le spectateur.</li>
+          <li>La servante <strong>Laure</strong>, longtemps sans nom, rappelle les humanités que l'histoire de l'art n'a pas vues.</li>
+          <li>Du <strong>scandale de 1865</strong> au musée d'Orsay&nbsp;: la vérité qui choque finit par être reconnue.</li>
+        </ol>
+      </div>
+      <div class="carte rapprocher">
+        <div class="etiquette">À rapprocher</div>
+        <p><strong>Émile Zola, <em>Nana</em> (1880)</strong>&nbsp;: Zola, défenseur de Manet, raconte l'ascension et la chute d'une courtisane du Second Empire, adulée et désirée par les puissants. Comme Olympia, Nana montre ce que la bonne société consomme en feignant de l'ignorer, et fait d'une femme vendue le miroir de toute une époque. Mais le roman la punit&nbsp;: Nana meurt défigurée par la petite vérole, image d'une société qui pourrit. Manet, lui, ne juge pas son modèle&nbsp;; c'est Olympia qui juge ceux qui la regardent.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /content -->
+</div><!-- /page -->
+
+<footer class="fin">
+  <div class="fin-inner">
+    <a href="art.html">← Toutes les fiches d'art</a>
+    <button type="button" class="bouton-lu" id="boutonLu">J'ai lu cette fiche</button>
+  </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
+
+<script>
+  // « J'ai lu cette fiche », gardé dans le navigateur
+  const CLE = 'ecg-humanite-fiches-lues';
+  const ID = 'art/olympia';
+  const lu = document.getElementById('boutonLu');
+  function lire() { try { return JSON.parse(localStorage.getItem(CLE)) || []; } catch (e) { return []; } }
+  function majLu() {
+    const fait = lire().includes(ID);
+    lu.classList.toggle('fait', fait);
+    lu.textContent = fait ? '✓ Fiche lue' : "J'ai lu cette fiche";
+  }
+  lu.addEventListener('click', () => {
+    let l = lire();
+    l = l.includes(ID) ? l.filter(x => x !== ID) : l.concat(ID);
+    try { localStorage.setItem(CLE, JSON.stringify(l)); } catch (e) {}
+    majLu();
+  });
+  majLu();
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>
