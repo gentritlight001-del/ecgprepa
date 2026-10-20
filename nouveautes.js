@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
+"titre": "Allemagne : le sommet « Invest in Germany » annonce 230 milliards d'euros d'engagements",
+"url": "actualites/de/articles/allemagne-invest-in-germany-summit-2026.html",
+"image": "actualites/de/images/allemagne-invest-in-germany-summit-2026.webp",
+"date": "2026-10-20T18:32:43+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "Canada",
@@ -1955,15 +1964,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "La Deutsche Bahn gèle ses prix pour un an : un pari audacieux face à la crise",
 "url": "actualites/de/articles/db-gel-prix.html",
 "image": "actualites/de/images/db-gel-prix.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "La jeunesse allemande contre la Wehrpflicht : un mouvement qui secoue la République",
-"url": "actualites/de/articles/jeunesse-wehrpflicht.html",
-"image": "actualites/de/images/jeunesse-wehrpflicht.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
