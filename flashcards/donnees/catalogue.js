@@ -12,18 +12,24 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-10-20",
+  "maj": "2026-10-21",
   "parties": [
+   {
+    "id": "2026-10-21",
+    "nom": "Jour 11 · Alberta Votes 75% to Stay in Canada",
+    "n": 30,
+    "date": "2026-10-21"
+   },
    {
     "id": "2026-10-20",
     "nom": "Jour 10 · Trump Waives New Sanctions on Russia",
-    "n": 30,
+    "n": 29,
     "date": "2026-10-20"
    },
    {
     "id": "2026-10-19",
     "nom": "Jour 9 · “No Kings” Swaps Marches for Early Voting",
-    "n": 30,
+    "n": 27,
     "date": "2026-10-19"
    },
    {
@@ -47,7 +53,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-15",
     "nom": "Jour 5 · Burnham Says Russia Meddled in the Brexit Vote",
-    "n": 29,
+    "n": 28,
     "date": "2026-10-15"
    },
    {
@@ -71,12 +77,12 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-10",
     "nom": "Jour 1 · Trump Renames AI “Super Intelligence”",
-    "n": 28,
+    "n": 25,
     "date": "2026-10-10"
    }
   ],
-  "n": 285,
-  "v": "d62536d72b"
+  "n": 307,
+  "v": "a01a4d2e8c"
  },
  {
   "id": "espagnol",
@@ -90,8 +96,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Espagnol",
   "lien": "premiere_annee/langues/espagnol/quotidien/index.html",
   "revoir": "ecg-espagnol-quotidien-a-revoir",
-  "maj": "2026-10-20",
+  "maj": "2026-10-21",
   "parties": [
+   {
+    "id": "2026-10-21",
+    "nom": "Jour 11 · EE. UU. y Cuba: Florida ordena el arresto de Raúl Castro",
+    "n": 30,
+    "date": "2026-10-21"
+   },
    {
     "id": "2026-10-20",
     "nom": "Jour 10 · Colombia: De la Espriella retira treinta obras del Museo Nacional",
@@ -101,7 +113,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-19",
     "nom": "Jour 9 · Costa Rica y El Salvador: un acuerdo contra el crimen transnacional",
-    "n": 30,
+    "n": 29,
     "date": "2026-10-19"
    },
    {
@@ -119,7 +131,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-16",
     "nom": "Jour 6 · España: Felipe VI y Letizia, una visita histórica a Ceuta",
-    "n": 29,
+    "n": 28,
     "date": "2026-10-16"
    },
    {
@@ -131,7 +143,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-13",
     "nom": "Jour 4 · España: Puigdemont ya puede volver sin ser detenido",
-    "n": 27,
+    "n": 26,
     "date": "2026-10-13"
    },
    {
@@ -153,8 +165,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 283,
-  "v": "92663a9f3d"
+  "n": 310,
+  "v": "df259d178d"
  },
  {
   "id": "allemand",
@@ -168,8 +180,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Allemand",
   "lien": "premiere_annee/langues/allemand/quotidien/index.html",
   "revoir": "ecg-allemand-quotidien-a-revoir",
-  "maj": "2026-10-20",
+  "maj": "2026-10-21",
   "parties": [
+   {
+    "id": "2026-10-21",
+    "nom": "Jour 11 · Berlin wirbt um Investoren",
+    "n": 30,
+    "date": "2026-10-21"
+   },
    {
     "id": "2026-10-20",
     "nom": "Jour 10 · Der Bundestag beschließt die Notfallreform",
@@ -185,7 +203,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-18",
     "nom": "Jour 8 · BioNTech schließt drei Standorte",
-    "n": 32,
+    "n": 30,
     "date": "2026-10-18"
    },
    {
@@ -221,7 +239,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-11",
     "nom": "Jour 2 · Die deutsche Wirtschaft wächst wieder",
-    "n": 25,
+    "n": 24,
     "date": "2026-10-11"
    },
    {
@@ -231,8 +249,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 294,
-  "v": "63effa99e7"
+  "n": 321,
+  "v": "adb9b8bb25"
  },
  {
   "id": "hgg1-ch1",
