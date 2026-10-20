@@ -28,7 +28,10 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   plus récent est celui de la carte du haut de l'index (`.une` ou `.i-une`) : la mettre à jour
   suffit, rien d'autre à faire.
 - Pages réservées à l'administrateur : `PAGES_ADMIN` dans `auth.js` (`admin.html`,
-  `idees-articles.html`, `mes-newsletters.html`). Une nouvelle page admin s'ajoute à cette
+  `idees-articles.html`, `mes-newsletters.html`, `mon-planning.html`). `mon-planning.html` : agenda
+  personnel du propriétaire (habillage « carnet pointillé » + grille horaire, **pas d'italique**),
+  synchronisé dans `planning/planning.json` du bucket privé `newsletters` ; interrupteurs « Au quotidien »
+  (anglais, espagnol, allemand, fiche HGG) qui ajoutent une ligne par jour. Une nouvelle page admin s'ajoute à cette
   liste et au menu admin de `auth.js`, dans le même style que `idees-articles.html`.
 - Tester une page avec Playwright : `NODE_PATH=$(npm root -g)` pour Node, Chromium dans
   `/opt/pw-browsers/chromium`. Remplacer `auth.js` par un script vide (sinon redirection

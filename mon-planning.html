@@ -103,6 +103,17 @@
   .mini button i { position: absolute; left: 50%; bottom: 3px; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: var(--encre); }
   .mini button.auj i { background: #fff; }
 
+  /* Interrupteurs « Au quotidien » */
+  .quot { display: flex; flex-direction: column; gap: 2px; }
+  .interr { display: flex; align-items: center; gap: 10px; min-height: 36px; font-size: 14px; cursor: pointer; }
+  .interr input { position: absolute; opacity: 0; pointer-events: none; }
+  .interr .bascule { width: 34px; height: 18px; border: 1.5px solid var(--encre); position: relative; flex-shrink: 0; background: var(--blanc); transition: background .15s; }
+  .interr .bascule::after { content: ''; position: absolute; top: 2px; left: 2px; width: 11px; height: 11px; background: var(--encre); transition: transform .15s; }
+  .interr input:checked + .bascule { background: var(--encre); }
+  .interr input:checked + .bascule::after { background: var(--papier); transform: translateX(16px); }
+  .interr input:focus-visible + .bascule { outline: 2px solid var(--tomate); outline-offset: 2px; }
+  .interr i { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
   /* Champs « carnet » */
   .champ-l { width: 100%; height: 44px; border: 1.5px solid var(--encre); background: var(--blanc); padding: 0 12px; font-size: 15px; outline: none; border-radius: 0; }
   .champ-l:focus { box-shadow: 3px 3px 0 var(--encre); }
@@ -207,6 +218,11 @@
   .ligne .q { font-size: 11px; color: var(--gris); margin-left: 5px; }
   .ligne.fait .txt { color: #9a9384; text-decoration: line-through; }
   .ligne.type-note .txt { color: var(--gris); }
+  .ligne.quotidien { font-size: 13px; }
+  .ligne.quotidien .txt { color: var(--c); font-weight: 500; }
+  .ligne.quotidien.fait .txt { color: #9a9384; }
+  .q-lien { font-size: 11.5px; font-weight: 400; color: var(--gris); text-decoration: none; white-space: nowrap; }
+  .q-lien:hover { color: var(--encre); text-decoration: underline; }
   .ligne.prio-haute .txt { font-weight: 600; }
   /* Polaroïd (page du site avec image) */
   .polaroid { background: #fff; padding: 6px 6px 8px; box-shadow: 0 1px 0 var(--filet), 0 6px 14px rgba(40,30,10,.12); display: flex; flex-direction: column; gap: 5px; margin: 6px 2px 4px; }
@@ -330,6 +346,12 @@
     </section>
 
     <section>
+      <div class="titre-bloc"><span class="petit">Au quotidien</span></div>
+      <div class="quot" id="quot"></div>
+      <p class="aide">Une ligne à cocher chaque jour, avec le lien vers le texte ou la fiche du jour.</p>
+    </section>
+
+    <section>
       <div class="titre-bloc"><span class="petit">Écrire une ligne</span></div>
       <input class="champ-l" type="text" id="rapide-titre" placeholder="Relire le chapitre 3 demain 14h" aria-label="Ajouter un élément">
       <div class="rangee">
@@ -437,6 +459,13 @@
   var MOIS_C = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
   var PRIO = { haute: 0, normale: 1, basse: 2 };
   var HEURE_PX = 48;
+  /* Espaces « au quotidien » qu'on peut faire apparaître chaque jour dans le planning. */
+  var ESPACES = {
+    anglais:  { court: 'Anglais', nom: 'Anglais au quotidien',  c: '#1d2a5c', dossier: 'premiere_annee/langues/anglais/quotidien/' },
+    espagnol: { court: 'Espagnol', nom: 'Espagnol au quotidien', c: '#b33a20', dossier: 'premiere_annee/langues/espagnol/quotidien/' },
+    allemand: { court: 'Allemand', nom: 'Allemand au quotidien', c: '#a8661a', dossier: 'premiere_annee/langues/allemand/quotidien/' },
+    hgg:      { court: 'Fiche HGG', nom: 'Fiche HGG du jour',     c: '#2f7a55', dossier: 'premiere_annee/hgg/quotidien/', fiches: true }
+  };
 
   function $(s) { return document.querySelector(s); }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -471,7 +500,9 @@
   var etat = { items: [], suppr: {} };
   try { var l = JSON.parse(localStorage.getItem(K_LOCAL) || 'null'); if (l && Array.isArray(l.items)) etat = l; } catch (e) {}
   etat.suppr = etat.suppr || {};
-  var instantane = {};
+  etat.reglages = etat.reglages || { quotidien: {}, m: 0 };
+  etat.reglages.quotidien = etat.reglages.quotidien || {};
+  var instantane = {}, reglagesAvant = JSON.stringify(etat.reglages.quotidien);
   function empreinte(x) { var c = {}; Object.keys(x).forEach(function (k) { if (k !== 'm') c[k] = x[k]; }); return JSON.stringify(c); }
   function photographier() { instantane = {}; etat.items.forEach(function (x) { instantane[x.id] = empreinte(x); }); }
   photographier();
@@ -485,6 +516,8 @@
     var t = Date.now(), vus = {};
     etat.items.forEach(function (x) { vus[x.id] = 1; if (instantane[x.id] !== empreinte(x)) x.m = t; });
     Object.keys(instantane).forEach(function (id) { if (!vus[id]) etat.suppr[id] = t; });
+    var r = JSON.stringify(etat.reglages.quotidien);
+    if (r !== reglagesAvant) { etat.reglages.m = t; reglagesAvant = r; }
     photographier();
     try { localStorage.setItem(K_LOCAL, JSON.stringify(etat)); } catch (e) {}
     if (!client) return;
@@ -507,10 +540,11 @@
     });
     var items = Object.keys(parId).map(function (id) { return parId[id]; })
       .filter(function (x) { return !(suppr[x.id] && suppr[x.id] >= (x.m || 0)); });
-    return { items: items, suppr: suppr };
+    var ra = a.reglages || { quotidien: {}, m: 0 }, rb = b.reglages || { quotidien: {}, m: 0 };
+    return { items: items, suppr: suppr, reglages: (rb.m || 0) > (ra.m || 0) ? rb : ra };
   }
   function signature(d) {
-    return d.items.map(function (x) { return x.id + ':' + (x.m || 0); }).sort().join() + '|' + Object.keys(d.suppr || {}).sort().join();
+    return d.items.map(function (x) { return x.id + ':' + (x.m || 0); }).sort().join() + '|' + Object.keys(d.suppr || {}).sort().join() + '|' + ((d.reglages && d.reglages.m) || 0);
   }
   function tirer() {
     if (!client) return Promise.resolve();
@@ -527,6 +561,8 @@
         var f = fusionner(etat, distant);
         var avant = JSON.stringify(etat);
         etat = f;
+        etat.reglages.quotidien = etat.reglages.quotidien || {};
+        reglagesAvant = JSON.stringify(etat.reglages.quotidien);
         photographier();
         try { localStorage.setItem(K_LOCAL, JSON.stringify(etat)); } catch (e) {}
         if (JSON.stringify(etat) !== avant) rendre();
@@ -625,6 +661,77 @@
   /* Retire du texte d'origine le passage trouvé dans sa version sans accents (même longueur). */
   function retirer(t, s, r) { return t.slice(0, r.index) + ' ' + t.slice(r.index + r[0].length); }
 
+  /* ─── Au quotidien : une ligne par jour et par espace activé ───
+     Identifiant fixe (q-<espace>-<date>) : deux appareils créent la même ligne sans doublon.
+     Lignes créées pour les jours affichés, à partir d'aujourd'hui (et du jour d'activation). */
+  var fichesHgg = null;
+  function chargerFichesHgg() {
+    if (fichesHgg) return Promise.resolve(fichesHgg);
+    return fetch(ESPACES.hgg.dossier + 'index.html', { cache: 'no-cache' }).then(function (r) { return r.text(); })
+      .then(function (t) {
+        fichesHgg = {};
+        t.replace(/data-slug="([^"]+)"\s+data-date="(\d{4}-\d{2}-\d{2})"/g, function (m, slug, date) { fichesHgg[date] = slug; return m; });
+        return fichesHgg;
+      }).catch(function () { fichesHgg = {}; return fichesHgg; });
+  }
+  function pageIndex(url) { return pages && pages.filter(function (p) { return p.url === url; })[0]; }
+  function lienQuotidien(k, s) {
+    var e = ESPACES[k], auj = aujourdhui(), url;
+    if (e.fiches) url = fichesHgg && fichesHgg[s] ? e.dossier + fichesHgg[s] + '.html' : e.dossier + 'index.html';
+    else url = s <= auj || pageIndex(e.dossier + 'jour-' + s + '.html') ? e.dossier + 'jour-' + s + '.html' : e.dossier + 'index.html';
+    var p = pageIndex(url), n = p && p.titre.match(/jour (\d+)/i);
+    var rub = /index\.html$/.test(url) ? 'Ouvrir l’espace' : n ? 'Jour ' + n[1] : p ? typo(p.titre.replace(/^.*?:\s*/, '')) : e.fiches ? 'Fiche du jour' : 'Texte du jour';
+    return { url: url, titre: p ? p.titre : e.nom, rub: rub, sec: 'langues', image: '' };
+  }
+  function joursAffiches() {
+    var auj = aujourdhui(), l = [];
+    if (vue === 'mois') {
+      var d = versDate(curseur), n = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+      for (var i = 1; i <= n; i++) l.push(iso(new Date(d.getFullYear(), d.getMonth(), i)));
+    } else if (vue === 'liste') { for (var j = 0; j < 14; j++) l.push(ajoute(auj, j)); }
+    else { var lun = lundi(curseur); for (var k = 0; k < 7; k++) l.push(ajoute(lun, k)); }
+    if (l.indexOf(auj) === -1) l.push(auj);
+    return l;
+  }
+  function assurerQuotidien() {
+    var q = etat.reglages.quotidien, auj = aujourdhui(), change = false;
+    Object.keys(ESPACES).forEach(function (k) {
+      var act = q[k]; if (!act) return;
+      joursAffiches().forEach(function (s) {
+        if (s < auj || s < act.depuis) return;
+        var id = 'q-' + k + '-' + s;
+        if (trouver(id) || (etat.suppr[id] && etat.suppr[id] > act.t)) return;
+        var x = nouvelElement({ titre: ESPACES[k].nom, date: s, cat: 'prepa', site: lienQuotidien(k, s) });
+        x.id = id; x.q = k;
+        etat.items.push(x); change = true;
+      });
+    });
+    /* Lien et numéro du jour mis à jour quand la page du jour existe. */
+    etat.items.forEach(function (x) {
+      if (!x.q || x.fait || x.date < auj || !ESPACES[x.q]) return;
+      var l = lienQuotidien(x.q, x.date);
+      if (!x.site || x.site.url !== l.url || x.site.rub !== l.rub) { x.site = l; change = true; }
+    });
+    if (change) enregistrer();
+  }
+  function basculerQuotidien(k, oui) {
+    var auj = aujourdhui();
+    if (oui) etat.reglages.quotidien[k] = { depuis: auj, t: Date.now() };
+    else {
+      etat.reglages.quotidien[k] = false;
+      etat.items = etat.items.filter(function (x) { return !(x.q === k && !x.fait && x.date >= auj); });
+    }
+    enregistrer(); rendre();
+    if (oui && ESPACES[k].fiches) chargerFichesHgg().then(rendre);
+  }
+  function rendreQuotidien() {
+    var q = etat.reglages.quotidien;
+    $('#quot').innerHTML = Object.keys(ESPACES).map(function (k) {
+      return '<label class="interr"><input type="checkbox" data-q="' + k + '"' + (q[k] ? ' checked' : '') + '><span class="bascule" aria-hidden="true"></span>' + ESPACES[k].nom + '</label>';
+    }).join('');
+  }
+  $('#quot').addEventListener('change', function (e) { var c = e.target.closest('[data-q]'); if (c) basculerQuotidien(c.dataset.q, c.checked); });
+
   /* ─── Rendu ─── */
   var vue = 'semaine', curseur = aujourdhui(), filtreCat = '', moisMini = null;
   try { vue = localStorage.getItem('ecg-planning-vue') || 'semaine'; } catch (e) {}
@@ -636,6 +743,8 @@
     if (!!a.heure !== !!b.heure) return a.heure ? -1 : 1;
     if (a.heure && b.heure && a.heure !== b.heure) return a.heure < b.heure ? -1 : 1;
     if (PRIO[a.prio] !== PRIO[b.prio]) return PRIO[a.prio] - PRIO[b.prio];
+    if (a.q && b.q) return Object.keys(ESPACES).indexOf(a.q) - Object.keys(ESPACES).indexOf(b.q);
+    if (!!a.q !== !!b.q) return a.q ? -1 : 1;
     return a.ordre - b.ordre;
   }
   function duJour(s) { return visibles().filter(function (x) { return x.date === s; }).sort(trier); }
@@ -644,7 +753,10 @@
   var images = {};
   function imageDe(site) { return site && (site.image || images[site.url]) || ''; }
 
-  function cat(x) { return CATS[x.cat] || CATS.autre; }
+  function cat(x) {
+    var c = CATS[x.cat] || CATS.autre;
+    return x.q && ESPACES[x.q] ? { nom: c.nom, c: ESPACES[x.q].c, p: c.p } : c;
+  }
   function classes(x, base) { return base + ' el type-' + x.type + (x.fait ? ' fait' : '') + (x.prio === 'haute' ? ' prio-haute' : ''); }
   function attrs(x) { return ' draggable="true" data-id="' + x.id + '" style="--c:' + cat(x).c + (x.site ? ';--sec:' + (SECS[x.site.sec] || SECS.autre) : '') + (x.cat ? ';--p:' + cat(x).p : '') + '"'; }
   function puce(x) {
@@ -670,20 +782,27 @@
   }
   /* Ligne de carnet : puce, heure, texte. */
   function ligne(x, avecDate) {
-    if (x.site && imageDe(x.site)) return polaroid(x, avecDate);
+    /* Ligne du quotidien : nom court, lien vers le texte ou la fiche du jour quand elle existe. */
+    if (x.q && ESPACES[x.q]) {
+      var lien = x.site && !/index\.html$/.test(x.site.url) ? ' <a class="q-lien" href="' + esc(x.site.url) + '" data-a="lien">' + tx(x.site.rub) + '&nbsp;↗</a>' : '';
+      return '<div class="' + classes(x, 'ligne') + ' quotidien"' + attrs(x) + '>' + puce(x) +
+        '<span class="txt">' + (avecDate && x.date ? '<span class="h">' + jourCourt(x.date) + '</span>' : '') +
+        (x.heure ? '<span class="h">' + heureLisible(x.heure) + '</span>' : '') + esc(ESPACES[x.q].court) + lien + '</span></div>';
+    }
+    if (x.site && !x.q && imageDe(x.site)) return polaroid(x, avecDate);
     return '<div class="' + classes(x, 'ligne') + '"' + attrs(x) + '>' + puce(x) +
       '<span class="txt">' + (avecDate && x.date ? '<span class="h">' + jourCourt(x.date) + '</span>' : '') +
       (x.heure ? '<span class="h">' + heureLisible(x.heure) + '</span>' : '') + tx(x.titre) + extras(x) + lienSite(x) + '</span></div>';
   }
   /* « À planifier » : post-it, ou polaroïd pour une page du site. */
   function postit(x) {
-    if (x.site && imageDe(x.site)) return polaroid(x);
+    if (x.site && !x.q && imageDe(x.site)) return polaroid(x);
     return '<div class="' + classes(x, 'postit') + '"' + attrs(x) + '>' + caseC(x) +
       '<span class="txt">' + tx(x.titre) + extras(x) + lienSite(x) + '</span></div>';
   }
   /* Bloc de la grille horaire. */
   function bloc(x, haut, hauteur, voie, voies) {
-    var img = imageDe(x.site), fin = minutes(x.heure) + (x.duree || 60);
+    var img = x.q ? '' : imageDe(x.site), fin = minutes(x.heure) + (x.duree || 60);
     return '<div class="' + classes(x, 'bloc' + (hauteur < 60 ? ' court' : '')) + '"' + attrs(x).replace('style="', 'style="top:' + haut + 'px;height:' + hauteur + 'px;left:calc(' + (100 * voie / voies) + '% + 3px);width:calc(' + (100 / voies) + '% - 6px);') + '>' +
       (img && hauteur >= 78 ? '<img src="' + esc(img) + '" alt="" loading="lazy" draggable="false">' : '') +
       '<div class="t">' + caseC(x) + '<span>' + tx(x.titre) + '</span></div>' +
@@ -797,7 +916,7 @@
       html += '<div class="case' + (dd.getMonth() !== d.getMonth() ? ' hors' : '') + (s === auj ? ' auj' : '') + '" data-date="' + s + '" data-a="jour">' +
         '<span class="case-num">' + dd.getDate() + '</span>' +
         liste.slice(0, 4).map(function (x) {
-          return '<div class="puce-m' + (x.fait ? ' fait' : '') + '" style="--c:' + cat(x).c + '"><b>' + (x.type === 'tache' ? (x.fait ? '×' : '•') : x.type === 'rdv' ? '○' : '–') + (x.heure ? ' ' + heureLisible(x.heure) : '') + '</b>' + tx(x.titre) + '</div>';
+          return '<div class="puce-m' + (x.fait ? ' fait' : '') + '" style="--c:' + cat(x).c + '"><b>' + (x.type === 'tache' ? (x.fait ? '×' : '•') : x.type === 'rdv' ? '○' : '–') + (x.heure ? ' ' + heureLisible(x.heure) : '') + '</b>' + (x.q && ESPACES[x.q] ? esc(ESPACES[x.q].court) : tx(x.titre)) + '</div>';
         }).join('') +
         (liste.length > 4 ? '<span class="plus">+' + (liste.length - 4) + '</span>' : '') +
         '</div>';
@@ -847,7 +966,7 @@
     $('#bac').innerHTML = (bac.length ? bac.map(postit).join('') : '<p class="vide">Rien en attente. Les éléments sans date arrivent ici.</p>') +
       (faitsBac.length ? '<button class="btn petit-b" id="purger" style="align-self:flex-start">' + (faitsBac.length > 1 ? 'Effacer les ' + faitsBac.length + ' éléments faits' : 'Effacer l’élément fait') + '</button>' : '');
     $('#nb-bac').textContent = bac.length || '';
-    var retard = visibles().filter(function (x) { return x.date && x.date < auj && x.type === 'tache' && !x.fait; }).sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+    var retard = visibles().filter(function (x) { return x.date && x.date < auj && x.type === 'tache' && !x.fait && !x.q; }).sort(function (a, b) { return a.date < b.date ? -1 : 1; });
     $('#bloc-retard').hidden = !retard.length;
     $('#nb-retard').textContent = retard.length || '';
     $('#retard').innerHTML = retard.map(function (x) { return ligne(x, true); }).join('');
@@ -856,7 +975,7 @@
     var aFaire = function (x) { return x.type === 'tache' && !x.fait; };
     $('#st-auj').textContent = tous.filter(function (x) { return x.date === auj && aFaire(x); }).length;
     $('#st-sem').textContent = tous.filter(function (x) { return x.date >= auj && x.date <= dim && aFaire(x); }).length;
-    var nr = tous.filter(function (x) { return x.date && x.date < auj && aFaire(x); }).length;
+    var nr = tous.filter(function (x) { return x.date && x.date < auj && aFaire(x) && !x.q; }).length;
     $('#st-retard').textContent = nr;
     $('#st-retard').classList.toggle('alerte', nr > 0);
   }
@@ -872,10 +991,12 @@
   }
 
   function rendre() {
+    assurerQuotidien();
     document.querySelectorAll('#onglets button').forEach(function (b) { b.classList.toggle('on', b.dataset.v === vue); });
     ['#prec', '#suiv', '#auj'].forEach(function (s) { $(s).hidden = vue === 'liste'; });
     if (vue === 'mois') rendreMois(); else if (vue === 'liste') rendreListe(); else rendreSemaine();
     rendreMini();
+    rendreQuotidien();
     rendreCote();
     rendreFiltres();
   }
@@ -1031,7 +1152,7 @@
   });
   $('#retard-auj').addEventListener('click', function () {
     var auj = aujourdhui(), avant = JSON.stringify(etat.items);
-    etat.items.forEach(function (x) { if (x.date && x.date < auj && x.type === 'tache' && !x.fait) x.date = auj; });
+    etat.items.forEach(function (x) { if (x.date && x.date < auj && x.type === 'tache' && !x.fait && !x.q) x.date = auj; });
     enregistrer(); rendre();
     toast('Reporté à aujourd’hui', function () { etat.items = JSON.parse(avant); enregistrer(); rendre(); });
   });
@@ -1098,7 +1219,8 @@
   if (viderFile()) enregistrer();
   rendre();
   /* Les images des pages ajoutées depuis le menu du compte viennent de l'index. */
-  if (etat.items.some(function (x) { return x.site && !x.site.image; })) chargerPages().then(rendre);
+  if (etat.items.some(function (x) { return x.site && !x.site.image; }) || Object.keys(etat.reglages.quotidien).some(function (k) { return etat.reglages.quotidien[k]; })) chargerPages().then(rendre);
+  if (etat.reglages.quotidien.hgg) chargerFichesHgg().then(rendre);
 
   function demarrerSync() {
     var A = window.ECGAuth;
