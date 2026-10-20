@@ -380,8 +380,8 @@ page pays ou région :
   Newsreader, accent rouge brique) : héros + « Votre parcours », 01 le cours, 02 les auteurs, 03 les œuvres,
   04 entrer par une notion, 05 dernières fiches.
 - Rien à y mettre à jour quand une fiche s'ajoute : le script de la page lit les tableaux `OEUVRES` des index
-  Littérature, Cinéma et Art, la frise de `fiches-auteurs.html` et `nouveautes.js`. Seuls restent écrits à la
-  main : la carte du cours (nouveau cours) et les totaux « 29 œuvres d'art » et « 16 musiques ».
+  Littérature, Cinéma, Art et Musique (chiffres du héros, jauges de « Votre parcours », cartes des rubriques), la
+  frise de `fiches-auteurs.html` et `nouveautes.js`. Seule reste écrite à la main la carte du cours (nouveau cours).
 
 ### Index de la culture générale (`culture-generale.html`)
 
