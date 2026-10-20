@@ -121,6 +121,16 @@ def visuel_de(rel, contenu):
     return RUBRIQUES[p[1]], chemin, (c.group(1) if c else '#a83a2e'), '\u00a0· '.join(m)
 
 
+def cours_de(rel, contenu):
+    """Cours d'Humanité : (« Cours N », image du héros, couleur, « L'Humanité · 2e année »), sinon None."""
+    m = re.search(r'cours-humanite/Cours/cours(\d+)\.html$', rel)
+    img = re.search(r'<div class="ch-hero-media"><img src="([^"]+)"', contenu)
+    if not m or not img:
+        return None
+    chemin = os.path.normpath(os.path.join(RACINE, os.path.dirname(rel), img.group(1)))
+    c = re.search(r'--accent:\s*(#[0-9a-fA-F]{6})', contenu)
+    return 'Cours ' + m.group(1), chemin, (c.group(1) if c else '#a83a2e'), "L'Humanité\u00a0· 2e année"
+
 def auteur_de(rel, contenu):
     """Fiche auteur de l'Humanité : (« Fiche auteur », portrait, couleur, « naissance – mort »), sinon None."""
     if '/Fiches auteurs/' not in rel or 'class="f-portrait"' not in contenu:
@@ -261,9 +271,11 @@ def main():
             sortie = 'partage/' + cle + '.jpg'
             os.makedirs(os.path.dirname(RACINE + sortie), exist_ok=True)
             photo = photo_de(rel, contenu)
-            visuel = None if photo else (visuel_de(rel, contenu) or auteur_de(rel, contenu))
+            visuel = None if photo else (visuel_de(rel, contenu) or auteur_de(rel, contenu) or cours_de(rel, contenu))
             if visuel:
                 rub, img, couleur, meta = visuel
+                if rub.startswith('Cours '):
+                    titre = re.sub(r'^Cours Humanité\s*·\s*', '', titre)
                 if rub == 'Fiche auteur':
                     h1 = re.search(r'<h1[^>]*>(.*?)</h1>', contenu, re.S)
                     if h1: titre = html.unescape(re.sub(r'<[^>]+>', '', h1.group(1))).strip()
@@ -276,7 +288,7 @@ def main():
                   document.getElementById('meta').textContent = meta;
                   let n = 0; const fini = () => { if (++n === 2) ok(); };
                   const v = document.getElementById('vis');
-                  v.onload = () => { const W = 420, H = 470, r = v.naturalWidth / v.naturalHeight;
+                  v.onload = () => { const W = 420, H = 470, r = rub.startsWith('Cours ') ? Math.min(v.naturalWidth / v.naturalHeight, 1.3) : v.naturalWidth / v.naturalHeight;
                     const w = r > W / H ? W : H * r; v.style.width = w + 'px'; v.style.height = w / r + 'px'; fini(); };
                   v.onerror = fini; v.src = img;
                   const f = document.getElementById('fond'); f.onload = f.onerror = fini; f.src = img; })""",

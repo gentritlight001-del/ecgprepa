@@ -73,7 +73,8 @@ directement après chaque modification, sans attendre un nouveau « mets en lign
    l'Humanité qui ont un visuel (`ch-hero-visuel` : affiche, couverture, œuvre, pochette) suivent le même esprit :
    visuel flou et assombri en fond, visuel net à droite, pastille de la rubrique, titre, « auteur · année » (`.meta`),
    « ecg-prepa.fr · L'Humanité », pastille et filet à la couleur de la fiche (`--c`). Les fiches auteurs aussi (portrait
-   `f-portrait`, pastille « Fiche auteur », nom du `<h1>`, années de naissance et de mort, couleur `--accent`). Les autres pages gardent un aplat de couleur. Regarder l'image produite : si le
+   `f-portrait`, pastille « Fiche auteur », nom du `<h1>`, années de naissance et de mort, couleur `--accent`). Et les cours d'Humanité (image du héros
+   `ch-hero-media` recadrée, pastille « Cours N », titre, « L'Humanité · 2e année »). Les autres pages gardent un aplat de couleur. Regarder l'image produite : si le
    visage ou le sujet de la photo passe sous le titre, le signaler au propriétaire.
    Pour **refaire** l'image d'une page qui en a déjà une (photo ou titre changés) :
    `python3 outils/images-partage.py --refaire <page>` (l'adresse prend `?v=<date et heure>`, sinon
