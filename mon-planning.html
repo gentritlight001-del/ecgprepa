@@ -251,7 +251,7 @@
   .polaroid:nth-child(odd) { transform: rotate(-1.5deg); }
   .polaroid:nth-child(even) { transform: rotate(1.2deg); }
   .polaroid:hover { transform: none; }
-  .polaroid::before { content: ''; position: absolute; top: -8px; left: 50%; width: 46px; height: 14px; margin-left: -23px; background: color-mix(in srgb, var(--c) 30%, transparent); }
+  .polaroid::before { content: ''; position: absolute; top: -8px; left: 50%; width: 46px; height: 14px; margin-left: -23px; background: var(--scotch, #f6dd7a); opacity: .8; }
   .polaroid img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; }
   .polaroid .rub { font-size: 10px; color: var(--sec, var(--tomate-texte)); text-decoration: none; }
   .polaroid .rub:hover { text-decoration: underline; }
@@ -836,9 +836,12 @@
   }
 
   /* Page du site avec image : polaroïd scotché. */
+  /* Scotch des polaroïds : couleurs qui alternent, comme les post-it. */
+  var rangScotch = 0;
   function polaroid(x, avecDate) {
+    var scotch = COULEURS_POSTIT[rangScotch++ % COULEURS_POSTIT.length];
     var img = imgDe(x), avant = (avecDate && x.date ? jourCourt(x.date) + ' · ' : '') + (x.heure ? heureLisible(x.heure) + ' · ' : '');
-    return '<div class="' + classes(x, 'polaroid') + '"' + attrs(x) + '>' +
+    return '<div class="' + classes(x, 'polaroid') + '"' + attrs(x).replace('style="', 'style="--scotch:' + scotch + ';') + '>' +
       '<img src="' + esc(img) + '" alt="" loading="lazy" draggable="false">' +
       (x.site ? '<a class="rub" href="' + esc(x.site.url) + '" data-a="lien">' + avant + esc(x.site.rub || 'Page du site') + '</a>'
               : '<span class="rub" style="--sec:' + cat(x).c + '">' + avant + esc(cat(x).nom) + '</span>') +
@@ -1078,6 +1081,7 @@
   }
 
   function rendre() {
+    rangScotch = 0;
     assurerQuotidien();
     document.querySelectorAll('#onglets button').forEach(function (b) { b.classList.toggle('on', b.dataset.v === vue); });
     ['#prec', '#suiv', '#auj'].forEach(function (s) { $(s).hidden = vue === 'liste' && !unJour(); });
