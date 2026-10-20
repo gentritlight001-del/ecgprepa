@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Art — D'où venons-nous ? Que sommes-nous ? Où allons-nous ?</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<style>
+  :root {
+    --c: #37589a;          /* couleur de la fiche */
+    --c-soft: #e8edf6;
+    --fond: #f5f4f0;
+    --carte: #ffffff;
+    --encre: #18181b;
+    --texte: #3f3f46;
+    --discret: #52525b;
+    --ligne: #e4e2dc;
+    --titre: 'Bricolage Grotesque', system-ui, sans-serif;
+    --corps: 'Newsreader', Georgia, serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--fond); color: var(--encre); font-family: var(--corps); font-size: 1.125rem; line-height: 1.65; min-height: 100vh; }
+  strong { font-weight: 600; color: var(--encre); }
+  a { color: inherit; }
+
+  /* ─── Barre du haut ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 14px 48px; background: var(--carte); border-bottom: 1px solid var(--ligne);
+    position: sticky; top: 0; z-index: 100; font-family: var(--titre);
+  }
+  .nav-logo { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em; }
+  .nav-logo a { color: var(--encre); text-decoration: none; }
+  .breadcrumb { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: calc(100% - 420px); display: flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; overflow: hidden; font-size: 0.85rem; color: var(--discret); }
+  .breadcrumb .current { overflow: hidden; text-overflow: ellipsis; }
+  .breadcrumb a { text-decoration: none; }
+  .breadcrumb a:hover { color: var(--c); }
+  .breadcrumb .sep { color: #a1a1aa; }
+  .breadcrumb .current { color: var(--encre); }
+
+  /* ─── Bandeau ─── */
+  .ch-hero { position: relative; background: var(--c); color: #fff; padding: 56px 48px 84px; overflow: hidden; }
+  .ch-hero-fond { display: none; }
+  .ch-hero-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 40px 56px; }
+  .ch-hero-texte { flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+  .chap-label { display: flex; flex-wrap: wrap; gap: 8px; font-family: var(--titre); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .chap-label span { background: rgba(255,255,255,0.18); padding: 6px 12px; border-radius: 999px; }
+  .ch-hero h1 { font-family: var(--titre); font-weight: 800; font-size: calc(var(--t, 1) * clamp(3rem, 8vw, 6rem)); line-height: 0.95; letter-spacing: -0.02em; }
+  .ch-hero .meta { font-family: var(--titre); font-size: 1.2rem; font-weight: 500; opacity: 0.92; }
+  .ch-hero .pitch { max-width: 620px; font-size: 1.3rem; line-height: 1.5; }
+  .ch-hero-visuel { flex: 0 0 240px; max-width: 100%; aspect-ratio: 2 / 3; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+  .ch-hero-visuel.paysage { flex: 1 1 420px; aspect-ratio: auto; }
+  .ch-hero-visuel.paysage img { height: auto; }
+  .ch-hero-visuel img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  /* ─── L'essentiel ─── */
+  .essentiel {
+    position: relative; max-width: 1040px; margin: -44px auto 0; background: var(--carte); border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(24,24,27,0.10); padding: 28px 32px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 20px 40px;
+  }
+  .essentiel-wrap { padding: 0 48px; }
+  .essentiel-these { flex: 999 1 420px; min-width: 0; }
+  .etiquette { font-family: var(--titre); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c); }
+  .essentiel-these p { margin-top: 6px; font-size: 1.35rem; line-height: 1.4; font-weight: 600; }
+  .notions { flex: 1 1 300px; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+  .notions li { font-family: var(--titre); font-size: 0.92rem; font-weight: 500; padding: 8px 14px; border-radius: 999px; background: var(--c-soft); color: var(--c); }
+
+  /* ─── Corps ─── */
+  .page { max-width: 820px; margin: 0 auto; padding: 64px 48px 72px; }
+
+  .content { display: flex; flex-direction: column; gap: 64px; }
+  .hgg-part { scroll-margin-top: 90px; }
+  .hgg-part-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 20px; }
+  .hgg-part-num { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; color: var(--c); }
+  .hgg-part-title { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; letter-spacing: -0.01em; }
+  .hgg-section { margin-top: 32px; scroll-margin-top: 90px; }
+  .hgg-section-title { font-family: var(--titre); font-weight: 700; font-size: 1.35rem; line-height: 1.25; margin-bottom: 12px; }
+  .hgg-section-title .num { color: var(--c); margin-right: 6px; }
+  .content p { color: var(--texte); margin-bottom: 16px; }
+  .content p:last-child { margin-bottom: 0; }
+
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 8px 0 24px; }
+  .hgg-stat-cell { background: var(--carte); border-radius: 12px; padding: 18px 20px; }
+  .hgg-stat-num { display: block; font-family: var(--titre); font-weight: 800; font-size: 2.2rem; line-height: 1; color: var(--c); }
+  .hgg-stat-label { margin-top: 6px; font-family: var(--titre); font-size: 0.88rem; color: var(--discret); }
+
+  .carte { background: var(--carte); border-radius: 14px; padding: 22px 26px; margin: 20px 0; }
+  .carte h3 { font-family: var(--titre); font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+  .carte p { font-size: 1.05rem; }
+  .carte .etiquette { margin-bottom: 8px; }
+  .surligne { background: var(--c-soft); border-radius: 14px; padding: 20px 24px; margin: 20px 0; color: #2a1d12; font-size: 1.08rem; }
+  .duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 20px 0; }
+  .duo .carte { margin: 0; }
+  .duo .carte.pleine { background: var(--c); }
+  .duo .carte.pleine h3, .duo .carte.pleine p { color: #fff; }
+  .sujets { background: var(--carte); border-radius: 16px; margin-top: 16px; overflow: hidden; }
+  .sujet + .sujet { border-top: 1px solid var(--ligne); }
+  .sujet summary { list-style: none; display: flex; gap: 14px; align-items: baseline; padding: 16px 22px; cursor: pointer; font-family: var(--titre); font-weight: 700; font-size: 1.08rem; line-height: 1.35; }
+  .sujet summary::-webkit-details-marker { display: none; }
+  .sujet summary .n { flex: 0 0 auto; font-weight: 800; color: var(--c); }
+  .sujet summary .q { flex: 1; }
+  .sujet summary::after { content: '+'; flex: 0 0 auto; font-size: 1.3rem; line-height: 1; color: var(--c); transition: transform 0.2s; }
+  .sujet[open] summary::after { transform: rotate(45deg); }
+  .sujet summary:hover .q { color: var(--c); }
+  .sujet-corps { padding: 0 22px 18px 58px; }
+  .sujet-corps p { font-size: 1.02rem; margin-bottom: 10px; }
+  .sujet-corps .reperes { font-family: var(--titre); font-size: 0.88rem; line-height: 1.5; color: var(--discret); display: flex; flex-direction: column; gap: 4px; }
+  .sujet-corps .reperes b { color: var(--c); font-weight: 700; }
+  .sujet a { color: var(--c); text-decoration: underline; text-underline-offset: 2px; }
+
+  .copie { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 8px; }
+  .copie .carte { margin: 0; }
+  .retenir { flex: 1 1 100%; min-width: 0; }
+  .retenir ol { padding-left: 22px; display: flex; flex-direction: column; gap: 10px; font-size: 1.05rem; color: var(--texte); }
+  .rapprocher { flex: 1 1 100%; min-width: 0; background: var(--c) !important; }
+  .rapprocher .etiquette, .rapprocher p, .rapprocher em { color: #fff; }
+  .rapprocher .etiquette { opacity: 0.85; }
+  .rapprocher strong, .rapprocher a, .duo .carte.pleine strong { color: #fff; }
+
+  /* ─── Fin de page ─── */
+  .fin { border-top: 1px solid var(--ligne); background: var(--carte); padding: 24px 48px; }
+  .fin-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; font-family: var(--titre); font-size: 0.95rem; }
+  .fin a { text-decoration: none; padding: 12px 0; }
+  .fin a:hover { color: var(--c); }
+  .bouton-lu { font: 700 0.95rem var(--titre); color: #fff; background: var(--c); border: 1.5px solid var(--c); border-radius: 999px; padding: 12px 22px; min-height: 44px; cursor: pointer; }
+  .bouton-lu.fait { background: transparent; color: var(--c); }
+
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--encre); color: #fff; border: none; border-radius: 50%; font-size: 1.1rem; cursor: pointer; opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 99; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+  }
+  @media (max-width: 760px) {
+    .breadcrumb { display: none; }
+  }
+  @media (max-width: 640px) {
+    nav { padding: 12px 16px; }
+    .breadcrumb { display: none; }
+    .ch-hero { padding: 36px 16px 72px; }
+    .ch-hero-visuel { flex-basis: 160px; }
+    .essentiel-wrap { padding: 0 16px; }
+    .essentiel { padding: 22px 20px; }
+    .page { padding: 40px 16px 56px; }
+    .fin { padding: 20px 16px; }
+    .sujet summary { padding: 14px 16px; }
+    .sujet-corps { padding: 0 16px 16px; }
+    .hgg-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .hgg-stat-cell { padding: 14px 12px; }
+    .hgg-stat-num { font-size: 1.6rem; }
+  }
+
+  @media print {
+    .sujet-corps { display: block !important; }
+    @page { size: A4; margin: 16mm 14mm; }
+    nav, .back-to-top, .fin, .ch-hero-visuel { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: #fff; font-size: 10pt; }
+    .ch-hero { padding: 1rem 1.2rem; }
+    .ch-hero h1 { font-size: 22pt; }
+    .essentiel { margin: 0.6rem 0; box-shadow: none; border: 1pt solid var(--ligne); }
+    .page { display: block; padding: 0.6rem 0; }
+    .content { gap: 1.2rem; }
+    .carte, .hgg-stat-cell { border: 1pt solid var(--ligne); break-inside: avoid; }
+    .surligne, .duo, .sujet { break-inside: avoid; }
+  }
+</style>
+<link rel="stylesheet" href="../../barre-section.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="D&#x27;où venons-nous ? Que sommes-nous ? Où allons-nous ?">
+<meta property="og:image" content="https://ecg-prepa.fr/partage/humanite/humanite-art-d-ou-venons-nous.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="D&#x27;où venons-nous ? Que sommes-nous ? Où allons-nous ?">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ecg-prepa.fr/partage/humanite/humanite-art-d-ou-venons-nous.jpg">
+<meta name="description" content="D'où venons-nous ? Que sommes-nous ? Où allons-nous ? (Paul Gauguin, 1897-1898) : fiche sur l'œuvre, son histoire, son analyse et les pistes pour la dissertation sur l'Humanité.">
+<link rel="canonical" href="https://ecg-prepa.fr/humanite/art/d-ou-venons-nous.html">
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="sn sn-hum">
+  <div class="nav-logo sn-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb sn-fil">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">›</span>
+    <a href="../../humanite.html"><span>L'Humanité</span></a>
+    <span class="sep">›</span>
+    <a href="art.html"><span>Art</span></a>
+    <span class="sep">›</span>
+    <span class="current">D'où venons-nous&nbsp;?</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="ch-hero-inner">
+    <div class="ch-hero-texte">
+      <div class="chap-label"><span>Art</span><span>L'Humanité</span></div>
+      <h1 style="--t: 0.5">D'où venons-nous&nbsp;?<br>Que sommes-nous&nbsp;?<br>Où allons-nous&nbsp;?</h1>
+      <p class="meta">Paul Gauguin · 1897-1898 · Huile sur toile, symbolisme</p>
+      <p class="pitch">À Tahiti, au bord du désespoir, Gauguin peint sur près de quatre mètres toute une vie humaine, de la naissance à la mort, et pose en titre les trois questions de l'humanité.</p>
+    </div>
+    <figure class="ch-hero-visuel paysage"><img src="images/d-ou-venons-nous-oeuvre.webp" alt="D'où venons-nous ? Que sommes-nous ? Où allons-nous ? de Gauguin : une longue frise de figures tahitiennes dans un paysage bleu et vert, un bébé à droite, un homme cueillant un fruit au centre, une idole bleue et une vieille femme accroupie à gauche" loading="eager" onerror="this.closest('.ch-hero-visuel').remove()"></figure>
+  </div>
+</div>
+
+<!-- L'ESSENTIEL -->
+<div class="essentiel-wrap">
+  <section class="essentiel" aria-label="L'essentiel">
+    <div class="essentiel-these">
+      <div class="etiquette">L'essentiel en une phrase</div>
+      <p>L'homme est le seul être qui se demande d'où il vient et où il va&nbsp;; l'art ne répond pas à ces questions, il permet seulement de les poser en face.</p>
+    </div>
+    <ul class="notions" aria-label="Notions du thème">
+      <li>Condition humaine et mort</li>
+      <li>Sens de l'existence</li>
+      <li>Regard sur l'autre</li>
+    </ul>
+  </section>
+</div>
+
+<div class="page">
+
+<div class="content">
+
+<section class="hgg-part" id="intro">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">1.</span><span class="hgg-part-title">Présentation de l'œuvre</span></h2>
+
+    <p><strong>D'où venons-nous&nbsp;? Que sommes-nous&nbsp;? Où allons-nous&nbsp;?</strong> est une huile sur toile de <strong>Paul Gauguin</strong> (1848-1903), peinte à <strong>Tahiti</strong> à la fin de 1897 et datée de cette année. Immense frise de 139 × 375 cm, elle réunit quatorze figures humaines et plusieurs animaux dans un paysage tropical. Exposée à Paris chez le marchand Ambroise Vollard à la fin de 1898, elle est conservée depuis <strong>1936</strong> au <strong>musée des Beaux-Arts de Boston</strong>.</p>
+  <div class="hgg-stats">
+<div class="hgg-stat-cell"><span class="hgg-stat-num">3,75 m</span><div class="hgg-stat-label">De large, pour 1,39 m de haut</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">14</span><div class="hgg-stat-label">Figures humaines, de la naissance à la vieillesse</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">3</span><div class="hgg-stat-label">Questions posées par le titre, écrit dans un coin de la toile</div></div>
+</div>
+    <p>Gauguin est l'un des rares peintres à avoir écrit en toutes lettres, sur sa toile, la question que pose le thème de l'Humanité. Il la peint à un moment où, dit-il, il a décidé de mourir. Le tableau ne donne aucune réponse&nbsp;: il déroule une vie humaine et laisse le spectateur seul avec les trois questions. Peut-on savoir ce qu'est l'homme, ou seulement le demander&nbsp;?</p>
+</section>
+
+<section class="hgg-part" id="p1">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">2.</span><span class="hgg-part-title">Genèse et description</span></h2>
+
+  <div class="hgg-section" id="s1-1">
+    <h3 class="hgg-section-title"><span class="num">2.1</span>Un testament peint à Tahiti</h3>
+
+    <p>En 1891, Gauguin quitte Paris pour <strong>Tahiti</strong>, colonie française depuis 1880, à la recherche d'un monde qu'il imagine plus vrai, plus «&nbsp;primitif&nbsp;» que l'Europe industrielle. Il y revient en 1895 après un séjour en France. Il est alors malade, sans argent, et apprend en 1897 la mort de sa fille Aline, emportée à 19 ans par une pneumonie.</p>
+    <p>À la fin de l'année, il peint en quelques semaines cette toile immense. Dans une lettre de 1898 à son ami Daniel de Monfreid, il explique qu'il avait pris la résolution de se suicider en décembre et qu'il a voulu, avant de mourir, peindre une grande toile. Il tente ensuite de s'empoisonner à l'arsenic, et survit. Il meurt cinq ans plus tard, en 1903, aux îles Marquises.</p>
+    <div class="surligne">Le tableau est conçu comme un <strong>testament</strong>&nbsp;: la dernière œuvre d'un homme qui croit mourir, et qui veut y dire tout ce qu'il pense de la vie.</div>
+  </div>
+
+  <div class="hgg-section" id="s1-2">
+    <h3 class="hgg-section-title"><span class="num">2.2</span>Une toile qui refuse d'être expliquée</h3>
+
+    <p>Le titre est peint en français dans le coin supérieur gauche, sur un fond jaune qui imite une fresque abîmée&nbsp;; la signature et la date sont à droite. Exposé chez Vollard, le tableau déconcerte. Le critique André Fontainas, dans le <em>Mercure de France</em> en janvier 1899, juge que seul le titre en révèle le sens.</p>
+    <div class="carte">
+      <div class="etiquette">«&nbsp;Mon rêve ne se laisse pas saisir&nbsp;»</div>
+      <p>Gauguin lui répond par lettre&nbsp;: «&nbsp;Mon rêve ne se laisse pas saisir, ne comporte aucune allégorie.&nbsp;» Il refuse qu'on traduise son tableau en leçon. Il défend aussi ses déformations, comme un bras trop long, comme des choix et non des erreurs&nbsp;: la peinture n'a pas à imiter la nature, mais à <strong>suggérer</strong>, comme la musique.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s1-3">
+    <h3 class="hgg-section-title"><span class="num">2.3</span>Lire la toile</h3>
+
+    <p>Le tableau se lit <strong>de droite à gauche</strong>, comme une vie&nbsp;: la naissance, l'âge adulte, la vieillesse. Les trois groupes de figures répondent aux trois questions du titre. Les couleurs ne sont pas réalistes&nbsp;: bleus profonds, verts, ocres et jaunes posés en aplats.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le bébé endormi</h3>
+        <p>En bas à droite, un nouveau-né couché, veillé par des femmes accroupies. C'est le début de la vie&nbsp;: «&nbsp;d'où venons-nous&nbsp;».</p>
+      </div>
+      <div class="carte">
+        <h3>Les deux figures en pourpre</h3>
+        <p>Au fond à droite, deux femmes vêtues de rouge marchent en se parlant. Gauguin les présente comme des êtres qui osent réfléchir à leur destinée.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>L'homme qui cueille un fruit</h3>
+        <p>Au centre, un jeune homme debout, les bras levés, cueille un fruit. On pense à Ève et au fruit défendu&nbsp;: le savoir, le désir, la vie adulte, «&nbsp;que sommes-nous&nbsp;».</p>
+      </div>
+      <div class="carte">
+        <h3>L'idole bleue</h3>
+        <p>À gauche, au fond, une statue de divinité aux bras levés. Selon Gauguin, elle semble indiquer l'au-delà&nbsp;: la religion comme réponse possible, mais immobile et lointaine.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>La vieille femme</h3>
+        <p>À l'extrême gauche, une femme âgée, accroupie, la tête dans les mains, attend la mort. C'est la fin du parcours&nbsp;: «&nbsp;où allons-nous&nbsp;».</p>
+      </div>
+      <div class="carte">
+        <h3>L'oiseau blanc</h3>
+        <p>À ses pieds, un étrange oiseau blanc tient un lézard. Gauguin l'associe à l'inutilité des vaines paroles&nbsp;: devant la mort, les mots ne servent plus.</p>
+      </div>
+    </div>
+    <div class="surligne">Le tableau est un <strong>cycle</strong> plutôt qu'un récit&nbsp;: on naît, on vit, on vieillit, et les questions restent ouvertes. Gauguin ne peint pas une réponse, mais l'étonnement humain devant sa propre existence.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p2">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">3.</span><span class="hgg-part-title">L'homme, un être qui s'interroge</span></h2>
+
+  <div class="hgg-section" id="s2-1">
+    <h3 class="hgg-section-title"><span class="num">3.1</span>Les trois questions de l'humanité</h3>
+
+    <p>Aucun animal ne se demande d'où il vient ni où il va. L'homme, lui, sait qu'il est né et qu'il mourra, et cette <strong>conscience de la finitude</strong> le pousse à interroger le sens de sa vie. Kant résumait la philosophie en quelques questions, dont la dernière était&nbsp;: «&nbsp;Qu'est-ce que l'homme&nbsp;?&nbsp;» Gauguin la pose en peintre, sous trois formes&nbsp;: l'origine, l'identité, la destination.</p>
+    <div class="carte">
+      <div class="etiquette">Des questions sans réponse</div>
+      <p>La religion (l'idole), le savoir (le fruit cueilli), la parole (l'oiseau) sont présents sur la toile, mais aucun ne tranche. Le tableau suggère que ce qui définit l'homme, ce n'est pas la réponse qu'il trouve, mais <strong>le fait de questionner</strong>.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-2">
+    <h3 class="hgg-section-title"><span class="num">3.2</span>La vie au bord de la mort</h3>
+
+    <p>Gauguin peint ce tableau en croyant mourir. Toute la toile est tendue vers la vieille femme de gauche, vers la fin. Pourtant, elle déborde de vie&nbsp;: des corps jeunes, des couleurs chaudes, des fruits, des animaux. Le peintre désespéré produit une œuvre pleine de <strong>vitalité</strong>, comme si regarder la mort en face rendait la vie plus intense, et comme si créer était encore une manière de répondre au néant.</p>
+    <div class="surligne">Le paradoxe du testament&nbsp;: Gauguin voulait mourir après l'avoir peint, et c'est l'œuvre qui lui a survécu, posant ses questions à des millions de visiteurs.</div>
+  </div>
+
+  <div class="hgg-section" id="s2-3">
+    <h3 class="hgg-section-title"><span class="num">3.3</span>Le paradis rêvé et le regard colonial</h3>
+
+    <p>Gauguin cherche à Tahiti une humanité «&nbsp;originelle&nbsp;», proche de la nature, qu'il oppose à l'Europe. Mais ce paradis est en partie un <strong>fantasme</strong>&nbsp;: Tahiti est alors une colonie, christianisée, marquée par les maladies venues d'Europe. Et Gauguin y a pris pour compagnes de très jeunes filles, dont l'une avait 13 ans, ce qui nourrit aujourd'hui de vifs débats sur l'homme et sur son œuvre.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>L'universel</h3>
+        <p>Une naissance, une vie, une mort, trois questions&nbsp;: <strong>le tableau universalise</strong>. Il parle de tout être humain, quels que soient son pays et son époque.</p>
+      </div>
+      <div class="carte pleine">
+        <h3>Le regard situé</h3>
+        <p>Des Tahitiens vus par un Européen en quête d'exotisme&nbsp;: <strong>le tableau projette</strong> sur d'autres hommes le rêve d'une humanité primitive.</p>
+      </div>
+    </div>
+    <div class="surligne">C'est la question la plus actuelle de l'œuvre&nbsp;: peut-on représenter «&nbsp;l'homme en général&nbsp;» à travers <strong>d'autres hommes</strong>, sans les réduire à l'image qu'on se fait d'eux&nbsp;?</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p3">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">4.</span><span class="hgg-part-title">Pistes pour la dissertation</span></h2>
+
+  <div class="hgg-section" id="s3-1">
+    <h3 class="hgg-section-title">Le tableau de Gauguin face à cinq sujets sur l'Humanité</h3>
+    <p>Cliquez sur un sujet pour l'argument à développer, le détail à citer et sa place dans le plan.</p>
+
+    <div class="sujets">
+      <details class="sujet">
+        <summary><span class="n">01</span><span class="q">Peut-on définir l'homme&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Gauguin écrit sur sa toile trois questions, et n'y répond pas. La religion, avec l'idole bleue, le savoir, avec le fruit cueilli, la parole, avec l'oiseau blanc, sont présents, mais aucun ne tranche. Ce qui définit l'homme serait moins une essence qu'une interrogation&nbsp;: il est l'être qui se demande d'où il vient et où il va. Comme chez Kant, la question «&nbsp;qu'est-ce que l'homme&nbsp;?&nbsp;» reste ouverte, et c'est cette ouverture qui le caractérise.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Le titre peint dans le coin jaune, en haut à gauche de la toile.</span><span><b>Dans le plan&nbsp;:</b> En partie de dépassement&nbsp;: l'homme défini par la question plutôt que par une réponse.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">02</span><span class="q">La conscience de la mort fait-elle l'humanité de l'homme&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Le tableau se lit de droite à gauche, du bébé endormi à la vieille femme qui attend la mort. Gauguin le peint fin 1897 en croyant mourir, puisqu'il dit avoir décidé de se suicider. La mort est la destination de toute la frise, mais elle n'éteint pas la vie&nbsp;: les corps, les couleurs, les fruits disent l'intensité de l'existence. Se savoir mortel donne son prix à la vie&nbsp;: c'est peut-être cela, être humain.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> La vieille femme accroupie à gauche, la tête dans les mains.</span><span><b>Dans le plan&nbsp;:</b> En première partie&nbsp;: la finitude comme marque propre de la condition humaine.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">03</span><span class="q">L'art doit-il donner un sens&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Le critique André Fontainas reproche au tableau de n'avoir de sens que par son titre. Gauguin répond&nbsp;: «&nbsp;Mon rêve ne se laisse pas saisir, ne comporte aucune allégorie.&nbsp;» Il refuse de faire de sa peinture une leçon&nbsp;: elle doit suggérer, comme la musique, et non expliquer. L'art ne répond pas aux questions de l'existence&nbsp;; il les rend sensibles, et laisse chacun libre de leur trouver un sens.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> La réponse de Gauguin à Fontainas, en 1899.</span><span><b>Dans le plan&nbsp;:</b> En partie critique&nbsp;: l'art comme question plutôt que comme réponse.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">04</span><span class="q">Peut-on parler de l'humanité à travers d'autres hommes&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Pour peindre l'homme en général, Gauguin peint des Tahitiens, qu'il imagine plus proches d'une humanité originelle que les Européens. Mais Tahiti est alors une colonie française, et ce «&nbsp;paradis&nbsp;» est en partie un fantasme. Le tableau révèle le risque de tout discours sur l'humanité&nbsp;: projeter sur d'autres hommes l'image qu'on se fait de soi ou de ses rêves. L'universel doit se méfier de l'exotisme.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Les figures tahitiennes dans un paysage idéalisé, peint par un Européen.</span><span><b>Dans le plan&nbsp;:</b> En partie critique&nbsp;: l'universalisme et ses angles morts coloniaux.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">05</span><span class="q">Créer, est-ce résister au désespoir&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Fin 1897, Gauguin est malade, ruiné, endeuillé par la mort de sa fille Aline, et décidé à mourir. Avant de tenter de s'empoisonner, il peint son tableau le plus ambitieux&nbsp;: près de quatre mètres de vie, de couleurs et de questions. L'œuvre lui survit et continue de parler. La création n'abolit pas le désespoir, mais elle le transforme en quelque chose qui se partage.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> La lettre à Daniel de Monfreid où il dit avoir voulu peindre une grande toile avant de mourir.</span><span><b>Dans le plan&nbsp;:</b> Sur l'art et la vie&nbsp;: la création comme réponse humaine au néant.</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s3-2">
+    <div class="copie">
+      <div class="carte retenir">
+        <div class="etiquette">Idées à retenir</div>
+        <ol>
+          <li>La toile se lit <strong>de droite à gauche</strong>, de la naissance à la mort&nbsp;: trois groupes pour les trois questions du titre.</li>
+          <li>Gauguin <strong>ne répond pas</strong>&nbsp;: «&nbsp;Mon rêve ne se laisse pas saisir, ne comporte aucune allégorie.&nbsp;» L'homme est défini par sa question.</li>
+          <li>Peinte comme un <strong>testament</strong>, avant une tentative de suicide, l'œuvre déborde pourtant de vie.</li>
+          <li>Le paradis tahitien est un <strong>fantasme</strong> d'Européen dans une colonie&nbsp;: parler de l'homme en général à travers d'autres hommes a ses limites.</li>
+        </ol>
+      </div>
+      <div class="carte rapprocher">
+        <div class="etiquette">À rapprocher</div>
+        <p><strong>Terrence Malick, <em>The Tree of Life</em> (2011)</strong>&nbsp;: palme d'or à Cannes, le film entremêle l'enfance d'un garçon au Texas, le deuil d'un frère et des images de la naissance de l'univers et de la vie sur Terre. Comme Gauguin, Malick déploie une existence humaine entière, de la naissance au deuil, et pose les mêmes questions sur l'origine et la destination de l'homme. Mais Malick y répond par la foi et la grâce, quand Gauguin laisse l'idole immobile au fond de la toile et les questions sans réponse.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /content -->
+</div><!-- /page -->
+
+<footer class="fin">
+  <div class="fin-inner">
+    <a href="art.html">← Toutes les fiches d'art</a>
+    <button type="button" class="bouton-lu" id="boutonLu">J'ai lu cette fiche</button>
+  </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
+
+<script>
+  // « J'ai lu cette fiche », gardé dans le navigateur
+  const CLE = 'ecg-humanite-fiches-lues';
+  const ID = 'art/d-ou-venons-nous';
+  const lu = document.getElementById('boutonLu');
+  function lire() { try { return JSON.parse(localStorage.getItem(CLE)) || []; } catch (e) { return []; } }
+  function majLu() {
+    const fait = lire().includes(ID);
+    lu.classList.toggle('fait', fait);
+    lu.textContent = fait ? '✓ Fiche lue' : "J'ai lu cette fiche";
+  }
+  lu.addEventListener('click', () => {
+    let l = lire();
+    l = l.includes(ID) ? l.filter(x => x !== ID) : l.concat(ID);
+    try { localStorage.setItem(CLE, JSON.stringify(l)); } catch (e) {}
+    majLu();
+  });
+  majLu();
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>

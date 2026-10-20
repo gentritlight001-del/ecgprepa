@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Art — Les photographies du Sonderkommando</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<style>
+  :root {
+    --c: #3a3a3a;          /* couleur de la fiche */
+    --c-soft: #ececec;
+    --fond: #f5f4f0;
+    --carte: #ffffff;
+    --encre: #18181b;
+    --texte: #3f3f46;
+    --discret: #52525b;
+    --ligne: #e4e2dc;
+    --titre: 'Bricolage Grotesque', system-ui, sans-serif;
+    --corps: 'Newsreader', Georgia, serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--fond); color: var(--encre); font-family: var(--corps); font-size: 1.125rem; line-height: 1.65; min-height: 100vh; }
+  strong { font-weight: 600; color: var(--encre); }
+  a { color: inherit; }
+
+  /* ─── Barre du haut ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 14px 48px; background: var(--carte); border-bottom: 1px solid var(--ligne);
+    position: sticky; top: 0; z-index: 100; font-family: var(--titre);
+  }
+  .nav-logo { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em; }
+  .nav-logo a { color: var(--encre); text-decoration: none; }
+  .breadcrumb { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: calc(100% - 420px); display: flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; overflow: hidden; font-size: 0.85rem; color: var(--discret); }
+  .breadcrumb .current { overflow: hidden; text-overflow: ellipsis; }
+  .breadcrumb a { text-decoration: none; }
+  .breadcrumb a:hover { color: var(--c); }
+  .breadcrumb .sep { color: #a1a1aa; }
+  .breadcrumb .current { color: var(--encre); }
+
+  /* ─── Bandeau ─── */
+  .ch-hero { position: relative; background: var(--c); color: #fff; padding: 56px 48px 84px; overflow: hidden; }
+  .ch-hero-fond { display: none; }
+  .ch-hero-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 40px 56px; }
+  .ch-hero-texte { flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+  .chap-label { display: flex; flex-wrap: wrap; gap: 8px; font-family: var(--titre); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .chap-label span { background: rgba(255,255,255,0.18); padding: 6px 12px; border-radius: 999px; }
+  .ch-hero h1 { font-family: var(--titre); font-weight: 800; font-size: calc(var(--t, 1) * clamp(3rem, 8vw, 6rem)); line-height: 0.95; letter-spacing: -0.02em; }
+  .ch-hero .meta { font-family: var(--titre); font-size: 1.2rem; font-weight: 500; opacity: 0.92; }
+  .ch-hero .pitch { max-width: 620px; font-size: 1.3rem; line-height: 1.5; }
+  .ch-hero-visuel { flex: 0 0 240px; max-width: 100%; aspect-ratio: 2 / 3; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+  .ch-hero-visuel.paysage { flex: 1 1 420px; aspect-ratio: auto; }
+  .ch-hero-visuel.paysage img { height: auto; }
+  .ch-hero-visuel img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  /* ─── L'essentiel ─── */
+  .essentiel {
+    position: relative; max-width: 1040px; margin: -44px auto 0; background: var(--carte); border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(24,24,27,0.10); padding: 28px 32px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 20px 40px;
+  }
+  .essentiel-wrap { padding: 0 48px; }
+  .essentiel-these { flex: 999 1 420px; min-width: 0; }
+  .etiquette { font-family: var(--titre); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c); }
+  .essentiel-these p { margin-top: 6px; font-size: 1.35rem; line-height: 1.4; font-weight: 600; }
+  .notions { flex: 1 1 300px; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+  .notions li { font-family: var(--titre); font-size: 0.92rem; font-weight: 500; padding: 8px 14px; border-radius: 999px; background: var(--c-soft); color: var(--c); }
+
+  /* ─── Corps ─── */
+  .page { max-width: 820px; margin: 0 auto; padding: 64px 48px 72px; }
+
+  .content { display: flex; flex-direction: column; gap: 64px; }
+  .hgg-part { scroll-margin-top: 90px; }
+  .hgg-part-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 20px; }
+  .hgg-part-num { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; color: var(--c); }
+  .hgg-part-title { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; letter-spacing: -0.01em; }
+  .hgg-section { margin-top: 32px; scroll-margin-top: 90px; }
+  .hgg-section-title { font-family: var(--titre); font-weight: 700; font-size: 1.35rem; line-height: 1.25; margin-bottom: 12px; }
+  .hgg-section-title .num { color: var(--c); margin-right: 6px; }
+  .content p { color: var(--texte); margin-bottom: 16px; }
+  .content p:last-child { margin-bottom: 0; }
+
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 8px 0 24px; }
+  .hgg-stat-cell { background: var(--carte); border-radius: 12px; padding: 18px 20px; }
+  .hgg-stat-num { display: block; font-family: var(--titre); font-weight: 800; font-size: 2.2rem; line-height: 1; color: var(--c); }
+  .hgg-stat-label { margin-top: 6px; font-family: var(--titre); font-size: 0.88rem; color: var(--discret); }
+
+  .carte { background: var(--carte); border-radius: 14px; padding: 22px 26px; margin: 20px 0; }
+  .carte h3 { font-family: var(--titre); font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+  .carte p { font-size: 1.05rem; }
+  .carte .etiquette { margin-bottom: 8px; }
+  .surligne { background: var(--c-soft); border-radius: 14px; padding: 20px 24px; margin: 20px 0; color: #2a1d12; font-size: 1.08rem; }
+  .duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 20px 0; }
+  .duo .carte { margin: 0; }
+  .duo .carte.pleine { background: var(--c); }
+  .duo .carte.pleine h3, .duo .carte.pleine p { color: #fff; }
+  .sujets { background: var(--carte); border-radius: 16px; margin-top: 16px; overflow: hidden; }
+  .sujet + .sujet { border-top: 1px solid var(--ligne); }
+  .sujet summary { list-style: none; display: flex; gap: 14px; align-items: baseline; padding: 16px 22px; cursor: pointer; font-family: var(--titre); font-weight: 700; font-size: 1.08rem; line-height: 1.35; }
+  .sujet summary::-webkit-details-marker { display: none; }
+  .sujet summary .n { flex: 0 0 auto; font-weight: 800; color: var(--c); }
+  .sujet summary .q { flex: 1; }
+  .sujet summary::after { content: '+'; flex: 0 0 auto; font-size: 1.3rem; line-height: 1; color: var(--c); transition: transform 0.2s; }
+  .sujet[open] summary::after { transform: rotate(45deg); }
+  .sujet summary:hover .q { color: var(--c); }
+  .sujet-corps { padding: 0 22px 18px 58px; }
+  .sujet-corps p { font-size: 1.02rem; margin-bottom: 10px; }
+  .sujet-corps .reperes { font-family: var(--titre); font-size: 0.88rem; line-height: 1.5; color: var(--discret); display: flex; flex-direction: column; gap: 4px; }
+  .sujet-corps .reperes b { color: var(--c); font-weight: 700; }
+  .sujet a { color: var(--c); text-decoration: underline; text-underline-offset: 2px; }
+
+  .copie { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 8px; }
+  .copie .carte { margin: 0; }
+  .retenir { flex: 1 1 100%; min-width: 0; }
+  .retenir ol { padding-left: 22px; display: flex; flex-direction: column; gap: 10px; font-size: 1.05rem; color: var(--texte); }
+  .rapprocher { flex: 1 1 100%; min-width: 0; background: var(--c) !important; }
+  .rapprocher .etiquette, .rapprocher p, .rapprocher em { color: #fff; }
+  .rapprocher .etiquette { opacity: 0.85; }
+  .rapprocher strong, .rapprocher a, .duo .carte.pleine strong { color: #fff; }
+
+  /* ─── Fin de page ─── */
+  .fin { border-top: 1px solid var(--ligne); background: var(--carte); padding: 24px 48px; }
+  .fin-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; font-family: var(--titre); font-size: 0.95rem; }
+  .fin a { text-decoration: none; padding: 12px 0; }
+  .fin a:hover { color: var(--c); }
+  .bouton-lu { font: 700 0.95rem var(--titre); color: #fff; background: var(--c); border: 1.5px solid var(--c); border-radius: 999px; padding: 12px 22px; min-height: 44px; cursor: pointer; }
+  .bouton-lu.fait { background: transparent; color: var(--c); }
+
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--encre); color: #fff; border: none; border-radius: 50%; font-size: 1.1rem; cursor: pointer; opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 99; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+  }
+  @media (max-width: 760px) {
+    .breadcrumb { display: none; }
+  }
+  @media (max-width: 640px) {
+    nav { padding: 12px 16px; }
+    .breadcrumb { display: none; }
+    .ch-hero { padding: 36px 16px 72px; }
+    .ch-hero-visuel { flex-basis: 160px; }
+    .essentiel-wrap { padding: 0 16px; }
+    .essentiel { padding: 22px 20px; }
+    .page { padding: 40px 16px 56px; }
+    .fin { padding: 20px 16px; }
+    .sujet summary { padding: 14px 16px; }
+    .sujet-corps { padding: 0 16px 16px; }
+    .hgg-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .hgg-stat-cell { padding: 14px 12px; }
+    .hgg-stat-num { font-size: 1.6rem; }
+  }
+
+  @media print {
+    .sujet-corps { display: block !important; }
+    @page { size: A4; margin: 16mm 14mm; }
+    nav, .back-to-top, .fin, .ch-hero-visuel { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: #fff; font-size: 10pt; }
+    .ch-hero { padding: 1rem 1.2rem; }
+    .ch-hero h1 { font-size: 22pt; }
+    .essentiel { margin: 0.6rem 0; box-shadow: none; border: 1pt solid var(--ligne); }
+    .page { display: block; padding: 0.6rem 0; }
+    .content { gap: 1.2rem; }
+    .carte, .hgg-stat-cell { border: 1pt solid var(--ligne); break-inside: avoid; }
+    .surligne, .duo, .sujet { break-inside: avoid; }
+  }
+</style>
+<link rel="stylesheet" href="../../barre-section.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Les photographies du Sonderkommando">
+<meta property="og:image" content="https://ecg-prepa.fr/partage/humanite/humanite-art-photographies-du-sonderkommando.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Les photographies du Sonderkommando">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ecg-prepa.fr/partage/humanite/humanite-art-photographies-du-sonderkommando.jpg">
+<meta name="description" content="Les photographies du Sonderkommando (Prisonniers d'Auschwitz-Birkenau, août 1944) : fiche sur l'œuvre, son histoire, son analyse et les pistes pour la dissertation sur l'Humanité.">
+<link rel="canonical" href="https://ecg-prepa.fr/humanite/art/photographies-du-sonderkommando.html">
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="sn sn-hum">
+  <div class="nav-logo sn-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb sn-fil">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">›</span>
+    <a href="../../humanite.html"><span>L'Humanité</span></a>
+    <span class="sep">›</span>
+    <a href="art.html"><span>Art</span></a>
+    <span class="sep">›</span>
+    <span class="current">Photographies du Sonderkommando</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="ch-hero-inner">
+    <div class="ch-hero-texte">
+      <div class="chap-label"><span>Art</span><span>L'Humanité</span></div>
+      <h1 style="--t: 0.5">Les photographies du Sonderkommando</h1>
+      <p class="meta">Prisonniers d'Auschwitz-Birkenau · août 1944 · Photographies clandestines</p>
+      <p class="pitch">Quatre images floues, prises en cachette par des prisonniers au péril de leur vie&nbsp;: les seules photographies de l'extermination prises de l'intérieur d'Auschwitz.</p>
+    </div>
+    <figure class="ch-hero-visuel" style="aspect-ratio: 1036 / 1420"><img src="images/photographies-du-sonderkommando-oeuvre.webp" alt="Photographie du Sonderkommando d'Auschwitz-Birkenau, août 1944 : à travers l'encadrement noir d'une porte, des prisonniers au milieu de corps étendus au sol, devant une épaisse fumée blanche qui monte d'une fosse de crémation" loading="eager" onerror="this.closest('.ch-hero-visuel').remove()"></figure>
+  </div>
+</div>
+
+<!-- L'ESSENTIEL -->
+<div class="essentiel-wrap">
+  <section class="essentiel" aria-label="L'essentiel">
+    <div class="essentiel-these">
+      <div class="etiquette">L'essentiel en une phrase</div>
+      <p>Là où les nazis voulaient effacer jusqu'à la trace des victimes, des prisonniers ont risqué leur vie pour arracher quatre images&nbsp;: témoigner est un acte de résistance et d'humanité.</p>
+    </div>
+    <ul class="notions" aria-label="Notions du thème">
+      <li>Shoah et extermination</li>
+      <li>Témoigner, résister</li>
+      <li>Montrer l'irreprésentable</li>
+    </ul>
+  </section>
+</div>
+
+<div class="page">
+
+<div class="content">
+
+<section class="hgg-part" id="intro">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">1.</span><span class="hgg-part-title">Présentation de l'œuvre</span></h2>
+
+    <p>Les <strong>photographies du Sonderkommando</strong> sont quatre clichés pris clandestinement en <strong>août 1944</strong> au camp d'extermination d'<strong>Auschwitz-Birkenau</strong>, près du <strong>crématoire V</strong>, par des prisonniers juifs du <strong>Sonderkommando</strong>, le «&nbsp;commando spécial&nbsp;» que les SS forçaient à travailler aux chambres à gaz et aux crématoires. Le film, sorti du camp par la résistance polonaise, est aujourd'hui conservé au musée d'État d'Auschwitz-Birkenau. Ce ne sont pas des œuvres d'art au sens habituel, mais des <strong>documents</strong>, devenus une référence majeure de la réflexion sur l'image et la Shoah.</p>
+  <div class="hgg-stats">
+<div class="hgg-stat-cell"><span class="hgg-stat-num">4</span><div class="hgg-stat-label">Photographies, prises en quelques dizaines de minutes</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">5</span><div class="hgg-stat-label">Prisonniers impliqués&nbsp;: un photographe et quatre guetteurs</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">1944</span><div class="hgg-stat-label">Le 4 septembre, le film quitte le camp caché dans un tube</div></div>
+</div>
+    <p>Les nazis ont tout fait pour qu'il ne reste aucune image de l'extermination. Ces quatre photographies, floues, mal cadrées, prises à la sauvette, sont pourtant là. Elles posent une question centrale pour le thème de l'Humanité&nbsp;: peut-on, doit-on montrer l'inhumain absolu, et que nous apprennent des images prises au péril de la vie&nbsp;?</p>
+</section>
+
+<section class="hgg-part" id="p1">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">2.</span><span class="hgg-part-title">Genèse et description</span></h2>
+
+  <div class="hgg-section" id="s1-1">
+    <h3 class="hgg-section-title"><span class="num">2.1</span>Les prisonniers du Sonderkommando</h3>
+
+    <p>À Auschwitz-Birkenau, plus d'un million de personnes, en très grande majorité des Juifs, ont été assassinées, la plupart dans les chambres à gaz. Les SS contraignaient des prisonniers juifs, le <strong>Sonderkommando</strong>, à faire entrer les victimes, à sortir les corps et à les brûler. Témoins de tout, ces hommes étaient eux-mêmes régulièrement assassinés et remplacés, pour qu'aucun ne puisse raconter.</p>
+    <p>Au printemps et à l'été 1944, l'arrivée massive des Juifs de Hongrie dépasse la capacité des crématoires&nbsp;: les corps sont aussi brûlés dans des fosses à ciel ouvert. C'est ce que montrent deux des quatre photographies.</p>
+    <div class="surligne">Les nazis voulaient un crime <strong>sans images et sans témoins</strong>&nbsp;: les victimes effacées jusqu'à leurs cendres, et ceux qui les avaient vues tués à leur tour.</div>
+  </div>
+
+  <div class="hgg-section" id="s1-2">
+    <h3 class="hgg-section-title"><span class="num">2.2</span>Prendre et faire sortir les images</h3>
+
+    <p>Un appareil photo est introduit dans le camp avec l'aide de la résistance. Un prisonnier grec, connu sous le nom d'«&nbsp;Alex&nbsp;», souvent identifié comme <strong>Alberto Errera</strong>, prend les photos pendant que quatre camarades font le guet, dont Szlama et Josel Dragon, Alter Fajnzylberg et David Szmulewski. Le film est caché dans un <strong>tube de dentifrice</strong> et sort du camp le 4 septembre 1944, accompagné d'un message de la résistance demandant qu'on l'envoie à Cracovie et réclamant de nouvelles pellicules.</p>
+    <div class="carte">
+      <div class="etiquette">Ce que montrent les quatre images</div>
+      <p>Deux photos montrent des corps brûlés dans une fosse, prises depuis l'intérieur d'un bâtiment, à travers l'encadrement noir d'une porte&nbsp;: celle reproduite ici en fait partie. Une troisième montre des femmes nues, poussées vers la chambre à gaz. La quatrième ne montre que des <strong>arbres</strong>&nbsp;: le photographe, qui devait cacher l'appareil, a visé trop haut.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s1-3">
+    <h3 class="hgg-section-title"><span class="num">2.3</span>Lire la photographie</h3>
+
+    <p>L'image reproduite en tête de cette fiche est l'une des deux vues de la fosse. Elle est faite de deux zones&nbsp;: un grand <strong>cadre noir</strong>, et dans l'ouverture, une scène blanche de fumée et de corps.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le cadre noir</h3>
+        <p>C'est l'encadrement d'une porte, vu de l'intérieur du bâtiment du crématoire. Il montre où se tenait le photographe&nbsp;: caché, dans le lieu même du crime.</p>
+      </div>
+      <div class="carte">
+        <h3>Les corps au sol</h3>
+        <p>Étendus en rangées, à peine distincts. Ce sont des victimes du gazage, sur le point d'être brûlées.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>Les hommes debout</h3>
+        <p>Des prisonniers du Sonderkommando, contraints de traîner les corps vers la fosse. Ils sont à la fois victimes et témoins forcés.</p>
+      </div>
+      <div class="carte">
+        <h3>La fumée</h3>
+        <p>Épaisse et blanche, elle monte de la fosse et envahit le haut de l'image. Elle dit l'effacement des corps, réduits en cendres.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le flou</h3>
+        <p>L'image est floue, mal exposée, parce qu'elle a été prise vite, en cachette, au risque d'être découvert. Le flou est la trace du danger.</p>
+      </div>
+      <div class="carte">
+        <h3>Le cadrage de travers</h3>
+        <p>Aucune composition, aucun choix esthétique&nbsp;: seulement l'urgence de prendre une image. C'est ce qui fait sa vérité.</p>
+      </div>
+    </div>
+    <div class="surligne">Longtemps, la photo a été publiée <strong>recadrée</strong>, sans le cadre noir, pour mieux montrer la scène. C'était effacer ce qu'elle a de plus précieux&nbsp;: la preuve du geste du photographe, caché dans la chambre à gaz.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p2">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">3.</span><span class="hgg-part-title">Des images malgré tout</span></h2>
+
+  <div class="hgg-section" id="s2-1">
+    <h3 class="hgg-section-title"><span class="num">3.1</span>Témoigner comme acte de résistance</h3>
+
+    <p>Prendre ces photos, c'était risquer une mort immédiate. Les prisonniers l'ont fait pour que le monde sache, pour opposer une <strong>preuve</strong> à un crime conçu pour ne laisser aucune trace. Dans un lieu où tout visait à détruire l'humanité des déportés, ce geste affirme qu'ils restaient des sujets capables de décider, de résister et de s'adresser aux autres.</p>
+    <div class="carte">
+      <div class="etiquette">Une révolte quelques semaines plus tard</div>
+      <p>Le 7 octobre 1944, des membres du Sonderkommando se révoltent et font sauter le crématoire IV. La révolte est écrasée et la plupart sont tués. Les photographies appartiennent à cette même <strong>résistance</strong> désespérée.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-2">
+    <h3 class="hgg-section-title"><span class="num">3.2</span>Faut-il montrer la Shoah&nbsp;?</h3>
+
+    <p>Certains, comme le cinéaste Claude Lanzmann dans son film <em>Shoah</em> (1985), ont refusé d'utiliser des images d'archives, jugeant que l'extermination est irreprésentable et que les images risquent de la banaliser. En 2003, l'historien de l'art Georges Didi-Huberman répond dans <em>Images malgré tout</em>&nbsp;: ces quatre images, arrachées au péril de la vie, doivent être regardées, précisément parce que les nazis voulaient qu'il n'y en ait aucune.</p>
+    <div class="surligne">Dire que la Shoah est «&nbsp;inimaginable&nbsp;», c'est, selon Didi-Huberman, donner involontairement raison aux bourreaux&nbsp;: il faut au contraire <strong>s'efforcer d'imaginer</strong>, à partir de ce qui reste.</div>
+  </div>
+
+  <div class="hgg-section" id="s2-3">
+    <h3 class="hgg-section-title"><span class="num">3.3</span>Regarder avec respect</h3>
+
+    <p>Ces images ne sont pas faites pour être contemplées comme des œuvres. Elles imposent un regard grave&nbsp;: ce sont des corps de personnes assassinées, photographiées sans leur consentement par d'autres prisonniers qui partageaient leur sort. Les regarder, c'est accepter la responsabilité de ne pas oublier, sans en faire un spectacle.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le document</h3>
+        <p>Un lieu, un mois, cinq prisonniers nommés&nbsp;: <strong>les photos témoignent</strong> de l'extermination à Auschwitz en août 1944.</p>
+      </div>
+      <div class="carte pleine">
+        <h3>Le symbole</h3>
+        <p>Une image arrachée à l'effacement&nbsp;: <strong>les photos universalisent</strong>. Elles deviennent l'image de tout témoignage contre l'oubli.</p>
+      </div>
+    </div>
+    <div class="surligne">Les nazis voulaient tuer jusqu'au souvenir de leurs victimes. Quatre images floues ont suffi à faire échouer ce projet&nbsp;: la <strong>mémoire</strong> est une forme de victoire de l'humanité.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p3">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">4.</span><span class="hgg-part-title">Pistes pour la dissertation</span></h2>
+
+  <div class="hgg-section" id="s3-1">
+    <h3 class="hgg-section-title">Les photographies du Sonderkommando face à cinq sujets sur l'Humanité</h3>
+    <p>Cliquez sur un sujet pour l'argument à développer, le détail à citer et sa place dans le plan.</p>
+
+    <div class="sujets">
+      <details class="sujet">
+        <summary><span class="n">01</span><span class="q">Peut-on représenter l'inhumain&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>En août 1944, des prisonniers d'Auschwitz-Birkenau photographient en cachette des corps brûlés dans une fosse et des femmes conduites à la chambre à gaz. Claude Lanzmann jugeait la Shoah irreprésentable et refusait les images d'archives&nbsp;; Georges Didi-Huberman répond en 2003 que ces images, arrachées au péril de la vie, doivent être regardées. Représenter l'inhumain n'est pas tout montrer&nbsp;: c'est accepter des images imparfaites pour ne pas laisser le dernier mot aux bourreaux.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Le débat entre <em>Shoah</em> de Lanzmann et <em>Images malgré tout</em> de Didi-Huberman.</span><span><b>Dans le plan&nbsp;:</b> En partie critique&nbsp;: l'irreprésentable et le devoir d'imaginer.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">02</span><span class="q">Témoigner, est-ce résister&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Les nazis voulaient un crime sans traces&nbsp;: les corps brûlés, les témoins du Sonderkommando tués à leur tour. Cinq prisonniers risquent pourtant leur vie pour prendre quatre photos, et la résistance les fait sortir du camp dans un tube de dentifrice le 4 septembre 1944. Témoigner devient un acte de résistance&nbsp;: opposer une preuve à l'effacement, et affirmer qu'on reste un sujet capable de s'adresser au monde.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Le cadre noir de la porte, qui montre que le photographe se cachait dans le crématoire.</span><span><b>Dans le plan&nbsp;:</b> En première partie&nbsp;: le témoignage comme acte d'humanité.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">03</span><span class="q">Peut-on rester humain dans un lieu inhumain&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Les hommes du Sonderkommando étaient contraints de participer à l'extermination de leur propre peuple, avant d'être assassinés à leur tour. Tout était fait pour détruire leur humanité. Pourtant, ils organisent la prise de ces photos, puis la révolte du 7 octobre 1944. Leur humanité tient à ce refus&nbsp;: même réduits au pire, ils restent capables de choisir de témoigner et de se révolter.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Les prisonniers debout au milieu des corps, à la fois victimes et témoins.</span><span><b>Dans le plan&nbsp;:</b> En partie de dépassement&nbsp;: l'humanité préservée dans la résistance.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">04</span><span class="q">Une image peut-elle mentir par son cadrage&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Pendant des décennies, les photographies du Sonderkommando ont été publiées recadrées&nbsp;: on retirait le cadre noir de la porte pour mieux montrer la scène, et certaines ont même été retouchées. Ce geste, fait pour rendre l'image plus lisible, effaçait l'essentiel&nbsp;: la trace du photographe caché et du danger couru. Une image ne ment pas seulement par ce qu'elle montre, mais aussi par ce qu'on lui retire.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Le cadre noir supprimé dans les premières publications.</span><span><b>Dans le plan&nbsp;:</b> Sur l'image&nbsp;: la vérité tient aussi aux conditions de la prise de vue.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">05</span><span class="q">Le devoir de mémoire passe-t-il par les images&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Les nazis voulaient effacer jusqu'au souvenir de leurs victimes. Les quatre photographies du Sonderkommando, conservées au musée d'Auschwitz-Birkenau, font échouer ce projet. Mais les images seules ne suffisent pas&nbsp;: sans les récits des survivants et le travail des historiens, elles resteraient muettes et floues. La mémoire passe par les images, à condition qu'on apprenne à les regarder et à les comprendre.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> La photographie des arbres, prise par erreur, qui ne montre rien sans son histoire.</span><span><b>Dans le plan&nbsp;:</b> Sur la mémoire&nbsp;: l'image, le récit et l'histoire.</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s3-2">
+    <div class="copie">
+      <div class="carte retenir">
+        <div class="etiquette">Idées à retenir</div>
+        <ol>
+          <li>En août 1944, des prisonniers du <strong>Sonderkommando</strong> prennent en cachette quatre photos de l'extermination à Auschwitz-Birkenau.</li>
+          <li>Les nazis voulaient un crime <strong>sans images ni témoins</strong>&nbsp;: ces photos sont un acte de résistance.</li>
+          <li>Le <strong>cadre noir</strong>, longtemps supprimé, est la preuve du geste du photographe caché.</li>
+          <li>Le débat Lanzmann / <strong>Didi-Huberman</strong>&nbsp;: l'irreprésentable ou le devoir d'imaginer «&nbsp;malgré tout&nbsp;».</li>
+        </ol>
+      </div>
+      <div class="carte rapprocher">
+        <div class="etiquette">À rapprocher</div>
+        <p><strong>László Nemes, <em>Le Fils de Saul</em> (2015)</strong>&nbsp;: le film suit, pendant un jour et demi, Saul, prisonnier hongrois du Sonderkommando d'Auschwitz-Birkenau en octobre 1944, et fait directement allusion à la prise des photographies. Comme les quatre images, il montre l'extermination depuis l'intérieur, à hauteur de ceux qui étaient forcés d'y travailler, en laissant l'horreur floue autour du personnage. Mais le film est une fiction construite et filmée après coup, qui choisit de ne pas montrer&nbsp;; les photographies sont des traces réelles, prises au péril de la vie, qui n'avaient pas le choix de ce qu'elles montraient.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /content -->
+</div><!-- /page -->
+
+<footer class="fin">
+  <div class="fin-inner">
+    <a href="art.html">← Toutes les fiches d'art</a>
+    <button type="button" class="bouton-lu" id="boutonLu">J'ai lu cette fiche</button>
+  </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
+
+<script>
+  // « J'ai lu cette fiche », gardé dans le navigateur
+  const CLE = 'ecg-humanite-fiches-lues';
+  const ID = 'art/photographies-du-sonderkommando';
+  const lu = document.getElementById('boutonLu');
+  function lire() { try { return JSON.parse(localStorage.getItem(CLE)) || []; } catch (e) { return []; } }
+  function majLu() {
+    const fait = lire().includes(ID);
+    lu.classList.toggle('fait', fait);
+    lu.textContent = fait ? '✓ Fiche lue' : "J'ai lu cette fiche";
+  }
+  lu.addEventListener('click', () => {
+    let l = lire();
+    l = l.includes(ID) ? l.filter(x => x !== ID) : l.concat(ID);
+    try { localStorage.setItem(CLE, JSON.stringify(l)); } catch (e) {}
+    majLu();
+  });
+  majLu();
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>

@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Art — Plus jamais la guerre !</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<style>
+  :root {
+    --c: #5a4a42;          /* couleur de la fiche */
+    --c-soft: #f0ebe7;
+    --fond: #f5f4f0;
+    --carte: #ffffff;
+    --encre: #18181b;
+    --texte: #3f3f46;
+    --discret: #52525b;
+    --ligne: #e4e2dc;
+    --titre: 'Bricolage Grotesque', system-ui, sans-serif;
+    --corps: 'Newsreader', Georgia, serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--fond); color: var(--encre); font-family: var(--corps); font-size: 1.125rem; line-height: 1.65; min-height: 100vh; }
+  strong { font-weight: 600; color: var(--encre); }
+  a { color: inherit; }
+
+  /* ─── Barre du haut ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 14px 48px; background: var(--carte); border-bottom: 1px solid var(--ligne);
+    position: sticky; top: 0; z-index: 100; font-family: var(--titre);
+  }
+  .nav-logo { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em; }
+  .nav-logo a { color: var(--encre); text-decoration: none; }
+  .breadcrumb { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: calc(100% - 420px); display: flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; overflow: hidden; font-size: 0.85rem; color: var(--discret); }
+  .breadcrumb .current { overflow: hidden; text-overflow: ellipsis; }
+  .breadcrumb a { text-decoration: none; }
+  .breadcrumb a:hover { color: var(--c); }
+  .breadcrumb .sep { color: #a1a1aa; }
+  .breadcrumb .current { color: var(--encre); }
+
+  /* ─── Bandeau ─── */
+  .ch-hero { position: relative; background: var(--c); color: #fff; padding: 56px 48px 84px; overflow: hidden; }
+  .ch-hero-fond { display: none; }
+  .ch-hero-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 40px 56px; }
+  .ch-hero-texte { flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+  .chap-label { display: flex; flex-wrap: wrap; gap: 8px; font-family: var(--titre); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .chap-label span { background: rgba(255,255,255,0.18); padding: 6px 12px; border-radius: 999px; }
+  .ch-hero h1 { font-family: var(--titre); font-weight: 800; font-size: calc(var(--t, 1) * clamp(3rem, 8vw, 6rem)); line-height: 0.95; letter-spacing: -0.02em; }
+  .ch-hero .meta { font-family: var(--titre); font-size: 1.2rem; font-weight: 500; opacity: 0.92; }
+  .ch-hero .pitch { max-width: 620px; font-size: 1.3rem; line-height: 1.5; }
+  .ch-hero-visuel { flex: 0 0 240px; max-width: 100%; aspect-ratio: 2 / 3; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+  .ch-hero-visuel.paysage { flex: 1 1 420px; aspect-ratio: auto; }
+  .ch-hero-visuel.paysage img { height: auto; }
+  .ch-hero-visuel img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  /* ─── L'essentiel ─── */
+  .essentiel {
+    position: relative; max-width: 1040px; margin: -44px auto 0; background: var(--carte); border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(24,24,27,0.10); padding: 28px 32px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 20px 40px;
+  }
+  .essentiel-wrap { padding: 0 48px; }
+  .essentiel-these { flex: 999 1 420px; min-width: 0; }
+  .etiquette { font-family: var(--titre); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c); }
+  .essentiel-these p { margin-top: 6px; font-size: 1.35rem; line-height: 1.4; font-weight: 600; }
+  .notions { flex: 1 1 300px; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+  .notions li { font-family: var(--titre); font-size: 0.92rem; font-weight: 500; padding: 8px 14px; border-radius: 999px; background: var(--c-soft); color: var(--c); }
+
+  /* ─── Corps ─── */
+  .page { max-width: 820px; margin: 0 auto; padding: 64px 48px 72px; }
+
+  .content { display: flex; flex-direction: column; gap: 64px; }
+  .hgg-part { scroll-margin-top: 90px; }
+  .hgg-part-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 20px; }
+  .hgg-part-num { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; color: var(--c); }
+  .hgg-part-title { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; letter-spacing: -0.01em; }
+  .hgg-section { margin-top: 32px; scroll-margin-top: 90px; }
+  .hgg-section-title { font-family: var(--titre); font-weight: 700; font-size: 1.35rem; line-height: 1.25; margin-bottom: 12px; }
+  .hgg-section-title .num { color: var(--c); margin-right: 6px; }
+  .content p { color: var(--texte); margin-bottom: 16px; }
+  .content p:last-child { margin-bottom: 0; }
+
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 8px 0 24px; }
+  .hgg-stat-cell { background: var(--carte); border-radius: 12px; padding: 18px 20px; }
+  .hgg-stat-num { display: block; font-family: var(--titre); font-weight: 800; font-size: 2.2rem; line-height: 1; color: var(--c); }
+  .hgg-stat-label { margin-top: 6px; font-family: var(--titre); font-size: 0.88rem; color: var(--discret); }
+
+  .carte { background: var(--carte); border-radius: 14px; padding: 22px 26px; margin: 20px 0; }
+  .carte h3 { font-family: var(--titre); font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+  .carte p { font-size: 1.05rem; }
+  .carte .etiquette { margin-bottom: 8px; }
+  .surligne { background: var(--c-soft); border-radius: 14px; padding: 20px 24px; margin: 20px 0; color: #2a1d12; font-size: 1.08rem; }
+  .duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 20px 0; }
+  .duo .carte { margin: 0; }
+  .duo .carte.pleine { background: var(--c); }
+  .duo .carte.pleine h3, .duo .carte.pleine p { color: #fff; }
+  .sujets { background: var(--carte); border-radius: 16px; margin-top: 16px; overflow: hidden; }
+  .sujet + .sujet { border-top: 1px solid var(--ligne); }
+  .sujet summary { list-style: none; display: flex; gap: 14px; align-items: baseline; padding: 16px 22px; cursor: pointer; font-family: var(--titre); font-weight: 700; font-size: 1.08rem; line-height: 1.35; }
+  .sujet summary::-webkit-details-marker { display: none; }
+  .sujet summary .n { flex: 0 0 auto; font-weight: 800; color: var(--c); }
+  .sujet summary .q { flex: 1; }
+  .sujet summary::after { content: '+'; flex: 0 0 auto; font-size: 1.3rem; line-height: 1; color: var(--c); transition: transform 0.2s; }
+  .sujet[open] summary::after { transform: rotate(45deg); }
+  .sujet summary:hover .q { color: var(--c); }
+  .sujet-corps { padding: 0 22px 18px 58px; }
+  .sujet-corps p { font-size: 1.02rem; margin-bottom: 10px; }
+  .sujet-corps .reperes { font-family: var(--titre); font-size: 0.88rem; line-height: 1.5; color: var(--discret); display: flex; flex-direction: column; gap: 4px; }
+  .sujet-corps .reperes b { color: var(--c); font-weight: 700; }
+  .sujet a { color: var(--c); text-decoration: underline; text-underline-offset: 2px; }
+
+  .copie { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 8px; }
+  .copie .carte { margin: 0; }
+  .retenir { flex: 1 1 100%; min-width: 0; }
+  .retenir ol { padding-left: 22px; display: flex; flex-direction: column; gap: 10px; font-size: 1.05rem; color: var(--texte); }
+  .rapprocher { flex: 1 1 100%; min-width: 0; background: var(--c) !important; }
+  .rapprocher .etiquette, .rapprocher p, .rapprocher em { color: #fff; }
+  .rapprocher .etiquette { opacity: 0.85; }
+  .rapprocher strong, .rapprocher a, .duo .carte.pleine strong { color: #fff; }
+
+  /* ─── Fin de page ─── */
+  .fin { border-top: 1px solid var(--ligne); background: var(--carte); padding: 24px 48px; }
+  .fin-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; font-family: var(--titre); font-size: 0.95rem; }
+  .fin a { text-decoration: none; padding: 12px 0; }
+  .fin a:hover { color: var(--c); }
+  .bouton-lu { font: 700 0.95rem var(--titre); color: #fff; background: var(--c); border: 1.5px solid var(--c); border-radius: 999px; padding: 12px 22px; min-height: 44px; cursor: pointer; }
+  .bouton-lu.fait { background: transparent; color: var(--c); }
+
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--encre); color: #fff; border: none; border-radius: 50%; font-size: 1.1rem; cursor: pointer; opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 99; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+  }
+  @media (max-width: 760px) {
+    .breadcrumb { display: none; }
+  }
+  @media (max-width: 640px) {
+    nav { padding: 12px 16px; }
+    .breadcrumb { display: none; }
+    .ch-hero { padding: 36px 16px 72px; }
+    .ch-hero-visuel { flex-basis: 160px; }
+    .essentiel-wrap { padding: 0 16px; }
+    .essentiel { padding: 22px 20px; }
+    .page { padding: 40px 16px 56px; }
+    .fin { padding: 20px 16px; }
+    .sujet summary { padding: 14px 16px; }
+    .sujet-corps { padding: 0 16px 16px; }
+    .hgg-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .hgg-stat-cell { padding: 14px 12px; }
+    .hgg-stat-num { font-size: 1.6rem; }
+  }
+
+  @media print {
+    .sujet-corps { display: block !important; }
+    @page { size: A4; margin: 16mm 14mm; }
+    nav, .back-to-top, .fin, .ch-hero-visuel { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: #fff; font-size: 10pt; }
+    .ch-hero { padding: 1rem 1.2rem; }
+    .ch-hero h1 { font-size: 22pt; }
+    .essentiel { margin: 0.6rem 0; box-shadow: none; border: 1pt solid var(--ligne); }
+    .page { display: block; padding: 0.6rem 0; }
+    .content { gap: 1.2rem; }
+    .carte, .hgg-stat-cell { border: 1pt solid var(--ligne); break-inside: avoid; }
+    .surligne, .duo, .sujet { break-inside: avoid; }
+  }
+</style>
+<link rel="stylesheet" href="../../barre-section.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Plus jamais la guerre !">
+<meta property="og:image" content="https://ecg-prepa.fr/partage/humanite/humanite-art-plus-jamais-la-guerre.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Plus jamais la guerre !">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ecg-prepa.fr/partage/humanite/humanite-art-plus-jamais-la-guerre.jpg">
+<meta name="description" content="Plus jamais la guerre ! (Käthe Kollwitz, 1924) : fiche sur l'œuvre, son histoire, son analyse et les pistes pour la dissertation sur l'Humanité.">
+<link rel="canonical" href="https://ecg-prepa.fr/humanite/art/plus-jamais-la-guerre.html">
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="sn sn-hum">
+  <div class="nav-logo sn-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb sn-fil">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">›</span>
+    <a href="../../humanite.html"><span>L'Humanité</span></a>
+    <span class="sep">›</span>
+    <a href="art.html"><span>Art</span></a>
+    <span class="sep">›</span>
+    <span class="current">Plus jamais la guerre&nbsp;!</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="ch-hero-inner">
+    <div class="ch-hero-texte">
+      <div class="chap-label"><span>Art</span><span>L'Humanité</span></div>
+      <h1 style="--t: 0.55">Plus jamais la guerre&nbsp;!</h1>
+      <p class="meta">Käthe Kollwitz · 1924 · Affiche, lithographie</p>
+      <p class="pitch">Un jeune visage qui crie, une main levée pour prêter serment&nbsp;: dix ans après avoir perdu son fils au front, Kollwitz dessine l'affiche du refus de la guerre.</p>
+    </div>
+    <figure class="ch-hero-visuel" style="aspect-ratio: 760 / 1000"><img src="images/plus-jamais-la-guerre-oeuvre.webp" alt="Affiche Nie wieder Krieg de Käthe Kollwitz : sur un fond beige, un jeune homme crie, le bras droit levé, deux doigts tendus comme pour un serment ; autour, l'inscription en grandes lettres noires Nie wieder Krieg" loading="eager" onerror="this.closest('.ch-hero-visuel').remove()"></figure>
+  </div>
+</div>
+
+<!-- L'ESSENTIEL -->
+<div class="essentiel-wrap">
+  <section class="essentiel" aria-label="L'essentiel">
+    <div class="essentiel-these">
+      <div class="etiquette">L'essentiel en une phrase</div>
+      <p>Du deuil d'une mère naît un serment collectif&nbsp;: l'art peut transformer la douleur privée en engagement public, même s'il ne suffit pas à empêcher la guerre suivante.</p>
+    </div>
+    <ul class="notions" aria-label="Notions du thème">
+      <li>Guerre et deuil</li>
+      <li>Pacifisme et engagement</li>
+      <li>Art militant</li>
+    </ul>
+  </section>
+</div>
+
+<div class="page">
+
+<div class="content">
+
+<section class="hgg-part" id="intro">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">1.</span><span class="hgg-part-title">Présentation de l'œuvre</span></h2>
+
+    <p><strong>Plus jamais la guerre&nbsp;!</strong> (<em lang="de">Nie wieder Krieg!</em>) est une affiche lithographiée de l'artiste allemande <strong>Käthe Kollwitz</strong> (1867-1945), réalisée en <strong>1924</strong> pour la Journée de la jeunesse d'Allemagne centrale, à <strong>Leipzig</strong>, du 2 au 4 août 1924, comme l'indique l'inscription en bas de l'affiche. Elle montre un jeune homme qui crie, le bras levé, deux doigts tendus. Des exemplaires sont conservés dans plusieurs musées, dont la National Gallery of Art de Washington.</p>
+  <div class="hgg-stats">
+<div class="hgg-stat-cell"><span class="hgg-stat-num">1914</span><div class="hgg-stat-label">Mort de Peter, le fils de Kollwitz, au front en Belgique</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">1924</span><div class="hgg-stat-label">Dix ans après le début de la guerre, l'affiche de Leipzig</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">3</span><div class="hgg-stat-label">Mots en grandes lettres&nbsp;: Nie wieder Krieg</div></div>
+</div>
+    <p>Une affiche est faite pour être collée sur les murs, lue en un instant, comprise par tous. Kollwitz y met toute la force de son dessin&nbsp;: un visage, un cri, un geste. Pour le thème de l'Humanité, l'œuvre pose une question simple et toujours actuelle&nbsp;: après les massacres de la Grande Guerre, l'humanité peut-elle s'engager à ne plus jamais recommencer, et l'art peut-il l'y aider&nbsp;?</p>
+</section>
+
+<section class="hgg-part" id="p1">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">2.</span><span class="hgg-part-title">Genèse et description</span></h2>
+
+  <div class="hgg-section" id="s1-1">
+    <h3 class="hgg-section-title"><span class="num">2.1</span>Une mère en deuil</h3>
+
+    <p>En août 1914, comme des millions de jeunes Européens, Peter Kollwitz, 18 ans, s'engage volontairement dans l'armée allemande, avec l'accord de ses parents. Il est tué en <strong>octobre 1914</strong>, quelques semaines plus tard, dans les Flandres, en Belgique. Pour sa mère, c'est une blessure qui ne se refermera jamais, et un remords&nbsp;: celui d'avoir consenti à son départ.</p>
+    <p>Kollwitz, qui dessinait déjà la misère des ouvriers et des pauvres, consacre désormais une grande partie de son œuvre à la guerre et au deuil&nbsp;: une série de gravures sur bois intitulée <em>Krieg</em> («&nbsp;La guerre&nbsp;»), au début des années 1920, et un monument, <em>Les Parents en deuil</em>, installé en 1932 dans le cimetière militaire allemand où repose son fils, en Belgique.</p>
+    <div class="surligne">L'affiche de 1924 n'est pas le cri d'une militante abstraite&nbsp;: c'est celui d'une <strong>mère</strong> qui a perdu son fils, et qui veut que d'autres mères n'aient pas à le vivre.</div>
+  </div>
+
+  <div class="hgg-section" id="s1-2">
+    <h3 class="hgg-section-title"><span class="num">2.2</span>Une affiche pour la jeunesse</h3>
+
+    <p>En 1924, l'Allemagne de la république de Weimar est traversée par un fort mouvement pacifiste. Le slogan <em lang="de">Nie wieder Krieg</em> rassemble chaque année des manifestations. Kollwitz réalise l'affiche pour une grande rencontre de la jeunesse à Leipzig&nbsp;: elle s'adresse à ceux qui ont l'âge de son fils lorsqu'il est parti, et leur demande de faire le serment qu'il n'a pas pu faire.</p>
+    <div class="carte">
+      <div class="etiquette">La lithographie</div>
+      <p>L'image est dessinée au crayon gras sur une pierre, puis imprimée en nombreux exemplaires&nbsp;: c'est la <strong>lithographie</strong>, technique des affiches. Kollwitz choisit un art de masse, bon marché, fait pour la rue, plutôt qu'un tableau de musée. L'œuvre doit atteindre le plus grand nombre.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s1-3">
+    <h3 class="hgg-section-title"><span class="num">2.3</span>Lire l'affiche</h3>
+
+    <p>L'affiche est construite sur une grande <strong>diagonale</strong>&nbsp;: le bras levé traverse toute l'image de bas en haut, comme un élan. Le texte, écrit à la main, encadre la figure et se lit en même temps qu'on la voit.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le visage qui crie</h3>
+        <p>Bouche ouverte, yeux écarquillés, cheveux au vent. Le jeune homme ne parle pas, il clame&nbsp;: c'est un appel, presque un hurlement.</p>
+      </div>
+      <div class="carte">
+        <h3>La main du serment</h3>
+        <p>Le bras levé, deux doigts tendus&nbsp;: le geste de celui qui prête serment. Plus jamais la guerre n'est pas un souhait, c'est un engagement solennel.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>La main sur le cœur</h3>
+        <p>En bas, l'autre main est posée sur la poitrine. Le serment engage le corps entier, la raison et le cœur.</p>
+      </div>
+      <div class="carte">
+        <h3>Les mots en grandes lettres</h3>
+        <p>Écrits d'un trait vigoureux, soulignés, ils remplissent l'espace. Le texte fait partie du dessin&nbsp;: l'affiche se lit autant qu'elle se regarde.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le noir sur fond clair</h3>
+        <p>Pas de couleur, pas de décor&nbsp;: un dessin noir sur un papier beige. La sobriété donne au message une force immédiate.</p>
+      </div>
+      <div class="carte">
+        <h3>La jeunesse</h3>
+        <p>Le visage est jeune, comme celui des soldats de 1914. Ce sont ces jeunes gens qui meurent dans les guerres, et ce sont eux qui doivent dire non.</p>
+      </div>
+    </div>
+    <div class="surligne">L'affiche transforme un <strong>deuil privé</strong> en <strong>serment public</strong>&nbsp;: ce que la mère n'a pu empêcher, elle demande à toute une génération de le refuser.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p2">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">3.</span><span class="hgg-part-title">Refuser la guerre</span></h2>
+
+  <div class="hgg-section" id="s2-1">
+    <h3 class="hgg-section-title"><span class="num">3.1</span>Le deuil comme engagement</h3>
+
+    <p>Kollwitz aurait pu se replier sur sa douleur. Elle en fait au contraire le point de départ d'une action&nbsp;: dessiner pour les autres, pour que la mort de son fils serve à quelque chose. Le <strong>deuil</strong> devient une responsabilité envers les vivants. C'est une manière profondément humaine de répondre à la perte&nbsp;: ne pas oublier, et empêcher que cela se reproduise.</p>
+    <div class="carte">
+      <div class="etiquette">Une humanité commune</div>
+      <p>Les gravures de Kollwitz montrent les mères allemandes en deuil, mais leur douleur est celle de toutes les mères, de tous les camps. Le pacifisme repose sur cette reconnaissance&nbsp;: <strong>l'ennemi aussi pleure ses morts</strong>.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-2">
+    <h3 class="hgg-section-title"><span class="num">3.2</span>L'échec du serment&nbsp;?</h3>
+
+    <p>Neuf ans après l'affiche, les nazis arrivent au pouvoir. Kollwitz est poussée en 1933 à quitter l'Académie des arts de Berlin, puis interdite d'exposition. Une nouvelle guerre éclate en 1939, et son petit-fils, prénommé Peter comme son fils, est tué sur le front russe en 1942. Elle meurt en avril 1945, quelques jours avant la fin de la guerre. Le «&nbsp;plus jamais&nbsp;» n'a pas tenu.</p>
+    <div class="surligne">L'histoire semble donner tort à l'affiche. Mais un serment n'est pas une prédiction&nbsp;: c'est un <strong>engagement</strong>, d'autant plus nécessaire qu'il est toujours menacé.</div>
+  </div>
+
+  <div class="hgg-section" id="s2-3">
+    <h3 class="hgg-section-title"><span class="num">3.3</span>L'art au service d'une cause</h3>
+
+    <p>L'affiche pose la question de l'<strong>art engagé</strong>&nbsp;: un artiste doit-il mettre son talent au service d'un message politique&nbsp;? Kollwitz l'assume pleinement. Elle choisit un art populaire, simple, direct, qui parle à tous. Son œuvre a traversé le siècle&nbsp;: depuis 1993, une version agrandie de sa sculpture d'une mère tenant son fils mort se trouve au cœur de la Neue Wache, le mémorial national allemand aux victimes de la guerre et de la tyrannie, à Berlin.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le document</h3>
+        <p>Une rencontre de jeunesse à Leipzig en 1924, le pacifisme de Weimar&nbsp;: <strong>l'affiche témoigne</strong> d'un moment de l'histoire allemande.</p>
+      </div>
+      <div class="carte pleine">
+        <h3>Le symbole</h3>
+        <p>Un jeune visage qui jure de refuser la guerre&nbsp;: <strong>l'affiche universalise</strong>. Elle devient l'image de tous les pacifismes.</p>
+      </div>
+    </div>
+    <div class="surligne">«&nbsp;Plus jamais&nbsp;» est une formule que l'humanité répète après chaque catastrophe. L'affiche de Kollwitz rappelle qu'il ne suffit pas de la dire&nbsp;: il faut la <strong>tenir</strong>.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p3">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">4.</span><span class="hgg-part-title">Pistes pour la dissertation</span></h2>
+
+  <div class="hgg-section" id="s3-1">
+    <h3 class="hgg-section-title">Plus jamais la guerre&nbsp;! face à cinq sujets sur l'Humanité</h3>
+    <p>Cliquez sur un sujet pour l'argument à développer, le détail à citer et sa place dans le plan.</p>
+
+    <div class="sujets">
+      <details class="sujet">
+        <summary><span class="n">01</span><span class="q">La paix est-elle un idéal naïf&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>En 1924, Käthe Kollwitz dessine un jeune homme qui jure, la main levée, de ne plus jamais faire la guerre. Neuf ans plus tard, les nazis prennent le pouvoir&nbsp;; en 1942, son petit-fils meurt sur le front russe. Le serment semble avoir échoué. Mais la paix n'est pas une prédiction naïve&nbsp;: c'est un engagement à tenir sans cesse, d'autant plus nécessaire qu'il est toujours menacé. L'échec ne prouve pas l'erreur de l'idéal, mais l'urgence de le défendre.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> La main levée du serment, face à l'histoire qui suit.</span><span><b>Dans le plan&nbsp;:</b> En partie de dépassement&nbsp;: la paix comme tâche et non comme état.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">02</span><span class="q">Le deuil peut-il fonder un engagement&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>En octobre 1914, Peter Kollwitz, 18 ans, est tué dans les Flandres. Sa mère en fait le point de départ d'une œuvre entière&nbsp;: la série <em>Krieg</em>, le monument des <em>Parents en deuil</em>, l'affiche de 1924. Le deuil ne la replie pas sur sa douleur&nbsp;: il devient une responsabilité envers les vivants. Se souvenir des morts, c'est s'engager pour que d'autres ne meurent pas de la même façon.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Le monument des Parents en deuil, installé en 1932 près de la tombe de Peter.</span><span><b>Dans le plan&nbsp;:</b> Sur la mémoire&nbsp;: du deuil privé à l'engagement public.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">03</span><span class="q">L'art doit-il être engagé&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Kollwitz choisit l'affiche, la lithographie, un art de masse fait pour la rue, et met son talent au service d'un message&nbsp;: <em>Nie wieder Krieg</em>. Elle refuse l'art pour l'art. Son œuvre montre que l'engagement n'appauvrit pas l'art&nbsp;: le visage qui crie, la main du serment ont une force plastique qui dépasse le slogan. Mais l'art engagé dépend de l'histoire&nbsp;: il peut échouer à changer le monde, sans perdre sa valeur.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Le texte écrit à la main, qui fait partie du dessin.</span><span><b>Dans le plan&nbsp;:</b> En partie critique&nbsp;: l'art militant entre efficacité et force propre.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">04</span><span class="q">Reconnaître la douleur de l'ennemi, est-ce le début de la paix&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Les mères dessinées par Kollwitz sont allemandes, mais leur douleur est celle de toutes les mères, françaises, britanniques ou belges, qui ont perdu un fils entre 1914 et 1918. Son monument des <em>Parents en deuil</em> se trouve d'ailleurs en Belgique, pays envahi par l'Allemagne. Reconnaître que l'ennemi souffre de la même façon, c'est retrouver une humanité commune par-delà les camps&nbsp;: c'est le fondement de tout pacifisme.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Le monument allemand des Parents en deuil, en terre belge.</span><span><b>Dans le plan&nbsp;:</b> En première partie&nbsp;: la souffrance partagée comme fondement de la paix.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">05</span><span class="q">La jeunesse peut-elle refuser l'histoire qu'on lui impose&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>En 1914, la jeunesse européenne part à la guerre avec enthousiasme, comme Peter Kollwitz, volontaire à 18 ans. En 1924, sa mère dessine pour une rencontre de jeunes à Leipzig un jeune homme qui jure de refuser la guerre. Elle demande à la génération suivante de rompre avec celle qui est morte au front. La jeunesse n'est pas condamnée à reproduire l'histoire&nbsp;: elle peut, par un serment, choisir un autre avenir.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Le visage jeune de la figure, qui rappelle les soldats de 1914.</span><span><b>Dans le plan&nbsp;:</b> Sur la liberté&nbsp;: rompre avec la fatalité de la guerre.</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s3-2">
+    <div class="copie">
+      <div class="carte retenir">
+        <div class="etiquette">Idées à retenir</div>
+        <ol>
+          <li>Kollwitz a perdu son fils <strong>Peter</strong> en 1914&nbsp;: l'affiche est le cri d'une mère en deuil.</li>
+          <li>Le geste du <strong>serment</strong> transforme un souhait de paix en engagement solennel de toute une génération.</li>
+          <li>Choisir l'affiche et la lithographie, c'est choisir un <strong>art populaire et engagé</strong>, fait pour la rue.</li>
+          <li>Le serment est trahi par l'histoire (nazisme, mort du petit-fils en 1942), mais la paix reste un <strong>engagement</strong> à tenir.</li>
+        </ol>
+      </div>
+      <div class="carte rapprocher">
+        <div class="etiquette">À rapprocher</div>
+        <p><strong>Erich Maria Remarque, <em>À l'Ouest, rien de nouveau</em> (1929)</strong>&nbsp;: le roman suit un groupe de lycéens allemands qui s'engagent en 1914, poussés par leur professeur, et meurent un à un dans les tranchées. Comme l'affiche de Kollwitz, il dit la jeunesse sacrifiée de la Grande Guerre et le refus de recommencer, et il sera lui aussi rejeté par les nazis, qui le brûlent en 1933. Mais Remarque raconte la guerre de l'intérieur, du côté des fils qui meurent&nbsp;; Kollwitz la regarde du côté de ceux qui restent, et appelle les vivants à prêter serment.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /content -->
+</div><!-- /page -->
+
+<footer class="fin">
+  <div class="fin-inner">
+    <a href="art.html">← Toutes les fiches d'art</a>
+    <button type="button" class="bouton-lu" id="boutonLu">J'ai lu cette fiche</button>
+  </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
+
+<script>
+  // « J'ai lu cette fiche », gardé dans le navigateur
+  const CLE = 'ecg-humanite-fiches-lues';
+  const ID = 'art/plus-jamais-la-guerre';
+  const lu = document.getElementById('boutonLu');
+  function lire() { try { return JSON.parse(localStorage.getItem(CLE)) || []; } catch (e) { return []; } }
+  function majLu() {
+    const fait = lire().includes(ID);
+    lu.classList.toggle('fait', fait);
+    lu.textContent = fait ? '✓ Fiche lue' : "J'ai lu cette fiche";
+  }
+  lu.addEventListener('click', () => {
+    let l = lire();
+    l = l.includes(ID) ? l.filter(x => x !== ID) : l.concat(ID);
+    try { localStorage.setItem(CLE, JSON.stringify(l)); } catch (e) {}
+    majLu();
+  });
+  majLu();
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>

@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Art — La Création d'Adam</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<style>
+  :root {
+    --c: #5b7a99;          /* couleur de la fiche */
+    --c-soft: #e9eef4;
+    --fond: #f5f4f0;
+    --carte: #ffffff;
+    --encre: #18181b;
+    --texte: #3f3f46;
+    --discret: #52525b;
+    --ligne: #e4e2dc;
+    --titre: 'Bricolage Grotesque', system-ui, sans-serif;
+    --corps: 'Newsreader', Georgia, serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--fond); color: var(--encre); font-family: var(--corps); font-size: 1.125rem; line-height: 1.65; min-height: 100vh; }
+  strong { font-weight: 600; color: var(--encre); }
+  a { color: inherit; }
+
+  /* ─── Barre du haut ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 14px 48px; background: var(--carte); border-bottom: 1px solid var(--ligne);
+    position: sticky; top: 0; z-index: 100; font-family: var(--titre);
+  }
+  .nav-logo { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em; }
+  .nav-logo a { color: var(--encre); text-decoration: none; }
+  .breadcrumb { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: calc(100% - 420px); display: flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; overflow: hidden; font-size: 0.85rem; color: var(--discret); }
+  .breadcrumb .current { overflow: hidden; text-overflow: ellipsis; }
+  .breadcrumb a { text-decoration: none; }
+  .breadcrumb a:hover { color: var(--c); }
+  .breadcrumb .sep { color: #a1a1aa; }
+  .breadcrumb .current { color: var(--encre); }
+
+  /* ─── Bandeau ─── */
+  .ch-hero { position: relative; background: var(--c); color: #fff; padding: 56px 48px 84px; overflow: hidden; }
+  .ch-hero-fond { display: none; }
+  .ch-hero-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 40px 56px; }
+  .ch-hero-texte { flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+  .chap-label { display: flex; flex-wrap: wrap; gap: 8px; font-family: var(--titre); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .chap-label span { background: rgba(255,255,255,0.18); padding: 6px 12px; border-radius: 999px; }
+  .ch-hero h1 { font-family: var(--titre); font-weight: 800; font-size: calc(var(--t, 1) * clamp(3rem, 8vw, 6rem)); line-height: 0.95; letter-spacing: -0.02em; }
+  .ch-hero .meta { font-family: var(--titre); font-size: 1.2rem; font-weight: 500; opacity: 0.92; }
+  .ch-hero .pitch { max-width: 620px; font-size: 1.3rem; line-height: 1.5; }
+  .ch-hero-visuel { flex: 0 0 240px; max-width: 100%; aspect-ratio: 2 / 3; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+  .ch-hero-visuel.paysage { flex: 1 1 420px; aspect-ratio: auto; }
+  .ch-hero-visuel.paysage img { height: auto; }
+  .ch-hero-visuel img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  /* ─── L'essentiel ─── */
+  .essentiel {
+    position: relative; max-width: 1040px; margin: -44px auto 0; background: var(--carte); border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(24,24,27,0.10); padding: 28px 32px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 20px 40px;
+  }
+  .essentiel-wrap { padding: 0 48px; }
+  .essentiel-these { flex: 999 1 420px; min-width: 0; }
+  .etiquette { font-family: var(--titre); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c); }
+  .essentiel-these p { margin-top: 6px; font-size: 1.35rem; line-height: 1.4; font-weight: 600; }
+  .notions { flex: 1 1 300px; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+  .notions li { font-family: var(--titre); font-size: 0.92rem; font-weight: 500; padding: 8px 14px; border-radius: 999px; background: var(--c-soft); color: var(--c); }
+
+  /* ─── Corps ─── */
+  .page { max-width: 820px; margin: 0 auto; padding: 64px 48px 72px; }
+
+  .content { display: flex; flex-direction: column; gap: 64px; }
+  .hgg-part { scroll-margin-top: 90px; }
+  .hgg-part-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 20px; }
+  .hgg-part-num { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; color: var(--c); }
+  .hgg-part-title { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; letter-spacing: -0.01em; }
+  .hgg-section { margin-top: 32px; scroll-margin-top: 90px; }
+  .hgg-section-title { font-family: var(--titre); font-weight: 700; font-size: 1.35rem; line-height: 1.25; margin-bottom: 12px; }
+  .hgg-section-title .num { color: var(--c); margin-right: 6px; }
+  .content p { color: var(--texte); margin-bottom: 16px; }
+  .content p:last-child { margin-bottom: 0; }
+
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 8px 0 24px; }
+  .hgg-stat-cell { background: var(--carte); border-radius: 12px; padding: 18px 20px; }
+  .hgg-stat-num { display: block; font-family: var(--titre); font-weight: 800; font-size: 2.2rem; line-height: 1; color: var(--c); }
+  .hgg-stat-label { margin-top: 6px; font-family: var(--titre); font-size: 0.88rem; color: var(--discret); }
+
+  .carte { background: var(--carte); border-radius: 14px; padding: 22px 26px; margin: 20px 0; }
+  .carte h3 { font-family: var(--titre); font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+  .carte p { font-size: 1.05rem; }
+  .carte .etiquette { margin-bottom: 8px; }
+  .surligne { background: var(--c-soft); border-radius: 14px; padding: 20px 24px; margin: 20px 0; color: #2a1d12; font-size: 1.08rem; }
+  .duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 20px 0; }
+  .duo .carte { margin: 0; }
+  .duo .carte.pleine { background: var(--c); }
+  .duo .carte.pleine h3, .duo .carte.pleine p { color: #fff; }
+  .sujets { background: var(--carte); border-radius: 16px; margin-top: 16px; overflow: hidden; }
+  .sujet + .sujet { border-top: 1px solid var(--ligne); }
+  .sujet summary { list-style: none; display: flex; gap: 14px; align-items: baseline; padding: 16px 22px; cursor: pointer; font-family: var(--titre); font-weight: 700; font-size: 1.08rem; line-height: 1.35; }
+  .sujet summary::-webkit-details-marker { display: none; }
+  .sujet summary .n { flex: 0 0 auto; font-weight: 800; color: var(--c); }
+  .sujet summary .q { flex: 1; }
+  .sujet summary::after { content: '+'; flex: 0 0 auto; font-size: 1.3rem; line-height: 1; color: var(--c); transition: transform 0.2s; }
+  .sujet[open] summary::after { transform: rotate(45deg); }
+  .sujet summary:hover .q { color: var(--c); }
+  .sujet-corps { padding: 0 22px 18px 58px; }
+  .sujet-corps p { font-size: 1.02rem; margin-bottom: 10px; }
+  .sujet-corps .reperes { font-family: var(--titre); font-size: 0.88rem; line-height: 1.5; color: var(--discret); display: flex; flex-direction: column; gap: 4px; }
+  .sujet-corps .reperes b { color: var(--c); font-weight: 700; }
+  .sujet a { color: var(--c); text-decoration: underline; text-underline-offset: 2px; }
+
+  .copie { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 8px; }
+  .copie .carte { margin: 0; }
+  .retenir { flex: 1 1 100%; min-width: 0; }
+  .retenir ol { padding-left: 22px; display: flex; flex-direction: column; gap: 10px; font-size: 1.05rem; color: var(--texte); }
+  .rapprocher { flex: 1 1 100%; min-width: 0; background: var(--c) !important; }
+  .rapprocher .etiquette, .rapprocher p, .rapprocher em { color: #fff; }
+  .rapprocher .etiquette { opacity: 0.85; }
+  .rapprocher strong, .rapprocher a, .duo .carte.pleine strong { color: #fff; }
+
+  /* ─── Fin de page ─── */
+  .fin { border-top: 1px solid var(--ligne); background: var(--carte); padding: 24px 48px; }
+  .fin-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; font-family: var(--titre); font-size: 0.95rem; }
+  .fin a { text-decoration: none; padding: 12px 0; }
+  .fin a:hover { color: var(--c); }
+  .bouton-lu { font: 700 0.95rem var(--titre); color: #fff; background: var(--c); border: 1.5px solid var(--c); border-radius: 999px; padding: 12px 22px; min-height: 44px; cursor: pointer; }
+  .bouton-lu.fait { background: transparent; color: var(--c); }
+
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--encre); color: #fff; border: none; border-radius: 50%; font-size: 1.1rem; cursor: pointer; opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 99; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+  }
+  @media (max-width: 760px) {
+    .breadcrumb { display: none; }
+  }
+  @media (max-width: 640px) {
+    nav { padding: 12px 16px; }
+    .breadcrumb { display: none; }
+    .ch-hero { padding: 36px 16px 72px; }
+    .ch-hero-visuel { flex-basis: 160px; }
+    .essentiel-wrap { padding: 0 16px; }
+    .essentiel { padding: 22px 20px; }
+    .page { padding: 40px 16px 56px; }
+    .fin { padding: 20px 16px; }
+    .sujet summary { padding: 14px 16px; }
+    .sujet-corps { padding: 0 16px 16px; }
+    .hgg-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .hgg-stat-cell { padding: 14px 12px; }
+    .hgg-stat-num { font-size: 1.6rem; }
+  }
+
+  @media print {
+    .sujet-corps { display: block !important; }
+    @page { size: A4; margin: 16mm 14mm; }
+    nav, .back-to-top, .fin, .ch-hero-visuel { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: #fff; font-size: 10pt; }
+    .ch-hero { padding: 1rem 1.2rem; }
+    .ch-hero h1 { font-size: 22pt; }
+    .essentiel { margin: 0.6rem 0; box-shadow: none; border: 1pt solid var(--ligne); }
+    .page { display: block; padding: 0.6rem 0; }
+    .content { gap: 1.2rem; }
+    .carte, .hgg-stat-cell { border: 1pt solid var(--ligne); break-inside: avoid; }
+    .surligne, .duo, .sujet { break-inside: avoid; }
+  }
+</style>
+<link rel="stylesheet" href="../../barre-section.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="La Création d&#x27;Adam">
+<meta property="og:image" content="https://ecg-prepa.fr/partage/humanite/humanite-art-la-creation-d-adam.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="La Création d&#x27;Adam">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ecg-prepa.fr/partage/humanite/humanite-art-la-creation-d-adam.jpg">
+<meta name="description" content="La Création d'Adam (Michel-Ange, vers 1511) : fiche sur l'œuvre, son histoire, son analyse et les pistes pour la dissertation sur l'Humanité.">
+<link rel="canonical" href="https://ecg-prepa.fr/humanite/art/la-creation-d-adam.html">
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="sn sn-hum">
+  <div class="nav-logo sn-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb sn-fil">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">›</span>
+    <a href="../../humanite.html"><span>L'Humanité</span></a>
+    <span class="sep">›</span>
+    <a href="art.html"><span>Art</span></a>
+    <span class="sep">›</span>
+    <span class="current">La Création d'Adam</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="ch-hero-inner">
+    <div class="ch-hero-texte">
+      <div class="chap-label"><span>Art</span><span>L'Humanité</span></div>
+      <h1 style="--t: 0.62">La Création d'Adam</h1>
+      <p class="meta">Michel-Ange · vers 1511 · Fresque, chapelle Sixtine</p>
+      <p class="pitch">Deux doigts qui ne se touchent pas encore&nbsp;: au plafond de la chapelle Sixtine, Michel-Ange peint l'instant où Dieu donne la vie au premier homme, créé à son image.</p>
+    </div>
+    <figure class="ch-hero-visuel paysage"><img src="images/la-creation-d-adam-oeuvre.webp" alt="La Création d'Adam de Michel-Ange : à gauche, Adam nu, allongé sur une colline, tend une main molle ; à droite, Dieu, porté par des anges dans un manteau rouge, tend l'index vers lui ; les deux doigts ne se touchent pas" loading="eager" onerror="this.closest('.ch-hero-visuel').remove()"></figure>
+  </div>
+</div>
+
+<!-- L'ESSENTIEL -->
+<div class="essentiel-wrap">
+  <section class="essentiel" aria-label="L'essentiel">
+    <div class="essentiel-these">
+      <div class="etiquette">L'essentiel en une phrase</div>
+      <p>Créé à l'image de Dieu, l'homme reçoit une dignité unique&nbsp;; mais l'espace entre les deux doigts rappelle qu'il reste séparé de son créateur, libre et inachevé.</p>
+    </div>
+    <ul class="notions" aria-label="Notions du thème">
+      <li>Dignité de l'homme</li>
+      <li>Création et origine</li>
+      <li>Humanisme chrétien</li>
+    </ul>
+  </section>
+</div>
+
+<div class="page">
+
+<div class="content">
+
+<section class="hgg-part" id="intro">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">1.</span><span class="hgg-part-title">Présentation de l'œuvre</span></h2>
+
+    <p><strong>La Création d'Adam</strong> est une fresque de <strong>Michel-Ange</strong> (1475-1564), peinte vers <strong>1511</strong> sur le plafond de la <strong>chapelle Sixtine</strong>, au Vatican. Elle fait partie d'un immense ensemble commandé par le pape Jules II et réalisé de 1508 à 1512, qui raconte la Genèse en neuf scènes, de la séparation de la lumière et des ténèbres à l'ivresse de Noé. Elle montre Dieu tendant la main vers Adam, le premier homme, pour lui donner la vie.</p>
+  <div class="hgg-stats">
+<div class="hgg-stat-cell"><span class="hgg-stat-num">1508-1512</span><div class="hgg-stat-label">Années de travail sur le plafond de la Sixtine</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">9</span><div class="hgg-stat-label">Scènes de la Genèse au centre du plafond</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">20 m</span><div class="hgg-stat-label">Environ, de hauteur entre le sol et le plafond</div></div>
+</div>
+    <p>Les deux mains qui se tendent sans se toucher sont devenues l'une des images les plus célèbres du monde, reprise dans d'innombrables affiches, publicités et films. Elle pose une question au cœur du thème de l'Humanité&nbsp;: d'où vient la dignité de l'homme, et que signifie être créé «&nbsp;à l'image&nbsp;» de Dieu&nbsp;?</p>
+</section>
+
+<section class="hgg-part" id="p1">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">2.</span><span class="hgg-part-title">Genèse et description</span></h2>
+
+  <div class="hgg-section" id="s1-1">
+    <h3 class="hgg-section-title"><span class="num">2.1</span>Un sculpteur au plafond</h3>
+
+    <p>Michel-Ange se considère d'abord comme <strong>sculpteur</strong>&nbsp;: il a déjà réalisé la <em>Pietà</em> et le <em>David</em>. Quand le pape Jules II lui commande en 1508 la décoration du plafond de la chapelle Sixtine, il accepte à contrecœur. Il travaille pendant quatre ans, debout sur un échafaudage, la tête renversée, peignant à fresque, c'est-à-dire sur un enduit frais qu'il faut couvrir avant qu'il sèche.</p>
+    <p>Le plafond raconte le début de la Bible&nbsp;: la création du monde, celle de l'homme, la chute et le Déluge. <strong>La Création d'Adam</strong> se trouve au centre. Elle illustre le passage de la Genèse où Dieu crée l'homme «&nbsp;à son image&nbsp;» et lui insuffle la vie.</p>
+    <div class="surligne">Le corps d'Adam a la puissance d'une statue antique&nbsp;: Michel-Ange peint en <strong>sculpteur</strong>, et fait du corps humain nu l'image la plus haute de la création.</div>
+  </div>
+
+  <div class="hgg-section" id="s1-2">
+    <h3 class="hgg-section-title"><span class="num">2.2</span>Un Dieu qui s'approche</h3>
+
+    <p>La Bible dit que Dieu a formé l'homme avec de la poussière et lui a insufflé la vie par les narines. Michel-Ange invente une autre image&nbsp;: un <strong>doigt tendu</strong>, comme une étincelle qui va passer. Dieu n'est pas un juge lointain, mais un vieillard puissant, en mouvement, porté par des anges, qui se penche vers sa créature.</p>
+    <div class="carte">
+      <div class="etiquette">Une fresque restaurée</div>
+      <p>De 1980 à 1994, le plafond de la Sixtine a été entièrement <strong>restauré</strong>&nbsp;: des siècles de fumée de bougies et de vernis l'avaient assombri. La restauration a révélé des couleurs vives, parfois surprenantes, et a suscité de vifs débats entre spécialistes.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s1-3">
+    <h3 class="hgg-section-title"><span class="num">2.3</span>Lire la fresque</h3>
+
+    <p>La fresque est construite sur une <strong>opposition</strong>&nbsp;: à gauche, Adam, allongé, immobile, sur la terre&nbsp;; à droite, Dieu, en plein vol, entouré d'êtres, dans le ciel. Entre eux, le vide, et deux mains.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Adam</h3>
+        <p>Allongé sur une colline, il a un corps parfait mais encore sans énergie&nbsp;: sa main pend, molle. Il attend la vie qui va le traverser.</p>
+      </div>
+      <div class="carte">
+        <h3>Dieu</h3>
+        <p>Barbe blanche, corps puissant, bras tendu avec énergie&nbsp;: tout son élan va vers l'homme. C'est lui qui fait le geste.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>Les deux doigts</h3>
+        <p>Ils ne se touchent pas&nbsp;: quelques centimètres les séparent. Toute la tension de la fresque est là, dans l'instant juste avant le contact.</p>
+      </div>
+      <div class="carte">
+        <h3>Le regard d'Adam</h3>
+        <p>Adam regarde Dieu, Dieu regarde Adam. La création n'est pas seulement un acte de puissance&nbsp;: c'est une rencontre.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le manteau rouge</h3>
+        <p>Dieu et les anges sont enveloppés d'un grand manteau en forme de coque. En 1990, un médecin y a vu la forme d'un cerveau humain&nbsp;: une lecture discutée, mais célèbre.</p>
+      </div>
+      <div class="carte">
+        <h3>La femme sous le bras de Dieu</h3>
+        <p>Parmi les anges, une jeune femme regarde Adam. On y voit souvent Ève, pas encore créée, ou la Sagesse divine.</p>
+      </div>
+    </div>
+    <div class="surligne">Les doigts ne se touchent pas, et c'est voulu&nbsp;: l'image saisit le moment où l'homme <strong>va recevoir</strong> la vie, et laisse entre Dieu et lui un espace que rien ne comblera tout à fait.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p2">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">3.</span><span class="hgg-part-title">La dignité de l'homme</span></h2>
+
+  <div class="hgg-section" id="s2-1">
+    <h3 class="hgg-section-title"><span class="num">3.1</span>Créé à l'image de Dieu</h3>
+
+    <p>Dans la tradition chrétienne, l'homme a une place unique dans la création, car il est fait «&nbsp;à l'image&nbsp;» de Dieu&nbsp;: doué de raison, de liberté, capable d'aimer. Michel-Ange le montre littéralement&nbsp;: Adam et Dieu se ressemblent, leurs bras ont la même position, comme un reflet. La <strong>dignité humaine</strong> vient de cette ressemblance&nbsp;: l'homme n'est pas une chose parmi les choses.</p>
+    <div class="carte">
+      <div class="etiquette">L'humanisme de la Renaissance</div>
+      <p>La fresque célèbre la beauté du corps humain nu, idéalisé comme les statues antiques. Elle unit la foi chrétienne et l'admiration de l'Antiquité pour l'homme&nbsp;: c'est l'<strong>humanisme chrétien</strong> de la Renaissance, qui voit dans la grandeur de l'homme la gloire de son créateur.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-2">
+    <h3 class="hgg-section-title"><span class="num">3.2</span>L'espace entre les doigts</h3>
+
+    <p>L'homme ressemble à Dieu, mais il n'est pas Dieu. Les deux doigts restent séparés&nbsp;: l'homme est une <strong>créature</strong>, fini, mortel, dépendant. Dans la suite du plafond, il désobéira, sera chassé du paradis, connaîtra le Déluge. L'écart entre les doigts annonce cette histoire&nbsp;: l'homme est grand par son origine, mais libre de s'en éloigner.</p>
+    <div class="surligne">L'homme de Michel-Ange est à la fois <strong>proche et séparé</strong> de Dieu&nbsp;: c'est dans cet écart que se joue sa liberté, et toute son histoire.</div>
+  </div>
+
+  <div class="hgg-section" id="s2-3">
+    <h3 class="hgg-section-title"><span class="num">3.3</span>Une image devenue universelle</h3>
+
+    <p>La main de Dieu et la main d'Adam ont été reprises à l'infini&nbsp;: affiches de films, publicités, dessins de presse, mains d'un humain et d'un robot qui se tendent. L'image n'appartient plus seulement à la foi chrétienne&nbsp;; elle est devenue le symbole de toute <strong>origine</strong>, de tout passage de la vie, de toute rencontre entre un créateur et sa créature.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le document</h3>
+        <p>Un pape, une chapelle, un récit biblique&nbsp;: <strong>la fresque témoigne</strong> de la foi et de l'art de la Rome de 1511.</p>
+      </div>
+      <div class="carte pleine">
+        <h3>Le symbole</h3>
+        <p>Deux mains qui vont se toucher&nbsp;: <strong>la fresque universalise</strong>. Elle devient l'image de l'origine de l'homme et de sa dignité.</p>
+      </div>
+    </div>
+    <div class="surligne">Aujourd'hui, la main tendue vers l'homme est souvent celle d'un <strong>robot</strong>&nbsp;: l'homme est devenu à son tour créateur, et la fresque pose la question de ce qu'il transmet à ses créatures.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p3">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">4.</span><span class="hgg-part-title">Pistes pour la dissertation</span></h2>
+
+  <div class="hgg-section" id="s3-1">
+    <h3 class="hgg-section-title">La Création d'Adam face à cinq sujets sur l'Humanité</h3>
+    <p>Cliquez sur un sujet pour l'argument à développer, le détail à citer et sa place dans le plan.</p>
+
+    <div class="sujets">
+      <details class="sujet">
+        <summary><span class="n">01</span><span class="q">D'où vient la dignité de l'homme&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Au plafond de la chapelle Sixtine, vers 1511, Michel-Ange peint Dieu tendant le doigt vers Adam, qui lui ressemble comme un reflet. Pour la tradition chrétienne, la dignité de l'homme vient de là&nbsp;: créé à l'image de Dieu, doué de raison et de liberté, il n'est pas une chose parmi les choses. On peut opposer à cette origine divine une dignité fondée sur la raison seule, comme chez Kant&nbsp;; mais toutes deux affirment que l'homme a une valeur unique.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> La position symétrique des bras de Dieu et d'Adam.</span><span><b>Dans le plan&nbsp;:</b> En première partie&nbsp;: la dignité fondée sur la ressemblance avec Dieu.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">02</span><span class="q">L'homme est-il un être à part dans la nature&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Dans la Genèse peinte par Michel-Ange, l'homme est créé à part, par un geste direct de Dieu, après tous les autres êtres. Son corps idéal, sa ressemblance avec le créateur le placent au sommet de la création. Depuis Darwin, la science le replace au contraire dans l'évolution du vivant, parmi les autres animaux. La fresque incarne une vision que la modernité a profondément remise en question.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Adam couché sur la terre, qui va recevoir la vie d'un geste divin.</span><span><b>Dans le plan&nbsp;:</b> En partie critique&nbsp;: de la création à part à l'homme dans la nature.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">03</span><span class="q">La liberté est-elle le propre de l'homme&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Les doigts de Dieu et d'Adam ne se touchent pas&nbsp;: l'homme, même créé à l'image de Dieu, reste séparé de lui. Dans la suite du plafond, il désobéit et est chassé du paradis. Cet écart est celui de la liberté&nbsp;: l'homme n'est pas une marionnette, il peut choisir, y compris de s'éloigner de son créateur. La grandeur humaine tient autant à cette liberté qu'à son origine.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> L'espace entre les deux doigts.</span><span><b>Dans le plan&nbsp;:</b> En partie de dépassement&nbsp;: la dignité comme liberté.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">04</span><span class="q">Le corps humain est-il digne d'être représenté&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Michel-Ange, sculpteur avant tout, peint Adam nu, avec la puissance d'une statue antique, au plafond de la chapelle du pape. Pour lui, le corps humain est l'œuvre la plus haute de la création, et sa beauté reflète celle de Dieu. La fresque s'oppose à une tradition qui méprise le corps au profit de l'âme&nbsp;: elle fait du corps lui-même le lieu de la dignité humaine.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Le corps nu et parfait d'Adam, au cœur d'une chapelle.</span><span><b>Dans le plan&nbsp;:</b> Sur le corps&nbsp;: l'humanisme qui réconcilie le corps et l'esprit.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">05</span><span class="q">L'homme peut-il devenir créateur&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>La main de Dieu tendue vers Adam est aujourd'hui souvent remplacée, dans les images populaires, par la main d'un humain tendue vers un robot. L'homme est devenu à son tour créateur d'êtres artificiels. La fresque pose alors la question de sa responsabilité&nbsp;: que transmet-il à ses créatures, et peut-il, comme Dieu, leur donner une dignité, ou seulement une fonction&nbsp;?</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Les reprises de la fresque avec une main humaine et une main robotique.</span><span><b>Dans le plan&nbsp;:</b> Sur la technique&nbsp;: l'homme créateur et ses responsabilités.</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s3-2">
+    <div class="copie">
+      <div class="carte retenir">
+        <div class="etiquette">Idées à retenir</div>
+        <ol>
+          <li>Michel-Ange peint vers 1511, au plafond de la <strong>Sixtine</strong>, l'instant où Dieu donne la vie à Adam.</li>
+          <li>Créé <strong>à l'image de Dieu</strong>, l'homme reçoit une dignité unique&nbsp;: c'est l'humanisme chrétien.</li>
+          <li>Les doigts qui ne se touchent pas disent l'<strong>écart</strong> entre le créateur et la créature, et la liberté de l'homme.</li>
+          <li>L'image est devenue <strong>universelle</strong>, jusqu'à la main tendue vers un robot&nbsp;: l'homme devenu créateur.</li>
+        </ol>
+      </div>
+      <div class="carte rapprocher">
+        <div class="etiquette">À rapprocher</div>
+        <p><a href="../cinema/blade-runner.html" style="color:inherit;text-decoration:underline;text-underline-offset:2px"><strong>Ridley Scott, <em>Blade Runner</em> (1982)</strong></a>&nbsp;: des réplicants, êtres artificiels créés à l'image de l'homme, reviennent sur Terre pour trouver leur créateur, Tyrell, et lui demander plus de vie. Comme dans la fresque, une créature se tourne vers celui qui l'a faite et cherche en lui son origine et sa valeur. Mais le Dieu de Michel-Ange se penche vers Adam pour lui donner la vie&nbsp;; Tyrell ne peut rien offrir à ses créatures, et la rencontre se termine par la mort du créateur.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /content -->
+</div><!-- /page -->
+
+<footer class="fin">
+  <div class="fin-inner">
+    <a href="art.html">← Toutes les fiches d'art</a>
+    <button type="button" class="bouton-lu" id="boutonLu">J'ai lu cette fiche</button>
+  </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
+
+<script>
+  // « J'ai lu cette fiche », gardé dans le navigateur
+  const CLE = 'ecg-humanite-fiches-lues';
+  const ID = 'art/la-creation-d-adam';
+  const lu = document.getElementById('boutonLu');
+  function lire() { try { return JSON.parse(localStorage.getItem(CLE)) || []; } catch (e) { return []; } }
+  function majLu() {
+    const fait = lire().includes(ID);
+    lu.classList.toggle('fait', fait);
+    lu.textContent = fait ? '✓ Fiche lue' : "J'ai lu cette fiche";
+  }
+  lu.addEventListener('click', () => {
+    let l = lire();
+    l = l.includes(ID) ? l.filter(x => x !== ID) : l.concat(ID);
+    try { localStorage.setItem(CLE, JSON.stringify(l)); } catch (e) {}
+    majLu();
+  });
+  majLu();
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>

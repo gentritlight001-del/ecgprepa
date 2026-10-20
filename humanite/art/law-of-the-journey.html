@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Art — Law of the Journey</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<style>
+  :root {
+    --c: #1e5266;          /* couleur de la fiche */
+    --c-soft: #e4eef2;
+    --fond: #f5f4f0;
+    --carte: #ffffff;
+    --encre: #18181b;
+    --texte: #3f3f46;
+    --discret: #52525b;
+    --ligne: #e4e2dc;
+    --titre: 'Bricolage Grotesque', system-ui, sans-serif;
+    --corps: 'Newsreader', Georgia, serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--fond); color: var(--encre); font-family: var(--corps); font-size: 1.125rem; line-height: 1.65; min-height: 100vh; }
+  strong { font-weight: 600; color: var(--encre); }
+  a { color: inherit; }
+
+  /* ─── Barre du haut ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 14px 48px; background: var(--carte); border-bottom: 1px solid var(--ligne);
+    position: sticky; top: 0; z-index: 100; font-family: var(--titre);
+  }
+  .nav-logo { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em; }
+  .nav-logo a { color: var(--encre); text-decoration: none; }
+  .breadcrumb { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: calc(100% - 420px); display: flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; overflow: hidden; font-size: 0.85rem; color: var(--discret); }
+  .breadcrumb .current { overflow: hidden; text-overflow: ellipsis; }
+  .breadcrumb a { text-decoration: none; }
+  .breadcrumb a:hover { color: var(--c); }
+  .breadcrumb .sep { color: #a1a1aa; }
+  .breadcrumb .current { color: var(--encre); }
+
+  /* ─── Bandeau ─── */
+  .ch-hero { position: relative; background: var(--c); color: #fff; padding: 56px 48px 84px; overflow: hidden; }
+  .ch-hero-fond { display: none; }
+  .ch-hero-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 40px 56px; }
+  .ch-hero-texte { flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+  .chap-label { display: flex; flex-wrap: wrap; gap: 8px; font-family: var(--titre); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .chap-label span { background: rgba(255,255,255,0.18); padding: 6px 12px; border-radius: 999px; }
+  .ch-hero h1 { font-family: var(--titre); font-weight: 800; font-size: calc(var(--t, 1) * clamp(3rem, 8vw, 6rem)); line-height: 0.95; letter-spacing: -0.02em; }
+  .ch-hero .meta { font-family: var(--titre); font-size: 1.2rem; font-weight: 500; opacity: 0.92; }
+  .ch-hero .pitch { max-width: 620px; font-size: 1.3rem; line-height: 1.5; }
+  .ch-hero-visuel { flex: 0 0 240px; max-width: 100%; aspect-ratio: 2 / 3; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+  .ch-hero-visuel.paysage { flex: 1 1 420px; aspect-ratio: auto; }
+  .ch-hero-visuel.paysage img { height: auto; }
+  .ch-hero-visuel img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  /* ─── L'essentiel ─── */
+  .essentiel {
+    position: relative; max-width: 1040px; margin: -44px auto 0; background: var(--carte); border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(24,24,27,0.10); padding: 28px 32px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 20px 40px;
+  }
+  .essentiel-wrap { padding: 0 48px; }
+  .essentiel-these { flex: 999 1 420px; min-width: 0; }
+  .etiquette { font-family: var(--titre); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c); }
+  .essentiel-these p { margin-top: 6px; font-size: 1.35rem; line-height: 1.4; font-weight: 600; }
+  .notions { flex: 1 1 300px; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+  .notions li { font-family: var(--titre); font-size: 0.92rem; font-weight: 500; padding: 8px 14px; border-radius: 999px; background: var(--c-soft); color: var(--c); }
+
+  /* ─── Corps ─── */
+  .page { max-width: 820px; margin: 0 auto; padding: 64px 48px 72px; }
+
+  .content { display: flex; flex-direction: column; gap: 64px; }
+  .hgg-part { scroll-margin-top: 90px; }
+  .hgg-part-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 20px; }
+  .hgg-part-num { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; color: var(--c); }
+  .hgg-part-title { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; letter-spacing: -0.01em; }
+  .hgg-section { margin-top: 32px; scroll-margin-top: 90px; }
+  .hgg-section-title { font-family: var(--titre); font-weight: 700; font-size: 1.35rem; line-height: 1.25; margin-bottom: 12px; }
+  .hgg-section-title .num { color: var(--c); margin-right: 6px; }
+  .content p { color: var(--texte); margin-bottom: 16px; }
+  .content p:last-child { margin-bottom: 0; }
+
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 8px 0 24px; }
+  .hgg-stat-cell { background: var(--carte); border-radius: 12px; padding: 18px 20px; }
+  .hgg-stat-num { display: block; font-family: var(--titre); font-weight: 800; font-size: 2.2rem; line-height: 1; color: var(--c); }
+  .hgg-stat-label { margin-top: 6px; font-family: var(--titre); font-size: 0.88rem; color: var(--discret); }
+
+  .carte { background: var(--carte); border-radius: 14px; padding: 22px 26px; margin: 20px 0; }
+  .carte h3 { font-family: var(--titre); font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+  .carte p { font-size: 1.05rem; }
+  .carte .etiquette { margin-bottom: 8px; }
+  .surligne { background: var(--c-soft); border-radius: 14px; padding: 20px 24px; margin: 20px 0; color: #2a1d12; font-size: 1.08rem; }
+  .duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 20px 0; }
+  .duo .carte { margin: 0; }
+  .duo .carte.pleine { background: var(--c); }
+  .duo .carte.pleine h3, .duo .carte.pleine p { color: #fff; }
+  .sujets { background: var(--carte); border-radius: 16px; margin-top: 16px; overflow: hidden; }
+  .sujet + .sujet { border-top: 1px solid var(--ligne); }
+  .sujet summary { list-style: none; display: flex; gap: 14px; align-items: baseline; padding: 16px 22px; cursor: pointer; font-family: var(--titre); font-weight: 700; font-size: 1.08rem; line-height: 1.35; }
+  .sujet summary::-webkit-details-marker { display: none; }
+  .sujet summary .n { flex: 0 0 auto; font-weight: 800; color: var(--c); }
+  .sujet summary .q { flex: 1; }
+  .sujet summary::after { content: '+'; flex: 0 0 auto; font-size: 1.3rem; line-height: 1; color: var(--c); transition: transform 0.2s; }
+  .sujet[open] summary::after { transform: rotate(45deg); }
+  .sujet summary:hover .q { color: var(--c); }
+  .sujet-corps { padding: 0 22px 18px 58px; }
+  .sujet-corps p { font-size: 1.02rem; margin-bottom: 10px; }
+  .sujet-corps .reperes { font-family: var(--titre); font-size: 0.88rem; line-height: 1.5; color: var(--discret); display: flex; flex-direction: column; gap: 4px; }
+  .sujet-corps .reperes b { color: var(--c); font-weight: 700; }
+  .sujet a { color: var(--c); text-decoration: underline; text-underline-offset: 2px; }
+
+  .copie { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 8px; }
+  .copie .carte { margin: 0; }
+  .retenir { flex: 1 1 100%; min-width: 0; }
+  .retenir ol { padding-left: 22px; display: flex; flex-direction: column; gap: 10px; font-size: 1.05rem; color: var(--texte); }
+  .rapprocher { flex: 1 1 100%; min-width: 0; background: var(--c) !important; }
+  .rapprocher .etiquette, .rapprocher p, .rapprocher em { color: #fff; }
+  .rapprocher .etiquette { opacity: 0.85; }
+  .rapprocher strong, .rapprocher a, .duo .carte.pleine strong { color: #fff; }
+
+  /* ─── Fin de page ─── */
+  .fin { border-top: 1px solid var(--ligne); background: var(--carte); padding: 24px 48px; }
+  .fin-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; font-family: var(--titre); font-size: 0.95rem; }
+  .fin a { text-decoration: none; padding: 12px 0; }
+  .fin a:hover { color: var(--c); }
+  .bouton-lu { font: 700 0.95rem var(--titre); color: #fff; background: var(--c); border: 1.5px solid var(--c); border-radius: 999px; padding: 12px 22px; min-height: 44px; cursor: pointer; }
+  .bouton-lu.fait { background: transparent; color: var(--c); }
+
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--encre); color: #fff; border: none; border-radius: 50%; font-size: 1.1rem; cursor: pointer; opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 99; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+  }
+  @media (max-width: 760px) {
+    .breadcrumb { display: none; }
+  }
+  @media (max-width: 640px) {
+    nav { padding: 12px 16px; }
+    .breadcrumb { display: none; }
+    .ch-hero { padding: 36px 16px 72px; }
+    .ch-hero-visuel { flex-basis: 160px; }
+    .essentiel-wrap { padding: 0 16px; }
+    .essentiel { padding: 22px 20px; }
+    .page { padding: 40px 16px 56px; }
+    .fin { padding: 20px 16px; }
+    .sujet summary { padding: 14px 16px; }
+    .sujet-corps { padding: 0 16px 16px; }
+    .hgg-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .hgg-stat-cell { padding: 14px 12px; }
+    .hgg-stat-num { font-size: 1.6rem; }
+  }
+
+  @media print {
+    .sujet-corps { display: block !important; }
+    @page { size: A4; margin: 16mm 14mm; }
+    nav, .back-to-top, .fin, .ch-hero-visuel { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: #fff; font-size: 10pt; }
+    .ch-hero { padding: 1rem 1.2rem; }
+    .ch-hero h1 { font-size: 22pt; }
+    .essentiel { margin: 0.6rem 0; box-shadow: none; border: 1pt solid var(--ligne); }
+    .page { display: block; padding: 0.6rem 0; }
+    .content { gap: 1.2rem; }
+    .carte, .hgg-stat-cell { border: 1pt solid var(--ligne); break-inside: avoid; }
+    .surligne, .duo, .sujet { break-inside: avoid; }
+  }
+</style>
+<link rel="stylesheet" href="../../barre-section.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Law of the Journey">
+<meta property="og:image" content="https://ecg-prepa.fr/partage/humanite/humanite-art-law-of-the-journey.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Law of the Journey">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ecg-prepa.fr/partage/humanite/humanite-art-law-of-the-journey.jpg">
+<meta name="description" content="Law of the Journey (Ai Weiwei, 2017) : fiche sur l'œuvre, son histoire, son analyse et les pistes pour la dissertation sur l'Humanité.">
+<link rel="canonical" href="https://ecg-prepa.fr/humanite/art/law-of-the-journey.html">
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="sn sn-hum">
+  <div class="nav-logo sn-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb sn-fil">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">›</span>
+    <a href="../../humanite.html"><span>L'Humanité</span></a>
+    <span class="sep">›</span>
+    <a href="art.html"><span>Art</span></a>
+    <span class="sep">›</span>
+    <span class="current">Law of the Journey</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="ch-hero-inner">
+    <div class="ch-hero-texte">
+      <div class="chap-label"><span>Art</span><span>L'Humanité</span></div>
+      <h1 style="--t: 0.62">Law of the Journey</h1>
+      <p class="meta">Ai Weiwei · 2017 · Installation monumentale</p>
+      <p class="pitch">Un canot pneumatique noir de 70 mètres, chargé de 258 silhouettes sans visage&nbsp;: Ai Weiwei fait de la traversée des exilés un monument impossible à contourner.</p>
+    </div>
+    <figure class="ch-hero-visuel paysage"><img src="images/law-of-the-journey-oeuvre.webp" alt="Law of the Journey d'Ai Weiwei : un immense canot pneumatique noir, chargé de dizaines de silhouettes noires sans visage, dans un grand hall d'exposition ; au sol, deux figures flottent dans des bouées" loading="eager" onerror="this.closest('.ch-hero-visuel').remove()"></figure>
+  </div>
+</div>
+
+<!-- L'ESSENTIEL -->
+<div class="essentiel-wrap">
+  <section class="essentiel" aria-label="L'essentiel">
+    <div class="essentiel-these">
+      <div class="etiquette">L'essentiel en une phrase</div>
+      <p>Derrière les chiffres des migrations, il y a des corps entassés sur un canot&nbsp;: l'art rend visible une humanité que le monde préfère réduire à une masse anonyme.</p>
+    </div>
+    <ul class="notions" aria-label="Notions du thème">
+      <li>Exil et migrations</li>
+      <li>Hospitalité et frontières</li>
+      <li>Masse et individu</li>
+    </ul>
+  </section>
+</div>
+
+<div class="page">
+
+<div class="content">
+
+<section class="hgg-part" id="intro">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">1.</span><span class="hgg-part-title">Présentation de l'œuvre</span></h2>
+
+    <p><strong>Law of the Journey</strong> («&nbsp;la loi du voyage&nbsp;») est une installation de l'artiste chinois <strong>Ai Weiwei</strong> (né en 1957), présentée pour la première fois en <strong>mars 2017</strong> à la Galerie nationale de <strong>Prague</strong>, dans le grand hall du palais des Expositions. Elle se compose d'un canot pneumatique noir d'environ <strong>70 mètres</strong>, suspendu au-dessus du sol, et de <strong>258 figures</strong> humaines gonflables, noires et sans visage, entassées à bord. L'œuvre a ensuite été montrée ailleurs dans le monde, notamment à la Biennale de Sydney en 2018.</p>
+  <div class="hgg-stats">
+<div class="hgg-stat-cell"><span class="hgg-stat-num">70 m</span><div class="hgg-stat-label">De long pour le canot, suspendu dans le hall</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">258</span><div class="hgg-stat-label">Silhouettes sans visage entassées à bord</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">2017</span><div class="hgg-stat-label">Première présentation, à Prague</div></div>
+</div>
+    <p>Un bateau trop plein, des passagers serrés, pas d'horizon&nbsp;: l'image est celle que les journaux télévisés ont montrée des milliers de fois depuis 2015. Ai Weiwei la change d'échelle et la transporte dans un musée, où l'on ne peut plus zapper. Pour le thème de l'Humanité, l'œuvre pose une question brûlante&nbsp;: que devient l'humanité d'une personne quand on ne la voit plus que comme une partie d'un «&nbsp;flux&nbsp;»&nbsp;?</p>
+</section>
+
+<section class="hgg-part" id="p1">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">2.</span><span class="hgg-part-title">Genèse et description</span></h2>
+
+  <div class="hgg-section" id="s1-1">
+    <h3 class="hgg-section-title"><span class="num">2.1</span>Un artiste lui-même exilé</h3>
+
+    <p>Ai Weiwei est l'un des artistes chinois les plus connus au monde, et l'un des plus critiques envers le pouvoir de Pékin. En 2011, il est détenu 81 jours sans inculpation officielle. Privé de passeport pendant plusieurs années, il quitte la Chine en 2015 et vit depuis en Europe. Son père, le poète Ai Qing, avait lui-même été envoyé en exil intérieur sous Mao&nbsp;: l'artiste a grandi dans un camp de travail.</p>
+    <p>À partir de 2015, plus d'un million de personnes traversent la Méditerranée pour rejoindre l'Europe, fuyant notamment la guerre en Syrie, en Afghanistan ou en Irak. Ai Weiwei s'installe un temps sur l'île grecque de <strong>Lesbos</strong>, où arrivent des canots chaque jour, et tourne un documentaire sur les réfugiés dans le monde, <em>Human Flow</em> (2017).</p>
+    <div class="surligne">L'œuvre ne vient pas de l'extérieur&nbsp;: Ai Weiwei a lui-même connu la répression et l'exil, et il a passé des mois au contact des réfugiés avant de la concevoir.</div>
+  </div>
+
+  <div class="hgg-section" id="s1-2">
+    <h3 class="hgg-section-title"><span class="num">2.2</span>Un lieu chargé de mémoire</h3>
+
+    <p>Le canot est fabriqué en Chine, dans une usine qui produit les mêmes canots pneumatiques que ceux utilisés par les passeurs. Les figures, en caoutchouc noir, ont toutes la même forme&nbsp;: on ne distingue ni âge, ni sexe, ni origine. Au sol, d'autres figures flottent seules dans des bouées, comme des naufragés. Autour, des citations sur l'exil et l'hospitalité courent le long de l'installation.</p>
+    <div class="carte">
+      <div class="etiquette">Le palais des Expositions de Prague</div>
+      <p>Le bâtiment où l'œuvre est présentée en 2017 a servi, pendant la Seconde Guerre mondiale, de lieu de rassemblement pour les Juifs de Prague avant leur <strong>déportation</strong> vers le ghetto de Terezín. Le choix du lieu relie les exilés d'aujourd'hui aux persécutés d'hier.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s1-3">
+    <h3 class="hgg-section-title"><span class="num">2.3</span>Lire l'installation</h3>
+
+    <p>L'œuvre joue sur le <strong>changement d'échelle</strong>. À la télévision, un canot de réfugiés est une petite image parmi d'autres. Ici, il fait 70 mètres, et le visiteur doit marcher longtemps pour en faire le tour&nbsp;: la masse devient impossible à ignorer.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le canot noir</h3>
+        <p>Un vrai modèle de canot de passeurs, agrandi jusqu'au gigantisme. Il évoque à la fois l'embarcation de fortune et le cercueil.</p>
+      </div>
+      <div class="carte">
+        <h3>Les figures sans visage</h3>
+        <p>Toutes identiques, serrées, assises ou debout. Elles disent comment le monde voit les réfugiés&nbsp;: une masse indistincte, sans histoire individuelle.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le noir</h3>
+        <p>Pas de couleur, pas de gilet orange&nbsp;: un monochrome funèbre, qui transforme le bateau en monument de deuil.</p>
+      </div>
+      <div class="carte">
+        <h3>Les figures dans les bouées</h3>
+        <p>Isolées sur le sol, hors du canot, elles flottent seules. Ce sont ceux qui sont tombés à l'eau, que personne ne repêche.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>La suspension</h3>
+        <p>À Prague, le canot flottait au-dessus du sol, ni à terre ni en mer. Les exilés sont suspendus entre deux mondes, sans port d'arrivée.</p>
+      </div>
+      <div class="carte">
+        <h3>Le titre</h3>
+        <p>«&nbsp;La loi du voyage&nbsp;»&nbsp;: une formule ironique, car ce voyage-là ne connaît aucune loi, sinon celle des passeurs et des frontières fermées.</p>
+      </div>
+    </div>
+    <div class="surligne">Ai Weiwei montre la masse pour mieux faire sentir ce qu'elle efface&nbsp;: chaque silhouette sans visage est <strong>quelqu'un</strong>, avec un nom, un pays, une histoire, que le regard collectif a cessé de voir.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p2">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">3.</span><span class="hgg-part-title">L'humanité des exilés</span></h2>
+
+  <div class="hgg-section" id="s2-1">
+    <h3 class="hgg-section-title"><span class="num">3.1</span>De la personne au flux</h3>
+
+    <p>On parle de «&nbsp;flux migratoires&nbsp;», de «&nbsp;vagues&nbsp;», de «&nbsp;crise&nbsp;»&nbsp;: le vocabulaire transforme des personnes en phénomène naturel ou en problème à gérer. Ai Weiwei donne une forme à ce regard&nbsp;: des figures identiques, interchangeables, comptées plutôt que nommées. L'installation montre ce que fait la <strong>déshumanisation</strong> ordinaire, celle qui ne passe pas par la violence mais par l'indifférence.</p>
+    <div class="carte">
+      <div class="etiquette">Un piège de lecture</div>
+      <p>Les figures sans visage ne disent pas que les réfugiés n'ont pas d'identité&nbsp;: elles montrent que <strong>notre regard</strong> la leur retire. L'œuvre accuse le spectateur, pas ceux qu'elle représente.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-2">
+    <h3 class="hgg-section-title"><span class="num">3.2</span>Le devoir d'hospitalité</h3>
+
+    <p>Depuis Kant, qui faisait du droit de visite un droit de tout homme sur la Terre, la question de l'accueil de l'étranger est au cœur de la réflexion sur l'humanité. L'Europe, qui se pense comme le continent des droits de l'homme, voit des milliers de personnes mourir à ses portes en Méditerranée. Ai Weiwei installe ce paradoxe au cœur d'un musée européen, là où l'on célèbre la culture et l'humanisme.</p>
+    <div class="surligne">Le lieu de Prague, ancien point de départ des déportations, rappelle que l'Europe a déjà connu des hommes réduits à des <strong>convois</strong>, et que le «&nbsp;plus jamais ça&nbsp;» engage aussi le présent.</div>
+  </div>
+
+  <div class="hgg-section" id="s2-3">
+    <h3 class="hgg-section-title"><span class="num">3.3</span>L'art peut-il défendre les exilés&nbsp;?</h3>
+
+    <p>Ai Weiwei a été critiqué&nbsp;: en 2016, il s'est fait photographier allongé sur une plage de Lesbos, dans la pose du petit <strong>Alan Kurdi</strong>, l'enfant syrien retrouvé mort en 2015, ce que beaucoup ont jugé indécent. On lui reproche aussi de transformer la souffrance en spectacle de musée. Mais son œuvre oblige des milliers de visiteurs à faire face à ce qu'ils évitent devant leur écran.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le document</h3>
+        <p>Un vrai modèle de canot, la crise de 2015, le séjour à Lesbos&nbsp;: <strong>l'œuvre témoigne</strong> d'une tragédie précise de notre temps.</p>
+      </div>
+      <div class="carte pleine">
+        <h3>Le symbole</h3>
+        <p>Un bateau surchargé, des silhouettes sans nom&nbsp;: <strong>l'œuvre universalise</strong>. Elle devient l'image de tous les exils.</p>
+      </div>
+    </div>
+    <div class="surligne">La question reste ouverte&nbsp;: l'artiste qui montre la souffrance des autres <strong>parle-t-il pour eux</strong>, ou à leur place&nbsp;? Ai Weiwei, exilé lui-même, se tient sur cette ligne fragile.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p3">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">4.</span><span class="hgg-part-title">Pistes pour la dissertation</span></h2>
+
+  <div class="hgg-section" id="s3-1">
+    <h3 class="hgg-section-title">Law of the Journey face à cinq sujets sur l'Humanité</h3>
+    <p>Cliquez sur un sujet pour l'argument à développer, le détail à citer et sa place dans le plan.</p>
+
+    <div class="sujets">
+      <details class="sujet">
+        <summary><span class="n">01</span><span class="q">L'hospitalité est-elle un devoir d'humanité&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>En 2017, Ai Weiwei installe à Prague un canot de 70 mètres chargé de 258 exilés, dans un bâtiment d'où partaient, pendant la guerre, les Juifs déportés vers Terezín. L'Europe des droits de l'homme y voit son propre paradoxe&nbsp;: elle laisse mourir à ses portes ceux qu'elle prétend protéger. Depuis Kant, le droit d'être accueilli sans hostilité est un droit de tout homme. L'œuvre rappelle que l'hospitalité n'est pas une faveur, mais une exigence de l'humanité commune.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Le palais des Expositions de Prague, ancien lieu de rassemblement avant la déportation.</span><span><b>Dans le plan&nbsp;:</b> En première partie&nbsp;: l'accueil de l'étranger comme devoir universel.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">02</span><span class="q">Le nombre fait-il disparaître l'individu&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Les 258 figures de Law of the Journey sont identiques, noires, sans visage&nbsp;: on ne distingue ni âge, ni sexe, ni origine. Ai Weiwei donne forme au regard qui parle de «&nbsp;flux&nbsp;» et de «&nbsp;vagues&nbsp;» migratoires. Mais en grossissant cette masse jusqu'au monument, il fait sentir ce qu'elle efface&nbsp;: chaque silhouette est une personne. L'œuvre dénonce la déshumanisation par le nombre en la rendant visible.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Les figures toutes semblables, serrées à bord du canot.</span><span><b>Dans le plan&nbsp;:</b> En partie critique&nbsp;: la statistique contre la personne.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">03</span><span class="q">L'exil fait-il perdre son humanité&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Ai Weiwei a grandi dans un camp de travail où son père était exilé, a été détenu 81 jours en 2011 et a quitté la Chine en 2015. Il sait que l'exil arrache à un pays, à une langue, à une place. Ses figures sans visage disent ce dépouillement. Mais c'est un regard extérieur qui leur retire leur identité, pas l'exil lui-même&nbsp;: l'exilé reste un homme, c'est l'accueil qui décide s'il sera reconnu comme tel.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Les figures isolées dans des bouées, flottant hors du canot.</span><span><b>Dans le plan&nbsp;:</b> En partie de dépassement&nbsp;: la reconnaissance comme condition de l'humanité.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">04</span><span class="q">L'art peut-il parler au nom des victimes&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>En 2016, Ai Weiwei se fait photographier sur une plage de Lesbos dans la pose d'Alan Kurdi, l'enfant syrien retrouvé mort en 2015&nbsp;: beaucoup jugent le geste indécent. Law of the Journey échappe en partie à ce reproche en montrant la masse plutôt qu'un individu réel. Mais la question demeure&nbsp;: l'artiste qui montre la souffrance des autres risque de parler à leur place, même quand il parle pour eux.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> La photographie de Lesbos en 2016 et les critiques qu'elle a suscitées.</span><span><b>Dans le plan&nbsp;:</b> En partie critique&nbsp;: l'éthique de l'art engagé.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">05</span><span class="q">L'art doit-il déranger&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>À la télévision, un canot de réfugiés est une image brève, vite oubliée. Ai Weiwei la change d'échelle&nbsp;: 70 mètres de long, suspendus dans un musée, impossibles à contourner. Le visiteur venu voir de l'art se retrouve face à ce qu'il évite. L'œuvre ne console pas et n'embellit rien&nbsp;: son rôle est de déranger le confort du regard, pour rendre à une tragédie le poids que l'habitude lui avait retiré.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Le gigantisme du canot, que le visiteur doit longer pour en faire le tour.</span><span><b>Dans le plan&nbsp;:</b> Sur la fonction de l'art&nbsp;: réveiller les consciences contre l'accoutumance.</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s3-2">
+    <div class="copie">
+      <div class="carte retenir">
+        <div class="etiquette">Idées à retenir</div>
+        <ol>
+          <li>Un canot de 70 mètres et 258 figures sans visage&nbsp;: l'œuvre rend visible la <strong>déshumanisation par le nombre</strong>.</li>
+          <li>Les figures n'ont pas de visage parce que <strong>notre regard</strong> le leur retire&nbsp;: l'œuvre accuse le spectateur.</li>
+          <li>Présentée à Prague, dans un ancien lieu de <strong>déportation</strong>, elle relie les exilés d'aujourd'hui aux persécutés d'hier.</li>
+          <li>Ai Weiwei, lui-même <strong>exilé</strong>, pose la question de l'art engagé&nbsp;: parler pour les victimes ou à leur place&nbsp;?</li>
+        </ol>
+      </div>
+      <div class="carte rapprocher">
+        <div class="etiquette">À rapprocher</div>
+        <p><a href="radeau-de-la-meduse.html" style="color:inherit;text-decoration:underline;text-underline-offset:2px"><strong>Théodore Géricault, <em>Le Radeau de la Méduse</em> (1819)</strong></a>&nbsp;: deux siècles avant Ai Weiwei, Géricault fait d'une embarcation surchargée, abandonnée en mer par ceux qui devaient la protéger, une œuvre monumentale qui accuse son temps. Dans les deux cas, des anonymes prennent la place des héros, et le bateau devient l'image d'une humanité laissée à la dérive. Mais Géricault donne à chaque corps une pose, un visage, un drame, et dresse un homme vers l'horizon&nbsp;; Ai Weiwei efface les visages et supprime l'horizon, pour montrer une masse que plus rien ne distingue.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /content -->
+</div><!-- /page -->
+
+<footer class="fin">
+  <div class="fin-inner">
+    <a href="art.html">← Toutes les fiches d'art</a>
+    <button type="button" class="bouton-lu" id="boutonLu">J'ai lu cette fiche</button>
+  </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
+
+<script>
+  // « J'ai lu cette fiche », gardé dans le navigateur
+  const CLE = 'ecg-humanite-fiches-lues';
+  const ID = 'art/law-of-the-journey';
+  const lu = document.getElementById('boutonLu');
+  function lire() { try { return JSON.parse(localStorage.getItem(CLE)) || []; } catch (e) { return []; } }
+  function majLu() {
+    const fait = lire().includes(ID);
+    lu.classList.toggle('fait', fait);
+    lu.textContent = fait ? '✓ Fiche lue' : "J'ai lu cette fiche";
+  }
+  lu.addEventListener('click', () => {
+    let l = lire();
+    l = l.includes(ID) ? l.filter(x => x !== ID) : l.concat(ID);
+    try { localStorage.setItem(CLE, JSON.stringify(l)); } catch (e) {}
+    majLu();
+  });
+  majLu();
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>

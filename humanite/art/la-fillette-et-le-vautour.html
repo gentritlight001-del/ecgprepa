@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Art — La fillette et le vautour</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<style>
+  :root {
+    --c: #9a6b3c;          /* couleur de la fiche */
+    --c-soft: #f6eee4;
+    --fond: #f5f4f0;
+    --carte: #ffffff;
+    --encre: #18181b;
+    --texte: #3f3f46;
+    --discret: #52525b;
+    --ligne: #e4e2dc;
+    --titre: 'Bricolage Grotesque', system-ui, sans-serif;
+    --corps: 'Newsreader', Georgia, serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--fond); color: var(--encre); font-family: var(--corps); font-size: 1.125rem; line-height: 1.65; min-height: 100vh; }
+  strong { font-weight: 600; color: var(--encre); }
+  a { color: inherit; }
+
+  /* ─── Barre du haut ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 14px 48px; background: var(--carte); border-bottom: 1px solid var(--ligne);
+    position: sticky; top: 0; z-index: 100; font-family: var(--titre);
+  }
+  .nav-logo { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em; }
+  .nav-logo a { color: var(--encre); text-decoration: none; }
+  .breadcrumb { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: calc(100% - 420px); display: flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; overflow: hidden; font-size: 0.85rem; color: var(--discret); }
+  .breadcrumb .current { overflow: hidden; text-overflow: ellipsis; }
+  .breadcrumb a { text-decoration: none; }
+  .breadcrumb a:hover { color: var(--c); }
+  .breadcrumb .sep { color: #a1a1aa; }
+  .breadcrumb .current { color: var(--encre); }
+
+  /* ─── Bandeau ─── */
+  .ch-hero { position: relative; background: var(--c); color: #fff; padding: 56px 48px 84px; overflow: hidden; }
+  .ch-hero-fond { display: none; }
+  .ch-hero-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 40px 56px; }
+  .ch-hero-texte { flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+  .chap-label { display: flex; flex-wrap: wrap; gap: 8px; font-family: var(--titre); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .chap-label span { background: rgba(255,255,255,0.18); padding: 6px 12px; border-radius: 999px; }
+  .ch-hero h1 { font-family: var(--titre); font-weight: 800; font-size: calc(var(--t, 1) * clamp(3rem, 8vw, 6rem)); line-height: 0.95; letter-spacing: -0.02em; }
+  .ch-hero .meta { font-family: var(--titre); font-size: 1.2rem; font-weight: 500; opacity: 0.92; }
+  .ch-hero .pitch { max-width: 620px; font-size: 1.3rem; line-height: 1.5; }
+  .ch-hero-visuel { flex: 0 0 240px; max-width: 100%; aspect-ratio: 2 / 3; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+  .ch-hero-visuel.paysage { flex: 1 1 420px; aspect-ratio: auto; }
+  .ch-hero-visuel.paysage img { height: auto; }
+  .ch-hero-visuel img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  /* ─── L'essentiel ─── */
+  .essentiel {
+    position: relative; max-width: 1040px; margin: -44px auto 0; background: var(--carte); border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(24,24,27,0.10); padding: 28px 32px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 20px 40px;
+  }
+  .essentiel-wrap { padding: 0 48px; }
+  .essentiel-these { flex: 999 1 420px; min-width: 0; }
+  .etiquette { font-family: var(--titre); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c); }
+  .essentiel-these p { margin-top: 6px; font-size: 1.35rem; line-height: 1.4; font-weight: 600; }
+  .notions { flex: 1 1 300px; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+  .notions li { font-family: var(--titre); font-size: 0.92rem; font-weight: 500; padding: 8px 14px; border-radius: 999px; background: var(--c-soft); color: var(--c); }
+
+  /* ─── Corps ─── */
+  .page { max-width: 820px; margin: 0 auto; padding: 64px 48px 72px; }
+
+  .content { display: flex; flex-direction: column; gap: 64px; }
+  .hgg-part { scroll-margin-top: 90px; }
+  .hgg-part-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 20px; }
+  .hgg-part-num { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; color: var(--c); }
+  .hgg-part-title { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; letter-spacing: -0.01em; }
+  .hgg-section { margin-top: 32px; scroll-margin-top: 90px; }
+  .hgg-section-title { font-family: var(--titre); font-weight: 700; font-size: 1.35rem; line-height: 1.25; margin-bottom: 12px; }
+  .hgg-section-title .num { color: var(--c); margin-right: 6px; }
+  .content p { color: var(--texte); margin-bottom: 16px; }
+  .content p:last-child { margin-bottom: 0; }
+
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 8px 0 24px; }
+  .hgg-stat-cell { background: var(--carte); border-radius: 12px; padding: 18px 20px; }
+  .hgg-stat-num { display: block; font-family: var(--titre); font-weight: 800; font-size: 2.2rem; line-height: 1; color: var(--c); }
+  .hgg-stat-label { margin-top: 6px; font-family: var(--titre); font-size: 0.88rem; color: var(--discret); }
+
+  .carte { background: var(--carte); border-radius: 14px; padding: 22px 26px; margin: 20px 0; }
+  .carte h3 { font-family: var(--titre); font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+  .carte p { font-size: 1.05rem; }
+  .carte .etiquette { margin-bottom: 8px; }
+  .surligne { background: var(--c-soft); border-radius: 14px; padding: 20px 24px; margin: 20px 0; color: #2a1d12; font-size: 1.08rem; }
+  .duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 20px 0; }
+  .duo .carte { margin: 0; }
+  .duo .carte.pleine { background: var(--c); }
+  .duo .carte.pleine h3, .duo .carte.pleine p { color: #fff; }
+  .sujets { background: var(--carte); border-radius: 16px; margin-top: 16px; overflow: hidden; }
+  .sujet + .sujet { border-top: 1px solid var(--ligne); }
+  .sujet summary { list-style: none; display: flex; gap: 14px; align-items: baseline; padding: 16px 22px; cursor: pointer; font-family: var(--titre); font-weight: 700; font-size: 1.08rem; line-height: 1.35; }
+  .sujet summary::-webkit-details-marker { display: none; }
+  .sujet summary .n { flex: 0 0 auto; font-weight: 800; color: var(--c); }
+  .sujet summary .q { flex: 1; }
+  .sujet summary::after { content: '+'; flex: 0 0 auto; font-size: 1.3rem; line-height: 1; color: var(--c); transition: transform 0.2s; }
+  .sujet[open] summary::after { transform: rotate(45deg); }
+  .sujet summary:hover .q { color: var(--c); }
+  .sujet-corps { padding: 0 22px 18px 58px; }
+  .sujet-corps p { font-size: 1.02rem; margin-bottom: 10px; }
+  .sujet-corps .reperes { font-family: var(--titre); font-size: 0.88rem; line-height: 1.5; color: var(--discret); display: flex; flex-direction: column; gap: 4px; }
+  .sujet-corps .reperes b { color: var(--c); font-weight: 700; }
+  .sujet a { color: var(--c); text-decoration: underline; text-underline-offset: 2px; }
+
+  .copie { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 8px; }
+  .copie .carte { margin: 0; }
+  .retenir { flex: 1 1 100%; min-width: 0; }
+  .retenir ol { padding-left: 22px; display: flex; flex-direction: column; gap: 10px; font-size: 1.05rem; color: var(--texte); }
+  .rapprocher { flex: 1 1 100%; min-width: 0; background: var(--c) !important; }
+  .rapprocher .etiquette, .rapprocher p, .rapprocher em { color: #fff; }
+  .rapprocher .etiquette { opacity: 0.85; }
+  .rapprocher strong, .rapprocher a, .duo .carte.pleine strong { color: #fff; }
+
+  /* ─── Fin de page ─── */
+  .fin { border-top: 1px solid var(--ligne); background: var(--carte); padding: 24px 48px; }
+  .fin-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; font-family: var(--titre); font-size: 0.95rem; }
+  .fin a { text-decoration: none; padding: 12px 0; }
+  .fin a:hover { color: var(--c); }
+  .bouton-lu { font: 700 0.95rem var(--titre); color: #fff; background: var(--c); border: 1.5px solid var(--c); border-radius: 999px; padding: 12px 22px; min-height: 44px; cursor: pointer; }
+  .bouton-lu.fait { background: transparent; color: var(--c); }
+
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--encre); color: #fff; border: none; border-radius: 50%; font-size: 1.1rem; cursor: pointer; opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 99; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+  }
+  @media (max-width: 760px) {
+    .breadcrumb { display: none; }
+  }
+  @media (max-width: 640px) {
+    nav { padding: 12px 16px; }
+    .breadcrumb { display: none; }
+    .ch-hero { padding: 36px 16px 72px; }
+    .ch-hero-visuel { flex-basis: 160px; }
+    .essentiel-wrap { padding: 0 16px; }
+    .essentiel { padding: 22px 20px; }
+    .page { padding: 40px 16px 56px; }
+    .fin { padding: 20px 16px; }
+    .sujet summary { padding: 14px 16px; }
+    .sujet-corps { padding: 0 16px 16px; }
+    .hgg-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .hgg-stat-cell { padding: 14px 12px; }
+    .hgg-stat-num { font-size: 1.6rem; }
+  }
+
+  @media print {
+    .sujet-corps { display: block !important; }
+    @page { size: A4; margin: 16mm 14mm; }
+    nav, .back-to-top, .fin, .ch-hero-visuel { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: #fff; font-size: 10pt; }
+    .ch-hero { padding: 1rem 1.2rem; }
+    .ch-hero h1 { font-size: 22pt; }
+    .essentiel { margin: 0.6rem 0; box-shadow: none; border: 1pt solid var(--ligne); }
+    .page { display: block; padding: 0.6rem 0; }
+    .content { gap: 1.2rem; }
+    .carte, .hgg-stat-cell { border: 1pt solid var(--ligne); break-inside: avoid; }
+    .surligne, .duo, .sujet { break-inside: avoid; }
+  }
+</style>
+<link rel="stylesheet" href="../../barre-section.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="La fillette et le vautour">
+<meta property="og:image" content="https://ecg-prepa.fr/partage/humanite/humanite-art-la-fillette-et-le-vautour.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="La fillette et le vautour">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ecg-prepa.fr/partage/humanite/humanite-art-la-fillette-et-le-vautour.jpg">
+<meta name="description" content="La fillette et le vautour (Kevin Carter, 1993) : fiche sur l'œuvre, son histoire, son analyse et les pistes pour la dissertation sur l'Humanité.">
+<link rel="canonical" href="https://ecg-prepa.fr/humanite/art/la-fillette-et-le-vautour.html">
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="sn sn-hum">
+  <div class="nav-logo sn-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb sn-fil">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">›</span>
+    <a href="../../humanite.html"><span>L'Humanité</span></a>
+    <span class="sep">›</span>
+    <a href="art.html"><span>Art</span></a>
+    <span class="sep">›</span>
+    <span class="current">La fillette et le vautour</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="ch-hero-inner">
+    <div class="ch-hero-texte">
+      <div class="chap-label"><span>Art</span><span>L'Humanité</span></div>
+      <h1 style="--t: 0.62">La fillette et le vautour</h1>
+      <p class="meta">Kevin Carter · 1993 · Photographie de presse</p>
+      <p class="pitch">Au Soudan, en 1993, un enfant affamé s'est effondré sur le sol&nbsp;; derrière lui, un vautour attend&nbsp;: la photo pose la question de ce que doit faire celui qui regarde.</p>
+    </div>
+    <figure class="ch-hero-visuel paysage"><img src="images/la-fillette-et-le-vautour-oeuvre.webp" alt="La fillette et le vautour de Kevin Carter : un enfant très maigre, recroquevillé au sol, la tête baissée, sur une terre sèche ; à quelques mètres derrière lui, un vautour se tient immobile" loading="eager" onerror="this.closest('.ch-hero-visuel').remove()"></figure>
+  </div>
+</div>
+
+<!-- L'ESSENTIEL -->
+<div class="essentiel-wrap">
+  <section class="essentiel" aria-label="L'essentiel">
+    <div class="essentiel-these">
+      <div class="etiquette">L'essentiel en une phrase</div>
+      <p>Montrer la souffrance peut réveiller le monde, mais celui qui photographie au lieu d'aider se demande s'il est encore un témoin, ou déjà un autre vautour.</p>
+    </div>
+    <ul class="notions" aria-label="Notions du thème">
+      <li>Famine et indifférence</li>
+      <li>Éthique du témoin</li>
+      <li>Regarder ou agir</li>
+    </ul>
+  </section>
+</div>
+
+<div class="page">
+
+<div class="content">
+
+<section class="hgg-part" id="intro">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">1.</span><span class="hgg-part-title">Présentation de l'œuvre</span></h2>
+
+    <p><strong>La fillette et le vautour</strong> est une photographie du Sud-Africain <strong>Kevin Carter</strong> (1960-1994), prise en <strong>mars 1993</strong> à <strong>Ayod</strong>, dans le sud du Soudan (aujourd'hui le Soudan du Sud), pendant une famine. Elle montre un enfant décharné, effondré au sol, et un vautour qui se tient derrière lui. Publiée par le <em>New York Times</em> le 26 mars 1993, elle reçoit le <strong>prix Pulitzer</strong> de la photographie en 1994. Quelques mois plus tard, Kevin Carter se donne la mort, à 33 ans.</p>
+  <div class="hgg-stats">
+<div class="hgg-stat-cell"><span class="hgg-stat-num">1993</span><div class="hgg-stat-label">Prise de vue à Ayod, au sud du Soudan, en mars</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">1994</span><div class="hgg-stat-label">Prix Pulitzer de la photographie de reportage</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">33 ans</span><div class="hgg-stat-label">Âge de Kevin Carter à sa mort, en juillet 1994</div></div>
+</div>
+    <p>Peu de photos ont autant ému, et autant accusé leur auteur. Le monde a découvert la famine du Soudan à travers elle, puis s'est demandé&nbsp;: qu'a fait le photographe pour l'enfant&nbsp;? La photo pose une question centrale pour le thème de l'Humanité&nbsp;: face à la souffrance d'un autre, faut-il témoigner ou secourir, et peut-on encore être humain derrière un objectif&nbsp;?</p>
+</section>
+
+<section class="hgg-part" id="p1">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">2.</span><span class="hgg-part-title">Genèse et description</span></h2>
+
+  <div class="hgg-section" id="s1-1">
+    <h3 class="hgg-section-title"><span class="num">2.1</span>Une famine oubliée</h3>
+
+    <p>Au début des années 1990, le sud du Soudan est ravagé par une guerre civile entre le gouvernement de Khartoum et des rebelles du Sud, et par une famine qui tue des milliers de personnes. Dans le cadre de l'opération Lifeline Sudan, les Nations unies acheminent de la nourriture par avion vers des centres de distribution. En mars 1993, l'ONU emmène quelques photographes, dont Kevin Carter et son ami João Silva, pour attirer l'attention du monde sur cette crise.</p>
+    <p>Kevin Carter est un photographe sud-africain, membre d'un petit groupe de reporters surnommé le <strong>Bang-Bang Club</strong>, qui a couvert les violences en Afrique du Sud à la fin de l'apartheid. Il a déjà vu beaucoup de morts. À Ayod, près d'un centre de distribution, il aperçoit un enfant affaibli et un vautour qui se pose non loin.</p>
+    <div class="surligne">La photo n'est pas une mise en scène&nbsp;: l'enfant se rendait au centre de nourriture, et le vautour, attiré par les morts nombreux de la famine, s'est posé là. C'est le <strong>cadrage</strong> qui crée l'image terrible.</div>
+  </div>
+
+  <div class="hgg-section" id="s1-2">
+    <h3 class="hgg-section-title"><span class="num">2.2</span>Le prix et la mort</h3>
+
+    <p>Publiée dans le <em>New York Times</em> le 26 mars 1993, la photo bouleverse les lecteurs, qui écrivent au journal pour savoir ce qu'est devenu l'enfant. Le journal répond qu'il avait la force de s'éloigner du vautour, mais qu'on ignore s'il a atteint le centre. Carter raconte avoir chassé le vautour après avoir pris ses photos. En avril 1994, il reçoit le prix Pulitzer. Les critiques fusent&nbsp;: un journal américain écrit que l'homme qui règle son objectif pour cadrer au mieux la souffrance de l'enfant pourrait bien être lui aussi un prédateur, un second vautour.</p>
+    <div class="carte">
+      <div class="etiquette">Un photographe brisé</div>
+      <p>Le <strong>27 juillet 1994</strong>, Kevin Carter se suicide à Johannesburg. Il laisse une lettre où il évoque les souvenirs de tueries, de cadavres et de souffrance qui le hantent, et ses difficultés personnelles. Le prix le plus prestigieux du photojournalisme n'a pas suffi à apaiser la culpabilité et le poids de ce qu'il avait vu.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s1-3">
+    <h3 class="hgg-section-title"><span class="num">2.3</span>Lire la photographie</h3>
+
+    <p>L'image est d'une grande <strong>simplicité</strong>&nbsp;: un sol de terre sèche, un enfant, un oiseau. Tout tient dans la distance entre les deux, et dans ce que le spectateur imagine de la suite.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>L'enfant</h3>
+        <p>Recroquevillé, le front contre le sol, les membres squelettiques. Il n'a plus la force de se tenir debout. On ne voit pas son visage.</p>
+      </div>
+      <div class="carte">
+        <h3>Le vautour</h3>
+        <p>Immobile, il semble attendre. Le charognard symbolise la mort qui guette, et transforme une scène de faim en scène de proie.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>La distance</h3>
+        <p>Quelques mètres seulement séparent l'oiseau de l'enfant. Le téléobjectif les rapproche encore, et rend la menace plus pressante.</p>
+      </div>
+      <div class="carte">
+        <h3>Le bracelet</h3>
+        <p>Au poignet de l'enfant, un bracelet blanc, sans doute celui d'un centre de nourriture&nbsp;: signe que l'aide existe, toute proche, et qu'il n'a pas pu l'atteindre.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le paysage vide</h3>
+        <p>Personne d'autre dans le cadre&nbsp;: ni parents, ni secouristes. L'enfant semble abandonné de tous, face à la mort seule.</p>
+      </div>
+      <div class="carte">
+        <h3>Le hors-champ</h3>
+        <p>Derrière l'objectif, il y a un homme. Le spectateur le devine, et se demande ce qu'il a fait&nbsp;: c'est ce hors-champ qui a fait scandale.</p>
+      </div>
+    </div>
+    <div class="surligne">La photo met en scène trois présences&nbsp;: l'enfant, le vautour, et le photographe invisible. Le spectateur, en la regardant, prend la place du <strong>troisième</strong>, et se pose la même question que lui.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p2">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">3.</span><span class="hgg-part-title">Regarder ou agir&nbsp;?</span></h2>
+
+  <div class="hgg-section" id="s2-1">
+    <h3 class="hgg-section-title"><span class="num">3.1</span>Montrer pour éveiller</h3>
+
+    <p>Sans cette photo, la famine du Soudan serait restée une information lointaine. L'image a provoqué une vague d'émotion et de dons, et a rappelé au monde l'existence d'une crise oubliée. C'est la justification du photojournaliste&nbsp;: il ne peut pas sauver tout le monde, mais en montrant, il peut mobiliser des milliers de personnes. Le <strong>témoignage</strong> est une forme d'aide, indirecte mais réelle.</p>
+    <div class="carte">
+      <div class="etiquette">Ce que l'on sait de l'enfant</div>
+      <p>En 2011, des journalistes espagnols retrouvent la famille de l'enfant&nbsp;: ce n'était pas une fillette mais un garçon, <strong>Kong Nyong</strong>. Il aurait survécu à la famine et serait mort quelques années plus tard, vers 2007, de fièvres. Le titre même de la photo repose donc sur une erreur.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-2">
+    <h3 class="hgg-section-title"><span class="num">3.2</span>Le dilemme du témoin</h3>
+
+    <p>Mais un homme était là, à quelques mètres d'un enfant mourant, et il a d'abord pris des photos. Les photographes de l'époque avaient pour consigne de ne pas toucher les victimes, par crainte des maladies, et l'aide alimentaire était à proximité. Pourtant, le malaise demeure&nbsp;: il y a des situations où le devoir d'<strong>assistance</strong> semble passer avant le devoir d'informer. La photo oblige à se demander ce que l'on doit à la personne qu'on a devant soi.</p>
+    <div class="surligne">Le reproche adressé à Carter est aussi un reproche adressé au spectateur&nbsp;: nous aussi, nous regardons la souffrance des autres <strong>sans agir</strong>, à distance, en tournant la page.</div>
+  </div>
+
+  <div class="hgg-section" id="s2-3">
+    <h3 class="hgg-section-title"><span class="num">3.3</span>Une image qui juge celui qui la regarde</h3>
+
+    <p>La photo de Carter est devenue un cas d'école dans l'enseignement du journalisme et de l'éthique. Elle montre que l'image de la souffrance n'est jamais innocente&nbsp;: elle engage celui qui la prend, celui qui la publie et celui qui la regarde. Le suicide de Carter rappelle aussi que les témoins de l'horreur en portent le poids, longtemps après avoir appuyé sur le déclencheur.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le document</h3>
+        <p>Un lieu, une date, une famine réelle&nbsp;: <strong>la photo témoigne</strong> de la tragédie du Soudan en 1993.</p>
+      </div>
+      <div class="carte pleine">
+        <h3>Le symbole</h3>
+        <p>Un enfant affamé et une mort qui attend&nbsp;: <strong>la photo universalise</strong>. Elle devient l'image de la faim et de l'indifférence du monde.</p>
+      </div>
+    </div>
+    <div class="surligne">Le vautour attend, le photographe cadre, le lecteur tourne la page&nbsp;: la photo montre une chaîne d'<strong>indifférences</strong>, et nous demande où nous nous situons.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p3">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">4.</span><span class="hgg-part-title">Pistes pour la dissertation</span></h2>
+
+  <div class="hgg-section" id="s3-1">
+    <h3 class="hgg-section-title">La fillette et le vautour face à cinq sujets sur l'Humanité</h3>
+    <p>Cliquez sur un sujet pour l'argument à développer, le détail à citer et sa place dans le plan.</p>
+
+    <div class="sujets">
+      <details class="sujet">
+        <summary><span class="n">01</span><span class="q">Faut-il témoigner ou secourir&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>En mars 1993, à Ayod, Kevin Carter photographie un enfant effondré sous le regard d'un vautour, avant de chasser l'oiseau. Publiée dans le <em>New York Times</em>, la photo alerte le monde sur la famine du Soudan et lui vaut le Pulitzer en 1994. Mais on lui reproche d'avoir cadré au lieu d'aider. Le dilemme est réel&nbsp;: le témoignage peut mobiliser des milliers de personnes, l'assistance sauve celle qu'on a devant soi. L'humanité exige peut-être de ne jamais choisir l'un au détriment de l'autre.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Le hors-champ&nbsp;: le photographe invisible, à quelques mètres de l'enfant.</span><span><b>Dans le plan&nbsp;:</b> En partie de dépassement&nbsp;: concilier le devoir d'informer et le devoir d'assistance.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">02</span><span class="q">L'indifférence est-elle une forme d'inhumanité&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Dans la photo, personne ne vient au secours de l'enfant&nbsp;: le paysage est vide, le vautour attend. Derrière l'objectif, le photographe cadre&nbsp;; devant le journal, le lecteur tourne la page. Carter a été accusé d'indifférence, mais il renvoie le spectateur à la sienne&nbsp;: nous voyons chaque jour la souffrance lointaine sans agir. L'inhumanité n'est pas seulement de faire le mal&nbsp;: c'est aussi de s'habituer à le voir.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Le paysage vide autour de l'enfant, sans parents ni secouristes.</span><span><b>Dans le plan&nbsp;:</b> En première partie&nbsp;: l'indifférence comme inhumanité ordinaire.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">03</span><span class="q">Une image peut-elle changer le monde&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>La photo de Carter a provoqué une immense émotion, des lettres de lecteurs, des dons, et a rendu visible une famine oubliée. Pourtant, la guerre et la faim ont continué au Soudan pendant des années. L'image ne change pas directement le cours des choses&nbsp;; elle agit sur les consciences et peut déclencher l'aide. Son pouvoir est réel, mais il dépend de ce que les spectateurs décident d'en faire.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Les lettres des lecteurs du <em>New York Times</em> demandant ce qu'était devenu l'enfant.</span><span><b>Dans le plan&nbsp;:</b> En partie critique&nbsp;: le pouvoir des images et ses limites.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">04</span><span class="q">Peut-on rester humain face à l'horreur&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Kevin Carter, membre du Bang-Bang Club, a photographié pendant des années les violences de la fin de l'apartheid. À Ayod, il prend une photo devenue célèbre, puis reçoit le Pulitzer, puis se suicide le 27 juillet 1994, à 33 ans, hanté par les souvenirs de cadavres et de souffrance. Son destin montre que le témoin de l'horreur n'en sort pas indemne&nbsp;: rester humain face à l'inhumain a un coût, parfois insupportable.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> La lettre laissée par Carter, où il évoque les images qui le hantent.</span><span><b>Dans le plan&nbsp;:</b> Sur le témoin&nbsp;: le prix humain du regard porté sur l'horreur.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">05</span><span class="q">Une image dit-elle la vérité&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>On a cru pendant près de vingt ans que la photo montrait une fillette condamnée. En 2011, on apprend que c'était un garçon, Kong Nyong, qui aurait survécu à la famine. Le téléobjectif rapprochait aussi le vautour et l'enfant, et le centre de nourriture était tout proche. La photo ne ment pas, mais elle cadre&nbsp;: elle dit une vérité sur la famine, tout en laissant le spectateur imaginer une histoire qui n'était pas exactement la bonne.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Le titre erroné et l'identification de Kong Nyong en 2011.</span><span><b>Dans le plan&nbsp;:</b> Sur l'image&nbsp;: vérité du document et pouvoir du cadrage.</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s3-2">
+    <div class="copie">
+      <div class="carte retenir">
+        <div class="etiquette">Idées à retenir</div>
+        <ol>
+          <li>La photo rend visible une <strong>famine oubliée</strong>, au Soudan en 1993, et lui vaut le Pulitzer en 1994.</li>
+          <li>Elle pose le <strong>dilemme du témoin</strong>&nbsp;: photographier pour alerter le monde, ou secourir celui qu'on a devant soi.</li>
+          <li>Le reproche fait à Carter vise aussi le spectateur&nbsp;: <strong>l'indifférence</strong> de celui qui regarde sans agir.</li>
+          <li>Le <strong>suicide</strong> de Carter et l'identité de l'enfant, révélée en 2011, rappellent le poids et les limites de l'image.</li>
+        </ol>
+      </div>
+      <div class="carte rapprocher">
+        <div class="etiquette">À rapprocher</div>
+        <p><strong>Terry George, <em>Hotel Rwanda</em> (2004)</strong>&nbsp;: le film raconte le génocide des Tutsi au Rwanda, en 1994, l'année même du Pulitzer de Carter. Un caméraman occidental y filme un massacre, et prévient que les gens qui verront ses images diront que c'est horrible, puis continueront à dîner. Comme la photo de Carter, le film interroge le pouvoir des images face à l'indifférence du monde. Mais le film donne aussi un visage à celui qui agit, le directeur d'hôtel qui cache plus d'un millier de réfugiés&nbsp;: là où la photo nous laisse face au dilemme, le film montre qu'on peut encore choisir de secourir.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /content -->
+</div><!-- /page -->
+
+<footer class="fin">
+  <div class="fin-inner">
+    <a href="art.html">← Toutes les fiches d'art</a>
+    <button type="button" class="bouton-lu" id="boutonLu">J'ai lu cette fiche</button>
+  </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
+
+<script>
+  // « J'ai lu cette fiche », gardé dans le navigateur
+  const CLE = 'ecg-humanite-fiches-lues';
+  const ID = 'art/la-fillette-et-le-vautour';
+  const lu = document.getElementById('boutonLu');
+  function lire() { try { return JSON.parse(localStorage.getItem(CLE)) || []; } catch (e) { return []; } }
+  function majLu() {
+    const fait = lire().includes(ID);
+    lu.classList.toggle('fait', fait);
+    lu.textContent = fait ? '✓ Fiche lue' : "J'ai lu cette fiche";
+  }
+  lu.addEventListener('click', () => {
+    let l = lire();
+    l = l.includes(ID) ? l.filter(x => x !== ID) : l.concat(ID);
+    try { localStorage.setItem(CLE, JSON.stringify(l)); } catch (e) {}
+    majLu();
+  });
+  majLu();
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>
