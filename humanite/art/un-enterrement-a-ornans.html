@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Art — Un enterrement à Ornans</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<style>
+  :root {
+    --c: #7a3b2e;          /* couleur de la fiche */
+    --c-soft: #f5ebe8;
+    --fond: #f5f4f0;
+    --carte: #ffffff;
+    --encre: #18181b;
+    --texte: #3f3f46;
+    --discret: #52525b;
+    --ligne: #e4e2dc;
+    --titre: 'Bricolage Grotesque', system-ui, sans-serif;
+    --corps: 'Newsreader', Georgia, serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--fond); color: var(--encre); font-family: var(--corps); font-size: 1.125rem; line-height: 1.65; min-height: 100vh; }
+  strong { font-weight: 600; color: var(--encre); }
+  a { color: inherit; }
+
+  /* ─── Barre du haut ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 14px 48px; background: var(--carte); border-bottom: 1px solid var(--ligne);
+    position: sticky; top: 0; z-index: 100; font-family: var(--titre);
+  }
+  .nav-logo { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em; }
+  .nav-logo a { color: var(--encre); text-decoration: none; }
+  .breadcrumb { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: calc(100% - 420px); display: flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; overflow: hidden; font-size: 0.85rem; color: var(--discret); }
+  .breadcrumb .current { overflow: hidden; text-overflow: ellipsis; }
+  .breadcrumb a { text-decoration: none; }
+  .breadcrumb a:hover { color: var(--c); }
+  .breadcrumb .sep { color: #a1a1aa; }
+  .breadcrumb .current { color: var(--encre); }
+
+  /* ─── Bandeau ─── */
+  .ch-hero { position: relative; background: var(--c); color: #fff; padding: 56px 48px 84px; overflow: hidden; }
+  .ch-hero-fond { display: none; }
+  .ch-hero-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 40px 56px; }
+  .ch-hero-texte { flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+  .chap-label { display: flex; flex-wrap: wrap; gap: 8px; font-family: var(--titre); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .chap-label span { background: rgba(255,255,255,0.18); padding: 6px 12px; border-radius: 999px; }
+  .ch-hero h1 { font-family: var(--titre); font-weight: 800; font-size: calc(var(--t, 1) * clamp(3rem, 8vw, 6rem)); line-height: 0.95; letter-spacing: -0.02em; }
+  .ch-hero .meta { font-family: var(--titre); font-size: 1.2rem; font-weight: 500; opacity: 0.92; }
+  .ch-hero .pitch { max-width: 620px; font-size: 1.3rem; line-height: 1.5; }
+  .ch-hero-visuel { flex: 0 0 240px; max-width: 100%; aspect-ratio: 2 / 3; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+  .ch-hero-visuel.paysage { flex: 1 1 420px; aspect-ratio: auto; }
+  .ch-hero-visuel.paysage img { height: auto; }
+  .ch-hero-visuel img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  /* ─── L'essentiel ─── */
+  .essentiel {
+    position: relative; max-width: 1040px; margin: -44px auto 0; background: var(--carte); border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(24,24,27,0.10); padding: 28px 32px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 20px 40px;
+  }
+  .essentiel-wrap { padding: 0 48px; }
+  .essentiel-these { flex: 999 1 420px; min-width: 0; }
+  .etiquette { font-family: var(--titre); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c); }
+  .essentiel-these p { margin-top: 6px; font-size: 1.35rem; line-height: 1.4; font-weight: 600; }
+  .notions { flex: 1 1 300px; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+  .notions li { font-family: var(--titre); font-size: 0.92rem; font-weight: 500; padding: 8px 14px; border-radius: 999px; background: var(--c-soft); color: var(--c); }
+
+  /* ─── Corps ─── */
+  .page { max-width: 820px; margin: 0 auto; padding: 64px 48px 72px; }
+
+  .content { display: flex; flex-direction: column; gap: 64px; }
+  .hgg-part { scroll-margin-top: 90px; }
+  .hgg-part-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 20px; }
+  .hgg-part-num { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; color: var(--c); }
+  .hgg-part-title { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; letter-spacing: -0.01em; }
+  .hgg-section { margin-top: 32px; scroll-margin-top: 90px; }
+  .hgg-section-title { font-family: var(--titre); font-weight: 700; font-size: 1.35rem; line-height: 1.25; margin-bottom: 12px; }
+  .hgg-section-title .num { color: var(--c); margin-right: 6px; }
+  .content p { color: var(--texte); margin-bottom: 16px; }
+  .content p:last-child { margin-bottom: 0; }
+
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 8px 0 24px; }
+  .hgg-stat-cell { background: var(--carte); border-radius: 12px; padding: 18px 20px; }
+  .hgg-stat-num { display: block; font-family: var(--titre); font-weight: 800; font-size: 2.2rem; line-height: 1; color: var(--c); }
+  .hgg-stat-label { margin-top: 6px; font-family: var(--titre); font-size: 0.88rem; color: var(--discret); }
+
+  .carte { background: var(--carte); border-radius: 14px; padding: 22px 26px; margin: 20px 0; }
+  .carte h3 { font-family: var(--titre); font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+  .carte p { font-size: 1.05rem; }
+  .carte .etiquette { margin-bottom: 8px; }
+  .surligne { background: var(--c-soft); border-radius: 14px; padding: 20px 24px; margin: 20px 0; color: #2a1d12; font-size: 1.08rem; }
+  .duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 20px 0; }
+  .duo .carte { margin: 0; }
+  .duo .carte.pleine { background: var(--c); }
+  .duo .carte.pleine h3, .duo .carte.pleine p { color: #fff; }
+  .sujets { background: var(--carte); border-radius: 16px; margin-top: 16px; overflow: hidden; }
+  .sujet + .sujet { border-top: 1px solid var(--ligne); }
+  .sujet summary { list-style: none; display: flex; gap: 14px; align-items: baseline; padding: 16px 22px; cursor: pointer; font-family: var(--titre); font-weight: 700; font-size: 1.08rem; line-height: 1.35; }
+  .sujet summary::-webkit-details-marker { display: none; }
+  .sujet summary .n { flex: 0 0 auto; font-weight: 800; color: var(--c); }
+  .sujet summary .q { flex: 1; }
+  .sujet summary::after { content: '+'; flex: 0 0 auto; font-size: 1.3rem; line-height: 1; color: var(--c); transition: transform 0.2s; }
+  .sujet[open] summary::after { transform: rotate(45deg); }
+  .sujet summary:hover .q { color: var(--c); }
+  .sujet-corps { padding: 0 22px 18px 58px; }
+  .sujet-corps p { font-size: 1.02rem; margin-bottom: 10px; }
+  .sujet-corps .reperes { font-family: var(--titre); font-size: 0.88rem; line-height: 1.5; color: var(--discret); display: flex; flex-direction: column; gap: 4px; }
+  .sujet-corps .reperes b { color: var(--c); font-weight: 700; }
+  .sujet a { color: var(--c); text-decoration: underline; text-underline-offset: 2px; }
+
+  .copie { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 8px; }
+  .copie .carte { margin: 0; }
+  .retenir { flex: 1 1 100%; min-width: 0; }
+  .retenir ol { padding-left: 22px; display: flex; flex-direction: column; gap: 10px; font-size: 1.05rem; color: var(--texte); }
+  .rapprocher { flex: 1 1 100%; min-width: 0; background: var(--c) !important; }
+  .rapprocher .etiquette, .rapprocher p, .rapprocher em { color: #fff; }
+  .rapprocher .etiquette { opacity: 0.85; }
+  .rapprocher strong, .rapprocher a, .duo .carte.pleine strong { color: #fff; }
+
+  /* ─── Fin de page ─── */
+  .fin { border-top: 1px solid var(--ligne); background: var(--carte); padding: 24px 48px; }
+  .fin-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; font-family: var(--titre); font-size: 0.95rem; }
+  .fin a { text-decoration: none; padding: 12px 0; }
+  .fin a:hover { color: var(--c); }
+  .bouton-lu { font: 700 0.95rem var(--titre); color: #fff; background: var(--c); border: 1.5px solid var(--c); border-radius: 999px; padding: 12px 22px; min-height: 44px; cursor: pointer; }
+  .bouton-lu.fait { background: transparent; color: var(--c); }
+
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--encre); color: #fff; border: none; border-radius: 50%; font-size: 1.1rem; cursor: pointer; opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 99; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+  }
+  @media (max-width: 760px) {
+    .breadcrumb { display: none; }
+  }
+  @media (max-width: 640px) {
+    nav { padding: 12px 16px; }
+    .breadcrumb { display: none; }
+    .ch-hero { padding: 36px 16px 72px; }
+    .ch-hero-visuel { flex-basis: 160px; }
+    .essentiel-wrap { padding: 0 16px; }
+    .essentiel { padding: 22px 20px; }
+    .page { padding: 40px 16px 56px; }
+    .fin { padding: 20px 16px; }
+    .sujet summary { padding: 14px 16px; }
+    .sujet-corps { padding: 0 16px 16px; }
+    .hgg-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .hgg-stat-cell { padding: 14px 12px; }
+    .hgg-stat-num { font-size: 1.6rem; }
+  }
+
+  @media print {
+    .sujet-corps { display: block !important; }
+    @page { size: A4; margin: 16mm 14mm; }
+    nav, .back-to-top, .fin, .ch-hero-visuel { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: #fff; font-size: 10pt; }
+    .ch-hero { padding: 1rem 1.2rem; }
+    .ch-hero h1 { font-size: 22pt; }
+    .essentiel { margin: 0.6rem 0; box-shadow: none; border: 1pt solid var(--ligne); }
+    .page { display: block; padding: 0.6rem 0; }
+    .content { gap: 1.2rem; }
+    .carte, .hgg-stat-cell { border: 1pt solid var(--ligne); break-inside: avoid; }
+    .surligne, .duo, .sujet { break-inside: avoid; }
+  }
+</style>
+<link rel="stylesheet" href="../../barre-section.css">
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="sn sn-hum">
+  <div class="nav-logo sn-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb sn-fil">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">›</span>
+    <a href="../../humanite.html"><span>L'Humanité</span></a>
+    <span class="sep">›</span>
+    <a href="art.html"><span>Art</span></a>
+    <span class="sep">›</span>
+    <span class="current">Un enterrement à Ornans</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="ch-hero-inner">
+    <div class="ch-hero-texte">
+      <div class="chap-label"><span>Art</span><span>L'Humanité</span></div>
+      <h1 style="--t: 0.55">Un enterrement à Ornans</h1>
+      <p class="meta">Gustave Courbet · 1849-1850 · Huile sur toile, réalisme</p>
+      <p class="pitch">Les habitants d'une petite ville du Doubs réunis autour d'une fosse, grandeur nature, sur près de sept mètres&nbsp;: Courbet donne à un enterrement ordinaire la taille d'un tableau d'histoire.</p>
+    </div>
+    <figure class="ch-hero-visuel paysage"><img src="images/un-enterrement-a-ornans-oeuvre.webp" alt="Un enterrement à Ornans de Courbet : une longue foule de villageois vêtus de noir, prêtre, enfants de chœur, bedeaux en rouge, hommes et femmes en deuil, rassemblés autour d'une fosse creusée dans la terre, sous un crucifix, devant des falaises" loading="eager" onerror="this.closest('.ch-hero-visuel').remove()"></figure>
+  </div>
+</div>
+
+<!-- L'ESSENTIEL -->
+<div class="essentiel-wrap">
+  <section class="essentiel" aria-label="L'essentiel">
+    <div class="essentiel-these">
+      <div class="etiquette">L'essentiel en une phrase</div>
+      <p>Devant la mort, il n'y a plus de héros ni de grands&nbsp;: il y a des gens ordinaires réunis autour d'un trou dans la terre, et c'est leur vie qui mérite d'être peinte.</p>
+    </div>
+    <ul class="notions" aria-label="Notions du thème">
+      <li>La mort ordinaire</li>
+      <li>Les anonymes en peinture</li>
+      <li>Réalisme et vérité</li>
+    </ul>
+  </section>
+</div>
+
+<div class="page">
+
+<div class="content">
+
+<section class="hgg-part" id="intro">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">1.</span><span class="hgg-part-title">Présentation de l'œuvre</span></h2>
+
+    <p><strong>Un enterrement à Ornans</strong> est une huile sur toile de <strong>Gustave Courbet</strong> (1819-1877), peinte en 1849-1850 et présentée au <strong>Salon de 1850-1851</strong>. Immense, elle mesure environ 3,15 × 6,68 m et compte une quarantaine de personnages grandeur nature. Elle est conservée au <strong>musée d'Orsay</strong>, à Paris. Elle représente un enterrement dans le cimetière d'<strong>Ornans</strong>, petite ville du Doubs où le peintre est né, avec pour modèles les habitants eux-mêmes.</p>
+  <div class="hgg-stats">
+<div class="hgg-stat-cell"><span class="hgg-stat-num">6,68 m</span><div class="hgg-stat-label">De large&nbsp;: le format des grandes batailles et des scènes sacrées</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">40</span><div class="hgg-stat-label">Environ&nbsp;: villageois peints grandeur nature</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">1850</span><div class="hgg-stat-label">Salon de 1850-1851, où le tableau fait scandale</div></div>
+</div>
+    <p>Pas de défunt célèbre, pas de miracle, pas de larmes théâtrales&nbsp;: des bourgeois, des paysans, un fossoyeur, un chien, rassemblés au bord d'une fosse. Courbet donne à cette scène banale la taille d'un tableau d'histoire, et la critique s'indigne. L'œuvre pose une question centrale pour le thème de l'Humanité&nbsp;: la vie et la mort des gens ordinaires sont-elles dignes de l'art, et de l'histoire&nbsp;?</p>
+</section>
+
+<section class="hgg-part" id="p1">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">2.</span><span class="hgg-part-title">Genèse et description</span></h2>
+
+  <div class="hgg-section" id="s1-1">
+    <h3 class="hgg-section-title"><span class="num">2.1</span>Un peintre de son village</h3>
+
+    <p>Courbet, fils d'un propriétaire terrien d'Ornans, est monté à Paris pour devenir peintre, mais revient sans cesse dans sa région de Franche-Comté. Après la révolution de 1848, il peint les gens de chez lui tels qu'ils sont. Pour <strong>Un enterrement à Ornans</strong>, il fait poser un à un les habitants dans son atelier&nbsp;: le maire, le curé, les bedeaux, son père, ses sœurs, des notables et des paysans. Le tableau est souvent rapproché de l'enterrement d'un de ses grands-oncles, mort en 1848.</p>
+    <p>Courbet veut peindre ce qu'il voit, et rien d'autre&nbsp;: ni dieux, ni anges, ni héros antiques. On lui prête cette formule&nbsp;: il ne peut pas peindre un ange, parce qu'il n'en a jamais vu. Ce refus de l'idéal porte un nom&nbsp;: le <strong>réalisme</strong>.</p>
+    <div class="surligne">Pour le Salon, un tableau de cette taille était réservé à la <strong>peinture d'histoire</strong>. Courbet y met un enterrement de province, comme si la vie d'un village valait celle des rois.</div>
+  </div>
+
+  <div class="hgg-section" id="s1-2">
+    <h3 class="hgg-section-title"><span class="num">2.2</span>Un scandale au Salon</h3>
+
+    <p>Le public parisien est choqué. On trouve les visages laids, vulgaires, presque caricaturaux&nbsp;; les bedeaux au nez rouge font rire&nbsp;; la composition paraît désordonnée, sans centre, sans action. La critique reproche à Courbet de rendre «&nbsp;sacrée&nbsp;» la laideur et d'exalter le peuple, quelques années après la révolution de 1848. Le tableau devient le manifeste d'une nouvelle peinture.</p>
+    <div class="carte">
+      <div class="etiquette">Le pavillon du Réalisme</div>
+      <p>En 1855, refusé en partie à l'Exposition universelle, Courbet construit son propre pavillon à côté, qu'il intitule «&nbsp;<strong>Du Réalisme</strong>&nbsp;», et y expose notamment <strong>Un enterrement à Ornans</strong>. Un peintre décide lui-même de ce qui mérite d'être vu, contre l'institution.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s1-3">
+    <h3 class="hgg-section-title"><span class="num">2.3</span>Lire le tableau</h3>
+
+    <p>La composition est une longue <strong>frise</strong> horizontale de personnages serrés, sans héros au centre. Le noir des vêtements domine, sous un ciel gris et devant des falaises calcaires.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>La fosse</h3>
+        <p>Au premier plan, au centre, un simple trou dans la terre, au bord duquel un crâne est posé. C'est le vrai centre du tableau&nbsp;: la mort.</p>
+      </div>
+      <div class="carte">
+        <h3>Le fossoyeur</h3>
+        <p>Agenouillé près de la fosse, en manches de chemise, il regarde le prêtre. L'homme qui fait le travail le plus humble est au cœur de la scène.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le prêtre et les bedeaux</h3>
+        <p>Le curé lit son livre&nbsp;; à côté, deux bedeaux en robe rouge, au visage rougeaud. L'Église est là, mais sans grandeur, presque distraite.</p>
+      </div>
+      <div class="carte">
+        <h3>Le crucifix</h3>
+        <p>Brandi au-dessus de la foule, il se découpe sur le ciel, mais personne ne le regarde. La religion encadre la cérémonie sans la transfigurer.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>Les femmes en deuil</h3>
+        <p>À droite, un groupe de femmes en noir, coiffées de blanc, s'essuie les yeux. Le chagrin est réel, mais discret, sans pose théâtrale.</p>
+      </div>
+      <div class="carte">
+        <h3>Le chien</h3>
+        <p>Au premier plan à droite, un chien blanc regarde ailleurs. Indifférent à la cérémonie, il rappelle que la vie continue, banale.</p>
+      </div>
+    </div>
+    <div class="surligne">On ne voit ni le visage du mort, ni son nom&nbsp;: ce n'est pas l'enterrement de <strong>quelqu'un d'illustre</strong>, c'est un enterrement, celui que chacun connaîtra.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p2">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">3.</span><span class="hgg-part-title">La dignité de l'ordinaire</span></h2>
+
+  <div class="hgg-section" id="s2-1">
+    <h3 class="hgg-section-title"><span class="num">3.1</span>Tous égaux devant la mort</h3>
+
+    <p>Le maire et le fossoyeur, le bourgeois et le paysan, l'homme et le chien&nbsp;: tous se tiennent au même niveau, au bord du même trou. La mort efface les hiérarchies que la vie avait établies. Courbet peint une <strong>égalité</strong> simple et brutale&nbsp;: chacun finira dans la terre, et la cérémonie n'y change rien.</p>
+    <div class="carte">
+      <div class="etiquette">Une mort sans au-delà&nbsp;?</div>
+      <p>Le crucifix est là, le prêtre aussi, mais aucun ciel ne s'ouvre, aucun ange ne descend. Courbet montre la mort telle qu'on la vit&nbsp;: une <strong>séparation</strong> terrestre, dont la promesse religieuse reste extérieure à la scène.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-2">
+    <h3 class="hgg-section-title"><span class="num">3.2</span>Les anonymes dans l'histoire</h3>
+
+    <p>En donnant à des villageois la taille des héros, Courbet affirme que leur vie compte autant que celle des rois et des généraux. C'est une révolution du regard, contemporaine de 1848 et de l'idée de suffrage universel masculin&nbsp;: le <strong>peuple</strong> entre dans l'histoire, et dans l'art. L'humanité n'est plus représentée par ses grands hommes, mais par tous.</p>
+    <div class="surligne">Le scandale du Salon vient de là&nbsp;: on accepte de voir des paysans dans un petit tableau pittoresque, pas de leur donner la <strong>place des rois</strong>.</div>
+  </div>
+
+  <div class="hgg-section" id="s2-3">
+    <h3 class="hgg-section-title"><span class="num">3.3</span>La vérité contre l'idéal</h3>
+
+    <p>Courbet refuse d'embellir&nbsp;: les visages sont tels qu'ils sont, rougeauds, fatigués, ordinaires. Il ne veut ni émouvoir artificiellement, ni idéaliser. Ce choix de la <strong>vérité</strong> est aussi un choix moral&nbsp;: respecter les gens tels qu'ils sont, au lieu de les transformer en types ou en symboles. Sa démarche ouvrira la voie à Manet et à toute la peinture moderne.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le document</h3>
+        <p>Les habitants d'Ornans, nommés, posant un à un&nbsp;: <strong>le tableau témoigne</strong> de la vie d'une petite ville de province vers 1850.</p>
+      </div>
+      <div class="carte pleine">
+        <h3>Le symbole</h3>
+        <p>Une communauté autour d'une fosse&nbsp;: <strong>le tableau universalise</strong>. Il devient l'image de la mort ordinaire, que chacun connaîtra.</p>
+      </div>
+    </div>
+    <div class="surligne">Courbet n'a peint ni héros ni miracle, seulement des gens&nbsp;: c'est justement ce qui fait du tableau une image de <strong>l'humanité tout entière</strong>.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p3">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">4.</span><span class="hgg-part-title">Pistes pour la dissertation</span></h2>
+
+  <div class="hgg-section" id="s3-1">
+    <h3 class="hgg-section-title">Un enterrement à Ornans face à cinq sujets sur l'Humanité</h3>
+    <p>Cliquez sur un sujet pour l'argument à développer, le détail à citer et sa place dans le plan.</p>
+
+    <div class="sujets">
+      <details class="sujet">
+        <summary><span class="n">01</span><span class="q">La mort rend-elle les hommes égaux&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Dans Un enterrement à Ornans, le maire, le curé, les notables, les paysans et le fossoyeur se tiennent au bord de la même fosse, devant un crâne posé sur la terre. Aucun ne domine, et le mort n'a ni nom ni visage. Courbet montre que la mort efface les hiérarchies de la vie. Mais le tableau montre aussi que ces hiérarchies persistent jusqu'au bord de la tombe, dans les costumes et les places&nbsp;: l'égalité devant la mort reste à conquérir parmi les vivants.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> La fosse au centre, entourée de toutes les conditions sociales.</span><span><b>Dans le plan&nbsp;:</b> En première partie, puis nuancé&nbsp;: l'égalité de la mort et l'inégalité des vivants.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">02</span><span class="q">Les anonymes font-ils l'histoire&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>En 1850, Courbet donne à un enterrement de village le format de 6,68 m réservé aux batailles et aux scènes sacrées. Il fait poser les habitants d'Ornans un à un, grandeur nature. Au lendemain de la révolution de 1848, le geste est politique&nbsp;: le peuple entre dans l'histoire et dans l'art. L'humanité n'est plus représentée par ses grands hommes, mais par des gens ordinaires, qui sont la matière même de l'histoire.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> L'immense format, opposé à la banalité du sujet.</span><span><b>Dans le plan&nbsp;:</b> En partie critique&nbsp;: l'histoire vue d'en bas.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">03</span><span class="q">L'art doit-il embellir le réel&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Le public du Salon trouve les visages de Courbet laids et vulgaires, et se moque des bedeaux au nez rouge. Courbet refuse pourtant d'idéaliser&nbsp;: il peint ce qu'il voit, et ne peint pas d'anges parce qu'il n'en a jamais vu. Ce choix de la vérité est aussi un respect&nbsp;: montrer les gens tels qu'ils sont, au lieu de les transformer en types. L'art n'a pas à embellir le réel pour lui donner de la valeur.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Les bedeaux au visage rougeaud, tournés en ridicule par la critique.</span><span><b>Dans le plan&nbsp;:</b> Sur l'art et le réel&nbsp;: la vérité comme forme de dignité.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">04</span><span class="q">La religion donne-t-elle un sens à la mort&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Le crucifix est brandi au-dessus de la foule, le prêtre lit son livre, les bedeaux sont là. Mais personne ne regarde la croix, aucun ciel ne s'ouvre, et un chien regarde ailleurs. Courbet montre une religion qui encadre la cérémonie sans la transfigurer&nbsp;: la mort reste une séparation terrestre. Le tableau interroge ce que deviennent les consolations religieuses dans une société qui commence à les mettre à distance.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Le crucifix au-dessus de la foule, que personne ne regarde.</span><span><b>Dans le plan&nbsp;:</b> En partie de dépassement&nbsp;: la mort sans transcendance, vécue en communauté.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">05</span><span class="q">Le deuil est-il une affaire collective&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Toute une petite ville se tient autour de la fosse&nbsp;: famille, voisins, notables, Église. Le chagrin des femmes en noir est discret, mais partagé. Courbet montre que la mort d'un seul engage la communauté&nbsp;: on enterre ensemble, on se rassemble, on se compte. Le deuil n'est pas seulement une douleur intime, c'est un rite qui réaffirme les liens de ceux qui restent.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Le groupe des femmes en deuil, à droite.</span><span><b>Dans le plan&nbsp;:</b> Sur le lien social&nbsp;: la mort comme moment de la communauté.</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s3-2">
+    <div class="copie">
+      <div class="carte retenir">
+        <div class="etiquette">Idées à retenir</div>
+        <ol>
+          <li>Courbet donne à un <strong>enterrement de village</strong> le format de la peinture d'histoire&nbsp;: un manifeste du réalisme.</li>
+          <li>Autour de la fosse, toutes les conditions sont <strong>égales devant la mort</strong>, et le défunt reste anonyme.</li>
+          <li>Après 1848, faire entrer le <strong>peuple</strong> dans le grand format, c'est le faire entrer dans l'histoire.</li>
+          <li>Refuser l'idéal, c'est <strong>respecter</strong> les gens tels qu'ils sont, sans les embellir ni les caricaturer.</li>
+        </ol>
+      </div>
+      <div class="carte rapprocher">
+        <div class="etiquette">À rapprocher</div>
+        <p><strong>Gustave Flaubert, <em>Madame Bovary</em> (1857)</strong>&nbsp;: quelques années après Courbet, Flaubert raconte la vie d'une femme de province, dans un bourg normand, avec ses notables, son curé, son pharmacien, jusqu'à l'enterrement d'Emma. Comme le tableau, le roman fait scandale, au point d'être poursuivi en justice, parce qu'il montre la province telle qu'elle est, sans idéal ni morale. Mais Flaubert observe ses personnages avec une ironie souvent cruelle&nbsp;; Courbet, lui, peint les siens avec gravité, comme une communauté qui mérite d'être regardée.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /content -->
+</div><!-- /page -->
+
+<footer class="fin">
+  <div class="fin-inner">
+    <a href="art.html">← Toutes les fiches d'art</a>
+    <button type="button" class="bouton-lu" id="boutonLu">J'ai lu cette fiche</button>
+  </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
+
+<script>
+  // « J'ai lu cette fiche », gardé dans le navigateur
+  const CLE = 'ecg-humanite-fiches-lues';
+  const ID = 'art/un-enterrement-a-ornans';
+  const lu = document.getElementById('boutonLu');
+  function lire() { try { return JSON.parse(localStorage.getItem(CLE)) || []; } catch (e) { return []; } }
+  function majLu() {
+    const fait = lire().includes(ID);
+    lu.classList.toggle('fait', fait);
+    lu.textContent = fait ? '✓ Fiche lue' : "J'ai lu cette fiche";
+  }
+  lu.addEventListener('click', () => {
+    let l = lire();
+    l = l.includes(ID) ? l.filter(x => x !== ID) : l.concat(ID);
+    try { localStorage.setItem(CLE, JSON.stringify(l)); } catch (e) {}
+    majLu();
+  });
+  majLu();
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>
