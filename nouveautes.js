@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Vietnam / AELE",
+"titre": "Vietnam – AELE : Hanoï signe un accord de libre-échange avec quatre pays européens hors UE",
+"url": "actualites/monde/articles/vietnam-aele-accord-libre-echange-2026.html",
+"image": "actualites/monde/images/vietnam-aele-accord-libre-echange-2026.webp",
+"date": "2026-10-20T18:17:08+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Chili",
@@ -1362,15 +1371,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/de/articles/biontech-fermeture-sites-allemagne.html",
 "image": "actualites/de/images/biontech-fermeture-sites-allemagne.webp",
 "date": "2026-10-01T13:52:44+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Serbie",
-"titre": "Serbie : Aleksandar Vučić démissionne de la présidence pour briguer le poste de Premier ministre",
-"url": "actualites/monde/articles/serbie-vucic-demission.html",
-"image": "actualites/monde/images/serbie-vucic-demission.webp",
-"date": "2026-09-28T19:28:07+00:00"
 },
 {
 "t": "de",
