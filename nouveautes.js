@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "es",
 "rubrique": "Actu Espagnol",
+"meta": "Chili",
+"titre": "Chili : sept ans après l'estallido social, des milliers de manifestants défilent contre Kast",
+"url": "actualites/es/articles/chili-anniversaire-estallido-2026.html",
+"image": "actualites/es/images/chili-anniversaire-estallido-2026.webp",
+"date": "2026-10-20T18:08:23+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
 "meta": "Espagne",
 "titre": "Espagne : la DANA Adam déverse plus de 700 litres d'eau par m² sur le littoral méditerranéen",
 "url": "actualites/es/articles/espagne-dana-adam-inondations-2026.html",
@@ -1775,15 +1784,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Fin des dialogues avec l'ELN : De la Espriella clôt la « paix totale »",
 "url": "actualites/es/articles/colombie-fin-dialogues-eln.html",
 "image": "actualites/es/images/colombie-fin-dialogues-eln.webp",
-"date": "2026-09-12T10:40:02+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Chili",
-"titre": "53 ans après : le Chili face à la mémoire du coup d'État de 1973",
-"url": "actualites/es/articles/chili-coup-etat.html",
-"image": "actualites/es/images/chili-coup-etat.webp",
 "date": "2026-09-12T10:40:02+00:00"
 },
 {
