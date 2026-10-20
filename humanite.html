@@ -352,9 +352,10 @@
           </ul>
         </div>
         <div class="rubrique-texte">
-          <span class="rubrique-compte">6 œuvres</span>
+          <span class="rubrique-compte" id="cMus">6 œuvres · 6 fiches en ligne</span>
           <span class="rubrique-nom">Musique</span>
           <span class="rubrique-desc">Hymnes, requiem et chants de lutte.</span>
+          <div class="piste"><span id="rMus"></span></div>
         </div>
       </a>
     </div>
@@ -403,7 +404,8 @@ document.write('<script src="nouveautes.js?v=' + Math.floor(Date.now() / 60000) 
   var RUB = {
     litterature: { nom: 'Littérature', page: 'humanite/litterature/litterature.html' },
     cinema: { nom: 'Cinéma', page: 'humanite/cinema/cinema.html' },
-    art: { nom: 'Art', page: 'humanite/art/art.html' }
+    art: { nom: 'Art', page: 'humanite/art/art.html' },
+    musique: { nom: 'Musique', page: 'humanite/musique/musique.html' }
   };
   // Notions transversales : chaque œuvre y entre si ses notions ou sa thèse contiennent l'un des mots.
   var NOTIONS = [
@@ -481,7 +483,7 @@ document.write('<script src="nouveautes.js?v=' + Math.floor(Date.now() / 60000) 
 
   // ─── Parcours et rubriques ───
   function majRubriques(par) {
-    var L = par.litterature, C = par.cinema, A = par.art;
+    var L = par.litterature, C = par.cinema, A = par.art, M = par.musique || [];
     function nb(l) { return l.filter(function (o) { return lues.indexOf(o.slug) >= 0; }).length; }
     if (L.length) {
       $('nbLivres').textContent = L.length;
@@ -500,15 +502,19 @@ document.write('<script src="nouveautes.js?v=' + Math.floor(Date.now() / 60000) 
       $('cArt').textContent = '29 œuvres · ' + A.length + (A.length > 1 ? ' fiches en ligne' : ' fiche en ligne');
       $('rArt').style.width = pct(nb(A), A.length);
     }
-    return nb(L) + nb(C) + nb(A);
+    if (M.length) {
+      $('cMus').textContent = '6 œuvres · ' + M.length + (M.length > 1 ? ' fiches en ligne' : ' fiche en ligne');
+      $('rMus').style.width = pct(nb(M), M.length);
+    }
+    return nb(L) + nb(C) + nb(A) + nb(M);
   }
 
   // « Reprendre » : la fiche suivante, non lue, dans la rubrique de la dernière fiche lue.
   function majSuite(par) {
-    var toutes = par.litterature.concat(par.cinema, par.art);
+    var toutes = par.litterature.concat(par.cinema, par.art, par.musique || []);
     if (!lues.length || !toutes.length) return;
     var derniere = lues[lues.length - 1].split('/')[0];
-    var ordre = [derniere, 'litterature', 'cinema', 'art'];
+    var ordre = [derniere, 'litterature', 'cinema', 'art', 'musique'];
     var s = null;
     for (var i = 0; i < ordre.length && !s; i++) {
       s = (par[ordre[i]] || []).filter(function (o) { return lues.indexOf(o.slug) < 0; })[0] || null;
@@ -566,7 +572,7 @@ document.write('<script src="nouveautes.js?v=' + Math.floor(Date.now() / 60000) 
     })).then(function () {
       nRub = majRubriques(parRub);
       majSuite(parRub);
-      majNotions(parRub.litterature.concat(parRub.cinema, parRub.art));
+      majNotions(parRub.litterature.concat(parRub.cinema, parRub.art, parRub.musique || []));
     }),
     auteurs().then(function (l) { nAut = majAuteurs(l) || 0; }).catch(function () {})
   ]).then(function () { total(nRub + nAut); });

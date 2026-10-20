@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Musique — Imagine</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<style>
+  :root {
+    --c: #1f5b6b;          /* couleur de la fiche */
+    --c-soft: #e3eff2;
+    --fond: #f5f4f0;
+    --carte: #ffffff;
+    --encre: #18181b;
+    --texte: #3f3f46;
+    --discret: #52525b;
+    --ligne: #e4e2dc;
+    --titre: 'Bricolage Grotesque', system-ui, sans-serif;
+    --corps: 'Newsreader', Georgia, serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--fond); color: var(--encre); font-family: var(--corps); font-size: 1.125rem; line-height: 1.65; min-height: 100vh; }
+  strong { font-weight: 600; color: var(--encre); }
+  a { color: inherit; }
+
+  /* ─── Barre du haut ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 14px 48px; background: var(--carte); border-bottom: 1px solid var(--ligne);
+    position: sticky; top: 0; z-index: 100; font-family: var(--titre);
+  }
+  .nav-logo { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em; }
+  .nav-logo a { color: var(--encre); text-decoration: none; }
+  .breadcrumb { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: calc(100% - 420px); display: flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; overflow: hidden; font-size: 0.85rem; color: var(--discret); }
+  .breadcrumb .current { overflow: hidden; text-overflow: ellipsis; }
+  .breadcrumb a { text-decoration: none; }
+  .breadcrumb a:hover { color: var(--c); }
+  .breadcrumb .sep { color: #a1a1aa; }
+  .breadcrumb .current { color: var(--encre); }
+
+  /* ─── Bandeau ─── */
+  .ch-hero { position: relative; background: var(--c); color: #fff; padding: 56px 48px 84px; overflow: hidden; }
+  .ch-hero-fond { display: none; }
+  .ch-hero-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 40px 56px; }
+  .ch-hero-texte { flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+  .chap-label { display: flex; flex-wrap: wrap; gap: 8px; font-family: var(--titre); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .chap-label span { background: rgba(255,255,255,0.18); padding: 6px 12px; border-radius: 999px; }
+  .ch-hero h1 { font-family: var(--titre); font-weight: 800; font-size: calc(var(--t, 1) * clamp(3rem, 8vw, 6rem)); line-height: 0.95; letter-spacing: -0.02em; }
+  .ch-hero .meta { font-family: var(--titre); font-size: 1.2rem; font-weight: 500; opacity: 0.92; }
+  .ch-hero .pitch { max-width: 620px; font-size: 1.3rem; line-height: 1.5; }
+  .ch-hero-visuel { flex: 0 0 240px; max-width: 100%; aspect-ratio: 2 / 3; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+  .ch-hero-visuel.paysage { flex: 1 1 420px; aspect-ratio: auto; }
+  .ch-hero-visuel.paysage img { height: auto; }
+  .ch-hero-visuel img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  /* ─── L'essentiel ─── */
+  .essentiel {
+    position: relative; max-width: 1040px; margin: -44px auto 0; background: var(--carte); border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(24,24,27,0.10); padding: 28px 32px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 20px 40px;
+  }
+  .essentiel-wrap { padding: 0 48px; }
+  .essentiel-these { flex: 999 1 420px; min-width: 0; }
+  .etiquette { font-family: var(--titre); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c); }
+  .essentiel-these p { margin-top: 6px; font-size: 1.35rem; line-height: 1.4; font-weight: 600; }
+  .notions { flex: 1 1 300px; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+  .notions li { font-family: var(--titre); font-size: 0.92rem; font-weight: 500; padding: 8px 14px; border-radius: 999px; background: var(--c-soft); color: var(--c); }
+
+  /* ─── Corps ─── */
+  .page { max-width: 820px; margin: 0 auto; padding: 64px 48px 72px; }
+
+  .content { display: flex; flex-direction: column; gap: 64px; }
+  .hgg-part { scroll-margin-top: 90px; }
+  .hgg-part-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 20px; }
+  .hgg-part-num { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; color: var(--c); }
+  .hgg-part-title { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; letter-spacing: -0.01em; }
+  .hgg-section { margin-top: 32px; scroll-margin-top: 90px; }
+  .hgg-section-title { font-family: var(--titre); font-weight: 700; font-size: 1.35rem; line-height: 1.25; margin-bottom: 12px; }
+  .hgg-section-title .num { color: var(--c); margin-right: 6px; }
+  .content p { color: var(--texte); margin-bottom: 16px; }
+  .content p:last-child { margin-bottom: 0; }
+
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 8px 0 24px; }
+  .hgg-stat-cell { background: var(--carte); border-radius: 12px; padding: 18px 20px; }
+  .hgg-stat-num { display: block; font-family: var(--titre); font-weight: 800; font-size: 2.2rem; line-height: 1; color: var(--c); }
+  .hgg-stat-label { margin-top: 6px; font-family: var(--titre); font-size: 0.88rem; color: var(--discret); }
+
+  .carte { background: var(--carte); border-radius: 14px; padding: 22px 26px; margin: 20px 0; }
+  .carte h3 { font-family: var(--titre); font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+  .carte p { font-size: 1.05rem; }
+  .carte .etiquette { margin-bottom: 8px; }
+  .surligne { background: var(--c-soft); border-radius: 14px; padding: 20px 24px; margin: 20px 0; color: #2a1d12; font-size: 1.08rem; }
+  .duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 20px 0; }
+  .duo .carte { margin: 0; }
+  .duo .carte.pleine { background: var(--c); }
+  .duo .carte.pleine h3, .duo .carte.pleine p { color: #fff; }
+  .sujets { background: var(--carte); border-radius: 16px; margin-top: 16px; overflow: hidden; }
+  .sujet + .sujet { border-top: 1px solid var(--ligne); }
+  .sujet summary { list-style: none; display: flex; gap: 14px; align-items: baseline; padding: 16px 22px; cursor: pointer; font-family: var(--titre); font-weight: 700; font-size: 1.08rem; line-height: 1.35; }
+  .sujet summary::-webkit-details-marker { display: none; }
+  .sujet summary .n { flex: 0 0 auto; font-weight: 800; color: var(--c); }
+  .sujet summary .q { flex: 1; }
+  .sujet summary::after { content: '+'; flex: 0 0 auto; font-size: 1.3rem; line-height: 1; color: var(--c); transition: transform 0.2s; }
+  .sujet[open] summary::after { transform: rotate(45deg); }
+  .sujet summary:hover .q { color: var(--c); }
+  .sujet-corps { padding: 0 22px 18px 58px; }
+  .sujet-corps p { font-size: 1.02rem; margin-bottom: 10px; }
+  .sujet-corps .reperes { font-family: var(--titre); font-size: 0.88rem; line-height: 1.5; color: var(--discret); display: flex; flex-direction: column; gap: 4px; }
+  .sujet-corps .reperes b { color: var(--c); font-weight: 700; }
+  .sujet a { color: var(--c); text-decoration: underline; text-underline-offset: 2px; }
+
+  .copie { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 8px; }
+  .copie .carte { margin: 0; }
+  .retenir { flex: 1 1 100%; min-width: 0; }
+  .retenir ol { padding-left: 22px; display: flex; flex-direction: column; gap: 10px; font-size: 1.05rem; color: var(--texte); }
+  .rapprocher { flex: 1 1 100%; min-width: 0; background: var(--c) !important; }
+  .rapprocher .etiquette, .rapprocher p, .rapprocher em { color: #fff; }
+  .rapprocher .etiquette { opacity: 0.85; }
+  .rapprocher strong, .rapprocher a, .duo .carte.pleine strong { color: #fff; }
+
+  /* ─── Fin de page ─── */
+  .fin { border-top: 1px solid var(--ligne); background: var(--carte); padding: 24px 48px; }
+  .fin-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; font-family: var(--titre); font-size: 0.95rem; }
+  .fin a { text-decoration: none; padding: 12px 0; }
+  .fin a:hover { color: var(--c); }
+  .bouton-lu { font: 700 0.95rem var(--titre); color: #fff; background: var(--c); border: 1.5px solid var(--c); border-radius: 999px; padding: 12px 22px; min-height: 44px; cursor: pointer; }
+  .bouton-lu.fait { background: transparent; color: var(--c); }
+
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--encre); color: #fff; border: none; border-radius: 50%; font-size: 1.1rem; cursor: pointer; opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 99; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+  }
+  @media (max-width: 760px) {
+    .breadcrumb { display: none; }
+  }
+  @media (max-width: 640px) {
+    nav { padding: 12px 16px; }
+    .breadcrumb { display: none; }
+    .ch-hero { padding: 36px 16px 72px; }
+    .ch-hero-visuel { flex-basis: 160px; }
+    .essentiel-wrap { padding: 0 16px; }
+    .essentiel { padding: 22px 20px; }
+    .page { padding: 40px 16px 56px; }
+    .fin { padding: 20px 16px; }
+    .sujet summary { padding: 14px 16px; }
+    .sujet-corps { padding: 0 16px 16px; }
+    .hgg-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .hgg-stat-cell { padding: 14px 12px; }
+    .hgg-stat-num { font-size: 1.6rem; }
+  }
+
+  @media print {
+    .sujet-corps { display: block !important; }
+    @page { size: A4; margin: 16mm 14mm; }
+    nav, .back-to-top, .fin, .ch-hero-visuel { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: #fff; font-size: 10pt; }
+    .ch-hero { padding: 1rem 1.2rem; }
+    .ch-hero h1 { font-size: 22pt; }
+    .essentiel { margin: 0.6rem 0; box-shadow: none; border: 1pt solid var(--ligne); }
+    .page { display: block; padding: 0.6rem 0; }
+    .content { gap: 1.2rem; }
+    .carte, .hgg-stat-cell { border: 1pt solid var(--ligne); break-inside: avoid; }
+    .surligne, .duo, .sujet { break-inside: avoid; }
+  }
+</style>
+<link rel="stylesheet" href="../../barre-section.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Imagine">
+<meta property="og:image" content="https://ecg-prepa.fr/partage/humanite/humanite-musique-imagine.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Imagine">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ecg-prepa.fr/partage/humanite/humanite-musique-imagine.jpg">
+<meta name="description" content="Imagine (John Lennon, 1971) : fiche sur l&#x27;œuvre, son histoire, son analyse et les pistes pour la dissertation sur l&#x27;Humanité.">
+<link rel="canonical" href="https://ecg-prepa.fr/humanite/musique/imagine.html">
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="sn sn-hum">
+  <div class="nav-logo sn-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb sn-fil">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">›</span>
+    <a href="../../humanite.html"><span>L'Humanité</span></a>
+    <span class="sep">›</span>
+    <a href="musique.html"><span>Musique</span></a>
+    <span class="sep">›</span>
+    <span class="current">Imagine</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="ch-hero-inner">
+    <div class="ch-hero-texte">
+      <div class="chap-label"><span>Musique</span><span>L'Humanité</span></div>
+      <h1>Imagine</h1>
+      <p class="meta">John Lennon · 1971 · Chanson pour la paix</p>
+      <p class="pitch">Un monde sans pays, sans religion, sans possessions&nbsp;: en pleine guerre du Vietnam, Lennon fait d'une humanité unie un rêve que le monde entier chante encore.</p>
+    </div>
+    <figure class="ch-hero-visuel" style="aspect-ratio: 1 / 1"><img src="images/imagine-visuel.webp" alt="Pochette d'Imagine, John Lennon : le visage de Lennon dessiné en quelques traits de couleur, cheveux rose et orange, lunettes rondes, sur fond blanc" loading="eager" onerror="this.closest('.ch-hero-visuel').remove()"></figure>
+  </div>
+</div>
+
+<!-- L'ESSENTIEL -->
+<div class="essentiel-wrap">
+  <section class="essentiel" aria-label="L'essentiel">
+    <div class="essentiel-these">
+      <div class="etiquette">L'essentiel en une phrase</div>
+      <p>Les frontières, les religions et la propriété divisent les hommes&nbsp;: Imagine invite à les penser disparues pour voir une seule humanité, au risque d'une utopie trop douce pour un monde qui reste en guerre.</p>
+    </div>
+    <ul class="notions" aria-label="Notions du thème">
+      <li>Utopie</li>
+      <li>Paix</li>
+      <li>Unité du genre humain</li>
+    </ul>
+  </section>
+</div>
+
+<div class="page">
+
+<div class="content">
+
+<section class="hgg-part" id="intro">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">1.</span><span class="hgg-part-title">Présentation de l'œuvre</span></h2>
+
+    <p><strong>Imagine</strong> est une chanson de <strong>John Lennon</strong> (1940-1980), ancien membre des Beatles, enregistrée en <strong>1971</strong> dans son studio de Tittenhurst Park, en Angleterre, et parue sur l'album du même nom. Sur une mélodie simple au piano, Lennon demande à l'auditeur d'imaginer un monde sans paradis ni enfer, sans pays, sans religion et sans possessions, où tous les hommes vivraient en paix.</p>
+  <div class="hgg-stats">
+<div class="hgg-stat-cell"><span class="hgg-stat-num">1971</span><div class="hgg-stat-label">Sortie de la chanson, en pleine guerre du Vietnam</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">125</span><div class="hgg-stat-label">Pays visités par Jimmy Carter, où il l'entendait «&nbsp;presque autant que les hymnes nationaux&nbsp;»</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">2017</span><div class="hgg-stat-label">Yoko Ono enfin reconnue comme coautrice de la chanson</div></div>
+</div>
+    <p>Devenue un hymne mondial de la paix, elle est jouée aux Jeux olympiques comme devant les lieux d'attentats. Elle pose une question centrale pour le thème de l'Humanité&nbsp;: ce qui sépare les hommes est-il naturel, ou peut-on imaginer une humanité <strong>une</strong>&nbsp;?</p>
+</section>
+
+<section class="hgg-part" id="p1">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">2.</span><span class="hgg-part-title">Genèse et description</span></h2>
+
+  <div class="hgg-section" id="s1-1">
+    <h3 class="hgg-section-title"><span class="num">2.1</span>Une chanson née d'un livre de Yoko Ono</h3>
+
+    <p>En 1971, les Beatles se sont séparés et la guerre du Vietnam divise le monde. Lennon et sa femme, l'artiste <strong>Yoko Ono</strong>, militent pour la paix depuis 1969. L'idée de la chanson vient en partie d'un livre d'Ono, <em>Grapefruit</em> (1964), fait de courtes instructions poétiques qui commencent souvent par «&nbsp;imagine&nbsp;». Lennon cite aussi un livre de prières offert par l'humoriste et militant Dick Gregory.</p>
+    <p>Lennon reconnaîtra plus tard qu'Ono aurait dû être créditée. Ce n'est qu'en <strong>2017</strong> que l'association des éditeurs de musique américains l'a officiellement reconnue comme coautrice.</p>
+    <div class="surligne">La chanson la plus célèbre sur l'égalité entre les hommes a longtemps <strong>effacé le nom</strong> de la femme qui l'avait inspirée.</div>
+  </div>
+
+  <div class="hgg-section" id="s1-2">
+    <h3 class="hgg-section-title"><span class="num">2.2</span>Un message radical dans une forme douce</h3>
+
+    <p>Enregistrée le 27 mai 1971, coproduite par Phil Spector, la chanson sort en single aux États-Unis en octobre 1971. Sa musique est apaisante&nbsp;: un piano, une voix calme, des cordes discrètes. Son texte, lui, est radical&nbsp;: il propose de supprimer ce qui structure les sociétés, les nations, les religions et la propriété.</p>
+    <div class="carte">
+      <div class="etiquette">Ce qu'en disait Lennon</div>
+      <p>Quelques jours avant sa mort, dans un entretien au magazine <em>Playboy</em>, Lennon disait qu'Imagine était «&nbsp;pratiquement le <strong>Manifeste du parti communiste</strong>&nbsp;», tout en précisant qu'il n'était pas communiste. Ailleurs, il expliquait que la chanson était antireligieuse, antinationaliste et anticapitaliste, mais acceptée parce qu'«&nbsp;enrobée de sucre&nbsp;».</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s1-3">
+    <h3 class="hgg-section-title"><span class="num">2.3</span>Écouter Imagine</h3>
+
+    <p>La chanson avance par une série de suppressions&nbsp;: à chaque couplet, Lennon retire une chose qui divise les hommes, puis montre ce qui reste.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Sans ciel ni enfer</h3>
+        <p>Le premier couplet supprime l'au-delà&nbsp;: les hommes vivraient «&nbsp;pour aujourd'hui&nbsp;». La morale ne viendrait plus d'une récompense promise, mais de la vie présente.</p>
+      </div>
+      <div class="carte">
+        <h3>Sans pays</h3>
+        <p>Plus de nations, plus de religions, et donc «&nbsp;rien pour quoi tuer ou mourir&nbsp;»&nbsp;: Lennon désigne ce qui pousse les hommes à la guerre.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>Sans possessions</h3>
+        <p>Le troisième couplet imagine un monde sans propriété, ni avidité ni faim&nbsp;: une «&nbsp;fraternité des hommes&nbsp;» qui partagerait le monde.</p>
+      </div>
+      <div class="carte">
+        <h3>Le refrain</h3>
+        <p>«&nbsp;Tu diras peut-être que je suis un rêveur, mais je ne suis pas le seul&nbsp;»&nbsp;: Lennon s'adresse à l'auditeur et l'invite à rejoindre le rêve.</p>
+      </div>
+    </div>
+    <div class="surligne">Le mot-clé est le verbe&nbsp;: Lennon ne dit pas «&nbsp;faites&nbsp;», il dit «&nbsp;<strong>imaginez</strong>&nbsp;». La chanson propose une expérience de pensée, pas un programme.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p2">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">3.</span><span class="hgg-part-title">Imaginer une humanité une</span></h2>
+
+  <div class="hgg-section" id="s2-1">
+    <h3 class="hgg-section-title"><span class="num">3.1</span>Ce qui divise les hommes</h3>
+
+    <p>Imagine fait un constat&nbsp;: les hommes ne se tuent pas parce qu'ils sont différents par nature, mais à cause de ce qu'ils ont construit, les <strong>frontières</strong>, les <strong>croyances</strong>, la <strong>propriété</strong>. En les effaçant par la pensée, la chanson fait apparaître ce qui reste&nbsp;: une seule humanité, faite d'êtres semblables. Elle reprend un vieux rêve, celui du cosmopolitisme, qui fait de chaque homme un «&nbsp;citoyen du monde&nbsp;».</p>
+    <div class="carte">
+      <div class="etiquette">Une chanson devenue hymne</div>
+      <p>Jouée aux cérémonies des Jeux olympiques de 2012 et de 2018, chantée chaque Nouvel An à Times Square, elle a aussi été jouée au piano par Davide Martello devant le <strong>Bataclan</strong>, après les attentats de Paris en novembre 2015.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-2">
+    <h3 class="hgg-section-title"><span class="num">3.2</span>Le pouvoir et les limites de l'utopie</h3>
+
+    <p>L'utopie, comme celle de Thomas More, n'existe nulle part&nbsp;: elle sert à juger le monde réel en montrant qu'il pourrait être autre. Imagine joue ce rôle. Mais on lui reproche sa naïveté&nbsp;: une humanité sans nations ni croyances serait-elle encore humaine, ou seulement uniforme&nbsp;? Et l'on a souvent relevé le paradoxe d'une star millionnaire qui chante un monde <strong>sans possessions</strong>.</p>
+    <div class="surligne">Imagine montre la force de l'utopie, qui oblige à penser autrement, et sa faiblesse&nbsp;: elle ne dit jamais <strong>comment</strong> y parvenir.</div>
+  </div>
+
+  <div class="hgg-section" id="s2-3">
+    <h3 class="hgg-section-title"><span class="num">3.3</span>Une chanson qui dérange encore</h3>
+
+    <p>Après les attentats du 11 septembre 2001, le groupe de radios américain Clear Channel la fait figurer sur une liste de chansons à éviter. En 2020, au début de la pandémie, une vidéo où des stars la chantent depuis leurs maisons de luxe est moquée comme déconnectée. Lennon lui-même est tué à New York le <strong>8 décembre 1980</strong>&nbsp;: la chanson revient alors en tête des ventes au Royaume-Uni.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le document</h3>
+        <p>Une chanson de 1971, écrite par un couple militant pendant la guerre du Vietnam&nbsp;: <strong>Imagine témoigne</strong> de l'espoir pacifiste de son époque.</p>
+      </div>
+      <div class="carte pleine">
+        <h3>Le symbole</h3>
+        <p>Un rêve sans pays ni religion&nbsp;: <strong>Imagine universalise</strong>. Chaque drame la fait revenir comme une prière laïque pour l'humanité.</p>
+      </div>
+    </div>
+    <div class="surligne">On la chante après chaque attentat&nbsp;: preuve que le rêve d'une humanité unie <strong>reste à faire</strong>, et qu'on en a toujours besoin.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p3">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">4.</span><span class="hgg-part-title">Pistes pour la dissertation</span></h2>
+
+  <div class="hgg-section" id="s3-1">
+    <h3 class="hgg-section-title">Imagine face à cinq sujets sur l'Humanité</h3>
+    <p>Cliquez sur un sujet pour l'argument à développer, le passage à citer et sa place dans le plan.</p>
+
+    <div class="sujets">
+      <details class="sujet">
+        <summary><span class="n">01</span><span class="q">L'humanité est-elle une&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Imagine efface par la pensée ce qui sépare les hommes, les pays, les religions, la propriété, et montre qu'il reste une seule humanité, faite d'êtres semblables qui pourraient vivre en paix. Ce qui divise les hommes n'est pas leur nature, mais ce qu'ils ont construit. L'unité du genre humain n'est pas un fait visible&nbsp;: c'est une idée qu'il faut imaginer pour pouvoir la vouloir.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> Le deuxième couplet, sans pays ni religion, «&nbsp;rien pour quoi tuer ou mourir&nbsp;».</span><span><b>Dans le plan&nbsp;:</b> En première partie&nbsp;: l'unité du genre humain sous les divisions.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">02</span><span class="q">À quoi servent les utopies&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Imagine ne donne aucun programme&nbsp;: elle demande seulement d'imaginer. Comme l'<em>Utopie</em> de Thomas More, elle décrit un monde qui n'existe nulle part pour faire voir que le nôtre n'est pas le seul possible. Mais l'utopie a sa limite&nbsp;: elle ne dit pas comment passer du rêve au réel. Elle sert moins à construire le monde qu'à le juger.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> Le refrain, «&nbsp;tu diras peut-être que je suis un rêveur&nbsp;».</span><span><b>Dans le plan&nbsp;:</b> En partie critique&nbsp;: la force et la naïveté de l'utopie.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">03</span><span class="q">Faut-il abolir les frontières&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Pour Lennon, les nations donnent aux hommes des raisons de se tuer. Pourtant, les frontières protègent aussi des droits, des langues, des cultures&nbsp;: une humanité sans aucune différence risquerait l'uniformité. Imagine oblige à distinguer ce qui sépare les hommes jusqu'à la guerre de ce qui les distingue sans les opposer.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> «&nbsp;Imagine qu'il n'y ait pas de pays&nbsp;».</span><span><b>Dans le plan&nbsp;:</b> Sur le cosmopolitisme&nbsp;: citoyen du monde ou citoyen d'un pays.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">04</span><span class="q">La propriété rend-elle l'homme inhumain&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Le troisième couplet imagine un monde sans possessions, et donc sans avidité ni faim. Lennon y voit l'origine de l'inégalité, comme Rousseau dans son <em>Discours sur l'origine de l'inégalité</em>. Mais le paradoxe du chanteur millionnaire montre combien il est difficile de renoncer à posséder&nbsp;: la critique de la propriété est plus facile à chanter qu'à vivre.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> Le couplet sur un monde «&nbsp;sans possessions&nbsp;».</span><span><b>Dans le plan&nbsp;:</b> En partie critique&nbsp;: l'idéal et la contradiction de celui qui le porte.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">05</span><span class="q">La musique peut-elle rassembler l'humanité&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Jimmy Carter disait l'avoir entendue dans de nombreux pays presque autant que les hymnes nationaux. Jouée aux Jeux olympiques, devant le Bataclan en 2015, Imagine est devenue un hymne de l'humanité entière. Une mélodie simple, comprise sans traduction, réunit des hommes que tout sépare&nbsp;: mais elle rassemble le temps d'une chanson, sans abolir les conflits.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> Davide Martello jouant Imagine devant le Bataclan, en novembre 2015.</span><span><b>Dans le plan&nbsp;:</b> En partie de dépassement&nbsp;: la musique comme langage commun.</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s3-2">
+    <div class="copie">
+      <div class="carte retenir">
+        <div class="etiquette">Idées à retenir</div>
+        <ol>
+          <li>Écrite en 1971, en pleine guerre du Vietnam, inspirée de <strong>Yoko Ono</strong>, reconnue coautrice en 2017.</li>
+          <li>Elle efface ce qui divise les hommes, <strong>pays, religions, propriété</strong>, pour montrer une humanité une.</li>
+          <li>C'est une <strong>utopie</strong>&nbsp;: elle invite à imaginer, sans dire comment faire.</li>
+          <li>Hymne mondial de la paix, elle reste critiquée pour sa <strong>naïveté</strong> et le paradoxe de son auteur.</li>
+        </ol>
+      </div>
+      <div class="carte rapprocher">
+        <div class="etiquette">À rapprocher</div>
+        <p><strong>Martin Luther King, «&nbsp;I Have a Dream&nbsp;» (1963)</strong>&nbsp;: le 28 août 1963, devant le Lincoln Memorial à Washington, King décrit le rêve d'une Amérique où ses enfants seraient jugés sur leur caractère et non sur la couleur de leur peau. Comme Lennon, il oppose à un monde divisé le rêve d'une humanité réconciliée. Mais King ancre son rêve dans la Bible et dans les promesses de la Constitution américaine, quand Lennon imagine un monde sans religion ni pays&nbsp;: l'un veut accomplir les institutions, l'autre rêve de s'en passer.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /content -->
+</div><!-- /page -->
+<footer class="fin">
+  <div class="fin-inner">
+    <a href="musique.html">← Toutes les fiches de musique</a>
+    <button type="button" class="bouton-lu" id="boutonLu">J'ai lu cette fiche</button>
+  </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
+
+<script>
+  // « J'ai lu cette fiche », gardé dans le navigateur
+  const CLE = 'ecg-humanite-fiches-lues';
+  const ID = 'musique/imagine';
+  const lu = document.getElementById('boutonLu');
+  function lire() { try { return JSON.parse(localStorage.getItem(CLE)) || []; } catch (e) { return []; } }
+  function majLu() {
+    const fait = lire().includes(ID);
+    lu.classList.toggle('fait', fait);
+    lu.textContent = fait ? '✓ Fiche lue' : "J'ai lu cette fiche";
+  }
+  lu.addEventListener('click', () => {
+    let l = lire();
+    l = l.includes(ID) ? l.filter(x => x !== ID) : l.concat(ID);
+    try { localStorage.setItem(CLE, JSON.stringify(l)); } catch (e) {}
+    majLu();
+  });
+  majLu();
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>
