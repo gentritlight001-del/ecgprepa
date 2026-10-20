@@ -1,6 +1,16 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Le Radeau de la Méduse",
+"url": "humanite/art/radeau-de-la-meduse.html",
+"image": "humanite/art/images/radeau-de-la-meduse-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T07:12:22+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "États-Unis",
@@ -2213,16 +2223,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Le Horla",
 "url": "humanite/litterature/le-horla.html",
 "image": "humanite/litterature/images/le-horla-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "Le Lambeau",
-"url": "humanite/litterature/le-lambeau.html",
-"image": "humanite/litterature/images/le-lambeau-couverture.webp",
 "portrait": true,
 "date": "2026-09-11T19:03:33+00:00"
 },
