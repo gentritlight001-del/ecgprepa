@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "Canada",
+"titre": "Canada : l'Alberta vote à 75 % pour rester dans le pays lors d'un référendum sur la séparation",
+"url": "actualites/en/articles/canada-alberta-referendum-2026.html",
+"image": "actualites/en/images/canada-alberta-referendum-2026.webp",
+"date": "2026-10-20T18:24:09+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Vietnam / AELE",
@@ -1622,15 +1631,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Trump minimise les risques de l'IA, en pleine vague d'alertes venues de la Silicon Valley",
 "url": "actualites/en/articles/trump-minimise-risques-ia-2026.html",
 "image": "actualites/en/images/trump-minimise-risques-ia-2026.webp",
-"date": "2026-09-18T20:00:18+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "Irlande",
-"titre": "Entre golf et diplomatie : la visite mouvementée de Donald Trump en Irlande",
-"url": "actualites/en/articles/trump-visite-irlande-2026.html",
-"image": "actualites/en/images/trump-visite-irlande-2026.webp",
 "date": "2026-09-18T20:00:18+00:00"
 },
 {
