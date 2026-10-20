@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Musique — A Change Is Gonna Come</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<style>
+  :root {
+    --c: #3b3f8f;          /* couleur de la fiche */
+    --c-soft: #e9eaf7;
+    --fond: #f5f4f0;
+    --carte: #ffffff;
+    --encre: #18181b;
+    --texte: #3f3f46;
+    --discret: #52525b;
+    --ligne: #e4e2dc;
+    --titre: 'Bricolage Grotesque', system-ui, sans-serif;
+    --corps: 'Newsreader', Georgia, serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--fond); color: var(--encre); font-family: var(--corps); font-size: 1.125rem; line-height: 1.65; min-height: 100vh; }
+  strong { font-weight: 600; color: var(--encre); }
+  a { color: inherit; }
+
+  /* ─── Barre du haut ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 14px 48px; background: var(--carte); border-bottom: 1px solid var(--ligne);
+    position: sticky; top: 0; z-index: 100; font-family: var(--titre);
+  }
+  .nav-logo { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em; }
+  .nav-logo a { color: var(--encre); text-decoration: none; }
+  .breadcrumb { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: calc(100% - 420px); display: flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; overflow: hidden; font-size: 0.85rem; color: var(--discret); }
+  .breadcrumb .current { overflow: hidden; text-overflow: ellipsis; }
+  .breadcrumb a { text-decoration: none; }
+  .breadcrumb a:hover { color: var(--c); }
+  .breadcrumb .sep { color: #a1a1aa; }
+  .breadcrumb .current { color: var(--encre); }
+
+  /* ─── Bandeau ─── */
+  .ch-hero { position: relative; background: var(--c); color: #fff; padding: 56px 48px 84px; overflow: hidden; }
+  .ch-hero-fond { display: none; }
+  .ch-hero-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 40px 56px; }
+  .ch-hero-texte { flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+  .chap-label { display: flex; flex-wrap: wrap; gap: 8px; font-family: var(--titre); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .chap-label span { background: rgba(255,255,255,0.18); padding: 6px 12px; border-radius: 999px; }
+  .ch-hero h1 { font-family: var(--titre); font-weight: 800; font-size: calc(var(--t, 1) * clamp(3rem, 8vw, 6rem)); line-height: 0.95; letter-spacing: -0.02em; }
+  .ch-hero .meta { font-family: var(--titre); font-size: 1.2rem; font-weight: 500; opacity: 0.92; }
+  .ch-hero .pitch { max-width: 620px; font-size: 1.3rem; line-height: 1.5; }
+  .ch-hero-visuel { flex: 0 0 240px; max-width: 100%; aspect-ratio: 2 / 3; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+  .ch-hero-visuel.paysage { flex: 1 1 420px; aspect-ratio: auto; }
+  .ch-hero-visuel.paysage img { height: auto; }
+  .ch-hero-visuel img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  /* ─── L'essentiel ─── */
+  .essentiel {
+    position: relative; max-width: 1040px; margin: -44px auto 0; background: var(--carte); border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(24,24,27,0.10); padding: 28px 32px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 20px 40px;
+  }
+  .essentiel-wrap { padding: 0 48px; }
+  .essentiel-these { flex: 999 1 420px; min-width: 0; }
+  .etiquette { font-family: var(--titre); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c); }
+  .essentiel-these p { margin-top: 6px; font-size: 1.35rem; line-height: 1.4; font-weight: 600; }
+  .notions { flex: 1 1 300px; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+  .notions li { font-family: var(--titre); font-size: 0.92rem; font-weight: 500; padding: 8px 14px; border-radius: 999px; background: var(--c-soft); color: var(--c); }
+
+  /* ─── Corps ─── */
+  .page { max-width: 820px; margin: 0 auto; padding: 64px 48px 72px; }
+
+  .content { display: flex; flex-direction: column; gap: 64px; }
+  .hgg-part { scroll-margin-top: 90px; }
+  .hgg-part-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 20px; }
+  .hgg-part-num { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; color: var(--c); }
+  .hgg-part-title { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; letter-spacing: -0.01em; }
+  .hgg-section { margin-top: 32px; scroll-margin-top: 90px; }
+  .hgg-section-title { font-family: var(--titre); font-weight: 700; font-size: 1.35rem; line-height: 1.25; margin-bottom: 12px; }
+  .hgg-section-title .num { color: var(--c); margin-right: 6px; }
+  .content p { color: var(--texte); margin-bottom: 16px; }
+  .content p:last-child { margin-bottom: 0; }
+
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 8px 0 24px; }
+  .hgg-stat-cell { background: var(--carte); border-radius: 12px; padding: 18px 20px; }
+  .hgg-stat-num { display: block; font-family: var(--titre); font-weight: 800; font-size: 2.2rem; line-height: 1; color: var(--c); }
+  .hgg-stat-label { margin-top: 6px; font-family: var(--titre); font-size: 0.88rem; color: var(--discret); }
+
+  .carte { background: var(--carte); border-radius: 14px; padding: 22px 26px; margin: 20px 0; }
+  .carte h3 { font-family: var(--titre); font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+  .carte p { font-size: 1.05rem; }
+  .carte .etiquette { margin-bottom: 8px; }
+  .surligne { background: var(--c-soft); border-radius: 14px; padding: 20px 24px; margin: 20px 0; color: #2a1d12; font-size: 1.08rem; }
+  .duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 20px 0; }
+  .duo .carte { margin: 0; }
+  .duo .carte.pleine { background: var(--c); }
+  .duo .carte.pleine h3, .duo .carte.pleine p { color: #fff; }
+  .sujets { background: var(--carte); border-radius: 16px; margin-top: 16px; overflow: hidden; }
+  .sujet + .sujet { border-top: 1px solid var(--ligne); }
+  .sujet summary { list-style: none; display: flex; gap: 14px; align-items: baseline; padding: 16px 22px; cursor: pointer; font-family: var(--titre); font-weight: 700; font-size: 1.08rem; line-height: 1.35; }
+  .sujet summary::-webkit-details-marker { display: none; }
+  .sujet summary .n { flex: 0 0 auto; font-weight: 800; color: var(--c); }
+  .sujet summary .q { flex: 1; }
+  .sujet summary::after { content: '+'; flex: 0 0 auto; font-size: 1.3rem; line-height: 1; color: var(--c); transition: transform 0.2s; }
+  .sujet[open] summary::after { transform: rotate(45deg); }
+  .sujet summary:hover .q { color: var(--c); }
+  .sujet-corps { padding: 0 22px 18px 58px; }
+  .sujet-corps p { font-size: 1.02rem; margin-bottom: 10px; }
+  .sujet-corps .reperes { font-family: var(--titre); font-size: 0.88rem; line-height: 1.5; color: var(--discret); display: flex; flex-direction: column; gap: 4px; }
+  .sujet-corps .reperes b { color: var(--c); font-weight: 700; }
+  .sujet a { color: var(--c); text-decoration: underline; text-underline-offset: 2px; }
+
+  .copie { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 8px; }
+  .copie .carte { margin: 0; }
+  .retenir { flex: 1 1 100%; min-width: 0; }
+  .retenir ol { padding-left: 22px; display: flex; flex-direction: column; gap: 10px; font-size: 1.05rem; color: var(--texte); }
+  .rapprocher { flex: 1 1 100%; min-width: 0; background: var(--c) !important; }
+  .rapprocher .etiquette, .rapprocher p, .rapprocher em { color: #fff; }
+  .rapprocher .etiquette { opacity: 0.85; }
+  .rapprocher strong, .rapprocher a, .duo .carte.pleine strong { color: #fff; }
+
+  /* ─── Fin de page ─── */
+  .fin { border-top: 1px solid var(--ligne); background: var(--carte); padding: 24px 48px; }
+  .fin-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; font-family: var(--titre); font-size: 0.95rem; }
+  .fin a { text-decoration: none; padding: 12px 0; }
+  .fin a:hover { color: var(--c); }
+  .bouton-lu { font: 700 0.95rem var(--titre); color: #fff; background: var(--c); border: 1.5px solid var(--c); border-radius: 999px; padding: 12px 22px; min-height: 44px; cursor: pointer; }
+  .bouton-lu.fait { background: transparent; color: var(--c); }
+
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--encre); color: #fff; border: none; border-radius: 50%; font-size: 1.1rem; cursor: pointer; opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 99; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+  }
+  @media (max-width: 760px) {
+    .breadcrumb { display: none; }
+  }
+  @media (max-width: 640px) {
+    nav { padding: 12px 16px; }
+    .breadcrumb { display: none; }
+    .ch-hero { padding: 36px 16px 72px; }
+    .ch-hero-visuel { flex-basis: 160px; }
+    .essentiel-wrap { padding: 0 16px; }
+    .essentiel { padding: 22px 20px; }
+    .page { padding: 40px 16px 56px; }
+    .fin { padding: 20px 16px; }
+    .sujet summary { padding: 14px 16px; }
+    .sujet-corps { padding: 0 16px 16px; }
+    .hgg-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .hgg-stat-cell { padding: 14px 12px; }
+    .hgg-stat-num { font-size: 1.6rem; }
+  }
+
+  @media print {
+    .sujet-corps { display: block !important; }
+    @page { size: A4; margin: 16mm 14mm; }
+    nav, .back-to-top, .fin, .ch-hero-visuel { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: #fff; font-size: 10pt; }
+    .ch-hero { padding: 1rem 1.2rem; }
+    .ch-hero h1 { font-size: 22pt; }
+    .essentiel { margin: 0.6rem 0; box-shadow: none; border: 1pt solid var(--ligne); }
+    .page { display: block; padding: 0.6rem 0; }
+    .content { gap: 1.2rem; }
+    .carte, .hgg-stat-cell { border: 1pt solid var(--ligne); break-inside: avoid; }
+    .surligne, .duo, .sujet { break-inside: avoid; }
+  }
+</style>
+<link rel="stylesheet" href="../../barre-section.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="A Change Is Gonna Come">
+<meta property="og:image" content="https://ecg-prepa.fr/partage/humanite/humanite-musique-a-change-is-gonna-come.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A Change Is Gonna Come">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ecg-prepa.fr/partage/humanite/humanite-musique-a-change-is-gonna-come.jpg">
+<meta name="description" content="A Change Is Gonna Come (Sam Cooke, 1964) : fiche sur l&#x27;œuvre, son histoire, son analyse et les pistes pour la dissertation sur l&#x27;Humanité.">
+<link rel="canonical" href="https://ecg-prepa.fr/humanite/musique/a-change-is-gonna-come.html">
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="sn sn-hum">
+  <div class="nav-logo sn-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb sn-fil">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">›</span>
+    <a href="../../humanite.html"><span>L'Humanité</span></a>
+    <span class="sep">›</span>
+    <a href="musique.html"><span>Musique</span></a>
+    <span class="sep">›</span>
+    <span class="current">A Change Is Gonna Come</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="ch-hero-inner">
+    <div class="ch-hero-texte">
+      <div class="chap-label"><span>Musique</span><span>L'Humanité</span></div>
+      <h1 style="--t: 0.62">A Change Is Gonna Come</h1>
+      <p class="meta">Sam Cooke · 1964 · Soul</p>
+      <p class="pitch">Refusé dans un motel réservé aux Blancs puis arrêté, le chanteur Sam Cooke écrit en 1964 la chanson de l'espoir des Noirs américains&nbsp;: un jour, le changement viendra.</p>
+    </div>
+    <figure class="ch-hero-visuel" style="aspect-ratio: 1 / 1"><img src="images/a-change-is-gonna-come-visuel.webp" alt="Couverture du livre illustré A Change Is Gonna Come, d'après la chanson de Sam Cooke, illustré par Nikkolas Smith : une fillette sur les épaules d'un homme brandit une pancarte au-dessus d'une foule en marche" loading="eager" onerror="this.closest('.ch-hero-visuel').remove()"></figure>
+  </div>
+</div>
+
+<!-- L'ESSENTIEL -->
+<div class="essentiel-wrap">
+  <section class="essentiel" aria-label="L'essentiel">
+    <div class="essentiel-these">
+      <div class="etiquette">L'essentiel en une phrase</div>
+      <p>Humilié et exclu parce qu'il est noir, un homme refuse le désespoir&nbsp;: A Change Is Gonna Come fait de la patience et de l'espérance une forme de résistance, et rappelle que l'égalité est une promesse encore à tenir.</p>
+    </div>
+    <ul class="notions" aria-label="Notions du thème">
+      <li>Égalité</li>
+      <li>Ségrégation</li>
+      <li>Espérance</li>
+    </ul>
+  </section>
+</div>
+
+<div class="page">
+
+<div class="content">
+
+<section class="hgg-part" id="intro">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">1.</span><span class="hgg-part-title">Présentation de l'œuvre</span></h2>
+
+    <p><strong>A Change Is Gonna Come</strong> («&nbsp;Un changement va venir&nbsp;») est une chanson de <strong>Sam Cooke</strong> (1931-1964), l'une des grandes voix de la <strong>soul</strong> américaine. Enregistrée en janvier 1964, elle paraît sur l'album <em>Ain't That Good News</em>, puis en single en <strong>décembre 1964</strong>, quelques jours après la mort brutale du chanteur. Elle raconte la vie d'un homme noir, humilié et rejeté, qui garde l'espoir d'un monde plus juste.</p>
+  <div class="hgg-stats">
+<div class="hgg-stat-cell"><span class="hgg-stat-num">1963</span><div class="hgg-stat-label">Cooke refusé dans un motel pour Blancs en Louisiane, puis arrêté</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">33 ans</span><div class="hgg-stat-label">Âge de Sam Cooke, tué en décembre 1964 avant la sortie du single</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">2008</span><div class="hgg-stat-label">Barack Obama la cite le soir de son élection</div></div>
+</div>
+    <p>Devenue un hymne du mouvement pour les droits civiques, elle pose une question centrale pour le thème de l'Humanité&nbsp;: comment garder sa dignité et son espoir quand la société vous refuse l'égalité&nbsp;?</p>
+</section>
+
+<section class="hgg-part" id="p1">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">2.</span><span class="hgg-part-title">Genèse et description</span></h2>
+
+  <div class="hgg-section" id="s1-1">
+    <h3 class="hgg-section-title"><span class="num">2.1</span>Une humiliation en Louisiane</h3>
+
+    <p>En octobre 1963, Sam Cooke est déjà une star. En tournée dans le Sud, lui et ses musiciens se présentent à un motel de <strong>Shreveport</strong>, en Louisiane&nbsp;: on leur refuse les chambres, réservées aux Blancs. Cooke proteste&nbsp;; il est arrêté pour trouble à l'ordre public. Même célèbre et riche, un Noir reste, dans le Sud de la <strong>ségrégation</strong>, un citoyen de seconde zone.</p>
+    <p>Cooke a aussi été frappé par «&nbsp;Blowin' in the Wind&nbsp;» de Bob Dylan&nbsp;: il trouve qu'un Blanc a écrit la chanson qu'un Noir aurait dû écrire. Le discours de Martin Luther King, en août 1963, l'inspire aussi.</p>
+    <div class="surligne">La célébrité ne protège pas du racisme&nbsp;: la chanson naît d'une <strong>humiliation</strong> qui touche tous les Noirs, quels que soient leur talent ou leur fortune.</div>
+  </div>
+
+  <div class="hgg-section" id="s1-2">
+    <h3 class="hgg-section-title"><span class="num">2.2</span>Une chanson posthume</h3>
+
+    <p>Cooke enregistre la chanson en janvier 1964, avec un arrangement de cordes ample, presque une musique de film, signé René Hall. Il ne la chante en public qu'une seule fois, à la télévision, en février 1964. Le 11 décembre 1964, il est tué par balle dans un motel de Los Angeles, dans des circonstances qui restent troubles. Il a 33 ans.</p>
+    <p>Le single sort quelques jours plus tard. Il n'est qu'un succès modeste, mais la chanson devient peu à peu l'un des hymnes du <strong>mouvement pour les droits civiques</strong>.</p>
+    <div class="carte">
+      <div class="etiquette">Un hymne reconnu</div>
+      <p>La Bibliothèque du Congrès l'a inscrite en 2007 au registre national des enregistrements. Le magazine <em>Rolling Stone</em> l'a classée troisième plus grande chanson de tous les temps en 2021.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s1-3">
+    <h3 class="hgg-section-title"><span class="num">2.3</span>Écouter A Change Is Gonna Come</h3>
+
+    <p>La chanson raconte une vie, du berceau à l'espoir, sur un rythme lent et une voix qui monte peu à peu.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>La naissance</h3>
+        <p>Le narrateur est né près d'une rivière, sous une petite tente, et depuis, il n'a jamais cessé de courir, comme cette rivière. Une vie pauvre, sans repos.</p>
+      </div>
+      <div class="carte">
+        <h3>La peur de mourir</h3>
+        <p>Vivre a été trop dur, mais il a peur de mourir, car il ne sait pas ce qu'il y a au-delà du ciel. La chanson parle d'abord d'angoisse.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le rejet</h3>
+        <p>Il va au cinéma, en ville, et on lui dit de ne pas traîner là. Il demande de l'aide à son frère, qui le renvoie à genoux. La ségrégation racontée en deux scènes.</p>
+      </div>
+      <div class="carte">
+        <h3>L'espoir</h3>
+        <p>«&nbsp;It's been a long time coming&nbsp;»&nbsp;: ça a pris longtemps, mais le changement va venir. Le refrain ne promet pas de date&nbsp;: il affirme une certitude.</p>
+      </div>
+    </div>
+    <div class="surligne">La chanson ne crie pas sa colère&nbsp;: elle avance de la douleur à l'<strong>espérance</strong>, comme une prière qui sait qu'elle sera entendue.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p2">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">3.</span><span class="hgg-part-title">L'égalité attendue</span></h2>
+
+  <div class="hgg-section" id="s2-1">
+    <h3 class="hgg-section-title"><span class="num">3.1</span>Une humanité de seconde zone</h3>
+
+    <p>Dans le Sud des États-Unis, jusqu'aux années 1960, les lois de <strong>ségrégation</strong> séparent les Noirs des Blancs dans les écoles, les transports, les hôtels, les cinémas. Elles disent qu'il existe deux catégories d'hommes. La chanson montre ce que cela fait, vu de l'intérieur&nbsp;: être chassé d'un lieu, ne pas être aidé, devoir se tenir à genoux. C'est une humanité <strong>refusée</strong> au quotidien.</p>
+    <div class="carte">
+      <div class="etiquette">Le droit et la vie</div>
+      <p>En juillet 1964, le Civil Rights Act interdit la ségrégation dans les lieux publics. Mais la loi ne change pas tout de suite les <strong>regards</strong> ni les vies&nbsp;: c'est pourquoi le changement reste à venir.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-2">
+    <h3 class="hgg-section-title"><span class="num">3.2</span>L'espérance comme résistance</h3>
+
+    <p>Face à l'humiliation, Cooke ne choisit ni la haine ni la résignation, mais l'<strong>espérance</strong>. Croire que le changement viendra, c'est refuser que l'injustice soit définitive, et garder sa dignité en attendant. Cette espérance, nourrie des chants religieux noirs, a porté le mouvement non violent de Martin Luther King.</p>
+    <div class="surligne">Espérer n'est pas attendre passivement&nbsp;: c'est tenir debout dans un monde qui veut vous mettre <strong>à genoux</strong>.</div>
+  </div>
+
+  <div class="hgg-section" id="s2-3">
+    <h3 class="hgg-section-title"><span class="num">3.3</span>Un changement venu, et encore à venir</h3>
+
+    <p>Le 4 novembre 2008, le soir de son élection, Barack Obama, premier président noir des États-Unis, reprend les mots de la chanson&nbsp;: cela a pris longtemps, mais ce soir, le changement est venu en Amérique. Quarante-quatre ans après la mort de Cooke, sa promesse semble tenue. Mais les inégalités et les violences raciales montrent que le changement reste à poursuivre.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le document</h3>
+        <p>Une chanson de 1964, née d'une arrestation en Louisiane&nbsp;: <strong>la chanson témoigne</strong> de la ségrégation et du combat pour les droits civiques.</p>
+      </div>
+      <div class="carte pleine">
+        <h3>Le symbole</h3>
+        <p>Un homme rejeté qui croit au changement&nbsp;: <strong>la chanson universalise</strong>. Elle dit l'espoir de tous ceux à qui l'on refuse l'égalité.</p>
+      </div>
+    </div>
+    <div class="surligne">La chanson de Cooke rappelle que l'égalité ne se reçoit pas une fois pour toutes&nbsp;: elle se <strong>conquiert</strong>, génération après génération.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p3">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">4.</span><span class="hgg-part-title">Pistes pour la dissertation</span></h2>
+
+  <div class="hgg-section" id="s3-1">
+    <h3 class="hgg-section-title">A Change Is Gonna Come face à cinq sujets sur l'Humanité</h3>
+    <p>Cliquez sur un sujet pour l'argument à développer, le passage à citer et sa place dans le plan.</p>
+
+    <div class="sujets">
+      <details class="sujet">
+        <summary><span class="n">01</span><span class="q">Tous les hommes sont-ils égaux&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>En octobre 1963, Sam Cooke, star de la soul, est refusé dans un motel pour Blancs de Shreveport, puis arrêté. Les lois de ségrégation affirment qu'il existe deux catégories d'hommes. La chanson montre ce que vit celui qu'on chasse et qu'on met à genoux. L'égalité proclamée en droit ne suffit pas&nbsp;: elle doit être vécue, et elle reste à conquérir.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> Le narrateur chassé de la ville et renvoyé à genoux.</span><span><b>Dans le plan&nbsp;:</b> En première partie&nbsp;: l'humanité refusée par la ségrégation.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">02</span><span class="q">L'espérance est-elle une force&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Face à l'humiliation, Cooke ne chante ni la haine ni la résignation, mais la certitude qu'un changement viendra. L'espérance refuse que l'injustice soit définitive et permet de garder sa dignité en attendant. Elle a porté le mouvement non violent pour les droits civiques, dont la chanson est devenue un hymne.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> «&nbsp;It's been a long time coming&nbsp;».</span><span><b>Dans le plan&nbsp;:</b> Sur l'espoir&nbsp;: une forme de résistance.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">03</span><span class="q">Le progrès de l'humanité est-il assuré&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Le Civil Rights Act de 1964 interdit la ségrégation&nbsp;; en 2008, Obama, premier président noir, cite la chanson le soir de son élection. Le changement semble venu. Mais les inégalités et les violences raciales persistent&nbsp;: le progrès n'est jamais acquis, il avance par à-coups et doit sans cesse être défendu.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> Le discours d'Obama du 4 novembre 2008.</span><span><b>Dans le plan&nbsp;:</b> En partie critique&nbsp;: un progrès fragile.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">04</span><span class="q">L'humiliation peut-elle nourrir l'art&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>La chanson naît d'une arrestation humiliante en Louisiane. Cooke transforme cette blessure en une œuvre ample et digne, qui dépasse son cas personnel pour parler de tous les Noirs américains. L'art ne répare pas l'humiliation, mais il lui donne une forme qui la rend partageable, et en fait une force.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> L'arrestation de Shreveport, en octobre 1963.</span><span><b>Dans le plan&nbsp;:</b> Sur l'art&nbsp;: transformer la blessure en œuvre.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">05</span><span class="q">Faut-il craindre la mort&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Le narrateur dit que vivre a été trop dur, mais qu'il a peur de mourir, car il ne sait pas ce qu'il y a au-delà. Sam Cooke meurt quelques mois après l'enregistrement, à 33 ans. La chanson montre que la peur de la mort et le désir de voir le changement sont liés&nbsp;: on craint de mourir avant que justice soit faite.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> La peur de mourir, faute de savoir ce qu'il y a au-delà du ciel.</span><span><b>Dans le plan&nbsp;:</b> En partie de dépassement&nbsp;: la mort et l'attente de justice.</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s3-2">
+    <div class="copie">
+      <div class="carte retenir">
+        <div class="etiquette">Idées à retenir</div>
+        <ol>
+          <li>Née d'une <strong>humiliation</strong>&nbsp;: Cooke refusé dans un motel pour Blancs et arrêté en 1963.</li>
+          <li>Sortie en single en <strong>décembre 1964</strong>, après la mort du chanteur, à 33 ans.</li>
+          <li>Elle fait de l'<strong>espérance</strong> une forme de résistance à la ségrégation.</li>
+          <li>Citée par <strong>Obama</strong> en 2008&nbsp;: un changement venu, mais toujours à poursuivre.</li>
+        </ol>
+      </div>
+      <div class="carte rapprocher">
+        <div class="etiquette">À rapprocher</div>
+        <p><strong>James Baldwin, <em>La prochaine fois, le feu</em> (1963)</strong>&nbsp;: dans cet essai paru l'année même où Cooke est arrêté, l'écrivain noir américain raconte l'humiliation de grandir noir aux États-Unis et appelle Blancs et Noirs à en finir avec le racisme. Comme la chanson, il part de l'expérience vécue de la ségrégation et croit encore possible un changement. Mais le titre de Baldwin, tiré d'un chant d'esclaves, est un avertissement&nbsp;: si l'Amérique ne change pas, viendra le feu. Là où Cooke chante la patience, Baldwin annonce la colère.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /content -->
+</div><!-- /page -->
+<footer class="fin">
+  <div class="fin-inner">
+    <a href="musique.html">← Toutes les fiches de musique</a>
+    <button type="button" class="bouton-lu" id="boutonLu">J'ai lu cette fiche</button>
+  </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
+
+<script>
+  // « J'ai lu cette fiche », gardé dans le navigateur
+  const CLE = 'ecg-humanite-fiches-lues';
+  const ID = 'musique/a-change-is-gonna-come';
+  const lu = document.getElementById('boutonLu');
+  function lire() { try { return JSON.parse(localStorage.getItem(CLE)) || []; } catch (e) { return []; } }
+  function majLu() {
+    const fait = lire().includes(ID);
+    lu.classList.toggle('fait', fait);
+    lu.textContent = fait ? '✓ Fiche lue' : "J'ai lu cette fiche";
+  }
+  lu.addEventListener('click', () => {
+    let l = lire();
+    l = l.includes(ID) ? l.filter(x => x !== ID) : l.concat(ID);
+    try { localStorage.setItem(CLE, JSON.stringify(l)); } catch (e) {}
+    majLu();
+  });
+  majLu();
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>

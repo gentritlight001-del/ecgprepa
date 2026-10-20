@@ -4,6 +4,106 @@ window.ECG_NOUVEAUTES = [
 "t": "humanite",
 "rubrique": "Humanité",
 "meta": "Musique",
+"titre": "Alright",
+"url": "humanite/musique/alright.html",
+"image": "humanite/musique/images/alright-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T16:02:27+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "A Change Is Gonna Come",
+"url": "humanite/musique/a-change-is-gonna-come.html",
+"image": "humanite/musique/images/a-change-is-gonna-come-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T15:57:58+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "Die Roboter",
+"url": "humanite/musique/die-roboter.html",
+"image": "humanite/musique/images/die-roboter-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T15:55:04+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "Le Voyage d'hiver",
+"url": "humanite/musique/le-voyage-d-hiver.html",
+"image": "humanite/musique/images/le-voyage-d-hiver-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T15:51:28+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "We Are the World",
+"url": "humanite/musique/we-are-the-world.html",
+"image": "humanite/musique/images/we-are-the-world-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T15:47:38+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "Nuit et brouillard",
+"url": "humanite/musique/nuit-et-brouillard.html",
+"image": "humanite/musique/images/nuit-et-brouillard-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T15:44:47+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "4′33″",
+"url": "humanite/musique/4-33.html",
+"image": "humanite/musique/images/4-33-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T15:41:08+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "Redemption Song",
+"url": "humanite/musique/redemption-song.html",
+"image": "humanite/musique/images/redemption-song-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T15:38:07+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "Symphonie n° 7 « Leningrad »",
+"url": "humanite/musique/symphonie-n-7.html",
+"image": "humanite/musique/images/symphonie-n-7-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T15:34:56+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "Le Déserteur",
+"url": "humanite/musique/le-deserteur.html",
+"image": "humanite/musique/images/le-deserteur-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T15:31:03+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
 "titre": "Le Chant des partisans",
 "url": "humanite/musique/le-chant-des-partisans.html",
 "image": "humanite/musique/images/le-chant-des-partisans-visuel.webp",
@@ -299,46 +399,6 @@ window.ECG_NOUVEAUTES = [
 "image": "humanite/art/images/girl-with-balloon-oeuvre.webp",
 "portrait": false,
 "date": "2026-10-20T08:17:58+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Art",
-"titre": "Le Penseur",
-"url": "humanite/art/le-penseur.html",
-"image": "humanite/art/images/le-penseur-oeuvre.webp",
-"portrait": false,
-"date": "2026-10-20T07:58:58+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Art",
-"titre": "Le Cri",
-"url": "humanite/art/le-cri.html",
-"image": "humanite/art/images/le-cri-oeuvre.webp",
-"portrait": false,
-"date": "2026-10-20T07:50:19+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Art",
-"titre": "Les Désastres de la guerre",
-"url": "humanite/art/desastres-de-la-guerre.html",
-"image": "humanite/art/images/desastres-de-la-guerre-oeuvre.webp",
-"portrait": false,
-"date": "2026-10-20T07:29:32+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Art",
-"titre": "Le Radeau de la Méduse",
-"url": "humanite/art/radeau-de-la-meduse.html",
-"image": "humanite/art/images/radeau-de-la-meduse-oeuvre.webp",
-"portrait": false,
-"date": "2026-10-20T07:12:22+00:00"
 },
 {
 "t": "en",
@@ -638,16 +698,6 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-10-13T18:28:46+00:00"
 },
 {
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Art",
-"titre": "Guernica",
-"url": "humanite/art/guernica.html",
-"image": "humanite/art/images/guernica-oeuvre.webp",
-"portrait": false,
-"date": "2026-10-12T18:03:02+00:00"
-},
-{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Arabie saoudite",
@@ -808,15 +858,6 @@ window.ECG_NOUVEAUTES = [
 "url": "Culture-Generale/revolution-industrielle.html",
 "image": "Culture-Generale/images/revolution-industrielle.webp",
 "date": "2026-10-10T15:41:06+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cours 1",
-"titre": "Qu'est-ce que l'humanité ?",
-"url": "humanite/cours-humanite/Cours/cours1.html",
-"image": "humanite/cours-humanite/Cours/images/ecole-d-athenes.webp",
-"date": "2026-10-09T19:29:57+00:00"
 },
 {
 "t": "es",
@@ -2184,46 +2225,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "L'Accord de Paris : dix ans de diplomatie du climat",
 "url": "Culture-Generale/accords-de-paris.html",
 "image": "Culture-Generale/images/accords-de-paris.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "Bienvenue à Gattaca",
-"url": "humanite/cinema/bienvenue-a-gattaca.html",
-"image": "humanite/cinema/images/bienvenue-a-gattaca-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "Blade Runner",
-"url": "humanite/cinema/blade-runner.html",
-"image": "humanite/cinema/images/blade-runner-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "Docteur Folamour",
-"url": "humanite/cinema/docteur-folamour.html",
-"image": "humanite/cinema/images/docteur-folamour-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "Edward aux mains d'argent",
-"url": "humanite/cinema/edward-aux-mains-dargent.html",
-"image": "humanite/cinema/images/edward-aux-mains-dargent-affiche.webp",
-"portrait": true,
 "date": "2026-09-11T19:03:33+00:00"
 },
 {

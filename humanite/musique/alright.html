@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Musique — Alright</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<style>
+  :root {
+    --c: #a3195b;          /* couleur de la fiche */
+    --c-soft: #f9e4ee;
+    --fond: #f5f4f0;
+    --carte: #ffffff;
+    --encre: #18181b;
+    --texte: #3f3f46;
+    --discret: #52525b;
+    --ligne: #e4e2dc;
+    --titre: 'Bricolage Grotesque', system-ui, sans-serif;
+    --corps: 'Newsreader', Georgia, serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--fond); color: var(--encre); font-family: var(--corps); font-size: 1.125rem; line-height: 1.65; min-height: 100vh; }
+  strong { font-weight: 600; color: var(--encre); }
+  a { color: inherit; }
+
+  /* ─── Barre du haut ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 14px 48px; background: var(--carte); border-bottom: 1px solid var(--ligne);
+    position: sticky; top: 0; z-index: 100; font-family: var(--titre);
+  }
+  .nav-logo { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em; }
+  .nav-logo a { color: var(--encre); text-decoration: none; }
+  .breadcrumb { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: calc(100% - 420px); display: flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; overflow: hidden; font-size: 0.85rem; color: var(--discret); }
+  .breadcrumb .current { overflow: hidden; text-overflow: ellipsis; }
+  .breadcrumb a { text-decoration: none; }
+  .breadcrumb a:hover { color: var(--c); }
+  .breadcrumb .sep { color: #a1a1aa; }
+  .breadcrumb .current { color: var(--encre); }
+
+  /* ─── Bandeau ─── */
+  .ch-hero { position: relative; background: var(--c); color: #fff; padding: 56px 48px 84px; overflow: hidden; }
+  .ch-hero-fond { display: none; }
+  .ch-hero-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 40px 56px; }
+  .ch-hero-texte { flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+  .chap-label { display: flex; flex-wrap: wrap; gap: 8px; font-family: var(--titre); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .chap-label span { background: rgba(255,255,255,0.18); padding: 6px 12px; border-radius: 999px; }
+  .ch-hero h1 { font-family: var(--titre); font-weight: 800; font-size: calc(var(--t, 1) * clamp(3rem, 8vw, 6rem)); line-height: 0.95; letter-spacing: -0.02em; }
+  .ch-hero .meta { font-family: var(--titre); font-size: 1.2rem; font-weight: 500; opacity: 0.92; }
+  .ch-hero .pitch { max-width: 620px; font-size: 1.3rem; line-height: 1.5; }
+  .ch-hero-visuel { flex: 0 0 240px; max-width: 100%; aspect-ratio: 2 / 3; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+  .ch-hero-visuel.paysage { flex: 1 1 420px; aspect-ratio: auto; }
+  .ch-hero-visuel.paysage img { height: auto; }
+  .ch-hero-visuel img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  /* ─── L'essentiel ─── */
+  .essentiel {
+    position: relative; max-width: 1040px; margin: -44px auto 0; background: var(--carte); border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(24,24,27,0.10); padding: 28px 32px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 20px 40px;
+  }
+  .essentiel-wrap { padding: 0 48px; }
+  .essentiel-these { flex: 999 1 420px; min-width: 0; }
+  .etiquette { font-family: var(--titre); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c); }
+  .essentiel-these p { margin-top: 6px; font-size: 1.35rem; line-height: 1.4; font-weight: 600; }
+  .notions { flex: 1 1 300px; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+  .notions li { font-family: var(--titre); font-size: 0.92rem; font-weight: 500; padding: 8px 14px; border-radius: 999px; background: var(--c-soft); color: var(--c); }
+
+  /* ─── Corps ─── */
+  .page { max-width: 820px; margin: 0 auto; padding: 64px 48px 72px; }
+
+  .content { display: flex; flex-direction: column; gap: 64px; }
+  .hgg-part { scroll-margin-top: 90px; }
+  .hgg-part-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 20px; }
+  .hgg-part-num { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; color: var(--c); }
+  .hgg-part-title { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; letter-spacing: -0.01em; }
+  .hgg-section { margin-top: 32px; scroll-margin-top: 90px; }
+  .hgg-section-title { font-family: var(--titre); font-weight: 700; font-size: 1.35rem; line-height: 1.25; margin-bottom: 12px; }
+  .hgg-section-title .num { color: var(--c); margin-right: 6px; }
+  .content p { color: var(--texte); margin-bottom: 16px; }
+  .content p:last-child { margin-bottom: 0; }
+
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 8px 0 24px; }
+  .hgg-stat-cell { background: var(--carte); border-radius: 12px; padding: 18px 20px; }
+  .hgg-stat-num { display: block; font-family: var(--titre); font-weight: 800; font-size: 2.2rem; line-height: 1; color: var(--c); }
+  .hgg-stat-label { margin-top: 6px; font-family: var(--titre); font-size: 0.88rem; color: var(--discret); }
+
+  .carte { background: var(--carte); border-radius: 14px; padding: 22px 26px; margin: 20px 0; }
+  .carte h3 { font-family: var(--titre); font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+  .carte p { font-size: 1.05rem; }
+  .carte .etiquette { margin-bottom: 8px; }
+  .surligne { background: var(--c-soft); border-radius: 14px; padding: 20px 24px; margin: 20px 0; color: #2a1d12; font-size: 1.08rem; }
+  .duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 20px 0; }
+  .duo .carte { margin: 0; }
+  .duo .carte.pleine { background: var(--c); }
+  .duo .carte.pleine h3, .duo .carte.pleine p { color: #fff; }
+  .sujets { background: var(--carte); border-radius: 16px; margin-top: 16px; overflow: hidden; }
+  .sujet + .sujet { border-top: 1px solid var(--ligne); }
+  .sujet summary { list-style: none; display: flex; gap: 14px; align-items: baseline; padding: 16px 22px; cursor: pointer; font-family: var(--titre); font-weight: 700; font-size: 1.08rem; line-height: 1.35; }
+  .sujet summary::-webkit-details-marker { display: none; }
+  .sujet summary .n { flex: 0 0 auto; font-weight: 800; color: var(--c); }
+  .sujet summary .q { flex: 1; }
+  .sujet summary::after { content: '+'; flex: 0 0 auto; font-size: 1.3rem; line-height: 1; color: var(--c); transition: transform 0.2s; }
+  .sujet[open] summary::after { transform: rotate(45deg); }
+  .sujet summary:hover .q { color: var(--c); }
+  .sujet-corps { padding: 0 22px 18px 58px; }
+  .sujet-corps p { font-size: 1.02rem; margin-bottom: 10px; }
+  .sujet-corps .reperes { font-family: var(--titre); font-size: 0.88rem; line-height: 1.5; color: var(--discret); display: flex; flex-direction: column; gap: 4px; }
+  .sujet-corps .reperes b { color: var(--c); font-weight: 700; }
+  .sujet a { color: var(--c); text-decoration: underline; text-underline-offset: 2px; }
+
+  .copie { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 8px; }
+  .copie .carte { margin: 0; }
+  .retenir { flex: 1 1 100%; min-width: 0; }
+  .retenir ol { padding-left: 22px; display: flex; flex-direction: column; gap: 10px; font-size: 1.05rem; color: var(--texte); }
+  .rapprocher { flex: 1 1 100%; min-width: 0; background: var(--c) !important; }
+  .rapprocher .etiquette, .rapprocher p, .rapprocher em { color: #fff; }
+  .rapprocher .etiquette { opacity: 0.85; }
+  .rapprocher strong, .rapprocher a, .duo .carte.pleine strong { color: #fff; }
+
+  /* ─── Fin de page ─── */
+  .fin { border-top: 1px solid var(--ligne); background: var(--carte); padding: 24px 48px; }
+  .fin-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; font-family: var(--titre); font-size: 0.95rem; }
+  .fin a { text-decoration: none; padding: 12px 0; }
+  .fin a:hover { color: var(--c); }
+  .bouton-lu { font: 700 0.95rem var(--titre); color: #fff; background: var(--c); border: 1.5px solid var(--c); border-radius: 999px; padding: 12px 22px; min-height: 44px; cursor: pointer; }
+  .bouton-lu.fait { background: transparent; color: var(--c); }
+
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--encre); color: #fff; border: none; border-radius: 50%; font-size: 1.1rem; cursor: pointer; opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 99; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+  }
+  @media (max-width: 760px) {
+    .breadcrumb { display: none; }
+  }
+  @media (max-width: 640px) {
+    nav { padding: 12px 16px; }
+    .breadcrumb { display: none; }
+    .ch-hero { padding: 36px 16px 72px; }
+    .ch-hero-visuel { flex-basis: 160px; }
+    .essentiel-wrap { padding: 0 16px; }
+    .essentiel { padding: 22px 20px; }
+    .page { padding: 40px 16px 56px; }
+    .fin { padding: 20px 16px; }
+    .sujet summary { padding: 14px 16px; }
+    .sujet-corps { padding: 0 16px 16px; }
+    .hgg-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .hgg-stat-cell { padding: 14px 12px; }
+    .hgg-stat-num { font-size: 1.6rem; }
+  }
+
+  @media print {
+    .sujet-corps { display: block !important; }
+    @page { size: A4; margin: 16mm 14mm; }
+    nav, .back-to-top, .fin, .ch-hero-visuel { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: #fff; font-size: 10pt; }
+    .ch-hero { padding: 1rem 1.2rem; }
+    .ch-hero h1 { font-size: 22pt; }
+    .essentiel { margin: 0.6rem 0; box-shadow: none; border: 1pt solid var(--ligne); }
+    .page { display: block; padding: 0.6rem 0; }
+    .content { gap: 1.2rem; }
+    .carte, .hgg-stat-cell { border: 1pt solid var(--ligne); break-inside: avoid; }
+    .surligne, .duo, .sujet { break-inside: avoid; }
+  }
+</style>
+<link rel="stylesheet" href="../../barre-section.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Alright">
+<meta property="og:image" content="https://ecg-prepa.fr/partage/humanite/humanite-musique-alright.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Alright">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ecg-prepa.fr/partage/humanite/humanite-musique-alright.jpg">
+<meta name="description" content="Alright (Kendrick Lamar, 2015) : fiche sur l&#x27;œuvre, son histoire, son analyse et les pistes pour la dissertation sur l&#x27;Humanité.">
+<link rel="canonical" href="https://ecg-prepa.fr/humanite/musique/alright.html">
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="sn sn-hum">
+  <div class="nav-logo sn-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb sn-fil">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">›</span>
+    <a href="../../humanite.html"><span>L'Humanité</span></a>
+    <span class="sep">›</span>
+    <a href="musique.html"><span>Musique</span></a>
+    <span class="sep">›</span>
+    <span class="current">Alright</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="ch-hero-inner">
+    <div class="ch-hero-texte">
+      <div class="chap-label"><span>Musique</span><span>L'Humanité</span></div>
+      <h1>Alright</h1>
+      <p class="meta">Kendrick Lamar · 2015 · Rap</p>
+      <p class="pitch">En 2015, après la mort de jeunes Noirs tués par la police, un refrain de rap devient le cri des manifestants de Black Lives Matter&nbsp;: malgré tout, «&nbsp;on va s'en sortir&nbsp;».</p>
+    </div>
+    <figure class="ch-hero-visuel" style="aspect-ratio: 1 / 1"><img src="images/alright-visuel.webp" alt="Pochette du single Alright de Kendrick Lamar : photo en noir et blanc d'une baie sous un ciel d'orage, avec un pont et une ville au loin" loading="eager" onerror="this.closest('.ch-hero-visuel').remove()"></figure>
+  </div>
+</div>
+
+<!-- L'ESSENTIEL -->
+<div class="essentiel-wrap">
+  <section class="essentiel" aria-label="L'essentiel">
+    <div class="essentiel-these">
+      <div class="etiquette">L'essentiel en une phrase</div>
+      <p>Cinquante ans après les droits civiques, de jeunes Noirs meurent encore sous les balles de la police&nbsp;: Alright ne nie ni la peur ni la colère, mais affirme qu'une communauté blessée peut tenir debout, ensemble.</p>
+    </div>
+    <ul class="notions" aria-label="Notions du thème">
+      <li>Violence et racisme</li>
+      <li>Résilience</li>
+      <li>Espoir collectif</li>
+    </ul>
+  </section>
+</div>
+
+<div class="page">
+
+<div class="content">
+
+<section class="hgg-part" id="intro">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">1.</span><span class="hgg-part-title">Présentation de l'œuvre</span></h2>
+
+    <p><strong>Alright</strong> est un morceau du rappeur américain <strong>Kendrick Lamar</strong>, né en 1987 à Compton, en Californie. Il figure sur l'album <em>To Pimp a Butterfly</em>, sorti en mars <strong>2015</strong>, et paraît en single en juin. Produit par Pharrell Williams et Sounwave, il oppose aux tentations, aux dangers et aux violences de la rue un refrain obstiné&nbsp;: «&nbsp;We gon' be alright&nbsp;», on va s'en sortir.</p>
+  <div class="hgg-stats">
+<div class="hgg-stat-cell"><span class="hgg-stat-num">2015</span><div class="hgg-stat-label">Sortie, en pleine vague de manifestations contre les violences policières</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">2</span><div class="hgg-stat-label">Grammy Awards en 2016, meilleure chanson et meilleure performance rap</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">2018</span><div class="hgg-stat-label">Prix Pulitzer de musique pour Lamar, une première pour un rappeur</div></div>
+</div>
+    <p>Repris en chœur dans les manifestations, le morceau est devenu l'hymne du mouvement <strong>Black Lives Matter</strong>. Il pose une question centrale pour le thème de l'Humanité&nbsp;: comment une communauté exposée à la violence peut-elle garder espoir, et affirmer que ses vies comptent&nbsp;?</p>
+</section>
+
+<section class="hgg-part" id="p1">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">2.</span><span class="hgg-part-title">Genèse et description</span></h2>
+
+  <div class="hgg-section" id="s1-1">
+    <h3 class="hgg-section-title"><span class="num">2.1</span>L'Amérique de Black Lives Matter</h3>
+
+    <p>En 2013, l'acquittement de l'homme qui a tué Trayvon Martin, un adolescent noir non armé, fait naître le mouvement <strong>Black Lives Matter</strong>, «&nbsp;les vies noires comptent&nbsp;». En 2014, la mort de Michael Brown, tué par un policier à Ferguson, puis celle d'Eric Garner, étouffé lors d'une interpellation à New York, déclenchent de grandes manifestations.</p>
+    <p>C'est dans ce contexte que Lamar écrit <em>To Pimp a Butterfly</em>, un album qui mêle rap, jazz et funk et parle de racisme, de célébrité et de culpabilité. Il dit avoir été inspiré aussi par un voyage en <strong>Afrique du Sud</strong>, où il a vu les traces de l'apartheid.</p>
+    <div class="surligne">Cinquante ans après les droits civiques, la question n'est plus seulement l'égalité des droits, mais le droit de <strong>rester en vie</strong>.</div>
+  </div>
+
+  <div class="hgg-section" id="s1-2">
+    <h3 class="hgg-section-title"><span class="num">2.2</span>Un hymne né dans la rue</h3>
+
+    <p>Le morceau n'était pas pensé comme un slogan. Mais dès l'été 2015, des manifestants, souvent jeunes, se mettent à chanter son refrain face à la police. Les médias le décrivent bientôt comme la bande sonore du mouvement. Le clip, en noir et blanc, réalisé par Colin Tilley, montre Lamar flottant au-dessus des rues, et a été récompensé aux MTV Video Music Awards.</p>
+    <div class="carte">
+      <div class="etiquette">Une polémique</div>
+      <p>Aux BET Awards de 2015, Lamar interprète le morceau debout sur une voiture de police. Le journaliste Geraldo Rivera, sur Fox News, critique la performance et accuse le hip-hop de faire du tort aux jeunes Noirs. Le débat montre que la chanson <strong>dérange</strong>.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s1-3">
+    <h3 class="hgg-section-title"><span class="num">2.3</span>Écouter Alright</h3>
+
+    <p>Le morceau mêle un rythme nerveux, des cuivres de jazz et la voix de Pharrell au refrain. Il avance entre menace et espoir.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Les épreuves</h3>
+        <p>Les couplets énumèrent ce que traverse un jeune Noir américain&nbsp;: la pauvreté, la tentation de l'argent facile, la dépression, et la peur de la police.</p>
+      </div>
+      <div class="carte">
+        <h3>La tentation</h3>
+        <p>Lamar parle de «&nbsp;Lucy&nbsp;», personnage qui revient dans tout l'album&nbsp;: c'est Lucifer, le diable, qui tente le rappeur avec l'argent et la gloire.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>La violence</h3>
+        <p>Les paroles disent sans détour la colère contre une police perçue comme prête à tuer dans la rue. Le morceau ne cache pas la haine que produit la peur.</p>
+      </div>
+      <div class="carte">
+        <h3>Le refrain</h3>
+        <p>«&nbsp;We gon' be alright&nbsp;»&nbsp;: une phrase simple, répétée, qu'on peut crier à plusieurs. Elle transforme la peur individuelle en force collective.</p>
+      </div>
+    </div>
+    <div class="surligne">Le refrain ne promet pas que tout ira bien&nbsp;: il affirme, contre l'évidence, qu'on <strong>tiendra</strong>, et c'est ce qui le rend chantable dans la rue.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p2">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">3.</span><span class="hgg-part-title">Des vies qui comptent</span></h2>
+
+  <div class="hgg-section" id="s2-1">
+    <h3 class="hgg-section-title"><span class="num">3.1</span>Des vies jugées moins précieuses</h3>
+
+    <p>Le slogan «&nbsp;Black Lives Matter&nbsp;» dit quelque chose de terrible&nbsp;: s'il faut rappeler que les vies noires comptent, c'est qu'elles semblent compter moins. Alright part de cette expérience&nbsp;: grandir en sachant que sa vie peut être prise à tout moment, par la rue ou par ceux qui devraient protéger. C'est une humanité <strong>exposée</strong>, toujours menacée.</p>
+    <div class="carte">
+      <div class="etiquette">Une mémoire longue</div>
+      <p>De <a href="strange-fruit.html">Strange Fruit</a> (1939) à Alright (2015), la musique noire américaine n'a cessé de dire la <strong>violence</strong> faite aux corps noirs&nbsp;: lynchages hier, violences policières aujourd'hui.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-2">
+    <h3 class="hgg-section-title"><span class="num">3.2</span>La résilience</h3>
+
+    <p>Alright n'est ni un appel à la vengeance ni une promesse naïve. C'est un chant de <strong>résilience</strong>&nbsp;: la capacité de tenir, de ne pas se laisser détruire par l'épreuve. Lamar ne nie pas la colère, la tentation, la dépression&nbsp;; il affirme qu'on peut les traverser, avec la foi, la communauté et la musique.</p>
+    <div class="surligne">La résilience n'efface pas la blessure&nbsp;: elle permet de <strong>vivre avec</strong>, et de rester humain malgré elle.</div>
+  </div>
+
+  <div class="hgg-section" id="s2-3">
+    <h3 class="hgg-section-title"><span class="num">3.3</span>Le rap reconnu comme art</h3>
+
+    <p>En 2018, Kendrick Lamar reçoit le prix <strong>Pulitzer</strong> de musique pour l'album suivant, <em>DAMN.</em>, une première pour un artiste qui n'est ni du classique ni du jazz. Le rap, longtemps méprisé ou accusé de violence, est reconnu comme une forme d'art capable de dire l'expérience humaine. Le magazine Pitchfork a même classé Alright meilleure chanson des années 2010.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le document</h3>
+        <p>Un morceau de 2015, chanté dans les manifestations&nbsp;: <strong>Alright témoigne</strong> de l'Amérique de Black Lives Matter et des violences policières.</p>
+      </div>
+      <div class="carte pleine">
+        <h3>Le symbole</h3>
+        <p>Une foule qui chante qu'elle tiendra&nbsp;: <strong>Alright universalise</strong>. Il dit la force de tous ceux qui refusent d'être détruits.</p>
+      </div>
+    </div>
+    <div class="surligne">Chanté par des milliers de voix, le refrain prouve ce qu'il affirme&nbsp;: une communauté qui chante ensemble est déjà en train de <strong>tenir</strong>.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p3">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">4.</span><span class="hgg-part-title">Pistes pour la dissertation</span></h2>
+
+  <div class="hgg-section" id="s3-1">
+    <h3 class="hgg-section-title">Alright face à cinq sujets sur l'Humanité</h3>
+    <p>Cliquez sur un sujet pour l'argument à développer, le passage à citer et sa place dans le plan.</p>
+
+    <div class="sujets">
+      <details class="sujet">
+        <summary><span class="n">01</span><span class="q">Toutes les vies ont-elles la même valeur&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>En 2014, Michael Brown à Ferguson et Eric Garner à New York meurent lors d'interventions policières&nbsp;; le mouvement Black Lives Matter fait d'Alright son hymne en 2015. S'il faut affirmer que les vies noires comptent, c'est qu'elles semblent compter moins. L'égale dignité des hommes, proclamée en droit, reste à faire respecter dans les faits.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> Le slogan «&nbsp;Black Lives Matter&nbsp;», chanté avec le refrain d'Alright.</span><span><b>Dans le plan&nbsp;:</b> En première partie&nbsp;: l'égale dignité, principe et réalité.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">02</span><span class="q">Qu'est-ce qui permet de résister à l'épreuve&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Alright énumère les épreuves d'un jeune Noir américain, pauvreté, tentation, dépression, peur de la police, et leur oppose un refrain obstiné&nbsp;: on va s'en sortir. La résilience ne nie pas la blessure&nbsp;; elle s'appuie sur la foi, la communauté et l'art pour tenir debout. L'homme n'est pas seulement ce que l'épreuve fait de lui.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> «&nbsp;We gon' be alright&nbsp;».</span><span><b>Dans le plan&nbsp;:</b> Sur la résilience&nbsp;: tenir sans nier la douleur.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">03</span><span class="q">Une chanson peut-elle devenir politique malgré elle&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Alright n'était pas écrit comme un slogan. Mais dès l'été 2015, des manifestants le chantent face à la police, et il devient la bande sonore de Black Lives Matter. Une œuvre échappe à son auteur&nbsp;: ce sont ceux qui la reprennent qui en font un acte politique. L'art engagé n'est pas toujours voulu, il peut naître de l'usage.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> Le refrain repris par les manifestants en 2015.</span><span><b>Dans le plan&nbsp;:</b> En partie critique&nbsp;: l'œuvre appropriée par la foule.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">04</span><span class="q">Le progrès de l'égalité est-il réel&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>En 1964, Sam Cooke chantait qu'un changement viendrait&nbsp;; en 2008, Obama le disait arrivé. Sept ans plus tard, Alright répond aux morts de jeunes Noirs tués par la police. Les droits ont progressé, mais la violence persiste&nbsp;: de Strange Fruit à Alright, la musique noire américaine montre une égalité toujours inachevée.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> La mort de Michael Brown à Ferguson, en août 2014.</span><span><b>Dans le plan&nbsp;:</b> En partie de dépassement&nbsp;: un progrès qui reste à défendre.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">05</span><span class="q">Le rap est-il un art&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Longtemps accusé de violence, comme par Geraldo Rivera sur Fox News en 2015, le rap a été consacré en 2018 quand Kendrick Lamar a reçu le prix Pulitzer de musique, une première hors du classique et du jazz. Alright mêle jazz, poésie et récit&nbsp;: le rap est une forme d'art capable de dire avec force une expérience humaine.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> Le prix Pulitzer de Kendrick Lamar, en 2018.</span><span><b>Dans le plan&nbsp;:</b> Sur l'art&nbsp;: la reconnaissance des formes populaires.</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s3-2">
+    <div class="copie">
+      <div class="carte retenir">
+        <div class="etiquette">Idées à retenir</div>
+        <ol>
+          <li>Morceau de <strong>Kendrick Lamar</strong> sur <em>To Pimp a Butterfly</em> (2015), produit par Pharrell Williams.</li>
+          <li>Devenu l'hymne de <strong>Black Lives Matter</strong>, chanté dans les manifestations contre les violences policières.</li>
+          <li>Un chant de <strong>résilience</strong>&nbsp;: ni vengeance ni naïveté, mais la force de tenir ensemble.</li>
+          <li>Lamar reçoit le <strong>Pulitzer</strong> en 2018&nbsp;: le rap reconnu comme art.</li>
+        </ol>
+      </div>
+      <div class="carte rapprocher">
+        <div class="etiquette">À rapprocher</div>
+        <p><strong>Ta-Nehisi Coates, <em>Une colère noire</em> (2015)</strong>&nbsp;: paru la même année, ce livre est une lettre de l'écrivain à son fils de quinze ans, après les morts de Ferguson. Il y explique ce que signifie grandir avec un corps noir aux États-Unis, toujours exposé à la violence, y compris celle de la police. Comme Alright, il part de la peur et de la colère d'une génération. Mais Coates refuse de consoler&nbsp;: il ne promet pas que tout ira bien, et se méfie de l'espoir&nbsp;; Lamar, lui, fait de cet espoir un cri collectif.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /content -->
+</div><!-- /page -->
+<footer class="fin">
+  <div class="fin-inner">
+    <a href="musique.html">← Toutes les fiches de musique</a>
+    <button type="button" class="bouton-lu" id="boutonLu">J'ai lu cette fiche</button>
+  </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
+
+<script>
+  // « J'ai lu cette fiche », gardé dans le navigateur
+  const CLE = 'ecg-humanite-fiches-lues';
+  const ID = 'musique/alright';
+  const lu = document.getElementById('boutonLu');
+  function lire() { try { return JSON.parse(localStorage.getItem(CLE)) || []; } catch (e) { return []; } }
+  function majLu() {
+    const fait = lire().includes(ID);
+    lu.classList.toggle('fait', fait);
+    lu.textContent = fait ? '✓ Fiche lue' : "J'ai lu cette fiche";
+  }
+  lu.addEventListener('click', () => {
+    let l = lire();
+    l = l.includes(ID) ? l.filter(x => x !== ID) : l.concat(ID);
+    try { localStorage.setItem(CLE, JSON.stringify(l)); } catch (e) {}
+    majLu();
+  });
+  majLu();
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>

@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Musique — Le Voyage d'hiver</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<style>
+  :root {
+    --c: #5a6e8c;          /* couleur de la fiche */
+    --c-soft: #eceff5;
+    --fond: #f5f4f0;
+    --carte: #ffffff;
+    --encre: #18181b;
+    --texte: #3f3f46;
+    --discret: #52525b;
+    --ligne: #e4e2dc;
+    --titre: 'Bricolage Grotesque', system-ui, sans-serif;
+    --corps: 'Newsreader', Georgia, serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--fond); color: var(--encre); font-family: var(--corps); font-size: 1.125rem; line-height: 1.65; min-height: 100vh; }
+  strong { font-weight: 600; color: var(--encre); }
+  a { color: inherit; }
+
+  /* ─── Barre du haut ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 14px 48px; background: var(--carte); border-bottom: 1px solid var(--ligne);
+    position: sticky; top: 0; z-index: 100; font-family: var(--titre);
+  }
+  .nav-logo { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em; }
+  .nav-logo a { color: var(--encre); text-decoration: none; }
+  .breadcrumb { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: calc(100% - 420px); display: flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; overflow: hidden; font-size: 0.85rem; color: var(--discret); }
+  .breadcrumb .current { overflow: hidden; text-overflow: ellipsis; }
+  .breadcrumb a { text-decoration: none; }
+  .breadcrumb a:hover { color: var(--c); }
+  .breadcrumb .sep { color: #a1a1aa; }
+  .breadcrumb .current { color: var(--encre); }
+
+  /* ─── Bandeau ─── */
+  .ch-hero { position: relative; background: var(--c); color: #fff; padding: 56px 48px 84px; overflow: hidden; }
+  .ch-hero-fond { display: none; }
+  .ch-hero-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 40px 56px; }
+  .ch-hero-texte { flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+  .chap-label { display: flex; flex-wrap: wrap; gap: 8px; font-family: var(--titre); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .chap-label span { background: rgba(255,255,255,0.18); padding: 6px 12px; border-radius: 999px; }
+  .ch-hero h1 { font-family: var(--titre); font-weight: 800; font-size: calc(var(--t, 1) * clamp(3rem, 8vw, 6rem)); line-height: 0.95; letter-spacing: -0.02em; }
+  .ch-hero .meta { font-family: var(--titre); font-size: 1.2rem; font-weight: 500; opacity: 0.92; }
+  .ch-hero .pitch { max-width: 620px; font-size: 1.3rem; line-height: 1.5; }
+  .ch-hero-visuel { flex: 0 0 240px; max-width: 100%; aspect-ratio: 2 / 3; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+  .ch-hero-visuel.paysage { flex: 1 1 420px; aspect-ratio: auto; }
+  .ch-hero-visuel.paysage img { height: auto; }
+  .ch-hero-visuel img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  /* ─── L'essentiel ─── */
+  .essentiel {
+    position: relative; max-width: 1040px; margin: -44px auto 0; background: var(--carte); border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(24,24,27,0.10); padding: 28px 32px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 20px 40px;
+  }
+  .essentiel-wrap { padding: 0 48px; }
+  .essentiel-these { flex: 999 1 420px; min-width: 0; }
+  .etiquette { font-family: var(--titre); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c); }
+  .essentiel-these p { margin-top: 6px; font-size: 1.35rem; line-height: 1.4; font-weight: 600; }
+  .notions { flex: 1 1 300px; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+  .notions li { font-family: var(--titre); font-size: 0.92rem; font-weight: 500; padding: 8px 14px; border-radius: 999px; background: var(--c-soft); color: var(--c); }
+
+  /* ─── Corps ─── */
+  .page { max-width: 820px; margin: 0 auto; padding: 64px 48px 72px; }
+
+  .content { display: flex; flex-direction: column; gap: 64px; }
+  .hgg-part { scroll-margin-top: 90px; }
+  .hgg-part-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 20px; }
+  .hgg-part-num { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; color: var(--c); }
+  .hgg-part-title { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; letter-spacing: -0.01em; }
+  .hgg-section { margin-top: 32px; scroll-margin-top: 90px; }
+  .hgg-section-title { font-family: var(--titre); font-weight: 700; font-size: 1.35rem; line-height: 1.25; margin-bottom: 12px; }
+  .hgg-section-title .num { color: var(--c); margin-right: 6px; }
+  .content p { color: var(--texte); margin-bottom: 16px; }
+  .content p:last-child { margin-bottom: 0; }
+
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 8px 0 24px; }
+  .hgg-stat-cell { background: var(--carte); border-radius: 12px; padding: 18px 20px; }
+  .hgg-stat-num { display: block; font-family: var(--titre); font-weight: 800; font-size: 2.2rem; line-height: 1; color: var(--c); }
+  .hgg-stat-label { margin-top: 6px; font-family: var(--titre); font-size: 0.88rem; color: var(--discret); }
+
+  .carte { background: var(--carte); border-radius: 14px; padding: 22px 26px; margin: 20px 0; }
+  .carte h3 { font-family: var(--titre); font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+  .carte p { font-size: 1.05rem; }
+  .carte .etiquette { margin-bottom: 8px; }
+  .surligne { background: var(--c-soft); border-radius: 14px; padding: 20px 24px; margin: 20px 0; color: #2a1d12; font-size: 1.08rem; }
+  .duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 20px 0; }
+  .duo .carte { margin: 0; }
+  .duo .carte.pleine { background: var(--c); }
+  .duo .carte.pleine h3, .duo .carte.pleine p { color: #fff; }
+  .sujets { background: var(--carte); border-radius: 16px; margin-top: 16px; overflow: hidden; }
+  .sujet + .sujet { border-top: 1px solid var(--ligne); }
+  .sujet summary { list-style: none; display: flex; gap: 14px; align-items: baseline; padding: 16px 22px; cursor: pointer; font-family: var(--titre); font-weight: 700; font-size: 1.08rem; line-height: 1.35; }
+  .sujet summary::-webkit-details-marker { display: none; }
+  .sujet summary .n { flex: 0 0 auto; font-weight: 800; color: var(--c); }
+  .sujet summary .q { flex: 1; }
+  .sujet summary::after { content: '+'; flex: 0 0 auto; font-size: 1.3rem; line-height: 1; color: var(--c); transition: transform 0.2s; }
+  .sujet[open] summary::after { transform: rotate(45deg); }
+  .sujet summary:hover .q { color: var(--c); }
+  .sujet-corps { padding: 0 22px 18px 58px; }
+  .sujet-corps p { font-size: 1.02rem; margin-bottom: 10px; }
+  .sujet-corps .reperes { font-family: var(--titre); font-size: 0.88rem; line-height: 1.5; color: var(--discret); display: flex; flex-direction: column; gap: 4px; }
+  .sujet-corps .reperes b { color: var(--c); font-weight: 700; }
+  .sujet a { color: var(--c); text-decoration: underline; text-underline-offset: 2px; }
+
+  .copie { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 8px; }
+  .copie .carte { margin: 0; }
+  .retenir { flex: 1 1 100%; min-width: 0; }
+  .retenir ol { padding-left: 22px; display: flex; flex-direction: column; gap: 10px; font-size: 1.05rem; color: var(--texte); }
+  .rapprocher { flex: 1 1 100%; min-width: 0; background: var(--c) !important; }
+  .rapprocher .etiquette, .rapprocher p, .rapprocher em { color: #fff; }
+  .rapprocher .etiquette { opacity: 0.85; }
+  .rapprocher strong, .rapprocher a, .duo .carte.pleine strong { color: #fff; }
+
+  /* ─── Fin de page ─── */
+  .fin { border-top: 1px solid var(--ligne); background: var(--carte); padding: 24px 48px; }
+  .fin-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; font-family: var(--titre); font-size: 0.95rem; }
+  .fin a { text-decoration: none; padding: 12px 0; }
+  .fin a:hover { color: var(--c); }
+  .bouton-lu { font: 700 0.95rem var(--titre); color: #fff; background: var(--c); border: 1.5px solid var(--c); border-radius: 999px; padding: 12px 22px; min-height: 44px; cursor: pointer; }
+  .bouton-lu.fait { background: transparent; color: var(--c); }
+
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--encre); color: #fff; border: none; border-radius: 50%; font-size: 1.1rem; cursor: pointer; opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 99; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+  }
+  @media (max-width: 760px) {
+    .breadcrumb { display: none; }
+  }
+  @media (max-width: 640px) {
+    nav { padding: 12px 16px; }
+    .breadcrumb { display: none; }
+    .ch-hero { padding: 36px 16px 72px; }
+    .ch-hero-visuel { flex-basis: 160px; }
+    .essentiel-wrap { padding: 0 16px; }
+    .essentiel { padding: 22px 20px; }
+    .page { padding: 40px 16px 56px; }
+    .fin { padding: 20px 16px; }
+    .sujet summary { padding: 14px 16px; }
+    .sujet-corps { padding: 0 16px 16px; }
+    .hgg-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .hgg-stat-cell { padding: 14px 12px; }
+    .hgg-stat-num { font-size: 1.6rem; }
+  }
+
+  @media print {
+    .sujet-corps { display: block !important; }
+    @page { size: A4; margin: 16mm 14mm; }
+    nav, .back-to-top, .fin, .ch-hero-visuel { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: #fff; font-size: 10pt; }
+    .ch-hero { padding: 1rem 1.2rem; }
+    .ch-hero h1 { font-size: 22pt; }
+    .essentiel { margin: 0.6rem 0; box-shadow: none; border: 1pt solid var(--ligne); }
+    .page { display: block; padding: 0.6rem 0; }
+    .content { gap: 1.2rem; }
+    .carte, .hgg-stat-cell { border: 1pt solid var(--ligne); break-inside: avoid; }
+    .surligne, .duo, .sujet { break-inside: avoid; }
+  }
+</style>
+<link rel="stylesheet" href="../../barre-section.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Le Voyage d&#x27;hiver">
+<meta property="og:image" content="https://ecg-prepa.fr/partage/humanite/humanite-musique-le-voyage-d-hiver.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Le Voyage d&#x27;hiver">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ecg-prepa.fr/partage/humanite/humanite-musique-le-voyage-d-hiver.jpg">
+<meta name="description" content="Le Voyage d&#x27;hiver (Schubert, 1827) : fiche sur l&#x27;œuvre, son histoire, son analyse et les pistes pour la dissertation sur l&#x27;Humanité.">
+<link rel="canonical" href="https://ecg-prepa.fr/humanite/musique/le-voyage-d-hiver.html">
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="sn sn-hum">
+  <div class="nav-logo sn-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb sn-fil">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">›</span>
+    <a href="../../humanite.html"><span>L'Humanité</span></a>
+    <span class="sep">›</span>
+    <a href="musique.html"><span>Musique</span></a>
+    <span class="sep">›</span>
+    <span class="current">Le Voyage d'hiver</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="ch-hero-inner">
+    <div class="ch-hero-texte">
+      <div class="chap-label"><span>Musique</span><span>L'Humanité</span></div>
+      <h1 style="--t: 0.72">Le Voyage d'hiver</h1>
+      <p class="meta">Franz Schubert · 1827 · Cycle de 24 lieder</p>
+      <p class="pitch">Un homme rejeté quitte la ville en pleine nuit d'hiver et marche seul dans la neige&nbsp;: un an avant de mourir, Schubert fait entendre la solitude de l'homme devenu étranger au monde.</p>
+    </div>
+    <figure class="ch-hero-visuel" style="aspect-ratio: 1 / 1"><img src="images/le-voyage-d-hiver-visuel.webp" alt="Pochette de Winterreise de Schubert par Richard Resch et Diego Caetano : un cardinal rouge posé sur une branche nue, dans un paysage d'herbes couvertes de neige" loading="eager" onerror="this.closest('.ch-hero-visuel').remove()"></figure>
+  </div>
+</div>
+
+<!-- L'ESSENTIEL -->
+<div class="essentiel-wrap">
+  <section class="essentiel" aria-label="L'essentiel">
+    <div class="essentiel-these">
+      <div class="etiquette">L'essentiel en une phrase</div>
+      <p>Arrivé en étranger, l'homme repart en étranger&nbsp;: le Voyage d'hiver fait de la solitude d'un amoureux éconduit l'image de la condition humaine, une marche vers la mort où seul l'art tient encore compagnie.</p>
+    </div>
+    <ul class="notions" aria-label="Notions du thème">
+      <li>Solitude</li>
+      <li>Mélancolie</li>
+      <li>L'homme étranger au monde</li>
+    </ul>
+  </section>
+</div>
+
+<div class="page">
+
+<div class="content">
+
+<section class="hgg-part" id="intro">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">1.</span><span class="hgg-part-title">Présentation de l'œuvre</span></h2>
+
+    <p><strong>Le Voyage d'hiver</strong> (<em>Winterreise</em>) est un cycle de <strong>24 lieder</strong>, des chansons pour voix et piano, composé en <strong>1827</strong> par <strong>Franz Schubert</strong> (1797-1828) sur des poèmes de l'Allemand <strong>Wilhelm Müller</strong>. Un jeune homme, rejeté par celle qu'il aimait, quitte la ville de nuit, en hiver, et erre seul dans un paysage de glace, de tombes et de corbeaux.</p>
+  <div class="hgg-stats">
+<div class="hgg-stat-cell"><span class="hgg-stat-num">24</span><div class="hgg-stat-label">Lieder, en deux parties de douze, sur des poèmes de Wilhelm Müller</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">31 ans</span><div class="hgg-stat-label">Âge de Schubert à sa mort, en novembre 1828</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">1828</span><div class="hgg-stat-label">Publication du cycle, l'année de sa mort</div></div>
+</div>
+    <p>C'est l'un des sommets du <strong>romantisme</strong> allemand. Il pose une question centrale pour le thème de l'Humanité&nbsp;: que reste-t-il à un homme qui a perdu tout lien avec les autres, et la solitude est-elle sa vraie condition&nbsp;?</p>
+</section>
+
+<section class="hgg-part" id="p1">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">2.</span><span class="hgg-part-title">Genèse et description</span></h2>
+
+  <div class="hgg-section" id="s1-1">
+    <h3 class="hgg-section-title"><span class="num">2.1</span>Un compositeur malade</h3>
+
+    <p>En 1827, Schubert a trente ans. Il vit à Vienne, entouré d'amis, mais il est pauvre, peu reconnu, et atteint de la <strong>syphilis</strong>, une maladie alors incurable. Il découvre les poèmes de Wilhelm Müller, qui meurt la même année, et les met en musique en deux temps, au début et à l'automne 1827.</p>
+    <p>Ses amis racontent qu'il était alors profondément mélancolique. Il meurt le <strong>19 novembre 1828</strong>, à 31 ans, l'année où le cycle est publié.</p>
+    <div class="surligne">Le voyage du héros vers la mort ressemble à celui de son compositeur&nbsp;: Schubert écrit la <strong>solitude</strong> d'un homme quand il se sait lui-même condamné.</div>
+  </div>
+
+  <div class="hgg-section" id="s1-2">
+    <h3 class="hgg-section-title"><span class="num">2.2</span>Des chants «&nbsp;terrifiants&nbsp;»</h3>
+
+    <p>Selon son ami Joseph von Spaun, Schubert invite ses proches à venir entendre «&nbsp;un cycle de chants terrifiants&nbsp;». Il les chante lui-même au piano. Ses amis restent sans voix, déconcertés par la noirceur de l'ensemble&nbsp;; un seul lied, «&nbsp;Le Tilleul&nbsp;», leur plaît vraiment. Schubert leur répond qu'il aime ces chants plus que tous les autres, et qu'ils finiront par les aimer aussi.</p>
+    <div class="carte">
+      <div class="etiquette">Le piano, second personnage</div>
+      <p>Dans le Voyage d'hiver, le piano n'accompagne pas seulement la voix&nbsp;: il peint le paysage, les pas dans la neige, la girouette qui grince, la tempête, la vielle du dernier lied. Voix et piano sont <strong>à égalité</strong>.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s1-3">
+    <h3 class="hgg-section-title"><span class="num">2.3</span>Écouter le Voyage d'hiver</h3>
+
+    <p>Le cycle dure un peu plus d'une heure. Quelques lieder en marquent les étapes, du départ à la rencontre finale.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Gute Nacht</h3>
+        <p>«&nbsp;Bonne nuit&nbsp;»&nbsp;: «&nbsp;Fremd bin ich eingezogen, fremd zieh' ich wieder aus&nbsp;», étranger je suis arrivé, étranger je repars. Une marche lente, pas à pas, dans la nuit.</p>
+      </div>
+      <div class="carte">
+        <h3>Der Lindenbaum</h3>
+        <p>«&nbsp;Le Tilleul&nbsp;»&nbsp;: l'arbre sous lequel il rêvait autrefois semble l'appeler pour qu'il y trouve le repos. Une mélodie douce, presque une chanson populaire, qui cache une tentation de la mort.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>Die Krähe</h3>
+        <p>«&nbsp;La Corneille&nbsp;»&nbsp;: un oiseau le suit depuis la ville et tourne au-dessus de sa tête, comme s'il attendait sa mort pour se nourrir de lui.</p>
+      </div>
+      <div class="carte">
+        <h3>Der Leiermann</h3>
+        <p>«&nbsp;Le Joueur de vielle&nbsp;»&nbsp;: un vieil homme pieds nus sur la glace tourne sa vielle, l'assiette vide, ignoré de tous. Le voyageur lui demande s'il peut aller avec lui.</p>
+      </div>
+    </div>
+    <div class="surligne">Le cycle ne finit ni par la mort ni par un retour&nbsp;: il s'arrête sur une <strong>rencontre</strong>, celle de deux solitaires, et une question sans réponse.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p2">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">3.</span><span class="hgg-part-title">L'homme seul</span></h2>
+
+  <div class="hgg-section" id="s2-1">
+    <h3 class="hgg-section-title"><span class="num">3.1</span>Étranger parmi les hommes</h3>
+
+    <p>Le premier vers donne la clé&nbsp;: le voyageur est un <strong>étranger</strong>, arrivé et reparti sans avoir trouvé sa place. Le chagrin d'amour n'est que le point de départ&nbsp;: peu à peu, il se sent exclu de toute la communauté humaine. Les chiens aboient, les villageois dorment dans leurs lits, et lui seul marche dans la nuit. La solitude devient sa condition.</p>
+    <div class="carte">
+      <div class="etiquette">Une solitude romantique</div>
+      <p>Le romantisme fait de l'individu seul face à la nature une figure centrale. Mais ici la nature n'est pas sublime&nbsp;: elle est <strong>gelée</strong>, morte, et ne répond pas à l'homme.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-2">
+    <h3 class="hgg-section-title"><span class="num">3.2</span>La marche vers la mort</h3>
+
+    <p>Le voyage d'hiver est aussi une marche vers la <strong>mort</strong>. Le voyageur est tenté par le repos du tilleul, s'arrête dans un cimetière qui lui refuse une place, suit les signes qui mènent là d'où personne ne revient. Mais il continue à marcher. Le cycle montre l'homme qui sait qu'il va mourir et qui avance quand même.</p>
+    <div class="surligne">La mélancolie n'est pas seulement de la tristesse&nbsp;: c'est la <strong>conscience</strong> lucide de sa propre fin, et le courage de continuer.</div>
+  </div>
+
+  <div class="hgg-section" id="s2-3">
+    <h3 class="hgg-section-title"><span class="num">3.3</span>L'art, dernier compagnon</h3>
+
+    <p>À la fin, le voyageur ne trouve ni l'amour, ni le repos, ni Dieu, mais un <strong>musicien</strong> pauvre que personne n'écoute. Il veut le suivre et chanter avec lui. On peut y voir Schubert lui-même, compositeur méconnu&nbsp;: quand tout est perdu, il reste l'art, même misérable, pour partager sa solitude.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le document</h3>
+        <p>Un cycle de 1827, écrit par un compositeur malade&nbsp;: <strong>le Voyage d'hiver témoigne</strong> du romantisme et de la fin de la vie de Schubert.</p>
+      </div>
+      <div class="carte pleine">
+        <h3>Le symbole</h3>
+        <p>Un homme seul qui marche dans la neige&nbsp;: <strong>le cycle universalise</strong>. Il dit la solitude que chacun peut connaître.</p>
+      </div>
+    </div>
+    <div class="surligne">Le voyageur ne guérit pas de sa solitude, mais il cesse d'être seul en la <strong>partageant</strong> avec un autre exclu.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p3">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">4.</span><span class="hgg-part-title">Pistes pour la dissertation</span></h2>
+
+  <div class="hgg-section" id="s3-1">
+    <h3 class="hgg-section-title">Le Voyage d'hiver face à cinq sujets sur l'Humanité</h3>
+    <p>Cliquez sur un sujet pour l'argument à développer, le passage à citer et sa place dans le plan.</p>
+
+    <div class="sujets">
+      <details class="sujet">
+        <summary><span class="n">01</span><span class="q">La solitude est-elle la condition de l'homme&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Le voyageur arrive en étranger et repart en étranger&nbsp;: rejeté par celle qu'il aimait, il se sent peu à peu exclu de toute la communauté humaine, pendant que les villageois dorment dans leurs lits. Schubert fait de cette solitude l'image de la condition humaine&nbsp;: chacun, au fond, marche seul vers sa mort. Mais le cycle finit sur une rencontre, qui nuance ce constat.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> «&nbsp;Fremd bin ich eingezogen, fremd zieh' ich wieder aus&nbsp;».</span><span><b>Dans le plan&nbsp;:</b> En première partie&nbsp;: l'homme essentiellement seul.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">02</span><span class="q">L'homme peut-il vivre sans les autres&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Coupé de tout lien, le voyageur s'enfonce dans la glace et la tentation de la mort. Pourtant, à la fin, il demande au joueur de vielle s'il peut aller avec lui. Même au bout de la solitude, l'homme cherche un compagnon&nbsp;: le cycle montre qu'on ne peut pas vivre sans les autres, et que le lien le plus humble suffit à rouvrir une existence.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> La question finale au joueur de vielle, dans «&nbsp;Der Leiermann&nbsp;».</span><span><b>Dans le plan&nbsp;:</b> En partie critique&nbsp;: la solitude appelle l'autre.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">03</span><span class="q">La conscience de la mort est-elle un fardeau&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Écrit en 1827 par un compositeur malade, mort l'année suivante à 31 ans, le Voyage d'hiver est une marche vers la mort&nbsp;: le tilleul promet le repos, la corneille attend, le cimetière refuse une place. Le voyageur sait où il va et continue de marcher. La conscience de la mort est un fardeau, mais elle donne aussi sa gravité et son courage à l'existence.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> «&nbsp;Le Tilleul&nbsp;», qui l'appelle au repos.</span><span><b>Dans le plan&nbsp;:</b> Sur la finitude&nbsp;: savoir et avancer quand même.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">04</span><span class="q">L'art console-t-il&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>À la fin, le voyageur ne trouve qu'un musicien pauvre, ignoré de tous, qui tourne sa vielle sur la glace. Il veut chanter avec lui. L'art ne guérit pas la douleur, mais il la partage&nbsp;: c'est le dernier lien qui reste à l'homme quand tout est perdu, et Schubert, méconnu, s'y reconnaît sans doute lui-même.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> Le joueur de vielle pieds nus, l'assiette vide.</span><span><b>Dans le plan&nbsp;:</b> En partie de dépassement&nbsp;: l'art comme compagnie.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">05</span><span class="q">Pourquoi aimons-nous les œuvres tristes&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Les amis de Schubert sont déconcertés par ces chants «&nbsp;terrifiants&nbsp;»&nbsp;; il leur répond qu'ils finiront par les aimer. Près de deux siècles plus tard, le cycle est l'un des plus chantés du répertoire. Une œuvre triste ne nous accable pas&nbsp;: elle donne une forme à ce que nous ressentons et nous fait sentir moins seuls dans notre propre peine.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> Le récit de Joseph von Spaun sur la première audition.</span><span><b>Dans le plan&nbsp;:</b> Sur l'émotion esthétique&nbsp;: la mélancolie partagée.</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s3-2">
+    <div class="copie">
+      <div class="carte retenir">
+        <div class="etiquette">Idées à retenir</div>
+        <ol>
+          <li>Cycle de <strong>24 lieder</strong> composé en 1827 par Schubert, malade, mort en 1828 à 31 ans.</li>
+          <li>Un homme rejeté erre seul en hiver&nbsp;: <strong>étranger</strong> parmi les hommes.</li>
+          <li>Une marche vers la <strong>mort</strong>, avec la conscience lucide de sa fin.</li>
+          <li>Il finit sur la rencontre d'un musicien pauvre&nbsp;: l'<strong>art</strong> comme dernier compagnon.</li>
+        </ol>
+      </div>
+      <div class="carte rapprocher">
+        <div class="etiquette">À rapprocher</div>
+        <p><strong>Caspar David Friedrich, <em>Le Voyageur contemplant une mer de nuages</em> (vers 1818)</strong>&nbsp;: ce tableau montre un homme de dos, debout sur un rocher, qui contemple un paysage de montagnes noyé dans la brume. Comme le voyageur de Schubert, c'est un homme seul face à la nature, figure du romantisme allemand. Mais celui de Friedrich domine le paysage, dans une méditation presque triomphante sur le sublime&nbsp;; celui de Schubert avance dans la neige sans rien dominer, et la nature gelée ne lui renvoie que sa solitude.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /content -->
+</div><!-- /page -->
+<footer class="fin">
+  <div class="fin-inner">
+    <a href="musique.html">← Toutes les fiches de musique</a>
+    <button type="button" class="bouton-lu" id="boutonLu">J'ai lu cette fiche</button>
+  </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
+
+<script>
+  // « J'ai lu cette fiche », gardé dans le navigateur
+  const CLE = 'ecg-humanite-fiches-lues';
+  const ID = 'musique/le-voyage-d-hiver';
+  const lu = document.getElementById('boutonLu');
+  function lire() { try { return JSON.parse(localStorage.getItem(CLE)) || []; } catch (e) { return []; } }
+  function majLu() {
+    const fait = lire().includes(ID);
+    lu.classList.toggle('fait', fait);
+    lu.textContent = fait ? '✓ Fiche lue' : "J'ai lu cette fiche";
+  }
+  lu.addEventListener('click', () => {
+    let l = lire();
+    l = l.includes(ID) ? l.filter(x => x !== ID) : l.concat(ID);
+    try { localStorage.setItem(CLE, JSON.stringify(l)); } catch (e) {}
+    majLu();
+  });
+  majLu();
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>
