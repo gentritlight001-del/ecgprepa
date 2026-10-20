@@ -74,7 +74,10 @@ directement après chaque modification, sans attendre un nouveau « mets en lign
    visuel flou et assombri en fond, visuel net à droite, pastille de la rubrique, titre, « auteur · année » (`.meta`),
    « ecg-prepa.fr · L'Humanité », pastille et filet à la couleur de la fiche (`--c`). Les fiches auteurs aussi (portrait
    `f-portrait`, pastille « Fiche auteur », nom du `<h1>`, années de naissance et de mort, couleur `--accent`). Et les cours d'Humanité (image du héros
-   `ch-hero-media` recadrée, pastille « Cours N », titre, « L'Humanité · 2e année »). Les autres pages gardent un aplat de couleur. Regarder l'image produite : si le
+   `ch-hero-media` recadrée, pastille « Cours N », titre, « L'Humanité · 2e année »). Les pages de cours de 1re et 2e année aussi (pastille de la
+   matière ou de la langue, titre, « Chapitre N · 1re année », couleur fixe par matière dans `COULEURS` du script) :
+   image du héros si elle est stockée sur le site, sinon la vignette `.ci-vig` de l'index de la matière (ou de l'autre
+   année), sinon l'image du bloc de données ; sans image, grand numéro du chapitre au trait. Les autres pages gardent un aplat de couleur. Regarder l'image produite : si le
    visage ou le sujet de la photo passe sous le titre, le signaler au propriétaire.
    Pour **refaire** l'image d'une page qui en a déjà une (photo ou titre changés) :
    `python3 outils/images-partage.py --refaire <page>` (l'adresse prend `?v=<date et heure>`, sinon

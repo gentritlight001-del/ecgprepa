@@ -96,8 +96,11 @@ body{width:1200px;height:630px;overflow:hidden;position:relative;background:#0b0
 #meta{margin-top:18px;font-family:'IBM Plex Mono',monospace;font-size:20px;letter-spacing:.06em;color:#e4e4dc}
 #url{font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.16em;text-transform:uppercase;color:#d6d6d0}
 #filet{position:absolute;left:0;right:0;bottom:0;height:8px}
+#num{display:none;position:absolute;right:56px;top:50%%;transform:translateY(-54%%);font-family:'Fraunces',serif;font-weight:600;font-size:360px;line-height:1;color:transparent;-webkit-text-stroke:3px var(--coul);opacity:.9}
+body.sans #fond,body.sans #vis{display:none}
+body.sans #num{display:block}
 </style></head><body>
-<img id="fond" alt=""><div id="voile"></div><img id="vis" alt="">
+<img id="fond" alt=""><div id="voile"></div><div id="num"></div><img id="vis" alt="">
 <div id="c"><div id="logo">ECG Prépa</div><div><span id="label"></span><div id="title"></div><div id="meta"></div></div>
 <div id="url">ecg-prepa.fr · L'Humanité</div></div><div id="filet"></div></body></html>"""
 
@@ -130,6 +133,55 @@ def cours_de(rel, contenu):
     chemin = os.path.normpath(os.path.join(RACINE, os.path.dirname(rel), img.group(1)))
     c = re.search(r'--accent:\s*(#[0-9a-fA-F]{6})', contenu)
     return 'Cours ' + m.group(1), chemin, (c.group(1) if c else '#a83a2e'), "L'Humanité\u00a0· 2e année"
+
+# Cours ECG (1re et 2e année) : même modèle. Image : celle du héros si elle est sur le site, sinon la
+# vignette de l'index de la matière, sinon celle du bloc de données (jour de langue, cours de
+# civilisation) ; sans image, un grand numéro du chapitre à la couleur de la matière.
+COULEURS = {'mathematiques': '#1f7a73', 'maths': '#1f7a73', 'hgg': '#a5652a', 'esh': '#9b2d4d',
+            'philosophie': '#6b4fa0', 'anglais': '#2457a0', 'espagnol': '#b23a26', 'allemand': '#8a6d12',
+            'langues': '#2457a0'}
+
+
+def image_cours(rel, contenu):
+    base = os.path.dirname(rel)
+    m = re.search(r'class="ch-hero-media"[^>]*>\s*<img src="([^"]+)"', contenu)
+    if m and not m.group(1).startswith('http'):
+        return m.group(1) if m.group(1).startswith('data:') else os.path.normpath(os.path.join(RACINE, base, m.group(1)))
+    autre = re.sub(r'^(premiere|deuxieme)_annee', lambda m: 'deuxieme_annee' if m.group(1) == 'premiere' else 'premiere_annee', base)
+    for idx in (os.path.join(base, 'index.html'), os.path.join(os.path.dirname(base), 'index.html'), os.path.join(autre, 'index.html')):
+        if os.path.exists(RACINE + idx) and os.path.normpath(RACINE + idx) != os.path.normpath(RACINE + rel):
+            lien = os.path.relpath(RACINE + rel, os.path.dirname(RACINE + idx))
+            if idx.startswith(autre + '/') and autre != base:
+                lien = os.path.basename(rel)
+            v = re.search(r'href="%s"><span class="ci-vig"><img src="([^"]+)"' % re.escape(lien), open(RACINE + idx, encoding='utf-8').read())
+            if v:
+                return os.path.normpath(os.path.join(RACINE, os.path.dirname(idx), v.group(1)))
+    m = re.search(r'"image":\s*\{\s*"src":\s*"([^"]+)"', contenu) or re.search(r'\bimage:\s*"([^"]+\.(?:webp|jpg|png))"', contenu)
+    if not m and '/quotidien/' in rel:
+        m = re.search(r'<img src="(images/[^"]+)"', contenu)
+    if m:
+        c = os.path.normpath(os.path.join(RACINE, base, m.group(1)))
+        if os.path.exists(c):
+            return c
+    return None
+
+
+def cours_ecg(rel, contenu, lab):
+    """Page de cours de 1re ou 2e année : (pastille, image ou None, couleur, ligne du bas, numéro)."""
+    p = rel.split('/')
+    if p[0] not in ('premiere_annee', 'deuxieme_annee') or 'http-equiv="refresh"' in contenu:
+        return None
+    morceaux = lab.split(' · ')
+    if len(p) > 3 and p[1] == 'langues' and len(morceaux) > 1:
+        morceaux = morceaux[1:]
+        if p[-1].startswith('civi-'):
+            morceaux.insert(1, 'Civilisation')
+        elif '/quotidien/' in rel:
+            morceaux.insert(1, 'Au quotidien')
+    num = re.search(r'(?:Chapitre|Leçon|Notion|Jour)\s*(\d+)', lab) or re.search(r'(?:chapitre|lecon|notion|colle|ds|civi-[a-z]+)-?(\d+)', p[-1])
+    couleur = COULEURS.get(p[2].lower() if len(p) > 3 and p[1] == 'langues' else p[1].lower(), '#2457a0')
+    return morceaux[0], image_cours(rel, contenu), couleur, '\u00a0· '.join(morceaux[1:]), (num.group(1).lstrip('0') or '0') if num else ''
+
 
 def auteur_de(rel, contenu):
     """Fiche auteur de l'Humanité : (« Fiche auteur », portrait, couleur, « naissance – mort »), sinon None."""
@@ -272,7 +324,36 @@ def main():
             os.makedirs(os.path.dirname(RACINE + sortie), exist_ok=True)
             photo = photo_de(rel, contenu)
             visuel = None if photo else (visuel_de(rel, contenu) or auteur_de(rel, contenu) or cours_de(rel, contenu))
-            if visuel:
+            cours = None if photo or visuel else cours_ecg(rel, contenu, lab)
+            if cours:
+                pastille, img, couleur, meta, num = cours
+                titre = re.sub(r'\s*·\s*Civilisation \w+$', '', titre)
+                m = re.match(r'^(Leçon|Chapitre|Notion|Colle)\s*(\d+)\s*[—:–-]\s*(.+)$', titre)
+                if m:
+                    titre = m.group(3)[:1].upper() + m.group(3)[1:]
+                    if m.group(1) not in meta:
+                        meta = m.group(1) + ' ' + m.group(2) + (' · ' + meta if meta else '')
+                titre = insecables(titre); meta = insecables(meta)
+                taille = 64 if len(titre) <= 30 else 56 if len(titre) <= 50 else 48 if len(titre) <= 75 else 42
+                page_visuel.evaluate("""([rub, titre, img, taille, couleur, meta, num]) => new Promise(ok => {
+                  document.body.classList.toggle('sans', !img); document.body.style.setProperty('--coul', couleur);
+                  document.getElementById('url').textContent = 'ecg-prepa.fr · Cours';
+                  document.getElementById('num').textContent = num;
+                  const l = document.getElementById('label'); l.textContent = rub; l.style.background = couleur;
+                  document.getElementById('filet').style.background = couleur;
+                  const t = document.getElementById('title'); t.textContent = titre; t.style.fontSize = taille + 'px';
+                  document.getElementById('meta').textContent = meta;
+                  if (!img) { document.body.style.background = 'radial-gradient(circle at 85% 50%, ' + couleur + '55, #0b0b0c 60%)'; return ok(); }
+                  document.body.style.background = '#0b0b0c';
+                  let n = 0; const fini = () => { if (++n === 2) ok(); };
+                  const v = document.getElementById('vis');
+                  v.onload = () => { const W = 420, H = 470, r = Math.min(v.naturalWidth / v.naturalHeight, 1.45);
+                    const w = r > W / H ? W : H * r; v.style.width = w + 'px'; v.style.height = w / r + 'px'; fini(); };
+                  v.onerror = fini; v.src = img;
+                  const f = document.getElementById('fond'); f.onload = f.onerror = fini; f.src = img; })""",
+                                     [pastille, titre, (img if not img or img.startswith('data:') else 'file://' + img), taille, couleur, meta, num])
+                page_visuel.screenshot(path=RACINE + sortie, type='jpeg', quality=82)
+            elif visuel:
                 rub, img, couleur, meta = visuel
                 if rub.startswith('Cours '):
                     titre = re.sub(r'^Cours Humanité\s*·\s*', '', titre)
@@ -282,6 +363,8 @@ def main():
                 titre = insecables(titre); meta = insecables(meta)
                 taille = 64 if len(titre) <= 30 else 56 if len(titre) <= 50 else 48 if len(titre) <= 75 else 42
                 page_visuel.evaluate("""([rub, titre, img, taille, couleur, meta]) => new Promise(ok => {
+                  document.body.classList.remove('sans'); document.body.style.background = '#0b0b0c';
+                  document.getElementById('url').textContent = "ecg-prepa.fr · L'Humanité";
                   const l = document.getElementById('label'); l.textContent = rub; l.style.background = couleur;
                   document.getElementById('filet').style.background = couleur;
                   const t = document.getElementById('title'); t.textContent = titre; t.style.fontSize = taille + 'px';
