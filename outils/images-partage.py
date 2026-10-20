@@ -88,7 +88,7 @@ GABARIT_VISUEL = """<!doctype html><html lang="fr"><head><meta charset="utf-8">
 body{width:1200px;height:630px;overflow:hidden;position:relative;background:#0b0b0c}
 #fond{position:absolute;inset:-60px;width:calc(100%% + 120px);height:calc(100%% + 120px);object-fit:cover;filter:blur(34px) brightness(.55) saturate(1.1)}
 #voile{position:absolute;inset:0;background:linear-gradient(90deg,rgba(11,11,12,.9) 0%%,rgba(11,11,12,.7) 50%%,rgba(11,11,12,.25) 100%%)}
-#vis{position:absolute;right:72px;top:50%%;transform:translateY(-50%%);max-width:380px;max-height:470px;border-radius:10px;box-shadow:0 24px 60px rgba(0,0,0,.55)}
+#vis{position:absolute;right:72px;top:50%%;transform:translateY(-50%%);object-fit:cover;border-radius:10px;box-shadow:0 24px 60px rgba(0,0,0,.55)}
 #c{position:absolute;top:0;bottom:0;left:0;width:700px;padding:56px 64px;display:flex;flex-direction:column;justify-content:space-between}
 #logo{font-family:'Playfair Display',serif;font-weight:700;font-size:32px;color:#fff}
 #label{display:inline-block;margin-bottom:20px;padding:8px 14px;color:#fff;font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:18px;letter-spacing:.14em;text-transform:uppercase}
@@ -116,10 +116,15 @@ def visuel_de(rel, contenu):
     if not os.path.exists(chemin):
         return None
     c = re.search(r'--c:\s*(#[0-9a-fA-F]{3,8})', contenu)
-    meta = re.search(r'<p class="meta">([^<]*)</p>', contenu)
-    m = html.unescape(meta.group(1)).split(' · ')[:2] if meta else []
-    return RUBRIQUES[p[1]], chemin, (c.group(1) if c else '#a83a2e'), ' · '.join(m)
+    meta = re.search(r'<p class="meta">(.*?)</p>', contenu)
+    m = html.unescape(re.sub(r'<[^>]+>', '', meta.group(1))).split(' · ')[:2] if meta else []
+    return RUBRIQUES[p[1]], chemin, (c.group(1) if c else '#a83a2e'), '\u00a0· '.join(m)
 
+
+def insecables(t):
+    """Typographie française : espace insécable avant « : ; ! ? » », après « et n°."""
+    t = re.sub(r' ([:;!?»])', '\u00a0\\1', t)
+    return re.sub(r'(«|n°) ', '\\1\u00a0', t)
 
 def photo_de(rel, contenu):
     """Article « a-page » : (pays, chemin absolu de la photo de une, couleur d'accent), sinon None."""
@@ -244,6 +249,7 @@ def main():
             visuel = None if photo else visuel_de(rel, contenu)
             if visuel:
                 rub, img, couleur, meta = visuel
+                titre = insecables(titre); meta = insecables(meta)
                 taille = 64 if len(titre) <= 30 else 56 if len(titre) <= 50 else 48 if len(titre) <= 75 else 42
                 page_visuel.evaluate("""([rub, titre, img, taille, couleur, meta]) => new Promise(ok => {
                   const l = document.getElementById('label'); l.textContent = rub; l.style.background = couleur;
@@ -251,7 +257,11 @@ def main():
                   const t = document.getElementById('title'); t.textContent = titre; t.style.fontSize = taille + 'px';
                   document.getElementById('meta').textContent = meta;
                   let n = 0; const fini = () => { if (++n === 2) ok(); };
-                  for (const id of ['fond', 'vis']) { const i = document.getElementById(id); i.onload = i.onerror = fini; i.src = img; } })""",
+                  const v = document.getElementById('vis');
+                  v.onload = () => { const W = 420, H = 470, r = v.naturalWidth / v.naturalHeight;
+                    const w = r > W / H ? W : H * r; v.style.width = w + 'px'; v.style.height = w / r + 'px'; fini(); };
+                  v.onerror = fini; v.src = img;
+                  const f = document.getElementById('fond'); f.onload = f.onerror = fini; f.src = img; })""",
                                      [rub, titre, 'file://' + img, taille, couleur, meta])
                 page_visuel.screenshot(path=RACINE + sortie, type='jpeg', quality=82)
             elif photo:
