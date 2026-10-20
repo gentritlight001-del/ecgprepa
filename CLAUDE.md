@@ -31,7 +31,10 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   `idees-articles.html`, `mes-newsletters.html`, `mon-planning.html`). `mon-planning.html` : agenda
   personnel du propriétaire (habillage « carnet pointillé » + grille horaire, **pas d'italique**),
   synchronisé dans `planning/planning.json` du bucket privé `newsletters` ; interrupteurs « Au quotidien »
-  (anglais, espagnol, allemand, fiche HGG) qui ajoutent une ligne par jour. Une nouvelle page admin s'ajoute à cette
+  (anglais, espagnol, allemand, fiche HGG) qui ajoutent une ligne par jour. Sa recherche « Depuis le site » lit
+  `recherche-index.json` (7e champ : image de la page) et `a-faire.json` (« Contenus à créer » : liens vers des pages
+  qui n'existent pas encore, œuvres `a-venir`, fiches auteurs sans fiche…), tous deux écrits par `outils/recherche.py`
+  (ne jamais les modifier à la main). Une nouvelle page admin s'ajoute à cette
   liste et au menu admin de `auth.js`, dans le même style que `idees-articles.html`.
 - Tester une page avec Playwright : `NODE_PATH=$(npm root -g)` pour Node, Chromium dans
   `/opt/pw-browsers/chromium`. Remplacer `auth.js` par un script vide (sinon redirection
