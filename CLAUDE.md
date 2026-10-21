@@ -323,6 +323,10 @@ page pays ou région :
   `.ci-vig`) : chaque ligne montre une vignette (`vignettes/chapitre-N.webp`, 360 px, WebP), à créer pour tout nouveau
   chapitre : l'image du héros en HGG, une photo ou un tableau libre de droits (Commons) qui évoque le chapitre en ESH et en philo.
   Maths et langues gardent le repère numéroté (choix du propriétaire).
+- **Fin de chapitre** (bloc commun à tous les chapitres refaits, modèle : HGG 1re année, chapitre 4) : juste avant
+  « Dans une copie », un bandeau `section.bilan` (« Bilan · Chapitre N », une phrase-bilan en grand, puis une idée par
+  grande partie : titre de la partie en gras et une phrase). **Pas** de lien « chapitre suivant ». Les documents propres
+  au chapitre (ex. le Long Télégramme de Kennan) restent dans leur sous-partie, jamais dans ce bandeau.
 - Un nouveau chapitre reprend la page du chapitre précédent. Par exemple
   `deuxieme_annee/maths/chapitre1.html` : palette sarcelle, titre du héros sur
   **2 lignes maximum** sur ordinateur.
