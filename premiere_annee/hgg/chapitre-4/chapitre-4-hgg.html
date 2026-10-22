@@ -1751,7 +1751,7 @@ body.focus #cours .cote .frise li:not(:has(~ li:not(.nf))){padding-bottom:0}
   #cours .plan{padding:14px 0 10px!important}
   nav.sn,.hl-fab,.back-to-top,.fx-pill,.ed-btn,.ed-bar,.ed-toast,#cours .pl-act,#cours .fin2{display:none!important}
   #cours .plus2{break-before:avoid;break-inside:avoid}
-  #cours .notes-imp{display:block;height:var(--nh,450px);margin-top:14px;padding:12px 18px;border:1px solid var(--rule);background:#fff repeating-linear-gradient(transparent 0 31px,#d9dcd6 31px 32px);background-origin:content-box;background-clip:content-box;break-inside:avoid}
+  #cours .notes-imp{display:none;height:var(--nh,450px);margin-top:14px;padding:12px 18px;border:1px solid var(--rule);background:#fff repeating-linear-gradient(transparent 0 31px,#d9dcd6 31px 32px);background-origin:content-box;background-clip:content-box;break-inside:avoid}
   #cours .notes-imp small{display:block;margin:-2px 0 6px;font-family:var(--mono);font-weight:700;font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--a1);background:#fff}
   body.focus #cours .nf{display:revert!important}
   body.focus #cours .fo{display:none!important}
@@ -1766,6 +1766,12 @@ body.focus #cours .cote .frise li:not(:has(~ li:not(.nf))){padding-bottom:0}
   #cours p{orphans:3;widows:3}
   #cours .corps p,#cours .corps li{line-height:1.7}
   #cours a{text-decoration:none}
+  #cours .scotch,#cours .att-pin,#cours .coupure,#cours .pt-pola{border-top:16px solid transparent!important;background-clip:padding-box}
+  #cours .bars.scotch,#cours .bars.att-pin,#cours .stats.att-pin,#cours .cartes.att-pin,#cours .flux.att-pin,#cours .liste5.att-pin,#cours .frise.att-pin,#cours .schema.scotch,#cours .schema.att-pin,#cours .kdoc.att-pin,#cours .large-schema.scotch{box-shadow:inset 0 1px 0 var(--rule)!important}
+  #cours .scotch::before{top:3px}
+  #cours .att-pin::after{top:7px}
+  #cours .coupure::before{top:6px}
+  #cours .pt-pola::before{top:5px}
   #cours .p-tete{break-inside:avoid}
   #cours.thC .p-tete{--pn:4.6rem;min-height:0;padding:0 0 8px}
   #cours.thC .p-tete>h2{font-size:1.9rem}
@@ -1774,10 +1780,17 @@ body.focus #cours .cote .frise li:not(:has(~ li:not(.nf))){padding-bottom:0}
   #cours section.bilan{break-inside:avoid}
   #cours h3,#cours .corps h3{break-inside:avoid}
   #cours .large.atlas,#cours .large.gp{break-inside:auto}
-  body.imp #cours .sp.fx-flot{display:flow-root!important}
-  body.imp #cours .sp.fx-flot .cote{float:right;width:42%;margin:0 0 18px 34px;padding-top:4px}
-  body.imp #cours .sp.rev.fx-flot .cote{float:left;margin:0 34px 18px 0}
-  body.imp #cours .sp.fx-flot .corps>:not(p),body.imp #cours .sp.fx-flot .corps>p.fort{display:flow-root}
+  /* mise en page « journal » : chaque partie sur deux colonnes, les fiches suivent leur texte ; les blocs larges traversent */
+  #cours .partie{display:block!important;column-count:2;column-gap:28px;column-fill:auto}
+  #cours .partie>*{margin:0 0 18px!important}
+  #cours .partie>.p-tete,#cours .partie>.large,#cours .partie>figure,#cours .partie>.cp{column-span:all}
+  #cours .sp{display:block!important}
+  #cours .sp>.corps{margin-bottom:14px}
+  #cours .sp>.cote{display:block!important;padding-top:6px}
+  #cours .sp>.cote>*{margin:0 0 20px!important}
+  #cours .corps h3{column-span:none}
+  #cours section.ess,#cours .plan{break-inside:avoid}
+  #cours .ch-hero{break-after:avoid}
   #cours .large.atlas>*,#cours .large.gp>*{break-inside:avoid}
 }
 </style>
@@ -4323,8 +4336,9 @@ nav.sn.sn-archive #ecg-avatar{background:#262924;border:1px solid #4b5a3c;color:
   }
   addEventListener('resize', function () { clearTimeout(recaler.t); recaler.t = setTimeout(recaler, 150); });
   /* à l'impression, même principe : les fiches flottent dans le texte, sans colonne vide */
-  addEventListener('beforeprint', function () { document.body.classList.add('imp'); if (!document.body.classList.contains('focus')) flotter(true); });
-  addEventListener('afterprint', function () { document.body.classList.remove('imp'); if (!document.body.classList.contains('focus')) flotter(false); });
+  var etaitFocus = false;
+  addEventListener('beforeprint', function () { etaitFocus = document.body.classList.contains('focus'); if (etaitFocus) flotter(false); document.body.classList.add('imp'); });
+  addEventListener('afterprint', function () { document.body.classList.remove('imp'); if (etaitFocus) flotter(true); });
   function regler(on, garder) {
     if (on !== document.body.classList.contains('focus')) flotter(on);
     document.body.classList.toggle('focus', on);
