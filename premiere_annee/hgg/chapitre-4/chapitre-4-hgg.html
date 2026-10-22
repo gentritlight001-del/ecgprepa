@@ -1483,6 +1483,24 @@ body .back-to-top.visible{transform:none}
 body .back-to-top.visible:hover{transform:translateY(-2px)}
 body .back-to-top svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 @media (max-width:720px){body .back-to-top{right:1rem;bottom:1.2rem}}
+/* Panneau « Mes révisions » : trois outils, habillage du cours */
+body .hl-panel{background:#f4f4ef;border-left:1px solid #b9bdb3;box-shadow:-18px 0 50px -20px rgba(28,30,28,.45)}
+body .hl-panel .rv-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:22px 22px 16px;background:#4b5a3c;color:#fff;border:0}
+body .hl-panel .rv-head small{display:block;font-family:'IBM Plex Sans Condensed','Arial Narrow',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#d8dfcc}
+body .hl-panel .rv-head h2{margin:2px 0 0;font-family:'Newsreader',Georgia,serif;font-weight:600;font-size:1.6rem;line-height:1.15;color:#fff}
+body .hl-panel .rv-head .hl-btn{color:#fff;background:transparent;border:1px solid rgba(255,255,255,.4);border-radius:50%;width:34px;height:34px;display:grid;place-items:center}
+body .hl-panel .rv-head .hl-btn:hover{background:rgba(255,255,255,.12)}
+body .hl-panel .rv-head .hl-btn svg{width:16px;height:16px}
+body .rv-list{display:grid;gap:12px;padding:18px}
+body .rv-item{display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;background:#fff;border:1px solid #b9bdb3;border-radius:10px;text-align:left;cursor:pointer;color:#1c1e1c;font:inherit;transition:border-color .15s,box-shadow .15s,transform .15s}
+body .rv-item:hover{border-color:#4b5a3c;box-shadow:0 6px 16px rgba(0,0,0,.08);transform:translateY(-1px)}
+body .rv-item:focus-visible{outline:2px solid #4b5a3c;outline-offset:2px}
+body .rv-ic{flex:none;display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:#e5e8df;color:#4b5a3c}
+body .rv-ic svg{width:20px;height:20px}
+body .rv-t{flex:1;min-width:0;display:grid;gap:2px}
+body .rv-t b{font-family:'Newsreader',Georgia,serif;font-weight:600;font-size:1.15rem;line-height:1.2}
+body .rv-t small{font-family:'Libre Franklin',system-ui,sans-serif;font-size:.84rem;color:#62665f}
+body .rv-ar{flex:none;font-size:1.5rem;line-height:1;color:#4b5a3c}
 /* Fiches des penseurs : livre ouvert */
 #cours .livre{--papier:#ffffff;--papier2:#eef0ea;--tranche:#c9cdc2;--dimL:var(--dimC);position:relative;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);margin-bottom:10px;
   filter:drop-shadow(0 12px 16px rgba(28,30,28,.16)) drop-shadow(0 2px 3px rgba(28,30,28,.16))}
@@ -2412,18 +2430,7 @@ nav.sn.sn-archive #ecg-avatar{background:#262924;border:1px solid #4b5a3c;color:
       cur = after; consumed = sg.b;
     }
   }
-  function render() {
-    unwrap(); index();
-    const L = live();
-    for (let i = 0; i < nodes.length; i++) {
-      const node = nodes[i], ns = starts[i], ne = ns + node.data.length, segs = [];
-      for (const h of L) if (h.s < ne && h.e > ns) segs.push({ a: Math.max(h.s, ns) - ns, b: Math.min(h.e, ne) - ns, h });
-      if (segs.length) wrapSegs(node, segs.sort((x, y) => x.a - y.a));
-    }
-    index(); decorate();
-    if (popId) { const ms = marksOf(popId); ms.forEach(m => m.classList.add('hl-active')); }
-    updateFab();
-  }
+  function render() { unwrap(); index(); updateFab(); }   // surligneur retiré : aucun passage marqué dans le cours
   const marksOf = id => Array.from(root.querySelectorAll('mark.hl')).filter(m => m.dataset.id === id);
   function decorate() {
     const seen = {};
@@ -2598,17 +2605,7 @@ nav.sn.sn-archive #ecg-avatar{background:#262924;border:1px solid #4b5a3c;color:
   root.addEventListener('mouseout', e => hover(e, false));
 
   /* ───────── détection de la sélection ───────── */
-  function checkSelection(fromMouse) {
-    const sel = readSelection();
-    if (!sel) { hideToolbar(); return; }
-    closePop();
-    if (prefs.auto && fromMouse && !isTouch()) {
-      mutate(() => _add(sel.s, sel.e, prefs.color));
-      const s = window.getSelection(); if (s) s.removeAllRanges();
-      hideToolbar(); return;
-    }
-    showToolbar(sel);
-  }
+  function checkSelection() { hideToolbar(); }   // surligneur retiré : la sélection reste une simple sélection
   document.addEventListener('mouseup', e => {
     if (e.target.closest && e.target.closest('.hl-ui')) return;
     setTimeout(() => checkSelection(true), 10);
@@ -2632,7 +2629,6 @@ nav.sn.sn-archive #ecg-avatar{background:#262924;border:1px solid #4b5a3c;color:
   document.addEventListener('keydown', e => {
     const inField = /^(TEXTAREA|INPUT)$/.test((e.target || {}).tagName || '');
     if (e.key === 'Escape') { if (closeTopOverlay()) return; hideToolbar(); closePop(); togglePanel(false); return; }
-    if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z' && !inField) { if (undo()) e.preventDefault(); return; }
     if (pending && !inField && !e.ctrlKey && !e.metaKey && !e.altKey) {
       const i = parseInt(e.key, 10) - 1;
       if (COLORS[i]) { e.preventDefault(); prefs.color = COLORS[i].id; savePrefs(); const { s, e: en } = pending; mutate(() => _add(s, en, COLORS[i].id)); finishSel(); }
@@ -2642,50 +2638,21 @@ nav.sn.sn-archive #ecg-avatar{background:#262924;border:1px solid #4b5a3c;color:
   /* ───────── panneau « Mes révisions » ───────── */
   const fab = el('button', 'hl-ui hl-fab');
   fab.type = 'button'; fab.title = 'Mes révisions'; fab.setAttribute('aria-label', 'Ouvrir mes révisions');
-  fab.innerHTML = ICON.pen + '<span class="badge" hidden></span>';
+  fab.innerHTML = ICON.cards + '<span class="badge" hidden></span>';
   document.body.appendChild(fab);
 
   let tab = 'list', pTag = null, pQuery = '';
   const panel = el('aside', 'hl-ui hl-panel');
   panel.setAttribute('aria-label', 'Mes révisions');
   panel.innerHTML =
-    `<div class="hl-panel-head"><h2>Mes révisions</h2><button type="button" class="hl-btn" data-act="close" aria-label="Fermer">${ICON.close}</button></div>` +
-    `<div class="hl-actions">` +
-      `<button type="button" class="hl-act" data-act="fiche">${ICON.sheet}<span>Ma fiche</span></button>` +
-      `<button type="button" class="hl-act" data-act="cards">${ICON.cards}<span>Flashcards</span></button>` +
-      `<button type="button" class="hl-act" data-act="frise">${ICON.clock}<span>Frise</span></button>` +
-      `<button type="button" class="hl-act" data-act="hide" aria-pressed="false">${ICON.eye}<span>Cache-cache</span></button>` +
-      `<button type="button" class="hl-act" data-act="suj">${ICON.bulb}<span>Sujets</span></button>` +
-      `<button type="button" class="hl-act" data-act="annot">${ICON.printer}<span>Cours annoté</span></button>` +
-    `</div>` +
-    `<div class="hl-tabs" role="tablist">` +
-      `<button type="button" class="hl-tab on" role="tab" data-tab="list">Surlignages</button>` +
-      `<button type="button" class="hl-tab" role="tab" data-tab="prog">Progression</button>` +
-      `<button type="button" class="hl-tab" role="tab" data-tab="set">Réglages</button>` +
-    `</div>` +
-    `<div class="hl-pane on" data-pane="list">` +
-      `<div class="hl-tools">` +
-        `<input type="search" class="hl-search" data-role="search" placeholder="Rechercher un passage, une note, une étiquette…" aria-label="Rechercher">` +
-        `<div class="hl-chips" data-role="chips"></div>` +
-        `<div class="hl-chips" data-role="tchips"></div>` +
-      `</div>` +
-      `<ul class="hl-list" data-role="list"></ul>` +
-    `</div>` +
-    `<div class="hl-pane" data-pane="prog" data-role="prog"></div>` +
-    `<div class="hl-pane" data-pane="set"><div class="hl-set">` +
-      `<button type="button" class="hl-switch" data-act="auto" aria-pressed="false"><span class="track"></span><span>Mode surligneur<small>Chaque sélection est surlignée d'un coup (souris)</small></span></button>` +
-      `<div><div class="hl-tools-label">Couleur active</div><div class="hl-chips" data-role="active"></div></div>` +
-      `<div><div class="hl-tools-label">Couleurs, noms et styles</div><div class="hl-cats" data-role="editor"></div></div>` +
-    `</div></div>` +
-    `<div class="hl-panel-foot">` +
-      `<button type="button" class="hl-foot-btn" data-act="undo">↶ Annuler</button>` +
-      `<button type="button" class="hl-foot-btn" data-act="copy">Copier (texte)</button>` +
-      `<button type="button" class="hl-foot-btn danger" data-act="clear">Tout effacer</button>` +
+    `<div class="hl-panel-head rv-head"><div><small>Chapitre 4</small><h2>Mes révisions</h2></div><button type="button" class="hl-btn" data-act="close" aria-label="Fermer">${ICON.close}</button></div>` +
+    `<div class="rv-list">` +
+      `<button type="button" class="rv-item" data-act="cards"><span class="rv-ic">${ICON.cards}</span><span class="rv-t"><b>Flashcards</b><small data-role="rvcards"></small></span><span class="rv-ar" aria-hidden="true">›</span></button>` +
+      `<button type="button" class="rv-item" data-act="frise"><span class="rv-ic">${ICON.clock}</span><span class="rv-t"><b>Frise</b><small data-role="rvfrise"></small></span><span class="rv-ar" aria-hidden="true">›</span></button>` +
+      `<button type="button" class="rv-item" data-act="suj"><span class="rv-ic">${ICON.bulb}</span><span class="rv-t"><b>Sujets</b><small data-role="rvsuj"></small></span><span class="rv-ar" aria-hidden="true">›</span></button>` +
     `</div>`;
   document.body.appendChild(panel);
   const $ = r => panel.querySelector(`[data-role="${r}"]`);
-  const searchBox = $('search');
-  searchBox.addEventListener('input', () => { pQuery = norm(searchBox.value.trim()); refreshPanel(); });
 
   function setTab(t) {
     tab = t;
@@ -2700,10 +2667,7 @@ nav.sn.sn-archive #ecg-avatar{background:#262924;border:1px solid #4b5a3c;color:
   fab.addEventListener('click', () => togglePanel());
 
   function updateFab() {
-    const n = live().length, b = fab.querySelector('.badge');
-    b.hidden = !n; b.textContent = '';
-    fab.classList.toggle('auto', prefs.auto);
-    fab.dataset.c = prefs.color;
+    fab.querySelector('.badge').hidden = true;
   }
 
   function headings() { return Array.from(root.querySelectorAll('.hgg-part-title, .hgg-section-title')); }
@@ -2726,58 +2690,12 @@ nav.sn.sn-archive #ecg-avatar{background:#262924;border:1px solid #4b5a3c;color:
     return true;
   }
   function refreshPanel() {
-    const chips = $('chips'), tchips = $('tchips'), active = $('active'), list = $('list');
-    chips.textContent = ''; tchips.textContent = ''; active.textContent = ''; list.textContent = '';
-    const mk = (id, label, n) => {
-      const b = el('button', 'hl-chip'); b.type = 'button';
-      const i = el('i', id ? '' : 'all'); if (id) i.dataset.c = id;
-      b.append(i, document.createTextNode(label));
-      if (n != null) b.append(el('b', '', n));
-      return b;
-    };
-    const all = mk('', 'Toutes', hls.length); all.dataset.f = ''; all.classList.toggle('on', !filter); chips.appendChild(all);
-    COLORS.forEach(c => { const b = mk(c.id, c.label, hls.filter(h => h.c === c.id).length); b.dataset.f = c.id; b.classList.toggle('on', filter === c.id); chips.appendChild(b); });
-    COLORS.forEach(c => { const b = mk(c.id, c.label); b.dataset.a = c.id; b.classList.toggle('on', prefs.color === c.id); active.appendChild(b); });
-    allTags().forEach(t => { const b = el('button', 'hl-chip hl-tchip' + (pTag === t ? ' on' : ''), '#' + t); b.type = 'button'; b.dataset.tf = t; tchips.appendChild(b); });
-    tchips.hidden = !tchips.children.length;
-    if (pTag && !allTags().includes(pTag)) pTag = null;
-
-    const sw = panel.querySelector('[data-act="auto"]');
-    sw.classList.toggle('on', prefs.auto); sw.setAttribute('aria-pressed', String(prefs.auto));
-    panel.querySelector('[data-act="hide"]').classList.toggle('on', hideMode);
-    panel.querySelector('[data-act="hide"]').setAttribute('aria-pressed', String(hideMode));
-    panel.querySelector('[data-act="undo"]').disabled = !hist.length;
-    panel.querySelector('[data-act="clear"]').disabled = !hls.length;
-    panel.querySelector('[data-act="copy"]').disabled = !hls.length;
-    panel.querySelector('[data-act="fiche"]').disabled = false;
-
-    const items = hls.filter(passes);
-    if (!items.length) {
-      const li = el('li', 'hl-empty');
-      li.innerHTML = hls.length ? 'Aucun passage ne correspond à ces filtres.' : '<b>Rien de surligné pour l\'instant.</b><br>Sélectionne du texte dans le cours pour le surligner.<br>Clique ensuite sur un surlignage pour ajouter une note, une étiquette ou un statut.';
-      list.appendChild(li);
-    } else {
-      const heads = headings(); let lastSec = null;
-      items.forEach(h => {
-        const sec = h.o ? 'Introuvables' : (sectionOf(h, heads) || 'Début du chapitre');
-        if (sec !== lastSec) { list.appendChild(el('li', 'hl-sec', sec)); lastSec = sec; }
-        const li = el('li', 'hl-item' + (h.o ? ' orphan' : '')); li.dataset.id = h.id; li.dataset.c = h.c;
-        const main = el('div', 'hl-item-main');
-        main.appendChild(el('div', 'hl-item-q', quoteText(h)));
-        if (h.n) main.appendChild(el('div', 'hl-item-n', '✎ ' + h.n));
-        if (h.tags && h.tags.length) { const t = el('div', 'hl-item-tags'); h.tags.forEach(x => t.appendChild(el('span', 'hl-ftag', '#' + x))); main.appendChild(t); }
-        const side = el('div', 'hl-item-side');
-        const del = el('button', 'hl-item-del', '×'); del.type = 'button'; del.setAttribute('aria-label', 'Supprimer'); del.dataset.act = 'del';
-        side.append(del);
-        li.append(el('span', 'hl-item-bar'), main, side);
-        list.appendChild(li);
-      });
-    }
-    panel.querySelectorAll('.hl-cat').forEach(r => { const s = r.querySelector('.hl-cat-n'); if (s) { const n = hls.filter(h => h.c === r.dataset.id).length; s.textContent = n ? String(n) : ''; } });
-    if (tab === 'prog') renderProgress();
+    if (typeof fcLoad === 'function') fcLoad();
+    const all = allCards(), ok = all.filter(c => fcProg[c.id] === 'ok').length, todo = all.filter(c => fcProg[c.id] === 'todo').length;
+    $('rvcards').textContent = all.length + ' cartes · ' + ok + ' sue' + (ok > 1 ? 's' : '') + (todo ? ' · ' + todo + ' à revoir' : '');
+    $('rvfrise').textContent = EVENTS.length + ' dates à retrouver';
+    $('rvsuj').textContent = 'Un sujet de dissertation corrigé et ' + HOOKS.length + ' accroches';
   }
-
-  /* progression : couverture du cours par section + statut des passages */
   function progressData() {
     const heads = headings(), n = heads.length; if (!n) return null;
     const offs = heads.map(hd => offsetOf(hd, 0)), L = live();
@@ -2811,7 +2729,7 @@ nav.sn.sn-archive #ecg-avatar{background:#262924;border:1px solid #4b5a3c;color:
       box.appendChild(row);
     });
   }
-  $('prog').addEventListener('click', e => {
+  if ($('prog')) $('prog').addEventListener('click', e => {
     const r = e.target.closest('.hl-prog-row'); if (!r) return;
     const hd = headings()[+r.dataset.hd]; if (!hd) return;
     hd.scrollIntoView({ behavior: 'smooth', block: 'start' });
