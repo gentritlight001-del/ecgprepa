@@ -12,12 +12,18 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-10-21",
+  "maj": "2026-10-22",
   "parties": [
+   {
+    "id": "2026-10-22",
+    "nom": "Jour 12 · Severe Drought Declared in Southern England",
+    "n": 30,
+    "date": "2026-10-22"
+   },
    {
     "id": "2026-10-21",
     "nom": "Jour 11 · Alberta Votes 75% to Stay in Canada",
-    "n": 30,
+    "n": 29,
     "date": "2026-10-21"
    },
    {
@@ -65,7 +71,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-12",
     "nom": "Jour 3 · Hurricane Isaias Hits Florida",
-    "n": 29,
+    "n": 28,
     "date": "2026-10-12"
    },
    {
@@ -81,8 +87,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 307,
-  "v": "a01a4d2e8c"
+  "n": 335,
+  "v": "cbe41a2bee"
  },
  {
   "id": "espagnol",
@@ -96,8 +102,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Espagnol",
   "lien": "premiere_annee/langues/espagnol/quotidien/index.html",
   "revoir": "ecg-espagnol-quotidien-a-revoir",
-  "maj": "2026-10-21",
+  "maj": "2026-10-22",
   "parties": [
+   {
+    "id": "2026-10-22",
+    "nom": "Jour 12 · España: Milei agita en Madrid la campaña del 29-N",
+    "n": 30,
+    "date": "2026-10-22"
+   },
    {
     "id": "2026-10-21",
     "nom": "Jour 11 · EE. UU. y Cuba: Florida ordena el arresto de Raúl Castro",
@@ -119,13 +131,13 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-18",
     "nom": "Jour 8 · Chile y Bolivia: Kast en La Paz, primera visita oficial en 71 años",
-    "n": 31,
+    "n": 29,
     "date": "2026-10-18"
    },
    {
     "id": "2026-10-17",
     "nom": "Jour 7 · Venezuela: Delcy Rodríguez lleva a la FAO el plan «Venezuela Alimenta»",
-    "n": 29,
+    "n": 28,
     "date": "2026-10-17"
    },
    {
@@ -149,7 +161,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-12",
     "nom": "Jour 3 · España: Maricarmen, símbolo de la crisis de la vivienda",
-    "n": 29,
+    "n": 28,
     "date": "2026-10-12"
    },
    {
@@ -165,8 +177,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 310,
-  "v": "df259d178d"
+  "n": 336,
+  "v": "941f30a467"
  },
  {
   "id": "allemand",
@@ -180,8 +192,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Allemand",
   "lien": "premiere_annee/langues/allemand/quotidien/index.html",
   "revoir": "ecg-allemand-quotidien-a-revoir",
-  "maj": "2026-10-21",
+  "maj": "2026-10-22",
   "parties": [
+   {
+    "id": "2026-10-22",
+    "nom": "Jour 12 · Die Schweiz sagt Nein zur Neutralitätsinitiative",
+    "n": 30,
+    "date": "2026-10-22"
+   },
    {
     "id": "2026-10-21",
     "nom": "Jour 11 · Berlin wirbt um Investoren",
@@ -215,13 +233,13 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-16",
     "nom": "Jour 6 · Bremen feiert die Deutsche Einheit",
-    "n": 29,
+    "n": 27,
     "date": "2026-10-16"
    },
    {
     "id": "2026-10-15",
     "nom": "Jour 5 · Schweitzer folgt auf Bärbel Bas",
-    "n": 30,
+    "n": 29,
     "date": "2026-10-15"
    },
    {
@@ -249,8 +267,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 321,
-  "v": "adb9b8bb25"
+  "n": 348,
+  "v": "e696af6543"
  },
  {
   "id": "hgg1-ch1",
