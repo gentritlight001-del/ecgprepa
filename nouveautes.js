@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "es",
 "rubrique": "Actu Espagnol",
+"meta": "Espagne",
+"titre": "Espagne : Milei s'invite dans la campagne du 29-N, reçu par Ayuso et insultant Sánchez",
+"url": "actualites/es/articles/espagne-milei-madrid-campagne-29n-2026.html",
+"image": "actualites/es/images/espagne-milei-madrid-campagne-29n-2026.webp",
+"date": "2026-10-22T13:53:42+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
 "meta": "Cuba",
 "titre": "Cuba : un juge de Miami délivre un mandat d'arrêt sans caution contre Raúl Castro",
 "url": "actualites/es/articles/cuba-raul-castro-mandat-arret-miami-2026.html",
@@ -1785,15 +1794,6 @@ window.ECG_NOUVEAUTES = [
 "url": "Culture-Generale/nicaragua.html",
 "image": "Culture-Generale/images/nicaragua.webp",
 "date": "2026-09-12T19:52:51+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Pérou",
-"titre": "Le Pérou rejoint l'« Escudo de las Américas » et réclame la révision de ses tarifs douaniers",
-"url": "actualites/es/articles/perou-escudo-americas.html",
-"image": "actualites/es/images/perou-escudo-americas.webp",
-"date": "2026-09-12T10:40:02+00:00"
 },
 {
 "t": "cg",
