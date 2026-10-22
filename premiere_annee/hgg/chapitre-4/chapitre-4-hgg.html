@@ -1683,6 +1683,19 @@ body.focus .fx-pill{display:inline-flex}
 body.focus #cours .sp:has(> .cote.nf){grid-template-columns:minmax(0,1fr)}
 body.focus #cours .ca:not(:has(~ .ca:not(.nf))){border-bottom:0;padding-bottom:0}
 body.focus #cours .cote .frise li:not(:has(~ li:not(.nf))){padding-bottom:0}
+/* Mode focus : la colonne de côté flotte dans le texte, qui l'entoure puis reprend toute la largeur (pas de blanc) */
+@media (min-width:861px){
+  body.focus #cours .sp.fx-flot{display:flow-root}
+  body.focus #cours .sp.fx-flot>.cote{float:right;width:42%;margin:0 0 22px 40px;padding-top:4px}
+  body.focus #cours .sp.rev.fx-flot>.cote{float:left;margin:0 40px 22px 0}
+  body.focus #cours .sp.fx-flot .corps>:not(p){display:flow-root}   /* titres, encadrés, listes : ils se rangent à côté de la colonne au lieu de passer dessous */
+  body.focus #cours .sp.fx-flot .corps>p.fort{display:flow-root}
+  body.focus #cours .sp.fx-flot .corps>h4.fx-clear{clear:both}
+}
+@media (max-width:860px){
+  body.focus #cours .sp.fx-flot{display:flex;flex-direction:column;gap:30px}
+  body.focus #cours .sp.fx-flot>.cote{order:2}
+}
 /* Fiches des penseurs : livre ouvert */
 #cours .livre{--papier:#ffffff;--papier2:#eef0ea;--tranche:#c9cdc2;--dimL:var(--dimC);position:relative;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);margin-bottom:10px;
   filter:drop-shadow(0 12px 16px rgba(28,30,28,.16)) drop-shadow(0 2px 3px rgba(28,30,28,.16))}
@@ -4244,8 +4257,34 @@ nav.sn.sn-archive #ecg-avatar{background:#262924;border:1px solid #4b5a3c;color:
 (function () {
   var K = 'ecg-cours:focus', sw = document.querySelector('.fx-sw'), pill = document.querySelector('.fx-pill');
   if (!sw) return;
+  /* en mode focus, la colonne de côté passe avant le texte pour flotter dedans ; elle reprend sa place ensuite */
+  var places = [];
+  function flotter(on) {
+    if (on) document.querySelectorAll('#cours .sp').forEach(function (sp) {
+      var c = sp.querySelector(':scope > .cote'), t = sp.querySelector(':scope > .corps');
+      if (!c || !t || c.classList.contains('nf')) return;
+      places.push({ c: c, suivant: c.nextSibling, parent: sp });
+      sp.insertBefore(c, t); sp.classList.add('fx-flot');
+    });
+    else { places.forEach(function (p) { p.parent.insertBefore(p.c, p.suivant); p.parent.classList.remove('fx-flot'); }); places = []; }
+  }
+  /* un intertitre resté à côté de la colonne alors que son texte commence dessous : il descend avec son texte */
+  function recaler() {
+    document.querySelectorAll('#cours .fx-clear').forEach(function (h) { h.classList.remove('fx-clear'); });
+    if (!document.body.classList.contains('focus') || innerWidth < 861) return;
+    document.querySelectorAll('#cours .sp.fx-flot').forEach(function (sp) {
+      var c = sp.querySelector(':scope > .cote'), bas = c.getBoundingClientRect().bottom + (parseFloat(getComputedStyle(c).marginBottom) || 0);
+      sp.querySelectorAll('.corps > h4').forEach(function (h) {
+        var s = h.nextElementSibling;
+        if (s && h.getBoundingClientRect().top < bas && s.getBoundingClientRect().top >= bas - 2) h.classList.add('fx-clear');
+      });
+    });
+  }
+  addEventListener('resize', function () { clearTimeout(recaler.t); recaler.t = setTimeout(recaler, 150); });
   function regler(on, garder) {
+    if (on !== document.body.classList.contains('focus')) flotter(on);
     document.body.classList.toggle('focus', on);
+    requestAnimationFrame(recaler);
     sw.setAttribute('aria-pressed', String(on));
     if (garder) { try { on ? localStorage.setItem(K, '1') : localStorage.removeItem(K); } catch (e) {} }
   }
