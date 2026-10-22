@@ -12,8 +12,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-10-22",
+  "maj": "2026-10-23",
   "parties": [
+   {
+    "id": "2026-10-23",
+    "nom": "Jour 13 · Ireland's Biggest Public Sector Strike Since 2009",
+    "n": 30,
+    "date": "2026-10-23"
+   },
    {
     "id": "2026-10-22",
     "nom": "Jour 12 · Severe Drought Declared in Southern England",
@@ -77,7 +83,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-11",
     "nom": "Jour 2 · Trump Strikes a Diesel Deal with Putin",
-    "n": 27,
+    "n": 25,
     "date": "2026-10-11"
    },
    {
@@ -87,8 +93,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 335,
-  "v": "cbe41a2bee"
+  "n": 363,
+  "v": "5c5387e612"
  },
  {
   "id": "espagnol",
@@ -102,8 +108,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Espagnol",
   "lien": "premiere_annee/langues/espagnol/quotidien/index.html",
   "revoir": "ecg-espagnol-quotidien-a-revoir",
-  "maj": "2026-10-22",
+  "maj": "2026-10-23",
   "parties": [
+   {
+    "id": "2026-10-23",
+    "nom": "Jour 13 · Chile: siete años después del estallido, miles marchan contra Kast",
+    "n": 30,
+    "date": "2026-10-23"
+   },
    {
     "id": "2026-10-22",
     "nom": "Jour 12 · España: Milei agita en Madrid la campaña del 29-N",
@@ -113,7 +125,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-21",
     "nom": "Jour 11 · EE. UU. y Cuba: Florida ordena el arresto de Raúl Castro",
-    "n": 30,
+    "n": 29,
     "date": "2026-10-21"
    },
    {
@@ -177,8 +189,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 336,
-  "v": "941f30a467"
+  "n": 365,
+  "v": "40f396995b"
  },
  {
   "id": "allemand",
@@ -192,8 +204,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Allemand",
   "lien": "premiere_annee/langues/allemand/quotidien/index.html",
   "revoir": "ecg-allemand-quotidien-a-revoir",
-  "maj": "2026-10-22",
+  "maj": "2026-10-23",
   "parties": [
+   {
+    "id": "2026-10-23",
+    "nom": "Jour 13 · Berlin zieht seine Olympia-Bewerbung zurück",
+    "n": 30,
+    "date": "2026-10-23"
+   },
    {
     "id": "2026-10-22",
     "nom": "Jour 12 · Die Schweiz sagt Nein zur Neutralitätsinitiative",
@@ -203,7 +221,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-21",
     "nom": "Jour 11 · Berlin wirbt um Investoren",
-    "n": 30,
+    "n": 29,
     "date": "2026-10-21"
    },
    {
@@ -215,7 +233,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-19",
     "nom": "Jour 9 · Merz und Macron lockern das Verbrenner-Aus",
-    "n": 29,
+    "n": 28,
     "date": "2026-10-19"
    },
    {
@@ -251,7 +269,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-12",
     "nom": "Jour 3 · Ein AfD-Politiker an der Spitze des Landtags",
-    "n": 29,
+    "n": 28,
     "date": "2026-10-12"
    },
    {
@@ -267,8 +285,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 348,
-  "v": "e696af6543"
+  "n": 375,
+  "v": "789b20682d"
  },
  {
   "id": "hgg1-ch1",
