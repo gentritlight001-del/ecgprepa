@@ -1758,7 +1758,6 @@ body.focus #cours .cote .frise li:not(:has(~ li:not(.nf))){padding-bottom:0}
   #cours,#cours .wrap{background:#fff!important}
   #cours .ch-hero h1,#cours .ch-hero .chap-label,#cours .ch-hero p,#cours .ch-hero h1 *{color:#1c1e1c!important;text-shadow:none!important}
   #cours .ch-hero img{filter:none!important;opacity:1!important}
-  #cours .t-photo img{aspect-ratio:var(--cov,4/3)!important}
   #cours .partie,#cours .plan,#cours .bilan{box-shadow:none!important}
   #cours .sp{break-inside:auto!important}
   #cours .v,#cours .fiche,#cours .def,#cours .encadre,#cours .large,#cours .cp,#cours figure,#cours .ca,#cours li{break-inside:avoid}
@@ -1773,24 +1772,13 @@ body.focus #cours .cote .frise li:not(:has(~ li:not(.nf))){padding-bottom:0}
   #cours .coupure::before{top:6px}
   #cours .pt-pola::before{top:5px}
   #cours .p-tete{break-inside:avoid}
-  #cours.thC .p-tete{--pn:4.6rem;min-height:0;padding:0 0 8px}
-  #cours.thC .p-tete>h2{font-size:1.9rem}
-  #cours.thC .partie{gap:18px!important;padding-top:4px!important}
-  #cours.thC .corps h3{margin-bottom:10px;padding-bottom:8px}
   #cours section.bilan{break-inside:avoid}
   #cours h3,#cours .corps h3{break-inside:avoid}
   #cours .large.atlas,#cours .large.gp{break-inside:auto}
-  /* mise en page « journal » : chaque partie sur deux colonnes, les fiches suivent leur texte ; les blocs larges traversent */
-  #cours .partie{display:block!important;column-count:2;column-gap:28px;column-fill:auto}
-  #cours .partie>*{margin:0 0 18px!important}
-  #cours .partie>.p-tete,#cours .partie>.large,#cours .partie>figure,#cours .partie>.cp{column-span:all}
-  #cours .sp{display:block!important}
-  #cours .sp>.corps{margin-bottom:14px}
-  #cours .sp>.cote{display:block!important;padding-top:6px}
-  #cours .sp>.cote>*{margin:0 0 20px!important}
-  #cours .corps h3{column-span:none}
-  #cours section.ess,#cours .plan{break-inside:avoid}
-  #cours .ch-hero{break-after:avoid}
+  body.imp #cours .sp.fx-flot{display:flow-root!important}
+  body.imp #cours .sp.fx-flot .cote{float:right;width:42%;margin:0 0 18px 34px;padding-top:4px}
+  body.imp #cours .sp.rev.fx-flot .cote{float:left;margin:0 34px 18px 0}
+  body.imp #cours .sp.fx-flot .corps>:not(p),body.imp #cours .sp.fx-flot .corps>p.fort{display:flow-root}
   #cours .large.atlas>*,#cours .large.gp>*{break-inside:avoid}
 }
 </style>
@@ -1978,7 +1966,7 @@ nav.sn.sn-archive #ecg-avatar{background:#262924;border:1px solid #4b5a3c;color:
 <section class="partie" id="p2">
   <div class="p-tete"><span class="p-num hgg-part-num">II</span><small>Partie II</small><h2 class="hgg-part-title">Un monde déstabilisé et marqué par une nouvelle hiérarchie des puissances</h2></div>
 
-  <section class="sp rev" id="s2-1" data-imp-apres>
+  <section class="sp rev" id="s2-1">
     <div class="corps">
       <h3 class="hgg-section-title"><i>II.1</i> Naissance de la Grande Alliance</h3>
       <p>La guerre est aussi l'occasion d'une coopération inédite entre des puissances que tout oppose. <strong>États-Unis</strong>, <strong>Royaume-Uni</strong> et <strong>URSS</strong> se retrouvent en conférence pour coordonner l'effort militaire et préparer l'après-guerre : c'est le temps de la <strong>Grande Alliance</strong>.</p>
@@ -4315,10 +4303,7 @@ nav.sn.sn-archive #ecg-avatar{background:#262924;border:1px solid #4b5a3c;color:
       var c = sp.querySelector(':scope > .cote'), t = sp.querySelector(':scope > .corps');
       if (!c || !t || (c.classList.contains('nf') && !document.body.classList.contains('imp'))) return;
       places.push({ c: c, suivant: c.nextSibling, parent: sp });
-      /* à l'impression, data-imp-apres : la colonne se glisse après le 1er paragraphe (le titre de partie peut finir une page) */
-      var ap = document.body.classList.contains('imp') && sp.hasAttribute('data-imp-apres') && t.querySelector(':scope > h3 + p');
-      if (ap) ap.after(c); else sp.insertBefore(c, t);
-      sp.classList.add('fx-flot');
+      sp.insertBefore(c, t); sp.classList.add('fx-flot');
     });
     else { places.forEach(function (p) { p.parent.insertBefore(p.c, p.suivant); p.parent.classList.remove('fx-flot'); }); places = []; }
   }
@@ -4336,9 +4321,8 @@ nav.sn.sn-archive #ecg-avatar{background:#262924;border:1px solid #4b5a3c;color:
   }
   addEventListener('resize', function () { clearTimeout(recaler.t); recaler.t = setTimeout(recaler, 150); });
   /* à l'impression, même principe : les fiches flottent dans le texte, sans colonne vide */
-  var etaitFocus = false;
-  addEventListener('beforeprint', function () { etaitFocus = document.body.classList.contains('focus'); if (etaitFocus) flotter(false); document.body.classList.add('imp'); });
-  addEventListener('afterprint', function () { document.body.classList.remove('imp'); if (etaitFocus) flotter(true); });
+  addEventListener('beforeprint', function () { document.body.classList.add('imp'); if (!document.body.classList.contains('focus')) flotter(true); });
+  addEventListener('afterprint', function () { document.body.classList.remove('imp'); if (!document.body.classList.contains('focus')) flotter(false); });
   function regler(on, garder) {
     if (on !== document.body.classList.contains('focus')) flotter(on);
     document.body.classList.toggle('focus', on);
