@@ -1,6 +1,24 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Roumanie",
+"titre": "Roumanie : le Parlement investit Luca Niculescu Premier ministre après 169 jours de crise politique",
+"url": "actualites/monde/articles/roumanie-niculescu-premier-ministre-2026.html",
+"image": "actualites/monde/images/roumanie-niculescu-premier-ministre-2026.webp",
+"date": "2026-10-22T14:02:05+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Espagne",
+"titre": "Espagne : Milei s'invite dans la campagne du 29-N, reçu par Ayuso et insultant Sánchez",
+"url": "actualites/es/articles/espagne-milei-madrid-campagne-29n-2026.html",
+"image": "actualites/es/images/espagne-milei-madrid-campagne-29n-2026.webp",
+"date": "2026-10-22T13:53:42+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Cuba",
@@ -1337,15 +1355,6 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-10-01T13:52:44+00:00"
 },
 {
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Inde",
-"titre": "Inde et Népal : au moins 81 morts en Uttar Pradesh et 27 au Népal sous des pluies diluviennes",
-"url": "actualites/monde/articles/inde-nepal-inondations-2026.html",
-"image": "actualites/monde/images/inde-nepal-inondations-2026.webp",
-"date": "2026-10-01T13:52:44+00:00"
-},
-{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "États-Unis",
@@ -1785,15 +1794,6 @@ window.ECG_NOUVEAUTES = [
 "url": "Culture-Generale/nicaragua.html",
 "image": "Culture-Generale/images/nicaragua.webp",
 "date": "2026-09-12T19:52:51+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Pérou",
-"titre": "Le Pérou rejoint l'« Escudo de las Américas » et réclame la révision de ses tarifs douaniers",
-"url": "actualites/es/articles/perou-escudo-americas.html",
-"image": "actualites/es/images/perou-escudo-americas.webp",
-"date": "2026-09-12T10:40:02+00:00"
 },
 {
 "t": "cg",

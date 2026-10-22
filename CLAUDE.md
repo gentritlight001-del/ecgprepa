@@ -327,10 +327,95 @@ page pays ou région :
   `deuxieme_annee/maths/chapitre1.html` : palette sarcelle, titre du héros sur
   **2 lignes maximum** sur ordinateur.
 
+### Chapitres d'HGG : gabarit « dossier d'archives »
+
+Choisi par le propriétaire (octobre 2026) au terme d'une longue mise au point sur **HGG 1re année, chapitre 4**
+(`premiere_annee/hgg/chapitre-4/chapitre-4-hgg.html`), qui sert de **modèle** : **tous les chapitres d'HGG (1re et 2e
+année) seront refaits sur ce gabarit**. Demande type : « Refais le chapitre N d'HGG au nouveau style ». Refonte = **même
+nom de fichier** (section 1), balises `og:`/`twitter:`/description/canonical gardées. Partir d'une copie du chapitre 4 :
+tout le CSS est dans le `<style>` de la page (portée `#cours.thC`, palette kaki `--a1:#4b5a3c`, rouge `--a3:#a3292a`,
+polices Newsreader / Libre Franklin / IBM Plex Sans Condensed / Big Shoulders Display), ainsi que les scripts (mode focus,
+« Mes révisions », impression). On garde : la barre `sn sn-cours sn-hgg sn-archive`, le script du surligneur réduit à
+« Mes révisions » (il lit `.content`, `.hgg-part-title`, `.hgg-section-title`, `.hgg-part-num`, `.ch-hero h1`, `.chap-label`),
+le `DECK`, le bouton « retour en haut ».
+
+**Contenu.** Reprendre **tout** le texte de l'ancien cours (vérifier par comparaison qu'aucune info n'est perdue), le
+corriger et le vérifier par recherche web (chiffres datés, fourchettes d'historiens, dates exactes des conférences, etc.) ;
+signaler au propriétaire ce qui est corrigé ou ajouté de mémoire. Pas de tiret cadratin. Chaque paragraphe de la colonne de
+droite a un appui dans le texte (pas de fiche sur une notion absente du texte : sinon ajouter une phrase au texte).
+
+**Ordre des blocs** (dans `#cours .wrap`) :
+1. **Héros** `header.hero.hv.hv1.ch-hero` : grande photo panoramique en tirage (`.t-photo`, scotch), étiquette de titre
+   `.t-etiq` (titre en Big Shoulders, sous-titre d'une phrase). **Pas de légende** sous la photo, pas de tampon.
+2. **Sommaire** `nav.plan` : **seulement les grandes parties** (`.pl-p`), l'interrupteur « Mode focus » (`.fx-sw`) et le
+   lien « Résumé (PDF) » (`resume-chapitreN.pdf`). **Pas de bouton PDF du cours** dans la barre (retiré).
+3. **L'essentiel** `section.ess` : 3 points numérotés et 4 chiffres (le plus marquant en rouge), centrés.
+4. **Parties** `section.partie` : en-tête `.p-tete` (`<small>Partie I</small>`, `h2.hgg-part-title`, grand chiffre romain
+   en filigrane `.p-num`, jamais coupé, un seul filet dessous) ; puis les sous-parties `section.sp` (une sur deux en
+   `.sp.rev`, colonne à gauche) : `.corps` (`h3.hgg-section-title` avec `<i>I.1</i>`, intertitres `h4.sub`, paragraphes,
+   `p.fort` à filet rouge pour la phrase clé, `ul.puces`) et `.cote` (colonne de côté). **La colonne de côté suit l'ordre
+   du texte** (la fiche en face du passage qu'elle illustre) et finit à peu près à la hauteur du texte : **pas de vide**
+   (ajouter une photo ou retirer une fiche, déplacer un bloc).
+5. **Blocs de la colonne de côté** : fiches `.v.fiche.att-pin` (punaise de couleur variable `--pin`) pour les graphiques
+   `.bars`, chiffres `.stats`, cartes `.cartes` (`.ca`), frises `.frise` (la plus récente en haut, `li.cur`), chaînes
+   `.flux`, listes `.liste5` ; photos et schémas `.v.fig.scotch` / `.schema.scotch` (scotch de couleur variable `--tape`,
+   inclinaisons `--tr`, `--rot`), photos en paysage, légende « Doc. N · … ». Photos et schémas tantôt à gauche, tantôt à
+   droite (`.sp.rev`).
+6. **Blocs pleine largeur** entre les sous-parties : citations en coupure de journal `figure.large.coupure` (toute la
+   largeur, petite taille de texte, source en dessous) ; **fiches de penseurs** `article.large.portrait` (portrait en
+   polaroïd `.pt-pola` avec scotch, kicker « Métier · œuvre, date », `h6`, texte ; portraits WebP `images/portrait-<nom>.webp`) ;
+   encadrés à volets `.large.cp.cp2` / `.cp3` (étiquettes `.cp-tag`) ; document `.large.kdoc` (ex. Long Télégramme,
+   dans sa sous-partie) ; carte commentée `.large.atlas` ; graphiques `.large.gp` ; schéma large `.large-schema`
+   (scotch visible, défilement horizontal seulement sur téléphone, schéma simple : pas d'éléments sans lien).
+7. **Définitions** `.def` dans le texte : étiquette « DÉFINITION », le mot en IBM Plex Sans Condensed gras capitales.
+   Encadrés `.encadre` (titre en capitales kaki).
+8. **Bilan** `section.bilan` : « Bilan · Chapitre N », une phrase-bilan en grand, puis une idée par grande partie (titre en
+   gras + une phrase, **2 lignes chacune**, sans liste d'exemples). Pas de lien « chapitre suivant » dans le bilan.
+9. **Pour aller plus loin** `section.plus2` : **6 cartes au plus** `.pl-c` (chapitre suivant, dossiers de culture générale,
+   œuvres de l'Humanité), sans groupes ni ligne de crédits. **Pas** de « Dans une copie » ni de liste de sources.
+10. **Fin** `footer.fin2` : deux boutons compacts, « ← Tous les chapitres d'HGG » et « Chapitre N+1 · titre → ». Pas de
+    bouton flashcards.
+
+**Mode focus** (interrupteur du sommaire, mémorisé dans `localStorage` `ecg-cours:focus`, pastille « Cours complet ») :
+le cours se resserre sur l'essentiel, environ la moitié du texte. Masquer avec la classe `nf` (blocs entiers ou
+`<span class="nf">` dans une phrase, qui doit rester correcte dans les deux modes) : fiches de penseurs, photos sauf
+le héros, coupures sauf une, exemples en trop (**un seul exemple par idée**), « Pour aller plus loin ». `<span class="fo">`
+= texte visible seulement en focus (rare, faits déjà dans le cours). Garder titres, essentiel, définitions, chiffres clés,
+schémas essentiels, bilan. En focus, la colonne de côté flotte dans le texte (script `flotter`), une colonne vide est
+masquée (`.cote.nf`), un intertitre seul à côté d'une fiche descend avec son texte. Ne pas ajouter ni retirer de blocs
+`p/li/h*/figcaption/td/th/dt/dd/blockquote` en balisant (l'éditeur s'appuie sur leur rang).
+
+**Mode éditeur** (`editeur.js`, administrateur seulement) : `<script src="../../../editeur.js" data-racine="#cours" defer>`
+en fin de `<body>`. Le propriétaire modifie le texte sur la page et l'enregistre **directement sur `main`** via l'API
+GitHub (jeton dans son navigateur). Conséquence : **avant de travailler sur un chapitre, toujours repartir du `main` le plus
+récent** (`git fetch origin main` puis fusion), pour ne jamais écraser ses éditions.
+
+**« Mes révisions »** (bouton flottant rond kaki, icône de cartes ; plus de surligneur) : plein écran à onglets
+Flashcards / Frise / Sujets (habillage kaki `.rv-ov`, dernier onglet mémorisé). Données dans le script de la page :
+`PARTS`, `DECK` (identifiants par position : **garder l'ordre et le nombre de cartes** quand on corrige), `EVENTS`
+(frise : le dernier champ est un extrait **exact** du texte du cours, vérifier que chaque « Voir dans le cours » trouve son
+passage), `HOOKS` (accroches), `ESSAY` (corrigé de dissertation ; `**gras**` et `==surligné==` permis pour aérer : mots
+clés, entrée de chaque point du plan, phrases qui répondent au sujet). Toutes ces données doivent reprendre les chiffres
+du cours corrigé (pas de valeurs d'un ancien cours) et sans tiret cadratin.
+
+**Résumé** (`resume-chapitreN.pdf`, lien du sommaire) : 2 pages A4, une carte par sous-partie (idée principale + 2 points,
+un seul exemple), dans l'esprit du mode focus. Gabarit : `outils/resume-chapitre/` (copier `hgg1-chapitre4.html`,
+feuille `style.css`) ; `python3 outils/resume-chapitre/generer.py <html> <pdf>` signale une page qui déborde. Page 1 :
+titre (pastille « Résumé »), phrase-bilan, parties I et II ; page 2 : partie III, frise de 8 dates repères aux couleurs des
+parties, 4 chiffres, puis « À retenir » (encadré sombre), « Dans une copie » et « Notions clés » (4 notions).
+
+**Impression** : bloc `@media print` en fin de `<style>` (fond blanc, A4 pleine largeur, punaises et scotchs gardés et
+jamais coupés grâce à `.pin-wrap`, fiches flottantes ou rangées sous le texte quand elles sont plus hautes que lui, aucun
+encadré coupé, blanc seulement en bas de page). Pas de PDF du cours proposé sur la page pour l'instant.
+
+**Contrôles** avant mise en ligne, à 1280 et 390 px (Playwright, `auth.js` vide) : aucune erreur JS, pas de défilement
+horizontal, images chargées, titres repérés par le script, mode focus sans colonne vide, onglets de « Mes révisions » qui
+s'ouvrent, liens de la frise valides, `grep -c '—'` à 0 dans le texte.
+
 ### Figures des chapitres d'HGG (photos, graphiques, schémas)
 
-- Même système que les chapitres 2 et 4 de 1re année et le chapitre 1 de 2e année
-  (`<figure class="hgg-fig …">`, CSS « kit figures » déjà présent dans ces pages).
+- Anciens chapitres (avant le gabarit « dossier d'archives ») : système des chapitres 2 de 1re année et 1 de 2e année
+  (`<figure class="hgg-fig …">`, CSS « kit figures »). Les règles de photos ci-dessous valent pour les deux gabarits.
 - **Photos toujours en paysage**, jamais verticales : source en paysage et cadre `r32`,
   `r43`, `r169` ou `r219` (jamais `r45` ni `r11`).
 - Photos **toujours en couleur**, sans effet de grisé ni de transition au survol.
