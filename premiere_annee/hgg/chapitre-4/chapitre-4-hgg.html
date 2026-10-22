@@ -1690,6 +1690,7 @@ body.focus #cours .cote .frise li:not(:has(~ li:not(.nf))){padding-bottom:0}
   body.focus #cours .sp.rev.fx-flot>.cote{float:left;margin:0 40px 22px 0}
   body.focus #cours .sp.fx-flot .corps>:not(p){display:flow-root}   /* titres, encadrés, listes : ils se rangent à côté de la colonne au lieu de passer dessous */
   body.focus #cours .sp.fx-flot .corps>p.fort{display:flow-root}
+  body.focus #cours .sp.fx-flot .corps>h4.fx-clear{clear:both}
 }
 @media (max-width:860px){
   body.focus #cours .sp.fx-flot{display:flex;flex-direction:column;gap:30px}
@@ -4267,9 +4268,23 @@ nav.sn.sn-archive #ecg-avatar{background:#262924;border:1px solid #4b5a3c;color:
     });
     else { places.forEach(function (p) { p.parent.insertBefore(p.c, p.suivant); p.parent.classList.remove('fx-flot'); }); places = []; }
   }
+  /* un intertitre resté à côté de la colonne alors que son texte commence dessous : il descend avec son texte */
+  function recaler() {
+    document.querySelectorAll('#cours .fx-clear').forEach(function (h) { h.classList.remove('fx-clear'); });
+    if (!document.body.classList.contains('focus') || innerWidth < 861) return;
+    document.querySelectorAll('#cours .sp.fx-flot').forEach(function (sp) {
+      var c = sp.querySelector(':scope > .cote'), bas = c.getBoundingClientRect().bottom + (parseFloat(getComputedStyle(c).marginBottom) || 0);
+      sp.querySelectorAll('.corps > h4').forEach(function (h) {
+        var s = h.nextElementSibling;
+        if (s && h.getBoundingClientRect().top < bas && s.getBoundingClientRect().top >= bas - 2) h.classList.add('fx-clear');
+      });
+    });
+  }
+  addEventListener('resize', function () { clearTimeout(recaler.t); recaler.t = setTimeout(recaler, 150); });
   function regler(on, garder) {
     if (on !== document.body.classList.contains('focus')) flotter(on);
     document.body.classList.toggle('focus', on);
+    requestAnimationFrame(recaler);
     sw.setAttribute('aria-pressed', String(on));
     if (garder) { try { on ? localStorage.setItem(K, '1') : localStorage.removeItem(K); } catch (e) {} }
   }
