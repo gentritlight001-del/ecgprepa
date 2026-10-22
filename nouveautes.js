@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Roumanie",
+"titre": "Roumanie : le Parlement investit Luca Niculescu Premier ministre après 169 jours de crise politique",
+"url": "actualites/monde/articles/roumanie-niculescu-premier-ministre-2026.html",
+"image": "actualites/monde/images/roumanie-niculescu-premier-ministre-2026.webp",
+"date": "2026-10-22T14:02:05+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Espagne",
@@ -1343,15 +1352,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Maroc : Fatima Ezzahra El Mansouri devient la première femme nommée cheffe du gouvernement",
 "url": "actualites/monde/articles/maroc-premiere-ministre-femme.html",
 "image": "actualites/monde/images/maroc-premiere-ministre-femme.webp",
-"date": "2026-10-01T13:52:44+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Inde",
-"titre": "Inde et Népal : au moins 81 morts en Uttar Pradesh et 27 au Népal sous des pluies diluviennes",
-"url": "actualites/monde/articles/inde-nepal-inondations-2026.html",
-"image": "actualites/monde/images/inde-nepal-inondations-2026.webp",
 "date": "2026-10-01T13:52:44+00:00"
 },
 {
