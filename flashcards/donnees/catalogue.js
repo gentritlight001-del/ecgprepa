@@ -873,73 +873,23 @@ window.ECG_FC_CATALOGUE = [
   "lien": "deuxieme_annee/hgg/chapitre-3-hgg.html",
   "parties": [
    {
-    "id": "I.1",
-    "nom": "Émergences et crises",
-    "n": 8
+    "id": "I",
+    "nom": "I · Une émergence heurtée",
+    "n": 68
    },
    {
-    "id": "I.2",
-    "nom": "Le modèle agro-minier exportateur",
-    "n": 7
+    "id": "II",
+    "nom": "II · Des problèmes structurels",
+    "n": 25
    },
    {
-    "id": "I.3",
-    "nom": "La valse des paradigmes",
-    "n": 16
-   },
-   {
-    "id": "I.4",
-    "nom": "Le néo-extractivisme de la vague rose",
-    "n": 6
-   },
-   {
-    "id": "I.5",
-    "nom": "La Chine, partenaire majeur",
-    "n": 10
-   },
-   {
-    "id": "I.6",
-    "nom": "La modernisation conservatrice",
-    "n": 15
-   },
-   {
-    "id": "I.7",
-    "nom": "Infrastructures et réseaux",
-    "n": 6
-   },
-   {
-    "id": "II.1",
-    "nom": "Un modèle dépendant et vulnérable",
-    "n": 10
-   },
-   {
-    "id": "II.2",
-    "nom": "Le piège du revenu intermédiaire",
-    "n": 8
-   },
-   {
-    "id": "II.3",
-    "nom": "Des externalités environnementales",
-    "n": 7
-   },
-   {
-    "id": "III.1",
-    "nom": "Métropoles et interfaces",
-    "n": 4
-   },
-   {
-    "id": "III.2",
-    "nom": "Des émergents en nombre limité",
-    "n": 4
-   },
-   {
-    "id": "III.3",
-    "nom": "Le Brésil, émergent ou émergé ?",
-    "n": 11
+    "id": "III",
+    "nom": "III · Des émergences très diverses",
+    "n": 19
    }
   ],
   "n": 112,
-  "v": "483c75dd9d"
+  "v": "3b27139cb8"
  },
  {
   "id": "humanite-cours1",
