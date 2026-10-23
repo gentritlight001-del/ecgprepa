@@ -2512,7 +2512,7 @@ window.ECG_NOUVEAUTES = [
 "meta": "HGG 1re année · chapitre 3",
 "titre": "L'Europe et le monde fracturés en 1939",
 "url": "premiere_annee/hgg/chapitre-3/chapitre-3-hgg.html",
-"image": "premiere_annee/hgg/chapitre-3/images/conseil-des-quatre-1919.webp",
+"image": "premiere_annee/hgg/chapitre-3/images/wielun-1939.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
