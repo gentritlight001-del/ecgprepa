@@ -841,63 +841,23 @@ window.ECG_FC_CATALOGUE = [
   "lien": "deuxieme_annee/hgg/chapitre-2-hgg.html",
   "parties": [
    {
-    "id": "I.1",
-    "nom": "La notion de puissance",
-    "n": 12
+    "id": "I",
+    "nom": "I · Le « pouvoir de »",
+    "n": 80
    },
    {
-    "id": "I.2",
-    "nom": "Le territoire comme ressource",
-    "n": 24
+    "id": "II",
+    "nom": "II · Le « pouvoir sur »",
+    "n": 35
    },
    {
-    "id": "I.3",
-    "nom": "E pluribus unum",
-    "n": 20
-   },
-   {
-    "id": "I.4",
-    "nom": "Les fondements économiques",
-    "n": 12
-   },
-   {
-    "id": "I.5",
-    "nom": "L'inégale intégration des territoires",
-    "n": 12
-   },
-   {
-    "id": "II.1",
-    "nom": "Domination politique et militaire",
-    "n": 19
-   },
-   {
-    "id": "II.2",
-    "nom": "La première économie du monde",
-    "n": 11
-   },
-   {
-    "id": "II.3",
-    "nom": "Le soft power",
-    "n": 5
-   },
-   {
-    "id": "III.1",
-    "nom": "Environnement et risques",
-    "n": 8
-   },
-   {
-    "id": "III.2",
-    "nom": "Une société inégalitaire et polarisée",
-    "n": 10
-   },
-   {
-    "id": "III.3",
-    "nom": "Une puissance contestée et fragilisée",
-    "n": 4
+    "id": "III",
+    "nom": "III · Le « pouvoir limité »",
+    "n": 22
    }
   ],
   "n": 137,
-  "v": "59d2ce0cce"
+  "v": "3fa8953cac"
  },
  {
   "id": "hgg2-ch3",
