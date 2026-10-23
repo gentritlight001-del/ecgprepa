@@ -1576,7 +1576,7 @@ window.ECG_NOUVEAUTES = [
 "meta": "HGG 2e année · chapitre 1",
 "titre": "Géopolitique des Amériques",
 "url": "deuxieme_annee/hgg/chapitre-1-hgg.html",
-"image": "deuxieme_annee/hgg/images/paraisopolis-tuca-vieira-2004.webp",
+"image": "deuxieme_annee/hgg/images/ameriques-mediterranee-americaine.webp",
 "date": "2026-09-21T19:18:06+00:00"
 },
 {
