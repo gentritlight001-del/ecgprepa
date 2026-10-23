@@ -294,7 +294,7 @@ window.ECG_FC_CATALOGUE = [
   "annee": 1,
   "num": 1,
   "type": "cours",
-  "titre": "Introduction à la Géopolitique",
+  "titre": "Introduction à la géopolitique",
   "court": "Chapitre 1",
   "sous": "",
   "recto": "Question",
@@ -318,7 +318,7 @@ window.ECG_FC_CATALOGUE = [
    }
   ],
   "n": 35,
-  "v": "f08ae2f730"
+  "v": "6babcc5262"
  },
  {
   "id": "hgg1-ch2",
