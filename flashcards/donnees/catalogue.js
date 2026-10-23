@@ -372,7 +372,7 @@ window.ECG_FC_CATALOGUE = [
    },
    {
     "id": "II",
-    "nom": "II · Un monde déstabilisé par la crise de 29",
+    "nom": "II · Un monde déstabilisé par la crise de 1929",
     "n": 16
    },
    {
@@ -382,7 +382,7 @@ window.ECG_FC_CATALOGUE = [
    }
   ],
   "n": 42,
-  "v": "898bf16f99"
+  "v": "858b1d70a2"
  },
  {
   "id": "hgg1-ch4",
