@@ -667,7 +667,7 @@ window.ECG_NOUVEAUTES = [
 "meta": "HGG 2e année · chapitre 3",
 "titre": "L'Amérique latine, entre émergences et crises",
 "url": "deuxieme_annee/hgg/chapitre-3-hgg.html",
-"image": "deuxieme_annee/hgg/images/chancay-port-vue-projet.webp",
+"image": "deuxieme_annee/hgg/images/avenida-paulista-sao-paulo.webp",
 "date": "2026-10-15T06:42:59+00:00"
 },
 {
