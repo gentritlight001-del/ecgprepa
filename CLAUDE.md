@@ -335,7 +335,7 @@ année) seront refaits sur ce gabarit**. Demande type : « Refais le chapitre N 
 nom de fichier** (section 1), balises `og:`/`twitter:`/description/canonical gardées. Partir d'une copie du chapitre 4 :
 tout le CSS est dans le `<style>` de la page (portée `#cours.thC`, palette kaki `--a1:#4b5a3c`, rouge `--a3:#a3292a`,
 polices Newsreader / Libre Franklin / IBM Plex Sans Condensed / Big Shoulders Display), ainsi que les scripts (mode focus,
-« Mes révisions », impression). On garde : la barre `sn sn-cours sn-hgg sn-archive`, le script du surligneur réduit à
+« Mes révisions », impression). **Une palette par chapitre**, jamais deux fois la même : remplacer dans tout le fichier les couleurs du chapitre 4 (kaki et leurs teintes, rouge, y compris les `--p` des parties de la frise de « Mes révisions » et la teinte `.f2` des schémas) ; les punaises et scotchs décoratifs ne changent pas. Palettes prises : chapitre 4 kaki `#4b5a3c` / rouge `#a3292a` ; chapitre 3 (refait en octobre 2026) bleu ardoise `#2f4b66` / rouille `#b0451c`. On garde : la barre `sn sn-cours sn-hgg sn-archive`, le script du surligneur réduit à
 « Mes révisions » (il lit `.content`, `.hgg-part-title`, `.hgg-section-title`, `.hgg-part-num`, `.ch-hero h1`, `.chap-label`),
 le `DECK`, le bouton « retour en haut ».
 
