@@ -2429,9 +2429,9 @@ window.ECG_NOUVEAUTES = [
 "t": "cours",
 "rubrique": "Cours",
 "meta": "HGG 1re année · chapitre 1",
-"titre": "Introduction à la Géopolitique",
+"titre": "Introduction à la géopolitique",
 "url": "premiere_annee/hgg/chapitre-1/chapitre-1-hgg.html",
-"image": "",
+"image": "premiere_annee/hgg/chapitre-1/images/eurasie-satellite.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
