@@ -14,7 +14,8 @@ relancer le script après chaque nouvel article ou nouveau cours.
 Articles d'actualité au gabarit « a-page » (maquette B) : photo de une en plein cadre,
 assombrie à gauche, pastille rouge du pays, titre blanc, filet rouge en bas. Fiches d'œuvres et
 fiches auteurs de l'Humanité avec visuel : visuel flou en fond, visuel net à droite, pastille et filet à la couleur
-de la fiche. Autres pages : aplat de couleur et titre.
+de la fiche. Chapitres d'HGG : modèle « dossier d'archives » (chemise kraft, photo du héros scotchée, fiche de titre
+à grand numéro, tampon), à la couleur du chapitre. Autres pages : aplat de couleur et titre.
 
 Prérequis : playwright (voir newsletter/outils/installer.sh). Le chemin de Chromium
 peut être donné avec la variable CHROMIUM_PATH.
@@ -183,6 +184,59 @@ def cours_ecg(rel, contenu, lab):
     return morceaux[0], image_cours(rel, contenu), couleur, '\u00a0· '.join(morceaux[1:]), (num.group(1).lstrip('0') or '0') if num else ''
 
 
+# Chapitres d'HGG (1re et 2e année) : modèle « dossier d'archives » choisi par le propriétaire (mélange des
+# maquettes E1 et E2), dans l'esprit du gabarit des chapitres. Chemise kraft avec onglet « HGG · année »,
+# photo du héros en tirage panoramique scotché, fiche de titre (grand numéro, « Chapitre / HGG · année »,
+# titre en Big Shoulders) qui chevauche la photo, tampon « ECG Prépa · Cours ». Couleur : celle du chapitre
+# (--a1 des chapitres refaits), sinon l'ocre de l'HGG. Sans photo : feuille quadrillée et grand numéro au trait.
+GABARIT_ARCHIVE = """<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<link rel="stylesheet" href="file://%(racine)sfonts/fonts.css">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@900&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1200px;height:630px;overflow:hidden;position:relative;--c:#a5652a;background:#d8cdb6;background-image:radial-gradient(ellipse at 15%% 10%%,rgba(255,255,255,.28),transparent 55%%),radial-gradient(ellipse at 90%% 95%%,rgba(80,60,30,.18),transparent 60%%),repeating-linear-gradient(93deg,rgba(90,70,40,.035) 0 1px,transparent 1px 4px),repeating-linear-gradient(2deg,rgba(255,255,255,.05) 0 2px,transparent 2px 6px)}
+.cond{font-family:'IBM Plex Sans Condensed',sans-serif}
+.sc{position:absolute;width:130px;height:34px;background:rgba(242,214,117,.78);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+#chem{position:absolute;left:28px;right:28px;top:60px;bottom:24px;background:#cfc2a6;border-radius:4px 10px 6px 6px;box-shadow:inset 0 0 0 1px rgba(90,70,40,.15),0 6px 18px rgba(40,30,10,.18)}
+#ong{position:absolute;left:28px;top:22px;height:46px;padding:0 26px;background:#cfc2a6;border-radius:10px 10px 0 0;display:flex;align-items:center;gap:14px;font-size:17px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#4d412b}
+#ong i{width:12px;height:12px;border-radius:50%%;background:var(--c)}
+#logo{position:absolute;right:46px;top:24px;font-family:'Playfair Display',serif;font-weight:700;font-size:28px;color:#3a3122}
+#tir{position:absolute;left:250px;right:60px;top:92px;height:300px;background:#fff;padding:12px;box-shadow:0 14px 34px rgba(40,30,10,.28);transform:rotate(-1.2deg)}
+#tir img{width:100%%;height:100%%;object-fit:cover;display:block}
+#tir .gnum{display:none;position:absolute;right:60px;top:10px;font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:260px;line-height:1;color:transparent;-webkit-text-stroke:3px var(--c);opacity:.85}
+body.sans #tir{background:#f6f1e6;background-image:linear-gradient(rgba(60,90,120,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(60,90,120,.12) 1px,transparent 1px);background-size:28px 28px}
+body.sans #tir img{display:none}
+body.sans #tir .gnum{display:block}
+#et{position:absolute;left:60px;bottom:52px;width:720px;background:#fbf9f3;padding:22px 32px 24px;box-shadow:0 12px 28px rgba(40,30,10,.26);transform:rotate(.5deg)}
+#piece{display:flex;align-items:flex-end;gap:16px;border-bottom:3px solid var(--c);padding-bottom:12px}
+#n{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:92px;line-height:.8;color:var(--c)}
+#l{font-size:16px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#6b5f48;line-height:1.45}
+#title{margin-top:4px;padding-top:.14em;font-family:'Big Shoulders Display',sans-serif;font-weight:900;text-transform:uppercase;line-height:1;color:#1c1915;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+#tampon{position:absolute;right:92px;bottom:40px;width:150px;height:150px;border-radius:50%%;border:4px solid rgba(163,41,42,.72);color:rgba(163,41,42,.78);display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-14deg);font-weight:700;letter-spacing:.12em;text-transform:uppercase;mix-blend-mode:multiply}
+#tampon b{font-size:30px;letter-spacing:.06em}
+#tampon span{font-size:13px}
+#url{position:absolute;left:60px;bottom:24px;font-family:'IBM Plex Mono',monospace;font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:#5d5038}
+</style></head><body>
+<div id="ong" class="cond"><i></i><span id="ongt"></span></div><div id="chem"></div><div id="logo">ECG Prépa</div>
+<div id="tir"><img id="img" alt=""><span class="gnum" id="gnum"></span><span class="sc" style="left:42%%;top:-17px;transform:rotate(-3deg)"></span><span class="sc" style="right:-38px;bottom:20px;width:110px;transform:rotate(-58deg)"></span></div>
+<div id="et"><div id="piece"><span id="n"></span><span id="l" class="cond"></span></div><div id="title"></div></div>
+<div id="tampon" class="cond"><span>ECG Prépa</span><b>Cours</b><span id="tan"></span></div>
+<div id="url">ecg-prepa.fr · Cours</div></body></html>"""
+
+
+def archive_de(rel, contenu):
+    """Chapitre d'HGG : (année, numéro, image ou None, couleur), sinon None."""
+    m = re.match(r'(premiere|deuxieme)_annee/hgg/(?:chapitre-\d+/)?chapitre-(\d+)-hgg\.html$', rel)
+    if not m:
+        return None
+    img = re.search(r'class="t-photo[^"]*"[^>]*>\s*<img src="([^"]+)"', contenu)
+    chemin = os.path.normpath(os.path.join(RACINE, os.path.dirname(rel), img.group(1))) if img else image_cours(rel, contenu)
+    if chemin and not chemin.startswith('data:') and not os.path.exists(chemin):
+        chemin = None
+    c = re.search(r'--a1:\s*(#[0-9a-fA-F]{6})', contenu)
+    return ('1re année' if m.group(1) == 'premiere' else '2e année'), m.group(2), chemin, (c.group(1) if c else COULEURS['hgg'])
+
+
 def auteur_de(rel, contenu):
     """Fiche auteur de l'Humanité : (« Fiche auteur », portrait, couleur, « naissance – mort »), sinon None."""
     if '/Fiches auteurs/' not in rel or 'class="f-portrait"' not in contenu:
@@ -307,6 +361,8 @@ def main():
     gab_photo.write(GABARIT_PHOTO % {'racine': RACINE}); gab_photo.close()
     gab_visuel = tempfile.NamedTemporaryFile('w', suffix='.html', delete=False, encoding='utf-8')
     gab_visuel.write(GABARIT_VISUEL % {'racine': RACINE}); gab_visuel.close()
+    gab_archive = tempfile.NamedTemporaryFile('w', suffix='.html', delete=False, encoding='utf-8')
+    gab_archive.write(GABARIT_ARCHIVE % {'racine': RACINE}); gab_archive.close()
     with sync_playwright() as pw:
         chemin = os.environ.get('CHROMIUM_PATH') or ('/opt/pw-browsers/chromium' if os.path.exists('/opt/pw-browsers/chromium') else None)
         nav = pw.chromium.launch(executable_path=chemin) if chemin else pw.chromium.launch()
@@ -319,13 +375,34 @@ def main():
         page_visuel = nav.new_page(viewport={'width': 1200, 'height': 630})
         page_visuel.goto('file://' + gab_visuel.name)
         page_visuel.evaluate('document.fonts.ready')
+        page_archive = nav.new_page(viewport={'width': 1200, 'height': 630})
+        page_archive.goto('file://' + gab_archive.name)
+        page_archive.evaluate('document.fonts.ready')
         for rel, contenu, (cle, lab, titre, fond, fg, accent, logo) in travail:
             sortie = 'partage/' + cle + '.jpg'
             os.makedirs(os.path.dirname(RACINE + sortie), exist_ok=True)
-            photo = photo_de(rel, contenu)
-            visuel = None if photo else (visuel_de(rel, contenu) or auteur_de(rel, contenu) or cours_de(rel, contenu))
-            cours = None if photo or visuel else cours_ecg(rel, contenu, lab)
-            if cours:
+            archive = archive_de(rel, contenu)
+            photo = None if archive else photo_de(rel, contenu)
+            visuel = None if photo or archive else (visuel_de(rel, contenu) or auteur_de(rel, contenu) or cours_de(rel, contenu))
+            cours = None if photo or visuel or archive else cours_ecg(rel, contenu, lab)
+            if archive:
+                annee, num, img, couleur = archive
+                titre = insecables(re.sub(r'^(?:HGG\s*)?Chapitre\s*\d+\s*[:—–-]\s*', '', titre))
+                n = len(titre)
+                taille = 62 if n < 24 else 56 if n < 34 else 50 if n < 46 else 44 if n < 58 else 40
+                page_archive.evaluate("""([titre, img, taille, couleur, annee, num]) => new Promise(ok => {
+                  document.body.style.setProperty('--c', couleur); document.body.classList.toggle('sans', !img);
+                  document.getElementById('ongt').textContent = 'HGG · ' + annee;
+                  document.getElementById('n').textContent = num.padStart(2, '0');
+                  document.getElementById('gnum').textContent = num.padStart(2, '0');
+                  document.getElementById('l').innerHTML = 'Chapitre<br>HGG · ' + annee;
+                  document.getElementById('tan').textContent = annee;
+                  const t = document.getElementById('title'); t.textContent = titre; t.style.fontSize = taille + 'px';
+                  const i = document.getElementById('img'); if (!img) return document.fonts.ready.then(() => ok());
+                  i.onload = i.onerror = () => document.fonts.ready.then(() => ok()); i.src = img; })""",
+                                      [titre, (img if not img or img.startswith('data:') else 'file://' + img), taille, couleur, annee, num])
+                page_archive.screenshot(path=RACINE + sortie, type='jpeg', quality=84)
+            elif cours:
                 pastille, img, couleur, meta, num = cours
                 titre = re.sub(r'\s*·\s*Civilisation \w+$', '', titre)
                 m = re.match(r'^(Leçon|Chapitre|Notion|Colle)\s*(\d+)\s*[—:–-]\s*(.+)$', titre)
@@ -410,6 +487,7 @@ def main():
     os.unlink(gab.name)
     os.unlink(gab_photo.name)
     os.unlink(gab_visuel.name)
+    os.unlink(gab_archive.name)
     print('%d image(s) de partage créée(s) dans partage/.' % len(travail))
 
 
