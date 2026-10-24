@@ -77,7 +77,7 @@ directement après chaque modification, sans attendre un nouveau « mets en lign
    `ch-hero-media` recadrée, pastille « Cours N », titre, « L'Humanité · 2e année »). Les pages de cours de 1re et 2e année aussi (pastille de la
    matière ou de la langue, titre, « Chapitre N · 1re année », couleur fixe par matière dans `COULEURS` du script) :
    image du héros si elle est stockée sur le site, sinon la vignette `.ci-vig` de l'index de la matière (ou de l'autre
-   année), sinon l'image du bloc de données ; sans image, grand numéro du chapitre au trait. Les autres pages gardent un aplat de couleur. Regarder l'image produite : si le
+   année), sinon l'image du bloc de données ; sans image, grand numéro du chapitre au trait. **Chapitres d'HGG** (1re et 2e année) : modèle propre « dossier d'archives » choisi par le propriétaire (`GABARIT_ARCHIVE`) : chemise kraft avec onglet « HGG · année », photo du héros (`.t-photo`) en tirage panoramique scotché, fiche de titre (grand numéro, titre en Big Shoulders) qui chevauche la photo, tampon « ECG Prépa · Cours », à la couleur du chapitre (`--a1`), sinon l'ocre de l'HGG ; après la refonte d'un chapitre, lancer `--refaire` sur sa page. Les autres pages gardent un aplat de couleur. Regarder l'image produite : si le
    visage ou le sujet de la photo passe sous le titre, le signaler au propriétaire.
    Pour **refaire** l'image d'une page qui en a déjà une (photo ou titre changés) :
    `python3 outils/images-partage.py --refaire <page>` (l'adresse prend `?v=<date et heure>`, sinon
