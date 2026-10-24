@@ -12,8 +12,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-10-23",
+  "maj": "2026-10-25",
   "parties": [
+   {
+    "id": "2026-10-25",
+    "nom": "Jour 14 · Zelenskyy in London as Burnham Pledges Unwavering Support",
+    "n": 30,
+    "date": "2026-10-25"
+   },
    {
     "id": "2026-10-23",
     "nom": "Jour 13 · Ireland's Biggest Public Sector Strike Since 2009",
@@ -29,7 +35,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-21",
     "nom": "Jour 11 · Alberta Votes 75% to Stay in Canada",
-    "n": 29,
+    "n": 28,
     "date": "2026-10-21"
    },
    {
@@ -59,7 +65,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-16",
     "nom": "Jour 6 · Burnham in Berlin as the Kensington Treaty Takes Effect",
-    "n": 27,
+    "n": 25,
     "date": "2026-10-16"
    },
    {
@@ -93,8 +99,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 363,
-  "v": "5c5387e612"
+  "n": 390,
+  "v": "b610adc01e"
  },
  {
   "id": "espagnol",
@@ -108,12 +114,18 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Espagnol",
   "lien": "premiere_annee/langues/espagnol/quotidien/index.html",
   "revoir": "ecg-espagnol-quotidien-a-revoir",
-  "maj": "2026-10-23",
+  "maj": "2026-10-25",
   "parties": [
+   {
+    "id": "2026-10-25",
+    "nom": "Jour 14 · España: la DANA Adam inunda la Safor y la Marina Alta",
+    "n": 28,
+    "date": "2026-10-25"
+   },
    {
     "id": "2026-10-23",
     "nom": "Jour 13 · Chile: siete años después del estallido, miles marchan contra Kast",
-    "n": 30,
+    "n": 29,
     "date": "2026-10-23"
    },
    {
@@ -125,13 +137,13 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-21",
     "nom": "Jour 11 · EE. UU. y Cuba: Florida ordena el arresto de Raúl Castro",
-    "n": 29,
+    "n": 28,
     "date": "2026-10-21"
    },
    {
     "id": "2026-10-20",
     "nom": "Jour 10 · Colombia: De la Espriella retira treinta obras del Museo Nacional",
-    "n": 30,
+    "n": 29,
     "date": "2026-10-20"
    },
    {
@@ -155,7 +167,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-16",
     "nom": "Jour 6 · España: Felipe VI y Letizia, una visita histórica a Ceuta",
-    "n": 28,
+    "n": 27,
     "date": "2026-10-16"
    },
    {
@@ -173,13 +185,13 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-12",
     "nom": "Jour 3 · España: Maricarmen, símbolo de la crisis de la vivienda",
-    "n": 28,
+    "n": 27,
     "date": "2026-10-12"
    },
    {
     "id": "2026-10-11",
     "nom": "Jour 2 · Panamá: un terremoto de magnitud 7,7 sacude el país",
-    "n": 28,
+    "n": 27,
     "date": "2026-10-11"
    },
    {
@@ -189,8 +201,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 365,
-  "v": "40f396995b"
+  "n": 387,
+  "v": "6db37e5f03"
  },
  {
   "id": "allemand",
@@ -204,8 +216,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Allemand",
   "lien": "premiere_annee/langues/allemand/quotidien/index.html",
   "revoir": "ecg-allemand-quotidien-a-revoir",
-  "maj": "2026-10-23",
+  "maj": "2026-10-25",
   "parties": [
+   {
+    "id": "2026-10-25",
+    "nom": "Jour 14 · Die Unionsfraktion stellt sich hinter Merz",
+    "n": 30,
+    "date": "2026-10-25"
+   },
    {
     "id": "2026-10-23",
     "nom": "Jour 13 · Berlin zieht seine Olympia-Bewerbung zurück",
@@ -269,7 +287,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-12",
     "nom": "Jour 3 · Ein AfD-Politiker an der Spitze des Landtags",
-    "n": 28,
+    "n": 25,
     "date": "2026-10-12"
    },
    {
@@ -285,8 +303,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 375,
-  "v": "789b20682d"
+  "n": 402,
+  "v": "c45526fda1"
  },
  {
   "id": "hgg1-ch1",
