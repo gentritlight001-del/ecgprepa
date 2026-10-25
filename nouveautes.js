@@ -2528,9 +2528,9 @@ window.ECG_NOUVEAUTES = [
 "t": "cours",
 "rubrique": "Cours",
 "meta": "HGG 1re année · chapitre 5",
-"titre": "Géopolitique de la Guerre Froide",
+"titre": "Géopolitique de la guerre froide",
 "url": "premiere_annee/hgg/chapitre-5/chapitre-5-hgg.html",
-"image": "",
+"image": "premiere_annee/hgg/chapitre-5/images/checkpoint-charlie-1961.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
