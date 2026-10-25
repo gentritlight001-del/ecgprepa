@@ -2548,7 +2548,7 @@ window.ECG_NOUVEAUTES = [
 "meta": "HGG 1re année · chapitre 7",
 "titre": "Le monde dans les années 1990",
 "url": "premiere_annee/hgg/chapitre-7/chapitre-7-hgg.html",
-"image": "",
+"image": "premiere_annee/hgg/chapitre-7/images/tempete-du-desert-1991.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
