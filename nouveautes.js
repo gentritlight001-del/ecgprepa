@@ -2539,7 +2539,7 @@ window.ECG_NOUVEAUTES = [
 "meta": "HGG 1re année · chapitre 6",
 "titre": "Décolonisations et Tiers-Monde",
 "url": "premiere_annee/hgg/chapitre-6/chapitre-6-hgg.html",
-"image": "",
+"image": "premiere_annee/hgg/chapitre-6/images/conference-bandung-1955.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {

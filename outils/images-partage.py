@@ -397,7 +397,7 @@ def main():
                   document.getElementById('gnum').textContent = num.padStart(2, '0');
                   document.getElementById('l').innerHTML = 'Chapitre<br>HGG · ' + annee;
                   document.getElementById('tan').textContent = annee;
-                  const t = document.getElementById('title'); t.textContent = titre; t.style.fontSize = taille + 'px';
+                  const t = document.getElementById('title'); t.innerHTML = titre.replace(/&/g, '&amp;').replace(/</g, '&lt;').split(' ').map(w => w.includes('-') ? '<span style="white-space:nowrap">' + w + '</span>' : w).join(' '); t.style.fontSize = taille + 'px';
                   const i = document.getElementById('img'); if (!img) return document.fonts.ready.then(() => ok());
                   i.onload = i.onerror = () => document.fonts.ready.then(() => ok()); i.src = img; })""",
                                       [titre, (img if not img or img.startswith('data:') else 'file://' + img), taille, couleur, annee, num])
