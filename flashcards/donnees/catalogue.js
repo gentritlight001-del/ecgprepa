@@ -440,7 +440,7 @@ window.ECG_FC_CATALOGUE = [
   "annee": 1,
   "num": 5,
   "type": "cours",
-  "titre": "Géopolitique de la Guerre Froide",
+  "titre": "Géopolitique de la guerre froide",
   "court": "Chapitre 5",
   "sous": "",
   "recto": "Question",
@@ -464,7 +464,7 @@ window.ECG_FC_CATALOGUE = [
    }
   ],
   "n": 45,
-  "v": "595322c123"
+  "v": "2f849229fa"
  },
  {
   "id": "hgg1-ch6",
