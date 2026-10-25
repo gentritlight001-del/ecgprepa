@@ -2555,9 +2555,9 @@ window.ECG_NOUVEAUTES = [
 "t": "cours",
 "rubrique": "Cours",
 "meta": "HGG 1re année · chapitre 8",
-"titre": "Le Monde Actuel — Ordre et Désordre Mondial",
+"titre": "Le monde actuel, ordre et désordre mondial",
 "url": "premiere_annee/hgg/chapitre-8/chapitre-8-hgg.html",
-"image": "",
+"image": "premiere_annee/hgg/chapitre-8/images/bakhmout-2023.webp",
 "date": "2026-09-11T19:03:33+00:00"
 }
 ];

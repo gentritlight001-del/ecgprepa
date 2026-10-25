@@ -536,7 +536,7 @@ window.ECG_FC_CATALOGUE = [
   "annee": 1,
   "num": 8,
   "type": "cours",
-  "titre": "Le Monde Actuel — Ordre et Désordre Mondial",
+  "titre": "Le monde actuel, ordre et désordre mondial",
   "court": "Chapitre 8",
   "sous": "",
   "recto": "Question",
@@ -555,7 +555,7 @@ window.ECG_FC_CATALOGUE = [
    }
   ],
   "n": 40,
-  "v": "b858bb5f9e"
+  "v": "792c4dd2d9"
  },
  {
   "id": "hgg1-ch9",
