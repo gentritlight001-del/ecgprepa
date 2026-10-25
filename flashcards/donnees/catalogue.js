@@ -12,8 +12,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-10-25",
+  "maj": "2026-10-26",
   "parties": [
+   {
+    "id": "2026-10-26",
+    "nom": "Jour 15 · Trump Says Iran Could “Take Out” Los Angeles or San Diego",
+    "n": 30,
+    "date": "2026-10-26"
+   },
    {
     "id": "2026-10-25",
     "nom": "Jour 14 · Zelenskyy in London as Burnham Pledges Unwavering Support",
@@ -35,19 +41,19 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-21",
     "nom": "Jour 11 · Alberta Votes 75% to Stay in Canada",
-    "n": 28,
+    "n": 27,
     "date": "2026-10-21"
    },
    {
     "id": "2026-10-20",
     "nom": "Jour 10 · Trump Waives New Sanctions on Russia",
-    "n": 29,
+    "n": 27,
     "date": "2026-10-20"
    },
    {
     "id": "2026-10-19",
     "nom": "Jour 9 · “No Kings” Swaps Marches for Early Voting",
-    "n": 27,
+    "n": 26,
     "date": "2026-10-19"
    },
    {
@@ -71,7 +77,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-15",
     "nom": "Jour 5 · Burnham Says Russia Meddled in the Brexit Vote",
-    "n": 28,
+    "n": 27,
     "date": "2026-10-15"
    },
    {
@@ -99,8 +105,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 390,
-  "v": "b610adc01e"
+  "n": 415,
+  "v": "c4c2df4557"
  },
  {
   "id": "espagnol",
@@ -114,12 +120,18 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Espagnol",
   "lien": "premiere_annee/langues/espagnol/quotidien/index.html",
   "revoir": "ecg-espagnol-quotidien-a-revoir",
-  "maj": "2026-10-25",
+  "maj": "2026-10-26",
   "parties": [
+   {
+    "id": "2026-10-26",
+    "nom": "Jour 15 · Venezuela: la diáspora se moviliza y exige una fecha electoral",
+    "n": 28,
+    "date": "2026-10-26"
+   },
    {
     "id": "2026-10-25",
     "nom": "Jour 14 · España: la DANA Adam inunda la Safor y la Marina Alta",
-    "n": 28,
+    "n": 26,
     "date": "2026-10-25"
    },
    {
@@ -143,7 +155,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-20",
     "nom": "Jour 10 · Colombia: De la Espriella retira treinta obras del Museo Nacional",
-    "n": 29,
+    "n": 28,
     "date": "2026-10-20"
    },
    {
@@ -155,13 +167,13 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-18",
     "nom": "Jour 8 · Chile y Bolivia: Kast en La Paz, primera visita oficial en 71 años",
-    "n": 29,
+    "n": 28,
     "date": "2026-10-18"
    },
    {
     "id": "2026-10-17",
     "nom": "Jour 7 · Venezuela: Delcy Rodríguez lleva a la FAO el plan «Venezuela Alimenta»",
-    "n": 28,
+    "n": 26,
     "date": "2026-10-17"
    },
    {
@@ -185,7 +197,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-12",
     "nom": "Jour 3 · España: Maricarmen, símbolo de la crisis de la vivienda",
-    "n": 27,
+    "n": 26,
     "date": "2026-10-12"
    },
    {
@@ -201,8 +213,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 387,
-  "v": "6db37e5f03"
+  "n": 408,
+  "v": "187329a86d"
  },
  {
   "id": "allemand",
@@ -216,8 +228,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Allemand",
   "lien": "premiere_annee/langues/allemand/quotidien/index.html",
   "revoir": "ecg-allemand-quotidien-a-revoir",
-  "maj": "2026-10-25",
+  "maj": "2026-10-26",
   "parties": [
+   {
+    "id": "2026-10-26",
+    "nom": "Jour 15 · AfD vorn in Schwerin, Linke vorn in Berlin",
+    "n": 30,
+    "date": "2026-10-26"
+   },
    {
     "id": "2026-10-25",
     "nom": "Jour 14 · Die Unionsfraktion stellt sich hinter Merz",
@@ -227,13 +245,13 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-23",
     "nom": "Jour 13 · Berlin zieht seine Olympia-Bewerbung zurück",
-    "n": 30,
+    "n": 28,
     "date": "2026-10-23"
    },
    {
     "id": "2026-10-22",
     "nom": "Jour 12 · Die Schweiz sagt Nein zur Neutralitätsinitiative",
-    "n": 30,
+    "n": 29,
     "date": "2026-10-22"
    },
    {
@@ -275,7 +293,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-15",
     "nom": "Jour 5 · Schweitzer folgt auf Bärbel Bas",
-    "n": 29,
+    "n": 28,
     "date": "2026-10-15"
    },
    {
@@ -287,7 +305,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-12",
     "nom": "Jour 3 · Ein AfD-Politiker an der Spitze des Landtags",
-    "n": 25,
+    "n": 24,
     "date": "2026-10-12"
    },
    {
@@ -303,8 +321,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 402,
-  "v": "c45526fda1"
+  "n": 427,
+  "v": "7aac5a6dd5"
  },
  {
   "id": "hgg1-ch1",
