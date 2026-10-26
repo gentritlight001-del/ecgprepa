@@ -2377,7 +2377,7 @@ window.ECG_NOUVEAUTES = [
 "meta": "Philosophie 2e année · notion 6",
 "titre": "La Liberté",
 "url": "deuxieme_annee/philosophie/notion-6-liberte.html",
-"image": "",
+"image": "deuxieme_annee/philosophie/images/portrait-descartes.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
