@@ -973,5 +973,47 @@ window.ECG_FC_CATALOGUE = [
   ],
   "n": 46,
   "v": "54248f7170"
+ },
+ {
+  "id": "philo2-ch6",
+  "matiere": "philo",
+  "annee": 2,
+  "num": 6,
+  "type": "cours",
+  "titre": "Philosophie · Notion 6 : La Liberté",
+  "court": "Chapitre 6",
+  "sous": "",
+  "recto": "Question",
+  "verso": "Réponse",
+  "lien": "deuxieme_annee/philosophie/notion-6-liberte.html",
+  "parties": [
+   {
+    "id": "D",
+    "nom": "Distinctions",
+    "n": 6
+   },
+   {
+    "id": "I",
+    "nom": "I · L'évidence",
+    "n": 8
+   },
+   {
+    "id": "II",
+    "nom": "II · Le soupçon",
+    "n": 6
+   },
+   {
+    "id": "III",
+    "nom": "III · La conquête de soi",
+    "n": 5
+   },
+   {
+    "id": "IV",
+    "nom": "IV · Avec les autres",
+    "n": 5
+   }
+  ],
+  "n": 30,
+  "v": "6b2e0db224"
  }
 ];
