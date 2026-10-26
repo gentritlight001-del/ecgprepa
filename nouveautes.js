@@ -2467,7 +2467,7 @@ window.ECG_NOUVEAUTES = [
 "meta": "HGG 1re année · chapitre 13",
 "titre": "Nouvelles frontières et nouveaux territoires de la mondialisation",
 "url": "premiere_annee/hgg/chapitre-13/chapitre-13-hgg.html",
-"image": "",
+"image": "premiere_annee/hgg/chapitre-13/images/tijuana-frontiere.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
