@@ -2458,7 +2458,7 @@ window.ECG_NOUVEAUTES = [
 "meta": "HGG 1re année · chapitre 12",
 "titre": "Les acteurs de la mondialisation",
 "url": "premiere_annee/hgg/chapitre-12/chapitre-12-hgg.html",
-"image": "",
+"image": "premiere_annee/hgg/chapitre-12/images/la-defense.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
