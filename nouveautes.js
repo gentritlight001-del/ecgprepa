@@ -2449,7 +2449,7 @@ window.ECG_NOUVEAUTES = [
 "meta": "HGG 1re année · chapitre 11",
 "titre": "Introduction à la Mondialisation",
 "url": "premiere_annee/hgg/chapitre-11/chapitre-11-hgg.html",
-"image": "",
+"image": "premiere_annee/hgg/chapitre-11/images/diamond-princess-yokohama.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
