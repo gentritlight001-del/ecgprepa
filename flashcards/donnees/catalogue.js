@@ -12,8 +12,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-10-26",
+  "maj": "2026-10-27",
   "parties": [
+   {
+    "id": "2026-10-27",
+    "nom": "Jour 16 · Parti Québécois Returns to Power as the CAQ Is Wiped Out",
+    "n": 30,
+    "date": "2026-10-27"
+   },
    {
     "id": "2026-10-26",
     "nom": "Jour 15 · Trump Says Iran Could “Take Out” Los Angeles or San Diego",
@@ -41,7 +47,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-21",
     "nom": "Jour 11 · Alberta Votes 75% to Stay in Canada",
-    "n": 27,
+    "n": 24,
     "date": "2026-10-21"
    },
    {
@@ -53,7 +59,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-19",
     "nom": "Jour 9 · “No Kings” Swaps Marches for Early Voting",
-    "n": 26,
+    "n": 25,
     "date": "2026-10-19"
    },
    {
@@ -71,7 +77,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-16",
     "nom": "Jour 6 · Burnham in Berlin as the Kensington Treaty Takes Effect",
-    "n": 25,
+    "n": 24,
     "date": "2026-10-16"
    },
    {
@@ -101,12 +107,12 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-10",
     "nom": "Jour 1 · Trump Renames AI “Super Intelligence”",
-    "n": 25,
+    "n": 24,
     "date": "2026-10-10"
    }
   ],
-  "n": 415,
-  "v": "c4c2df4557"
+  "n": 439,
+  "v": "67b813b7cf"
  },
  {
   "id": "espagnol",
@@ -120,8 +126,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Espagnol",
   "lien": "premiere_annee/langues/espagnol/quotidien/index.html",
   "revoir": "ecg-espagnol-quotidien-a-revoir",
-  "maj": "2026-10-26",
+  "maj": "2026-10-27",
   "parties": [
+   {
+    "id": "2026-10-27",
+    "nom": "Jour 16 · Argentina: la quinta Marcha Federal Universitaria exige que se cumpla la ley",
+    "n": 32,
+    "date": "2026-10-27"
+   },
    {
     "id": "2026-10-26",
     "nom": "Jour 15 · Venezuela: la diáspora se moviliza y exige una fecha electoral",
@@ -137,7 +149,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-23",
     "nom": "Jour 13 · Chile: siete años después del estallido, miles marchan contra Kast",
-    "n": 29,
+    "n": 27,
     "date": "2026-10-23"
    },
    {
@@ -155,7 +167,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-20",
     "nom": "Jour 10 · Colombia: De la Espriella retira treinta obras del Museo Nacional",
-    "n": 28,
+    "n": 27,
     "date": "2026-10-20"
    },
    {
@@ -173,7 +185,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-17",
     "nom": "Jour 7 · Venezuela: Delcy Rodríguez lleva a la FAO el plan «Venezuela Alimenta»",
-    "n": 26,
+    "n": 25,
     "date": "2026-10-17"
    },
    {
@@ -213,8 +225,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 408,
-  "v": "187329a86d"
+  "n": 436,
+  "v": "f137675d4c"
  },
  {
   "id": "allemand",
@@ -228,8 +240,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Allemand",
   "lien": "premiere_annee/langues/allemand/quotidien/index.html",
   "revoir": "ecg-allemand-quotidien-a-revoir",
-  "maj": "2026-10-26",
+  "maj": "2026-10-27",
   "parties": [
+   {
+    "id": "2026-10-27",
+    "nom": "Jour 16 · Zwei Schläge zum Auftakt der Wiesn",
+    "n": 30,
+    "date": "2026-10-27"
+   },
    {
     "id": "2026-10-26",
     "nom": "Jour 15 · AfD vorn in Schwerin, Linke vorn in Berlin",
@@ -321,8 +339,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 427,
-  "v": "7aac5a6dd5"
+  "n": 457,
+  "v": "8851a35b54"
  },
  {
   "id": "hgg1-ch1",
