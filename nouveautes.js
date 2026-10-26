@@ -2440,7 +2440,7 @@ window.ECG_NOUVEAUTES = [
 "meta": "HGG 1re année · chapitre 10",
 "titre": "Les modèles de croissance",
 "url": "premiere_annee/hgg/chapitre-10/chapitre-10-hgg.html",
-"image": "",
+"image": "premiere_annee/hgg/chapitre-10/images/pudong-shanghai.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
