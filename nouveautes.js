@@ -2494,7 +2494,7 @@ window.ECG_NOUVEAUTES = [
 "meta": "HGG 1re année · chapitre 16",
 "titre": "La France, un modèle et une puissance en question",
 "url": "premiere_annee/hgg/chapitre-16/chapitre-16-hgg.html",
-"image": "",
+"image": "premiere_annee/hgg/chapitre-16/images/paris-la-defense.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
