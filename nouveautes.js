@@ -3,8 +3,17 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Serbie",
+"titre": "Serbie : la Liste étudiante remporte les législatives avec environ 53 % des voix, Vučić concède",
+"url": "actualites/monde/articles/serbie-liste-etudiante-victoire-vucic-2026.html",
+"image": "actualites/monde/images/serbie-liste-etudiante-victoire-vucic-2026.webp",
+"date": "2026-10-27T06:59:30+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Monde",
-"titre": "Cybersécurité : deux failles critiques dans PHP permettent d'exécuter du code à distance, déjà exploitées",
+"titre": "Cybersécurité : deux failles critiques dans PHP permettent d'exécuter du code à distance",
 "url": "actualites/monde/articles/php-faille-critique-execution-code-2026.html",
 "image": "actualites/monde/images/php-faille-critique-execution-code-2026.webp",
 "date": "2026-10-27T06:51:37+00:00"
@@ -1344,15 +1353,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/es/articles/colombie-mega-prison-haute-securite.html",
 "image": "actualites/es/images/colombie-mega-prison-haute-securite.webp",
 "date": "2026-10-01T13:53:39+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "France",
-"titre": "France : le blocus des lycées s'étend aux facs, plus de 1 000 interpellations en deux jours",
-"url": "actualites/monde/articles/france-blocus-etudiants.html",
-"image": "actualites/monde/images/france-blocus-etudiants.webp",
-"date": "2026-10-01T13:53:18+00:00"
 },
 {
 "t": "en",
