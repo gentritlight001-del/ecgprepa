@@ -4,7 +4,16 @@ window.ECG_NOUVEAUTES = [
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "États-Unis",
-"titre": "États-Unis : Meta devra payer 25 milliards de dollars au Nouveau-Mexique pour avoir trompé ses utilisateurs",
+"titre": "Midterms : Trump multiplie les meetings en terrain républicain, alors que les courses se resserrent",
+"url": "actualites/en/articles/us-midterms-trump-meetings-bastions-republicains-2026.html",
+"image": "actualites/en/images/us-midterms-trump-meetings-bastions-republicains-2026.webp",
+"date": "2026-10-27T07:36:42+00:00"
+},
+{
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "États-Unis",
+"titre": "Nouveau-Mexique : Meta condamné à payer 25 milliards de dollars pour avoir trompé ses utilisateurs",
 "url": "actualites/en/articles/us-meta-amende-25-milliards-nouveau-mexique-2026.html",
 "image": "actualites/en/images/us-meta-amende-25-milliards-nouveau-mexique-2026.webp",
 "date": "2026-10-27T07:23:36+00:00"
@@ -1649,15 +1658,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Les États-Unis confirment pour la première fois avoir déployé une arme en orbite terrestre",
 "url": "actualites/en/articles/usa-premiere-arme-orbite-2026.html",
 "image": "actualites/en/images/usa-premiere-arme-orbite-2026.webp",
-"date": "2026-09-18T20:00:18+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "Royaume-Uni",
-"titre": "Indépendance : les First Ministers d'Irlande du Nord, d'Écosse et du Pays de Galles se sont réunis à Cardiff",
-"url": "actualites/en/articles/uk-first-ministers-independence-cardiff-2026.html",
-"image": "actualites/en/images/uk-first-ministers-independence-cardiff-2026.webp",
 "date": "2026-09-18T20:00:18+00:00"
 },
 {
