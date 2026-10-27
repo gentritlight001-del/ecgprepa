@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Art — Le Cri</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<style>
+  :root {
+    --c: #a8431a;          /* couleur de la fiche */
+    --c-soft: #f9ebe3;
+    --fond: #f5f4f0;
+    --carte: #ffffff;
+    --encre: #18181b;
+    --texte: #3f3f46;
+    --discret: #52525b;
+    --ligne: #e4e2dc;
+    --titre: 'Bricolage Grotesque', system-ui, sans-serif;
+    --corps: 'Newsreader', Georgia, serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--fond); color: var(--encre); font-family: var(--corps); font-size: 1.125rem; line-height: 1.65; min-height: 100vh; }
+  strong { font-weight: 600; color: var(--encre); }
+  a { color: inherit; }
+
+  /* ─── Barre du haut ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 14px 48px; background: var(--carte); border-bottom: 1px solid var(--ligne);
+    position: sticky; top: 0; z-index: 100; font-family: var(--titre);
+  }
+  .nav-logo { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em; }
+  .nav-logo a { color: var(--encre); text-decoration: none; }
+  .breadcrumb { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: calc(100% - 420px); display: flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; overflow: hidden; font-size: 0.85rem; color: var(--discret); }
+  .breadcrumb .current { overflow: hidden; text-overflow: ellipsis; }
+  .breadcrumb a { text-decoration: none; }
+  .breadcrumb a:hover { color: var(--c); }
+  .breadcrumb .sep { color: #a1a1aa; }
+  .breadcrumb .current { color: var(--encre); }
+
+  /* ─── Bandeau ─── */
+  .ch-hero { position: relative; background: var(--c); color: #fff; padding: 56px 48px 84px; overflow: hidden; }
+  .ch-hero-fond { display: none; }
+  .ch-hero-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 40px 56px; }
+  .ch-hero-texte { flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+  .chap-label { display: flex; flex-wrap: wrap; gap: 8px; font-family: var(--titre); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .chap-label span { background: rgba(255,255,255,0.18); padding: 6px 12px; border-radius: 999px; }
+  .ch-hero h1 { font-family: var(--titre); font-weight: 800; font-size: calc(var(--t, 1) * clamp(3rem, 8vw, 6rem)); line-height: 0.95; letter-spacing: -0.02em; }
+  .ch-hero .meta { font-family: var(--titre); font-size: 1.2rem; font-weight: 500; opacity: 0.92; }
+  .ch-hero .pitch { max-width: 620px; font-size: 1.3rem; line-height: 1.5; }
+  .ch-hero-visuel { flex: 0 0 240px; max-width: 100%; aspect-ratio: 2 / 3; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+  .ch-hero-visuel.paysage { flex: 1 1 420px; aspect-ratio: auto; }
+  .ch-hero-visuel.paysage img { height: auto; }
+  .ch-hero-visuel img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  /* ─── L'essentiel ─── */
+  .essentiel {
+    position: relative; max-width: 1040px; margin: -44px auto 0; background: var(--carte); border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(24,24,27,0.10); padding: 28px 32px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 20px 40px;
+  }
+  .essentiel-wrap { padding: 0 48px; }
+  .essentiel-these { flex: 999 1 420px; min-width: 0; }
+  .etiquette { font-family: var(--titre); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c); }
+  .essentiel-these p { margin-top: 6px; font-size: 1.35rem; line-height: 1.4; font-weight: 600; }
+  .notions { flex: 1 1 300px; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+  .notions li { font-family: var(--titre); font-size: 0.92rem; font-weight: 500; padding: 8px 14px; border-radius: 999px; background: var(--c-soft); color: var(--c); }
+
+  /* ─── Corps ─── */
+  .page { max-width: 820px; margin: 0 auto; padding: 64px 48px 72px; }
+
+  .content { display: flex; flex-direction: column; gap: 64px; }
+  .hgg-part { scroll-margin-top: 90px; }
+  .hgg-part-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 20px; }
+  .hgg-part-num { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; color: var(--c); }
+  .hgg-part-title { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; letter-spacing: -0.01em; }
+  .hgg-section { margin-top: 32px; scroll-margin-top: 90px; }
+  .hgg-section-title { font-family: var(--titre); font-weight: 700; font-size: 1.35rem; line-height: 1.25; margin-bottom: 12px; }
+  .hgg-section-title .num { color: var(--c); margin-right: 6px; }
+  .content p { color: var(--texte); margin-bottom: 16px; }
+  .content p:last-child { margin-bottom: 0; }
+
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 8px 0 24px; }
+  .hgg-stat-cell { background: var(--carte); border-radius: 12px; padding: 18px 20px; }
+  .hgg-stat-num { display: block; font-family: var(--titre); font-weight: 800; font-size: 2.2rem; line-height: 1; color: var(--c); }
+  .hgg-stat-label { margin-top: 6px; font-family: var(--titre); font-size: 0.88rem; color: var(--discret); }
+
+  .carte { background: var(--carte); border-radius: 14px; padding: 22px 26px; margin: 20px 0; }
+  .carte h3 { font-family: var(--titre); font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+  .carte p { font-size: 1.05rem; }
+  .carte .etiquette { margin-bottom: 8px; }
+  .surligne { background: var(--c-soft); border-radius: 14px; padding: 20px 24px; margin: 20px 0; color: #2a1d12; font-size: 1.08rem; }
+  .duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 20px 0; }
+  .duo .carte { margin: 0; }
+  .duo .carte.pleine { background: var(--c); }
+  .duo .carte.pleine h3, .duo .carte.pleine p { color: #fff; }
+  .sujets { background: var(--carte); border-radius: 16px; margin-top: 16px; overflow: hidden; }
+  .sujet + .sujet { border-top: 1px solid var(--ligne); }
+  .sujet summary { list-style: none; display: flex; gap: 14px; align-items: baseline; padding: 16px 22px; cursor: pointer; font-family: var(--titre); font-weight: 700; font-size: 1.08rem; line-height: 1.35; }
+  .sujet summary::-webkit-details-marker { display: none; }
+  .sujet summary .n { flex: 0 0 auto; font-weight: 800; color: var(--c); }
+  .sujet summary .q { flex: 1; }
+  .sujet summary::after { content: '+'; flex: 0 0 auto; font-size: 1.3rem; line-height: 1; color: var(--c); transition: transform 0.2s; }
+  .sujet[open] summary::after { transform: rotate(45deg); }
+  .sujet summary:hover .q { color: var(--c); }
+  .sujet-corps { padding: 0 22px 18px 58px; }
+  .sujet-corps p { font-size: 1.02rem; margin-bottom: 10px; }
+  .sujet-corps .reperes { font-family: var(--titre); font-size: 0.88rem; line-height: 1.5; color: var(--discret); display: flex; flex-direction: column; gap: 4px; }
+  .sujet-corps .reperes b { color: var(--c); font-weight: 700; }
+  .sujet a { color: var(--c); text-decoration: underline; text-underline-offset: 2px; }
+
+  .copie { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 8px; }
+  .copie .carte { margin: 0; }
+  .retenir { flex: 1 1 100%; min-width: 0; }
+  .retenir ol { padding-left: 22px; display: flex; flex-direction: column; gap: 10px; font-size: 1.05rem; color: var(--texte); }
+  .rapprocher { flex: 1 1 100%; min-width: 0; background: var(--c) !important; }
+  .rapprocher .etiquette, .rapprocher p, .rapprocher em { color: #fff; }
+  .rapprocher .etiquette { opacity: 0.85; }
+  .rapprocher strong, .rapprocher a, .duo .carte.pleine strong { color: #fff; }
+
+  /* ─── Fin de page ─── */
+  .fin { border-top: 1px solid var(--ligne); background: var(--carte); padding: 24px 48px; }
+  .fin-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; font-family: var(--titre); font-size: 0.95rem; }
+  .fin a { text-decoration: none; padding: 12px 0; }
+  .fin a:hover { color: var(--c); }
+  .bouton-lu { font: 700 0.95rem var(--titre); color: #fff; background: var(--c); border: 1.5px solid var(--c); border-radius: 999px; padding: 12px 22px; min-height: 44px; cursor: pointer; }
+  .bouton-lu.fait { background: transparent; color: var(--c); }
+
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--encre); color: #fff; border: none; border-radius: 50%; font-size: 1.1rem; cursor: pointer; opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 99; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+  }
+  @media (max-width: 760px) {
+    .breadcrumb { display: none; }
+  }
+  @media (max-width: 640px) {
+    nav { padding: 12px 16px; }
+    .breadcrumb { display: none; }
+    .ch-hero { padding: 36px 16px 72px; }
+    .ch-hero-visuel { flex-basis: 160px; }
+    .essentiel-wrap { padding: 0 16px; }
+    .essentiel { padding: 22px 20px; }
+    .page { padding: 40px 16px 56px; }
+    .fin { padding: 20px 16px; }
+    .sujet summary { padding: 14px 16px; }
+    .sujet-corps { padding: 0 16px 16px; }
+    .hgg-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .hgg-stat-cell { padding: 14px 12px; }
+    .hgg-stat-num { font-size: 1.6rem; }
+  }
+
+  @media print {
+    .sujet-corps { display: block !important; }
+    @page { size: A4; margin: 16mm 14mm; }
+    nav, .back-to-top, .fin, .ch-hero-visuel { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: #fff; font-size: 10pt; }
+    .ch-hero { padding: 1rem 1.2rem; }
+    .ch-hero h1 { font-size: 22pt; }
+    .essentiel { margin: 0.6rem 0; box-shadow: none; border: 1pt solid var(--ligne); }
+    .page { display: block; padding: 0.6rem 0; }
+    .content { gap: 1.2rem; }
+    .carte, .hgg-stat-cell { border: 1pt solid var(--ligne); break-inside: avoid; }
+    .surligne, .duo, .sujet { break-inside: avoid; }
+  }
+</style>
+<link rel="stylesheet" href="../../barre-section.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Le Cri">
+<meta property="og:image" content="https://ecg-prepa.fr/partage/humanite/humanite-art-le-cri.jpg?v=202610201949">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Le Cri">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ecg-prepa.fr/partage/humanite/humanite-art-le-cri.jpg?v=202610201949">
+<meta name="description" content="Le Cri est une œuvre d'Edvard Munch (1893), image de l'angoisse moderne. Fiche sur l'œuvre, son histoire, son analyse et les pistes pour la dissertation sur l'Humanité.">
+<link rel="canonical" href="https://ecg-prepa.fr/humanite/art/le-cri.html">
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="sn sn-hum">
+  <div class="nav-logo sn-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb sn-fil">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">›</span>
+    <a href="../../humanite.html"><span>L'Humanité</span></a>
+    <span class="sep">›</span>
+    <a href="art.html"><span>Art</span></a>
+    <span class="sep">›</span>
+    <span class="current">Le Cri</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="ch-hero-inner">
+    <div class="ch-hero-texte">
+      <div class="chap-label"><span>Art</span><span>L'Humanité</span></div>
+      <h1>Le Cri</h1>
+      <p class="meta">Edvard Munch · 1893 · Tempera et crayon, expressionnisme</p>
+      <p class="pitch">Sur une route au-dessus du fjord d'Oslo, une silhouette se bouche les oreilles sous un ciel rouge sang&nbsp;: Munch peint l'angoisse elle-même, sans cause ni remède.</p>
+    </div>
+    <figure class="ch-hero-visuel paysage"><img src="images/le-cri-oeuvre.webp" alt="Le Cri de Munch, version au pastel de 1895 : une silhouette au visage de crâne se tient la tête entre les mains, bouche ouverte, sur un pont, sous un ciel ondoyant rouge et jaune" loading="eager" onerror="this.closest('.ch-hero-visuel').remove()"></figure>
+  </div>
+</div>
+
+<!-- L'ESSENTIEL -->
+<div class="essentiel-wrap">
+  <section class="essentiel" aria-label="L'essentiel">
+    <div class="essentiel-these">
+      <div class="etiquette">L'essentiel en une phrase</div>
+      <p>Seul parmi les autres, sans danger visible, l'homme moderne découvre une angoisse sans objet&nbsp;: être humain, c'est aussi pouvoir être submergé par ce que l'on ressent.</p>
+    </div>
+    <ul class="notions" aria-label="Notions du thème">
+      <li>Angoisse et existence</li>
+      <li>Solitude de l'homme moderne</li>
+      <li>Folie et sensibilité</li>
+    </ul>
+  </section>
+</div>
+
+<div class="page">
+
+<div class="content">
+
+<section class="hgg-part" id="intro">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">1.</span><span class="hgg-part-title">Présentation de l'œuvre</span></h2>
+
+    <p><strong>Le Cri</strong> (en norvégien <em>Skrik</em>) est une œuvre du peintre norvégien <strong>Edvard Munch</strong> (1863-1944). La première version, peinte en <strong>1893</strong> à la tempera et au crayon sur carton (91 × 73,5 cm), est conservée au <strong>Musée national d'Oslo</strong>. Munch reprend le motif plusieurs fois&nbsp;: un pastel (1893), un second pastel (1895), reproduit en tête de cette fiche, une lithographie (1895), et une seconde peinture (vers 1910), conservée au musée Munch d'Oslo.</p>
+  <div class="hgg-stats">
+<div class="hgg-stat-cell"><span class="hgg-stat-num">4</span><div class="hgg-stat-label">Versions peintes ou dessinées, plus une lithographie</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">2</span><div class="hgg-stat-label">Vols, en 1994 et en 2004, à Oslo</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">119,9</span><div class="hgg-stat-label">Millions de dollars, prix du pastel de 1895 en 2012</div></div>
+</div>
+    <p>Aucun danger n'est visible&nbsp;: une route, une rambarde, un fjord, deux promeneurs. Et pourtant la figure du premier plan semble se dissoudre dans le paysage. Munch ne peint pas ce qu'il voit, mais ce qu'il éprouve. La toile pose une question centrale pour le thème de l'Humanité&nbsp;: l'angoisse est-elle une faiblesse, ou ce qui fait de nous des êtres humains&nbsp;?</p>
+</section>
+
+<section class="hgg-part" id="p1">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">2.</span><span class="hgg-part-title">Genèse et description</span></h2>
+
+  <div class="hgg-section" id="s1-1">
+    <h3 class="hgg-section-title"><span class="num">2.1</span>Un cri qui traverse la nature</h3>
+
+    <p>Le point de départ est un souvenir que Munch note dans son journal, à Nice, le <strong>22 janvier 1892</strong>. Il marchait avec deux amis au coucher du soleil quand le ciel est devenu rouge sang&nbsp;; ses amis ont continué, et lui est resté seul, tremblant d'angoisse, à sentir «&nbsp;un cri infini qui traversait la nature&nbsp;». La scène se situe sur la colline d'<strong>Ekeberg</strong>, qui domine le fjord et la ville de Kristiania, l'actuelle Oslo.</p>
+    <p>Cette angoisse a une histoire. Munch a perdu sa mère, emportée par la tuberculose quand il avait cinq ans, puis sa sœur Sophie, morte de la même maladie à quinze ans&nbsp;; une autre sœur, Laura, a été internée. Dans ses notes, il écrit que la maladie, la folie et la mort ont été les anges noirs qui ont veillé sur son berceau.</p>
+    <div class="surligne">La figure ne crie pas&nbsp;: elle se bouche les oreilles. Selon Munch lui-même, c'est la <strong>nature</strong> qui crie, et l'homme qui l'entend. Le premier titre, en allemand, le dit clairement&nbsp;: <em>Der Schrei der Natur</em>, «&nbsp;le cri de la nature&nbsp;».</div>
+  </div>
+
+  <div class="hgg-section" id="s1-2">
+    <h3 class="hgg-section-title"><span class="num">2.2</span>Une image reprise et diffusée</h3>
+
+    <p>Munch fait du <em>Cri</em> le centre de la <strong>Frise de la vie</strong>, un ensemble de toiles sur l'amour, l'angoisse et la mort, qu'il expose notamment à Berlin en 1902. Il reprend le motif en pastel, en peinture, et surtout en <strong>lithographie</strong> en 1895&nbsp;: une version en noir et blanc, imprimée en plusieurs exemplaires, qui fait circuler l'image dans les revues et les expositions. Le Cri n'est pas un tableau unique, c'est une image que l'artiste veut faire voir.</p>
+    <div class="carte">
+      <div class="etiquette">«&nbsp;Ne peut avoir été peint que par un fou&nbsp;»</div>
+      <p>Sur la version de 1893, une petite phrase est écrite au crayon dans le ciel&nbsp;: <em>Kan kun være malet af en gal Mand!</em> On a longtemps cru à l'insulte d'un visiteur. En <strong>2021</strong>, une étude de l'écriture menée par le Musée national l'a attribuée à <strong>Munch lui-même</strong>, sans doute après les critiques de 1895 qui mettaient en doute sa santé mentale. Le peintre reprend à son compte l'accusation de folie.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s1-3">
+    <h3 class="hgg-section-title"><span class="num">2.3</span>Lire la toile</h3>
+
+    <p>Le tableau oppose deux mondes. D'un côté, des <strong>lignes droites</strong>&nbsp;: la rambarde et la route, qui filent en diagonale vers le fond. De l'autre, des <strong>lignes courbes</strong>&nbsp;: le ciel, le fjord, la colline, et la figure elle-même, qui ondulent comme une onde sonore. Entre les deux, l'homme est pris dans un vertige.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>La figure</h3>
+        <p>Un crâne chauve, des yeux vides, ni âge ni sexe. On a rapproché ce visage d'une momie péruvienne que Munch aurait vue à l'Exposition universelle de Paris en 1889. C'est un homme réduit à sa peur.</p>
+      </div>
+      <div class="carte">
+        <h3>Les mains sur les oreilles</h3>
+        <p>Le geste dit tout&nbsp;: la figure veut ne plus entendre. Le cri vient de l'extérieur et de l'intérieur à la fois, et rien ne peut l'arrêter.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le ciel rouge sang</h3>
+        <p>Des bandes de rouge et d'orange tourbillonnent. Certains y voient les couchers de soleil causés par l'éruption du Krakatoa en 1883, d'autres des nuages rares&nbsp;; l'essentiel est ailleurs&nbsp;: le ciel est en feu parce que l'homme est en crise.</p>
+      </div>
+      <div class="carte">
+        <h3>Le fjord et la colline</h3>
+        <p>Le paysage perd sa solidité&nbsp;: l'eau, la terre et l'air se mêlent en lignes qui vibrent. Le monde extérieur devient le reflet d'un état intérieur.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>La rambarde</h3>
+        <p>Seule ligne droite et rigide, elle fuit vers le fond et accentue le vertige. Elle sépare la route du vide, mais ne protège de rien.</p>
+      </div>
+      <div class="carte">
+        <h3>Les deux promeneurs</h3>
+        <p>Au fond, deux silhouettes continuent leur chemin, indifférentes. Ce sont les amis du journal&nbsp;: l'angoisse isole celui qui l'éprouve des autres.</p>
+      </div>
+    </div>
+    <div class="surligne">Le paysage n'est plus représenté, il est <strong>ressenti</strong>. En déformant les formes et les couleurs pour exprimer une émotion, Munch ouvre la voie à l'<strong>expressionnisme</strong>, qui s'épanouit en Allemagne au début du XXe siècle.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p2">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">3.</span><span class="hgg-part-title">L'angoisse, propre de l'homme&nbsp;?</span></h2>
+
+  <div class="hgg-section" id="s2-1">
+    <h3 class="hgg-section-title"><span class="num">3.1</span>Une angoisse sans objet</h3>
+
+    <p>La peur a un objet&nbsp;: on a peur d'un danger. L'angoisse, elle, n'en a pas. C'est la distinction que fait le philosophe danois <strong>Søren Kierkegaard</strong> dans <em>Le Concept d'angoisse</em> (1844)&nbsp;: l'angoisse est le vertige de la liberté, propre à un être qui sait qu'il peut choisir et qu'il va mourir. Le Cri en donne l'image&nbsp;: rien ne menace la figure, et pourtant tout vacille. Aucun animal ne connaît cette peur sans cause&nbsp;; elle est la marque d'une <strong>conscience</strong> qui se sait fragile.</p>
+    <div class="carte">
+      <div class="etiquette">Une image de la condition humaine</div>
+      <p>La figure n'a pas de nom, pas de visage singulier, pas de vêtement d'époque. Elle peut être chacun de nous. C'est ce dépouillement qui fait du Cri, plus qu'un autoportrait, une image de l'<strong>homme en général</strong> face à l'angoisse d'exister.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-2">
+    <h3 class="hgg-section-title"><span class="num">3.2</span>Seul parmi les autres</h3>
+
+    <p>La scène se passe à quelques pas d'une capitale, sur une route fréquentée, et pourtant la figure est absolument seule. Les deux promeneurs ne se retournent pas. Munch peint une <strong>solitude moderne</strong>&nbsp;: non pas celle de l'ermite dans le désert, mais celle de l'individu dans la foule, que personne ne voit souffrir. À la fin du XIXe siècle, la ville grandit, les liens traditionnels se défont, et chacun se retrouve face à lui-même.</p>
+    <div class="surligne">Le cri ne reçoit <strong>aucune réponse</strong>. C'est peut-être le plus terrible&nbsp;: l'angoisse n'est pas seulement de souffrir, c'est de souffrir sans être entendu.</div>
+  </div>
+
+  <div class="hgg-section" id="s2-3">
+    <h3 class="hgg-section-title"><span class="num">3.3</span>Une image devenue universelle</h3>
+
+    <p>Le Cri est devenu l'une des images les plus reproduites au monde. Il a été volé deux fois&nbsp;: le <strong>12 février 1994</strong>, au Musée national d'Oslo, le jour de l'ouverture des Jeux olympiques de Lillehammer, puis en <strong>2004</strong>, à main armée, au musée Munch&nbsp;; les deux tableaux ont été retrouvés. En <strong>2012</strong>, le pastel de 1895 a été vendu près de 120 millions de dollars, un record à l'époque. Andy Warhol l'a reproduit en sérigraphie, et l'émoji 😱 en reprend le visage.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le document</h3>
+        <p>Un souvenir daté, un lieu précis, une histoire familiale&nbsp;: <strong>le Cri témoigne</strong> de l'angoisse d'un homme, Edvard Munch, en 1892.</p>
+      </div>
+      <div class="carte pleine">
+        <h3>Le symbole</h3>
+        <p>Une figure sans nom, un cri sans cause&nbsp;: <strong>le Cri universalise</strong>. Il devient l'image de l'angoisse moderne, au risque d'être banalisé.</p>
+      </div>
+    </div>
+    <div class="surligne">Le succès pose une question&nbsp;: à force d'être reproduit sur des mugs, des affiches et des écrans, le Cri exprime-t-il encore l'angoisse, ou est-il devenu un signe comique&nbsp;? La banalisation est le prix de l'universalité.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p3">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">4.</span><span class="hgg-part-title">Pistes pour la dissertation</span></h2>
+
+  <div class="hgg-section" id="s3-1">
+    <h3 class="hgg-section-title">Le Cri face à cinq sujets sur l'Humanité</h3>
+    <p>Cliquez sur un sujet pour l'argument à développer, le passage à citer et sa place dans le plan.</p>
+
+    <div class="sujets">
+      <details class="sujet">
+        <summary><span class="n">01</span><span class="q">L'angoisse est-elle le propre de l'homme&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Rien ne menace la figure du Cri&nbsp;: pas de bête, pas d'arme, pas de tempête, seulement une route et un ciel rouge. C'est l'angoisse au sens de Kierkegaard, qui la distingue de la peur parce qu'elle n'a pas d'objet. L'animal a peur d'un danger&nbsp;; seul l'homme, qui se sait libre et mortel, peut être bouleversé sans raison visible. Le tableau fait de cette fragilité une marque d'humanité, et non une simple faiblesse.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> La figure qui se bouche les oreilles, seule sur la route, sans aucun danger visible.</span><span><b>Dans le plan&nbsp;:</b> En première partie&nbsp;: l'angoisse comme signe d'une conscience qui se sait libre et mortelle.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">02</span><span class="q">L'art doit-il imiter la nature&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Munch déforme tout&nbsp;: le ciel ondule, le fjord se tord, la figure se réduit à un crâne. Il ne cherche pas à reproduire le paysage d'Ekeberg, mais à rendre ce qu'il a ressenti le 22 janvier 1892, quand il a cru entendre «&nbsp;un cri infini qui traversait la nature&nbsp;». L'art n'imite plus le monde extérieur, il rend visible le monde intérieur&nbsp;: c'est l'acte de naissance de l'expressionnisme.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> L'opposition entre la rambarde rectiligne et les lignes ondulantes du ciel et du fjord.</span><span><b>Dans le plan&nbsp;:</b> En partie critique&nbsp;: dépasser l'imitation pour exprimer ce que l'humain éprouve.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">03</span><span class="q">Peut-on être seul au milieu des autres&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>La scène se passe sur une route fréquentée, au-dessus d'une capitale, et deux amis sont là, à quelques pas. Mais ils continuent leur chemin, et la figure reste seule avec son cri, que personne n'entend. Munch peint une solitude proprement moderne&nbsp;: celle de l'individu dans la ville, entouré mais incompris. L'humanité ne se réduit pas à la proximité des corps&nbsp;; elle suppose qu'on se rende attentif à la souffrance d'autrui.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> Les deux promeneurs du fond, qui s'éloignent sans se retourner.</span><span><b>Dans le plan&nbsp;:</b> Sur la relation à autrui&nbsp;: la présence des autres ne suffit pas à rompre la solitude.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">04</span><span class="q">La folie nous rend-elle étrangers à l'humanité&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Sur la version de 1893, une phrase au crayon dit que le tableau «&nbsp;ne peut avoir été peint que par un fou&nbsp;». En 2021, le Musée national d'Oslo l'a attribuée à Munch lui-même&nbsp;: le peintre reprend l'accusation et la retourne. Celui que les critiques disaient fou a peint l'image dans laquelle des millions de gens se reconnaissent. La sensibilité extrême, loin d'exclure de l'humanité, peut en révéler une vérité commune.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> L'inscription <em>Kan kun være malet af en gal Mand!</em> dans le ciel de la version de 1893.</span><span><b>Dans le plan&nbsp;:</b> En partie de dépassement&nbsp;: le «&nbsp;fou&nbsp;» comme révélateur de ce que tous éprouvent.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">05</span><span class="q">Une image peut-elle appartenir à toute l'humanité&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Le Cri est né d'une angoisse personnelle, datée et située. Mais sa figure sans nom ni visage singulier permet à chacun de s'y reconnaître&nbsp;: Munch lui-même l'a diffusée en lithographie dès 1895, Warhol l'a reproduite, et l'émoji 😱 en a fait un signe que tout le monde comprend. L'universalité a un prix&nbsp;: vendue près de 120 millions de dollars en 2012 et imprimée sur des mugs, l'image risque de perdre sa charge d'angoisse.</p>
+          <div class="reperes"><span><b>Détail à citer&nbsp;:</b> La lithographie de 1895, puis la vente record du pastel en 2012.</span><span><b>Dans le plan&nbsp;:</b> Sur l'art et la culture commune&nbsp;: l'universalisation entre partage et banalisation.</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s3-2">
+    <div class="copie">
+      <div class="carte retenir">
+        <div class="etiquette">Idées à retenir</div>
+        <ol>
+          <li>Le Cri peint une <strong>angoisse sans objet</strong>&nbsp;: rien ne menace la figure, et pourtant tout vacille autour d'elle.</li>
+          <li>La figure ne crie pas, elle <strong>entend le cri de la nature</strong>&nbsp;: le paysage devient le reflet d'un état intérieur.</li>
+          <li>L'angoisse <strong>isole</strong>&nbsp;: les deux promeneurs continuent leur route, le cri reste sans réponse.</li>
+          <li>Une angoisse personnelle devient une <strong>image universelle</strong>, jusqu'au risque de la banalisation (vente record, émoji).</li>
+        </ol>
+      </div>
+      <div class="carte rapprocher">
+        <div class="etiquette">À rapprocher</div>
+        <p><strong>Jean-Paul Sartre, <em>La Nausée</em> (1938)</strong>&nbsp;: dans un jardin public de Bouville, Antoine Roquentin regarde la racine d'un marronnier et découvre, avec horreur, l'existence brute des choses, sans raison ni nécessité. Comme chez Munch, une scène ordinaire bascule, le monde perd sa forme rassurante et un homme seul est submergé par ce qu'il éprouve. Mais chez Sartre, l'angoisse naît de l'absurdité d'un monde qui n'a pas de sens&nbsp;; chez Munch, au contraire, la nature crie, comme si elle souffrait avec l'homme.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /content -->
+</div><!-- /page -->
+
+<footer class="fin">
+  <div class="fin-inner">
+    <a href="art.html">← Toutes les fiches d'art</a>
+    <button type="button" class="bouton-lu" id="boutonLu">J'ai lu cette fiche</button>
+  </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
+
+<script>
+  // « J'ai lu cette fiche », gardé dans le navigateur
+  const CLE = 'ecg-humanite-fiches-lues';
+  const ID = 'art/le-cri';
+  const lu = document.getElementById('boutonLu');
+  function lire() { try { return JSON.parse(localStorage.getItem(CLE)) || []; } catch (e) { return []; } }
+  function majLu() {
+    const fait = lire().includes(ID);
+    lu.classList.toggle('fait', fait);
+    lu.textContent = fait ? '✓ Fiche lue' : "J'ai lu cette fiche";
+  }
+  lu.addEventListener('click', () => {
+    let l = lire();
+    l = l.includes(ID) ? l.filter(x => x !== ID) : l.concat(ID);
+    try { localStorage.setItem(CLE, JSON.stringify(l)); } catch (e) {}
+    majLu();
+  });
+  majLu();
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>

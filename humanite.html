@@ -59,9 +59,10 @@
   .parcours-tete { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
   .parcours h2 { font-size: 1.06rem; font-weight: 700; color: var(--encre); }
   .parcours-total { font-size: 0.875rem; color: var(--discret); }
-  .jauges { display: flex; flex-direction: column; gap: 12px; margin-top: 18px; font-size: 0.875rem; color: var(--texte); }
+  .jauges { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 22px; margin-top: 16px; font-size: 0.875rem; color: var(--texte); }
+  .jauges > .large { grid-column: 1 / -1; }
   .jauge-ligne { display: flex; justify-content: space-between; gap: 10px; }
-  .piste { height: 6px; border-radius: 3px; background: var(--piste); margin-top: 6px; overflow: hidden; }
+  .piste { height: 5px; border-radius: 3px; background: var(--piste); margin-top: 5px; overflow: hidden; }
   .piste span { display: block; height: 100%; width: 0; border-radius: 3px; background: var(--accent); transition: width 0.6s ease; }
   .suite { display: flex; align-items: center; gap: 14px; margin-top: 20px; padding: 10px; min-height: 44px; border-radius: 12px; background: var(--fond); text-decoration: none; color: var(--encre); transition: background 0.2s; }
   .suite:hover { background: #ecebe6; }
@@ -105,9 +106,16 @@
   .cours-prochain span:first-child { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--discret); }
   .cours-prochain span:last-child { font-size: 1.25rem; font-weight: 700; color: var(--texte); }
   .cours-tous { margin-top: 14px; }
+  .cours-bientot { position: relative; overflow: hidden; border: 0; min-height: 250px; justify-content: flex-end; color: #fff; }
+  .cours-bientot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+  .cours-bientot::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(14,12,10,0.88), rgba(14,12,10,0.15) 70%); z-index: 1; }
+  .cours-bientot > span, .cours-bientot > em { position: relative; z-index: 2; }
+  .cours-prochain.cours-bientot span:first-of-type { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #e8b4ae; }
+  .cours-prochain.cours-bientot span:last-of-type { font-size: 1.5rem; font-weight: 700; line-height: 1.15; color: #fff; }
+  .cours-bientot em { font-style: normal; font: 600 0.9rem var(--titre); color: #d4d4d8; }
 
   /* 02 · les auteurs */
-  .auteurs-cartes { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+  .auteurs-cartes { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
   .auteur { display: flex; gap: 18px; align-items: center; background: var(--carte); border: 1px solid var(--ligne); border-radius: 18px; padding: 14px; text-decoration: none; color: var(--encre); }
   .auteur img { width: 128px; height: 96px; object-fit: cover; border-radius: 12px; flex-shrink: 0; }
   .auteur-texte { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
@@ -126,9 +134,10 @@
   .rubrique:hover .eventail img:nth-child(1) { transform: rotate(-12deg) translateX(-6px); }
   .rubrique:hover .eventail img:nth-child(2) { transform: rotate(12deg) translateX(6px); }
   .rubrique > img.plein { width: 100%; height: 200px; object-fit: cover; }
-  .musique-vitrine { height: 200px; background: var(--encre); color: var(--fond); padding: 22px 22px 18px; display: flex; flex-direction: column; justify-content: space-between; font-family: var(--titre); }
-  .musique-vitrine ul { list-style: none; display: flex; flex-direction: column; gap: 3px; font-size: 0.875rem; line-height: 1.3; }
-  .musique-vitrine ul span { color: #a1a1aa; }
+  .eventail.disques img { top: 48px; width: 100px; height: 100px; }
+  .eventail.disques img:nth-child(1) { left: calc(50% - 116px); }
+  .eventail.disques img:nth-child(2) { left: calc(50% + 16px); }
+  .eventail.disques img:nth-child(3) { left: calc(50% - 58px); top: 38px; width: 116px; height: 116px; }
   .rubrique-texte { padding: 20px 22px 22px; display: flex; flex-direction: column; gap: 8px; flex-grow: 1; }
   .rubrique-compte { font: 600 0.8rem var(--titre); color: var(--discret); }
   .rubrique-nom { font: 700 1.5rem var(--titre); letter-spacing: -0.01em; }
@@ -217,8 +226,8 @@
       <div class="chiffres">
         <span><strong id="nbLivres">42</strong> livres</span>
         <span><strong id="nbFilms">19</strong> films</span>
-        <span><strong>8</strong> œuvres d'art</span>
-        <span><strong>6</strong> musiques</span>
+        <span><strong id="nbArt">29</strong> œuvres d'art</span>
+        <span><strong id="nbMus">16</strong> musiques</span>
         <span><strong id="nbAuteurs">15</strong> auteurs</span>
       </div>
     </div>
@@ -238,6 +247,14 @@
           <div class="piste"><span id="bCine"></span></div>
         </div>
         <div>
+          <div class="jauge-ligne"><span>Art</span><span id="jArt">0 / 29</span></div>
+          <div class="piste"><span id="bArt"></span></div>
+        </div>
+        <div>
+          <div class="jauge-ligne"><span>Musique</span><span id="jMus">0 / 16</span></div>
+          <div class="piste"><span id="bMus"></span></div>
+        </div>
+        <div class="large">
           <div class="jauge-ligne"><span>Fiches auteurs</span><span id="jAut">0 / 2</span></div>
           <div class="piste"><span id="bAut"></span></div>
         </div>
@@ -274,7 +291,10 @@
           </div>
         </div>
       </article>
-      <div class="cours-prochain"><span>Cours 2</span><span>Prochain cours bientôt en ligne</span></div>
+      <div class="cours-prochain cours-bientot">
+        <img src="humanite/cours-humanite/Cours/images/cueva-de-las-manos.webp" alt="Mains peintes au pochoir sur la paroi de la Cueva de las Manos, en Patagonie argentine, il y a environ 9 000 ans" loading="lazy">
+        <span>Cours 2</span><span>L'enfance de l'humanité</span><em>Bientôt en ligne</em>
+      </div>
     </div>
   </section>
 
@@ -287,11 +307,11 @@
     <div class="auteurs-cartes" id="auteursCartes">
       <a class="auteur carte" style="--c:#1f4a6e" href="humanite/cours-humanite/Fiches%20auteurs/hobbes.html">
         <img src="humanite/cours-humanite/Fiches%20auteurs/images/hobbes.webp" alt="" loading="lazy">
-        <span class="auteur-texte"><span class="auteur-dates">1588 – 1679</span><span class="auteur-nom">Hobbes</span><span class="auteur-these">Sans pouvoir commun, la vie humaine est une guerre de chacun contre chacun.</span></span>
+        <span class="auteur-texte"><span class="auteur-dates">1588 – 1679</span><span class="auteur-nom">Hobbes</span><span class="auteur-these">Sans État, l'humanité vit dans la guerre de tous.</span></span>
       </a>
       <a class="auteur carte" style="--c:#6b2d5c" href="humanite/cours-humanite/Fiches%20auteurs/rousseau.html">
         <img src="humanite/cours-humanite/Fiches%20auteurs/images/rousseau.webp" alt="" loading="lazy">
-        <span class="auteur-texte"><span class="auteur-dates">1712 – 1778</span><span class="auteur-nom">Rousseau</span><span class="auteur-these">La perfectibilité fait l'homme et son malheur&nbsp;: c'est en devenant social qu'il devient inégal.</span></span>
+        <span class="auteur-texte"><span class="auteur-dates">1712 – 1778</span><span class="auteur-nom">Rousseau</span><span class="auteur-these">En se civilisant, l'humanité devient inégale.</span></span>
       </a>
     </div>
   </section>
@@ -311,7 +331,7 @@
         <div class="rubrique-texte">
           <span class="rubrique-compte" id="cLitt">42 livres</span>
           <span class="rubrique-nom">Littérature</span>
-          <span class="rubrique-desc">Romans, essais, discours, d'Homère à Harari.</span>
+          <span class="rubrique-desc">Les livres qui racontent l'humanité, d'hier à aujourd'hui.</span>
           <div class="piste"><span id="rLitt"></span></div>
         </div>
       </a>
@@ -324,33 +344,34 @@
         <div class="rubrique-texte">
           <span class="rubrique-compte" id="cCine">19 films, de 1927 à 2016</span>
           <span class="rubrique-nom">Cinéma</span>
-          <span class="rubrique-desc">De Metropolis à Her, ce que l'écran dit de l'humain.</span>
+          <span class="rubrique-desc">Les films qui interrogent l'humanité et son avenir.</span>
           <div class="piste"><span id="rCine"></span></div>
         </div>
       </a>
       <a class="rubrique carte" href="humanite/art/art.html">
-        <img class="plein" src="humanite/art/images/guernica-oeuvre.webp" alt="" loading="lazy">
+        <div class="eventail" style="background:#ebe6e0" aria-hidden="true">
+          <img src="humanite/art/images/le-cri-oeuvre.webp" alt="" loading="lazy" style="object-position:57% 50%">
+          <img src="humanite/art/images/girl-with-balloon-oeuvre.webp" alt="" loading="lazy" style="object-position:62% 50%">
+          <img src="humanite/art/images/le-penseur-oeuvre.webp" alt="" loading="lazy" style="object-position:58% 50%">
+        </div>
         <div class="rubrique-texte">
-          <span class="rubrique-compte" id="cArt">8 œuvres · 1 fiche en ligne</span>
+          <span class="rubrique-compte" id="cArt">29 œuvres</span>
           <span class="rubrique-nom">Art</span>
-          <span class="rubrique-desc">Peinture, sculpture, photographie&nbsp;: de Guernica à Banksy.</span>
+          <span class="rubrique-desc">Les œuvres qui montrent l'humanité sous tous ses visages.</span>
           <div class="piste"><span id="rArt"></span></div>
         </div>
       </a>
       <a class="rubrique carte" href="humanite/musique/musique.html">
-        <div class="musique-vitrine" aria-hidden="true">
-          <svg viewBox="0 0 48 48" width="40" height="40" fill="none" stroke="#e8b4ae" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 36V12l22-5v24"/><path d="M17 18l22-5"/><ellipse cx="12.5" cy="36" rx="4.5" ry="3.5"/><ellipse cx="34.5" cy="31" rx="4.5" ry="3.5"/></svg>
-          <ul>
-            <li>Symphonie n°&nbsp;9 <span>Beethoven</span></li>
-            <li>Requiem <span>Mozart</span></li>
-            <li>Strange Fruit <span>Billie Holiday</span></li>
-            <li>Le Chant des partisans <span>Anna Marly</span></li>
-          </ul>
+        <div class="eventail disques" style="background:#e6e4ea" aria-hidden="true">
+          <img src="humanite/musique/images/requiem-visuel.webp" alt="" loading="lazy">
+          <img src="humanite/musique/images/le-sacre-du-printemps-visuel.webp" alt="" loading="lazy">
+          <img src="humanite/musique/images/strange-fruit-visuel.webp" alt="" loading="lazy">
         </div>
         <div class="rubrique-texte">
-          <span class="rubrique-compte">6 œuvres</span>
+          <span class="rubrique-compte" id="cMus">16 musiques</span>
           <span class="rubrique-nom">Musique</span>
-          <span class="rubrique-desc">Hymnes, requiem et chants de lutte.</span>
+          <span class="rubrique-desc">Les chants qui font entendre la voix de l'humanité.</span>
+          <div class="piste"><span id="rMus"></span></div>
         </div>
       </a>
     </div>
@@ -399,7 +420,8 @@ document.write('<script src="nouveautes.js?v=' + Math.floor(Date.now() / 60000) 
   var RUB = {
     litterature: { nom: 'Littérature', page: 'humanite/litterature/litterature.html' },
     cinema: { nom: 'Cinéma', page: 'humanite/cinema/cinema.html' },
-    art: { nom: 'Art', page: 'humanite/art/art.html' }
+    art: { nom: 'Art', page: 'humanite/art/art.html' },
+    musique: { nom: 'Musique', page: 'humanite/musique/musique.html' }
   };
   // Notions transversales : chaque œuvre y entre si ses notions ou sa thèse contiennent l'un des mots.
   var NOTIONS = [
@@ -477,7 +499,7 @@ document.write('<script src="nouveautes.js?v=' + Math.floor(Date.now() / 60000) 
 
   // ─── Parcours et rubriques ───
   function majRubriques(par) {
-    var L = par.litterature, C = par.cinema, A = par.art;
+    var L = par.litterature, C = par.cinema, A = par.art, M = par.musique || [];
     function nb(l) { return l.filter(function (o) { return lues.indexOf(o.slug) >= 0; }).length; }
     if (L.length) {
       $('nbLivres').textContent = L.length;
@@ -493,18 +515,26 @@ document.write('<script src="nouveautes.js?v=' + Math.floor(Date.now() / 60000) 
       $('bCine').style.width = $('rCine').style.width = pct(nb(C), C.length);
     }
     if (A.length) {
-      $('cArt').textContent = '8 œuvres · ' + A.length + (A.length > 1 ? ' fiches en ligne' : ' fiche en ligne');
-      $('rArt').style.width = pct(nb(A), A.length);
+      $('nbArt').textContent = A.length;
+      $('cArt').textContent = A.length + ' œuvres';
+      $('jArt').textContent = nb(A) + ' / ' + A.length;
+      $('bArt').style.width = $('rArt').style.width = pct(nb(A), A.length);
     }
-    return nb(L) + nb(C) + nb(A);
+    if (M.length) {
+      $('nbMus').textContent = M.length;
+      $('cMus').textContent = M.length + ' musiques';
+      $('jMus').textContent = nb(M) + ' / ' + M.length;
+      $('bMus').style.width = $('rMus').style.width = pct(nb(M), M.length);
+    }
+    return nb(L) + nb(C) + nb(A) + nb(M);
   }
 
   // « Reprendre » : la fiche suivante, non lue, dans la rubrique de la dernière fiche lue.
   function majSuite(par) {
-    var toutes = par.litterature.concat(par.cinema, par.art);
+    var toutes = par.litterature.concat(par.cinema, par.art, par.musique || []);
     if (!lues.length || !toutes.length) return;
     var derniere = lues[lues.length - 1].split('/')[0];
-    var ordre = [derniere, 'litterature', 'cinema', 'art'];
+    var ordre = [derniere, 'litterature', 'cinema', 'art', 'musique'];
     var s = null;
     for (var i = 0; i < ordre.length && !s; i++) {
       s = (par[ordre[i]] || []).filter(function (o) { return lues.indexOf(o.slug) < 0; })[0] || null;
@@ -562,7 +592,7 @@ document.write('<script src="nouveautes.js?v=' + Math.floor(Date.now() / 60000) 
     })).then(function () {
       nRub = majRubriques(parRub);
       majSuite(parRub);
-      majNotions(parRub.litterature.concat(parRub.cinema, parRub.art));
+      majNotions(parRub.litterature.concat(parRub.cinema, parRub.art, parRub.musique || []));
     }),
     auteurs().then(function (l) { nAut = majAuteurs(l) || 0; }).catch(function () {})
   ]).then(function () { total(nRub + nAut); });

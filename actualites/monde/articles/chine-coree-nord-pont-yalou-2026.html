@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Le nouveau pont sur le Yalou</title>
+<link rel="stylesheet" href="../../../fonts/fonts.css">
+<style>
+  :root {
+    --fond: #f3f4f6; --carte: #ffffff; --bord: #dfe3e8; --filet: #eef0f3;
+    --encre: #16202e; --texte: #25303e; --doux: #4f5b6b;
+    --marine: #1f3a5f;
+    /* Palette de l'article (une par article) : bleu fleuve */
+    --accent: #0a6486; --accent-fonce: #074b66; --accent-pale: #e1f1f7;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body.a-page { background: var(--fond); color: var(--encre); font-family: 'Figtree', system-ui, sans-serif; min-height: 100vh; overflow-x: hidden; }
+  a { color: var(--accent); }
+  strong { color: var(--encre); font-weight: 700; }
+
+  /* Barre du haut */
+  nav.a-nav { display: flex; align-items: center; gap: 16px; padding: 14px 32px; background: #fff; border-bottom: 1px solid var(--bord); position: sticky; top: 0; z-index: 100; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .nav-logo { font-family: 'Fraunces', Georgia, serif; font-size: 1.4rem; font-weight: 700; color: var(--encre); text-decoration: none; white-space: nowrap; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: .88rem; color: var(--doux); flex-wrap: wrap; justify-content: center; }
+  .breadcrumb a { color: var(--doux); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--accent); }
+  .breadcrumb .sep { color: #9aa5b3; }
+  .breadcrumb .current { color: var(--encre); font-weight: 600; }
+  /* Choix de la langue : petit interrupteur FR / EN, dans le ton de la barre noire */
+  .a-langues { display: flex; gap: 2px; padding: 2px; border: 1px solid #2e2e33; border-radius: 999px; background: #161617; }
+  nav.sn .a-langues .ap-lang-btn { border: 0; border-radius: 999px; background: transparent; color: #bdbdb8; font: 500 11px/1 'IBM Plex Mono', ui-monospace, monospace; letter-spacing: .1em; padding: 0 11px; height: 30px; min-height: 0; cursor: pointer; transition: background .15s, color .15s; }
+  nav.sn .a-langues .ap-lang-btn:hover { color: #fff; }
+  nav.sn .a-langues .ap-lang-btn.active { background: #f3efe4; color: #0b0b0c; }
+  nav.sn .a-langues .ap-lang-btn:focus-visible { outline: 2px solid #f3efe4; outline-offset: 2px; }
+  .a-filet { height: 6px; background: var(--accent); }
+
+  .a-main { max-width: 1216px; margin: 0 auto; padding: 40px 32px 88px; }
+  .ap-es-section { display: none; }
+
+  /* Héros : titre à gauche, photo à droite */
+  .a-hero { display: flex; flex-wrap: wrap; gap: 40px; align-items: center; }
+  .a-hero-texte { flex: 1 1 520px; min-width: 0; }
+  .a-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .a-tag { font-size: .82rem; font-weight: 700; padding: 6px 12px; border-radius: 999px; background: #e6eaef; color: var(--texte); }
+  .a-tag.t0 { background: var(--encre); color: #fff; }
+  .a-tag.t1 { background: var(--accent-pale); color: var(--accent-fonce); }
+  .a-titre { font-family: 'Fraunces', Georgia, serif; font-size: 2.15rem; line-height: 1.1; font-weight: 600; color: var(--encre); }
+  .a-sous-titre { margin-top: 14px; font-family: 'Fraunces', Georgia, serif; font-size: 1.4rem; line-height: 1.3; font-weight: 500; color: var(--doux); }
+  .a-meta { margin-top: 20px; font-size: .9rem; color: var(--doux); }
+  .a-hero-img { flex: 1 1 380px; min-width: 0; width: 100%; max-width: 480px; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 16px; display: block; }
+
+  /* Cartes */
+  .a-carte { background: var(--carte); border: 1px solid var(--bord); border-radius: 16px; }
+  .a-lab { font-size: .75rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--doux); margin-bottom: 16px; }
+  .a-lab.rouge { color: var(--accent); }
+
+  .a-essentiel { margin-top: 40px; padding: 28px 32px; }
+  .a-essentiel ol { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px 32px; }
+  .a-essentiel li { display: flex; gap: 14px; }
+  .a-essentiel p { font-size: 1rem; line-height: 1.55; color: var(--texte); }
+  .a-rond { flex: none; width: 32px; height: 32px; border-radius: 50%; background: var(--encre); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+
+  /* Article */
+  .a-article { margin-top: 24px; padding: 48px 56px 56px; }
+  .a-chiffres { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; padding-bottom: 36px; margin-bottom: 36px; border-bottom: 1px solid var(--filet); }
+  .a-chiffre { font-family: 'Fraunces', Georgia, serif; font-size: 2.5rem; font-weight: 700; line-height: 1; color: var(--encre); }
+  .a-chiffre.rouge { color: var(--accent); }
+  .a-chiffre-txt { margin-top: 8px; font-size: .9rem; line-height: 1.4; color: var(--doux); }
+  .a-chapo { font-family: 'Fraunces', Georgia, serif; font-size: 1.35rem; line-height: 1.6; color: var(--encre); margin-bottom: 44px; }
+  .a-sec { margin-bottom: 44px; display: flow-root; }
+  .a-h2 { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; font-family: 'Fraunces', Georgia, serif; font-size: 1.75rem; line-height: 1.2; font-weight: 600; color: var(--encre); }
+  .a-num { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; background: var(--accent-pale); color: var(--accent-fonce); font-family: 'Figtree', sans-serif; font-size: .82rem; font-weight: 700; }
+  .a-p { font-size: 1.19rem; line-height: 1.7; color: var(--texte); margin-bottom: 16px; }
+  .a-sec .a-p:last-child, .a-analyse .a-p:last-child { margin-bottom: 0; }
+  .a-lien { color: inherit; text-decoration: underline; text-underline-offset: 2px; text-decoration-color: var(--accent); }
+
+  /* Photo dans le texte */
+  .a-photo { float: right; width: min(400px, 42%); margin: 6px 0 14px 32px; }
+  .a-photo.gauche { float: left; margin: 6px 36px 18px 0; }
+  .a-photo img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 12px; }
+  .a-photo figcaption { margin-top: 8px; font-size: .82rem; line-height: 1.45; color: var(--doux); }
+
+  /* Citation : filet rouge, taille de lecture */
+  .a-citation { margin: 0 0 44px; padding: 4px 0 4px 26px; border-left: 3px solid var(--accent); max-width: 860px; }
+  .a-citation blockquote { font-family: 'Fraunces', Georgia, serif; font-size: 1.45rem; line-height: 1.4; font-weight: 500; color: var(--encre); }
+  .a-citation figcaption { margin-top: 12px; font-size: .9rem; line-height: 1.5; color: var(--doux); }
+  .a-citation figcaption b { color: var(--encre); font-weight: 700; }
+  .a-trad { display: block; margin-top: 4px; font-style: italic; }
+
+  /* Schémas */
+  .a-schema { margin: -12px 0 44px; padding: 26px 28px; background: #f5f6f8; border-radius: 14px; }
+  .a-schema-t { font-family: 'Fraunces', Georgia, serif; font-size: 1.2rem; font-weight: 600; color: var(--encre); margin-bottom: 16px; }
+  .a-src { margin-top: 14px; font-size: .8rem; line-height: 1.45; color: var(--doux); }
+  .a-etapes { display: flex; flex-wrap: wrap; gap: 10px; }
+  .a-etape { flex: 1 1 180px; min-width: 0; padding: 16px 18px; background: #fff; border: 2px solid var(--bord); border-radius: 12px; display: flex; flex-direction: column; gap: 4px; }
+  .a-etape.non { background: var(--accent-pale); border-color: var(--accent); }
+  .a-statut { font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #1f6b3a; }
+  .a-etape.estime .a-statut { color: #8a5a00; }
+  .a-etape.non .a-statut { color: var(--accent-fonce); }
+  .a-val { font-family: 'Fraunces', Georgia, serif; font-size: 1.4rem; font-weight: 700; color: var(--encre); }
+  .a-txt { font-size: .9rem; line-height: 1.4; color: var(--texte); }
+  .a-fleche { flex: none; align-self: center; font-size: 1.4rem; color: #9aa5b3; }
+  .a-axe-bornes { display: flex; justify-content: space-between; gap: 12px; font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--doux); margin-bottom: 14px; }
+  .a-axe { list-style: none; border-top: 3px solid; border-image: linear-gradient(90deg, var(--marine), var(--accent)) 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 20px; }
+  .a-axe li { position: relative; padding-top: 18px; }
+  .a-point { position: absolute; top: -10px; left: 0; width: 16px; height: 16px; border-radius: 50%; border: 3px solid #f5f6f8; }
+  .a-axe b { display: block; font-size: .95rem; color: var(--encre); }
+  .a-axe small { display: block; font-size: .8rem; color: var(--doux); }
+  .a-axe p { margin-top: 8px; font-size: .9rem; line-height: 1.45; color: var(--texte); }
+
+  /* Tableau comparatif (dans un a-schema) */
+  .a-tableau { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; font-size: .95rem; line-height: 1.45; }
+  .a-tableau th { padding: 12px 16px; text-align: left; font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--doux); background: #fff; border-bottom: 2px solid var(--bord); }
+  .a-tableau th:last-child { color: var(--accent); }
+  .a-tableau td { padding: 12px 16px; border-bottom: 1px solid var(--filet); color: var(--texte); vertical-align: top; }
+  .a-tableau tr:last-child td { border-bottom: 0; }
+  .a-tableau td:first-child { font-weight: 700; color: var(--encre); white-space: nowrap; }
+  .a-defile-t { overflow-x: auto; border-radius: 12px; }
+  /* Étapes datées : le statut porte la date */
+  .a-etapes.dates .a-statut { color: var(--doux); }
+  .a-etapes.dates .a-etape.non .a-statut { color: var(--accent-fonce); }
+
+  /* Chronologie : frise horizontale, la plus récente à gauche */
+  .a-chrono-bloc .a-h2 { margin-bottom: 4px; }
+  .a-chrono-sous { font-size: .85rem; color: var(--doux); margin-bottom: 18px; }
+  .a-defile { overflow-x: auto; }
+  .a-chrono { list-style: none; min-width: 900px; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0 18px; }
+  .a-chrono li { border-top: 4px solid #c9d0d8; padding-top: 14px; }
+  .a-chrono li.recent { border-top-color: var(--accent); }
+  .a-date { display: block; font-family: 'Fraunces', Georgia, serif; font-size: 1.05rem; font-weight: 700; color: var(--encre); }
+  .a-chrono li.recent .a-date { color: var(--accent); }
+  .a-chrono p { margin-top: 8px; font-size: .9rem; line-height: 1.45; color: var(--texte); }
+
+  /* Analyse : page d'éditorial, filet noir, texte sur deux colonnes */
+  .a-analyse { margin-top: 8px; padding: 26px 0 30px; border-top: 3px solid var(--encre); border-bottom: 1px solid var(--bord); }
+  .a-analyse-lab { display: flex; align-items: center; gap: 10px; font-size: .75rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+  .a-analyse-lab::before { content: ""; width: 10px; height: 10px; background: var(--accent); }
+  .a-analyse-t { margin: 10px 0 22px; max-width: 820px; font-family: 'Fraunces', Georgia, serif; font-size: 2.1rem; line-height: 1.15; font-weight: 600; color: var(--encre); }
+  .a-analyse-corps { columns: 2 340px; column-gap: 48px; column-rule: 1px solid var(--filet); orphans: 1; widows: 1; }
+  .a-analyse-corps .a-p { font-size: 1.08rem; line-height: 1.7; margin-bottom: 14px; }
+  .a-analyse-corps .a-p:last-child { margin-bottom: 0; }
+  /* Dans une copie : accroche prête à l'emploi, idée-force, sujets, piège */
+  .a-copie { margin-top: 30px; padding: 24px 26px 26px; background: var(--fond); border-radius: 14px; }
+  .a-copie-t { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; font-size: .75rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--encre); }
+  .a-copie-t::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--encre); }
+  .a-accroche { padding: 20px 22px 18px; background: var(--carte); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; }
+  .a-copie h3 { margin-bottom: 8px; font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+  .a-accroche p { font-family: 'Fraunces', Georgia, serif; font-size: 1.18rem; line-height: 1.55; color: var(--encre); }
+  .a-copie-grille { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 14px; }
+  .a-copie-grille > div { padding: 18px 20px; background: var(--carte); border-radius: 10px; }
+  .a-copie-grille p, .a-copie-grille li { font-size: .95rem; line-height: 1.55; color: var(--texte); }
+  .a-copie-grille ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .a-copie-grille li { padding-left: 16px; position: relative; }
+  .a-copie-grille li::before { content: ""; position: absolute; left: 0; top: .6em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .a-copie-grille .a-piege { background: var(--accent-pale); }
+  .a-copie-grille .a-piege h3 { color: var(--accent-fonce); }
+  .a-analyse-corps .a-p:first-child::first-letter { float: left; margin: 6px 10px 0 0; font-family: 'Fraunces', Georgia, serif; font-size: 3.6rem; line-height: .8; font-weight: 700; color: var(--accent); }
+
+  /* Pour aller plus loin : le cours à réviser, les articles liés en vignettes, les sources */
+  .a-plus { margin-top: 24px; padding: 36px 36px 32px; }
+  .a-plus-t { font-family: 'Fraunces', Georgia, serif; font-size: 1.75rem; font-weight: 600; color: var(--encre); margin-bottom: 22px; }
+  .a-plus-h { display: flex; align-items: center; gap: 12px; margin: 34px 0 16px; font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--doux); }
+  .a-plus-h::after { content: ""; flex: 1; height: 1px; background: var(--filet); }
+  .a-kicker { display: block; font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+  .a-cours { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 28px; align-items: center; padding: 16px; background: var(--fond); border-radius: 14px; text-decoration: none; color: var(--encre); }
+  .a-cours img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 10px; display: block; }
+  .a-cours b { display: block; margin-top: 8px; font-family: 'Fraunces', Georgia, serif; font-size: 1.6rem; line-height: 1.2; font-weight: 600; }
+  .a-cours p { margin-top: 8px; font-size: 1rem; line-height: 1.55; color: var(--texte); }
+  .a-cours-btn { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; padding: 10px 16px; border-radius: 999px; background: var(--encre); color: #fff; font-size: .9rem; font-weight: 700; }
+  .a-cours:hover .a-cours-btn { background: var(--accent); }
+  .a-lire { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+  .a-lire a { display: flex; flex-direction: column; gap: 10px; height: 100%; text-decoration: none; color: var(--encre); }
+  .a-lire img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 10px; display: block; background: var(--filet); }
+  .a-lire b { font-family: 'Fraunces', Georgia, serif; font-size: 1.05rem; line-height: 1.3; font-weight: 600; }
+  .a-lire a:hover b { color: var(--accent); }
+  .a-lire .a-kicker { color: var(--doux); font-size: .72rem; }
+  .a-sources { list-style: none; counter-reset: src; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px 40px; }
+  .a-sources li { counter-increment: src; display: grid; grid-template-columns: 28px minmax(0, 1fr); font-size: .88rem; line-height: 1.5; color: var(--doux); }
+  .a-sources li::before { content: counter(src); font-weight: 700; color: var(--accent); }
+  .a-sources b { display: block; font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; color: var(--encre); }
+  .a-sources a { color: var(--encre); text-decoration: underline; text-decoration-color: var(--bord); text-underline-offset: 3px; }
+  .a-sources a:hover { text-decoration-color: var(--accent); }
+
+
+  .a-fin { margin-top: 28px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+  .a-fin a { display: inline-flex; align-items: center; min-height: 48px; font-weight: 700; color: var(--encre); text-decoration: none; }
+  .a-fin a:hover { color: var(--accent); }
+  .a-partager { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 18px; border: 1px solid var(--bord); border-radius: 999px; background: var(--carte); color: var(--encre); font: 700 .9rem 'Figtree', sans-serif; cursor: pointer; }
+  .a-partager:hover { border-color: var(--encre); }
+
+  @media (max-width: 900px) {
+    .a-axe { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 20px; border-image: none; border-top: 0; }
+    .a-axe li { border-top: 3px solid var(--bord); }
+    .a-point { top: -10px; }
+  }
+  @media (max-width: 1000px) {
+    .a-copie-grille { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .a-copie-grille .a-piege { grid-column: 1 / -1; }
+    .a-lire { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  /* Photo : sous 1000 px, plus de colonne de texte trop étroite à côté : elle passe au-dessus du texte */
+  @media (max-width: 1000px) {
+    .a-photo, .a-photo.gauche { float: none; width: 100%; max-width: 560px; margin: 4px auto 20px; }
+  }
+  @media (max-width: 760px) {
+    nav.a-nav { padding: 12px 16px; }
+    .breadcrumb { display: none; }
+    .a-main { padding: 24px 16px 64px; }
+    .a-hero { gap: 20px; }
+    .a-titre { font-size: 1.85rem; }
+    .a-sous-titre { font-size: 1.1rem; }
+    .a-essentiel { margin-top: 24px; padding: 22px 20px; }
+    .a-article { padding: 28px 20px 32px; }
+    .a-chiffres { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .a-chiffre { font-size: 1.8rem; }
+    .a-chapo { font-size: 1.15rem; margin-bottom: 32px; }
+    .a-h2 { font-size: 1.35rem; }
+    .a-p { font-size: 1.05rem; }
+    .a-photo, .a-photo.gauche { float: none; width: 100%; margin: 0 0 18px; }
+    .a-citation { padding-left: 18px; }
+    .a-citation blockquote { font-size: 1.2rem; }
+    .a-schema { padding: 20px 18px; }
+    .a-fleche { transform: rotate(90deg); width: 100%; text-align: center; }
+    .a-axe { grid-template-columns: 1fr; }
+    .a-tableau { min-width: 560px; }
+    .a-analyse-t { font-size: 1.55rem; }
+    .a-analyse-corps .a-p { font-size: 1.02rem; }
+    .a-copie { padding: 18px 14px 16px; margin-left: -6px; margin-right: -6px; }
+    .a-accroche p { font-size: 1.05rem; }
+    .a-copie-grille { grid-template-columns: 1fr; }
+    .a-plus { padding: 26px 20px 24px; }
+    .a-plus-t { margin-bottom: 18px; }
+    .a-cours { grid-template-columns: 1fr; gap: 14px; padding: 12px; }
+    .a-cours b { font-size: 1.35rem; }
+    .a-lire { grid-template-columns: 1fr; gap: 0; }
+    .a-lire a { flex-direction: row; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--filet); }
+    .a-lire li:last-child a { border-bottom: 0; }
+    .a-lire img { flex: none; width: 104px; border-radius: 8px; }
+    .a-lire b { font-size: .98rem; }
+    .a-sources { grid-template-columns: 1fr; }
+    .a-fin { justify-content: center; }
+  }
+
+  /* Schémas propres à cet article : barres d'échelle et vérification point par point */
+  .a-barres { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+  .a-barres li { display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: 6px 18px; align-items: center; }
+  .a-barres .a-b-nom { font-size: .95rem; line-height: 1.35; color: var(--texte); }
+  .a-barres .a-b-piste { display: flex; align-items: center; gap: 12px; }
+  .a-barres .a-b-barre { height: 22px; min-width: 4px; border-radius: 5px; background: var(--accent); }
+  .a-barres .a-b-barre.zero { min-width: 0; width: 0; }
+  .a-barres b { font-family: 'Fraunces', Georgia, serif; font-size: 1.4rem; color: var(--encre); }
+  .a-verif { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .a-verif li { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 8px 22px; padding: 16px 18px; background: #fff; border-radius: 12px; border-left: 4px solid var(--accent); }
+  .a-verif q { display: block; font-family: 'Fraunces', Georgia, serif; font-size: 1.05rem; line-height: 1.4; color: var(--encre); quotes: none; }
+  .a-verif p { margin-top: 6px; font-size: .92rem; line-height: 1.5; color: var(--texte); }
+  .a-verif .a-v-sceau { align-self: start; justify-self: end; padding: 6px 12px; border-radius: 999px; font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; background: var(--accent-pale); color: var(--accent-fonce); text-align: center; }
+  .a-verif .a-v-sceau.ok { background: #e4f3ea; color: #1f6b3a; }
+  @media (max-width: 760px) { .a-barres li { grid-template-columns: 1fr; } .a-verif li { grid-template-columns: 1fr; } .a-verif .a-v-sceau { justify-self: start; order: -1; } }
+
+  /* Schéma de circuit : les deux ponts sur le fleuve (dans un a-schema) */
+  .a-circuit { position: relative; }
+  .a-circuit .ci-rive { position: relative; z-index: 1; padding: 12px 18px; background: #fff; border: 2px solid var(--bord); border-radius: 12px; }
+  .a-circuit .ci-rive small { display: block; font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--doux); }
+  .a-circuit .ci-rive b { font-size: 1.05rem; color: var(--encre); }
+  .a-circuit .ci-fleuve { position: relative; margin: -4px 0; padding: 52px 0 30px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); background: var(--accent-pale); }
+  .a-circuit .ci-nomf { position: absolute; z-index: 3; top: 12px; left: 50%; transform: translateX(-50%); white-space: nowrap; padding: 3px 12px; border-radius: 999px; background: #fff; font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-fonce); }
+  .a-circuit .ci-pont { position: relative; padding: 0 14px 0 46px; display: flex; flex-direction: column; gap: 2px; }
+  .a-circuit .ci-barre { position: absolute; z-index: 0; left: 16px; top: -14px; bottom: -14px; width: 12px; border-radius: 3px; background: #7b8794; }
+  .a-circuit .ci-neuf .ci-barre { left: 12px; width: 24px; background: var(--accent); }
+  .a-circuit .ci-barre::after { content: ''; position: absolute; left: 50%; top: 8px; bottom: 8px; width: 0; border-left: 2px dashed #fff; transform: translateX(-1px); }
+  .a-circuit .ci-pont b { font-size: .98rem; color: var(--encre); }
+  .a-circuit .ci-neuf b { color: var(--accent-fonce); }
+  .a-circuit .ci-grand { font-family: 'Fraunces', Georgia, serif; font-size: 2rem; line-height: 1.1; font-weight: 600; color: var(--encre); }
+  .a-circuit .ci-neuf .ci-grand { color: var(--accent); }
+  .a-circuit .ci-pont span.ci-u { font-size: .92rem; line-height: 1.4; color: var(--texte); }
+  .a-circuit .ci-pont small { margin-top: 6px; font-size: .82rem; line-height: 1.4; color: var(--doux); }
+  @media (max-width: 520px) { .a-tableau { min-width: 0; font-size: .82rem; } .a-tableau th, .a-tableau td { padding: 9px 8px; } .a-tableau td:first-child { white-space: normal; } }
+  @media (max-width: 520px) { .a-circuit .ci-pont { padding-left: 38px; padding-right: 8px; } .a-circuit .ci-grand { font-size: 1.6rem; } .a-circuit .ci-barre { left: 12px; } .a-circuit .ci-neuf .ci-barre { left: 8px; } }
+</style>
+<link rel="stylesheet" href="../../../barre-section.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Le nouveau pont sur le Yalou">
+<meta property="og:image" content="https://ecg-prepa.fr/partage/actualites/monde-chine-coree-nord-pont-yalou-2026.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Le nouveau pont sur le Yalou">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ecg-prepa.fr/partage/actualites/monde-chine-coree-nord-pont-yalou-2026.jpg">
+<meta name="description" content="Jeudi 15 octobre 2026, deux Premiers ministres, Li Qiang pour la Chine et Pak Thae Song pour la Corée du Nord, ont inauguré par visioconférence le nouveau…">
+<link rel="canonical" href="https://ecg-prepa.fr/actualites/monde/articles/chine-coree-nord-pont-yalou-2026.html">
+</head>
+<body class="a-page">
+<nav class="a-nav sn sn-actu">
+  <div class="nav-left"><a class="nav-logo sn-logo" href="../../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb sn-fil">
+    <a href="../../../index.html">Accueil</a><span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a><span class="sep">/</span>
+    <a href="../index-monde.html">Monde</a><span class="sep">/</span>
+    <a href="../asie.html">Asie</a><span class="sep">/</span>
+    <span class="current">Pont sur le Yalou</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+<div class="a-filet"></div>
+<main class="a-main">
+<section class="a-hero">
+<div class="a-hero-texte">
+<div class="a-tags"><span class="a-tag t0">Chine / Corée du Nord</span><span class="a-tag t1">Géopolitique</span><span class="a-tag t2">Commerce</span><span class="a-tag t3">Sanctions</span></div>
+<h1 class="ap-title a-titre">Chine et Corée du Nord : le nouveau pont sur le Yalou ouvre enfin, douze ans après son achèvement</h1>
+<p class="a-meta">Octobre 2026 · Chine, Corée du Nord · 5 min de lecture</p>
+</div>
+<img class="a-hero-img" src="../images/chine-coree-nord-pont-yalou-2026.webp" alt="Un pont à haubans à deux pylônes blancs, bordé de drapeaux chinois, sous un ciel nuageux ; un grand drapeau flotte au premier plan">
+</section>
+<section class="a-carte a-essentiel"><p class="a-lab rouge">L'essentiel en 30 secondes</p><ol>
+<li><span class="a-rond">1</span><p>Le jeudi 15 octobre, la Chine et la Corée du Nord ouvrent le <strong>nouveau pont du Yalou</strong> (Dandong–Sinuiju), <strong>douze ans après son achèvement</strong> : les routes et la douane côté nord-coréen n'étaient pas prêtes.</p></li>
+<li><span class="a-rond">2</span><p>Quatre voies, 3 026 mètres : il doit soulager le <strong>pont de l'Amitié</strong> (1943), qui porte <strong>plus de 70 %</strong> du commerce officiel entre les deux pays.</p></li>
+<li><span class="a-rond">3</span><p>L'ouverture scelle le <strong>réchauffement entre Pékin et Pyongyang</strong>, mais les <strong>sanctions</strong> limitent les échanges et le <strong>tourisme chinois</strong> n'a pas repris.</p></li>
+</ol></section>
+<article class="a-carte a-article">
+<section class="a-chiffres" aria-label="Chiffres clés">
+<div><div class="a-chiffre rouge">12 ans</div><div class="a-chiffre-txt">Entre l'achèvement du pont (2014) et son ouverture (2026)</div></div>
+<div><div class="a-chiffre">3 026 m</div><div class="a-chiffre-txt">Longueur de l'ouvrage routier, à quatre voies</div></div>
+<div><div class="a-chiffre">70 %+</div><div class="a-chiffre-txt">Du commerce officiel entre les deux pays passe par le pont de l'Amitié (AP)</div></div>
+<div><div class="a-chiffre">20 000</div><div class="a-chiffre-txt">Véhicules par jour : capacité estimée par la Chine</div></div>
+</section>
+<p class="ap-intro a-chapo">Jeudi 15 octobre 2026, deux Premiers ministres, Li Qiang pour la Chine et Pak Thae Song pour la Corée du Nord, ont inauguré par visioconférence le nouveau pont routier sur le Yalou, entre Dandong et Sinuiju. Achevé en 2014, l'ouvrage n'avait jamais servi : il s'arrêtait dans un champ, faute de routes d'accès et de douane du côté nord-coréen. Son ouverture, après douze ans d'attente, ne tient pas qu'à des travaux enfin terminés. Elle marque le réchauffement entre Pékin et Pyongyang, au moment où la Corée du Nord, que la guerre en Ukraine avait rapprochée de Moscou, se tourne de nouveau vers son voisin chinois.</p>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">01</span>Une inauguration à distance</h2>
+<p class="a-p">La cérémonie est organisée conjointement, avait annoncé l'agence chinoise Xinhua. Li Qiang et Pak Thae Song s'adressent aux deux pays par vidéo, des responsables des deux partis au pouvoir et les ambassadeurs sont présents, et les premiers véhicules de chaque rive franchissent l'ouvrage. Les images de la télévision d'État montrent des camions ornés des drapeaux des deux pays sur un tablier pavoisé.</p>
+<p class="a-p">Li Qiang appelle à fluidifier le passage des marchandises et à développer la coopération frontalière, et assure que la Chine fera passer l'amitié avec la Corée du Nord en priorité, quelle que soit l'évolution de la situation internationale. Pak Thae Song, selon l'agence nord-coréenne KCNA, juge que le pont accélérera la prospérité des deux pays.</p>
+</div>
+<figure class="a-citation"><blockquote lang="en">« A new landmark symbolizing the traditional friendship between China and the DPRK. »</blockquote><figcaption><b>Li Qiang</b>, Premier ministre chinois, à propos du pont, le 15 octobre 2026 (Xinhua)<span class="a-trad">« Un nouveau jalon symbolisant l'amitié traditionnelle entre la Chine et la RPDC. »</span></figcaption></figure>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">02</span>Un ouvrage chinois de trois kilomètres</h2>
+<p class="a-p">Le pont franchit le Yalou, que les Coréens appellent Amnok, entre Dandong, ville chinoise de la province du Liaoning, et Sinuiju, dans la province nord-coréenne du Pyongan du Nord. Il mesure 3 026 mètres et compte quatre voies. Il est à haubans et la Chine l'a financé. Les travaux commencent en 2011 et la partie chinoise est finie en 2014. Pékin estime qu'il peut absorber jusqu'à 20 000 véhicules et 50 000 voyageurs par jour. Il est ouvert, pour l'instant, aux camions de marchandises.</p>
+</div>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">03</span>Douze ans de retard : les raisons d'un blocage</h2>
+<p class="a-p">L'explication officielle est technique : les routes d'accès et les installations douanières manquaient du côté nord-coréen, et le pont se terminait dans un champ près de Sinuiju. Les spécialistes en avancent d'autres : la méfiance de Pyongyang envers une dépendance accrue à l'égard de Pékin, son mécontentement face au soutien chinois aux sanctions de l'ONU contre ses programmes nucléaire et balistique, ou un désaccord sur l'emplacement de l'ouvrage. Pour Jung Eun-yi, de l'Institut coréen pour l'unification nationale, la capacité limitée de Sinuiju comptait aussi : sans elle, la ville risquait de devenir un simple lieu de transit.</p>
+<p class="a-p">À Dandong, l'attente a été si longue que des habitants ont exprimé, dans le Global Times, journal proche du Parti communiste, une frustration inhabituellement vive. Début octobre, des signes annonçaient l'ouverture : les employés des services du pont ont repris des horaires réguliers le 8 octobre, et plusieurs dizaines de camions nord-coréens attendaient déjà. Des négociants chinois soupçonnaient aussi que Pékin avait voulu éviter une cérémonie voyante en pleines tensions sur la péninsule, après une explosion de mine dans la zone démilitarisée et un tir de missile nord-coréen, sans que ce lien soit confirmé.</p>
+</div>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">04</span>Le pont de l'Amitié, un goulot d'étranglement</h2>
+<p class="a-p">Le nouvel ouvrage doit décharger le pont de l'Amitié, bâti en 1943 sous domination japonaise : une voie ferrée, une seule voie routière, et une circulation à sens unique à la fois. Il n'est plus adapté aux poids lourds. Pourtant, selon l'AP, plus de 70 % du commerce officiel entre les deux pays y passe, et la Chine représente environ 98 % du commerce extérieur de la Corée du Nord, d'après Al Jazeera. Les échanges ont atteint 2,74 milliards de dollars en 2025, soit 98,1 % de leur niveau de 2019, puis 1,51 milliard au premier semestre 2026, en hausse de 19,6 % sur un an. La frontière, longue d'environ 1 400 kilomètres, compte au moins 17 liaisons routières et ferroviaires actives selon Séoul : le nouveau pont n'en est qu'un de plus, mais il se trouve sur l'axe le plus fréquenté.</p>
+</div>
+<figure class="a-schema"><p class="a-schema-t">Deux ponts, un même fleuve : ce qui change pour les marchandises</p><div class="a-circuit" role="img" aria-label="Schéma du Yalou : entre Dandong, en Chine, et Sinuiju, en Corée du Nord, le pont de l'Amitié, étroit, et le nouveau pont à quatre voies">
+<div class="ci-rive"><small>Chine</small><b>Dandong</b></div>
+<div class="ci-fleuve"><span class="ci-nomf">Le Yalou (Amnok en coréen)</span>
+<div class="ci-pont ci-vieux"><span class="ci-barre"></span><b>Pont de l'Amitié</b><span class="ci-grand">70 %+</span><span class="ci-u">du commerce officiel entre les deux pays</span><small>Ouvert en 1943 · une voie routière, une voie ferrée</small></div>
+<div class="ci-pont ci-neuf"><span class="ci-barre"></span><b>Nouveau pont</b><span class="ci-grand">20 000</span><span class="ci-u">véhicules par jour, capacité estimée par la Chine</span><small>Ouvert le 15 octobre 2026 · quatre voies · 3 026 m</small></div>
+</div>
+<div class="ci-rive"><small>Corée du Nord</small><b>Sinuiju</b></div>
+</div><figcaption class="a-src">Sources : AP ; Al Jazeera ; Seoul Economic Daily ; Daily NK. La capacité de 20 000 véhicules par jour est une estimation chinoise ; la part de 70 % concerne le commerce officiel.</figcaption></figure>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">05</span>Pékin, Pyongyang, Moscou : un triangle</h2>
+<p class="a-p">Le pont couronne un an de rapprochement. En septembre 2025, Kim Jong-un assiste au défilé de Pékin pour la victoire de 1945, aux côtés de Xi Jinping. En mars 2026, les trains de voyageurs, interrompus depuis six ans, et les vols directs entre les deux capitales reprennent. Le ministre chinois des Affaires étrangères, Wang Yi, se rend à Pyongyang en avril, et Xi Jinping <a href="xi-jinping-coree-nord.html" class="a-lien">y est reçu les 8 et 9 juin, pour sa première visite en sept ans</a>.</p>
+<p class="a-p">Pyongyang n'a pas rompu avec Moscou pour autant : il a envoyé plus de 10 000 soldats dans la guerre en Ukraine en 2024, et un pont routier avec la Russie, sur le Tumen, a été inauguré le 7 septembre, cinq semaines avant celui du Yalou. Kim Jong-un a récemment privilégié Vladimir Poutine, note Al Jazeera, mais il se rapproche à nouveau de la Chine pour relancer une économie en difficulté.</p>
+</div>
+<figure class="a-schema"><p class="a-schema-t">Deux ponts en cinq semaines : la Chine et la Russie, côte à côte</p><div class="a-defile-t"><table class="a-tableau"><thead><tr><th></th><th>Pont du Yalou (Chine)</th><th>Pont du Tumen (Russie)</th></tr></thead><tbody><tr><td>Ouverture</td><td>15 octobre 2026</td><td>7 septembre 2026</td></tr><tr><td>Villes reliées</td><td>Dandong et Sinuiju</td><td>Khasan et Rason</td></tr><tr><td>Longueur</td><td>3 026 m</td><td>environ 1 km</td></tr><tr><td>Voies</td><td>4</td><td>2</td></tr><tr><td>Capacité annoncée</td><td>jusqu'à 20 000 véhicules par jour</td><td>jusqu'à 300 véhicules par jour</td></tr><tr><td>Début des travaux</td><td>2011</td><td>avril 2025</td></tr><tr><td>Cérémonie</td><td>Li Qiang et Pak Thae Song, par vidéo</td><td>Mikhaïl Michoustine et Pak Thae Song, par vidéo</td></tr></tbody></table></div><figcaption class="a-src">Sources : Al Jazeera (15 octobre et 7 septembre 2026) ; Seoul Economic Daily ; jeunessedumonde.fr. Les deux capacités ne se mesurent pas de la même façon : estimation chinoise pour le pont, capacité des installations frontalières pour le Tumen (autorités russes).</figcaption></figure>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">06</span>Ce que le pont change, et ce qui reste à prouver</h2>
+<p class="a-p">Le fret démarre : les premiers véhicules des deux rives ont franchi l'ouvrage le 15 octobre, et il est ouvert aux camions de marchandises. Un spécialiste de l'université de Kyungnam estime que le trafic pourrait tripler, voire quadrupler, mais il s'agit d'une estimation, sans donnée mesurée à ce jour. Le tourisme, lui, reste suspendu : la Corée du Nord n'a pas encore rétabli la délivrance de visas touristiques pour les visiteurs chinois.</p>
+<p class="a-p">Reste la question des sanctions. Les sanctions internationales continuent de limiter les échanges, et le même spécialiste redoute que le pont les émousse. Rien ne le démontre encore : tout dépendra des marchandises qui passeront, et de la façon dont Pékin choisira de contrôler ce qui franchit le fleuve.</p>
+</div>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">07</span>Dandong et Sinuiju, deux villes à relier</h2>
+<p class="a-p">Pour Lim Eul-chul, de l'université de Kyungnam, le pont peut soutenir le programme nord-coréen de « développement régional 20x10 » et relier les provinces du Nord-Est chinois à une chaîne d'approvisionnement plus profonde avec Sinuiju. Mais il peut aussi émousser les sanctions et ralentir tout dégel intercoréen, en confortant la doctrine des « deux États hostiles » de Kim Jong-un. Jung Eun-yi rappelle qu'un lien plus étroit approfondirait la dépendance de Sinuiju envers Pékin. Pour la Chine, l'enjeu est aussi de relancer Dandong, qui espérait depuis 2014 un regain d'activité. Le pont ouvre une route ; il ne dit pas encore qui en fixera le trafic.</p>
+</div>
+<section class="a-sec a-chrono-bloc"><h2 class="ap-sub a-h2">Chronologie</h2><p class="a-chrono-sous">Du plus récent au plus ancien</p><div class="a-defile"><ol class="a-chrono">
+<li class="recent"><span class="a-date">15 octobre 2026</span><p>Ouverture du nouveau pont du Yalou, entre Dandong et Sinuiju.</p></li>
+<li><span class="a-date">7 septembre 2026</span><p>Inauguration du pont routier du Tumen entre la Corée du Nord et la Russie.</p></li>
+<li><span class="a-date">8 et 9 juin 2026</span><p>Visite de Xi Jinping à Pyongyang, la première en sept ans.</p></li>
+<li><span class="a-date">Mars 2026</span><p>Reprise des trains de voyageurs et des vols directs entre Pékin et Pyongyang.</p></li>
+<li><span class="a-date">Septembre 2025</span><p>Kim Jong-un au défilé de la victoire à Pékin, près de Xi Jinping.</p></li>
+<li><span class="a-date">2014</span><p>Achèvement du pont côté chinois ; il reste fermé faute de routes et de douane au Nord.</p></li>
+</ol></div></section>
+<aside class="a-analyse"><p class="a-analyse-lab">L'analyse</p><h2 class="a-analyse-t">Un pont qui s'ouvre quand la politique le décide</h2><div class="a-analyse-corps"><p class="a-p">Si le pont est resté fermé douze ans, ce n'est pas seulement une affaire de béton : l'ouvrir ou le garder clos était un message politique. Les explications avancées, méfiance envers une dépendance à Pékin, irritation face aux sanctions, désaccord sur l'emplacement, relèvent toutes de la politique plus que de la technique. En 2014, Pyongyang n'avait aucune raison de presser ; en 2026, ses alliances se sont rééquilibrées, et l'ouvrage devient le symbole d'un rapprochement que les deux capitales choisissent de montrer.</p><p class="a-p">Pour Pékin, le pont est un instrument d'influence autant qu'un chantier : il consolide la place de premier partenaire de Pyongyang, déjà proche de 98 % de son commerce extérieur. Mais un pont ne vaut que par ce qui passe dessus. Tant que les sanctions pèsent et que les visas touristiques restent gelés, il sera plus un symbole qu'une révolution commerciale. La vraie question est de savoir qui, de la Chine qui finance ou de la Corée du Nord qui contrôle la douane, fixera le rythme du trafic, et si le pont servira à autre chose qu'à écouler des camions.</p></div>
+<section class="a-copie" aria-label="Dans une copie"><p class="a-copie-t">Dans une copie</p>
+<div class="a-accroche"><h3>Accroche</h3><p>Le 15 octobre 2026, la Chine et la Corée du Nord ont ouvert un pont routier de 3 026 mètres sur le Yalou, achevé en 2014 mais resté fermé douze ans faute de routes et de douane côté nord-coréen. Cinq semaines plus tôt, Pyongyang inaugurait un autre pont, vers la Russie. Quand un État isolé multiplie les ponts vers ses protecteurs, ouvre-t-il son économie ou renforce-t-il sa dépendance ?</p></div>
+<div class="a-copie-grille">
+<div><h3>Idée-force</h3><p>Les infrastructures sont un instrument de puissance : celui qui finance un passage frontalier gagne de l'influence sur son voisin. Le pont du Yalou montre qu'un calendrier de travaux dépend autant des relations politiques que de la technique, et que sanctions, dépendance commerciale et rivalité entre protecteurs dessinent la marge de manœuvre d'un État isolé.</p></div>
+<div><h3>Sujets où la placer</h3><ul><li>Les frontières : barrières ou passages ? (HGG)</li><li>Les sanctions économiques sont-elles efficaces ? (ESH)</li><li>Relier ou dominer : que fait un pont entre deux États inégaux ? (philo)</li></ul></div>
+<div class="a-piege"><h3>Piège à éviter</h3><p>Écrire que le pont a été construit en 2026, qu'il est l'unique lien entre la Chine et la Corée du Nord ou que le commerce y passe désormais en majorité. Le pont date de 2014 et n'ouvre qu'en 2026 ; le pont de l'Amitié (1943) porte encore plus de 70 % du commerce officiel (AP) ; et la hausse attendue du trafic (« tripler ou quadrupler ») n'est qu'une estimation.</p></div>
+</div></section></aside>
+</article>
+<section class="a-carte a-plus"><h2 class="a-plus-t">Pour aller plus loin</h2>
+<a class="a-cours" href="../../../premiere_annee/hgg/chapitre-5/chapitre-5-hgg.html#s1-4"><img src="../../../premiere_annee/hgg/vignettes/chapitre-5.webp" alt="" loading="lazy"><div><span class="a-kicker">Réviser le cours · HGG · 1re année</span><b>Chapitre 5 · Géopolitique de la Guerre Froide</b><p>La guerre de Corée, l'entrée de la Chine dans le conflit en novembre 1950 et la division de la péninsule : les origines de la frontière que le pont enjambe.</p><span class="a-cours-btn">Ouvrir le chapitre <span aria-hidden="true">→</span></span></div></a>
+<h3 class="a-plus-h">Lire aussi</h3><ul class="a-lire">
+<li><a href="xi-jinping-coree-nord.html"><img src="../images/xi-jinping-coree-nord.webp" alt="" loading="lazy"><span><span class="a-kicker">Chine / Corée du Nord · Juin 2026</span><b>Xi Jinping en Corée du Nord : Pyongyang déroule le tapis rouge, une première depuis 2019</b></span></a></li>
+<li><a href="coree-nord-doctrine-nucleaire-dead-hand.html"><img src="../images/coree-nord-doctrine-nucleaire-dead-hand.webp" alt="" loading="lazy"><span><span class="a-kicker">Corée du Nord · Mai 2026</span><b>Corée du Nord : si Kim Jong-un meurt, les missiles partent, selon la nouvelle Constitution</b></span></a></li>
+<li><a href="chine-mao-50e-anniversaire-mort.html"><img src="../images/chine-mao-50e-anniversaire-mort.webp" alt="" loading="lazy"><span><span class="a-kicker">Chine · Septembre 2026</span><b>Chine : le 50e anniversaire de la mort de Mao ravive les débats historiques</b></span></a></li>
+<li><a href="chine-droits-douane-afrique.html"><img src="../images/chine-droits-douane-afrique.webp" alt="" loading="lazy"><span><span class="a-kicker">Afrique · Mai 2026</span><b>Chine–Afrique : quand Pékin abolit ses droits de douane, entre ouverture historique et déséquilibres persistants</b></span></a></li>
+</ul><h3 class="a-plus-h">Sources</h3><ol class="a-sources">
+<li><span><b>Al Jazeera</b><a href="https://www.aljazeera.com/gallery/2026/10/15/photos-china-and-north-korea-open-new-border-bridge-amid-deepening-ties" target="_blank" rel="noopener">« Photos: China and North Korea open new border bridge amid deepening ties »</a>, 15 octobre 2026.</span></li>
+<li><span><b>Seoul Economic Daily</b><a href="https://en.sedaily.com/politics/2026/10/15/new-yalu-river-bridge-opens-12-years-after-completion" target="_blank" rel="noopener">« New Yalu River Bridge Opens 12 Years After Completion »</a>, 15 octobre 2026.</span></li>
+<li><span><b>Daily NK</b><a href="https://www.dailynk.com/english/new-yalu-river-bridge-opening-imminent-dandong-sinuiju/" target="_blank" rel="noopener">« New Yalu River Bridge appears set to open as signs emerge on both sides of border »</a>, octobre 2026.</span></li>
+<li><span><b>Jeunesse du monde</b><a href="https://jeunessedumonde.fr/2026/10/16/rpdc-chine-le-nouveau-pont-sur-l-amnok-yalu-officiellement-ouvert/" target="_blank" rel="noopener">« RPDC–Chine : ouverture du nouveau pont sur l'Amnok (Yalu) »</a>, 16 octobre 2026.</span></li>
+<li><span><b>CGTN, d'après Xinhua</b><a href="https://news.cgtn.com/news/2026-10-15/Chinese-Premier-hails-new-bridge-as-landmark-of-China-DPRK-friendship-1Rgrglvqa7C/p.html" target="_blank" rel="noopener">« Chinese Premier hails cross-border bridge as new landmark of China-DPRK friendship »</a>, 15 octobre 2026.</span></li>
+<li><span><b>Al Jazeera</b><a href="https://www.aljazeera.com/news/2026/9/7/russia-and-north-korea-deepen-relations-with-symbolic-road-bridge" target="_blank" rel="noopener">« Russia and North Korea deepen relations with symbolic road bridge »</a>, 7 septembre 2026.</span></li>
+</ol></section>
+<div class="a-fin"><a href="../tous-monde.html">← Tous les articles</a><button class="a-partager" type="button" onclick="partager(this)">Partager l'article</button><a href="../asie.html">Asie →</a></div>
+</main>
+<script>
+function partager(btn) {
+  const url = location.href.split('#')[0], titre = document.title.replace(/^ECG Prépa — /, '');
+  const fini = t => { const v = btn.textContent; btn.textContent = t; setTimeout(() => btn.textContent = v, 2000); };
+  if (navigator.share) { navigator.share({ title: titre, url }).catch(() => {}); return; }
+  navigator.clipboard.writeText(url).then(() => fini('Lien copié'), () => {});
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Albanie : les émeutes de Tirana</title>
+<link rel="stylesheet" href="../../../fonts/fonts.css">
+<style>
+  :root {
+    --fond: #f3f4f6; --carte: #ffffff; --bord: #dfe3e8; --filet: #eef0f3;
+    --encre: #16202e; --texte: #25303e; --doux: #4f5b6b;
+    --marine: #1f3a5f;
+    /* Palette de l'article (une par article) : indigo */
+    --accent: #4a3f8f; --accent-fonce: #352c6e; --accent-pale: #ecebf7;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body.a-page { background: var(--fond); color: var(--encre); font-family: 'Figtree', system-ui, sans-serif; min-height: 100vh; overflow-x: hidden; }
+  a { color: var(--accent); }
+  strong { color: var(--encre); font-weight: 700; }
+
+  /* Barre du haut */
+  nav.a-nav { display: flex; align-items: center; gap: 16px; padding: 14px 32px; background: #fff; border-bottom: 1px solid var(--bord); position: sticky; top: 0; z-index: 100; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .nav-logo { font-family: 'Fraunces', Georgia, serif; font-size: 1.4rem; font-weight: 700; color: var(--encre); text-decoration: none; white-space: nowrap; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: .88rem; color: var(--doux); flex-wrap: wrap; justify-content: center; }
+  .breadcrumb a { color: var(--doux); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--accent); }
+  .breadcrumb .sep { color: #9aa5b3; }
+  .breadcrumb .current { color: var(--encre); font-weight: 600; }
+  /* Choix de la langue : petit interrupteur FR / EN, dans le ton de la barre noire */
+  .a-langues { display: flex; gap: 2px; padding: 2px; border: 1px solid #2e2e33; border-radius: 999px; background: #161617; }
+  nav.sn .a-langues .ap-lang-btn { border: 0; border-radius: 999px; background: transparent; color: #bdbdb8; font: 500 11px/1 'IBM Plex Mono', ui-monospace, monospace; letter-spacing: .1em; padding: 0 11px; height: 30px; min-height: 0; cursor: pointer; transition: background .15s, color .15s; }
+  nav.sn .a-langues .ap-lang-btn:hover { color: #fff; }
+  nav.sn .a-langues .ap-lang-btn.active { background: #f3efe4; color: #0b0b0c; }
+  nav.sn .a-langues .ap-lang-btn:focus-visible { outline: 2px solid #f3efe4; outline-offset: 2px; }
+  .a-filet { height: 6px; background: var(--accent); }
+
+  .a-main { max-width: 1216px; margin: 0 auto; padding: 40px 32px 88px; }
+  .ap-es-section { display: none; }
+
+  /* Héros : titre à gauche, photo à droite */
+  .a-hero { display: flex; flex-wrap: wrap; gap: 40px; align-items: center; }
+  .a-hero-texte { flex: 1 1 520px; min-width: 0; }
+  .a-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .a-tag { font-size: .82rem; font-weight: 700; padding: 6px 12px; border-radius: 999px; background: #e6eaef; color: var(--texte); }
+  .a-tag.t0 { background: var(--encre); color: #fff; }
+  .a-tag.t1 { background: var(--accent-pale); color: var(--accent-fonce); }
+  .a-titre { font-family: 'Fraunces', Georgia, serif; font-size: 2.15rem; line-height: 1.1; font-weight: 600; color: var(--encre); }
+  .a-sous-titre { margin-top: 14px; font-family: 'Fraunces', Georgia, serif; font-size: 1.4rem; line-height: 1.3; font-weight: 500; color: var(--doux); }
+  .a-meta { margin-top: 20px; font-size: .9rem; color: var(--doux); }
+  .a-hero-img { flex: 1 1 380px; min-width: 0; width: 100%; max-width: 480px; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 16px; display: block; }
+
+  /* Cartes */
+  .a-carte { background: var(--carte); border: 1px solid var(--bord); border-radius: 16px; }
+  .a-lab { font-size: .75rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--doux); margin-bottom: 16px; }
+  .a-lab.rouge { color: var(--accent); }
+
+  .a-essentiel { margin-top: 40px; padding: 28px 32px; }
+  .a-essentiel ol { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px 32px; }
+  .a-essentiel li { display: flex; gap: 14px; }
+  .a-essentiel p { font-size: 1rem; line-height: 1.55; color: var(--texte); }
+  .a-rond { flex: none; width: 32px; height: 32px; border-radius: 50%; background: var(--encre); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+
+  /* Article */
+  .a-article { margin-top: 24px; padding: 48px 56px 56px; }
+  .a-chiffres { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; padding-bottom: 36px; margin-bottom: 36px; border-bottom: 1px solid var(--filet); }
+  .a-chiffre { font-family: 'Fraunces', Georgia, serif; font-size: 2.5rem; font-weight: 700; line-height: 1; color: var(--encre); }
+  .a-chiffre.rouge { color: var(--accent); }
+  .a-chiffre-txt { margin-top: 8px; font-size: .9rem; line-height: 1.4; color: var(--doux); }
+  .a-chapo { font-family: 'Fraunces', Georgia, serif; font-size: 1.35rem; line-height: 1.6; color: var(--encre); margin-bottom: 44px; }
+  .a-sec { margin-bottom: 44px; display: flow-root; }
+  .a-h2 { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; font-family: 'Fraunces', Georgia, serif; font-size: 1.75rem; line-height: 1.2; font-weight: 600; color: var(--encre); }
+  .a-num { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; background: var(--accent-pale); color: var(--accent-fonce); font-family: 'Figtree', sans-serif; font-size: .82rem; font-weight: 700; }
+  .a-p { font-size: 1.19rem; line-height: 1.7; color: var(--texte); margin-bottom: 16px; }
+  .a-sec .a-p:last-child, .a-analyse .a-p:last-child { margin-bottom: 0; }
+  .a-lien { color: inherit; text-decoration: underline; text-underline-offset: 2px; text-decoration-color: var(--accent); }
+
+  /* Photo dans le texte */
+  .a-photo { float: right; width: min(400px, 42%); margin: 6px 0 14px 32px; }
+  .a-photo.gauche { float: left; margin: 6px 36px 18px 0; }
+  .a-photo img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 12px; }
+  .a-photo figcaption { margin-top: 8px; font-size: .82rem; line-height: 1.45; color: var(--doux); }
+
+  /* Citation : filet rouge, taille de lecture */
+  .a-citation { margin: 0 0 44px; padding: 4px 0 4px 26px; border-left: 3px solid var(--accent); max-width: 860px; }
+  .a-citation blockquote { font-family: 'Fraunces', Georgia, serif; font-size: 1.45rem; line-height: 1.4; font-weight: 500; color: var(--encre); }
+  .a-citation figcaption { margin-top: 12px; font-size: .9rem; line-height: 1.5; color: var(--doux); }
+  .a-citation figcaption b { color: var(--encre); font-weight: 700; }
+  .a-trad { display: block; margin-top: 4px; font-style: italic; }
+
+  /* Schémas */
+  .a-schema { margin: -12px 0 44px; padding: 26px 28px; background: #f5f6f8; border-radius: 14px; }
+  .a-schema-t { font-family: 'Fraunces', Georgia, serif; font-size: 1.2rem; font-weight: 600; color: var(--encre); margin-bottom: 16px; }
+  .a-src { margin-top: 14px; font-size: .8rem; line-height: 1.45; color: var(--doux); }
+  .a-etapes { display: flex; flex-wrap: wrap; gap: 10px; }
+  .a-etape { flex: 1 1 180px; min-width: 0; padding: 16px 18px; background: #fff; border: 2px solid var(--bord); border-radius: 12px; display: flex; flex-direction: column; gap: 4px; }
+  .a-etape.non { background: var(--accent-pale); border-color: var(--accent); }
+  .a-statut { font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #1f6b3a; }
+  .a-etape.estime .a-statut { color: #8a5a00; }
+  .a-etape.non .a-statut { color: var(--accent-fonce); }
+  .a-val { font-family: 'Fraunces', Georgia, serif; font-size: 1.4rem; font-weight: 700; color: var(--encre); }
+  .a-txt { font-size: .9rem; line-height: 1.4; color: var(--texte); }
+  .a-fleche { flex: none; align-self: center; font-size: 1.4rem; color: #9aa5b3; }
+  .a-axe-bornes { display: flex; justify-content: space-between; gap: 12px; font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--doux); margin-bottom: 14px; }
+  .a-axe { list-style: none; border-top: 3px solid; border-image: linear-gradient(90deg, var(--marine), var(--accent)) 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 20px; }
+  .a-axe li { position: relative; padding-top: 18px; }
+  .a-point { position: absolute; top: -10px; left: 0; width: 16px; height: 16px; border-radius: 50%; border: 3px solid #f5f6f8; }
+  .a-axe b { display: block; font-size: .95rem; color: var(--encre); }
+  .a-axe small { display: block; font-size: .8rem; color: var(--doux); }
+  .a-axe p { margin-top: 8px; font-size: .9rem; line-height: 1.45; color: var(--texte); }
+
+  /* Tableau comparatif (dans un a-schema) */
+  .a-tableau { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; font-size: .95rem; line-height: 1.45; }
+  .a-tableau th { padding: 12px 16px; text-align: left; font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--doux); background: #fff; border-bottom: 2px solid var(--bord); }
+  .a-tableau th:last-child { color: var(--accent); }
+  .a-tableau td { padding: 12px 16px; border-bottom: 1px solid var(--filet); color: var(--texte); vertical-align: top; }
+  .a-tableau tr:last-child td { border-bottom: 0; }
+  .a-tableau td:first-child { font-weight: 700; color: var(--encre); white-space: nowrap; }
+  .a-defile-t { overflow-x: auto; border-radius: 12px; }
+  /* Étapes datées : le statut porte la date */
+  .a-etapes.dates .a-statut { color: var(--doux); }
+  .a-etapes.dates .a-etape.non .a-statut { color: var(--accent-fonce); }
+
+  /* Chronologie : frise horizontale, la plus récente à gauche */
+  .a-chrono-bloc .a-h2 { margin-bottom: 4px; }
+  .a-chrono-sous { font-size: .85rem; color: var(--doux); margin-bottom: 18px; }
+  .a-defile { overflow-x: auto; }
+  .a-chrono { list-style: none; min-width: 900px; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0 18px; }
+  .a-chrono li { border-top: 4px solid #c9d0d8; padding-top: 14px; }
+  .a-chrono li.recent { border-top-color: var(--accent); }
+  .a-date { display: block; font-family: 'Fraunces', Georgia, serif; font-size: 1.05rem; font-weight: 700; color: var(--encre); }
+  .a-chrono li.recent .a-date { color: var(--accent); }
+  .a-chrono p { margin-top: 8px; font-size: .9rem; line-height: 1.45; color: var(--texte); }
+
+  /* Analyse : page d'éditorial, filet noir, texte sur deux colonnes */
+  .a-analyse { margin-top: 8px; padding: 26px 0 30px; border-top: 3px solid var(--encre); border-bottom: 1px solid var(--bord); }
+  .a-analyse-lab { display: flex; align-items: center; gap: 10px; font-size: .75rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+  .a-analyse-lab::before { content: ""; width: 10px; height: 10px; background: var(--accent); }
+  .a-analyse-t { margin: 10px 0 22px; max-width: 820px; font-family: 'Fraunces', Georgia, serif; font-size: 2.1rem; line-height: 1.15; font-weight: 600; color: var(--encre); }
+  .a-analyse-corps { columns: 2 340px; column-gap: 48px; column-rule: 1px solid var(--filet); orphans: 1; widows: 1; }
+  .a-analyse-corps .a-p { font-size: 1.08rem; line-height: 1.7; margin-bottom: 14px; }
+  .a-analyse-corps .a-p:last-child { margin-bottom: 0; }
+  /* Dans une copie : accroche prête à l'emploi, idée-force, sujets, piège */
+  .a-copie { margin-top: 30px; padding: 24px 26px 26px; background: var(--fond); border-radius: 14px; }
+  .a-copie-t { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; font-size: .75rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--encre); }
+  .a-copie-t::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--encre); }
+  .a-accroche { padding: 20px 22px 18px; background: var(--carte); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; }
+  .a-copie h3 { margin-bottom: 8px; font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+  .a-accroche p { font-family: 'Fraunces', Georgia, serif; font-size: 1.18rem; line-height: 1.55; color: var(--encre); }
+  .a-copie-grille { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 14px; }
+  .a-copie-grille > div { padding: 18px 20px; background: var(--carte); border-radius: 10px; }
+  .a-copie-grille p, .a-copie-grille li { font-size: .95rem; line-height: 1.55; color: var(--texte); }
+  .a-copie-grille ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .a-copie-grille li { padding-left: 16px; position: relative; }
+  .a-copie-grille li::before { content: ""; position: absolute; left: 0; top: .6em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .a-copie-grille .a-piege { background: var(--accent-pale); }
+  .a-copie-grille .a-piege h3 { color: var(--accent-fonce); }
+  .a-analyse-corps .a-p:first-child::first-letter { float: left; margin: 6px 10px 0 0; font-family: 'Fraunces', Georgia, serif; font-size: 3.6rem; line-height: .8; font-weight: 700; color: var(--accent); }
+
+  /* Pour aller plus loin : le cours à réviser, les articles liés en vignettes, les sources */
+  .a-plus { margin-top: 24px; padding: 36px 36px 32px; }
+  .a-plus-t { font-family: 'Fraunces', Georgia, serif; font-size: 1.75rem; font-weight: 600; color: var(--encre); margin-bottom: 22px; }
+  .a-plus-h { display: flex; align-items: center; gap: 12px; margin: 34px 0 16px; font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--doux); }
+  .a-plus-h::after { content: ""; flex: 1; height: 1px; background: var(--filet); }
+  .a-kicker { display: block; font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+  .a-cours { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 28px; align-items: center; padding: 16px; background: var(--fond); border-radius: 14px; text-decoration: none; color: var(--encre); }
+  .a-cours img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 10px; display: block; }
+  .a-cours b { display: block; margin-top: 8px; font-family: 'Fraunces', Georgia, serif; font-size: 1.6rem; line-height: 1.2; font-weight: 600; }
+  .a-cours p { margin-top: 8px; font-size: 1rem; line-height: 1.55; color: var(--texte); }
+  .a-cours-btn { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; padding: 10px 16px; border-radius: 999px; background: var(--encre); color: #fff; font-size: .9rem; font-weight: 700; }
+  .a-cours:hover .a-cours-btn { background: var(--accent); }
+  .a-lire { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+  .a-lire a { display: flex; flex-direction: column; gap: 10px; height: 100%; text-decoration: none; color: var(--encre); }
+  .a-lire img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 10px; display: block; background: var(--filet); }
+  .a-lire b { font-family: 'Fraunces', Georgia, serif; font-size: 1.05rem; line-height: 1.3; font-weight: 600; }
+  .a-lire a:hover b { color: var(--accent); }
+  .a-lire .a-kicker { color: var(--doux); font-size: .72rem; }
+  .a-sources { list-style: none; counter-reset: src; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px 40px; }
+  .a-sources li { counter-increment: src; display: grid; grid-template-columns: 28px minmax(0, 1fr); font-size: .88rem; line-height: 1.5; color: var(--doux); }
+  .a-sources li::before { content: counter(src); font-weight: 700; color: var(--accent); }
+  .a-sources b { display: block; font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; color: var(--encre); }
+  .a-sources a { color: var(--encre); text-decoration: underline; text-decoration-color: var(--bord); text-underline-offset: 3px; }
+  .a-sources a:hover { text-decoration-color: var(--accent); }
+
+
+  .a-fin { margin-top: 28px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+  .a-fin a { display: inline-flex; align-items: center; min-height: 48px; font-weight: 700; color: var(--encre); text-decoration: none; }
+  .a-fin a:hover { color: var(--accent); }
+  .a-partager { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 18px; border: 1px solid var(--bord); border-radius: 999px; background: var(--carte); color: var(--encre); font: 700 .9rem 'Figtree', sans-serif; cursor: pointer; }
+  .a-partager:hover { border-color: var(--encre); }
+
+  @media (max-width: 900px) {
+    .a-axe { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 20px; border-image: none; border-top: 0; }
+    .a-axe li { border-top: 3px solid var(--bord); }
+    .a-point { top: -10px; }
+  }
+  @media (max-width: 1000px) {
+    .a-copie-grille { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .a-copie-grille .a-piege { grid-column: 1 / -1; }
+    .a-lire { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  /* Photo : sous 1000 px, plus de colonne de texte trop étroite à côté : elle passe au-dessus du texte */
+  @media (max-width: 1000px) {
+    .a-photo, .a-photo.gauche { float: none; width: 100%; max-width: 560px; margin: 4px auto 20px; }
+  }
+  @media (max-width: 760px) {
+    nav.a-nav { padding: 12px 16px; }
+    .breadcrumb { display: none; }
+    .a-main { padding: 24px 16px 64px; }
+    .a-hero { gap: 20px; }
+    .a-titre { font-size: 1.85rem; }
+    .a-sous-titre { font-size: 1.1rem; }
+    .a-essentiel { margin-top: 24px; padding: 22px 20px; }
+    .a-article { padding: 28px 20px 32px; }
+    .a-chiffres { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .a-chiffre { font-size: 1.8rem; }
+    .a-chapo { font-size: 1.15rem; margin-bottom: 32px; }
+    .a-h2 { font-size: 1.35rem; }
+    .a-p { font-size: 1.05rem; }
+    .a-photo, .a-photo.gauche { float: none; width: 100%; margin: 0 0 18px; }
+    .a-citation { padding-left: 18px; }
+    .a-citation blockquote { font-size: 1.2rem; }
+    .a-schema { padding: 20px 18px; }
+    .a-fleche { transform: rotate(90deg); width: 100%; text-align: center; }
+    .a-axe { grid-template-columns: 1fr; }
+    .a-tableau { min-width: 560px; }
+    .a-analyse-t { font-size: 1.55rem; }
+    .a-analyse-corps .a-p { font-size: 1.02rem; }
+    .a-copie { padding: 18px 14px 16px; margin-left: -6px; margin-right: -6px; }
+    .a-accroche p { font-size: 1.05rem; }
+    .a-copie-grille { grid-template-columns: 1fr; }
+    .a-plus { padding: 26px 20px 24px; }
+    .a-plus-t { margin-bottom: 18px; }
+    .a-cours { grid-template-columns: 1fr; gap: 14px; padding: 12px; }
+    .a-cours b { font-size: 1.35rem; }
+    .a-lire { grid-template-columns: 1fr; gap: 0; }
+    .a-lire a { flex-direction: row; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--filet); }
+    .a-lire li:last-child a { border-bottom: 0; }
+    .a-lire img { flex: none; width: 104px; border-radius: 8px; }
+    .a-lire b { font-size: .98rem; }
+    .a-sources { grid-template-columns: 1fr; }
+    .a-fin { justify-content: center; }
+  }
+
+  /* Schémas propres à cet article : barres d'échelle et vérification point par point */
+  .a-barres { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+  .a-barres li { display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: 6px 18px; align-items: center; }
+  .a-barres .a-b-nom { font-size: .95rem; line-height: 1.35; color: var(--texte); }
+  .a-barres .a-b-piste { display: flex; align-items: center; gap: 12px; }
+  .a-barres .a-b-barre { height: 22px; min-width: 4px; border-radius: 5px; background: var(--accent); }
+  .a-barres .a-b-barre.zero { min-width: 0; width: 0; }
+  .a-barres b { font-family: 'Fraunces', Georgia, serif; font-size: 1.4rem; color: var(--encre); }
+  .a-verif { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .a-verif li { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 8px 22px; padding: 16px 18px; background: #fff; border-radius: 12px; border-left: 4px solid var(--accent); }
+  .a-verif q { display: block; font-family: 'Fraunces', Georgia, serif; font-size: 1.05rem; line-height: 1.4; color: var(--encre); quotes: none; }
+  .a-verif p { margin-top: 6px; font-size: .92rem; line-height: 1.5; color: var(--texte); }
+  .a-verif .a-v-sceau { align-self: start; justify-self: end; padding: 6px 12px; border-radius: 999px; font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; background: var(--accent-pale); color: var(--accent-fonce); text-align: center; }
+  .a-verif .a-v-sceau.ok { background: #e4f3ea; color: #1f6b3a; }
+  @media (max-width: 760px) { .a-barres li { grid-template-columns: 1fr; } .a-verif li { grid-template-columns: 1fr; } .a-verif .a-v-sceau { justify-self: start; order: -1; } }
+</style>
+<link rel="stylesheet" href="../../../barre-section.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Albanie : les émeutes de Tirana">
+<meta property="og:image" content="https://ecg-prepa.fr/partage/actualites/monde-albanie-emeutes-tirana-2026.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Albanie : les émeutes de Tirana">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ecg-prepa.fr/partage/actualites/monde-albanie-emeutes-tirana-2026.jpg">
+<meta name="description" content="Mardi 13 octobre, un rassemblement d&#x27;étudiants devant le ministère de l&#x27;Éducation, à Tirana, a viré à l&#x27;affrontement avec la police. Samedi 17, cinquième…">
+<link rel="canonical" href="https://ecg-prepa.fr/actualites/monde/articles/albanie-emeutes-tirana-2026.html">
+</head>
+<body class="a-page">
+<nav class="a-nav sn sn-actu">
+  <div class="nav-left"><a class="nav-logo sn-logo" href="../../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb sn-fil">
+    <a href="../../../index.html">Accueil</a><span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a><span class="sep">/</span>
+    <a href="../index-monde.html">Monde</a><span class="sep">/</span>
+    <a href="../europe.html">Europe</a><span class="sep">/</span>
+    <span class="current">Émeutes à Tirana</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+<div class="a-filet"></div>
+<main class="a-main">
+<section class="a-hero">
+<div class="a-hero-texte">
+<div class="a-tags"><span class="a-tag t0">Albanie</span><span class="a-tag t1">Politique</span><span class="a-tag t2">Étudiants</span><span class="a-tag t3">Corruption</span></div>
+<h1 class="ap-title a-titre">Albanie : cinq jours d'émeutes à Tirana, des étudiants exigent le départ du Premier ministre Edi Rama</h1>
+<p class="a-meta">Octobre 2026 · Albanie · 5 min de lecture</p>
+</div>
+<img class="a-hero-img" src="../images/albanie-emeutes-tirana-2026.webp" alt="De nuit, deux silhouettes tiennent un drapeau albanais à l'aigle bicéphale devant un bâtiment en flammes">
+</section>
+<section class="a-carte a-essentiel"><p class="a-lab rouge">L'essentiel en 30 secondes</p><ol>
+<li><span class="a-rond">1</span><p>Depuis le mardi 13 octobre, des étudiants affrontent la police à Tirana : <strong>cinq jours d'émeutes</strong>, des bâtiments publics incendiés, <strong>167 arrestations</strong> et <strong>132 policiers blessés</strong> selon l'AP.</p></li>
+<li><span class="a-rond">2</span><p>Ils exigent la <strong>démission d'Edi Rama</strong>, au pouvoir depuis 2013, et dénoncent le coût des études et le manque d'emplois : la colère prolonge les protestations de Zvërnec contre le <strong>projet lié à Jared Kushner</strong>.</p></li>
+<li><span class="a-rond">3</span><p>Rama accuse des <strong>« mains étrangères »</strong> de vouloir freiner l'adhésion à l'UE ; Bruxelles réclame une <strong>enquête sur la force excessive</strong> de la police.</p></li>
+</ol></section>
+<article class="a-carte a-article">
+<section class="a-chiffres" aria-label="Chiffres clés">
+<div><div class="a-chiffre rouge">132</div><div class="a-chiffre-txt">Policiers blessés en cinq jours (AP, 17 octobre)</div></div>
+<div><div class="a-chiffre">167</div><div class="a-chiffre-txt">Personnes arrêtées, selon la police</div></div>
+<div><div class="a-chiffre">388</div><div class="a-chiffre-txt">Personnes visées par des poursuites pénales</div></div>
+<div><div class="a-chiffre">4 sur 33</div><div class="a-chiffre-txt">Chapitres de négociation avec l'UE provisoirement clos</div></div>
+</section>
+<p class="ap-intro a-chapo">Mardi 13 octobre, un rassemblement d'étudiants devant le ministère de l'Éducation, à Tirana, a viré à l'affrontement avec la police. Samedi 17, cinquième jour de troubles, la capitale albanaise a connu des barricades de poubelles en feu, des vitrines brisées, des incendies jusque dans la Cour suprême et, pour la première fois, des balles en caoutchouc. Les manifestants réclament le départ du Premier ministre Edi Rama, qui parle de « mains étrangères » et refuse de démissionner. Derrière la colère étudiante se profile la contestation de treize ans de pouvoir, déjà secoué depuis mai par l'affaire du projet touristique lié à Jared Kushner.</p>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">01</span>Mardi 13 octobre, un rassemblement qui dégénère</h2>
+<p class="a-p">Tout commence devant le ministère de l'Éducation. Selon le site OBCT, quelques dizaines de jeunes brandissent des pancartes et scandent des slogans dans le calme. Au bout d'une heure environ, certains arrachent des grilles et des dalles du trottoir et les lancent contre le bâtiment, dont les vitres et la clôture sont endommagées. La police riposte aux gaz lacrymogènes et aux canons à eau. Le soir, des feux sont allumés rue de Durrës et dans le hall de la mairie de Tirana, et des commerces sont abîmés.</p>
+<p class="a-p">Plusieurs personnes sont blessées, dont des policiers, des journalistes, un diplomate autrichien et un jeune de 19 ans à la jambe cassée, que le chef des urgences de l'hôpital traumatologique attribue à des violences policières. Quarante-neuf personnes sont conduites au poste et cinq policiers sont suspendus.</p>
+</div>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">02</span>Cinq jours d'escalade, de Tirana à Durrës</h2>
+<p class="a-p">Le mercredi, le mouvement gagne les universités d'Elbasan et de Shkodër. Jeudi soir, le ministre de l'Intérieur, Ervin Demo, annonce 156 blessés, dont 97 policiers, et au moins 160 arrestations. Vendredi 16, des milliers de personnes défilent : selon un journaliste de l'AFP, des groupes masqués brisent des vitrines, pillent des magasins et tentent de prendre d'assaut des bâtiments gouvernementaux. Les troubles touchent aussi Korçë.</p>
+<p class="a-p">Samedi 17, quelques centaines de personnes se retrouvent vers midi près du ministère, puis la contestation se répand dans la ville. Le soir, des incendies touchent la Cour suprême, l'entrée de la Banque d'Albanie et des bureaux de poste ; à Durrës, des routes sont bloquées par des barricades enflammées. La police emploie, pour la première fois depuis le début du mouvement, des balles en caoutchouc, que la loi albanaise ne permet que dans des cas extrêmes.</p>
+</div>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">03</span>Un bilan qui change selon les sources</h2>
+<p class="a-p">Le décompte reste mouvant. D'après l'AP, la police recense samedi 132 policiers blessés en cinq jours, 167 personnes arrêtées et 388 visées par des poursuites pénales. Reuters, qui cite des chiffres de police, parle d'environ 500 manifestants interpellés, dont 330 relâchés, et d'environ 120 policiers et 45 manifestants blessés, en précisant que les blessés côté manifestants sont sans doute sous-estimés.</p>
+<p class="a-p">Sept policiers sont suspendus et font l'objet d'une enquête disciplinaire pour abus de pouvoir. Plusieurs journalistes ont été agressés ou empêchés de travailler, selon l'Association des journalistes d'Albanie.</p>
+</div>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">04</span>« Des passeports pour l'émigration »</h2>
+<p class="a-p">Les étudiants parlent d'un trop-plein plus que d'une étincelle. Ils dénoncent l'état des dortoirs et des amphithéâtres, le coût des études, le manque de débouchés et le départ des jeunes. Le chercheur Afrim Krasniqi rappelle, dans Al Jazeera, que les étudiants ont manifesté pacifiquement pendant près de trois mois sans être entendus, le pouvoir recourant souvent à des campagnes de discrédit plutôt qu'au dialogue.</p>
+<p class="a-p">Un précédent existe : en décembre 2018, des manifestations contre les frais universitaires avaient poussé Edi Rama à remplacer huit ministres et à annoncer un « Pacte pour l'université », sans satisfaire toutes les demandes. Cette fois, les étudiants disent ne pas vouloir négocier et réclament la démission du Premier ministre, qu'ils tiennent pour responsable de l'émigration des jeunes.</p>
+</div>
+<figure class="a-citation"><blockquote lang="en">« The degrees we receive from universities are nothing more than passports for emigration. »</blockquote><figcaption><b>Redjan Shkëmbi</b>, étudiant, cité par OBCT, 14 octobre 2026<span class="a-trad">« Les diplômes que nous recevons à l'université ne sont rien d'autre que des passeports pour l'émigration. »</span></figcaption></figure>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">05</span>De la plage de Zvërnec aux amphithéâtres</h2>
+<p class="a-p">La révolte étudiante prolonge un mouvement né fin mai à Zvërnec, dans le sud du pays. Des barbelés y avaient été tendus sur <a href="albanie-pas-a-vendre.html" class="a-lien">une plage de la zone protégée de Vjosa-Narta</a> et des gardes privés avaient blessé des manifestants. Le projet touristique, qui vise aussi l'île de Sazan, est lié à Affinity Partners, la société de Jared Kushner, gendre de Donald Trump. Reuters, qui n'a trouvé aucune preuve de faute de sa part, rapporte que le vendeur de terres contestées serait recherché pour trafic de drogue, ce que son avocat dément.</p>
+<p class="a-p">Le 3 juin, des milliers de personnes avaient défilé à Tirana sous la bannière « L'Albanie n'est pas à vendre ». Baptisé « révolution des flamants », le mouvement a élargi ses revendications. Le journaliste Arlis Alikaj y voit, dans Al Jazeera, « le point d'ébullition de mois de griefs refoulés » : des groupes d'opposition cherchent à en profiter, selon lui, mais ce sont les jeunes qui portent la demande de changement.</p>
+</div>
+<figure class="a-schema"><p class="a-schema-t">De la plage barbelée à la rue étudiante</p><div class="a-etapes dates"><div class="a-etape "><span class="a-statut">30 mai</span><span class="a-val">Zvërnec</span><span class="a-txt">barbelés sur une plage protégée, gardes privés, premiers blessés</span></div>
+<span class="a-fleche" aria-hidden="true">→</span>
+<div class="a-etape "><span class="a-statut">3 juin</span><span class="a-val">Des milliers</span><span class="a-txt">défilent à Tirana : « L'Albanie n'est pas à vendre »</span></div>
+<span class="a-fleche" aria-hidden="true">→</span>
+<div class="a-etape "><span class="a-statut">13 octobre</span><span class="a-val">Étudiants</span><span class="a-txt">face au ministère de l'Éducation, premiers affrontements</span></div>
+<span class="a-fleche" aria-hidden="true">→</span>
+<div class="a-etape non"><span class="a-statut">17 octobre</span><span class="a-val">5<sup>e</sup> jour</span><span class="a-txt">Cour suprême touchée par un incendie, premières balles en caoutchouc</span></div></div><figcaption class="a-src">Sources : Al Jazeera (4 juin 2026) ; OBCT (14 octobre 2026) ; AFP (17 octobre 2026).</figcaption></figure>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">06</span>Rama : « mains étrangères » et refus de partir</h2>
+<p class="a-p">Edi Rama, au pouvoir depuis 2013 et réélu pour un quatrième mandat en mai 2025, refuse de démissionner. Il l'a dit à Reuters cette semaine, et a écrit sur Facebook disposer d'un « mandat très clair » pour mener l'Albanie dans l'Union européenne d'ici 2030. Dans une vidéo publiée vendredi, il affirme que la protestation n'a rien à voir avec les aspirations légitimes de la population et accuse, sans les nommer, des « mains étrangères » d'attiser les troubles pour entraver la candidature européenne.</p>
+<p class="a-p">Son ministre de l'Intérieur, Ervin Demo, dénonce une « tentative déguisée » de prise de pouvoir par la violence. Du côté de l'Union européenne, la délégation à Tirana a condamné les violences, appelé à l'apaisement et demandé qu'une enquête sur les accusations de recours excessif à la force soit menée en priorité.</p>
+</div>
+<figure class="a-schema"><p class="a-schema-t">Qui est responsable ? Quatre lectures de la crise</p>
+<div class="a-axe-bornes"><span>La violence des manifestants</span><span>La responsabilité du pouvoir</span></div><ol class="a-axe">
+<li><span class="a-point" style="background:#1f3a5f" aria-hidden="true"></span><b>Ervin Demo</b><small>ministre de l'Intérieur</small><p>Une « tentative déguisée » de prise de pouvoir par la violence.</p></li>
+<li><span class="a-point" style="background:#6b7a8f" aria-hidden="true"></span><b>Edi Rama</b><small>Premier ministre</small><p>Des « mains étrangères » ; droit de manifester protégé, pas de démission.</p></li>
+<li><span class="a-point" style="background:#9a8fc4" aria-hidden="true"></span><b>Délégation de l'UE</b><small>à Tirana</small><p>Condamne les violences et demande une enquête sur la force excessive.</p></li>
+<li><span class="a-point" style="background:#4a3f8f" aria-hidden="true"></span><b>Les étudiants</b><small>mouvement sans chef</small><p>Rama est responsable de l'émigration des jeunes : il doit partir.</p></li>
+</ol><figcaption class="a-src">Déclarations des 14 au 17 octobre 2026 (AFP, OBCT, Reuters).</figcaption></figure>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">07</span>L'Europe, un calendrier à contretemps</h2>
+<p class="a-p">Le hasard du calendrier est cruel pour Tirana. Le 13 octobre, jour des premiers affrontements, l'Albanie et l'UE convenaient à Luxembourg de la clôture provisoire du chapitre 20, consacré à la politique industrielle. Le pays a désormais refermé 4 des 33 chapitres de négociation, dont trois en juillet. La commissaire à l'élargissement, Marta Kos, évoque la perspective de conclure les négociations l'an prochain.</p>
+<p class="a-p">Mais ces clôtures reposent sur une évaluation positive des critères d'État de droit, précisément le terrain sur lequel s'est déplacée la contestation. Des analystes décrivent l'Albanie comme une plaque tournante du blanchiment d'argent issu des trafics de drogue et d'armes, ce qui complique sa candidature, déposée en 2014. Pour Rama, démissionner serait « une trahison » envers ceux qui lui ont confié le mandat d'achever les négociations ; le dossier européen est devenu l'un des arguments du pouvoir, et un angle mort de la rue.</p>
+</div>
+<section class="a-sec a-chrono-bloc"><h2 class="ap-sub a-h2">Chronologie</h2><p class="a-chrono-sous">Du plus récent au plus ancien</p><div class="a-defile"><ol class="a-chrono">
+<li class="recent"><span class="a-date">17 octobre 2026</span><p>Cinquième jour : incendies à la Cour suprême et à la Banque d'Albanie, premières balles en caoutchouc.</p></li>
+<li><span class="a-date">16 octobre 2026</span><p>Rama dénonce des « mains étrangères » ; des milliers de manifestants défilent.</p></li>
+<li><span class="a-date">15 octobre 2026</span><p>Bilan du ministre de l'Intérieur : 156 blessés, dont 97 policiers, et 160 arrestations.</p></li>
+<li><span class="a-date">13 octobre 2026</span><p>Premiers affrontements devant le ministère de l'Éducation ; l'UE ferme le chapitre 20.</p></li>
+<li><span class="a-date">3 juin 2026</span><p>Des milliers de personnes défilent à Tirana contre le projet de Zvërnec.</p></li>
+<li><span class="a-date">Décembre 2018</span><p>Manifestations étudiantes, huit ministres remplacés, « Pacte pour l'université ».</p></li>
+</ol></div></section>
+<aside class="a-analyse"><p class="a-analyse-lab">L'analyse</p><h2 class="a-analyse-t">Quand la jeunesse n'attend plus les urnes</h2><div class="a-analyse-corps"><p class="a-p">Le slogan a changé, la colère est restée : en quatre mois, la contestation est passée d'une plage barbelée aux amphithéâtres, d'un projet immobilier à la question du pouvoir lui-même. Rama oppose les urnes de 2025 à la rue et brandit l'Europe comme horizon, mais le nombre de chapitres refermés ne répond pas à ceux qui comptent les diplômés qui partent. La séquence rappelle, en plus violent, décembre 2018 : un remaniement et un pacte avaient alors éteint l'incendie, mais plusieurs demandes étaient restées sans réponse, et l'impression d'une promesse sans lendemain a fait le reste.</p><p class="a-p">Le gouvernement choisit pour l'instant la fermeté : des arrestations par centaines, des poursuites par dizaines, mais aussi sept policiers suspendus, signe qu'il mesure le risque d'une bavure. Le danger est double : l'image d'un pouvoir qui réprime des lycéens au moment où Bruxelles examine l'État de droit, et la tentation de présenter la violence comme la preuve d'un complot étranger, ce qui disqualifie des revendications qu'il dit pourtant légitimes. Reste à savoir si un mouvement sans chef ni parti saura transformer l'émeute en demande négociable, ou si l'escalade enfermera chaque camp dans son récit.</p></div>
+<section class="a-copie" aria-label="Dans une copie"><p class="a-copie-t">Dans une copie</p>
+<div class="a-accroche"><h3>Accroche</h3><p>Le 13 octobre 2026, alors que l'Albanie et l'Union européenne actaient à Luxembourg la clôture provisoire d'un quatrième chapitre de négociation, des étudiants affrontaient la police devant le ministère de l'Éducation, à Tirana. Quatre jours plus tard, des incendies touchaient la Cour suprême et la police tirait pour la première fois des balles en caoutchouc. Un pays peut-il se rapprocher de l'Europe sur le papier tout en perdant sa jeunesse dans la rue ?</p></div>
+<div class="a-copie-grille">
+<div><h3>Idée-force</h3><p>L'adhésion à l'Union européenne se mesure aussi à l'État de droit, à la confiance dans les institutions et aux perspectives offertes aux jeunes : en Albanie, la progression des négociations coexiste avec une contestation de la corruption et de l'émigration. L'élargissement est autant un processus intérieur qu'un calendrier de chapitres.</p></div>
+<div><h3>Sujets où la placer</h3><ul><li>Jeunesse, études et émigration : un pays peut-il retenir ses diplômés ? (ESH)</li><li>L'élargissement de l'UE aux Balkans occidentaux : un horizon crédible ? (HGG)</li><li>Peut-on gouverner contre la rue au nom d'un mandat électoral ? (philo)</li></ul></div>
+<div class="a-piege"><h3>Piège à éviter</h3><p>Écrire que Rama a démissionné, que Jared Kushner est mis en cause par la justice ou que l'Albanie est membre de l'UE. Rama refuse de partir, Reuters n'a trouvé aucune preuve de faute de Kushner, et l'Albanie, candidate depuis 2014, n'a clos que 4 chapitres sur 33. Les bilans varient aussi selon la source (132 policiers blessés et 167 arrestations pour l'AP, environ 500 interpellations pour Reuters) : citer toujours la source et la date.</p></div>
+</div></section></aside>
+</article>
+<section class="a-carte a-plus"><h2 class="a-plus-t">Pour aller plus loin</h2>
+<a class="a-cours" href="../../../Culture-Generale/mai-68.html"><img src="../../../Culture-Generale/images/mai-68.webp" alt="" loading="lazy"><div><span class="a-kicker">Réviser le cours · Culture générale · Histoire</span><b>Mai 68 : la révolte qui a changé la société française</b><p>Une contestation étudiante née dans un amphithéâtre devient en quelques semaines un mouvement de société : un point de comparaison pour comprendre ce qu'une jeunesse peut déclencher.</p><span class="a-cours-btn">Ouvrir le dossier <span aria-hidden="true">→</span></span></div></a>
+<h3 class="a-plus-h">Lire aussi</h3><ul class="a-lire">
+<li><a href="albanie-pas-a-vendre.html"><img src="../images/albanie-pas-a-vendre.webp" alt="" loading="lazy"><span><span class="a-kicker">Albanie · Juin 2026</span><b>« L'Albanie n'est pas à vendre » : le projet Kushner embrase la côte adriatique</b></span></a></li>
+<li><a href="albanie-diella-ministre-ia.html"><img src="../images/albanie-diella-ministre-ia.webp" alt="" loading="lazy"><span><span class="a-kicker">Albanie · Mai 2026</span><b>Albanie : Diella, la première ministre IA au monde, prise dans les filets de la loi</b></span></a></li>
+<li><a href="serbie-vucic-demission.html"><img src="../images/serbie-vucic-demission.webp" alt="" loading="lazy"><span><span class="a-kicker">Serbie · Septembre 2026</span><b>Serbie : Aleksandar Vučić démissionne de la présidence pour briguer le poste de Premier ministre</b></span></a></li>
+<li><a href="montenegro-28e-etat-ue.html"><img src="../images/montenegro-28e-etat-ue.webp" alt="" loading="lazy"><span><span class="a-kicker">Monténégro · Avril 2026</span><b>Monténégro : le 28e État de l'Union européenne en vue pour 2028</b></span></a></li>
+</ul><h3 class="a-plus-h">Sources</h3><ol class="a-sources">
+<li><span><b>Boursorama, avec l'AFP</b><a href="https://www.boursorama.com/actualite-economique/actualites/albanie-cinquieme-jour-de-manifestations-et-d-affrontements-a-tirana-1ace96bb9efcc8ba4c2356e51638f7ef" target="_blank" rel="noopener">« Albanie : cinquième jour de manifestations et d'affrontements à Tirana »</a>, 17 octobre 2026.</span></li>
+<li><span><b>France 24, avec l'AFP</b><a href="https://www.france24.com/fr/info-en-continu/20261016-albanie-le-premier-ministre-accuse-des-mains-%C3%A9trang%C3%A8res-d-attiser-les-troubles" target="_blank" rel="noopener">« Albanie : le Premier ministre accuse des “mains étrangères” d'attiser les troubles »</a>, 16 octobre 2026.</span></li>
+<li><span><b>Reuters, via NBC News</b><a href="https://www.nbcnews.com/world/europe/albanian-anti-government-protesters-clash-police-tirana-rcna604009" target="_blank" rel="noopener">« Albanian anti-government protesters clash with police in Tirana »</a>, 17 octobre 2026.</span></li>
+<li><span><b>Al Jazeera</b><a href="https://www.aljazeera.com/news/2026/10/15/boiling-point-why-students-are-protesting-against-albanias-edi-rama" target="_blank" rel="noopener">« “Boiling point”: Why students are protesting against Albania's Edi Rama »</a>, 15 octobre 2026.</span></li>
+<li><span><b>Osservatorio Balcani e Caucaso Transeuropa (OBCT)</b><a href="https://www.balcanicaucaso.org/en/cp_article/albania-students-protest-escalates-into-violence/" target="_blank" rel="noopener">« Albania, students' protest escalates into violence »</a>, 14 octobre 2026.</span></li>
+<li><span><b>European Western Balkans</b><a href="https://europeanwesternbalkans.com/2026/10/14/albania-provisionally-closes-chapter-20-in-eu-accession-talks/" target="_blank" rel="noopener">« Albania provisionally closes Chapter 20 in EU accession talks »</a>, 14 octobre 2026.</span></li>
+</ol></section>
+<div class="a-fin"><a href="../tous-monde.html">← Tous les articles</a><button class="a-partager" type="button" onclick="partager(this)">Partager l'article</button><a href="../europe.html">Europe →</a></div>
+</main>
+<script>
+function partager(btn) {
+  const url = location.href.split('#')[0], titre = document.title.replace(/^ECG Prépa — /, '');
+  const fini = t => { const v = btn.textContent; btn.textContent = t; setTimeout(() => btn.textContent = v, 2000); };
+  if (navigator.share) { navigator.share({ title: titre, url }).catch(() => {}); return; }
+  navigator.clipboard.writeText(url).then(() => fini('Lien copié'), () => {});
+}
+</script>
+</body>
+</html>

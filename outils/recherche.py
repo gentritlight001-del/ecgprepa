@@ -14,7 +14,7 @@ dont le contenu est construit par un script (cours de civilisation, DS de langue
 langues…) sont lues dans leur bloc `<script id="donnees">`.
 
 Format : {"pages": [[adresse, titre, rubrique, catégorie, description, [[titre de partie,
-ancre], …]], …], "mots": "mot1 mot2 …" (sans accents, en minuscules, triés), "p": [pages de
+ancre], …], image (depuis la racine, "" s'il n'y en a pas)], …], "mots": "mot1 mot2 …" (sans accents, en minuscules, triés), "p": [pages de
 chaque mot : écarts entre numéros de page, moins 1, en base 36, séparés par des points]}.
 
 Relançable sans risque : à lancer avant chaque mise en ligne (ne jamais modifier
@@ -208,8 +208,102 @@ def lire_page(rel):
         if p[0] and sans_accents(p[0]) in sans_accents(titre):
             p[0] = ''
     cat, lib = rubrique(rel)
-    return {'u': rel, 't': titre, 'c': cat, 'r': lib, 'd': desc,
+    return {'u': rel, 't': titre, 'c': cat, 'r': lib, 'd': desc, 'i': image_de(rel, c),
             'parties': [[t, a, mots(t + ' ' + texte)] for t, a, texte in parties]}
+
+
+def image_de(rel, c):
+    """Photo de la page (héros, couverture…) : première image locale du corps, sinon le champ
+    « image » d'un bloc de données ou un fond CSS. Lue par mon-planning.html."""
+    d = os.path.dirname(rel)
+    corps = c.split('<body', 1)[-1]
+    cands = re.findall(r'<img\b[^>]*?\bsrc="([^"]+)"', corps)
+    cands += re.findall(r'''["']?image["']?\s*:\s*["']([^"']+\.(?:webp|jpe?g|png))["']''', c)
+    cands += re.findall(r'url\(["\']?([^"\')]+\.(?:webp|jpe?g|png))', corps)
+    # Dernier recours : un chemin d'image cité dans la page (« image »: { "src": … } des cours de civilisation).
+    cands += re.findall(r'''["']([^"'\s<>]+\.(?:webp|jpe?g|png))["']''', corps)
+    for src in cands:
+        if (src.startswith(('http', 'data:', '//')) or src.endswith('.svg') or 'logo' in src or 'icon' in src
+                or 'partage/' in src or 'favicon' in src):
+            continue
+        chemin = os.path.normpath(os.path.join(d, src.split('?')[0]))
+        if os.path.isfile(RACINE + chemin):
+            return chemin.replace(os.sep, '/')
+    return ''
+
+
+def vignettes(lues):
+    """Image d'un lien à vignette d'une page (index des chapitres…) → image de la page visée."""
+    v = {}
+    for pg in lues:
+        c = open(RACINE + pg['u'], encoding='utf-8').read()
+        d = os.path.dirname(pg['u'])
+        for href, dedans in re.findall(r'<a\b[^>]*?\bhref="([^"#?]+\.html)[^"]*"[^>]*>(.*?)</a>', c, re.S):
+            m = re.search(r'<img\b[^>]*?\bsrc="([^"]+\.(?:webp|jpe?g|png))"', dedans)
+            if not m or m.group(1).startswith('http'):
+                continue
+            cible = os.path.normpath(os.path.join(d, href)).replace(os.sep, '/')
+            img = os.path.normpath(os.path.join(d, m.group(1))).replace(os.sep, '/')
+            if os.path.isfile(RACINE + img):
+                v.setdefault(cible, img)
+    return v
+
+
+def texte(h):
+    return propre(html.unescape(re.sub(r'<[^>]+>', ' ', h)))
+
+
+def a_faire(pages):
+    """Contenus annoncés sur le site mais pas encore faits : liens vers une page qui n'existe pas
+    (chapitres de civilisation, chapitres de philo…), œuvres et cours « à venir », fiches auteurs
+    sans fiche. Écrit `a-faire.json`, lu par mon-planning.html (« Depuis le site »)."""
+    res, vus = [], set()
+
+    def ajouter(rel, titre, groupe=''):
+        titre = propre(titre)
+        cle = (rel, titre)
+        if not titre or cle in vus:
+            return
+        vus.add(cle)
+        cat, lib = rubrique(rel)
+        res.append([rel, titre, lib + (' · ' + groupe if groupe else ''), cat])
+
+    for rel in pages:
+        c = open(RACINE + rel, encoding='utf-8').read()
+        if re.search(r'name="robots"[^>]*noindex', c):
+            continue
+        corps = c.split('<body', 1)[-1]
+        d = os.path.dirname(rel)
+        # Liens vers des pages qui n'existent pas encore, avec le dernier titre h2/h3 qui les précède.
+        for m in re.finditer(r'<a\b[^>]*?\bhref="([^"#?:]+\.html)"[^>]*>(.*?)</a>', corps, re.S):
+            cible = os.path.normpath(os.path.join(d, m.group(1).replace('%20', ' ')))
+            if os.path.exists(RACINE + cible):
+                continue
+            dedans = m.group(2)
+            t = re.search(r'class="[^"]*(?:titre|nom|name)[^"]*"[^>]*>(.*?)</', dedans, re.S)
+            titre = texte(t.group(1) if t else dedans)
+            avant = re.findall(r'<h[23][^>]*>(.*?)</h[23]>', corps[:m.start()], re.S)
+            ajouter(rel, titre, texte(avant[-1]) if avant else '')
+        # Œuvres et éléments marqués « à venir ».
+        for m in re.finditer(r'<(div|li|a)\b[^>]*class="[^"]*\ba-venir\b[^"]*"[^>]*>(.*?)</\1>', corps, re.S):
+            b = m.group(2)
+            t = re.search(r'class="(?:titre|chapter-name|num-titre)"[^>]*>(.*?)</', b, re.S)
+            q = re.search(r'class="(?:qui|chapter-author)"[^>]*>(.*?)</', b, re.S)
+            if t:
+                auteur = re.sub(r'\s*·\s*à venir$', '', texte(q.group(1))) if q else ''
+                ajouter(rel, texte(t.group(1)) + (' (' + auteur + ')' if auteur else ''))
+        # Fiches auteurs pas encore faites.
+        for m in re.finditer(r'<li class="auteur-card"[^>]*>(.*?)</li>', corps, re.S):
+            h = re.search(r'<h2[^>]*>(.*?)</h2>', m.group(1), re.S)
+            if h:
+                ajouter(rel, 'Fiche auteur : ' + texte(h.group(1)))
+        # Emplacements vides annoncés (« Premier dossier bientôt disponible », « Prochain cours bientôt en ligne »…).
+        for m in re.finditer(r'class="(?:ix-dos-vide|ci-venir|ci-prochain)"[^>]*>(.*?)</(?:div|p)>', corps, re.S):
+            ajouter(rel, texte(m.group(1)))
+    with open(RACINE + 'a-faire.json', 'w', encoding='utf-8') as f:
+        json.dump({'genere': 'outils/recherche.py, ne pas modifier à la main', 'pages': res},
+                  f, ensure_ascii=False, separators=(',', ':'))
+    print('a-faire.json : %d contenus à créer.' % len(res))
 
 
 def base36(n):
@@ -227,9 +321,10 @@ def main():
     pages = [p for p in pages if os.path.basename(p) not in IGNORER]
     lues = [x for x in (lire_page(p) for p in pages) if x]
     liste, index = [], {}
+    vig = vignettes(lues)
     for n, pg in enumerate(lues):
         titres = [[t, a] for t, a, _ in pg['parties'] if t]
-        liste.append([pg['u'], pg['t'], pg['r'], pg['c'], pg['d'], titres])
+        liste.append([pg['u'], pg['t'], pg['r'], pg['c'], pg['d'], titres, pg['i'] or vig.get(pg['u'], '')])
         for m in set().union(*(ms for _, _, ms in pg['parties'])) | mots(pg['t']):
             index.setdefault(m, []).append(n)
     vocab = sorted(index)
@@ -246,6 +341,7 @@ def main():
                   f, ensure_ascii=False, separators=(',', ':'))
     print('recherche-index.json : %d pages, %d mots, %.1f Mo.'
           % (len(liste), len(vocab), os.path.getsize(SORTIE) / 1e6))
+    a_faire(pages)
 
 
 if __name__ == '__main__':

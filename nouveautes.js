@@ -10,6 +10,613 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-10-27T06:43:54+00:00"
 },
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Roumanie",
+"titre": "Roumanie : le Parlement investit Luca Niculescu Premier ministre après 169 jours de crise politique",
+"url": "actualites/monde/articles/roumanie-niculescu-premier-ministre-2026.html",
+"image": "actualites/monde/images/roumanie-niculescu-premier-ministre-2026.webp",
+"date": "2026-10-22T14:02:05+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Espagne",
+"titre": "Espagne : Milei s'invite dans la campagne du 29-N, reçu par Ayuso et insultant Sánchez",
+"url": "actualites/es/articles/espagne-milei-madrid-campagne-29n-2026.html",
+"image": "actualites/es/images/espagne-milei-madrid-campagne-29n-2026.webp",
+"date": "2026-10-22T13:53:42+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Cuba",
+"titre": "Cuba : un juge de Miami délivre un mandat d'arrêt sans caution contre Raúl Castro",
+"url": "actualites/es/articles/cuba-raul-castro-mandat-arret-miami-2026.html",
+"image": "actualites/es/images/cuba-raul-castro-mandat-arret-miami-2026.webp",
+"date": "2026-10-20T18:46:30+00:00"
+},
+{
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
+"titre": "Allemagne : le sommet « Invest in Germany » annonce 230 milliards d'euros d'engagements",
+"url": "actualites/de/articles/allemagne-invest-in-germany-summit-2026.html",
+"image": "actualites/de/images/allemagne-invest-in-germany-summit-2026.webp",
+"date": "2026-10-20T18:32:43+00:00"
+},
+{
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "Canada",
+"titre": "Canada : l'Alberta vote à 75 % pour rester dans le pays lors d'un référendum sur la séparation",
+"url": "actualites/en/articles/canada-alberta-referendum-2026.html",
+"image": "actualites/en/images/canada-alberta-referendum-2026.webp",
+"date": "2026-10-20T18:24:09+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Vietnam / AELE",
+"titre": "Vietnam – AELE : Hanoï signe un accord de libre-échange avec quatre pays européens hors UE",
+"url": "actualites/monde/articles/vietnam-aele-accord-libre-echange-2026.html",
+"image": "actualites/monde/images/vietnam-aele-accord-libre-echange-2026.webp",
+"date": "2026-10-20T18:17:08+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Chili",
+"titre": "Chili : sept ans après l'estallido social, des milliers de manifestants défilent contre Kast",
+"url": "actualites/es/articles/chili-anniversaire-estallido-2026.html",
+"image": "actualites/es/images/chili-anniversaire-estallido-2026.webp",
+"date": "2026-10-20T18:08:23+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Espagne",
+"titre": "Espagne : la DANA Adam déverse plus de 700 litres d'eau par m² sur le littoral méditerranéen",
+"url": "actualites/es/articles/espagne-dana-adam-inondations-2026.html",
+"image": "actualites/es/images/espagne-dana-adam-inondations-2026.webp",
+"date": "2026-10-20T17:59:25+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "Alright",
+"url": "humanite/musique/alright.html",
+"image": "humanite/musique/images/alright-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T16:02:27+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "A Change Is Gonna Come",
+"url": "humanite/musique/a-change-is-gonna-come.html",
+"image": "humanite/musique/images/a-change-is-gonna-come-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T15:57:58+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "Die Roboter",
+"url": "humanite/musique/die-roboter.html",
+"image": "humanite/musique/images/die-roboter-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T15:55:04+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "Le Voyage d'hiver",
+"url": "humanite/musique/le-voyage-d-hiver.html",
+"image": "humanite/musique/images/le-voyage-d-hiver-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T15:51:28+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "We Are the World",
+"url": "humanite/musique/we-are-the-world.html",
+"image": "humanite/musique/images/we-are-the-world-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T15:47:38+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "Nuit et brouillard",
+"url": "humanite/musique/nuit-et-brouillard.html",
+"image": "humanite/musique/images/nuit-et-brouillard-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T15:44:47+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "4′33″",
+"url": "humanite/musique/4-33.html",
+"image": "humanite/musique/images/4-33-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T15:41:08+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "Redemption Song",
+"url": "humanite/musique/redemption-song.html",
+"image": "humanite/musique/images/redemption-song-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T15:38:07+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "Symphonie n° 7 « Leningrad »",
+"url": "humanite/musique/symphonie-n-7.html",
+"image": "humanite/musique/images/symphonie-n-7-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T15:34:56+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "Le Déserteur",
+"url": "humanite/musique/le-deserteur.html",
+"image": "humanite/musique/images/le-deserteur-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T15:31:03+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "Le Chant des partisans",
+"url": "humanite/musique/le-chant-des-partisans.html",
+"image": "humanite/musique/images/le-chant-des-partisans-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T15:12:12+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "Le Sacre du printemps",
+"url": "humanite/musique/le-sacre-du-printemps.html",
+"image": "humanite/musique/images/le-sacre-du-printemps-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T15:09:57+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "Imagine",
+"url": "humanite/musique/imagine.html",
+"image": "humanite/musique/images/imagine-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T15:07:02+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "Strange Fruit",
+"url": "humanite/musique/strange-fruit.html",
+"image": "humanite/musique/images/strange-fruit-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T15:01:41+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "Requiem",
+"url": "humanite/musique/requiem.html",
+"image": "humanite/musique/images/requiem-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T14:58:12+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Musique",
+"titre": "Symphonie n° 9",
+"url": "humanite/musique/symphonie-n-9.html",
+"image": "humanite/musique/images/symphonie-n-9-visuel.webp",
+"portrait": false,
+"date": "2026-10-20T14:53:04+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "La Leçon d'anatomie du docteur Tulp",
+"url": "humanite/art/la-lecon-d-anatomie.html",
+"image": "humanite/art/images/la-lecon-d-anatomie-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T11:14:22+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Vietnam Veterans Memorial",
+"url": "humanite/art/vietnam-veterans-memorial.html",
+"image": "humanite/art/images/vietnam-veterans-memorial-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T11:11:41+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Un enterrement à Ornans",
+"url": "humanite/art/un-enterrement-a-ornans.html",
+"image": "humanite/art/images/un-enterrement-a-ornans-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T11:09:09+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Les photographies du Sonderkommando",
+"url": "humanite/art/photographies-du-sonderkommando.html",
+"image": "humanite/art/images/photographies-du-sonderkommando-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T11:06:40+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Étude d'après le portrait du pape Innocent X",
+"url": "humanite/art/etude-pape-innocent-x.html",
+"image": "humanite/art/images/etude-pape-innocent-x-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T11:03:32+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "La Liberté guidant le peuple",
+"url": "humanite/art/la-liberte-guidant-le-peuple.html",
+"image": "humanite/art/images/la-liberte-guidant-le-peuple-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T11:00:23+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Personnes",
+"url": "humanite/art/personnes.html",
+"image": "humanite/art/images/personnes-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T10:55:15+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "La Création d'Adam",
+"url": "humanite/art/la-creation-d-adam.html",
+"image": "humanite/art/images/la-creation-d-adam-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T10:52:28+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Plus jamais la guerre !",
+"url": "humanite/art/plus-jamais-la-guerre.html",
+"image": "humanite/art/images/plus-jamais-la-guerre-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T10:49:45+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "La Colonne brisée",
+"url": "humanite/art/la-colonne-brisee.html",
+"image": "humanite/art/images/la-colonne-brisee-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T10:46:51+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Portrait d'Edmond de Belamy",
+"url": "humanite/art/portrait-d-edmond-de-belamy.html",
+"image": "humanite/art/images/portrait-d-edmond-de-belamy-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T10:44:16+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Les Glaneuses",
+"url": "humanite/art/les-glaneuses.html",
+"image": "humanite/art/images/les-glaneuses-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T10:33:24+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "La fillette et le vautour",
+"url": "humanite/art/la-fillette-et-le-vautour.html",
+"image": "humanite/art/images/la-fillette-et-le-vautour-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T10:30:49+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "L'Homme de Vitruve",
+"url": "humanite/art/l-homme-de-vitruve.html",
+"image": "humanite/art/images/l-homme-de-vitruve-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T10:27:44+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Rhythm 0",
+"url": "humanite/art/rhythm-0.html",
+"image": "humanite/art/images/rhythm-0-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T10:18:09+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Olympia",
+"url": "humanite/art/olympia.html",
+"image": "humanite/art/images/olympia-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T10:12:44+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "L'Homme qui marche",
+"url": "humanite/art/l-homme-qui-marche.html",
+"image": "humanite/art/images/l-homme-qui-marche-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T10:09:13+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Law of the Journey",
+"url": "humanite/art/law-of-the-journey.html",
+"image": "humanite/art/images/law-of-the-journey-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T09:59:20+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Les Ambassadeurs",
+"url": "humanite/art/les-ambassadeurs.html",
+"image": "humanite/art/images/les-ambassadeurs-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T09:45:01+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Tank Man",
+"url": "humanite/art/tank-man.html",
+"image": "humanite/art/images/tank-man-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T09:39:29+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "D'où venons-nous ? Que sommes-nous ? Où allons-nous ?",
+"url": "humanite/art/d-ou-venons-nous.html",
+"image": "humanite/art/images/d-ou-venons-nous-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T08:43:46+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "La fillette au napalm",
+"url": "humanite/art/fillette-au-napalm.html",
+"image": "humanite/art/images/fillette-au-napalm-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T08:24:47+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Migrant Mother",
+"url": "humanite/art/migrant-mother.html",
+"image": "humanite/art/images/migrant-mother-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T08:21:07+00:00"
+},
+{
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Girl with Balloon",
+"url": "humanite/art/girl-with-balloon.html",
+"image": "humanite/art/images/girl-with-balloon-oeuvre.webp",
+"portrait": false,
+"date": "2026-10-20T08:17:58+00:00"
+},
+{
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "États-Unis",
+"titre": "États-Unis : le mouvement « No Kings » appelle à voter tôt avant les élections de mi-mandat",
+"url": "actualites/en/articles/us-no-kings-vote-early-2026.html",
+"image": "actualites/en/images/us-no-kings-vote-early-2026.webp",
+"date": "2026-10-18T08:28:47+00:00"
+},
+{
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "États-Unis",
+"titre": "États-Unis : Trump suspend un large paquet de sanctions et de droits de douane contre la Russie",
+"url": "actualites/en/articles/us-trump-suspend-sanctions-russie-2026.html",
+"image": "actualites/en/images/us-trump-suspend-sanctions-russie-2026.webp",
+"date": "2026-10-18T08:28:47+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "France",
+"titre": "France : 550 000 manifestants contre la vie chère, l'hôtel de ville de Limoges détruit",
+"url": "actualites/monde/articles/france-17-octobre-mobilisation-limoges-2026.html",
+"image": "actualites/monde/images/france-17-octobre-mobilisation-limoges-2026.webp",
+"date": "2026-10-18T08:12:16+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Brésil",
+"titre": "Brésil : à une semaine du second tour, Lula multiplie les mesures sociales et fiscales",
+"url": "actualites/monde/articles/bresil-lula-mesures-electorales-second-tour-2026.html",
+"image": "actualites/monde/images/bresil-lula-mesures-electorales-second-tour-2026.webp",
+"date": "2026-10-18T08:05:39+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Costa Rica",
+"titre": "Costa Rica : Laura Fernández signe avec Bukele un accord contre le crime transnational",
+"url": "actualites/es/articles/costa-rica-salvador-accord-crime-transnational-2026.html",
+"image": "actualites/es/images/costa-rica-salvador-accord-crime-transnational-2026.webp",
+"date": "2026-10-18T07:59:54+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Colombie",
+"titre": "Colombie : De la Espriella retire 30 œuvres du Musée national, une « contrarrevolución cultural »",
+"url": "actualites/es/articles/colombie-musee-national-contrarrevolucion-culturelle-2026.html",
+"image": "actualites/es/images/colombie-musee-national-contrarrevolucion-culturelle-2026.webp",
+"date": "2026-10-18T07:51:47+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Venezuela",
+"titre": "Venezuela : la diaspora manifeste dans au moins 17 pays pour exiger un calendrier électoral",
+"url": "actualites/es/articles/venezuela-diaspora-save-the-date-2026.html",
+"image": "actualites/es/images/venezuela-diaspora-save-the-date-2026.webp",
+"date": "2026-10-18T07:44:57+00:00"
+},
+{
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne / France",
+"titre": "Allemagne – France : Merz et Macron s'accordent pour assouplir la sortie du thermique en 2035",
+"url": "actualites/de/articles/allemagne-france-merz-macron-moteurs-thermiques-2026.html",
+"image": "actualites/de/images/allemagne-france-merz-macron-moteurs-thermiques-2026.webp",
+"date": "2026-10-18T07:13:23+00:00"
+},
+{
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
+"titre": "Santé : le Bundestag adopte une réforme de la médecine d'urgence après trois tentatives avortées",
+"url": "actualites/de/articles/allemagne-reforme-medecine-urgence-2026.html",
+"image": "actualites/de/images/allemagne-reforme-medecine-urgence-2026.webp",
+"date": "2026-10-18T07:06:13+00:00"
+},
+{
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "Royaume-Uni",
+"titre": "Royaume-Uni : sécheresse sévère déclarée dans plusieurs comtés du sud de l'Angleterre",
+"url": "actualites/en/articles/uk-severe-drought-southern-england-2026.html",
+"image": "actualites/en/images/uk-severe-drought-southern-england-2026.webp",
+"date": "2026-10-18T06:59:48+00:00"
+},
+{
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "Irlande",
+"titre": "Irlande : plus de 300 000 agents publics en grève, la plus grande mobilisation depuis 2009",
+"url": "actualites/en/articles/ireland-public-sector-strike-2026.html",
+"image": "actualites/en/images/ireland-public-sector-strike-2026.webp",
+"date": "2026-10-18T06:52:56+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Brésil",
+"titre": "Brésil : la déforestation en Amazonie tombe à 3 335 km², son plus bas niveau depuis 1988",
+"url": "actualites/monde/articles/bresil-deforestation-amazonie-plus-bas-2026.html",
+"image": "actualites/monde/images/bresil-deforestation-amazonie-plus-bas-2026.webp",
+"date": "2026-10-18T06:44:07+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Astronomie",
+"titre": "Astronomie : la première étoile verte connue est une naine blanche, à 280 années-lumière",
+"url": "actualites/monde/articles/astronomie-etoile-verte-naine-blanche-2026.html",
+"image": "actualites/monde/images/astronomie-etoile-verte-naine-blanche-2026.webp",
+"date": "2026-10-18T06:37:27+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Chine / Corée du Nord",
+"titre": "Chine – Corée du Nord : le nouveau pont sur le Yalou ouvre enfin, douze ans après son achèvement",
+"url": "actualites/monde/articles/chine-coree-nord-pont-yalou-2026.html",
+"image": "actualites/monde/images/chine-coree-nord-pont-yalou-2026.webp",
+"date": "2026-10-18T06:21:40+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Albanie",
+"titre": "Albanie : cinq jours d'émeutes à Tirana, des étudiants exigent le départ d'Edi Rama",
+"url": "actualites/monde/articles/albanie-emeutes-tirana-2026.html",
+"image": "actualites/monde/images/albanie-emeutes-tirana-2026.webp",
+"date": "2026-10-18T06:07:37+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "États-Unis",
@@ -69,7 +676,7 @@ window.ECG_NOUVEAUTES = [
 "meta": "HGG 2e année · chapitre 3",
 "titre": "L'Amérique latine, entre émergences et crises",
 "url": "deuxieme_annee/hgg/chapitre-3-hgg.html",
-"image": "deuxieme_annee/hgg/images/chancay-port-vue-projet.webp",
+"image": "deuxieme_annee/hgg/images/avenida-paulista-sao-paulo.webp",
 "date": "2026-10-15T06:42:59+00:00"
 },
 {
@@ -170,16 +777,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/es/articles/espagne-fete-nationale-hispanidad-2026.html",
 "image": "actualites/es/images/espagne-fete-nationale-hispanidad-2026.webp",
 "date": "2026-10-13T18:28:46+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Art",
-"titre": "Guernica",
-"url": "humanite/art/guernica.html",
-"image": "humanite/art/images/guernica-oeuvre.webp",
-"portrait": false,
-"date": "2026-10-12T18:03:02+00:00"
 },
 {
 "t": "monde",
@@ -342,15 +939,6 @@ window.ECG_NOUVEAUTES = [
 "url": "Culture-Generale/revolution-industrielle.html",
 "image": "Culture-Generale/images/revolution-industrielle.webp",
 "date": "2026-10-10T15:41:06+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cours 1",
-"titre": "Qu'est-ce que l'humanité ?",
-"url": "humanite/cours-humanite/Cours/cours1.html",
-"image": "humanite/cours-humanite/Cours/images/ecole-d-athenes.webp",
-"date": "2026-10-09T19:29:57+00:00"
 },
 {
 "t": "es",
@@ -767,24 +1355,6 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-10-01T13:52:44+00:00"
 },
 {
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Maroc",
-"titre": "Maroc : Fatima Ezzahra El Mansouri devient la première femme nommée cheffe du gouvernement",
-"url": "actualites/monde/articles/maroc-premiere-ministre-femme.html",
-"image": "actualites/monde/images/maroc-premiere-ministre-femme.webp",
-"date": "2026-10-01T13:52:44+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Inde",
-"titre": "Inde et Népal : au moins 81 morts en Uttar Pradesh et 27 au Népal sous des pluies diluviennes",
-"url": "actualites/monde/articles/inde-nepal-inondations-2026.html",
-"image": "actualites/monde/images/inde-nepal-inondations-2026.webp",
-"date": "2026-10-01T13:52:44+00:00"
-},
-{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "États-Unis",
@@ -839,24 +1409,6 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-10-01T13:52:44+00:00"
 },
 {
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Serbie",
-"titre": "Serbie : Aleksandar Vučić démissionne de la présidence pour briguer le poste de Premier ministre",
-"url": "actualites/monde/articles/serbie-vucic-demission.html",
-"image": "actualites/monde/images/serbie-vucic-demission.webp",
-"date": "2026-09-28T19:28:07+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "ONU",
-"titre": "Allemagne-Russie : premier entretien entre ministres des Affaires étrangères depuis 2022",
-"url": "actualites/monde/articles/allemagne-russie-lavrov-wadephul.html",
-"image": "actualites/monde/images/allemagne-russie-lavrov-wadephul.webp",
-"date": "2026-09-27T16:38:01+00:00"
-},
-{
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Suisse",
@@ -882,15 +1434,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/es/articles/manifestation-madrid-ceuta-elections.html",
 "image": "actualites/es/images/manifestation-madrid-ceuta-elections.webp",
 "date": "2026-09-27T12:59:31+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "France",
-"titre": "France : Léon XIV, premier voyage officiel d'un pape depuis 2008, entre laïcité, Europe et espérance",
-"url": "actualites/monde/articles/pape-leon-xiv-france.html",
-"image": "actualites/monde/images/pape-leon-xiv-france.webp",
-"date": "2026-09-27T12:49:02+00:00"
 },
 {
 "t": "cg",
@@ -927,15 +1470,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/de/articles/retrait-candidature-jo-berlin.html",
 "image": "actualites/de/images/retrait-candidature-jo-berlin.webp",
 "date": "2026-09-26T15:06:19+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Éthiopie",
-"titre": "Éthiopie : le TPLF s'empare des aéroports du Tigré",
-"url": "actualites/monde/articles/ethiopie-tplf-aeroports-tigre.html",
-"image": "actualites/monde/images/ethiopie-tplf-aeroports-tigre.webp",
-"date": "2026-09-24T20:25:41+00:00"
 },
 {
 "t": "en",
@@ -1042,17 +1576,8 @@ window.ECG_NOUVEAUTES = [
 "meta": "HGG 2e année · chapitre 1",
 "titre": "Géopolitique des Amériques",
 "url": "deuxieme_annee/hgg/chapitre-1-hgg.html",
-"image": "deuxieme_annee/hgg/images/paraisopolis-tuca-vieira-2004.webp",
+"image": "deuxieme_annee/hgg/images/ameriques-mediterranee-americaine.webp",
 "date": "2026-09-21T19:18:06+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Groenland",
-"titre": "Groenland : Washington obtient un accord de « contrôle permanent » sur la sécurité du territoire",
-"url": "actualites/monde/articles/groenland-accord-securite-usa.html",
-"image": "actualites/monde/images/groenland-accord-securite-usa.jpg",
-"date": "2026-09-20T07:05:53+00:00"
 },
 {
 "t": "en",
@@ -1089,15 +1614,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/es/articles/bolivie-nouveau-felin-leopardus-tilcayo.html",
 "image": "actualites/es/images/bolivie-nouveau-felin-leopardus-tilcayo.jpg",
 "date": "2026-09-20T07:05:53+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Suède",
-"titre": "Suède : la gauche de Magdalena Andersson l'emporte de justesse aux législatives",
-"url": "actualites/monde/articles/suede-elections-legislatives.html",
-"image": "actualites/monde/images/suede-elections-legislatives.webp",
-"date": "2026-09-18T20:00:18+00:00"
 },
 {
 "t": "en",
@@ -1142,15 +1658,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Trump minimise les risques de l'IA, en pleine vague d'alertes venues de la Silicon Valley",
 "url": "actualites/en/articles/trump-minimise-risques-ia-2026.html",
 "image": "actualites/en/images/trump-minimise-risques-ia-2026.webp",
-"date": "2026-09-18T20:00:18+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "Irlande",
-"titre": "Entre golf et diplomatie : la visite mouvementée de Donald Trump en Irlande",
-"url": "actualites/en/articles/trump-visite-irlande-2026.html",
-"image": "actualites/en/images/trump-visite-irlande-2026.webp",
 "date": "2026-09-18T20:00:18+00:00"
 },
 {
@@ -1289,51 +1796,6 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-09-12T19:52:51+00:00"
 },
 {
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "25 ans du 11-Septembre : l'Amérique commémore l'attentat, entre recueillement et exigence de vérité",
-"url": "actualites/en/articles/25-ans-11-septembre-2026.html",
-"image": "actualites/en/images/25-ans-11-septembre-2026.webp",
-"date": "2026-09-12T10:40:02+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "« Le dividende Trump » : 5 000 dollars promis à chaque Américain si les républicains gagnent les midterms",
-"url": "actualites/en/articles/trump-dividende-5000-dollars-midterms-2026.html",
-"image": "actualites/en/images/trump-dividende-5000-dollars-midterms-2026.webp",
-"date": "2026-09-12T10:40:02+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Pérou",
-"titre": "Le Pérou rejoint l'« Escudo de las Américas » et réclame la révision de ses tarifs douaniers",
-"url": "actualites/es/articles/perou-escudo-americas.html",
-"image": "actualites/es/images/perou-escudo-americas.webp",
-"date": "2026-09-12T10:40:02+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Colombie",
-"titre": "Fin des dialogues avec l'ELN : De la Espriella clôt la « paix totale »",
-"url": "actualites/es/articles/colombie-fin-dialogues-eln.html",
-"image": "actualites/es/images/colombie-fin-dialogues-eln.webp",
-"date": "2026-09-12T10:40:02+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Chili",
-"titre": "53 ans après : le Chili face à la mémoire du coup d'État de 1973",
-"url": "actualites/es/articles/chili-coup-etat.html",
-"image": "actualites/es/images/chili-coup-etat.webp",
-"date": "2026-09-12T10:40:02+00:00"
-},
-{
 "t": "cg",
 "rubrique": "Culture générale",
 "meta": "Culture & Arts",
@@ -1350,60 +1812,6 @@ window.ECG_NOUVEAUTES = [
 "url": "Culture-Generale/amazon.html",
 "image": "Culture-Generale/images/amazon.webp",
 "date": "2026-09-12T10:40:02+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "11-Septembre : Mamdani dévoile 170 000 pages d'archives sur la toxicité de l'air à Ground Zero",
-"url": "actualites/en/articles/mamdani-toxicite-11-septembre-2026.html",
-"image": "actualites/en/images/mamdani-toxicite-11-septembre-2026.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "Royaume-Uni",
-"titre": "Cisjordanie : Londres provoque une crise diplomatique inédite avec Israël",
-"url": "actualites/en/articles/uk-israel-diplomatic-crisis-2026.html",
-"image": "actualites/en/images/uk-israel-diplomatic-crisis-2026.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Équateur",
-"titre": "Équateur : Marco Rubio annonce une nouvelle offensive contre les narcotrafiquants",
-"url": "actualites/es/articles/equateur-rubio-offensive-narcotrafiquants.html",
-"image": "actualites/es/images/equateur-rubio-offensive-narcotrafiquants.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Colombie",
-"titre": "Virage sécuritaire encore plus marqué — port d'armes, épandage aérien et méga-prisons",
-"url": "actualites/es/articles/colombie-virage-securitaire.html",
-"image": "actualites/es/images/colombie-virage-securitaire.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Espagne",
-"titre": "PISA 2025 : énorme alerte autour du niveau scolaire en Espagne",
-"url": "actualites/es/articles/alerte-pisa-espagne.html",
-"image": "actualites/es/images/alerte-pisa-espagne.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Argentine",
-"titre": "Javier Milei réaffirme la revendication argentine sur les îles Malouines",
-"url": "actualites/es/articles/malouines-milei-revendication.html",
-"image": "actualites/es/images/malouines-milei-revendication.webp",
-"date": "2026-09-11T19:03:33+00:00"
 },
 {
 "t": "de",
@@ -1556,33 +1964,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "La Deutsche Bahn gèle ses prix pour un an : un pari audacieux face à la crise",
 "url": "actualites/de/articles/db-gel-prix.html",
 "image": "actualites/de/images/db-gel-prix.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "La jeunesse allemande contre la Wehrpflicht : un mouvement qui secoue la République",
-"url": "actualites/de/articles/jeunesse-wehrpflicht.html",
-"image": "actualites/de/images/jeunesse-wehrpflicht.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "Boris Pistorius, l'homme qui veut faire de l'Allemagne une puissance militaire",
-"url": "actualites/de/articles/pistorius-defense.html",
-"image": "actualites/de/images/pistorius-defense.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "La crise automobile en Allemagne : quand le pilier de l'industrie vacille",
-"url": "actualites/de/articles/crise-automobile.html",
-"image": "actualites/de/images/crise-automobile.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
@@ -1847,386 +2228,6 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "Bienvenue à Gattaca",
-"url": "humanite/cinema/bienvenue-a-gattaca.html",
-"image": "humanite/cinema/images/bienvenue-a-gattaca-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "Blade Runner",
-"url": "humanite/cinema/blade-runner.html",
-"image": "humanite/cinema/images/blade-runner-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "Docteur Folamour",
-"url": "humanite/cinema/docteur-folamour.html",
-"image": "humanite/cinema/images/docteur-folamour-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "Edward aux mains d'argent",
-"url": "humanite/cinema/edward-aux-mains-dargent.html",
-"image": "humanite/cinema/images/edward-aux-mains-dargent-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "Freaks, la monstrueuse parade",
-"url": "humanite/cinema/freaks-la-monstrueuse-parade.html",
-"image": "humanite/cinema/images/freaks-la-monstrueuse-parade-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "Her",
-"url": "humanite/cinema/her.html",
-"image": "humanite/cinema/images/her-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "La Liste de Schindler",
-"url": "humanite/cinema/la-liste-de-schindler.html",
-"image": "humanite/cinema/images/la-liste-de-schindler-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "La vie est belle",
-"url": "humanite/cinema/la-vie-est-belle.html",
-"image": "humanite/cinema/images/la-vie-est-belle-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "Le Nouveau Monde",
-"url": "humanite/cinema/le-nouveau-monde.html",
-"image": "humanite/cinema/images/le-nouveau-monde-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "L'Enfant sauvage",
-"url": "humanite/cinema/lenfant-sauvage.html",
-"image": "humanite/cinema/images/lenfant-sauvage-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "Les Habitants",
-"url": "humanite/cinema/les-habitants.html",
-"image": "humanite/cinema/images/les-habitants-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "Metropolis",
-"url": "humanite/cinema/metropolis.html",
-"image": "humanite/cinema/images/metropolis-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "Minority Report",
-"url": "humanite/cinema/minority-report.html",
-"image": "humanite/cinema/images/minority-report-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "2001 : L'Odyssée de l'espace",
-"url": "humanite/cinema/odyssee-de-lespace.html",
-"image": "humanite/cinema/images/odyssee-de-lespace-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "Robocop",
-"url": "humanite/cinema/robocop.html",
-"image": "humanite/cinema/images/robocop-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "S21, la machine de mort khmère rouge",
-"url": "humanite/cinema/s21-la-machine-de-mort-khmere-rouge.html",
-"image": "humanite/cinema/images/s21-la-machine-de-mort-khmere-rouge-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "Seul au monde",
-"url": "humanite/cinema/seul-au-monde.html",
-"image": "humanite/cinema/images/seul-au-monde-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "Les Temps modernes",
-"url": "humanite/cinema/temps-modernes.html",
-"image": "humanite/cinema/images/temps-modernes-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Cinéma",
-"titre": "Valse avec Bachir",
-"url": "humanite/cinema/valse-avec-bachir.html",
-"image": "humanite/cinema/images/valse-avec-bachir-affiche.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "1984",
-"url": "humanite/litterature/1984.html",
-"image": "humanite/litterature/images/1984-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "Alceste",
-"url": "humanite/litterature/alceste.html",
-"image": "humanite/litterature/images/alceste-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "Aucun de nous ne reviendra",
-"url": "humanite/litterature/aucun-de-nous-ne-reviendra.html",
-"image": "humanite/litterature/images/aucun-de-nous-ne-reviendra-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "La Belle et la Bête",
-"url": "humanite/litterature/belle-et-la-bete.html",
-"image": "humanite/litterature/images/belle-et-la-bete-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "Condition de l'homme moderne",
-"url": "humanite/litterature/condition-homme-moderne.html",
-"image": "humanite/litterature/images/condition-homme-moderne-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "Très brève relation de la destruction des Indes",
-"url": "humanite/litterature/destruction-des-indes.html",
-"image": "humanite/litterature/images/destruction-des-indes-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "Discours sur l'origine de l'inégalité",
-"url": "humanite/litterature/discours-inegalite.html",
-"image": "humanite/litterature/images/discours-inegalite-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "Les Essais",
-"url": "humanite/litterature/essais-montaigne.html",
-"image": "humanite/litterature/images/essais-montaigne-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "L'existentialisme est un humanisme",
-"url": "humanite/litterature/existentialisme-humanisme.html",
-"image": "humanite/litterature/images/existentialisme-humanisme-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "Fahrenheit 451",
-"url": "humanite/litterature/fahrenheit-451.html",
-"image": "humanite/litterature/images/fahrenheit-451-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "Frankenstein",
-"url": "humanite/litterature/frankenstein.html",
-"image": "humanite/litterature/images/frankenstein-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "L'Homme qui rit",
-"url": "humanite/litterature/homme-qui-rit.html",
-"image": "humanite/litterature/images/homme-qui-rit-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "L'Homme révolté",
-"url": "humanite/litterature/homme-revolte.html",
-"image": "humanite/litterature/images/homme-revolte-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "L'Étrange Cas du docteur Jekyll et de M. Hyde",
-"url": "humanite/litterature/jekyll-et-hyde.html",
-"image": "humanite/litterature/images/jekyll-et-hyde-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "La Peste",
-"url": "humanite/litterature/la-peste.html",
-"image": "humanite/litterature/images/la-peste-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "La Route",
-"url": "humanite/litterature/la-route.html",
-"image": "humanite/litterature/images/la-route-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "Lambeaux",
-"url": "humanite/litterature/lambeaux.html",
-"image": "humanite/litterature/images/lambeaux-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "Le Horla",
-"url": "humanite/litterature/le-horla.html",
-"image": "humanite/litterature/images/le-horla-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Littérature",
-"titre": "Le Lambeau",
-"url": "humanite/litterature/le-lambeau.html",
-"image": "humanite/litterature/images/le-lambeau-couverture.webp",
-"portrait": true,
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
 "t": "cours",
 "rubrique": "Cours",
 "meta": "Maths 2e année · chapitre 1",
@@ -2376,7 +2377,7 @@ window.ECG_NOUVEAUTES = [
 "meta": "Philosophie 2e année · notion 6",
 "titre": "La Liberté",
 "url": "deuxieme_annee/philosophie/notion-6-liberte.html",
-"image": "",
+"image": "deuxieme_annee/philosophie/images/portrait-descartes.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
@@ -2428,9 +2429,9 @@ window.ECG_NOUVEAUTES = [
 "t": "cours",
 "rubrique": "Cours",
 "meta": "HGG 1re année · chapitre 1",
-"titre": "Introduction à la Géopolitique",
+"titre": "Introduction à la géopolitique",
 "url": "premiere_annee/hgg/chapitre-1/chapitre-1-hgg.html",
-"image": "",
+"image": "premiere_annee/hgg/chapitre-1/images/eurasie-satellite.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
@@ -2439,7 +2440,7 @@ window.ECG_NOUVEAUTES = [
 "meta": "HGG 1re année · chapitre 10",
 "titre": "Les modèles de croissance",
 "url": "premiere_annee/hgg/chapitre-10/chapitre-10-hgg.html",
-"image": "",
+"image": "premiere_annee/hgg/chapitre-10/images/pudong-shanghai.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
@@ -2448,7 +2449,7 @@ window.ECG_NOUVEAUTES = [
 "meta": "HGG 1re année · chapitre 11",
 "titre": "Introduction à la Mondialisation",
 "url": "premiere_annee/hgg/chapitre-11/chapitre-11-hgg.html",
-"image": "",
+"image": "premiere_annee/hgg/chapitre-11/images/diamond-princess-yokohama.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
@@ -2457,7 +2458,7 @@ window.ECG_NOUVEAUTES = [
 "meta": "HGG 1re année · chapitre 12",
 "titre": "Les acteurs de la mondialisation",
 "url": "premiere_annee/hgg/chapitre-12/chapitre-12-hgg.html",
-"image": "",
+"image": "premiere_annee/hgg/chapitre-12/images/la-defense.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
@@ -2466,7 +2467,7 @@ window.ECG_NOUVEAUTES = [
 "meta": "HGG 1re année · chapitre 13",
 "titre": "Nouvelles frontières et nouveaux territoires de la mondialisation",
 "url": "premiere_annee/hgg/chapitre-13/chapitre-13-hgg.html",
-"image": "",
+"image": "premiere_annee/hgg/chapitre-13/images/tijuana-frontiere.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
@@ -2511,7 +2512,7 @@ window.ECG_NOUVEAUTES = [
 "meta": "HGG 1re année · chapitre 3",
 "titre": "L'Europe et le monde fracturés en 1939",
 "url": "premiere_annee/hgg/chapitre-3/chapitre-3-hgg.html",
-"image": "premiere_annee/hgg/chapitre-3/images/conseil-des-quatre-1919.webp",
+"image": "premiere_annee/hgg/chapitre-3/images/wielun-1939.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
@@ -2527,9 +2528,9 @@ window.ECG_NOUVEAUTES = [
 "t": "cours",
 "rubrique": "Cours",
 "meta": "HGG 1re année · chapitre 5",
-"titre": "Géopolitique de la Guerre Froide",
+"titre": "Géopolitique de la guerre froide",
 "url": "premiere_annee/hgg/chapitre-5/chapitre-5-hgg.html",
-"image": "",
+"image": "premiere_annee/hgg/chapitre-5/images/checkpoint-charlie-1961.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
@@ -2538,7 +2539,7 @@ window.ECG_NOUVEAUTES = [
 "meta": "HGG 1re année · chapitre 6",
 "titre": "Décolonisations et Tiers-Monde",
 "url": "premiere_annee/hgg/chapitre-6/chapitre-6-hgg.html",
-"image": "",
+"image": "premiere_annee/hgg/chapitre-6/images/conference-bandung-1955.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
@@ -2547,16 +2548,16 @@ window.ECG_NOUVEAUTES = [
 "meta": "HGG 1re année · chapitre 7",
 "titre": "Le monde dans les années 1990",
 "url": "premiere_annee/hgg/chapitre-7/chapitre-7-hgg.html",
-"image": "",
+"image": "premiere_annee/hgg/chapitre-7/images/tempete-du-desert-1991.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
 "t": "cours",
 "rubrique": "Cours",
 "meta": "HGG 1re année · chapitre 8",
-"titre": "Le Monde Actuel — Ordre et Désordre Mondial",
+"titre": "Le monde actuel, ordre et désordre mondial",
 "url": "premiere_annee/hgg/chapitre-8/chapitre-8-hgg.html",
-"image": "",
+"image": "premiere_annee/hgg/chapitre-8/images/bakhmout-2023.webp",
 "date": "2026-09-11T19:03:33+00:00"
 }
 ];

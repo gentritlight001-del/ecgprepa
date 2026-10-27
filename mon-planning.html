@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>ECG Prépa — Mon planning</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+  /* Habillage « carnet pointillé » (maquette A) sur la mise en page « grille horaire » (maquette C),
+     choisis par le propriétaire. */
+  :root {
+    --papier: #f4f1ea;
+    --points: #cfc8b8;
+    --blanc: #fffdf8;
+    --encre: #1d2a5c;
+    --texte: #24283a;
+    --gris: #6b6556;
+    --filet: #d9d2c2;
+    --tomate: #d9482b;
+    --tomate-texte: #b33a20;
+    --heure: 48px;
+    --serif: 'Fraunces', Georgia, serif;
+    --sans: 'IBM Plex Sans', system-ui, sans-serif;
+    --mono: 'IBM Plex Mono', ui-monospace, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { background: var(--papier); }
+  body {
+    background-color: var(--papier);
+    background-image: radial-gradient(var(--points) 1px, transparent 1.2px);
+    background-size: 22px 22px;
+    color: var(--texte); font-family: var(--sans); font-size: 15px; line-height: 1.45; min-height: 100vh; overflow-x: hidden;
+    -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility;
+    font-kerning: normal; font-feature-settings: 'kern', 'liga';
+  }
+  /* Pas d'italique sur cette page (choix du propriétaire) : le contraste passe par la graisse et la couleur. */
+  em, i, cite { font-style: normal; }
+  /* Système typographique : Fraunces (taille optique) pour les titres et les chiffres affichés,
+     IBM Plex Sans pour le texte, les libellés et les heures (chiffres tabulaires),
+     IBM Plex Mono seulement pour les puces du carnet. */
+  .serif { font-family: var(--serif); font-weight: 400; letter-spacing: -.01em; font-variant-numeric: lining-nums; }
+  .libelle, .petit, .jt .jn, .mois-nom, .fenetre label.e, .fenetre .e, .polaroid .rub, .si-txt span, .lien-site {
+    font-family: var(--sans); font-weight: 600; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; line-height: 1.3;
+  }
+  .num { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum'; }
+  button, input, select, textarea { font-family: inherit; color: inherit; }
+  [hidden] { display: none !important; }
+
+  nav {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    height: 60px; padding: 0 32px; border-bottom: 1.5px solid var(--encre);
+    background: var(--papier); position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 20px; color: var(--encre); cursor: pointer; }
+  .breadcrumb { display: flex; gap: 8px; font-size: 13px; color: var(--gris); }
+  .breadcrumb a { color: inherit; text-decoration: none; }
+  .breadcrumb a:hover { color: var(--tomate-texte); }
+  .breadcrumb .current { color: var(--encre); }
+  .nav-right { display: flex; align-items: center; }
+
+  /* ─── Mise en page : colonne latérale + agenda ─── */
+  .page { display: grid; grid-template-columns: 300px minmax(0, 1fr); min-height: calc(100vh - 60px); }
+  .rail { border-right: 1.5px solid var(--encre); padding: 28px 24px 40px; display: flex; flex-direction: column; gap: 28px; }
+  /* Sur ordinateur, la colonne défile seule : on peut glisser une page vers n'importe quel jour. */
+  @media (min-width: 1101px) {
+    .rail { position: sticky; top: 60px; height: calc(100vh - 60px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+  }
+  .agenda { padding: 28px 32px 40px; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+
+  .petit { color: var(--gris); }
+  .titre-bloc { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .titre-bloc em { font-style: normal; color: var(--tomate-texte); letter-spacing: 0; font-variant-numeric: tabular-nums; }
+  .vide { font-size: 13px; color: var(--gris); line-height: 1.5; }
+
+  /* Rail : titre, compteurs, mini-mois */
+  .rail-tete h1 { font-family: var(--serif); font-weight: 380; font-optical-sizing: auto; font-size: 56px; line-height: .9; letter-spacing: -.035em; color: var(--encre); margin-top: 8px; }
+  .rail-tete h1 em { display: block; font-weight: 300; letter-spacing: -.02em; color: var(--tomate); }
+  /* Titres : graisse légère pour les mots de liaison, couleur pour la partie mise en avant. */
+  .it { font-weight: 300; }
+  .compteurs { display: flex; gap: 18px; margin-top: 16px; }
+  .compteurs div { display: flex; flex-direction: column; }
+  .compteurs b { font-family: var(--serif); font-weight: 360; font-size: 40px; letter-spacing: -.02em; line-height: 1; color: var(--encre); font-variant-numeric: lining-nums; }
+  .compteurs b.alerte { color: var(--tomate); }
+  .compteurs span { font-size: 12.5px; color: var(--gris); margin-top: 3px; }
+  .sync { display: flex; align-items: center; gap: 7px; margin-top: 14px; font-size: 12px; color: var(--gris); }
+  .sync i { width: 7px; height: 7px; border-radius: 50%; background: var(--points); }
+  .sync.ok i { background: #3f8a5f; }
+  .sync.en-cours i { background: #c99a2e; }
+  .sync.err i { background: var(--tomate); }
+
+  .mini-tete { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .mini-tete b { font-family: var(--serif); font-weight: 450; font-size: 22px; letter-spacing: -.02em; color: var(--encre); }
+  .mini-tete b .it { font-weight: 300; color: var(--gris); }
+  .mini-tete div { display: flex; gap: 4px; }
+  .mini { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); text-align: center; }
+  .mini span { font-size: 11px; font-weight: 600; color: var(--gris); padding-bottom: 4px; }
+  .mini button {
+    border: 0; background: transparent; height: 32px; font-size: 13px; font-variant-numeric: tabular-nums; cursor: pointer;
+    position: relative; color: var(--texte);
+  }
+  .mini button:hover { background: rgba(29,42,92,.07); }
+  .mini button.hors { color: #b0a999; }
+  .mini button.sem { background: rgba(29,42,92,.08); }
+  .mini button.auj { background: var(--tomate); color: #fff; }
+  .mini button i { position: absolute; left: 50%; bottom: 3px; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: var(--encre); }
+  .mini button.auj i { background: #fff; }
+
+  /* Interrupteurs « Au quotidien » */
+  .quot { display: flex; flex-direction: column; gap: 2px; }
+  .interr { display: flex; align-items: center; gap: 10px; min-height: 36px; font-size: 14px; cursor: pointer; }
+  .interr input { position: absolute; opacity: 0; pointer-events: none; }
+  .interr .bascule { width: 34px; height: 18px; border: 1.5px solid var(--encre); position: relative; flex-shrink: 0; background: var(--blanc); transition: background .15s; }
+  .interr .bascule::after { content: ''; position: absolute; top: 2px; left: 2px; width: 11px; height: 11px; background: var(--encre); transition: transform .15s; }
+  .interr input:checked + .bascule { background: var(--encre); }
+  .interr input:checked + .bascule::after { background: var(--papier); transform: translateX(16px); }
+  .interr input:focus-visible + .bascule { outline: 2px solid var(--tomate); outline-offset: 2px; }
+  .interr i { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* Champs « carnet » */
+  .champ-l { width: 100%; height: 44px; border: 1.5px solid var(--encre); background: var(--blanc); padding: 0 12px; font-size: 15px; outline: none; border-radius: 0; }
+  .champ-l:focus { box-shadow: 3px 3px 0 var(--encre); }
+  .champ-l::placeholder { color: #8f887a; }
+  .rangee { display: flex; gap: 8px; margin-top: 8px; }
+  .rangee select { flex: 1; }
+  .btn {
+    height: 44px; padding: 0 16px; border: 1.5px solid var(--encre); background: transparent; color: var(--encre);
+    font-size: 14px; font-weight: 500; cursor: pointer; white-space: nowrap; border-radius: 0;
+  }
+  .btn:hover { background: rgba(29,42,92,.07); }
+  .btn.plein { background: var(--encre); color: var(--papier); }
+  .btn.plein:hover { background: #2a3a78; }
+  .btn.petit-b { height: 36px; padding: 0 13px; font-size: 13.5px; }
+  .btn.rond { width: 34px; padding: 0; height: 34px; }
+  .aide { font-size: 13px; color: var(--gris); line-height: 1.5; margin-top: 8px; }
+
+  /* Recherche « Depuis le site » */
+  .site-res { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; max-height: 330px; overflow-y: auto; padding: 2px; }
+  .site-item { display: flex; gap: 10px; align-items: center; padding: 6px; background: var(--blanc); box-shadow: 0 1px 0 var(--filet), 0 4px 10px rgba(40,30,10,.08); cursor: grab; }
+  .si-img { width: 54px; height: 40px; object-fit: cover; flex-shrink: 0; }
+  .si-txt { flex: 1; min-width: 0; }
+  .si-txt b { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 13.5px; font-weight: 500; line-height: 1.3; }
+  .si-txt span { font-size: 10.5px; color: var(--sec, var(--gris)); }
+  .site-item button { width: 30px; height: 30px; border: 1.5px solid var(--encre); background: transparent; color: var(--encre); cursor: pointer; flex-shrink: 0; font-size: 16px; }
+
+  .lien-afaire { display: inline-flex; gap: 6px; align-items: baseline; margin-top: 8px; border: 0; background: none; padding: 2px 0; font-size: 13px; font-weight: 500; color: var(--encre); text-decoration: underline; text-decoration-color: var(--filet); text-underline-offset: 4px; cursor: pointer; }
+  .lien-afaire:hover, .lien-afaire.on { text-decoration-color: var(--encre); }
+  .lien-afaire.on { font-weight: 600; }
+  .lien-afaire span { font-size: 12px; color: var(--gris); font-variant-numeric: tabular-nums; }
+  .site-item.a-creer { background: transparent; box-shadow: none; border: 1.5px dashed var(--filet); }
+  .site-item.a-creer .si-txt span::before { content: 'À créer · '; color: var(--tomate-texte); }
+
+  /* « À planifier » et retards : post-it et polaroïds */
+  .bac { display: flex; flex-direction: column; gap: 14px; min-height: 60px; padding: 4px 2px; }
+  .bac.cible, .retard.cible { outline: 1.5px dashed var(--encre); outline-offset: 4px; }
+  .retard { display: flex; flex-direction: column; gap: 2px; }
+
+  /* ─── En-tête de l'agenda ─── */
+  .agenda-tete { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .periode { font-family: var(--serif); font-weight: 380; font-optical-sizing: auto; font-size: 54px; line-height: 1; letter-spacing: -.035em; color: var(--encre); font-variant-numeric: lining-nums; }
+  .periode em { font-weight: 320; letter-spacing: -.025em; color: var(--tomate); }
+  .periode .lie { font-weight: 300; font-size: .6em; letter-spacing: 0; color: var(--gris); margin: 0 .22em; }
+  .periode .lie:first-child { margin-left: 0; }
+  .commandes { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .onglets { display: flex; border: 1.5px solid var(--encre); }
+  .onglets button { height: 34px; padding: 0 14px; border: 0; background: transparent; font-size: 13.5px; font-weight: 500; color: var(--encre); cursor: pointer; }
+  .onglets button + button { border-left: 1.5px solid var(--encre); }
+  .onglets button.on { background: var(--encre); color: var(--papier); }
+  .filtres { display: flex; gap: 6px; flex-wrap: wrap; }
+  .filtre { height: 30px; padding: 0 11px; border: 1px solid var(--filet); background: var(--blanc); font-size: 12.5px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; }
+  .filtre i { width: 8px; height: 8px; border-radius: 50%; }
+  .filtre.on { border-color: var(--encre); background: var(--encre); color: var(--papier); }
+
+  /* ─── Semaine : grille horaire ─── */
+  .sem { border: 1.5px solid var(--encre); background: rgba(255,253,248,.55); }
+  .sem-ligne { display: grid; grid-template-columns: 52px repeat(7, minmax(0, 1fr)); }
+  /* Vue Jour : la même grille, une seule colonne. */
+  .sem.un .sem-ligne { grid-template-columns: 64px minmax(0, 1fr); }
+  .sem.un .jt { display: none; }
+  .sem.un .sem-tete { display: none; }
+  .sem.un .libre { flex-direction: row; flex-wrap: wrap; align-items: flex-start; gap: 6px 22px; min-height: 52px; }
+  .sem.un .libre .polaroid { width: 200px; }
+  .sem.un .libre .postit { width: 220px; }
+  .sem.un .libre .ajout { flex: 1 0 100%; }
+  .sem.un .bloc { font-size: 14px; padding: 6px 10px 6px 12px; }
+  .sem.un .bloc img { width: 120px; height: auto; aspect-ratio: 16 / 10; margin: 0; position: absolute; right: 6px; top: 6px; }
+  .sem.un .bloc .t, .sem.un .bloc .h { padding-right: 130px; }
+  .sem.un .bloc.court .t, .sem.un .bloc.court .h { padding-right: 0; }
+  .sem-tete { border-bottom: 1px solid var(--filet); position: sticky; top: 60px; z-index: 5; background: var(--papier); }
+  .jt { padding: 10px 10px 8px; border-left: 1px solid var(--filet); display: flex; align-items: baseline; gap: 8px; border-top: 3px solid transparent; }
+  .jt .jn { color: var(--gris); }
+  .jt .jd { font-family: var(--serif); font-weight: 400; font-size: 34px; line-height: 1; letter-spacing: -.03em; color: var(--encre); font-variant-numeric: lining-nums; }
+  .jt.auj { border-top-color: var(--tomate); background: rgba(217,72,43,.06); }
+  .jt.auj .jn { color: var(--tomate-texte); }
+  .jt.auj .jd { color: var(--tomate); }
+  .sem-libre { border-bottom: 1.5px solid var(--encre); }
+  .lib-h { font-size: 11px; color: var(--gris); text-align: right; padding: 10px 8px 0 0; line-height: 1.3; }
+  .libre { border-left: 1px solid var(--filet); padding: 8px 8px 6px; display: flex; flex-direction: column; gap: 6px; min-height: 64px; min-width: 0; }
+  .libre.auj { background: rgba(217,72,43,.06); }
+  .libre.cible, .col.cible, .case.cible, .jour-c.cible, .groupe.cible { background: rgba(29,42,92,.08); }
+  .ajout { width: 100%; border: 0; border-bottom: 1px dashed var(--filet); background: transparent; font-size: 13px; padding: 4px 2px; outline: none; margin-top: auto; }
+  .ajout:focus { border-bottom: 1.5px solid var(--encre); }
+  .ajout::placeholder { color: #9b9485; }
+  .heures { position: relative; }
+  .heures span { position: absolute; right: 8px; transform: translateY(-8px); font-size: 11px; font-weight: 500; font-variant-numeric: tabular-nums; color: var(--gris); white-space: nowrap; }
+  .col {
+    position: relative; border-left: 1px solid var(--filet); cursor: copy;
+    background-image: linear-gradient(var(--filet) 1px, transparent 1px), linear-gradient(rgba(217,210,194,.5) 1px, transparent 1px);
+    background-size: 100% var(--heure), 100% calc(var(--heure) / 2);
+  }
+  .col.auj { background-color: rgba(217,72,43,.05); }
+  .col.passe, .libre.passe { background-color: rgba(107,101,86,.05); }
+  .maintenant { position: absolute; left: -1px; right: 0; height: 2px; background: var(--tomate); z-index: 3; pointer-events: none; }
+  .maintenant::before { content: ''; position: absolute; left: -5px; top: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--tomate); }
+
+  /* ─── Éléments ─── */
+  .el { --c: var(--gris); cursor: pointer; position: relative; }
+  .el.glisse { opacity: .35; }
+  /* Bloc horaire */
+  .bloc {
+    position: absolute; padding: 4px 6px 4px 8px; background: var(--blanc); border: 1px solid var(--encre); border-left: 4px solid var(--c);
+    overflow: hidden; display: flex; flex-direction: column; gap: 2px; font-size: 13px; line-height: 1.25; z-index: 2; hyphens: auto;
+  }
+  .bloc:hover { z-index: 4; box-shadow: 3px 3px 0 var(--encre); }
+  .bloc.type-rdv { background: var(--encre); color: var(--papier); border-color: var(--encre); border-left-color: var(--c); }
+  .bloc.type-note { border-style: dashed; border-left-style: solid; background: rgba(255,253,248,.8); }
+  .bloc.fait { opacity: .5; }
+  .bloc.fait .t { text-decoration: line-through; }
+  .bloc .t { font-weight: 500; overflow-wrap: break-word; display: flex; gap: 6px; align-items: flex-start; }
+  .bloc.court .t span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .bloc .h { font-size: 11px; font-variant-numeric: tabular-nums; opacity: .8; }
+  .bloc img { width: calc(100% + 14px); margin: -4px -6px 2px -8px; height: 36px; flex-shrink: 0; object-fit: cover; display: block; }
+  .case-c { width: 13px; height: 13px; border: 1.5px solid currentColor; background: transparent; flex-shrink: 0; margin-top: 1px; cursor: pointer; padding: 0; font-size: 9px; line-height: 1; }
+  .fait .case-c { background: currentColor; }
+  /* Ligne de carnet (sans heure, retards, liste) */
+  .ligne { display: flex; gap: 8px; align-items: baseline; font-size: 13.5px; line-height: 1.4; padding: 1px 0; overflow-wrap: break-word; hyphens: auto; }
+  .ligne .puce { font-family: var(--mono); font-size: 13px; width: 13px; flex-shrink: 0; color: var(--c); border: 0; background: none; padding: 0; cursor: pointer; text-align: center; }
+  .ligne .txt { flex: 1; min-width: 0; }
+  .ligne .h { font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--tomate-texte); margin-right: 5px; }
+  .ligne .q { font-size: 11px; color: var(--gris); margin-left: 5px; }
+  .ligne.fait .txt { color: #9a9384; text-decoration: line-through; }
+  .ligne.type-note .txt { color: var(--gris); }
+  .ligne.quotidien { font-size: 13px; }
+  .ligne.quotidien .txt { color: var(--c); font-weight: 500; }
+  .ligne.quotidien.fait .txt { color: #9a9384; }
+  .q-lien { font-size: 11.5px; font-weight: 400; color: var(--gris); text-decoration: none; white-space: nowrap; }
+  .q-lien:hover { color: var(--encre); text-decoration: underline; }
+  .ligne.prio-haute .txt { font-weight: 600; }
+  /* Polaroïd (page du site avec image) */
+  .polaroid { background: #fff; padding: 6px 6px 8px; box-shadow: 0 1px 0 var(--filet), 0 6px 14px rgba(40,30,10,.12); display: flex; flex-direction: column; gap: 5px; margin: 6px 2px 4px; }
+  .polaroid:nth-child(odd) { transform: rotate(-1.5deg); }
+  .polaroid:nth-child(even) { transform: rotate(1.2deg); }
+  .polaroid:hover { transform: none; }
+  .polaroid::before { content: ''; position: absolute; top: -8px; left: 50%; width: 46px; height: 14px; margin-left: -23px; background: var(--scotch, #f6dd7a); opacity: .8; }
+  .polaroid img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; }
+  .polaroid .rub { font-size: 10px; color: var(--sec, var(--tomate-texte)); text-decoration: none; }
+  .polaroid .rub:hover { text-decoration: underline; }
+  .polaroid .t { font-size: 13px; line-height: 1.3; hyphens: auto; display: flex; gap: 6px; align-items: flex-start; }
+  .polaroid .t span { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .polaroid.fait { opacity: .5; }
+  .polaroid.fait .t span { text-decoration: line-through; }
+  /* Post-it (« À planifier ») */
+  .postit { background: var(--p, #f6dd7a); padding: 11px 13px; font-size: 14.5px; line-height: 1.4; box-shadow: 0 5px 12px rgba(60,50,10,.12); display: flex; gap: 8px; align-items: flex-start; }
+  .postit:nth-child(odd) { transform: rotate(1.2deg); }
+  .postit:nth-child(even) { transform: rotate(-1deg); }
+  .postit:hover { transform: none; }
+  /* Post-it dans la bande « sans heure » : plus compacts. */
+  .libre .postit { font-size: 13px; padding: 8px 9px; gap: 6px; box-shadow: 0 3px 8px rgba(60,50,10,.12); }
+  .libre .postit .case-c { margin-top: 2px; }
+  .postit .txt { flex: 1; min-width: 0; overflow-wrap: break-word; }
+  .postit.fait .txt { text-decoration: line-through; opacity: .6; }
+  .lien-site { font-size: 10px; color: var(--sec, var(--tomate-texte)); text-decoration: none; display: block; margin-top: 4px; }
+
+  /* ─── Mois ─── */
+  .mois { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border-top: 1.5px solid var(--encre); border-left: 1.5px solid var(--encre); }
+  .mois-nom { color: var(--gris); padding: 8px 10px; border-right: 1px solid var(--filet); border-bottom: 1.5px solid var(--encre); }
+  .mois-nom:nth-child(7) { border-right: 1.5px solid var(--encre); }
+  .case { min-height: 118px; padding: 6px 8px; border-right: 1px solid var(--filet); border-bottom: 1px solid var(--filet); background: rgba(255,253,248,.5); cursor: pointer; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .case:nth-child(7n) { border-right: 1.5px solid var(--encre); }
+  .case:hover { background: rgba(255,253,248,.9); }
+  .case.hors { opacity: .45; }
+  .case-num { font-family: var(--serif); font-weight: 400; letter-spacing: -.03em; font-size: 26px; line-height: 1; color: var(--encre); font-variant-numeric: lining-nums; }
+  .case.auj .case-num { color: var(--tomate); }
+  .case.auj { box-shadow: inset 0 3px 0 var(--tomate); }
+  .puce-m { font-size: 12px; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .puce-m b { font-weight: 600; font-variant-numeric: tabular-nums; color: var(--c); margin-right: 5px; }
+  .puce-m.fait { color: #9a9384; text-decoration: line-through; }
+  .plus { font-size: 11px; font-weight: 600; color: var(--gris); }
+
+  /* ─── Liste et semaine compacte (téléphone) ─── */
+  .groupe, .jour-c { padding: 12px 0 14px; border-top: 1px solid var(--filet); display: flex; flex-direction: column; gap: 4px; }
+  .groupe h3, .jour-c h3 { font-family: var(--serif); font-weight: 420; font-size: 30px; letter-spacing: -.025em; line-height: 1.1; color: var(--encre); display: flex; gap: 10px; align-items: baseline; margin-bottom: 4px; }
+  .groupe h3 small, .jour-c h3 small { font-family: var(--sans); font-size: 12.5px; color: var(--gris); letter-spacing: 0; }
+  .jour-c.auj h3 { color: var(--tomate); }
+  .jour-c .postit { max-width: 320px; margin: 3px 0; }
+  .groupe .polaroid, .jour-c .polaroid { max-width: 260px; }
+
+  /* Liste : « À venir » ou un seul jour */
+  .sous-onglets { display: inline-flex; border: 1.5px solid var(--encre); margin-bottom: 6px; }
+  .sous-onglets button { height: 32px; padding: 0 13px; border: 0; background: transparent; font-size: 13px; font-weight: 500; color: var(--encre); cursor: pointer; }
+  .sous-onglets button + button { border-left: 1.5px solid var(--encre); }
+  .sous-onglets button.on { background: var(--encre); color: var(--papier); }
+  .sous-barre { display: flex; gap: 10px; flex-wrap: wrap; }
+  .groupe .cartes { display: flex; flex-wrap: wrap; gap: 16px 18px; align-items: flex-start; padding: 6px 2px 4px; }
+  .cartes .postit, .cartes .polaroid { width: 220px; margin: 0; }
+  .postit .h { font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--tomate-texte); margin-right: 5px; }
+  @media (max-width: 760px) { .cartes .postit, .cartes .polaroid { width: calc(50% - 9px); } }
+  .groupe h3 button { all: unset; cursor: pointer; }
+  .groupe h3 button:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 5px; }
+  .groupe h3 button:focus-visible { outline: 2px solid var(--tomate); outline-offset: 2px; }
+  .legende { display: flex; gap: 20px; flex-wrap: wrap; font-size: 12.5px; color: var(--gris); border-top: 1px solid var(--filet); padding-top: 12px; }
+
+  /* ─── Fenêtre d'édition ─── */
+  .voile { position: fixed; inset: 0; z-index: 500; background: rgba(29,42,92,.35); display: flex; align-items: center; justify-content: center; padding: 16px; opacity: 0; pointer-events: none; transition: opacity .15s; }
+  .voile.open { opacity: 1; pointer-events: auto; }
+  .fenetre {
+    background: var(--papier); border: 1.5px solid var(--encre); box-shadow: 8px 8px 0 var(--encre);
+    width: 540px; max-width: 100%; max-height: calc(100vh - 32px); overflow-y: auto; padding: 26px; display: flex; flex-direction: column; gap: 14px;
+  }
+  .fenetre h2 { font-family: var(--serif); font-weight: 400; font-size: 38px; letter-spacing: -.03em; color: var(--encre); line-height: 1; }
+  .fenetre label.e, .fenetre .e { display: block; color: var(--gris); margin-bottom: 6px; }
+  .legende .m { font-family: var(--mono); font-weight: 400; margin-right: 3px; color: var(--encre); }
+  .fenetre textarea.champ-l { height: auto; padding: 10px 12px; resize: vertical; }
+  .deux, .trois { display: grid; gap: 12px; }
+  .deux { grid-template-columns: 1fr 1fr; }
+  .trois { grid-template-columns: 1.3fr 1fr 1fr; }
+  .types { display: flex; gap: 6px; flex-wrap: wrap; }
+  .types .btn.on { background: var(--encre); color: var(--papier); }
+  .site-lie { display: flex; gap: 10px; align-items: center; padding: 8px; background: #fff; box-shadow: 0 1px 0 var(--filet); font-size: 13px; }
+  .site-lie img { width: 60px; height: 42px; object-fit: cover; }
+  .site-lie a { flex: 1; min-width: 0; color: var(--encre); }
+  .joints { align-items: start; }
+  .f-res { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; max-height: 210px; overflow-y: auto; }
+  .f-res button { all: unset; display: flex; gap: 8px; align-items: center; padding: 5px 6px; background: #fff; box-shadow: 0 1px 0 var(--filet); cursor: pointer; font-size: 13px; line-height: 1.3; }
+  .f-res button:hover, .f-res button:focus-visible { outline: 1.5px solid var(--encre); }
+  .f-res img { width: 40px; height: 30px; object-fit: cover; flex-shrink: 0; }
+  .f-res small { display: block; font-size: 10.5px; color: var(--gris); }
+  .photo-lie { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+  .photo-lie img { width: 100%; max-height: 150px; object-fit: cover; box-shadow: 0 1px 0 var(--filet), 0 4px 10px rgba(40,30,10,.1); background: #fff; padding: 5px; }
+  .depot { display: inline-flex; align-items: center; cursor: pointer; }
+  .depot input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  .depot:focus-within { outline: 2px solid var(--tomate); outline-offset: 2px; }
+  .actions { display: flex; gap: 8px; align-items: center; margin-top: 4px; }
+  .actions .suppr { margin-right: auto; border-color: transparent; color: var(--tomate-texte); }
+  .actions .suppr:hover { border-color: var(--tomate-texte); background: transparent; }
+
+  .toast { position: fixed; left: 50%; bottom: 22px; transform: translate(-50%, 16px); z-index: 600; background: var(--encre); color: var(--papier); padding: 10px 16px; font-size: 14px; display: flex; gap: 14px; align-items: center; opacity: 0; pointer-events: none; transition: all .2s; max-width: calc(100vw - 32px); }
+  .toast.open { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+  .toast button { border: 0; background: none; color: #f6dd7a; font-size: 14px; font-weight: 600; cursor: pointer; }
+
+  @media (max-width: 1100px) {
+    .page { grid-template-columns: minmax(0, 1fr); }
+    .rail { order: 2; border-right: 0; border-top: 1.5px solid var(--encre); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+  }
+  @media (max-width: 760px) {
+    nav { padding: 0 16px; }
+    .breadcrumb { display: none; }
+    .agenda { padding: 22px 16px 32px; }
+    .rail { padding: 24px 16px 32px; grid-template-columns: minmax(0, 1fr); }
+    .periode { font-size: 34px; width: 100%; }
+    .case { min-height: 60px; padding: 4px; }
+    .case-num { font-size: 17px; }
+    .puce-m { font-size: 0; height: 4px; background: var(--c); }
+    .puce-m b { display: none; }
+    .deux, .trois { grid-template-columns: 1fr; }
+    .astuce { display: none; }
+    .fenetre { padding: 20px 16px; box-shadow: 5px 5px 0 var(--encre); }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo" onclick="location.href='index.html'">ECG Prépa</div>
+  <div class="breadcrumb">
+    <a href="index.html">Accueil</a><span>/</span><a href="admin.html">Administration</a><span>/</span><span class="current">Mon planning</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<div class="page">
+  <aside class="rail">
+    <section class="rail-tete">
+      <span class="petit" style="color:var(--tomate-texte)">Mon planning</span>
+      <h1 id="rail-mois"></h1>
+      <div class="compteurs">
+        <div><b id="st-auj">0</b><span>aujourd’hui</span></div>
+        <div><b id="st-sem">0</b><span>cette semaine</span></div>
+        <div><b id="st-retard">0</b><span>en retard</span></div>
+      </div>
+      <div class="sync" id="sync"><i></i><span>Enregistré sur cet appareil</span></div>
+    </section>
+
+    <section>
+      <div class="mini-tete"><b id="mini-titre"></b><div><button class="btn rond" id="mini-prec" aria-label="Mois précédent">‹</button><button class="btn rond" id="mini-suiv" aria-label="Mois suivant">›</button></div></div>
+      <div class="mini" id="mini"></div>
+    </section>
+
+    <section>
+      <div class="titre-bloc"><span class="petit">Au quotidien</span></div>
+      <div class="quot" id="quot"></div>
+      <p class="aide">Une ligne à cocher chaque jour, avec le lien vers le texte ou la fiche du jour.</p>
+    </section>
+
+    <section>
+      <div class="titre-bloc"><span class="petit">Écrire une ligne</span></div>
+      <input class="champ-l" type="text" id="rapide-titre" placeholder="Relire le chapitre 3 demain 14h" aria-label="Ajouter un élément">
+      <div class="rangee">
+        <select class="champ-l" id="rapide-cat" aria-label="Catégorie"></select>
+        <button class="btn plein" id="rapide-ok">Ajouter</button>
+      </div>
+      <p class="aide">«&nbsp;aujourd’hui&nbsp;», «&nbsp;demain&nbsp;», «&nbsp;lundi&nbsp;», «&nbsp;le 24&nbsp;» et «&nbsp;14 h&nbsp;» sont compris. Sans date, la ligne va dans «&nbsp;À planifier&nbsp;».</p>
+    </section>
+
+    <section>
+      <div class="titre-bloc"><span class="petit">Depuis le site</span></div>
+      <input class="champ-l" type="text" id="site-q" placeholder="Article, dossier, chapitre, fiche…" aria-label="Chercher une page du site">
+      <button class="lien-afaire" id="voir-afaire" type="button">Contenus à créer<span id="nb-afaire"></span></button>
+      <div class="site-res" id="site-res"></div>
+      <p class="aide" id="site-aide">Glisser une page sur un jour ou une heure, ou «&nbsp;+&nbsp;» pour la mettre dans «&nbsp;À planifier&nbsp;». «&nbsp;Contenus à créer&nbsp;» liste ce qui est annoncé sur le site mais pas encore fait.</p>
+    </section>
+
+    <section id="bloc-retard" hidden>
+      <div class="titre-bloc"><span class="petit">En retard</span><em class="petit" id="nb-retard"></em></div>
+      <div class="retard" id="retard"></div>
+      <button class="btn petit-b" id="retard-auj" style="margin-top:10px">&gt; Tout reporter à aujourd’hui</button>
+    </section>
+
+    <section>
+      <div class="titre-bloc"><span class="petit">À planifier</span><em class="petit" id="nb-bac"></em></div>
+      <div class="bac" id="bac"></div>
+    </section>
+  </aside>
+
+  <main class="agenda">
+    <div class="agenda-tete">
+      <h2 class="periode" id="periode"></h2>
+      <div class="commandes">
+        <button class="btn petit-b" id="prec" aria-label="Période précédente">‹</button>
+        <button class="btn petit-b" id="auj">Aujourd’hui</button>
+        <button class="btn petit-b" id="suiv" aria-label="Période suivante">›</button>
+        <div class="onglets" id="onglets">
+          <button data-v="jour">Jour</button><button data-v="semaine">Semaine</button><button data-v="mois">Mois</button><button data-v="liste">Liste</button>
+        </div>
+      </div>
+    </div>
+    <div class="filtres" id="filtres"></div>
+    <div id="vue"></div>
+    <div class="legende"><span><b class="m">•</b> à faire</span><span><b class="m">×</b> fait</span><span><b class="m">○</b> rendez-vous</span><span><b class="m">–</b> note</span><span class="astuce">Cliquer dans la grille pour ajouter à cette heure</span></div>
+  </main>
+</div>
+
+<div class="voile" id="voile">
+  <div class="fenetre" role="dialog" aria-modal="true" aria-labelledby="f-h">
+    <h2 id="f-h">Modifier</h2>
+    <div><label class="e" for="f-titre">Titre</label><input class="champ-l" type="text" id="f-titre"></div>
+    <div><span class="e">Type</span>
+      <div class="types" id="f-types">
+        <button class="btn petit-b" data-t="tache">• À faire</button>
+        <button class="btn petit-b" data-t="rdv">○ Rendez-vous</button>
+        <button class="btn petit-b" data-t="note">– Note</button>
+      </div>
+    </div>
+    <div class="trois">
+      <div><label class="e" for="f-date">Date</label><input class="champ-l" type="date" id="f-date"></div>
+      <div><label class="e" for="f-heure">Heure</label><input class="champ-l" type="time" id="f-heure"></div>
+      <div><label class="e" for="f-duree">Durée</label>
+        <select class="champ-l" id="f-duree"><option value="15">15 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60">1 h</option><option value="90">1 h 30</option><option value="120">2 h</option><option value="180">3 h</option><option value="240">4 h</option></select>
+      </div>
+    </div>
+    <div class="trois">
+      <div><label class="e" for="f-cat">Catégorie</label><select class="champ-l" id="f-cat"></select></div>
+      <div><label class="e" for="f-prio">Priorité</label><select class="champ-l" id="f-prio"><option value="haute">Haute</option><option value="normale">Normale</option><option value="basse">Basse</option></select></div>
+      <div><label class="e" for="f-rep">Répétition</label><select class="champ-l" id="f-rep"><option value="">Aucune</option><option value="jour">Chaque jour</option><option value="semaine">Chaque semaine</option><option value="mois">Chaque mois</option></select></div>
+    </div>
+    <div class="deux joints">
+      <div><span class="e">Page du site</span>
+        <div class="site-lie" id="f-site" hidden></div>
+        <div id="f-site-choix"><input class="champ-l" type="text" id="f-site-q" placeholder="Chercher une page…" aria-label="Chercher une page du site à attacher"><div class="f-res" id="f-site-res"></div></div>
+      </div>
+      <div><span class="e">Photo</span>
+        <div class="photo-lie" id="f-photo" hidden><img id="f-photo-img" alt=""><button class="btn petit-b" id="f-photo-retirer" type="button">Retirer</button></div>
+        <label class="btn petit-b depot" id="f-photo-choix"><input type="file" id="f-photo-fichier" accept="image/*">Choisir une photo</label>
+        <p class="aide" id="f-photo-etat"></p>
+      </div>
+    </div>
+    <div><label class="e" for="f-note">Note</label><textarea class="champ-l" id="f-note" rows="3" placeholder="Détails, liens, idées…"></textarea></div>
+    <div class="actions">
+      <button class="btn suppr" id="f-suppr">Supprimer</button>
+      <button class="btn" id="f-annuler">Annuler</button>
+      <button class="btn plein" id="f-ok">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span></span><button hidden>Annuler</button></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* Stockage : copie locale immédiate, puis fichier planning/planning.json du bucket privé
+     « newsletters » (réservé aux administrateurs), pour retrouver le planning sur tous les appareils. */
+  var K_LOCAL = 'ecg-planning:v1';
+  var BUCKET = 'newsletters', CHEMIN = 'planning/planning.json';
+
+  /* c : encre de la catégorie (puces, filets), p : couleur du post-it. */
+  var CATS = {
+    site:  { nom: 'Site',           c: '#d9482b', p: '#f6dd7a' },
+    prepa: { nom: 'Prépa',          c: '#1d2a5c', p: '#cfd9f2' },
+    perso: { nom: 'Perso',          c: '#2f7a55', p: '#bfe0d4' },
+    rdv:   { nom: 'Rendez-vous',    c: '#7a3f8f', p: '#e5d3ee' },
+    admin: { nom: 'Admin & argent', c: '#a8661a', p: '#f7d6ae' },
+    autre: { nom: 'Autre',          c: '#6b6556', p: '#e6e0d3' }
+  };
+  /* Couleur de la rubrique d'une page du site (recherche-index.json, 4e champ). */
+  var SECS = { actu: '#b33a20', cg: '#6a4c9c', cours: '#1d2a5c', langues: '#2f7a55', humanite: '#9a4a1f', autre: '#6b6556' };
+  var JOURS = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
+  var MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+  var MOIS_C = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+  var PRIO = { haute: 0, normale: 1, basse: 2 };
+  var HEURE_PX = 48;
+  /* Espaces « au quotidien » qu'on peut faire apparaître chaque jour dans le planning. */
+  var ESPACES = {
+    anglais:  { court: 'Anglais', nom: 'Anglais au quotidien',  c: '#1d2a5c', dossier: 'premiere_annee/langues/anglais/quotidien/' },
+    espagnol: { court: 'Espagnol', nom: 'Espagnol au quotidien', c: '#b33a20', dossier: 'premiere_annee/langues/espagnol/quotidien/' },
+    allemand: { court: 'Allemand', nom: 'Allemand au quotidien', c: '#a8661a', dossier: 'premiere_annee/langues/allemand/quotidien/' },
+    hgg:      { court: 'Fiche HGG', nom: 'Fiche HGG du jour',     c: '#2f7a55', dossier: 'premiere_annee/hgg/quotidien/', fiches: true }
+  };
+
+  function $(s) { return document.querySelector(s); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function sansAccents(s) { return String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+  function nouvelId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+  function maj1(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+  /* Typographie française des textes saisis : apostrophe courbe, espace insécable
+     avant : ; ! ? % » et après « (sauf en tout début de texte). */
+  function typo(s) {
+    return String(s == null ? '' : s).replace(/'/g, '’')
+      .replace(/(\S)\s*([;!?%»])/g, '$1\u00a0$2')
+      .replace(/(\S)\s*:(?=\s|$)/g, '$1\u00a0:')
+      .replace(/«\s*/g, '«\u00a0');
+  }
+  function tx(s) { return esc(typo(s)); }
+
+  /* ─── Dates (chaînes AAAA-MM-JJ, heure locale) ─── */
+  function iso(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  function versDate(s) { var p = s.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function ajoute(s, n) { var d = versDate(s); d.setDate(d.getDate() + n); return iso(d); }
+  function lundi(s) { var d = versDate(s); return ajoute(s, -((d.getDay() + 6) % 7)); }
+  function aujourdhui() { return iso(new Date()); }
+  function jourCourt(s) { var d = versDate(s); return JOURS[(d.getDay() + 6) % 7].slice(0, 3) + '\u00a0' + d.getDate() + '\u00a0' + MOIS_C[d.getMonth()]; }
+  function jourLong(s) { var d = versDate(s); return JOURS[(d.getDay() + 6) % 7] + ' ' + d.getDate() + '\u00a0' + MOIS[d.getMonth()]; }
+  function minutes(h) { var p = h.split(':'); return +p[0] * 60 + +p[1]; }
+  function hhmm(m) { return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); }
+  function heureLisible(h) { var p = h.split(':'); return +p[0] + '\u00a0h' + (p[1] !== '00' ? '\u00a0' + p[1] : ''); }
+
+  /* ─── Données ───
+     Chaque élément porte sa date de modification (m) et les suppressions sont gardées
+     (suppr) : deux appareils fusionnent élément par élément, sans rien écraser. */
+  var etat = { items: [], suppr: {} };
+  try { var l = JSON.parse(localStorage.getItem(K_LOCAL) || 'null'); if (l && Array.isArray(l.items)) etat = l; } catch (e) {}
+  etat.suppr = etat.suppr || {};
+  etat.reglages = etat.reglages || { quotidien: {}, m: 0 };
+  etat.reglages.quotidien = etat.reglages.quotidien || {};
+  var instantane = {}, reglagesAvant = JSON.stringify(etat.reglages.quotidien);
+  function empreinte(x) { var c = {}; Object.keys(x).forEach(function (k) { if (k !== 'm') c[k] = x[k]; }); return JSON.stringify(c); }
+  function photographier() { instantane = {}; etat.items.forEach(function (x) { instantane[x.id] = empreinte(x); }); }
+  photographier();
+
+  var client = null, envoiMinuteur = null;
+  function sync(cls, txt) { var el = $('#sync'); el.className = 'sync ' + cls; el.querySelector('span').textContent = txt; }
+  function syncOk() { sync('ok', 'Synchronisé sur tous vos appareils'); }
+  function syncErr() { sync('err', 'Pas de synchronisation : enregistré sur cet appareil seulement'); }
+
+  function enregistrer() {
+    var t = Date.now(), vus = {};
+    etat.items.forEach(function (x) { vus[x.id] = 1; if (instantane[x.id] !== empreinte(x)) x.m = t; });
+    Object.keys(instantane).forEach(function (id) { if (!vus[id]) etat.suppr[id] = t; });
+    var r = JSON.stringify(etat.reglages.quotidien);
+    if (r !== reglagesAvant) { etat.reglages.m = t; reglagesAvant = r; }
+    photographier();
+    try { localStorage.setItem(K_LOCAL, JSON.stringify(etat)); } catch (e) {}
+    if (!client) return;
+    clearTimeout(envoiMinuteur);
+    sync('en-cours', 'Synchronisation…');
+    envoiMinuteur = setTimeout(envoyer, 900);
+  }
+  function envoyer() {
+    var blob = new Blob([JSON.stringify(etat)], { type: 'application/json' });
+    return client.storage.from(BUCKET).upload(CHEMIN, blob, { upsert: true, contentType: 'application/json', cacheControl: '0' })
+      .then(function (r) { if (r.error) throw r.error; syncOk(); })
+      .catch(syncErr);
+  }
+  function fusionner(a, b) {
+    var suppr = {}, parId = {}, limite = Date.now() - 90 * 864e5;
+    [a.suppr || {}, b.suppr || {}].forEach(function (s) { Object.keys(s).forEach(function (id) { if (s[id] > limite) suppr[id] = Math.max(suppr[id] || 0, s[id]); }); });
+    a.items.concat(b.items || []).forEach(function (x) {
+      var y = parId[x.id];
+      if (!y || (x.m || 0) > (y.m || 0)) parId[x.id] = x;
+    });
+    var items = Object.keys(parId).map(function (id) { return parId[id]; })
+      .filter(function (x) { return !(suppr[x.id] && suppr[x.id] >= (x.m || 0)); });
+    var ra = a.reglages || { quotidien: {}, m: 0 }, rb = b.reglages || { quotidien: {}, m: 0 };
+    return { items: items, suppr: suppr, reglages: (rb.m || 0) > (ra.m || 0) ? rb : ra };
+  }
+  function signature(d) {
+    return d.items.map(function (x) { return x.id + ':' + (x.m || 0); }).sort().join() + '|' + Object.keys(d.suppr || {}).sort().join() + '|' + ((d.reglages && d.reglages.m) || 0);
+  }
+  function tirer() {
+    if (!client) return Promise.resolve();
+    return client.storage.from(BUCKET).download(CHEMIN)
+      .then(function (r) {
+        if (r.error) {
+          var m = String(r.error.message || r.error) + ' ' + (r.error.statusCode || r.error.status || '');
+          if (/not.?found|404/i.test(m)) return { items: [], suppr: {} };
+          throw r.error;
+        }
+        return r.data.text().then(function (t) { var d = JSON.parse(t); d.items = d.items || []; return d; });
+      })
+      .then(function (distant) {
+        var f = fusionner(etat, distant);
+        var avant = JSON.stringify(etat);
+        etat = f;
+        etat.reglages.quotidien = etat.reglages.quotidien || {};
+        reglagesAvant = JSON.stringify(etat.reglages.quotidien);
+        photographier();
+        try { localStorage.setItem(K_LOCAL, JSON.stringify(etat)); } catch (e) {}
+        if (JSON.stringify(etat) !== avant) rendre();
+        if (signature(distant) !== signature(etat)) {
+          sync('en-cours', 'Synchronisation…');
+          return envoyer();
+        }
+        syncOk();
+      })
+      .catch(syncErr);
+  }
+
+  function nouvelElement(o) {
+    return {
+      id: nouvelId(), titre: o.titre || 'Sans titre', type: o.type || 'tache', date: o.date || '', heure: o.heure || '',
+      duree: o.duree || 60, cat: o.cat || 'site', prio: o.prio || 'normale', note: o.note || '', site: o.site || null, rep: o.rep || '',
+      fait: false, cree: Date.now(), ordre: Date.now(), m: Date.now()
+    };
+  }
+  function trouver(id) { return etat.items.filter(function (x) { return x.id === id; })[0]; }
+
+  /* Un élément répété coché : il reste fait à sa date et réapparaît à l'échéance suivante. */
+  function prochaine(x) {
+    if (x.rep === 'jour') return ajoute(x.date, 1);
+    if (x.rep === 'semaine') return ajoute(x.date, 7);
+    var d = versDate(x.date), j = d.getDate();
+    d.setDate(1); d.setMonth(d.getMonth() + 1);
+    var dernier = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+    d.setDate(Math.min(j, dernier));
+    return iso(d);
+  }
+  function cocher(id) {
+    var x = trouver(id); if (!x || x.type !== 'tache') return;
+    x.fait = !x.fait;
+    if (x.fait && x.rep && x.date) {
+      var suite = nouvelElement(x);
+      suite.date = prochaine(x); suite.rep = x.rep;
+      x.rep = '';
+      x.suiteId = suite.id;
+      etat.items.push(suite);
+    } else if (!x.fait && x.suiteId) {
+      var s = trouver(x.suiteId);
+      if (s && !s.fait) { x.rep = s.rep; etat.items = etat.items.filter(function (y) { return y.id !== s.id; }); }
+      delete x.suiteId;
+    }
+    enregistrer(); rendre();
+  }
+
+  /* ─── Ajout rapide : « demain 14h », « lundi », « le 24 »… ─── */
+  function analyser(texte) {
+    var t = ' ' + texte + ' ', date = '', heure = '', base = aujourdhui();
+    var m = t.match(/\s(\d{1,2})\s?h\s?(\d{2})?(?=\s)/i);
+    if (m && +m[1] < 24) { heure = String(m[1]).padStart(2, '0') + ':' + (m[2] || '00'); t = t.replace(m[0], ' '); }
+    var s = sansAccents(t);
+    var mots = [
+      [/\s(aujourd'hui|aujourd’hui|auj)(?=\s)/, 0], [/\sapres-demain(?=\s)/, 2], [/\sdemain(?=\s)/, 1]
+    ];
+    for (var i = 0; i < mots.length && !date; i++) {
+      var r = s.match(mots[i][0]);
+      if (r) { date = ajoute(base, mots[i][1]); t = retirer(t, s, r); }
+    }
+    if (!date) {
+      s = sansAccents(t);
+      var r2 = s.match(/\s(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)( prochain)?(?=\s)/);
+      if (r2) {
+        var cible = JOURS.indexOf(r2[1]), actuel = (versDate(base).getDay() + 6) % 7, ecart = (cible - actuel + 7) % 7;
+        if (ecart === 0) ecart = 7;
+        date = ajoute(base, ecart); t = retirer(t, s, r2);
+      }
+    }
+    if (!date) {
+      s = sansAccents(t);
+      var r3 = s.match(/\sle (\d{1,2})(?: (janvier|fevrier|mars|avril|mai|juin|juillet|aout|septembre|octobre|novembre|decembre))?(?=\s)/);
+      if (r3 && +r3[1] >= 1 && +r3[1] <= 31) {
+        var d = versDate(base), mois = r3[2] ? MOIS.map(sansAccents).indexOf(r3[2]) : d.getMonth();
+        var c = new Date(d.getFullYear(), mois, +r3[1]);
+        if (iso(c) < base) c = r3[2] ? new Date(d.getFullYear() + 1, mois, +r3[1]) : new Date(d.getFullYear(), mois + 1, +r3[1]);
+        date = iso(c); t = retirer(t, s, r3);
+      }
+    }
+    return { titre: t.replace(/\s+/g, ' ').trim().replace(/^[,:\-]\s*|\s*[,:\-]$/g, ''), date: date, heure: heure };
+  }
+  /* Retire du texte d'origine le passage trouvé dans sa version sans accents (même longueur). */
+  function retirer(t, s, r) { return t.slice(0, r.index) + ' ' + t.slice(r.index + r[0].length); }
+
+  /* ─── Au quotidien : une ligne par jour et par espace activé ───
+     Identifiant fixe (q-<espace>-<date>) : deux appareils créent la même ligne sans doublon.
+     Lignes créées pour les jours affichés, à partir d'aujourd'hui (et du jour d'activation). */
+  var fichesHgg = null;
+  function chargerFichesHgg() {
+    if (fichesHgg) return Promise.resolve(fichesHgg);
+    return fetch(ESPACES.hgg.dossier + 'index.html', { cache: 'no-cache' }).then(function (r) { return r.text(); })
+      .then(function (t) {
+        fichesHgg = {};
+        t.replace(/data-slug="([^"]+)"\s+data-date="(\d{4}-\d{2}-\d{2})"/g, function (m, slug, date) { fichesHgg[date] = slug; return m; });
+        return fichesHgg;
+      }).catch(function () { fichesHgg = {}; return fichesHgg; });
+  }
+  function pageIndex(url) { return pages && pages.filter(function (p) { return p.url === url; })[0]; }
+  function lienQuotidien(k, s) {
+    var e = ESPACES[k], auj = aujourdhui(), url;
+    if (e.fiches) url = fichesHgg && fichesHgg[s] ? e.dossier + fichesHgg[s] + '.html' : e.dossier + 'index.html';
+    else url = s <= auj || pageIndex(e.dossier + 'jour-' + s + '.html') ? e.dossier + 'jour-' + s + '.html' : e.dossier + 'index.html';
+    var p = pageIndex(url), n = p && p.titre.match(/jour (\d+)/i);
+    var rub = /index\.html$/.test(url) ? 'Ouvrir l’espace' : n ? 'Jour ' + n[1] : p ? typo(p.titre.replace(/^.*?:\s*/, '')) : e.fiches ? 'Fiche du jour' : 'Texte du jour';
+    return { url: url, titre: p ? p.titre : e.nom, rub: rub, sec: 'langues', image: '' };
+  }
+  function joursAffiches() {
+    var auj = aujourdhui(), l = [];
+    if (vue === 'mois') {
+      var d = versDate(curseur), n = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+      for (var i = 1; i <= n; i++) l.push(iso(new Date(d.getFullYear(), d.getMonth(), i)));
+    } else if (unJour() || vue === 'jour') { l.push(curseur); }
+    else if (vue === 'liste') { for (var j = 0; j < 14; j++) l.push(ajoute(auj, j)); }
+    else { var lun = lundi(curseur); for (var k = 0; k < 7; k++) l.push(ajoute(lun, k)); }
+    if (l.indexOf(auj) === -1) l.push(auj);
+    return l;
+  }
+  function assurerQuotidien() {
+    var q = etat.reglages.quotidien, auj = aujourdhui(), change = false;
+    Object.keys(ESPACES).forEach(function (k) {
+      var act = q[k]; if (!act) return;
+      joursAffiches().forEach(function (s) {
+        if (s < auj || s < act.depuis) return;
+        var id = 'q-' + k + '-' + s;
+        if (trouver(id) || (etat.suppr[id] && etat.suppr[id] > act.t)) return;
+        var x = nouvelElement({ titre: ESPACES[k].nom, date: s, cat: 'prepa', site: lienQuotidien(k, s) });
+        x.id = id; x.q = k;
+        etat.items.push(x); change = true;
+      });
+    });
+    /* Lien et numéro du jour mis à jour quand la page du jour existe. */
+    etat.items.forEach(function (x) {
+      if (!x.q || x.fait || x.date < auj || !ESPACES[x.q]) return;
+      var l = lienQuotidien(x.q, x.date);
+      if (!x.site || x.site.url !== l.url || x.site.rub !== l.rub || x.site.titre !== l.titre) { x.site = l; change = true; }
+    });
+    if (change) enregistrer();
+  }
+  function basculerQuotidien(k, oui) {
+    var auj = aujourdhui();
+    if (oui) etat.reglages.quotidien[k] = { depuis: auj, t: Date.now() };
+    else {
+      etat.reglages.quotidien[k] = false;
+      etat.items = etat.items.filter(function (x) { return !(x.q === k && !x.fait && x.date >= auj); });
+    }
+    enregistrer(); rendre();
+    if (oui) chargerPages().then(rendre);
+    if (oui && ESPACES[k].fiches) chargerFichesHgg().then(rendre);
+  }
+  function rendreQuotidien() {
+    var q = etat.reglages.quotidien;
+    $('#quot').innerHTML = Object.keys(ESPACES).map(function (k) {
+      return '<label class="interr"><input type="checkbox" data-q="' + k + '"' + (q[k] ? ' checked' : '') + '><span class="bascule" aria-hidden="true"></span>' + ESPACES[k].nom + '</label>';
+    }).join('');
+  }
+  $('#quot').addEventListener('change', function (e) { var c = e.target.closest('[data-q]'); if (c) basculerQuotidien(c.dataset.q, c.checked); });
+
+  /* ─── Rendu ─── */
+  var vue = 'semaine', curseur = aujourdhui(), filtreCat = '', moisMini = null, listeMode = 'avenir';
+  try { listeMode = localStorage.getItem('ecg-planning-liste') || 'avenir'; } catch (e) {}
+  /* Liste « simple » (lignes seules) ou « visuelle » (post-it, polaroïds, scotch). */
+  var listeStyle = 'simple';
+  try { listeStyle = localStorage.getItem('ecg-planning-liste-style') || 'simple'; } catch (e) {}
+  function unJour() { return vue === 'liste' && listeMode === 'jour'; }
+  try { vue = localStorage.getItem('ecg-planning-vue') || 'semaine'; } catch (e) {}
+  var etroit = window.matchMedia('(max-width: 760px)');
+
+  function visibles() { return etat.items.filter(function (x) { return !filtreCat || x.cat === filtreCat; }); }
+  function trier(a, b) {
+    if (a.fait !== b.fait) return a.fait ? 1 : -1;
+    if (!!a.heure !== !!b.heure) return a.heure ? -1 : 1;
+    if (a.heure && b.heure && a.heure !== b.heure) return a.heure < b.heure ? -1 : 1;
+    if (PRIO[a.prio] !== PRIO[b.prio]) return PRIO[a.prio] - PRIO[b.prio];
+    if (a.q && b.q) return Object.keys(ESPACES).indexOf(a.q) - Object.keys(ESPACES).indexOf(b.q);
+    if (!!a.q !== !!b.q) return a.q ? -1 : 1;
+    return a.ordre - b.ordre;
+  }
+  function duJour(s) { return visibles().filter(function (x) { return x.date === s; }).sort(trier); }
+
+  /* Image d'une page du site : celle de l'index (recherche-index.json, 7e champ). */
+  var images = {};
+  function imageDe(site) { return site && (site.image || images[site.url]) || ''; }
+  /* Photos attachées : fichier planning/photos/… du bucket privé (lien signé, valable un jour),
+     ou image réduite gardée dans l'élément quand l'envoi est impossible. */
+  var liensPhotos = {}, photosEnAttente = false;
+  function photoDe(x) {
+    if (!x.photo) return '';
+    if (x.photo.data) return x.photo.data;
+    if (liensPhotos[x.photo.chemin]) return liensPhotos[x.photo.chemin];
+    demanderPhotos();
+    return '';
+  }
+  function demanderPhotos() {
+    if (photosEnAttente || !client) return;
+    var chemins = etat.items.filter(function (x) { return x.photo && x.photo.chemin && !liensPhotos[x.photo.chemin]; }).map(function (x) { return x.photo.chemin; });
+    if (!chemins.length) return;
+    photosEnAttente = true;
+    client.storage.from(BUCKET).createSignedUrls(chemins, 86400).then(function (r) {
+      photosEnAttente = false;
+      (r.data || []).forEach(function (d) { if (d.signedUrl) liensPhotos[d.path] = d.signedUrl; });
+      rendre();
+    }).catch(function () { photosEnAttente = false; });
+  }
+  /* Ligne « au quotidien » : la photo du texte ou de la fiche du jour, quand la page existe. */
+  function imgDe(x) {
+    if (x.q) return photoDe(x) || (x.site && !/index\.html$/.test(x.site.url) ? imageDe(x.site) : '');
+    return photoDe(x) || imageDe(x.site);
+  }
+
+  function cat(x) {
+    var c = CATS[x.cat] || CATS.autre;
+    return x.q && ESPACES[x.q] ? { nom: c.nom, c: ESPACES[x.q].c, p: c.p } : c;
+  }
+  function classes(x, base) { return base + ' el type-' + x.type + (x.fait ? ' fait' : '') + (x.prio === 'haute' ? ' prio-haute' : ''); }
+  function attrs(x) { return ' draggable="true" data-id="' + x.id + '" style="--c:' + cat(x).c + (x.site ? ';--sec:' + (SECS[x.site.sec] || SECS.autre) : '') + '' + '"'; }
+  function puce(x) {
+    if (x.type === 'tache') return '<button class="puce" data-a="cocher" aria-label="' + (x.fait ? 'Décocher' : 'Cocher') + '">' + (x.fait ? '×' : '•') + '</button>';
+    return '<span class="puce" aria-hidden="true">' + (x.type === 'rdv' ? '○' : '–') + '</span>';
+  }
+  function caseC(x) { return x.type === 'tache' ? '<button class="case-c" data-a="cocher" aria-label="' + (x.fait ? 'Décocher' : 'Cocher') + '">' + (x.fait ? '✓' : '') + '</button>' : ''; }
+  function lienSite(x) { return x.site ? '<a class="lien-site" href="' + esc(x.site.url) + '" data-a="lien">↗ ' + esc(x.site.rub || 'Ouvrir la page') + '</a>' : ''; }
+  function extras(x) {
+    var q = [];
+    if (x.rep) q.push('↻');
+    if (x.note) q.push('✎');
+    return q.length ? '<span class="q" title="' + esc(x.note || '') + '">' + q.join(' ') + '</span>' : '';
+  }
+
+  /* Page du site avec image : polaroïd scotché. */
+  /* Scotch des polaroïds : couleurs qui alternent, comme les post-it. */
+  var rangScotch = 0;
+  function polaroid(x, avecDate) {
+    var scotch = COULEURS_POSTIT[rangScotch++ % COULEURS_POSTIT.length];
+    var img = imgDe(x), avant = (avecDate && x.date ? jourCourt(x.date) + ' · ' : '') + (x.heure ? heureLisible(x.heure) + ' · ' : '');
+    var titre = tx(x.titre), rub = x.site ? esc(x.site.rub || 'Page du site') : '';
+    if (x.q && ESPACES[x.q]) {
+      /* « Anglais · Jour 10 », puis le sujet du jour (titre de la page sans « Daily English, jour 10 : »). */
+      rub = esc(ESPACES[x.q].court) + (x.site && x.site.rub ? ' · ' + tx(x.site.rub) : '');
+      var sujet = x.site && x.site.titre && x.site.titre !== ESPACES[x.q].nom ? x.site.titre.replace(/^[^:]*:\s*/, '') : '';
+      titre = sujet ? tx(maj1(sujet)) : esc(ESPACES[x.q].nom);
+    }
+    return '<div class="' + classes(x, 'polaroid') + '"' + attrs(x).replace('style="', 'style="--scotch:' + scotch + ';') + '>' +
+      '<img src="' + esc(img) + '" alt="" loading="lazy" draggable="false">' +
+      (x.site ? '<a class="rub" href="' + esc(x.site.url) + '" data-a="lien">' + avant + rub + '</a>'
+              : '<span class="rub" style="--sec:' + cat(x).c + '">' + avant + esc(cat(x).nom) + '</span>') +
+      '<div class="t">' + caseC(x) + '<span>' + titre + '</span></div></div>';
+  }
+  /* Ligne de carnet : puce, heure, texte. */
+  function ligne(x, avecDate, simple) {
+    /* Ligne du quotidien : nom court, lien vers le texte ou la fiche du jour quand elle existe. */
+    if (x.q && ESPACES[x.q] && imgDe(x) && !simple) return polaroid(x, avecDate);
+    if (x.q && ESPACES[x.q]) {
+      var lien = x.site && !/index\.html$/.test(x.site.url) ? ' <a class="q-lien" href="' + esc(x.site.url) + '" data-a="lien">' + tx(x.site.rub) + '&nbsp;↗</a>' : '';
+      return '<div class="' + classes(x, 'ligne') + ' quotidien"' + attrs(x) + '>' + puce(x) +
+        '<span class="txt">' + (avecDate && x.date ? '<span class="h">' + jourCourt(x.date) + '</span>' : '') +
+        (x.heure ? '<span class="h">' + heureLisible(x.heure) + '</span>' : '') + esc(ESPACES[x.q].court) + lien + '</span></div>';
+    }
+    if (imgDe(x) && !simple) return polaroid(x, avecDate);
+    return '<div class="' + classes(x, 'ligne') + '"' + attrs(x) + '>' + puce(x) +
+      '<span class="txt">' + (avecDate && x.date ? '<span class="h">' + jourCourt(x.date) + '</span>' : '') +
+      (x.heure ? '<span class="h">' + heureLisible(x.heure) + '</span>' : '') + tx(x.titre) + extras(x) + lienSite(x) + '</span></div>';
+  }
+  /* « À planifier » : post-it, ou polaroïd pour une page du site. */
+  /* Post-it : une couleur différente de ses voisins (la suite repart au début après la dernière). */
+  /* Teintes bien séparées (un seul rose), rangées pour que deux voisines contrastent. */
+  var COULEURS_POSTIT = ['#f6dd7a', '#b8d4f5', '#f7bfcf', '#cfe59a', '#d4c6f3', '#f9c88c', '#a6dfdc'];
+  var rangPostit = 0;
+  function postit(x) {
+    if (imgDe(x)) return polaroid(x);
+    var coul = COULEURS_POSTIT[rangPostit++ % COULEURS_POSTIT.length];
+    return '<div class="' + classes(x, 'postit') + '"' + attrs(x).replace('style="', 'style="--p:' + coul + ';') + '>' + caseC(x) +
+      '<span class="txt">' + (x.heure ? '<span class="h">' + heureLisible(x.heure) + '</span>' : '') + tx(x.titre) + extras(x) + lienSite(x) + '</span></div>';
+  }
+  /* Bloc de la grille horaire. */
+  function bloc(x, haut, hauteur, voie, voies) {
+    var img = imgDe(x), fin = minutes(x.heure) + (x.duree || 60);
+    return '<div class="' + classes(x, 'bloc' + (hauteur < 60 ? ' court' : '')) + '"' + attrs(x).replace('style="', 'style="top:' + haut + 'px;height:' + hauteur + 'px;left:calc(' + (100 * voie / voies) + '% + 3px);width:calc(' + (100 / voies) + '% - 6px);') + '>' +
+      (img && hauteur >= 78 ? '<img src="' + esc(img) + '" alt="" loading="lazy" draggable="false">' : '') +
+      '<div class="t">' + caseC(x) + '<span>' + tx(x.titre) + '</span></div>' +
+      (hauteur >= 40 ? '<span class="h">' + heureLisible(x.heure) + '\u00a0– ' + heureLisible(hhmm(Math.min(fin, 1439))) + (x.site ? ' · ' + esc(x.site.rub || '') : '') + '</span>' : '') +
+      '</div>';
+  }
+
+  /* Plage horaire affichée : 8 h à 21 h, élargie si un élément de la semaine en sort. */
+  function plage(jours) {
+    var debut = 8, fin = 21;
+    jours.forEach(function (l) {
+      l.forEach(function (x) {
+        if (!x.heure) return;
+        var m = minutes(x.heure);
+        debut = Math.min(debut, Math.floor(m / 60));
+        fin = Math.max(fin, Math.min(24, Math.ceil((m + (x.duree || 60)) / 60)));
+      });
+    });
+    return [debut, fin];
+  }
+  /* Éléments qui se chevauchent : côte à côte, en voies. */
+  function voies(liste) {
+    var res = [], groupe = [], finGroupe = -1;
+    function clore() { var n = 0; groupe.forEach(function (g) { n = Math.max(n, g.voie + 1); }); groupe.forEach(function (g) { g.voies = n; }); groupe = []; }
+    liste.slice().sort(function (a, b) { return minutes(a.heure) - minutes(b.heure); }).forEach(function (x) {
+      var d = minutes(x.heure), f = d + Math.max(x.duree || 60, 30);
+      if (d >= finGroupe) { clore(); finGroupe = -1; }
+      var prises = groupe.filter(function (g) { return g.fin > d; }).map(function (g) { return g.voie; });
+      var v = 0; while (prises.indexOf(v) !== -1) v++;
+      var r = { x: x, debut: d, fin: f, voie: v };
+      groupe.push(r); res.push(r);
+      finGroupe = Math.max(finGroupe, f);
+    });
+    clore();
+    return res;
+  }
+
+  function titrePeriode(debut) {
+    var fin = ajoute(debut, 6), d1 = versDate(debut), d2 = versDate(fin);
+    $('#periode').innerHTML = d1.getMonth() === d2.getMonth()
+      ? '<span class="lie">du</span>' + d1.getDate() + '<span class="lie">au</span>' + d2.getDate() + '&nbsp;<em>' + MOIS[d2.getMonth()] + '</em>'
+      : '<span class="lie">du</span>' + d1.getDate() + '&nbsp;<em>' + MOIS[d1.getMonth()] + '</em><span class="lie">au</span>' + d2.getDate() + '&nbsp;<em>' + MOIS[d2.getMonth()] + '</em>';
+  }
+
+  var heureDebut = 8;
+  function rendreSemaine(unSeul) {
+    var debut = lundi(curseur), auj = aujourdhui();
+    var jours = [], dates = [];
+    if (unSeul) {
+      var dj = versDate(curseur);
+      $('#periode').innerHTML = '<span class="lie">' + JOURS[(dj.getDay() + 6) % 7] + '</span>' + dj.getDate() + '&nbsp;<em>' + MOIS[dj.getMonth()] + '</em>';
+      dates.push(curseur); jours.push(duJour(curseur));
+    } else {
+      titrePeriode(debut);
+      for (var i = 0; i < 7; i++) { dates.push(ajoute(debut, i)); jours.push(duJour(dates[i])); }
+    }
+
+    if (etroit.matches && !unSeul) {
+      $('#vue').innerHTML = dates.map(function (s, i) {
+        var d = versDate(s);
+        return '<div class="jour-c' + (s === auj ? ' auj' : '') + '" data-date="' + s + '"><h3>' + maj1(JOURS[i]) + ' ' + d.getDate() + (s === auj ? ' <small>aujourd’hui</small>' : '') + '</h3>' +
+          jours[i].map(function (x) { return x.heure || x.q ? ligne(x) : postit(x); }).join('') +
+          '<input class="ajout" type="text" data-ajout="' + s + '" placeholder="+ ajouter" aria-label="Ajouter le ' + jourLong(s) + '"></div>';
+      }).join('');
+      return;
+    }
+
+    var p = plage(jours); heureDebut = p[0];
+    var hauteur = (p[1] - p[0]) * HEURE_PX;
+    var classe = function (s) { return s === auj ? ' auj' : s < auj ? ' passe' : ''; };
+    var html = '<div class="sem' + (unSeul ? ' un' : '') + '"><div class="sem-ligne sem-tete"><span></span>' +
+      dates.map(function (s) { return '<div class="jt' + classe(s) + '"><span class="jn">' + JOURS[(versDate(s).getDay() + 6) % 7].slice(0, 3) + '</span><span class="jd">' + versDate(s).getDate() + '</span></div>'; }).join('') +
+      '</div><div class="sem-ligne sem-libre"><span class="lib-h">sans<br>heure</span>' +
+      dates.map(function (s, i) {
+        return '<div class="libre' + classe(s) + '" data-date="' + s + '">' +
+          jours[i].filter(function (x) { return !x.heure; }).map(function (x) { return x.q ? ligne(x) : postit(x); }).join('') +
+          '<input class="ajout" type="text" data-ajout="' + s + '" placeholder="+ ajouter" aria-label="Ajouter le ' + jourLong(s) + '"></div>';
+      }).join('') +
+      '</div><div class="sem-ligne" style="height:' + hauteur + 'px"><div class="heures">';
+    for (var h = p[0] + 1; h < p[1]; h++) html += '<span style="top:' + ((h - p[0]) * HEURE_PX) + 'px">' + h + ' h</span>';
+    html += '</div>';
+    dates.forEach(function (s, i) {
+      html += '<div class="col' + classe(s) + '" data-date="' + s + '">';
+      voies(jours[i].filter(function (x) { return x.heure; })).forEach(function (r) {
+        var haut = (r.debut - p[0] * 60) * HEURE_PX / 60;
+        var bas = Math.min(r.debut + (r.x.duree || 60), p[1] * 60);
+        html += bloc(r.x, haut, Math.max(22, (bas - r.debut) * HEURE_PX / 60 - 2), r.voie, r.voies);
+      });
+      if (s === auj) html += '<div class="maintenant" id="maintenant"></div>';
+      html += '</div>';
+    });
+    html += '</div></div>';
+    $('#vue').innerHTML = html;
+    placerMaintenant(p);
+  }
+  function placerMaintenant(p) {
+    var m = $('#maintenant'); if (!m) return;
+    var n = new Date(), mn = n.getHours() * 60 + n.getMinutes();
+    m.hidden = mn < p[0] * 60 || mn > p[1] * 60;
+    m.style.top = ((mn - p[0] * 60) * HEURE_PX / 60) + 'px';
+    m.dataset.p = p.join(',');
+  }
+  setInterval(function () {
+    var m = $('#maintenant'); if (m) placerMaintenant(m.dataset.p.split(',').map(Number));
+    if (aujourdhui() !== dernierJour) { dernierJour = aujourdhui(); rendre(); }
+  }, 60000);
+  var dernierJour = aujourdhui();
+
+  function rendreMois() {
+    var d = versDate(curseur), premier = iso(new Date(d.getFullYear(), d.getMonth(), 1));
+    var debut = lundi(premier), auj = aujourdhui(), html = '';
+    $('#periode').innerHTML = maj1(MOIS[d.getMonth()]) + ' <em>' + d.getFullYear() + '</em>';
+    JOURS.forEach(function (j) { html += '<div class="mois-nom">' + j.slice(0, 3) + '</div>'; });
+    var semaines = Math.ceil(((versDate(premier).getDay() + 6) % 7 + new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate()) / 7);
+    for (var i = 0; i < semaines * 7; i++) {
+      var s = ajoute(debut, i), liste = duJour(s), dd = versDate(s);
+      html += '<div class="case' + (dd.getMonth() !== d.getMonth() ? ' hors' : '') + (s === auj ? ' auj' : '') + '" data-date="' + s + '" data-a="jour">' +
+        '<span class="case-num">' + dd.getDate() + '</span>' +
+        liste.slice(0, 4).map(function (x) {
+          return '<div class="puce-m' + (x.fait ? ' fait' : '') + '" style="--c:' + cat(x).c + '"><b>' + (x.type === 'tache' ? (x.fait ? '×' : '•') : x.type === 'rdv' ? '○' : '–') + (x.heure ? ' ' + heureLisible(x.heure) : '') + '</b>' + (x.q && ESPACES[x.q] ? esc(ESPACES[x.q].court) : tx(x.titre)) + '</div>';
+        }).join('') +
+        (liste.length > 4 ? '<span class="plus">+' + (liste.length - 4) + '</span>' : '') +
+        '</div>';
+    }
+    $('#vue').innerHTML = '<div class="mois">' + html + '</div>';
+  }
+
+  function sousOnglets() {
+    return '<div class="sous-barre"><div class="sous-onglets" role="group" aria-label="Contenu de la liste"><button data-lm="avenir" class="' + (listeMode === 'avenir' ? 'on' : '') + '">À venir</button><button data-lm="jour" class="' + (listeMode === 'jour' ? 'on' : '') + '">Un jour</button></div>' +
+      '<div class="sous-onglets" role="group" aria-label="Présentation de la liste"><button data-ls="simple" class="' + (listeStyle === 'simple' ? 'on' : '') + '">Simple</button><button data-ls="visuel" class="' + (listeStyle === 'visuel' ? 'on' : '') + '">Visuel</button></div></div>';
+  }
+  /* « Un jour » : la même présentation que « À venir », pour ce seul jour. */
+  function groupeJour(s, l) {
+    var auj = aujourdhui(), reste = l.filter(function (x) { return x.type === 'tache' && !x.fait; }).length;
+    var etiquette = s === auj ? 'Aujourd’hui' : s === ajoute(auj, 1) ? 'Demain' : maj1(jourLong(s));
+    return '<div class="groupe" data-date="' + s + '"><h3><button data-jour="' + s + '" title="Voir ce jour seul">' + etiquette + '</button> <small>' + (s === auj || s === ajoute(auj, 1) ? jourCourt(s) + ' · ' : '') + (reste ? reste + ' à faire' : 'rien à faire') + '</small></h3>' +
+      (listeStyle === 'visuel'
+        ? '<div class="cartes">' + l.map(function (x) { return postit(x); }).join('') + '</div>'
+        : l.map(function (x) { return ligne(x, false, true); }).join('')) + '</div>';
+  }
+  function rendreJour() {
+    var d = versDate(curseur);
+    $('#periode').innerHTML = '<span class="lie">' + JOURS[(d.getDay() + 6) % 7] + '</span>' + d.getDate() + '&nbsp;<em>' + MOIS[d.getMonth()] + '</em>';
+    $('#vue').innerHTML = sousOnglets() + groupeJour(curseur, duJour(curseur));
+  }
+  function rendreListe() {
+    if (listeMode === 'jour') { rendreJour(); return; }
+    var auj = aujourdhui();
+    $('#periode').innerHTML = '<span class="lie">à</span><em>venir</em>';
+    var futurs = visibles().filter(function (x) { return x.date && x.date >= auj; });
+    var dates = {};
+    futurs.forEach(function (x) { (dates[x.date] = dates[x.date] || []).push(x); });
+    var cles = Object.keys(dates).sort();
+    var html = cles.length ? '' : '<p class="vide">Rien de prévu pour l’instant.</p>';
+    cles.forEach(function (s) { html += groupeJour(s, dates[s].sort(trier)); });
+    $('#vue').innerHTML = sousOnglets() + html;
+  }
+
+  function rendreMini() {
+    var ref = versDate(moisMini || curseur), auj = aujourdhui();
+    var premier = iso(new Date(ref.getFullYear(), ref.getMonth(), 1)), debut = lundi(premier);
+    var semDebut = lundi(curseur), semFin = ajoute(semDebut, 6);
+    $('#mini-titre').innerHTML = maj1(MOIS[ref.getMonth()]) + ' <span class="it">' + ref.getFullYear() + '</span>';
+    var compte = {};
+    etat.items.forEach(function (x) { if (x.date && !x.fait) compte[x.date] = 1; });
+    var html = 'LMMJVSD'.split('').map(function (c) { return '<span>' + c + '</span>'; }).join('');
+    for (var i = 0; i < 42; i++) {
+      var s = ajoute(debut, i), d = versDate(s);
+      if (i === 35 && d.getMonth() !== ref.getMonth()) break;
+      html += '<button class="' + (d.getMonth() !== ref.getMonth() ? 'hors ' : '') + (s === auj ? 'auj ' : '') + ((vue === 'semaine' && s >= semDebut && s <= semFin) || ((unJour() || vue === 'jour') && s === curseur) ? 'sem' : '') + '" data-mini="' + s + '" aria-label="' + jourLong(s) + '">' + d.getDate() + (compte[s] ? '<i></i>' : '') + '</button>';
+    }
+    $('#mini').innerHTML = html;
+    var c = versDate(curseur);
+    $('#rail-mois').innerHTML = maj1(MOIS[c.getMonth()]) + ' <em>' + c.getFullYear() + '</em>';
+  }
+
+  function rendreCote() {
+    var auj = aujourdhui();
+    var bac = visibles().filter(function (x) { return !x.date && !x.fait; }).sort(trier);
+    var faitsBac = visibles().filter(function (x) { return !x.date && x.fait; });
+    rangPostit = 0;
+    $('#bac').innerHTML = (bac.length ? bac.map(function (x) { return postit(x); }).join('') : '<p class="vide">Rien en attente. Les éléments sans date arrivent ici.</p>') +
+      (faitsBac.length ? '<button class="btn petit-b" id="purger" style="align-self:flex-start">' + (faitsBac.length > 1 ? 'Effacer les ' + faitsBac.length + ' éléments faits' : 'Effacer l’élément fait') + '</button>' : '');
+    $('#nb-bac').textContent = bac.length || '';
+    var retard = visibles().filter(function (x) { return x.date && x.date < auj && x.type === 'tache' && !x.fait && !x.q; }).sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+    $('#bloc-retard').hidden = !retard.length;
+    $('#nb-retard').textContent = retard.length || '';
+    $('#retard').innerHTML = retard.map(function (x) { return ligne(x, true); }).join('');
+
+    var tous = etat.items, dim = ajoute(lundi(auj), 6);
+    var aFaire = function (x) { return x.type === 'tache' && !x.fait; };
+    $('#st-auj').textContent = tous.filter(function (x) { return x.date === auj && aFaire(x); }).length;
+    $('#st-sem').textContent = tous.filter(function (x) { return x.date >= auj && x.date <= dim && aFaire(x); }).length;
+    var nr = tous.filter(function (x) { return x.date && x.date < auj && aFaire(x) && !x.q; }).length;
+    $('#st-retard').textContent = nr;
+    $('#st-retard').classList.toggle('alerte', nr > 0);
+  }
+
+  function rendreFiltres() {
+    var html = '<button class="filtre' + (!filtreCat ? ' on' : '') + '" data-cat="">Tout</button>';
+    Object.keys(CATS).forEach(function (k) {
+      var n = etat.items.filter(function (x) { return x.cat === k && !x.fait; }).length;
+      if (!n && filtreCat !== k) return;
+      html += '<button class="filtre' + (filtreCat === k ? ' on' : '') + '" data-cat="' + k + '"><i style="background:' + CATS[k].c + '"></i>' + CATS[k].nom + '</button>';
+    });
+    $('#filtres').innerHTML = html;
+  }
+
+  function rendre() {
+    rangScotch = 0; rangPostit = 0;
+    assurerQuotidien();
+    document.querySelectorAll('#onglets button').forEach(function (b) { b.classList.toggle('on', b.dataset.v === vue); });
+    ['#prec', '#suiv', '#auj'].forEach(function (s) { $(s).hidden = vue === 'liste' && !unJour(); });
+    var astuce = document.querySelector('.astuce'); if (astuce) astuce.hidden = vue !== 'semaine' && vue !== 'jour';
+    $('#prec').setAttribute('aria-label', unJour() || vue === 'jour' ? 'Jour précédent' : 'Période précédente');
+    $('#suiv').setAttribute('aria-label', unJour() || vue === 'jour' ? 'Jour suivant' : 'Période suivante');
+    if (vue === 'mois') rendreMois(); else if (vue === 'liste') rendreListe(); else if (vue === 'jour') rendreSemaine(true); else rendreSemaine();
+    rendreMini();
+    rendreQuotidien();
+    rendreCote();
+    rendreFiltres();
+  }
+  etroit.addEventListener('change', rendre);
+
+  /* ─── Toast avec « Annuler » ─── */
+  var toastMin = null, annulerAction = null;
+  function toast(txt, annuler) {
+    var t = $('#toast'); t.querySelector('span').textContent = txt;
+    var b = t.querySelector('button'); b.hidden = !annuler; annulerAction = annuler || null;
+    t.classList.add('open');
+    clearTimeout(toastMin); toastMin = setTimeout(function () { t.classList.remove('open'); }, 4500);
+  }
+  $('#toast button').addEventListener('click', function () { if (annulerAction) annulerAction(); $('#toast').classList.remove('open'); });
+
+  /* ─── Fenêtre d'édition (aussi pour un nouvel élément, depuis la grille) ─── */
+  var enCours = null, typeChoisi = 'tache';
+  function choisirType(t) { typeChoisi = t; document.querySelectorAll('#f-types button').forEach(function (b) { b.classList.toggle('on', b.dataset.t === t); }); }
+  function ouvrir(x) {
+    enCours = x;
+    var nouveau = !trouver(x.id);
+    $('#f-h').textContent = nouveau ? 'Nouvelle ligne' : 'Modifier';
+    $('#f-suppr').hidden = nouveau;
+    $('#f-titre').value = nouveau ? '' : x.titre; $('#f-date').value = x.date; $('#f-heure').value = x.heure;
+    $('#f-duree').value = String(x.duree || 60);
+    if (!$('#f-duree').value) $('#f-duree').value = '60';
+    $('#f-cat').value = x.cat; $('#f-prio').value = x.prio; $('#f-note').value = x.note; $('#f-rep').value = x.rep || '';
+    choisirType(x.type);
+    choixSite = x.site || null; choixPhoto = x.photo || null; photoNouvelle = null;
+    $('#f-site-q').value = ''; $('#f-site-res').innerHTML = ''; $('#f-photo-etat').textContent = '';
+    montrerJoints();
+    $('#voile').classList.add('open');
+    setTimeout(function () { $('#f-titre').focus(); }, 50);
+  }
+  function fermer() { $('#voile').classList.remove('open'); enCours = null; }
+
+  /* Page du site et photo attachées (appliquées à l'enregistrement). */
+  var choixSite = null, choixPhoto = null, photoNouvelle = null, resF = [];
+  function montrerJoints() {
+    var s = choixSite;
+    $('#f-site').hidden = !s; $('#f-site-choix').hidden = !!s;
+    if (s) {
+      var img = imageDe(s);
+      $('#f-site').innerHTML = (img ? '<img src="' + esc(img) + '" alt="">' : '') + '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + tx(s.titre) + '</a><button class="btn petit-b" id="f-site-retirer" type="button">Détacher</button>';
+    }
+    var src = photoNouvelle ? photoNouvelle.apercu : choixPhoto ? (choixPhoto.data || liensPhotos[choixPhoto.chemin] || '') : '';
+    $('#f-photo').hidden = !(photoNouvelle || choixPhoto);
+    $('#f-photo-choix').hidden = !!(photoNouvelle || choixPhoto);
+    if (src) $('#f-photo-img').src = src;
+  }
+  $('#f-site-q').addEventListener('input', function () {
+    var q = sansAccents(this.value.trim());
+    if (!q) { $('#f-site-res').innerHTML = ''; return; }
+    chargerPages().then(function (ps) {
+      var mots = q.split(/\s+/);
+      resF = ps.concat(aFaire).filter(function (p) { return mots.every(function (m) { return p.cle.indexOf(m) !== -1; }); }).slice(0, 12);
+      $('#f-site-res').innerHTML = resF.length ? resF.map(function (p, i) {
+        return '<button type="button" data-f="' + i + '">' + (p.image ? '<img src="' + esc(p.image) + '" alt="">' : '') + '<span>' + tx(p.titre) + '<small>' + (p.aCreer ? 'À créer · ' : '') + esc(p.rub) + '</small></span></button>';
+      }).join('') : '<p class="vide">Aucune page trouvée.</p>';
+    });
+  });
+  $('#f-site-res').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-f]'); if (!b) return;
+    var p = resF[+b.dataset.f];
+    choixSite = { url: p.url, titre: p.titre, rub: p.rub, sec: p.sec, image: p.image || '' };
+    montrerJoints();
+  });
+  $('#f-site').addEventListener('click', function (e) { if (e.target.id === 'f-site-retirer') { choixSite = null; montrerJoints(); } });
+  $('#f-photo-retirer').addEventListener('click', function () { choixPhoto = null; photoNouvelle = null; $('#f-photo-fichier').value = ''; montrerJoints(); });
+  /* Photo réduite dans le navigateur (1200 px de large au plus, WebP) avant l'envoi. */
+  function reduire(fichier, max, qualite) {
+    return new Promise(function (ok, ko) {
+      var img = new Image(), url = URL.createObjectURL(fichier);
+      img.onload = function () {
+        var r = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement('canvas');
+        c.width = Math.round(img.width * r); c.height = Math.round(img.height * r);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        c.toBlob(function (b) { b ? ok({ blob: b, apercu: c.toDataURL('image/webp', .7), canvas: c }) : ko(new Error('image')); }, 'image/webp', qualite);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); ko(new Error('image')); };
+      img.src = url;
+    });
+  }
+  $('#f-photo-fichier').addEventListener('change', function () {
+    var f = this.files && this.files[0]; if (!f) return;
+    $('#f-photo-etat').textContent = 'Préparation de la photo…';
+    reduire(f, 1200, .85).then(function (r) { photoNouvelle = r; $('#f-photo-etat').textContent = ''; montrerJoints(); })
+      .catch(function () { $('#f-photo-etat').textContent = 'Image illisible : essaie un autre fichier.'; });
+  });
+  /* Envoi de la nouvelle photo au moment d'enregistrer ; sans connexion, une version réduite reste dans l'élément. */
+  function envoyerPhoto(x) {
+    if (!photoNouvelle) return Promise.resolve(choixPhoto);
+    var ancien = x.photo && x.photo.chemin;
+    if (!client) {
+      var c = photoNouvelle.canvas, r = Math.min(1, 480 / Math.max(c.width, c.height)), p = document.createElement('canvas');
+      p.width = Math.round(c.width * r); p.height = Math.round(c.height * r);
+      p.getContext('2d').drawImage(c, 0, 0, p.width, p.height);
+      return Promise.resolve({ data: p.toDataURL('image/webp', .75) });
+    }
+    var chemin = 'planning/photos/' + x.id + '-' + Date.now() + '.webp';
+    return client.storage.from(BUCKET).upload(chemin, photoNouvelle.blob, { contentType: 'image/webp', upsert: true })
+      .then(function (r) {
+        if (r.error) throw r.error;
+        liensPhotos[chemin] = photoNouvelle.apercu;
+        if (ancien) client.storage.from(BUCKET).remove([ancien]).catch(function () {});
+        return { chemin: chemin };
+      });
+  }
+  $('#f-types').addEventListener('click', function (e) { var b = e.target.closest('[data-t]'); if (b) choisirType(b.dataset.t); });
+  $('#f-annuler').addEventListener('click', fermer);
+  $('#voile').addEventListener('click', function (e) { if (e.target.id === 'voile') fermer(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && enCours) fermer(); });
+  $('#f-ok').addEventListener('click', function () {
+    var x = enCours; if (!x) return;
+    var titre = $('#f-titre').value.trim();
+    if (!titre && !trouver(x.id)) { $('#f-titre').focus(); return; }
+    x.titre = titre || x.titre;
+    x.date = $('#f-date').value; x.heure = $('#f-heure').value; x.duree = +$('#f-duree').value || 60; x.cat = $('#f-cat').value;
+    x.prio = $('#f-prio').value; x.note = $('#f-note').value.trim(); x.type = typeChoisi;
+    x.rep = x.date ? $('#f-rep').value : '';
+    x.site = choixSite;
+    var bouton = $('#f-ok'); bouton.disabled = true;
+    if (photoNouvelle) $('#f-photo-etat').textContent = 'Envoi de la photo…';
+    envoyerPhoto(x).then(function (ph) {
+      if (x.photo && x.photo.chemin && !ph && client) client.storage.from(BUCKET).remove([x.photo.chemin]).catch(function () {});
+      if (ph) x.photo = ph; else delete x.photo;
+      if (!trouver(x.id)) etat.items.push(x);
+      bouton.disabled = false;
+      enregistrer(); fermer(); rendre();
+    }).catch(function () {
+      bouton.disabled = false;
+      $('#f-photo-etat').textContent = 'La photo n’a pas pu être envoyée. Réessaie, ou retire-la pour enregistrer.';
+    });
+  });
+  $('#f-titre').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('#f-ok').click(); });
+  $('#f-suppr').addEventListener('click', function () {
+    var x = enCours; if (!x) return;
+    var avant = etat.items.slice();
+    etat.items = etat.items.filter(function (y) { return y.id !== x.id; });
+    enregistrer(); fermer(); rendre();
+    toast('«\u00a0' + typo(x.titre) + '\u00a0» supprimé', function () { etat.items = avant; enregistrer(); rendre(); });
+  });
+
+  /* ─── Ajouts ─── */
+  function ajouterRapide(texte, dateForcee) {
+    var a = analyser(texte);
+    if (!a.titre) return;
+    var x = nouvelElement({ titre: a.titre, date: dateForcee != null ? (a.date || dateForcee) : a.date, heure: a.heure, cat: $('#rapide-cat').value });
+    etat.items.push(x);
+    enregistrer(); rendre();
+    toast(x.date ? 'Ajouté au\u00a0' + jourLong(x.date) + (x.heure ? ' à ' + heureLisible(x.heure) : '') : 'Ajouté à «\u00a0À planifier\u00a0»');
+  }
+  $('#rapide-ok').addEventListener('click', function () { var i = $('#rapide-titre'); ajouterRapide(i.value); i.value = ''; i.focus(); });
+  $('#rapide-titre').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('#rapide-ok').click(); });
+  $('#vue').addEventListener('keydown', function (e) {
+    var i = e.target.closest('[data-ajout]');
+    if (i && e.key === 'Enter' && i.value.trim()) {
+      var d = i.dataset.ajout;
+      ajouterRapide(i.value, d);
+      var nouvel = document.querySelector('[data-ajout="' + d + '"]'); if (nouvel) nouvel.focus();
+    }
+  });
+
+  /* ─── Recherche dans les pages du site (recherche-index.json) ─── */
+  /* Pages du site (recherche-index.json) et contenus annoncés mais pas encore faits (a-faire.json,
+     écrit par outils/recherche.py) : chapitres de civilisation, fiches auteurs, œuvres « à venir »… */
+  var pages = null, aFaire = [], modeAfaire = false;
+  function chargerPages() {
+    if (pages) return Promise.resolve(pages);
+    var index = fetch('recherche-index.json', { cache: 'no-cache' }).then(function (r) { return r.json(); })
+      .then(function (d) {
+        return (d.pages || []).map(function (p) {
+          if (p[6]) images[p[0]] = p[6];
+          return { url: p[0], titre: p[1], rub: p[2], sec: p[3], image: p[6] || '', cle: sansAccents(p[1] + ' ' + p[2] + ' ' + p[0]) };
+        });
+      }).catch(function () { return []; });
+    var afaire = fetch('a-faire.json', { cache: 'no-cache' }).then(function (r) { return r.json(); })
+      .then(function (d) {
+        return (d.pages || []).map(function (p) {
+          return { url: p[0], titre: p[1], rub: p[2], sec: p[3], image: '', aCreer: true, cle: sansAccents('a creer ' + p[1] + ' ' + p[2]) };
+        });
+      }).catch(function () { return []; });
+    return Promise.all([index, afaire]).then(function (r) {
+      pages = r[0]; aFaire = r[1];
+      $('#nb-afaire').textContent = aFaire.length ? '(' + aFaire.length + ')' : '';
+      return pages;
+    });
+  }
+  var resultats = [];
+  function chercher() {
+    var q = sansAccents($('#site-q').value.trim());
+    $('#voir-afaire').classList.toggle('on', modeAfaire);
+    if (!q && !modeAfaire) { $('#site-res').innerHTML = ''; $('#site-aide').hidden = false; return; }
+    chargerPages().then(function (ps) {
+      var mots = q ? q.split(/\s+/) : [];
+      var base = modeAfaire ? aFaire : ps.concat(aFaire);
+      resultats = base.filter(function (p) { return mots.every(function (m) { return p.cle.indexOf(m) !== -1; }); }).slice(0, modeAfaire ? 200 : 30);
+      $('#site-aide').hidden = true;
+      $('#site-res').innerHTML = resultats.length ? resultats.map(function (p, i) {
+        return '<div class="site-item' + (p.aCreer ? ' a-creer' : '') + '" draggable="true" data-p="' + i + '" style="--sec:' + (SECS[p.sec] || SECS.autre) + '">' +
+          (p.image ? '<img class="si-img" src="' + esc(p.image) + '" alt="" loading="lazy" draggable="false">' : '') +
+          '<div class="si-txt"><b>' + tx(p.titre) + '</b><span>' + esc(p.rub) + '</span></div>' +
+          '<button data-a="envoyer" aria-label="Ajouter à « À planifier »" title="Ajouter à « À planifier »">+</button></div>';
+      }).join('') : '<p class="vide">Aucune page trouvée.</p>';
+    });
+  }
+  $('#site-q').addEventListener('input', chercher);
+  $('#voir-afaire').addEventListener('click', function () { modeAfaire = !modeAfaire; chercher(); });
+  function depuisPage(p, date, heure) {
+    /* Un contenu à créer devient une tâche « À créer : … » qui mène à la page où il est annoncé. */
+    var x = nouvelElement({ titre: (p.aCreer ? 'À créer : ' : '') + p.titre, cat: 'site', date: date || '', heure: heure || '',
+      site: { url: p.url, titre: p.titre, rub: p.rub, sec: p.sec, image: p.image || '' } });
+    etat.items.push(x); enregistrer(); rendre();
+    toast(date ? 'Ajouté au\u00a0' + jourLong(date) + (heure ? ' à ' + heureLisible(heure) : '') : 'Ajouté à «\u00a0À planifier\u00a0»');
+  }
+  $('#site-res').addEventListener('click', function (e) {
+    var it = e.target.closest('.site-item'); if (!it) return;
+    depuisPage(resultats[+it.dataset.p], '');
+  });
+
+  /* Heure visée dans une colonne de la grille, à la demi-heure. */
+  function heureDans(col, y) {
+    var m = heureDebut * 60 + Math.floor((y - col.getBoundingClientRect().top) / HEURE_PX * 2) * 30;
+    return hhmm(Math.max(0, Math.min(23 * 60 + 30, m)));
+  }
+
+  /* ─── Clics ─── */
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('.el');
+    if (el && !e.target.closest('[data-a="lien"]')) {
+      if (e.target.closest('[data-a="cocher"]')) { cocher(el.dataset.id); return; }
+      var x = trouver(el.dataset.id); if (x) ouvrir(x);
+      return;
+    }
+    var col = e.target.closest('.col');
+    if (col && e.target === col) {
+      ouvrir(nouvelElement({ date: col.dataset.date, heure: heureDans(col, e.clientY), cat: $('#rapide-cat').value }));
+      return;
+    }
+    var mini = e.target.closest('[data-mini]');
+    if (mini) { curseur = mini.dataset.mini; moisMini = null; if (vue === 'liste') listeMode = 'jour'; memoVue(); rendre(); return; }
+    var j = e.target.closest('[data-jour]');
+    if (j) { curseur = j.dataset.jour; listeMode = 'jour'; memoVue(); rendre(); return; }
+    var ls = e.target.closest('[data-ls]');
+    if (ls) { listeStyle = ls.dataset.ls; memoVue(); rendre(); return; }
+    var lm = e.target.closest('[data-lm]');
+    if (lm) { listeMode = lm.dataset.lm; if (listeMode === 'jour' && vue !== 'liste') vue = 'liste'; memoVue(); rendre(); return; }
+    var c = e.target.closest('[data-a="jour"]');
+    if (c) { curseur = c.dataset.date; vue = 'semaine'; memoVue(); rendre(); return; }
+    if (e.target.id === 'purger') {
+      var avant = etat.items.slice();
+      etat.items = etat.items.filter(function (y) { return y.date || !y.fait; });
+      enregistrer(); rendre(); toast('Éléments faits effacés', function () { etat.items = avant; enregistrer(); rendre(); });
+    }
+  });
+  $('#retard-auj').addEventListener('click', function () {
+    var auj = aujourdhui(), avant = JSON.stringify(etat.items);
+    etat.items.forEach(function (x) { if (x.date && x.date < auj && x.type === 'tache' && !x.fait && !x.q) x.date = auj; });
+    enregistrer(); rendre();
+    toast('Reporté à aujourd’hui', function () { etat.items = JSON.parse(avant); enregistrer(); rendre(); });
+  });
+  function moisDecale(sens) { var d = versDate(moisMini || curseur); moisMini = iso(new Date(d.getFullYear(), d.getMonth() + sens, 1)); rendreMini(); }
+  $('#mini-prec').addEventListener('click', function () { moisDecale(-1); });
+  $('#mini-suiv').addEventListener('click', function () { moisDecale(1); });
+
+  /* ─── Glisser-déposer : heure de la grille, bande « sans heure », jour, « À planifier » ─── */
+  var glisse = null;
+  document.addEventListener('dragstart', function (e) {
+    var el = e.target.closest && e.target.closest('.el, .site-item');
+    if (!el) return;
+    glisse = el.classList.contains('site-item') ? { page: resultats[+el.dataset.p] } : { id: el.dataset.id };
+    el.classList.add('glisse');
+    try { e.dataTransfer.setData('text/plain', 'planning'); e.dataTransfer.effectAllowed = 'move'; } catch (er) {}
+  });
+  document.addEventListener('dragend', function (e) {
+    var el = e.target.closest && e.target.closest('.el, .site-item'); if (el) el.classList.remove('glisse');
+    document.querySelectorAll('.cible').forEach(function (c) { c.classList.remove('cible'); });
+    glisse = null;
+  });
+  function zone(e) { return e.target.closest && e.target.closest('.col, .libre, .case, #bac, .groupe, .jour-c'); }
+  document.addEventListener('dragover', function (e) {
+    var z = glisse && zone(e); if (!z) return;
+    e.preventDefault();
+    document.querySelectorAll('.cible').forEach(function (c) { if (c !== z) c.classList.remove('cible'); });
+    z.classList.add('cible');
+  });
+  document.addEventListener('drop', function (e) {
+    var z = glisse && zone(e); if (!z) return;
+    e.preventDefault();
+    var date = z.dataset.date || '';
+    /* Grille : l'heure du point de dépôt ; bande « sans heure » et « À planifier » : plus d'heure ;
+       jour du mois ou de la liste : l'heure reste. */
+    var heure = z.classList.contains('col') ? heureDans(z, e.clientY) : (z.classList.contains('libre') || z.id === 'bac') ? '' : null;
+    if (glisse.page) depuisPage(glisse.page, date, heure || '');
+    else {
+      var x = trouver(glisse.id);
+      if (x) {
+        x.date = date; if (heure !== null) x.heure = heure;
+        if (!date) { x.rep = ''; x.heure = ''; }
+        x.ordre = Date.now(); enregistrer(); rendre();
+      }
+    }
+    glisse = null;
+  });
+
+  /* ─── Navigation ─── */
+  function memoVue() { try { localStorage.setItem('ecg-planning-vue', vue); localStorage.setItem('ecg-planning-liste', listeMode); localStorage.setItem('ecg-planning-liste-style', listeStyle); } catch (e) {} }
+  function decaler(sens) {
+    if (vue === 'mois') { var d = versDate(curseur); curseur = iso(new Date(d.getFullYear(), d.getMonth() + sens, 1)); }
+    else curseur = ajoute(curseur, (unJour() || vue === 'jour' ? 1 : 7) * sens);
+    moisMini = null; rendre();
+  }
+  $('#prec').addEventListener('click', function () { decaler(-1); });
+  $('#suiv').addEventListener('click', function () { decaler(1); });
+  $('#auj').addEventListener('click', function () { curseur = aujourdhui(); moisMini = null; rendre(); });
+  $('#onglets').addEventListener('click', function (e) { var b = e.target.closest('[data-v]'); if (b) { vue = b.dataset.v; memoVue(); rendre(); } });
+  $('#filtres').addEventListener('click', function (e) { var b = e.target.closest('[data-cat]'); if (b) { filtreCat = b.dataset.cat; rendre(); } });
+
+  /* ─── Démarrage ─── */
+  var opts = Object.keys(CATS).map(function (k) { return '<option value="' + k + '">' + CATS[k].nom + '</option>'; }).join('');
+  $('#rapide-cat').innerHTML = opts; $('#f-cat').innerHTML = opts;
+  rendre();
+  /* Les images des pages du site viennent de l'index. */
+  if (etat.items.some(function (x) { return x.site && !x.site.image; }) || Object.keys(etat.reglages.quotidien).some(function (k) { return etat.reglages.quotidien[k]; })) chargerPages().then(rendre);
+  if (etat.reglages.quotidien.hgg) chargerFichesHgg().then(rendre);
+  fetch('a-faire.json', { cache: 'no-cache' }).then(function (r) { return r.json(); })
+    .then(function (d) { if (!pages && d.pages) $('#nb-afaire').textContent = '(' + d.pages.length + ')'; }).catch(function () {});
+
+  function demarrerSync() {
+    var A = window.ECGAuth;
+    if (!A || !A.client) return;
+    A.client().then(function (c) { if (!c) return; client = c; tirer(); demanderPhotos(); }).catch(function () {});
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrerSync); else demarrerSync();
+  /* Retour sur l'onglet : pages ajoutées entre-temps et modifications faites sur un autre appareil. */
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState !== 'visible') return;
+    tirer();
+  });
+})();
+</script>
+</body>
+</html>

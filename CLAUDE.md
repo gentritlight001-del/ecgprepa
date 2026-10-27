@@ -5,7 +5,7 @@ stockage sur Supabase). Ce fichier est relu au début de **chaque** conversation
 toutes les règles valables d'une conversation à l'autre sont ici.
 
 Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualité ·
-4. Cours (chapitres, colles, HGG au quotidien, DS) · 5. Newsletters PDF
+4. Cours (chapitres, colles, HGG au quotidien, DS, dossiers de culture générale) · 5. Newsletters PDF
 
 ---
 
@@ -28,7 +28,13 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   plus récent est celui de la carte du haut de l'index (`.une` ou `.i-une`) : la mettre à jour
   suffit, rien d'autre à faire.
 - Pages réservées à l'administrateur : `PAGES_ADMIN` dans `auth.js` (`admin.html`,
-  `idees-articles.html`, `mes-newsletters.html`). Une nouvelle page admin s'ajoute à cette
+  `idees-articles.html`, `mes-newsletters.html`, `mon-planning.html`). `mon-planning.html` : agenda
+  personnel du propriétaire (habillage « carnet pointillé » + grille horaire, **pas d'italique**),
+  synchronisé dans `planning/planning.json` du bucket privé `newsletters` (photos attachées dans `planning/photos/`) ; interrupteurs « Au quotidien »
+  (anglais, espagnol, allemand, fiche HGG) qui ajoutent une ligne par jour. Sa recherche « Depuis le site » lit
+  `recherche-index.json` (7e champ : image de la page) et `a-faire.json` (« Contenus à créer » : liens vers des pages
+  qui n'existent pas encore, œuvres `a-venir`, fiches auteurs sans fiche…), tous deux écrits par `outils/recherche.py`
+  (ne jamais les modifier à la main). Une nouvelle page admin s'ajoute à cette
   liste et au menu admin de `auth.js`, dans le même style que `idees-articles.html`.
 - Tester une page avec Playwright : `NODE_PATH=$(npm root -g)` pour Node, Chromium dans
   `/opt/pw-browsers/chromium`. Remplacer `auth.js` par un script vide (sinon redirection
@@ -45,7 +51,7 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   Partout : 60 px, logo « ECG Prépa » en Playfair Display gras 20 px à gauche, fil d'Ariane au centre
   (sous la barre sur téléphone, en une ligne qui défile), loupe et compte à droite. Couleurs : Cours ECG
   (`sn-cours`, noir, filet à la couleur de la matière : `sn-maths`, `sn-hgg`…), Actualité (`sn-actu`, noir,
-  filet rouge, fil en capitales), Culture générale (`sn-cg`, kraft, logo rouge tampon), L'Humanité (`sn-hum`,
+  filet rouge, fil en capitales), Culture générale (`sn-cg`, pleine couleur du dossier, encre sur l'index), L'Humanité (`sn-hum`,
   blanc, filet rouge brique). Une nouvelle page copiée d'une page existante garde sa barre ; sinon,
   `python3 outils/barre-section.py` marque la `<nav>` (classes `sn`, `sn-logo`, `sn-fil`, `.nav-right`) et
   relie la feuille. Ne pas restyler la barre dans la page.
@@ -63,7 +69,15 @@ directement après chaque modification, sans attendre un nouveau « mets en lign
    Les articles au gabarit `a-page` ont leur propre modèle, la **maquette B** choisie par le
    propriétaire : photo de une en plein cadre, assombrie à gauche, logo « ECG Prépa » en haut, pastille
    du pays (`a-tag t0`), titre blanc en Fraunces (celui du `<title>`), « ecg-prepa.fr · Actualité »
-   en bas et filet ; pastille et filet à la couleur d'accent de l'article (`--accent`). Les autres pages gardent un aplat de couleur. Regarder l'image produite : si le
+   en bas et filet ; pastille et filet à la couleur d'accent de l'article (`--accent`). Les fiches d'œuvres de
+   l'Humanité qui ont un visuel (`ch-hero-visuel` : affiche, couverture, œuvre, pochette) suivent le même esprit :
+   visuel flou et assombri en fond, visuel net à droite, pastille de la rubrique, titre, « auteur · année » (`.meta`),
+   « ecg-prepa.fr · L'Humanité », pastille et filet à la couleur de la fiche (`--c`). Les fiches auteurs aussi (portrait
+   `f-portrait`, pastille « Fiche auteur », nom du `<h1>`, années de naissance et de mort, couleur `--accent`). Et les cours d'Humanité (image du héros
+   `ch-hero-media` recadrée, pastille « Cours N », titre, « L'Humanité · 2e année »). Les pages de cours de 1re et 2e année aussi (pastille de la
+   matière ou de la langue, titre, « Chapitre N · 1re année », couleur fixe par matière dans `COULEURS` du script) :
+   image du héros si elle est stockée sur le site, sinon la vignette `.ci-vig` de l'index de la matière (ou de l'autre
+   année), sinon l'image du bloc de données ; sans image, grand numéro du chapitre au trait. **Chapitres d'HGG** (1re et 2e année) : modèle propre « dossier d'archives » choisi par le propriétaire (`GABARIT_ARCHIVE`) : chemise kraft avec onglet « HGG · année », photo du héros (`.t-photo`) en tirage panoramique scotché, fiche de titre (grand numéro, titre en Big Shoulders) qui chevauche la photo, tampon « ECG Prépa · Cours », à la couleur du chapitre (`--a1`), sinon l'ocre de l'HGG ; après la refonte d'un chapitre, lancer `--refaire` sur sa page. Les autres pages gardent un aplat de couleur. Regarder l'image produite : si le
    visage ou le sujet de la photo passe sous le titre, le signaler au propriétaire.
    Pour **refaire** l'image d'une page qui en a déjà une (photo ou titre changés) :
    `python3 outils/images-partage.py --refaire <page>` (l'adresse prend `?v=<date et heure>`, sinon
@@ -87,6 +101,14 @@ directement après chaque modification, sans attendre un nouveau « mets en lign
 2. Créer la PR vers `main` et la merger (outils GitHub MCP).
 3. Remettre la branche à jour sur `main` :
    `git fetch origin main && git checkout -B <branche> origin/main && git push -u origin <branche> --force-with-lease`
+
+**Clone « shallow » et fichiers générés.** Dans un clone tronqué (`git rev-parse --is-shallow-repository` donne
+`true`), `outils/referencement.py` date des pages à la date du clone : ne pas committer son `sitemap.xml`
+(`git checkout sitemap.xml` avant le commit). Si la fusion de la PR échoue pour conflit, c'est presque toujours
+sur un fichier généré (`recherche-index.json`, `sitemap.xml`, `nouveautes.js`) : fusionner `origin/main` dans la
+branche, prendre la version de `main` (`git checkout --theirs <fichier>`), relancer les scripts, committer, pousser.
+Chaque fusion sur `main` = un build Cloudflare Pages (compté dans la limite mensuelle du plan) : une modification
+qui ne touche que `CLAUDE.md` ou `outils/` peut être fusionnée avec `[CI Skip]` dans le message de fusion.
 
 Cloudflare Pages redéploie `main` automatiquement. Le service worker est « réseau
 d'abord » et `_headers` désactive le cache : pas de numéro de version à changer.
@@ -137,7 +159,9 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   `ap-facts`, `ap-ctx` : ne plus les écrire ; les anciens articles restent tels quels). Garder son
   `<style>` tel quel (ne le compléter que pour un nouveau type de bloc) et les classes `ap-title`,
   `ap-sub`, `ap-intro` (lues par les scripts). Supprimer de la copie les balises `og:`, `twitter:`,
-  `canonical` et la description.
+  `canonical` et la description, **mais garder** `<link rel="stylesheet" href="../../../barre-section.css">`
+  (juste après le `</style>`) : sans elle, la barre du haut perd son habillage noir et son filet. Le
+  lien « ← Tous les articles » de `a-fin` mène à `tous-<code>.html` de l'édition.
 - **Ordre des blocs**, dans chaque langue :
   1. Barre `sn sn-actu` (fil d'Ariane : Accueil / Actualité / édition / pays / sujet court), puis `a-filet`.
   2. Héros `a-hero` : tags `a-tag` (`t0` le pays, `t1` le thème, puis 1 ou 2 mots-clés), titre `a-titre`,
@@ -162,7 +186,8 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   changer (tout le CSS passe par elles ; les classes `rouge` des chiffres et étiquettes désignent l'accent).
   Jamais deux fois la même : vérifier avec `grep -rh -- '--accent:' actualites/*/articles/`. Déjà prises :
   Burnham et le Brexit rouge `#b5131f` / `#8e0f19` / `#fbe9ea` ; Colombie à Jérusalem bleu cobalt `#1d4fa0` /
-  `#143a78` / `#e6edf9`. La barre du haut garde son filet rouge (`barre-section.css`) ; l'image de partage
+  `#143a78` / `#e6edf9` ; émeutes de Tirana indigo `#4a3f8f` / `#352c6e` / `#ecebf7` ; pont du Yalou bleu
+  fleuve `#0a6486` / `#074b66` / `#e1f1f7` ; étoile verte vert chartreuse `#5f7a0a` / `#465a07` / `#f0f5dc` ; déforestation de l'Amazonie brun terre brûlée `#7b4a26` / `#5c3519` / `#f5ebe1` ; grève du secteur public irlandais bordeaux `#6e1d3a` / `#52132b` / `#f6e8ed` ; sécheresse en Angleterre ardoise `#3f5b6e` / `#2b4150` / `#e9eff3` ; réforme des urgences allemandes baie `#9c2a77` / `#771d5a` / `#f7e6f1` ; accord Merz-Macron sur le thermique sauge `#4f7a63` / `#365745` / `#e7f0ea`. La barre du haut garde son filet rouge (`barre-section.css`) ; l'image de partage
   prend l'accent de l'article.
 - **Langue** : éditions de langue **bilingues** (`ap-fr-section` et `ap-<code>-section`, la seconde
   cachée), avec le petit interrupteur de la barre `.a-langues` : deux boutons `ap-lang-btn` « FR » et
@@ -184,6 +209,15 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
     dans le même style (couleurs `--accent`, `--marine`, bords et fonds du gabarit) : barres
     comparatives, tableau avant / après, arbre ou schéma de circuit (qui décide, qui finance), carte
     simplifiée, courbe ou frise de chiffres, double colonne « ce que dit le camp A / le camp B ».
+    **Le schéma s'adapte au sujet** : on part de ce que la section doit montrer (un lieu : carte ; un
+    flux ou des passages : circuit ; des chiffres de deux sources : tableau ; des affirmations à contrôler :
+    `a-verif`), jamais d'une forme choisie d'avance. `a-etapes` et `a-axe` ne sont **pas** des valeurs par
+    défaut (déjà pris par Burnham, Colombie, Albanie) : ne les reprendre que si le sujet s'y prête vraiment.
+    Un `a-tableau` doit tenir à 390 px sans défilement : ajouter dans le `<style>` de l'article
+    `@media (max-width: 520px) { .a-tableau { min-width: 0; font-size: .82rem; } .a-tableau th, .a-tableau td { padding: 9px 8px; } .a-tableau td:first-child { white-space: normal; } }`.
+    Exemple de schéma sur mesure : le circuit des deux ponts du Yalou (`a-circuit`, en HTML et CSS dans le
+    `<style>` de l'article, lisible à 390 px). Les deux schémas d'un article n'ont pas la même forme, et
+    aucun ne reprend la forme des deux articles précédents.
     Ne pas mettre deux schémas de la même forme dans un même article, et regarder les derniers articles
     publiés (`grep -l 'a-etapes\|a-axe' actualites/*/articles/*.html`) pour ne pas répéter la forme
     de l'article précédent. Données vérifiées et sourcées ; un nouveau type de bloc s'ajoute au
@@ -199,7 +233,10 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   - « Accroche » (`a-accroche`) : un paragraphe prêt à recopier, qui part d'un fait daté et vérifié de
     l'article et finit sur la question qu'il pose. Pas de bouton « Copier ».
   - « Idée-force » : l'argument que l'article permet de défendre.
-  - « Sujets où la placer » : 3 sujets de dissertation plausibles (HGG, culture générale, langue).
+  - « Sujets où la placer » : 3 sujets de dissertation plausibles, chacun suivi entre parenthèses de la
+    **matière du cours** en rapport avec son thème : HGG, ESH, philo, Humanité, anglais, espagnol ou
+    allemand. **Jamais « culture générale »** : c'est trop vague, il faut dire dans quelle matière le sujet
+    tombe (on varie les matières d'un sujet à l'autre quand le thème s'y prête).
   - « Piège à éviter » (`a-piege`, fond rose) : l'erreur de fait ou d'interprétation à ne pas commettre,
     avec le bon chiffre.
   C'est le seul endroit de l'article où le ton scolaire est permis.
@@ -216,8 +253,10 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   le même contenu. Compter avant de mettre en ligne. Une recherche web poussée (plusieurs sources par
   article) est nécessaire pour atteindre cette longueur sans rien inventer.
 - Dans la liste du mois, l'article passe **en premier**.
-- **Renvois vers d'autres articles** : pas de « Lire notre article ». Le lien se met directement sur le
-  texte concerné (`<a href="slug.html" class="a-lien">l'attentat de Leipzig</a>`).
+- **Renvois vers d'autres articles** : pas de « Lire notre article », ni de « comme nous l'avons raconté
+  dans notre article de juin », ni de « notre article précédent ». Le lien se met directement sur les mots
+  qui portent l'information renvoyée (`<a href="slug.html" class="a-lien">l'attentat de Leipzig</a>`,
+  `<a href="…" class="a-lien">une plage de la zone protégée de Vjosa-Narta</a>`).
 - Faits vérifiés par recherche web, sans rien inventer.
 - Pas de tiret cadratin « — » dans le texte, même dans les versions étrangères (voir section 1).
 - **Contrôles** avec Playwright à 1280 et 390 px, dans chaque langue : aucune erreur JS, pas de
@@ -288,10 +327,95 @@ page pays ou région :
   `deuxieme_annee/maths/chapitre1.html` : palette sarcelle, titre du héros sur
   **2 lignes maximum** sur ordinateur.
 
+### Chapitres d'HGG : gabarit « dossier d'archives »
+
+Choisi par le propriétaire (octobre 2026) au terme d'une longue mise au point sur **HGG 1re année, chapitre 4**
+(`premiere_annee/hgg/chapitre-4/chapitre-4-hgg.html`), qui sert de **modèle** : **tous les chapitres d'HGG (1re et 2e
+année) seront refaits sur ce gabarit**. Demande type : « Refais le chapitre N d'HGG au nouveau style ». Refonte = **même
+nom de fichier** (section 1), balises `og:`/`twitter:`/description/canonical gardées. Partir d'une copie du chapitre 4 :
+tout le CSS est dans le `<style>` de la page (portée `#cours.thC`, palette kaki `--a1:#4b5a3c`, rouge `--a3:#a3292a`,
+polices Newsreader / Libre Franklin / IBM Plex Sans Condensed / Big Shoulders Display), ainsi que les scripts (mode focus,
+« Mes révisions », impression). **Une palette par chapitre**, jamais deux fois la même : remplacer dans tout le fichier les couleurs du chapitre 4 (kaki et leurs teintes, rouge, y compris les `--p` des parties de la frise de « Mes révisions » et la teinte `.f2` des schémas) ; les punaises et scotchs décoratifs ne changent pas. Palettes prises : chapitre 4 kaki `#4b5a3c` / rouge `#a3292a` ; chapitre 3 (refait en octobre 2026) bleu ardoise `#2f4b66` / rouille `#b0451c` ; chapitre 2 aubergine `#4a2d5c` / framboise `#9b2457` ; chapitre 1 sépia `#5b3a24` / cobalt `#1f5fa8` ; chapitre 5 graphite `#33363d` / rouge drapeau `#c41e1a` ; chapitre 6 latérite `#8a3a1c` / vert palme `#1d7a55` ; chapitre 7 bronze `#6e5514` / bleu ONU `#1c6fc0` ; chapitre 8 mûre `#6d2353` / vert jade `#138a6c` ; chapitre 9 bleu marine `#1b3668` / safran `#c98a0a` ; chapitre 10 vert pré `#2e6a22` / magenta `#b0247a` ; chapitre 11 violet améthyste `#5b2a8c` / vert anis `#6b9a12` ; chapitre 12 carmin `#a3173f` / bleu pétrole `#0d6e86` ; chapitre 13 cuivre `#b4500f` / indigo `#3f4aa8` ; 2e année, chapitre 1 (Géopolitique des Amériques) émeraude `#1d5c47` / orange brûlé `#c75a12` ; 2e année, chapitre 2 (Les États-Unis) bordeaux `#7a1e2c` / or `#9a6a0c` ; 2e année, chapitre 3 (L'Amérique latine) indigo `#3b347f` / turquoise `#0b7785`. Choisir une teinte principale franchement différente de celles déjà prises (une sarcelle, trop proche de l'ardoise du chapitre 3, a été refusée). On garde : la barre `sn sn-cours sn-hgg sn-archive`, le script du surligneur réduit à
+« Mes révisions » (il lit `.content`, `.hgg-part-title`, `.hgg-section-title`, `.hgg-part-num`, `.ch-hero h1`, `.chap-label`),
+le `DECK`, le bouton « retour en haut ».
+
+**Contenu.** Reprendre **tout** le texte de l'ancien cours (vérifier par comparaison qu'aucune info n'est perdue), le
+corriger et le vérifier par recherche web (chiffres datés, fourchettes d'historiens, dates exactes des conférences, etc.) ;
+signaler au propriétaire ce qui est corrigé ou ajouté de mémoire. Pas de tiret cadratin. Chaque paragraphe de la colonne de
+droite a un appui dans le texte (pas de fiche sur une notion absente du texte : sinon ajouter une phrase au texte).
+
+**Ordre des blocs** (dans `#cours .wrap`) :
+1. **Héros** `header.hero.hv.hv1.ch-hero` : grande photo panoramique en tirage (`.t-photo`, scotch), étiquette de titre
+   `.t-etiq` (titre en Big Shoulders, sous-titre d'une phrase). **Pas de légende** sous la photo, pas de tampon.
+2. **Sommaire** `nav.plan` : **seulement les grandes parties** (`.pl-p`), l'interrupteur « Mode focus » (`.fx-sw`) et le
+   lien « Résumé (PDF) » (`resume-chapitreN.pdf`). **Pas de bouton PDF du cours** dans la barre (retiré).
+3. **L'essentiel** `section.ess` : 3 points numérotés et 4 chiffres (le plus marquant en rouge), centrés.
+4. **Parties** `section.partie` : en-tête `.p-tete` (`<small>Partie I</small>`, `h2.hgg-part-title`, grand chiffre romain
+   en filigrane `.p-num`, jamais coupé, un seul filet dessous) ; puis les sous-parties `section.sp` (une sur deux en
+   `.sp.rev`, colonne à gauche) : `.corps` (`h3.hgg-section-title` avec `<i>I.1</i>`, intertitres `h4.sub`, paragraphes,
+   `p.fort` à filet rouge pour la phrase clé, `ul.puces`) et `.cote` (colonne de côté). **La colonne de côté suit l'ordre
+   du texte** (la fiche en face du passage qu'elle illustre) et finit à peu près à la hauteur du texte : **pas de vide**
+   (ajouter une photo ou retirer une fiche, déplacer un bloc).
+5. **Blocs de la colonne de côté** : fiches `.v.fiche.att-pin` (punaise de couleur variable `--pin`) pour les graphiques
+   `.bars`, chiffres `.stats`, cartes `.cartes` (`.ca`), frises `.frise` (la plus récente en haut, `li.cur`), chaînes
+   `.flux`, listes `.liste5` ; photos et schémas `.v.fig.scotch` / `.schema.scotch` (scotch de couleur variable `--tape`,
+   inclinaisons `--tr`, `--rot`), photos en paysage, légende « Doc. N · … ». Photos et schémas tantôt à gauche, tantôt à
+   droite (`.sp.rev`).
+6. **Blocs pleine largeur** entre les sous-parties : citations en coupure de journal `figure.large.coupure` (toute la
+   largeur, petite taille de texte, source en dessous) ; **fiches de penseurs** `article.large.portrait` (portrait en
+   polaroïd `.pt-pola` avec scotch, kicker « Métier · œuvre, date », `h6`, texte ; portraits WebP `images/portrait-<nom>.webp`) ;
+   encadrés à volets `.large.cp.cp2` / `.cp3` (étiquettes `.cp-tag`) ; document `.large.kdoc` (ex. Long Télégramme,
+   dans sa sous-partie) ; carte commentée `.large.atlas` ; graphiques `.large.gp` ; schéma large `.large-schema`
+   (scotch visible, défilement horizontal seulement sur téléphone, schéma simple : pas d'éléments sans lien).
+7. **Définitions** `.def` dans le texte : étiquette « DÉFINITION », le mot en IBM Plex Sans Condensed gras capitales.
+   Encadrés `.encadre` (titre en capitales kaki).
+8. **Bilan** `section.bilan` : « Bilan · Chapitre N », une phrase-bilan en grand, puis une idée par grande partie (titre en
+   gras + une phrase, **2 lignes chacune**, sans liste d'exemples). Pas de lien « chapitre suivant » dans le bilan.
+9. **Pour aller plus loin** `section.plus2` : **6 cartes au plus** `.pl-c` (chapitre suivant, dossiers de culture générale,
+   œuvres de l'Humanité), sans groupes ni ligne de crédits. **Pas** de « Dans une copie » ni de liste de sources.
+10. **Fin** `footer.fin2` : deux boutons compacts, « ← Tous les chapitres d'HGG » et « Chapitre N+1 · titre → ». Pas de
+    bouton flashcards.
+
+**Mode focus** (interrupteur du sommaire, mémorisé dans `localStorage` `ecg-cours:focus`, pastille « Cours complet ») :
+le cours se resserre sur l'essentiel, environ la moitié du texte. Masquer avec la classe `nf` (blocs entiers ou
+`<span class="nf">` dans une phrase, qui doit rester correcte dans les deux modes) : fiches de penseurs, photos sauf
+le héros, coupures sauf une, exemples en trop (**un seul exemple par idée**), « Pour aller plus loin ». `<span class="fo">`
+= texte visible seulement en focus (rare, faits déjà dans le cours). Garder titres, essentiel, définitions, chiffres clés,
+schémas essentiels, bilan. En focus, la colonne de côté flotte dans le texte (script `flotter`), une colonne vide est
+masquée (`.cote.nf`), un intertitre seul à côté d'une fiche descend avec son texte. Ne pas ajouter ni retirer de blocs
+`p/li/h*/figcaption/td/th/dt/dd/blockquote` en balisant (l'éditeur s'appuie sur leur rang).
+
+**Mode éditeur** (`editeur.js`, administrateur seulement) : `<script src="../../../editeur.js" data-racine="#cours" defer>`
+en fin de `<body>`. Le propriétaire modifie le texte sur la page et l'enregistre **directement sur `main`** via l'API
+GitHub (jeton dans son navigateur). Conséquence : **avant de travailler sur un chapitre, toujours repartir du `main` le plus
+récent** (`git fetch origin main` puis fusion), pour ne jamais écraser ses éditions.
+
+**« Mes révisions »** (bouton flottant rond kaki, icône de cartes ; plus de surligneur) : plein écran à onglets
+Flashcards / Frise / Sujets (habillage kaki `.rv-ov`, dernier onglet mémorisé). Données dans le script de la page :
+`PARTS`, `DECK` (identifiants par position : **garder l'ordre et le nombre de cartes** quand on corrige), `EVENTS`
+(frise : le dernier champ est un extrait **exact** du texte du cours, vérifier que chaque « Voir dans le cours » trouve son
+passage), `HOOKS` (accroches), `ESSAY` (corrigé de dissertation ; `**gras**` et `==surligné==` permis pour aérer : mots
+clés, entrée de chaque point du plan, phrases qui répondent au sujet). Toutes ces données doivent reprendre les chiffres
+du cours corrigé (pas de valeurs d'un ancien cours) et sans tiret cadratin.
+
+**Résumé** (`resume-chapitreN.pdf`, lien du sommaire) : 2 pages A4, une carte par sous-partie (idée principale + 2 points,
+un seul exemple), dans l'esprit du mode focus. Gabarit : `outils/resume-chapitre/` (copier `hgg1-chapitre4.html`,
+feuille `style.css`) ; `python3 outils/resume-chapitre/generer.py <html> <pdf>` signale une page qui déborde. Page 1 :
+titre (pastille « Résumé »), phrase-bilan, parties I et II ; page 2 : partie III, frise de 8 dates repères aux couleurs des
+parties, 4 chiffres, puis « À retenir » (encadré sombre), « Dans une copie » et « Notions clés » (4 notions).
+
+**Impression** : bloc `@media print` en fin de `<style>` (fond blanc, A4 pleine largeur, punaises et scotchs gardés et
+jamais coupés grâce à `.pin-wrap`, fiches flottantes ou rangées sous le texte quand elles sont plus hautes que lui, aucun
+encadré coupé, blanc seulement en bas de page). Pas de PDF du cours proposé sur la page pour l'instant.
+
+**Contrôles** avant mise en ligne, à 1280 et 390 px (Playwright, `auth.js` vide) : aucune erreur JS, pas de défilement
+horizontal, images chargées, titres repérés par le script, mode focus sans colonne vide, onglets de « Mes révisions » qui
+s'ouvrent, liens de la frise valides, `grep -c '—'` à 0 dans le texte.
+
 ### Figures des chapitres d'HGG (photos, graphiques, schémas)
 
-- Même système que les chapitres 2 et 4 de 1re année et le chapitre 1 de 2e année
-  (`<figure class="hgg-fig …">`, CSS « kit figures » déjà présent dans ces pages).
+- Anciens chapitres (avant le gabarit « dossier d'archives ») : système des chapitres 2 de 1re année et 1 de 2e année
+  (`<figure class="hgg-fig …">`, CSS « kit figures »). Les règles de photos ci-dessous valent pour les deux gabarits.
 - **Photos toujours en paysage**, jamais verticales : source en paysage et cadre `r32`,
   `r43`, `r169` ou `r219` (jamais `r45` ni `r11`).
 - Photos **toujours en couleur**, sans effet de grisé ni de transition au survol.
@@ -349,18 +473,134 @@ page pays ou région :
   Newsreader, accent rouge brique) : héros + « Votre parcours », 01 le cours, 02 les auteurs, 03 les œuvres,
   04 entrer par une notion, 05 dernières fiches.
 - Rien à y mettre à jour quand une fiche s'ajoute : le script de la page lit les tableaux `OEUVRES` des index
-  Littérature, Cinéma et Art, la frise de `fiches-auteurs.html` et `nouveautes.js`. Seuls restent écrits à la
-  main : la carte du cours (nouveau cours) et les totaux « 8 œuvres d'art » et « 6 musiques ».
+  Littérature, Cinéma, Art et Musique (chiffres du héros, jauges de « Votre parcours », cartes des rubriques), la
+  frise de `fiches-auteurs.html` et `nouveautes.js`. Seule reste écrite à la main la carte du cours (nouveau cours).
 
 ### Index de la culture générale (`culture-generale.html`)
 
-- Habillage « Les archives », choisi par le propriétaire sur maquette (papier kraft `#e6dcc3`, Fraunces + IBM Plex
-  Mono, tampon rouge `#8a3324`, comme les dossiers) : page de garde + recherche, le dernier dossier versé en
-  chemise ouverte, puis **le registre de tous les dossiers** (vignette, n°, intitulé, classé sous ; onglets de
-  thème et recherche). Pas de « tiroirs » par thème (refusés par le propriétaire).
-- Tout vient de `CG_DATA` (même format qu'avant, lu aussi par `auth.js`, `outils/nouveautes.py` et la
-  newsletter) : un nouveau dossier s'ajoute **à la fin** de `CG_DATA`, rien d'autre. Les lignes gardent
-  `.actu-card` / `.actu-card-title` (badge Premium, étoile des favoris).
+- Habillage « mosaïque », choisi par le propriétaire sur maquette (octobre 2026), cohérent avec les dossiers bento :
+  fond clair `#f3efec`, Bricolage Grotesque, cartes arrondies. En haut, l'en-tête (titre, trois chiffres) et la
+  **une** : le dernier dossier en grande carte photo (pastille « Nouveau »), les deux précédents à côté. Dessous,
+  recherche, pastilles de thèmes avec compteurs, puis la **grille de tous les dossiers** (3 par ligne au maximum, photos toutes de même taille en 16:10, n°, titre, thème,
+  filet à la couleur du dossier), du plus récent au plus ancien. Pas de « tiroirs » par thème.
+- Tout vient de `CG_DATA` (lu aussi par `auth.js`, `favoris.js`, `outils/nouveautes.py` et la newsletter) : un
+  nouveau dossier s'ajoute **à la fin** de `CG_DATA`, avec ses deux couleurs `g` et `g2` (les `--g` et `--g2` du
+  `:root` de sa page), rien d'autre. Les cartes gardent `.actu-card` / `.actu-card-title` (badge Premium, étoile des
+  favoris).
+- Barre du haut `sn-cg` : **pleine couleur du dossier** (maquette D, `barre-section.css`) ; elle lit `--g` dans le
+  `:root` de la page, encre `#1e1610` sur l'index.
+- Les dossiers eux-mêmes sont tous au gabarit « bento » : voir « Dossiers de culture générale » juste après.
+
+### Dossiers de culture générale (gabarit « bento »)
+
+Gabarit **« bento »**, choisi par le propriétaire sur maquette (octobre 2026) pour les dossiers
+`Culture-Generale/<slug>.html` : cartes arrondies sur une grille de 12 colonnes, **une palette propre à chaque
+dossier**. **Les 55 dossiers sont refaits** (octobre 2026, FARC n° 052 et développement durable n° 051 ayant servi de
+modèles) : plus aucun n'a l'ancien habillage « archives ». Pour modifier un dossier, partir de sa page actuelle ; pour un
+nouveau, copier le plus proche par la forme. Demandes types : « Mets à jour le dossier sur X » (nouvelles données vérifiées par recherche web, mêmes règles de mise en page, `cg-controle.py` jusqu'à 23 ✅), « Fais un dossier de culture générale sur Y » (nouveau dossier). Règle de refonte éventuelle :
+**même nom de fichier** (section 1). Palettes (`--g`) déjà prises, à ne pas reprendre : voir
+`grep -ho -- '--g:#[0-9a-f]*' Culture-Generale/*.html`. section 1). Demandes types : « Refais le dossier sur X au nouveau gabarit », « Fais un dossier de culture générale
+sur Y » (nouveau dossier). **`python3 outils/cg-controle.py Culture-Generale/<slug>.html`** vérifie toutes les
+règles ci-dessous (une ligne ✅/❌ par règle, code de sortie 1 s'il reste un ❌, comme `quotidien-controle.py`).
+Procédure de A à Z, sans poser de question jusqu'à la mise en ligne :
+
+1. **Données** (nouveau dossier seulement). N° = dernier + 1 (`grep -ho 'Dossier n° [0-9]*' Culture-Generale/*.html
+   | sort | tail -1`, dernier connu : 055 Nestlé). Fichier `Culture-Generale/<slug>.html`, image
+   `Culture-Generale/images/<slug>.webp` (WebP, 1600 px maximum, **la plus grande photo libre qu'on trouve** : la
+   largeur médiane des images actuelles est de 687 px, 46 sur 55 font moins de 800 px), entrée **à la fin** de
+   `CG_DATA` dans `culture-generale.html` (`id`, `jour` = dernier + 1, `titre`, `theme`/`domain`, `g`/`g2`, `image`,
+   `externalUrl`, `month`, `year`). Une refonte ne touche pas `CG_DATA`.
+2. **Page.** Copier `farc.html` (ou `developpement-durable.html`). Le `<head>` garde, dans cet ordre :
+   `../auth.js`, `../favoris.js`, charset, viewport, `<title>ECG Prépa — <titre></title>`, `../fonts/fonts.css`, le
+   `<style>` du gabarit (ne se complète que pour un nouveau type de bloc, **à la fin**), les balises
+   `og:`/`twitter:`/description/canonical, puis `../barre-section.css`. **Refonte** : reprendre ces balises, le
+   titre et le texte de l'ancienne page (corrigé et actualisé). **Nouveau dossier** : retirer celles de la copie,
+   `outils/images-partage.py` et `outils/referencement.py` les recréent. Barre : `<nav class="sn sn-cg">`
+   **sans `sn-dossier`** (le `body` du gabarit n'a pas de marge), fil Accueil / Culture Générale / titre court du
+   dossier ; ne pas la restyler.
+3. **Palette.** Une par dossier, **jamais deux fois la même** (`grep -ho -- '--g:#[0-9a-f]*' Culture-Generale/*.html`) :
+   choisir selon le sujet. Elle est dans `:root` (`--g` principale foncée, `--g2` fond pâle, `--g3` ton moyen, `--y`
+   accent clair, `--r` alerte, `--bg` fond de page, `--line` filets, `--ink` encre, `--dim` gris) et dans quelques
+   valeurs écrites en dur : remplacer **dans tout le fichier** les valeurs de la copie par celles du nouveau
+   dossier (valeurs FARC → exemple du développement durable) : `#7a2a1c` → `#2d6a3e` (`--g`) · `#f6e3dc` →
+   `#e3f0e5` (`--g2`) · `#e3b3a5` → `#a9d1b2` (`--g3`) · `#f2c230` → `#e9c64a` (`--y`) · `#b3261e` → `#c0532b`
+   (`--r`) · `#5c1d12` → `#1f4a2c` (survol des boutons) · `rgba(122,42,28,.2)` → `rgba(45,106,62,.2)` ·
+   `rgba(242,194,48,.22)` → `rgba(233,198,74,.22)` · `#e0782f` → `#8bbf5a` · `#17110e` → `#10201a` (encre) ·
+   `#f5f0ea` → `#eef2ea` (fond) · `#e6ddd3` → `#dbe3d6` (filets) · `#33292a` → `#27352b` (texte) · `#6a5a56` →
+   `#566358` (gris). Palettes prises : FARC brique `#7a2a1c`, développement durable vert `#2d6a3e`.
+4. **Ordre des blocs** (les classes sont dans le `<style>` du gabarit ; tout est dans `<div class="grid">`) :
+   - **Titre et photo** : `header.b.title3` (kicker « Dossier n° 0XX · Fiche <type> », boutons Favori et Partager, `h1`
+     = titre du dossier, ligne `.meta` « Thème · Thème · 10 min ») et `figure.b.img3.cover` (la photo). **Ni tags, ni
+     sous-titre, ni légende sous la photo.** Titre en 7 colonnes, photo en 5, même hauteur.
+   - `.ess` « L'essentiel en 30 secondes » (3 points, mots clés en `<strong>`) et `.st` (4 chiffres vérifiés, le 2e en
+     `--r`).
+   - **4 à 6 sections numérotées** (`.lab` avec `<i>01</i>`), chacune une carte de texte `.txt` en `.c5`/`.c6`/`.c7`,
+     **appariée dans sa rangée à une carte visuelle** (7 + 5 ou 6 + 6 colonnes) : mots clés `.gl` (4 définitions
+     courtes, nombre pair), schéma `.vis`, chronologie `.tlv`, ou schéma pleine largeur `.sch` / `.camps` / `.duo`.
+   - Une **citation en bandeau** `blockquote.b.quote.band` entre deux sections (la plus parlante du dossier, avec sa
+     source en capitales dans `<cite>`).
+   - Une **chronologie** `.tlv` à côté d'une section : **la plus récente en haut** (`li.cur`, en `--r`).
+   - **Analyse** `.analyse` : titre original (jamais « Conclusion »), 2 paragraphes en deux colonnes `.cols2` avec
+     lettrine (la première lettre se met seule, `:first-child:first-letter`).
+   - **Dans une copie** `.cop` (voir plus bas).
+   - **Pour aller plus loin** `.plus.p3` (3 cartes `.carte`) et **Sources** `.src.s4` (3 sources), puis `.fin`
+     (« ← Tous les dossiers » et « Partager le dossier »).
+5. **Schémas.** Tous pertinents et **variés** (même règle que les articles d'actualité : on part de ce que la section
+   doit montrer, jamais d'une forme choisie d'avance), 2 à 4 par dossier, jamais deux de la même forme dans un
+   dossier. Formes déjà dans le gabarit : barres comparatives `.bars` (+ `.mini` pour deux chiffres), chaîne d'étapes à
+   statuts `.flux`, 5 cases numérotées `.pts5`, arbre `.racine` + `.branches`, frise verticale `.etat`, diagramme de
+   Venn en SVG `.venn`, deux cartes en vis-à-vis `.duo`, barre empilée `.pile` + légende `.pleg`, cases `.tuiles`,
+   donut `.dn`, trois lectures `.cp`, tableau `.tab`, histogramme vertical `.vbars`, courbe SVG, secteurs `.pie`, trois cartes de couleur `.camps`. Une nouvelle forme s'ajoute à la fin du `<style>` de la page (couleurs par les
+   variables). Données sourcées ; une valeur déduite ou approchée est dite sous le schéma (« proportions
+   approximatives… »). **Jamais de pastilles de mots isolés sans phrase qui dit ce qu'ils sont** (refusé par le
+   propriétaire) : une liste numérotée avec un titre et un sous-titre explicatif.
+6. **Contenu.** Faits vérifiés par recherche web (chiffres datés, rien d'inventé). Ce qui ne vient ni du dossier
+   d'origine ni d'une recherche (connaissance générale, phrase ajoutée pour égaliser des colonnes, sujets d'une
+   copie, sources génériques quand l'ancienne page n'en avait pas) est **signalé au propriétaire dans la réponse**.
+   - **Dans une copie** (`.cop`, deux colonnes) : à gauche « Accroche » (`.accroche` : un fait daté et vérifié du
+     dossier, puis la question qu'il pose, **4 lignes**) et « Idée-force » (`.idee`) ; à droite « Sujets où la
+     placer » (3 sujets, chacun avec **la matière** en pastille : HGG, ESH, philo, Humanité, anglais… **jamais
+     « culture générale »**) et `.tip` « Piège à éviter » (l'erreur de fait ou d'interprétation, avec le bon chiffre).
+   - **Pour aller plus loin** : 3 cartes **réelles** (autres dossiers de culture générale avec leur vignette
+     `images/<slug>.webp`, ou articles d'actualité du site avec leur image), kicker « Dossier n° 0XX » ou « Pays ·
+     Mois année » **sur une seule ligne**, jamais de lien de remplissage ni de lien `#`. Pas de carte « Réviser le
+     cours » sans chapitre vraiment proche.
+   - **Sources** : média ou institution en `<b>`, puis titre et date, 3 sources.
+7. **Mise en page, mesurée** (le propriétaire regarde ligne par ligne ; `cg-controle.py` mesure, mais regarder aussi
+   des captures Playwright à 1280 et 390 px) :
+   - Titre du héros **3 lignes maximum**. Photo **jamais agrandie** : `cover` (qui la fait remplir toute la hauteur
+     de la carte, légèrement rognée sur les côtés) seulement si elle fait au moins 480 px de large et 320 px de haut (la règle « aucune image agrandie » de `cg-controle.py` tranche) ; en dessous,
+     retirer `cover` : elle reste à sa taille sur le fond flou `.fill`. `alt` qui dit ce que montre la photo.
+   - Citation en bandeau : **2 lignes maximum** à 1280 px et plus.
+   - **Analyse : les deux colonnes de même hauteur** (ajouter une phrase dans la colonne de gauche ou en retirer une
+     à droite). Mesurer avec la **hauteur du paragraphe divisée par son `line-height`** : un comptage par rectangles
+     de texte compte la lettrine comme une ligne et se trompe.
+   - **Dans une copie** : l'idée-force et le cadre « Piège à éviter » **finissent à la même ligne**, et le cadre rose
+     épouse son texte (marge de 23 px, pas de vide dessous) : régler la longueur de l'accroche.
+   - **Cartes en rangée** (`.pts5`, `.branches`, `.cp`) : titres **sur une ligne**, descriptions du même nombre
+     de lignes (rédiger les textes à longueur égale, la grille partagée `subgrid` aligne le reste ; 5, 3 ou 1 colonne
+     selon la largeur).
+   - **Pas de grand blanc** : sous le texte d'une carte de récit, 90 px au plus ; si une carte visuelle est plus haute
+     que son texte, ajouter au texte une phrase utile (par exemple un paragraphe qui explique le schéma voisin) ou
+     un élément pertinent à la carte visuelle, **jamais du remplissage**. Chaque graphique a son petit titre
+     (`.lab`) juste au-dessus.
+   - Typographie française (espace insécable avant `: ; ! ? »` et après `«`) et **pas de tiret cadratin** (sauf le
+     `<title>`). Chronologies et tableaux : le plus récent en premier.
+8. **Boutons.** « Favori » branché sur `ECGFav` (objet `ITEM` du script : `id: 'cg:<slug>'`, `titre`, `url`, `image`,
+   `theme`, `section: 'cg'`, comme dans `CG_DATA`), visible seulement si l'élève est connecté ; « Partager »
+   (`partager(this)` : copie le lien ou ouvre le partage du téléphone). Le script est celui du gabarit : n'adapter que
+   `ITEM`. **Pas de sommaire collant, pas de barre de progression** (essayés puis retirés à la demande du
+   propriétaire).
+9. **Contrôles.** `python3 outils/cg-controle.py Culture-Generale/<slug>.html` (23 règles, à 1920, 1440, 1280, 1000 et
+   390 px, `auth.js` remplacé par un script vide) : corriger jusqu'à ce que tout soit ✅. Pièges déjà rencontrés :
+   un nettoyage de CSS par `^\.bar` qui supprime aussi `.bars` (comparer les sélecteurs de la page avec ceux du
+   gabarit) ; une même classe (`.p3`) donnée à un segment de graphique et à la section « plus loin » ; un
+   `style="grid-column:…"` en ligne qui l'emporte sur la media query mobile (utiliser des classes) ; la barre du
+   site fait 60 px sur ordinateur et environ 90 px sur téléphone (fil d'Ariane sous la barre).
+10. **Mise en ligne** : la séquence de la section 2 (dont le clone « shallow » et les conflits sur fichiers générés).
+    `outils/images-partage.py` ne fait rien pour une refonte (l'image de partage des dossiers est un aplat de
+    couleur, déjà faite) ; relancer `outils/recherche.py` (l'index change pour ce dossier) et ne pas committer
+    `sitemap.xml` d'un clone tronqué.
 
 ### Fiches de l'Humanité (cinéma, littérature)
 
@@ -370,6 +610,10 @@ page pays ou région :
 - **Affiche / couverture** : `python3 outils/fiche-visuel.py <page> <image>`. Le script crée le
   WebP dans `images/` de la rubrique et ajoute le visuel et le fond flou. **Pas de légende** sous
   l'image. Sans visuel, le bandeau reste en texte seul.
+- **Fiches d'art** (`humanite/art/`, copiées de `guernica.html`) : le cadre « À rapprocher » met en parallèle
+  **une seule autre œuvre**, de n'importe quel genre (tableau, film, roman, photo…) et pas forcément du site (ex. *Tres de mayo* de Goya pour *Guernica*, *Le Négrier* de
+  Turner pour *Le Radeau de la Méduse*) : ressemblances, puis la différence qui éclaire l'œuvre de la fiche.
+  Le texte sous le nom de l'auteur dans le bandeau (`.pitch`) fait **3 lignes** à 1280, 1440 et 1920 px, jamais 4.
 
 ### Fiches auteurs (Cours Humanité)
 

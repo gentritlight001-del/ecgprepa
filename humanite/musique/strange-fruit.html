@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Musique — Strange Fruit</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<style>
+  :root {
+    --c: #6b1f1f;          /* couleur de la fiche */
+    --c-soft: #f6e6e4;
+    --fond: #f5f4f0;
+    --carte: #ffffff;
+    --encre: #18181b;
+    --texte: #3f3f46;
+    --discret: #52525b;
+    --ligne: #e4e2dc;
+    --titre: 'Bricolage Grotesque', system-ui, sans-serif;
+    --corps: 'Newsreader', Georgia, serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--fond); color: var(--encre); font-family: var(--corps); font-size: 1.125rem; line-height: 1.65; min-height: 100vh; }
+  strong { font-weight: 600; color: var(--encre); }
+  a { color: inherit; }
+
+  /* ─── Barre du haut ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 14px 48px; background: var(--carte); border-bottom: 1px solid var(--ligne);
+    position: sticky; top: 0; z-index: 100; font-family: var(--titre);
+  }
+  .nav-logo { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em; }
+  .nav-logo a { color: var(--encre); text-decoration: none; }
+  .breadcrumb { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: calc(100% - 420px); display: flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; overflow: hidden; font-size: 0.85rem; color: var(--discret); }
+  .breadcrumb .current { overflow: hidden; text-overflow: ellipsis; }
+  .breadcrumb a { text-decoration: none; }
+  .breadcrumb a:hover { color: var(--c); }
+  .breadcrumb .sep { color: #a1a1aa; }
+  .breadcrumb .current { color: var(--encre); }
+
+  /* ─── Bandeau ─── */
+  .ch-hero { position: relative; background: var(--c); color: #fff; padding: 56px 48px 84px; overflow: hidden; }
+  .ch-hero-fond { display: none; }
+  .ch-hero-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 40px 56px; }
+  .ch-hero-texte { flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+  .chap-label { display: flex; flex-wrap: wrap; gap: 8px; font-family: var(--titre); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .chap-label span { background: rgba(255,255,255,0.18); padding: 6px 12px; border-radius: 999px; }
+  .ch-hero h1 { font-family: var(--titre); font-weight: 800; font-size: calc(var(--t, 1) * clamp(3rem, 8vw, 6rem)); line-height: 0.95; letter-spacing: -0.02em; }
+  .ch-hero .meta { font-family: var(--titre); font-size: 1.2rem; font-weight: 500; opacity: 0.92; }
+  .ch-hero .pitch { max-width: 620px; font-size: 1.3rem; line-height: 1.5; }
+  .ch-hero-visuel { flex: 0 0 240px; max-width: 100%; aspect-ratio: 2 / 3; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+  .ch-hero-visuel.paysage { flex: 1 1 420px; aspect-ratio: auto; }
+  .ch-hero-visuel.paysage img { height: auto; }
+  .ch-hero-visuel img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  /* ─── L'essentiel ─── */
+  .essentiel {
+    position: relative; max-width: 1040px; margin: -44px auto 0; background: var(--carte); border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(24,24,27,0.10); padding: 28px 32px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 20px 40px;
+  }
+  .essentiel-wrap { padding: 0 48px; }
+  .essentiel-these { flex: 999 1 420px; min-width: 0; }
+  .etiquette { font-family: var(--titre); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c); }
+  .essentiel-these p { margin-top: 6px; font-size: 1.35rem; line-height: 1.4; font-weight: 600; }
+  .notions { flex: 1 1 300px; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+  .notions li { font-family: var(--titre); font-size: 0.92rem; font-weight: 500; padding: 8px 14px; border-radius: 999px; background: var(--c-soft); color: var(--c); }
+
+  /* ─── Corps ─── */
+  .page { max-width: 820px; margin: 0 auto; padding: 64px 48px 72px; }
+
+  .content { display: flex; flex-direction: column; gap: 64px; }
+  .hgg-part { scroll-margin-top: 90px; }
+  .hgg-part-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 20px; }
+  .hgg-part-num { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; color: var(--c); }
+  .hgg-part-title { font-family: var(--titre); font-weight: 800; font-size: 2.1rem; line-height: 1.1; letter-spacing: -0.01em; }
+  .hgg-section { margin-top: 32px; scroll-margin-top: 90px; }
+  .hgg-section-title { font-family: var(--titre); font-weight: 700; font-size: 1.35rem; line-height: 1.25; margin-bottom: 12px; }
+  .hgg-section-title .num { color: var(--c); margin-right: 6px; }
+  .content p { color: var(--texte); margin-bottom: 16px; }
+  .content p:last-child { margin-bottom: 0; }
+
+  .hgg-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 8px 0 24px; }
+  .hgg-stat-cell { background: var(--carte); border-radius: 12px; padding: 18px 20px; }
+  .hgg-stat-num { display: block; font-family: var(--titre); font-weight: 800; font-size: 2.2rem; line-height: 1; color: var(--c); }
+  .hgg-stat-label { margin-top: 6px; font-family: var(--titre); font-size: 0.88rem; color: var(--discret); }
+
+  .carte { background: var(--carte); border-radius: 14px; padding: 22px 26px; margin: 20px 0; }
+  .carte h3 { font-family: var(--titre); font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+  .carte p { font-size: 1.05rem; }
+  .carte .etiquette { margin-bottom: 8px; }
+  .surligne { background: var(--c-soft); border-radius: 14px; padding: 20px 24px; margin: 20px 0; color: #2a1d12; font-size: 1.08rem; }
+  .duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 20px 0; }
+  .duo .carte { margin: 0; }
+  .duo .carte.pleine { background: var(--c); }
+  .duo .carte.pleine h3, .duo .carte.pleine p { color: #fff; }
+  .sujets { background: var(--carte); border-radius: 16px; margin-top: 16px; overflow: hidden; }
+  .sujet + .sujet { border-top: 1px solid var(--ligne); }
+  .sujet summary { list-style: none; display: flex; gap: 14px; align-items: baseline; padding: 16px 22px; cursor: pointer; font-family: var(--titre); font-weight: 700; font-size: 1.08rem; line-height: 1.35; }
+  .sujet summary::-webkit-details-marker { display: none; }
+  .sujet summary .n { flex: 0 0 auto; font-weight: 800; color: var(--c); }
+  .sujet summary .q { flex: 1; }
+  .sujet summary::after { content: '+'; flex: 0 0 auto; font-size: 1.3rem; line-height: 1; color: var(--c); transition: transform 0.2s; }
+  .sujet[open] summary::after { transform: rotate(45deg); }
+  .sujet summary:hover .q { color: var(--c); }
+  .sujet-corps { padding: 0 22px 18px 58px; }
+  .sujet-corps p { font-size: 1.02rem; margin-bottom: 10px; }
+  .sujet-corps .reperes { font-family: var(--titre); font-size: 0.88rem; line-height: 1.5; color: var(--discret); display: flex; flex-direction: column; gap: 4px; }
+  .sujet-corps .reperes b { color: var(--c); font-weight: 700; }
+  .sujet a { color: var(--c); text-decoration: underline; text-underline-offset: 2px; }
+
+  .copie { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 8px; }
+  .copie .carte { margin: 0; }
+  .retenir { flex: 1 1 100%; min-width: 0; }
+  .retenir ol { padding-left: 22px; display: flex; flex-direction: column; gap: 10px; font-size: 1.05rem; color: var(--texte); }
+  .rapprocher { flex: 1 1 100%; min-width: 0; background: var(--c) !important; }
+  .rapprocher .etiquette, .rapprocher p, .rapprocher em { color: #fff; }
+  .rapprocher .etiquette { opacity: 0.85; }
+  .rapprocher strong, .rapprocher a, .duo .carte.pleine strong { color: #fff; }
+
+  /* ─── Fin de page ─── */
+  .fin { border-top: 1px solid var(--ligne); background: var(--carte); padding: 24px 48px; }
+  .fin-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; font-family: var(--titre); font-size: 0.95rem; }
+  .fin a { text-decoration: none; padding: 12px 0; }
+  .fin a:hover { color: var(--c); }
+  .bouton-lu { font: 700 0.95rem var(--titre); color: #fff; background: var(--c); border: 1.5px solid var(--c); border-radius: 999px; padding: 12px 22px; min-height: 44px; cursor: pointer; }
+  .bouton-lu.fait { background: transparent; color: var(--c); }
+
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--encre); color: #fff; border: none; border-radius: 50%; font-size: 1.1rem; cursor: pointer; opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 99; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+  }
+  @media (max-width: 760px) {
+    .breadcrumb { display: none; }
+  }
+  @media (max-width: 640px) {
+    nav { padding: 12px 16px; }
+    .breadcrumb { display: none; }
+    .ch-hero { padding: 36px 16px 72px; }
+    .ch-hero-visuel { flex-basis: 160px; }
+    .essentiel-wrap { padding: 0 16px; }
+    .essentiel { padding: 22px 20px; }
+    .page { padding: 40px 16px 56px; }
+    .fin { padding: 20px 16px; }
+    .sujet summary { padding: 14px 16px; }
+    .sujet-corps { padding: 0 16px 16px; }
+    .hgg-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .hgg-stat-cell { padding: 14px 12px; }
+    .hgg-stat-num { font-size: 1.6rem; }
+  }
+
+  @media print {
+    .sujet-corps { display: block !important; }
+    @page { size: A4; margin: 16mm 14mm; }
+    nav, .back-to-top, .fin, .ch-hero-visuel { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: #fff; font-size: 10pt; }
+    .ch-hero { padding: 1rem 1.2rem; }
+    .ch-hero h1 { font-size: 22pt; }
+    .essentiel { margin: 0.6rem 0; box-shadow: none; border: 1pt solid var(--ligne); }
+    .page { display: block; padding: 0.6rem 0; }
+    .content { gap: 1.2rem; }
+    .carte, .hgg-stat-cell { border: 1pt solid var(--ligne); break-inside: avoid; }
+    .surligne, .duo, .sujet { break-inside: avoid; }
+  }
+</style>
+<link rel="stylesheet" href="../../barre-section.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Strange Fruit">
+<meta property="og:image" content="https://ecg-prepa.fr/partage/humanite/humanite-musique-strange-fruit.jpg?v=202610201949">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Strange Fruit">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ecg-prepa.fr/partage/humanite/humanite-musique-strange-fruit.jpg?v=202610201949">
+<meta name="description" content="Strange Fruit (Billie Holiday, 1939) : fiche sur l&#x27;œuvre, son histoire, son analyse et les pistes pour la dissertation sur l&#x27;Humanité.">
+<link rel="canonical" href="https://ecg-prepa.fr/humanite/musique/strange-fruit.html">
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="sn sn-hum">
+  <div class="nav-logo sn-logo"><a href="../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb sn-fil">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">›</span>
+    <a href="../../humanite.html"><span>L'Humanité</span></a>
+    <span class="sep">›</span>
+    <a href="musique.html"><span>Musique</span></a>
+    <span class="sep">›</span>
+    <span class="current">Strange Fruit</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="ch-hero-inner">
+    <div class="ch-hero-texte">
+      <div class="chap-label"><span>Musique</span><span>L'Humanité</span></div>
+      <h1>Strange Fruit</h1>
+      <p class="meta">Billie Holiday · 1939 · Chanson contre le lynchage</p>
+      <p class="pitch">Un poème contre les lynchages, écrit par un professeur de New York et chanté par Billie Holiday en 1939&nbsp;: trois minutes qui forcent l'Amérique à regarder ses propres crimes.</p>
+    </div>
+    <figure class="ch-hero-visuel" style="aspect-ratio: 1 / 1"><img src="images/strange-fruit-visuel.webp" alt="Pochette d'un album de Billie Holiday intitulé Strange Fruit : la chanteuse, les yeux fermés, chante la bouche ouverte, en photo sépia" loading="eager" onerror="this.closest('.ch-hero-visuel').remove()"></figure>
+  </div>
+</div>
+
+<!-- L'ESSENTIEL -->
+<div class="essentiel-wrap">
+  <section class="essentiel" aria-label="L'essentiel">
+    <div class="essentiel-these">
+      <div class="etiquette">L'essentiel en une phrase</div>
+      <p>Des hommes en ont pendu d'autres sous les yeux d'une foule qui posait pour la photo&nbsp;: en chantant ces «&nbsp;fruits étranges&nbsp;», Billie Holiday force l'Amérique à regarder ce qu'elle refusait de voir, et rend aux victimes leur humanité.</p>
+    </div>
+    <ul class="notions" aria-label="Notions du thème">
+      <li>Déshumanisation</li>
+      <li>Art engagé</li>
+      <li>Mémoire des victimes</li>
+    </ul>
+  </section>
+</div>
+
+<div class="page">
+
+<div class="content">
+
+<section class="hgg-part" id="intro">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">1.</span><span class="hgg-part-title">Présentation de l'œuvre</span></h2>
+
+    <p><strong>Strange Fruit</strong> («&nbsp;Fruit étrange&nbsp;») est une chanson écrite par <strong>Abel Meeropol</strong>, professeur juif new-yorkais, sous le pseudonyme de Lewis Allan, et enregistrée par <strong>Billie Holiday</strong> le <strong>20 avril 1939</strong>. Elle décrit un lynchage dans le sud des États-Unis&nbsp;: les corps de Noirs pendus aux arbres sont les «&nbsp;fruits étranges&nbsp;» d'un paysage paisible de magnolias et de peupliers.</p>
+  <div class="hgg-stats">
+<div class="hgg-stat-cell"><span class="hgg-stat-num">4&nbsp;084</span><div class="hgg-stat-label">Lynchages racistes recensés dans 12 États du Sud entre 1877 et 1950 (Equal Justice Initiative)</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">1939</span><div class="hgg-stat-label">Enregistrement par Billie Holiday, refusé par sa maison de disques</div></div>
+<div class="hgg-stat-cell"><span class="hgg-stat-num">2022</span><div class="hgg-stat-label">Le lynchage devient enfin un crime fédéral aux États-Unis</div></div>
+</div>
+    <p>Le magazine <em>Time</em> l'a désignée en 1999 comme la «&nbsp;chanson du siècle&nbsp;». Elle pose une question centrale pour le thème de l'Humanité&nbsp;: comment des hommes peuvent-ils en traiter d'autres comme des choses, et que peut l'art face à cette négation de l'humain&nbsp;?</p>
+</section>
+
+<section class="hgg-part" id="p1">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">2.</span><span class="hgg-part-title">Genèse et description</span></h2>
+
+  <div class="hgg-section" id="s1-1">
+    <h3 class="hgg-section-title"><span class="num">2.1</span>Une photographie à l'origine</h3>
+
+    <p>Le 7 août 1930, à <strong>Marion</strong>, dans l'Indiana, deux jeunes Noirs, <strong>Thomas Shipp et Abram Smith</strong>, accusés d'un meurtre, sont arrachés à la prison par une foule et pendus à un arbre. Le photographe <strong>Lawrence Beitler</strong> prend une photo de la scène&nbsp;: sous les corps, des Blancs, hommes et femmes, regardent l'objectif, certains sourient.</p>
+    <p>Quelques années plus tard, Abel Meeropol, professeur d'anglais dans le Bronx, voit cette photo. Elle le hante. Il écrit un poème, «&nbsp;Bitter Fruit&nbsp;», publié en janvier 1937 dans <em>The New York Teacher</em>, le journal du syndicat des enseignants, puis le met lui-même en musique.</p>
+    <div class="surligne">Ce qui choque dans la photo de Marion, ce n'est pas seulement le crime&nbsp;: c'est la <strong>foule tranquille</strong> qui pose devant, comme à une fête.</div>
+  </div>
+
+  <div class="hgg-section" id="s1-2">
+    <h3 class="hgg-section-title"><span class="num">2.2</span>Billie Holiday et le refus des maisons de disques</h3>
+
+    <p>En 1939, Meeropol fait entendre la chanson à <strong>Billie Holiday</strong>, qui chante alors au <strong>Café Society</strong>, à Greenwich Village, le premier club de New York où Noirs et Blancs se mêlent dans la salle. Elle l'adopte et en fait le moment le plus grave de ses concerts.</p>
+    <p>Sa maison de disques, <strong>Columbia</strong>, refuse de l'enregistrer&nbsp;: elle craint la réaction des disquaires du Sud et des radios. Holiday se tourne vers un petit label, <strong>Commodore</strong>, dont le producteur, Milt Gabler, accepte. Le disque se vend finalement à un million d'exemplaires&nbsp;: c'est le plus grand succès de sa carrière.</p>
+    <div class="carte">
+      <div class="etiquette">Le prix à payer</div>
+      <p>Billie Holiday est ensuite poursuivie par le Bureau fédéral des stupéfiants de <strong>Harry Anslinger</strong>, qui l'aurait pressée de ne plus chanter Strange Fruit. Condamnée en 1947 pour usage de drogue, privée de sa licence pour chanter dans les clubs de New York, elle meurt en juillet 1959, à 44 ans, arrêtée sur son lit d'hôpital.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s1-3">
+    <h3 class="hgg-section-title"><span class="num">2.3</span>Écouter Strange Fruit</h3>
+
+    <p>La chanson est courte, lente, presque sans refrain. Tout repose sur un procédé&nbsp;: décrire l'horreur avec les mots doux d'une <strong>chanson du Sud</strong>, pour que le contraste frappe.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le paysage</h3>
+        <p>Les arbres du Sud, le vent, les magnolias au parfum sucré&nbsp;: les images de la carte postale. Mais sur les branches, du sang, et des corps qui se balancent.</p>
+      </div>
+      <div class="carte">
+        <h3>La métaphore</h3>
+        <p>Le corps devient un «&nbsp;fruit&nbsp;» que les corbeaux picorent, que la pluie et le soleil font pourrir. L'image dit exactement ce qu'ont fait les bourreaux&nbsp;: <strong>une chose</strong>.</p>
+      </div>
+    </div>
+    <div class="duo">
+      <div class="carte">
+        <h3>La voix</h3>
+        <p>Holiday ne crie pas. Elle chante lentement, d'une voix tenue, presque froide, et laisse l'horreur parler d'elle-même. La retenue rend la chanson insoutenable.</p>
+      </div>
+      <div class="carte">
+        <h3>La fin</h3>
+        <p>La dernière ligne parle d'une «&nbsp;récolte&nbsp;» amère. Pas de morale, pas d'appel&nbsp;: la chanson s'arrête net et laisse l'auditeur seul avec ce qu'il vient d'entendre.</p>
+      </div>
+    </div>
+    <div class="surligne">Au Café Society, on ne servait plus pendant la chanson&nbsp;: salle dans le noir, un seul projecteur sur le visage de Holiday, et <strong>aucun rappel</strong> après.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p2">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">3.</span><span class="hgg-part-title">Nommer la déshumanisation</span></h2>
+
+  <div class="hgg-section" id="s2-1">
+    <h3 class="hgg-section-title"><span class="num">3.1</span>Des hommes changés en choses</h3>
+
+    <p>Le lynchage n'est pas seulement un meurtre&nbsp;: c'est un spectacle public, souvent annoncé, photographié, parfois vendu en cartes postales. Il sert à terroriser toute une population et à affirmer qu'un Noir n'est pas un homme dont la vie compte. En appelant les corps des «&nbsp;fruits&nbsp;», la chanson reprend le regard des bourreaux pour le rendre <strong>insupportable</strong>.</p>
+    <div class="carte">
+      <div class="etiquette">Une humanité refusée</div>
+      <p>Entre 1877 et 1950, l'Equal Justice Initiative a recensé <strong>4&nbsp;084 lynchages</strong> racistes dans douze États du Sud, et plus de 300 ailleurs. Presque aucun coupable n'a été condamné.</p>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s2-2">
+    <h3 class="hgg-section-title"><span class="num">3.2</span>Le spectateur mis en cause</h3>
+
+    <p>La photo de Marion montre une foule qui regarde. La chanson, elle, oblige un autre public à regarder&nbsp;: celui des clubs, des radios, des disques. Elle fait de l'auditeur un <strong>témoin</strong>, qui ne peut plus dire qu'il ne savait pas. L'horreur vient autant de l'indifférence des spectateurs que de la violence des bourreaux.</p>
+    <div class="surligne">La chanson renverse la photo&nbsp;: la foule de Marion regardait pour jouir du spectacle, l'auditeur de Strange Fruit regarde pour <strong>en avoir honte</strong>.</div>
+  </div>
+
+  <div class="hgg-section" id="s2-3">
+    <h3 class="hgg-section-title"><span class="num">3.3</span>Une chanson qui agit</h3>
+
+    <p>Strange Fruit est souvent présentée comme l'une des premières grandes chansons du mouvement pour les droits civiques. Des militants en envoient des copies aux sénateurs pour soutenir une loi fédérale contre le lynchage, toujours bloquée par les élus du Sud. Cette loi n'est votée qu'en <strong>mars 2022</strong>&nbsp;: l'Emmett Till Antilynching Act, du nom d'un adolescent noir tué en 1955.</p>
+    <div class="duo">
+      <div class="carte">
+        <h3>Le document</h3>
+        <p>Un poème né d'une photo de 1930, une chanteuse qui prend des risques&nbsp;: <strong>Strange Fruit témoigne</strong> de la violence raciale dans l'Amérique de son temps.</p>
+      </div>
+      <div class="carte pleine">
+        <h3>Le symbole</h3>
+        <p>Une chanson qui ne nomme aucune victime&nbsp;: <strong>Strange Fruit universalise</strong>. Elle parle pour toutes celles dont l'humanité a été niée.</p>
+      </div>
+    </div>
+    <div class="surligne">Il a fallu 83 ans entre l'enregistrement de 1939 et la loi de 2022&nbsp;: l'art peut <strong>éveiller les consciences</strong>, il ne change pas seul les lois.</div>
+  </div>
+
+</section>
+
+<section class="hgg-part" id="p3">
+  <h2 class="hgg-part-header"><span class="hgg-part-num">4.</span><span class="hgg-part-title">Pistes pour la dissertation</span></h2>
+
+  <div class="hgg-section" id="s3-1">
+    <h3 class="hgg-section-title">Strange Fruit face à cinq sujets sur l'Humanité</h3>
+    <p>Cliquez sur un sujet pour l'argument à développer, le passage à citer et sa place dans le plan.</p>
+
+    <div class="sujets">
+      <details class="sujet">
+        <summary><span class="n">01</span><span class="q">Peut-on cesser de voir l'autre comme un homme&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Entre 1877 et 1950, plus de 4&nbsp;000 Noirs sont lynchés dans le Sud des États-Unis, souvent devant une foule venue en spectatrice. La photo de Marion, qui inspire Strange Fruit, montre des Blancs qui posent sous deux corps pendus. La chanson nomme ce que voient les bourreaux&nbsp;: non plus des hommes, mais des «&nbsp;fruits&nbsp;», des choses. La déshumanisation ne demande pas des monstres&nbsp;: une foule ordinaire, convaincue que l'autre ne compte pas, suffit.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> L'image des corps comme «&nbsp;fruits étranges&nbsp;» pendus aux arbres du Sud.</span><span><b>Dans le plan&nbsp;:</b> En première partie&nbsp;: l'humanité peut être refusée à certains hommes.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">02</span><span class="q">L'art peut-il changer le monde&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Refusée par Columbia, enregistrée chez un petit label, Strange Fruit se vend à un million d'exemplaires et devient un hymne du mouvement pour les droits civiques&nbsp;; des militants l'envoient aux sénateurs pour obtenir une loi. Mais cette loi n'arrive qu'en 2022. L'art ne change pas directement le monde&nbsp;: il change le regard des hommes, ce qui rend le changement possible.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> L'Emmett Till Antilynching Act, voté en mars 2022.</span><span><b>Dans le plan&nbsp;:</b> En partie critique&nbsp;: la force et les limites de l'art engagé.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">03</span><span class="q">Sommes-nous responsables de ce que nous laissons faire&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Sur la photo de Marion, la foule ne tue pas&nbsp;: elle regarde, elle sourit. Strange Fruit fait de chaque auditeur un témoin qui ne peut plus dire qu'il ne savait pas. Le crime n'a été possible que parce qu'une société entière l'a toléré, sans condamner presque aucun coupable. La chanson rappelle que l'indifférence des spectateurs est la condition de la violence.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> La photographie de Lawrence Beitler, Marion, 7 août 1930.</span><span><b>Dans le plan&nbsp;:</b> Sur la responsabilité&nbsp;: le témoin et le complice.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">04</span><span class="q">La beauté peut-elle dire l'horreur&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Strange Fruit est une belle chanson, lente, douce, chantée d'une voix retenue, sur des images de magnolias et d'arbres du Sud. C'est cette beauté qui rend l'horreur insoutenable&nbsp;: le contraste entre la douceur du paysage et les corps pendus empêche l'auditeur de s'habituer. Loin de trahir les victimes, la beauté oblige à écouter jusqu'au bout.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> Le parfum des magnolias, puis l'odeur de la chair brûlée.</span><span><b>Dans le plan&nbsp;:</b> En partie de dépassement&nbsp;: la forme au service de la vérité.</span></div>
+        </div>
+      </details>
+      <details class="sujet">
+        <summary><span class="n">05</span><span class="q">Faut-il entretenir la mémoire des crimes passés&nbsp;?</span></summary>
+        <div class="sujet-corps">
+          <p>Strange Fruit continue d'être chantée, reprise par Nina Simone dès 1965, et désignée «&nbsp;chanson du siècle&nbsp;» par <em>Time</em> en 1999. Elle garde vivante la mémoire de victimes que personne n'a jugées. Se souvenir, c'est leur rendre la dignité que leurs bourreaux leur avaient refusée, et rappeler qu'une société peut basculer dans la cruauté.</p>
+          <div class="reperes"><span><b>Passage à citer&nbsp;:</b> La reprise de Nina Simone, en 1965.</span><span><b>Dans le plan&nbsp;:</b> Sur la mémoire&nbsp;: réparer l'humanité niée des victimes.</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="hgg-section" id="s3-2">
+    <div class="copie">
+      <div class="carte retenir">
+        <div class="etiquette">Idées à retenir</div>
+        <ol>
+          <li>Écrite par Abel Meeropol d'après une <strong>photo de lynchage</strong> (Marion, 1930), enregistrée par Billie Holiday le 20 avril 1939.</li>
+          <li>La métaphore du «&nbsp;fruit&nbsp;» reprend le regard des bourreaux, qui faisaient des victimes <strong>des choses</strong>.</li>
+          <li>La chanson fait de l'auditeur un <strong>témoin</strong>&nbsp;: l'horreur tient aussi à la foule qui regarde.</li>
+          <li>Hymne des droits civiques, elle précède de 83 ans la <strong>loi fédérale</strong> contre le lynchage (2022).</li>
+        </ol>
+      </div>
+      <div class="carte rapprocher">
+        <div class="etiquette">À rapprocher</div>
+        <p><strong>Le Mémorial national pour la paix et la justice, Montgomery (2018)</strong>&nbsp;: ouvert par l'Equal Justice Initiative en Alabama, il rend hommage aux victimes des lynchages par 805 blocs d'acier suspendus, un par comté, qui portent les noms des morts. Comme la chanson, il montre des formes pendues pour obliger le visiteur à regarder ce que le pays a voulu oublier. Mais le mémorial nomme chaque victime, une à une, là où Strange Fruit n'en nomme aucune&nbsp;: l'un rend à chacun son nom, l'autre fait entendre ce que toutes ont subi.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /content -->
+</div><!-- /page -->
+<footer class="fin">
+  <div class="fin-inner">
+    <a href="musique.html">← Toutes les fiches de musique</a>
+    <button type="button" class="bouton-lu" id="boutonLu">J'ai lu cette fiche</button>
+  </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
+
+<script>
+  // « J'ai lu cette fiche », gardé dans le navigateur
+  const CLE = 'ecg-humanite-fiches-lues';
+  const ID = 'musique/strange-fruit';
+  const lu = document.getElementById('boutonLu');
+  function lire() { try { return JSON.parse(localStorage.getItem(CLE)) || []; } catch (e) { return []; } }
+  function majLu() {
+    const fait = lire().includes(ID);
+    lu.classList.toggle('fait', fait);
+    lu.textContent = fait ? '✓ Fiche lue' : "J'ai lu cette fiche";
+  }
+  lu.addEventListener('click', () => {
+    let l = lire();
+    l = l.includes(ID) ? l.filter(x => x !== ID) : l.concat(ID);
+    try { localStorage.setItem(CLE, JSON.stringify(l)); } catch (e) {}
+    majLu();
+  });
+  majLu();
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>

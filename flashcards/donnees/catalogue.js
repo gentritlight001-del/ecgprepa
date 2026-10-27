@@ -12,24 +12,78 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-10-17",
+  "maj": "2026-10-27",
   "parties": [
+   {
+    "id": "2026-10-27",
+    "nom": "Jour 16 · Parti Québécois Returns to Power as the CAQ Is Wiped Out",
+    "n": 30,
+    "date": "2026-10-27"
+   },
+   {
+    "id": "2026-10-26",
+    "nom": "Jour 15 · Trump Says Iran Could “Take Out” Los Angeles or San Diego",
+    "n": 30,
+    "date": "2026-10-26"
+   },
+   {
+    "id": "2026-10-25",
+    "nom": "Jour 14 · Zelenskyy in London as Burnham Pledges Unwavering Support",
+    "n": 30,
+    "date": "2026-10-25"
+   },
+   {
+    "id": "2026-10-23",
+    "nom": "Jour 13 · Ireland's Biggest Public Sector Strike Since 2009",
+    "n": 30,
+    "date": "2026-10-23"
+   },
+   {
+    "id": "2026-10-22",
+    "nom": "Jour 12 · Severe Drought Declared in Southern England",
+    "n": 30,
+    "date": "2026-10-22"
+   },
+   {
+    "id": "2026-10-21",
+    "nom": "Jour 11 · Alberta Votes 75% to Stay in Canada",
+    "n": 24,
+    "date": "2026-10-21"
+   },
+   {
+    "id": "2026-10-20",
+    "nom": "Jour 10 · Trump Waives New Sanctions on Russia",
+    "n": 27,
+    "date": "2026-10-20"
+   },
+   {
+    "id": "2026-10-19",
+    "nom": "Jour 9 · “No Kings” Swaps Marches for Early Voting",
+    "n": 25,
+    "date": "2026-10-19"
+   },
+   {
+    "id": "2026-10-18",
+    "nom": "Jour 8 · The White House Press Secretary Who Lasted Five Days",
+    "n": 29,
+    "date": "2026-10-18"
+   },
    {
     "id": "2026-10-17",
     "nom": "Jour 7 · The Pentagon Plans to Livestream a Military Execution",
-    "n": 30,
+    "n": 28,
     "date": "2026-10-17"
    },
    {
     "id": "2026-10-16",
     "nom": "Jour 6 · Burnham in Berlin as the Kensington Treaty Takes Effect",
-    "n": 30,
+    "n": 24,
     "date": "2026-10-16"
    },
    {
     "id": "2026-10-15",
     "nom": "Jour 5 · Burnham Says Russia Meddled in the Brexit Vote",
-    "n": 30,
+    "n": 27,
     "date": "2026-10-15"
    },
    {
@@ -41,24 +95,24 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-12",
     "nom": "Jour 3 · Hurricane Isaias Hits Florida",
-    "n": 29,
+    "n": 28,
     "date": "2026-10-12"
    },
    {
     "id": "2026-10-11",
     "nom": "Jour 2 · Trump Strikes a Diesel Deal with Putin",
-    "n": 29,
+    "n": 25,
     "date": "2026-10-11"
    },
    {
     "id": "2026-10-10",
     "nom": "Jour 1 · Trump Renames AI “Super Intelligence”",
-    "n": 29,
+    "n": 24,
     "date": "2026-10-10"
    }
   ],
-  "n": 205,
-  "v": "67b34693b6"
+  "n": 439,
+  "v": "67b813b7cf"
  },
  {
   "id": "espagnol",
@@ -72,53 +126,107 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Espagnol",
   "lien": "premiere_annee/langues/espagnol/quotidien/index.html",
   "revoir": "ecg-espagnol-quotidien-a-revoir",
-  "maj": "2026-10-17",
+  "maj": "2026-10-27",
   "parties": [
+   {
+    "id": "2026-10-27",
+    "nom": "Jour 16 · Argentina: la quinta Marcha Federal Universitaria exige que se cumpla la ley",
+    "n": 32,
+    "date": "2026-10-27"
+   },
+   {
+    "id": "2026-10-26",
+    "nom": "Jour 15 · Venezuela: la diáspora se moviliza y exige una fecha electoral",
+    "n": 28,
+    "date": "2026-10-26"
+   },
+   {
+    "id": "2026-10-25",
+    "nom": "Jour 14 · España: la DANA Adam inunda la Safor y la Marina Alta",
+    "n": 26,
+    "date": "2026-10-25"
+   },
+   {
+    "id": "2026-10-23",
+    "nom": "Jour 13 · Chile: siete años después del estallido, miles marchan contra Kast",
+    "n": 27,
+    "date": "2026-10-23"
+   },
+   {
+    "id": "2026-10-22",
+    "nom": "Jour 12 · España: Milei agita en Madrid la campaña del 29-N",
+    "n": 30,
+    "date": "2026-10-22"
+   },
+   {
+    "id": "2026-10-21",
+    "nom": "Jour 11 · EE. UU. y Cuba: Florida ordena el arresto de Raúl Castro",
+    "n": 28,
+    "date": "2026-10-21"
+   },
+   {
+    "id": "2026-10-20",
+    "nom": "Jour 10 · Colombia: De la Espriella retira treinta obras del Museo Nacional",
+    "n": 27,
+    "date": "2026-10-20"
+   },
+   {
+    "id": "2026-10-19",
+    "nom": "Jour 9 · Costa Rica y El Salvador: un acuerdo contra el crimen transnacional",
+    "n": 29,
+    "date": "2026-10-19"
+   },
+   {
+    "id": "2026-10-18",
+    "nom": "Jour 8 · Chile y Bolivia: Kast en La Paz, primera visita oficial en 71 años",
+    "n": 28,
+    "date": "2026-10-18"
+   },
    {
     "id": "2026-10-17",
     "nom": "Jour 7 · Venezuela: Delcy Rodríguez lleva a la FAO el plan «Venezuela Alimenta»",
-    "n": 30,
+    "n": 25,
     "date": "2026-10-17"
    },
    {
     "id": "2026-10-16",
     "nom": "Jour 6 · España: Felipe VI y Letizia, una visita histórica a Ceuta",
-    "n": 30,
+    "n": 27,
     "date": "2026-10-16"
    },
    {
     "id": "2026-10-15",
     "nom": "Jour 5 · Costa Rica: el CACCO, una megacárcel al estilo Bukele",
-    "n": 29,
+    "n": 24,
     "date": "2026-10-15"
    },
    {
     "id": "2026-10-13",
     "nom": "Jour 4 · España: Puigdemont ya puede volver sin ser detenido",
-    "n": 27,
+    "n": 26,
     "date": "2026-10-13"
    },
    {
     "id": "2026-10-12",
     "nom": "Jour 3 · España: Maricarmen, símbolo de la crisis de la vivienda",
-    "n": 30,
+    "n": 26,
     "date": "2026-10-12"
    },
    {
     "id": "2026-10-11",
     "nom": "Jour 2 · Panamá: un terremoto de magnitud 7,7 sacude el país",
-    "n": 29,
+    "n": 27,
     "date": "2026-10-11"
    },
    {
     "id": "2026-10-10",
     "nom": "Jour 1 · México: las madres buscadoras, certificadas",
-    "n": 27,
+    "n": 26,
     "date": "2026-10-10"
    }
   ],
-  "n": 202,
-  "v": "74727bb6a7"
+  "n": 436,
+  "v": "f137675d4c"
  },
  {
   "id": "allemand",
@@ -132,24 +240,78 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Allemand",
   "lien": "premiere_annee/langues/allemand/quotidien/index.html",
   "revoir": "ecg-allemand-quotidien-a-revoir",
-  "maj": "2026-10-17",
+  "maj": "2026-10-27",
   "parties": [
+   {
+    "id": "2026-10-27",
+    "nom": "Jour 16 · Zwei Schläge zum Auftakt der Wiesn",
+    "n": 30,
+    "date": "2026-10-27"
+   },
+   {
+    "id": "2026-10-26",
+    "nom": "Jour 15 · AfD vorn in Schwerin, Linke vorn in Berlin",
+    "n": 30,
+    "date": "2026-10-26"
+   },
+   {
+    "id": "2026-10-25",
+    "nom": "Jour 14 · Die Unionsfraktion stellt sich hinter Merz",
+    "n": 30,
+    "date": "2026-10-25"
+   },
+   {
+    "id": "2026-10-23",
+    "nom": "Jour 13 · Berlin zieht seine Olympia-Bewerbung zurück",
+    "n": 28,
+    "date": "2026-10-23"
+   },
+   {
+    "id": "2026-10-22",
+    "nom": "Jour 12 · Die Schweiz sagt Nein zur Neutralitätsinitiative",
+    "n": 29,
+    "date": "2026-10-22"
+   },
+   {
+    "id": "2026-10-21",
+    "nom": "Jour 11 · Berlin wirbt um Investoren",
+    "n": 29,
+    "date": "2026-10-21"
+   },
+   {
+    "id": "2026-10-20",
+    "nom": "Jour 10 · Der Bundestag beschließt die Notfallreform",
+    "n": 30,
+    "date": "2026-10-20"
+   },
+   {
+    "id": "2026-10-19",
+    "nom": "Jour 9 · Merz und Macron lockern das Verbrenner-Aus",
+    "n": 28,
+    "date": "2026-10-19"
+   },
+   {
+    "id": "2026-10-18",
+    "nom": "Jour 8 · BioNTech schließt drei Standorte",
+    "n": 30,
+    "date": "2026-10-18"
+   },
    {
     "id": "2026-10-17",
     "nom": "Jour 7 · Ein Extremjahr für die Gletscher",
-    "n": 32,
+    "n": 30,
     "date": "2026-10-17"
    },
    {
     "id": "2026-10-16",
     "nom": "Jour 6 · Bremen feiert die Deutsche Einheit",
-    "n": 30,
+    "n": 27,
     "date": "2026-10-16"
    },
    {
     "id": "2026-10-15",
     "nom": "Jour 5 · Schweitzer folgt auf Bärbel Bas",
-    "n": 30,
+    "n": 28,
     "date": "2026-10-15"
    },
    {
@@ -161,13 +323,13 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-12",
     "nom": "Jour 3 · Ein AfD-Politiker an der Spitze des Landtags",
-    "n": 29,
+    "n": 24,
     "date": "2026-10-12"
    },
    {
     "id": "2026-10-11",
     "nom": "Jour 2 · Die deutsche Wirtschaft wächst wieder",
-    "n": 27,
+    "n": 24,
     "date": "2026-10-11"
    },
    {
@@ -177,8 +339,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 208,
-  "v": "79afbb2d1c"
+  "n": 457,
+  "v": "8851a35b54"
  },
  {
   "id": "hgg1-ch1",
@@ -186,7 +348,7 @@ window.ECG_FC_CATALOGUE = [
   "annee": 1,
   "num": 1,
   "type": "cours",
-  "titre": "Introduction à la Géopolitique",
+  "titre": "Introduction à la géopolitique",
   "court": "Chapitre 1",
   "sous": "",
   "recto": "Question",
@@ -210,7 +372,7 @@ window.ECG_FC_CATALOGUE = [
    }
   ],
   "n": 35,
-  "v": "f08ae2f730"
+  "v": "6babcc5262"
  },
  {
   "id": "hgg1-ch2",
@@ -242,7 +404,7 @@ window.ECG_FC_CATALOGUE = [
    }
   ],
   "n": 40,
-  "v": "69c8f70d7a"
+  "v": "9f1e313a50"
  },
  {
   "id": "hgg1-ch3",
@@ -264,7 +426,7 @@ window.ECG_FC_CATALOGUE = [
    },
    {
     "id": "II",
-    "nom": "II · Un monde déstabilisé par la crise de 29",
+    "nom": "II · Un monde déstabilisé par la crise de 1929",
     "n": 16
    },
    {
@@ -274,7 +436,7 @@ window.ECG_FC_CATALOGUE = [
    }
   ],
   "n": 42,
-  "v": "898bf16f99"
+  "v": "858b1d70a2"
  },
  {
   "id": "hgg1-ch4",
@@ -306,7 +468,7 @@ window.ECG_FC_CATALOGUE = [
    }
   ],
   "n": 47,
-  "v": "b3acae2a8c"
+  "v": "9d5a387dbe"
  },
  {
   "id": "hgg1-ch5",
@@ -314,7 +476,7 @@ window.ECG_FC_CATALOGUE = [
   "annee": 1,
   "num": 5,
   "type": "cours",
-  "titre": "Géopolitique de la Guerre Froide",
+  "titre": "Géopolitique de la guerre froide",
   "court": "Chapitre 5",
   "sous": "",
   "recto": "Question",
@@ -338,7 +500,7 @@ window.ECG_FC_CATALOGUE = [
    }
   ],
   "n": 45,
-  "v": "595322c123"
+  "v": "2f849229fa"
  },
  {
   "id": "hgg1-ch6",
@@ -370,7 +532,7 @@ window.ECG_FC_CATALOGUE = [
    }
   ],
   "n": 37,
-  "v": "a6ad5a7125"
+  "v": "09722d0c8e"
  },
  {
   "id": "hgg1-ch7",
@@ -402,7 +564,7 @@ window.ECG_FC_CATALOGUE = [
    }
   ],
   "n": 44,
-  "v": "1b6b3e3854"
+  "v": "e1089f63b9"
  },
  {
   "id": "hgg1-ch8",
@@ -410,7 +572,7 @@ window.ECG_FC_CATALOGUE = [
   "annee": 1,
   "num": 8,
   "type": "cours",
-  "titre": "Le Monde Actuel — Ordre et Désordre Mondial",
+  "titre": "Le monde actuel, ordre et désordre mondial",
   "court": "Chapitre 8",
   "sous": "",
   "recto": "Question",
@@ -429,7 +591,7 @@ window.ECG_FC_CATALOGUE = [
    }
   ],
   "n": 40,
-  "v": "b858bb5f9e"
+  "v": "792c4dd2d9"
  },
  {
   "id": "hgg1-ch9",
@@ -461,7 +623,7 @@ window.ECG_FC_CATALOGUE = [
    }
   ],
   "n": 36,
-  "v": "1d32c0ec86"
+  "v": "2b3a1c2f95"
  },
  {
   "id": "hgg1-ch10",
@@ -493,7 +655,7 @@ window.ECG_FC_CATALOGUE = [
    }
   ],
   "n": 41,
-  "v": "cceae5b797"
+  "v": "8b3a5954b9"
  },
  {
   "id": "hgg1-ch11",
@@ -525,7 +687,7 @@ window.ECG_FC_CATALOGUE = [
    }
   ],
   "n": 34,
-  "v": "cbe98bcc9f"
+  "v": "95205ecfdf"
  },
  {
   "id": "hgg1-ch12",
@@ -557,7 +719,7 @@ window.ECG_FC_CATALOGUE = [
    }
   ],
   "n": 38,
-  "v": "a0b800718c"
+  "v": "fe46b4e1dd"
  },
  {
   "id": "hgg1-ch13",
@@ -589,7 +751,7 @@ window.ECG_FC_CATALOGUE = [
    }
   ],
   "n": 54,
-  "v": "fe93a583f0"
+  "v": "792c3bf51b"
  },
  {
   "id": "hgg1-ch14",
@@ -733,63 +895,23 @@ window.ECG_FC_CATALOGUE = [
   "lien": "deuxieme_annee/hgg/chapitre-2-hgg.html",
   "parties": [
    {
-    "id": "I.1",
-    "nom": "La notion de puissance",
-    "n": 12
+    "id": "I",
+    "nom": "I · Le « pouvoir de »",
+    "n": 80
    },
    {
-    "id": "I.2",
-    "nom": "Le territoire comme ressource",
-    "n": 24
+    "id": "II",
+    "nom": "II · Le « pouvoir sur »",
+    "n": 35
    },
    {
-    "id": "I.3",
-    "nom": "E pluribus unum",
-    "n": 20
-   },
-   {
-    "id": "I.4",
-    "nom": "Les fondements économiques",
-    "n": 12
-   },
-   {
-    "id": "I.5",
-    "nom": "L'inégale intégration des territoires",
-    "n": 12
-   },
-   {
-    "id": "II.1",
-    "nom": "Domination politique et militaire",
-    "n": 19
-   },
-   {
-    "id": "II.2",
-    "nom": "La première économie du monde",
-    "n": 11
-   },
-   {
-    "id": "II.3",
-    "nom": "Le soft power",
-    "n": 5
-   },
-   {
-    "id": "III.1",
-    "nom": "Environnement et risques",
-    "n": 8
-   },
-   {
-    "id": "III.2",
-    "nom": "Une société inégalitaire et polarisée",
-    "n": 10
-   },
-   {
-    "id": "III.3",
-    "nom": "Une puissance contestée et fragilisée",
-    "n": 4
+    "id": "III",
+    "nom": "III · Le « pouvoir limité »",
+    "n": 22
    }
   ],
   "n": 137,
-  "v": "59d2ce0cce"
+  "v": "3fa8953cac"
  },
  {
   "id": "hgg2-ch3",
@@ -805,73 +927,23 @@ window.ECG_FC_CATALOGUE = [
   "lien": "deuxieme_annee/hgg/chapitre-3-hgg.html",
   "parties": [
    {
-    "id": "I.1",
-    "nom": "Émergences et crises",
-    "n": 8
+    "id": "I",
+    "nom": "I · Une émergence heurtée",
+    "n": 68
    },
    {
-    "id": "I.2",
-    "nom": "Le modèle agro-minier exportateur",
-    "n": 7
+    "id": "II",
+    "nom": "II · Des problèmes structurels",
+    "n": 25
    },
    {
-    "id": "I.3",
-    "nom": "La valse des paradigmes",
-    "n": 16
-   },
-   {
-    "id": "I.4",
-    "nom": "Le néo-extractivisme de la vague rose",
-    "n": 6
-   },
-   {
-    "id": "I.5",
-    "nom": "La Chine, partenaire majeur",
-    "n": 10
-   },
-   {
-    "id": "I.6",
-    "nom": "La modernisation conservatrice",
-    "n": 15
-   },
-   {
-    "id": "I.7",
-    "nom": "Infrastructures et réseaux",
-    "n": 6
-   },
-   {
-    "id": "II.1",
-    "nom": "Un modèle dépendant et vulnérable",
-    "n": 10
-   },
-   {
-    "id": "II.2",
-    "nom": "Le piège du revenu intermédiaire",
-    "n": 8
-   },
-   {
-    "id": "II.3",
-    "nom": "Des externalités environnementales",
-    "n": 7
-   },
-   {
-    "id": "III.1",
-    "nom": "Métropoles et interfaces",
-    "n": 4
-   },
-   {
-    "id": "III.2",
-    "nom": "Des émergents en nombre limité",
-    "n": 4
-   },
-   {
-    "id": "III.3",
-    "nom": "Le Brésil, émergent ou émergé ?",
-    "n": 11
+    "id": "III",
+    "nom": "III · Des émergences très diverses",
+    "n": 19
    }
   ],
   "n": 112,
-  "v": "483c75dd9d"
+  "v": "3b27139cb8"
  },
  {
   "id": "humanite-cours1",
@@ -919,5 +991,47 @@ window.ECG_FC_CATALOGUE = [
   ],
   "n": 46,
   "v": "54248f7170"
+ },
+ {
+  "id": "philo2-ch6",
+  "matiere": "philo",
+  "annee": 2,
+  "num": 6,
+  "type": "cours",
+  "titre": "Philosophie · Notion 6 : La Liberté",
+  "court": "Chapitre 6",
+  "sous": "",
+  "recto": "Question",
+  "verso": "Réponse",
+  "lien": "deuxieme_annee/philosophie/notion-6-liberte.html",
+  "parties": [
+   {
+    "id": "D",
+    "nom": "Distinctions",
+    "n": 6
+   },
+   {
+    "id": "I",
+    "nom": "I · L'évidence",
+    "n": 8
+   },
+   {
+    "id": "II",
+    "nom": "II · Le soupçon",
+    "n": 6
+   },
+   {
+    "id": "III",
+    "nom": "III · La conquête de soi",
+    "n": 5
+   },
+   {
+    "id": "IV",
+    "nom": "IV · Avec les autres",
+    "n": 5
+   }
+  ],
+  "n": 30,
+  "v": "6b2e0db224"
  }
 ];
