@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Japon",
+"titre": "Japon : la JAXA lance MMX vers Phobos pour en rapporter au moins 10 grammes d'échantillons en 2031",
+"url": "actualites/monde/articles/japon-jaxa-mmx-phobos-2026.html",
+"image": "actualites/monde/images/japon-jaxa-mmx-phobos-2026.webp",
+"date": "2026-10-27T06:43:54+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Roumanie",
 "titre": "Roumanie : le Parlement investit Luca Niculescu Premier ministre après 169 jours de crise politique",
 "url": "actualites/monde/articles/roumanie-niculescu-premier-ministre-2026.html",
@@ -1343,15 +1352,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Somalie : de violents combats éclatent à Baidoa, 3e offensive en six semaines dans le Sud-Ouest",
 "url": "actualites/monde/articles/somalie-combats-sud-ouest.html",
 "image": "actualites/monde/images/somalie-combats-sud-ouest.webp",
-"date": "2026-10-01T13:52:44+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Maroc",
-"titre": "Maroc : Fatima Ezzahra El Mansouri devient la première femme nommée cheffe du gouvernement",
-"url": "actualites/monde/articles/maroc-premiere-ministre-femme.html",
-"image": "actualites/monde/images/maroc-premiere-ministre-femme.webp",
 "date": "2026-10-01T13:52:44+00:00"
 },
 {
