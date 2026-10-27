@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Brésil",
+"titre": "Brésil : Lula est réélu président avec 52 % des voix contre Flávio Bolsonaro (48 %)",
+"url": "actualites/monde/articles/bresil-lula-reelu-flavio-bolsonaro-2026.html",
+"image": "actualites/monde/images/bresil-lula-reelu-flavio-bolsonaro-2026.webp",
+"date": "2026-10-27T07:07:16+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Serbie",
 "titre": "Serbie : la Liste étudiante remporte les législatives avec environ 53 % des voix, Vučić concède",
 "url": "actualites/monde/articles/serbie-liste-etudiante-victoire-vucic-2026.html",
@@ -1290,15 +1299,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/en/articles/us-autowarcom-hegseth-drones-2026.html",
 "image": "actualites/en/images/us-autowarcom-hegseth-drones-2026.webp",
 "date": "2026-10-02T06:40:29+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Union européenne",
-"titre": "Sierra Leone : l'UE suspend 18 millions d'euros après le refus d'extrader « Bolle Jos »",
-"url": "actualites/monde/articles/ue-sierra-leone-suspension-paiements.html",
-"image": "actualites/monde/images/ue-sierra-leone-suspension-paiements.webp",
-"date": "2026-10-02T06:40:14+00:00"
 },
 {
 "t": "es",
