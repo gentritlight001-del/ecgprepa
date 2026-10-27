@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Cybersécurité : failles critiques dans PHP</title>
+<link rel="stylesheet" href="../../../fonts/fonts.css">
+<style>
+  :root {
+    --fond: #f3f4f6; --carte: #ffffff; --bord: #dfe3e8; --filet: #eef0f3;
+    --encre: #16202e; --texte: #25303e; --doux: #4f5b6b;
+    --marine: #1f3a5f;
+    /* Palette de l'article (une par article) : terre de sienne */
+    --accent: #9a3412; --accent-fonce: #7a2a0e; --accent-pale: #fdece3;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body.a-page { background: var(--fond); color: var(--encre); font-family: 'Figtree', system-ui, sans-serif; min-height: 100vh; overflow-x: hidden; }
+  a { color: var(--accent); }
+  strong { color: var(--encre); font-weight: 700; }
+
+  /* Barre du haut */
+  nav.a-nav { display: flex; align-items: center; gap: 16px; padding: 14px 32px; background: #fff; border-bottom: 1px solid var(--bord); position: sticky; top: 0; z-index: 100; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .nav-logo { font-family: 'Fraunces', Georgia, serif; font-size: 1.4rem; font-weight: 700; color: var(--encre); text-decoration: none; white-space: nowrap; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: .88rem; color: var(--doux); flex-wrap: wrap; justify-content: center; }
+  .breadcrumb a { color: var(--doux); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--accent); }
+  .breadcrumb .sep { color: #9aa5b3; }
+  .breadcrumb .current { color: var(--encre); font-weight: 600; }
+  /* Choix de la langue : petit interrupteur FR / EN, dans le ton de la barre noire */
+  .a-langues { display: flex; gap: 2px; padding: 2px; border: 1px solid #2e2e33; border-radius: 999px; background: #161617; }
+  nav.sn .a-langues .ap-lang-btn { border: 0; border-radius: 999px; background: transparent; color: #bdbdb8; font: 500 11px/1 'IBM Plex Mono', ui-monospace, monospace; letter-spacing: .1em; padding: 0 11px; height: 30px; min-height: 0; cursor: pointer; transition: background .15s, color .15s; }
+  nav.sn .a-langues .ap-lang-btn:hover { color: #fff; }
+  nav.sn .a-langues .ap-lang-btn.active { background: #f3efe4; color: #0b0b0c; }
+  nav.sn .a-langues .ap-lang-btn:focus-visible { outline: 2px solid #f3efe4; outline-offset: 2px; }
+  .a-filet { height: 6px; background: var(--accent); }
+
+  .a-main { max-width: 1216px; margin: 0 auto; padding: 40px 32px 88px; }
+  .ap-es-section { display: none; }
+
+  /* Héros : titre à gauche, photo à droite */
+  .a-hero { display: flex; flex-wrap: wrap; gap: 40px; align-items: center; }
+  .a-hero-texte { flex: 1 1 520px; min-width: 0; }
+  .a-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .a-tag { font-size: .82rem; font-weight: 700; padding: 6px 12px; border-radius: 999px; background: #e6eaef; color: var(--texte); }
+  .a-tag.t0 { background: var(--encre); color: #fff; }
+  .a-tag.t1 { background: var(--accent-pale); color: var(--accent-fonce); }
+  .a-titre { font-family: 'Fraunces', Georgia, serif; font-size: 2.15rem; line-height: 1.1; font-weight: 600; color: var(--encre); }
+  .a-sous-titre { margin-top: 14px; font-family: 'Fraunces', Georgia, serif; font-size: 1.4rem; line-height: 1.3; font-weight: 500; color: var(--doux); }
+  .a-meta { margin-top: 20px; font-size: .9rem; color: var(--doux); }
+  .a-hero-img { flex: 1 1 380px; min-width: 0; width: 100%; max-width: 480px; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 16px; display: block; }
+
+  /* Cartes */
+  .a-carte { background: var(--carte); border: 1px solid var(--bord); border-radius: 16px; }
+  .a-lab { font-size: .75rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--doux); margin-bottom: 16px; }
+  .a-lab.rouge { color: var(--accent); }
+
+  .a-essentiel { margin-top: 40px; padding: 28px 32px; }
+  .a-essentiel ol { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px 32px; }
+  .a-essentiel li { display: flex; gap: 14px; }
+  .a-essentiel p { font-size: 1rem; line-height: 1.55; color: var(--texte); }
+  .a-rond { flex: none; width: 32px; height: 32px; border-radius: 50%; background: var(--encre); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+
+  /* Article */
+  .a-article { margin-top: 24px; padding: 48px 56px 56px; }
+  .a-chiffres { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; padding-bottom: 36px; margin-bottom: 36px; border-bottom: 1px solid var(--filet); }
+  .a-chiffre { font-family: 'Fraunces', Georgia, serif; font-size: 2.5rem; font-weight: 700; line-height: 1; color: var(--encre); }
+  .a-chiffre.rouge { color: var(--accent); }
+  .a-chiffre-txt { margin-top: 8px; font-size: .9rem; line-height: 1.4; color: var(--doux); }
+  .a-chapo { font-family: 'Fraunces', Georgia, serif; font-size: 1.35rem; line-height: 1.6; color: var(--encre); margin-bottom: 44px; }
+  .a-sec { margin-bottom: 44px; display: flow-root; }
+  .a-h2 { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; font-family: 'Fraunces', Georgia, serif; font-size: 1.75rem; line-height: 1.2; font-weight: 600; color: var(--encre); }
+  .a-num { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; background: var(--accent-pale); color: var(--accent-fonce); font-family: 'Figtree', sans-serif; font-size: .82rem; font-weight: 700; }
+  .a-p { font-size: 1.19rem; line-height: 1.7; color: var(--texte); margin-bottom: 16px; }
+  .a-sec .a-p:last-child, .a-analyse .a-p:last-child { margin-bottom: 0; }
+  .a-lien { color: inherit; text-decoration: underline; text-underline-offset: 2px; text-decoration-color: var(--accent); }
+
+  /* Photo dans le texte */
+  .a-photo { float: right; width: min(400px, 42%); margin: 6px 0 14px 32px; }
+  .a-photo.gauche { float: left; margin: 6px 36px 18px 0; }
+  .a-photo img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 12px; }
+  .a-photo figcaption { margin-top: 8px; font-size: .82rem; line-height: 1.45; color: var(--doux); }
+
+  /* Citation : filet rouge, taille de lecture */
+  .a-citation { margin: 0 0 44px; padding: 4px 0 4px 26px; border-left: 3px solid var(--accent); max-width: 860px; }
+  .a-citation blockquote { font-family: 'Fraunces', Georgia, serif; font-size: 1.45rem; line-height: 1.4; font-weight: 500; color: var(--encre); }
+  .a-citation figcaption { margin-top: 12px; font-size: .9rem; line-height: 1.5; color: var(--doux); }
+  .a-citation figcaption b { color: var(--encre); font-weight: 700; }
+  .a-trad { display: block; margin-top: 4px; font-style: italic; }
+
+  /* Schémas */
+  .a-schema { margin: -12px 0 44px; padding: 26px 28px; background: #f5f6f8; border-radius: 14px; }
+  .a-schema-t { font-family: 'Fraunces', Georgia, serif; font-size: 1.2rem; font-weight: 600; color: var(--encre); margin-bottom: 16px; }
+  .a-src { margin-top: 14px; font-size: .8rem; line-height: 1.45; color: var(--doux); }
+  .a-etapes { display: flex; flex-wrap: wrap; gap: 10px; }
+  .a-etape { flex: 1 1 180px; min-width: 0; padding: 16px 18px; background: #fff; border: 2px solid var(--bord); border-radius: 12px; display: flex; flex-direction: column; gap: 4px; }
+  .a-etape.non { background: var(--accent-pale); border-color: var(--accent); }
+  .a-statut { font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #1f6b3a; }
+  .a-etape.estime .a-statut { color: #8a5a00; }
+  .a-etape.non .a-statut { color: var(--accent-fonce); }
+  .a-val { font-family: 'Fraunces', Georgia, serif; font-size: 1.4rem; font-weight: 700; color: var(--encre); }
+  .a-txt { font-size: .9rem; line-height: 1.4; color: var(--texte); }
+  .a-fleche { flex: none; align-self: center; font-size: 1.4rem; color: #9aa5b3; }
+  .a-axe-bornes { display: flex; justify-content: space-between; gap: 12px; font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--doux); margin-bottom: 14px; }
+  .a-axe { list-style: none; border-top: 3px solid; border-image: linear-gradient(90deg, var(--marine), var(--accent)) 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 20px; }
+  .a-axe li { position: relative; padding-top: 18px; }
+  .a-point { position: absolute; top: -10px; left: 0; width: 16px; height: 16px; border-radius: 50%; border: 3px solid #f5f6f8; }
+  .a-axe b { display: block; font-size: .95rem; color: var(--encre); }
+  .a-axe small { display: block; font-size: .8rem; color: var(--doux); }
+  .a-axe p { margin-top: 8px; font-size: .9rem; line-height: 1.45; color: var(--texte); }
+
+  /* Tableau comparatif (dans un a-schema) */
+  .a-tableau { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; font-size: .95rem; line-height: 1.45; }
+  .a-tableau th { padding: 12px 16px; text-align: left; font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--doux); background: #fff; border-bottom: 2px solid var(--bord); }
+  .a-tableau th:last-child { color: var(--accent); }
+  .a-tableau td { padding: 12px 16px; border-bottom: 1px solid var(--filet); color: var(--texte); vertical-align: top; }
+  .a-tableau tr:last-child td { border-bottom: 0; }
+  .a-tableau td:first-child { font-weight: 700; color: var(--encre); white-space: nowrap; }
+  .a-defile-t { overflow-x: auto; border-radius: 12px; }
+  /* Étapes datées : le statut porte la date */
+  .a-etapes.dates .a-statut { color: var(--doux); }
+  .a-etapes.dates .a-etape.non .a-statut { color: var(--accent-fonce); }
+
+  /* Chronologie : frise horizontale, la plus récente à gauche */
+  .a-chrono-bloc .a-h2 { margin-bottom: 4px; }
+  .a-chrono-sous { font-size: .85rem; color: var(--doux); margin-bottom: 18px; }
+  .a-defile { overflow-x: auto; }
+  .a-chrono { list-style: none; min-width: 900px; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0 18px; }
+  .a-chrono li { border-top: 4px solid #c9d0d8; padding-top: 14px; }
+  .a-chrono li.recent { border-top-color: var(--accent); }
+  .a-date { display: block; font-family: 'Fraunces', Georgia, serif; font-size: 1.05rem; font-weight: 700; color: var(--encre); }
+  .a-chrono li.recent .a-date { color: var(--accent); }
+  .a-chrono p { margin-top: 8px; font-size: .9rem; line-height: 1.45; color: var(--texte); }
+
+  /* Analyse : page d'éditorial, filet noir, texte sur deux colonnes */
+  .a-analyse { margin-top: 8px; padding: 26px 0 30px; border-top: 3px solid var(--encre); border-bottom: 1px solid var(--bord); }
+  .a-analyse-lab { display: flex; align-items: center; gap: 10px; font-size: .75rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+  .a-analyse-lab::before { content: ""; width: 10px; height: 10px; background: var(--accent); }
+  .a-analyse-t { margin: 10px 0 22px; max-width: 820px; font-family: 'Fraunces', Georgia, serif; font-size: 2.1rem; line-height: 1.15; font-weight: 600; color: var(--encre); }
+  .a-analyse-corps { columns: 2 340px; column-gap: 48px; column-rule: 1px solid var(--filet); orphans: 1; widows: 1; }
+  .a-analyse-corps .a-p { font-size: 1.08rem; line-height: 1.7; margin-bottom: 14px; }
+  .a-analyse-corps .a-p:last-child { margin-bottom: 0; }
+  /* Dans une copie : accroche prête à l'emploi, idée-force, sujets, piège */
+  .a-copie { margin-top: 30px; padding: 24px 26px 26px; background: var(--fond); border-radius: 14px; }
+  .a-copie-t { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; font-size: .75rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--encre); }
+  .a-copie-t::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--encre); }
+  .a-accroche { padding: 20px 22px 18px; background: var(--carte); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; }
+  .a-copie h3 { margin-bottom: 8px; font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+  .a-accroche p { font-family: 'Fraunces', Georgia, serif; font-size: 1.18rem; line-height: 1.55; color: var(--encre); }
+  .a-copie-grille { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 14px; }
+  .a-copie-grille > div { padding: 18px 20px; background: var(--carte); border-radius: 10px; }
+  .a-copie-grille p, .a-copie-grille li { font-size: .95rem; line-height: 1.55; color: var(--texte); }
+  .a-copie-grille ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .a-copie-grille li { padding-left: 16px; position: relative; }
+  .a-copie-grille li::before { content: ""; position: absolute; left: 0; top: .6em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .a-copie-grille .a-piege { background: var(--accent-pale); }
+  .a-copie-grille .a-piege h3 { color: var(--accent-fonce); }
+  .a-analyse-corps .a-p:first-child::first-letter { float: left; margin: 6px 10px 0 0; font-family: 'Fraunces', Georgia, serif; font-size: 3.6rem; line-height: .8; font-weight: 700; color: var(--accent); }
+
+  /* Pour aller plus loin : le cours à réviser, les articles liés en vignettes, les sources */
+  .a-plus { margin-top: 24px; padding: 36px 36px 32px; }
+  .a-plus-t { font-family: 'Fraunces', Georgia, serif; font-size: 1.75rem; font-weight: 600; color: var(--encre); margin-bottom: 22px; }
+  .a-plus-h { display: flex; align-items: center; gap: 12px; margin: 34px 0 16px; font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--doux); }
+  .a-plus-h::after { content: ""; flex: 1; height: 1px; background: var(--filet); }
+  .a-kicker { display: block; font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+  .a-cours { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 28px; align-items: center; padding: 16px; background: var(--fond); border-radius: 14px; text-decoration: none; color: var(--encre); }
+  .a-cours img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 10px; display: block; }
+  .a-cours b { display: block; margin-top: 8px; font-family: 'Fraunces', Georgia, serif; font-size: 1.6rem; line-height: 1.2; font-weight: 600; }
+  .a-cours p { margin-top: 8px; font-size: 1rem; line-height: 1.55; color: var(--texte); }
+  .a-cours-btn { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; padding: 10px 16px; border-radius: 999px; background: var(--encre); color: #fff; font-size: .9rem; font-weight: 700; }
+  .a-cours:hover .a-cours-btn { background: var(--accent); }
+  .a-lire { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+  .a-lire a { display: flex; flex-direction: column; gap: 10px; height: 100%; text-decoration: none; color: var(--encre); }
+  .a-lire img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 10px; display: block; background: var(--filet); }
+  .a-lire b { font-family: 'Fraunces', Georgia, serif; font-size: 1.05rem; line-height: 1.3; font-weight: 600; }
+  .a-lire a:hover b { color: var(--accent); }
+  .a-lire .a-kicker { color: var(--doux); font-size: .72rem; }
+  .a-sources { list-style: none; counter-reset: src; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px 40px; }
+  .a-sources li { counter-increment: src; display: grid; grid-template-columns: 28px minmax(0, 1fr); font-size: .88rem; line-height: 1.5; color: var(--doux); }
+  .a-sources li::before { content: counter(src); font-weight: 700; color: var(--accent); }
+  .a-sources b { display: block; font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; color: var(--encre); }
+  .a-sources a { color: var(--encre); text-decoration: underline; text-decoration-color: var(--bord); text-underline-offset: 3px; }
+  .a-sources a:hover { text-decoration-color: var(--accent); }
+
+
+  .a-fin { margin-top: 28px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+  .a-fin a { display: inline-flex; align-items: center; min-height: 48px; font-weight: 700; color: var(--encre); text-decoration: none; }
+  .a-fin a:hover { color: var(--accent); }
+  .a-partager { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 18px; border: 1px solid var(--bord); border-radius: 999px; background: var(--carte); color: var(--encre); font: 700 .9rem 'Figtree', sans-serif; cursor: pointer; }
+  .a-partager:hover { border-color: var(--encre); }
+
+  @media (max-width: 900px) {
+    .a-axe { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 20px; border-image: none; border-top: 0; }
+    .a-axe li { border-top: 3px solid var(--bord); }
+    .a-point { top: -10px; }
+  }
+  @media (max-width: 1000px) {
+    .a-copie-grille { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .a-copie-grille .a-piege { grid-column: 1 / -1; }
+    .a-lire { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  /* Photo : sous 1000 px, plus de colonne de texte trop étroite à côté : elle passe au-dessus du texte */
+  @media (max-width: 1000px) {
+    .a-photo, .a-photo.gauche { float: none; width: 100%; max-width: 560px; margin: 4px auto 20px; }
+  }
+  @media (max-width: 760px) {
+    nav.a-nav { padding: 12px 16px; }
+    .breadcrumb { display: none; }
+    .a-main { padding: 24px 16px 64px; }
+    .a-hero { gap: 20px; }
+    .a-titre { font-size: 1.85rem; }
+    .a-sous-titre { font-size: 1.1rem; }
+    .a-essentiel { margin-top: 24px; padding: 22px 20px; }
+    .a-article { padding: 28px 20px 32px; }
+    .a-chiffres { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .a-chiffre { font-size: 1.8rem; }
+    .a-chapo { font-size: 1.15rem; margin-bottom: 32px; }
+    .a-h2 { font-size: 1.35rem; }
+    .a-p { font-size: 1.05rem; }
+    .a-photo, .a-photo.gauche { float: none; width: 100%; margin: 0 0 18px; }
+    .a-citation { padding-left: 18px; }
+    .a-citation blockquote { font-size: 1.2rem; }
+    .a-schema { padding: 20px 18px; }
+    .a-fleche { transform: rotate(90deg); width: 100%; text-align: center; }
+    .a-axe { grid-template-columns: 1fr; }
+    .a-tableau { min-width: 560px; }
+    .a-analyse-t { font-size: 1.55rem; }
+    .a-analyse-corps .a-p { font-size: 1.02rem; }
+    .a-copie { padding: 18px 14px 16px; margin-left: -6px; margin-right: -6px; }
+    .a-accroche p { font-size: 1.05rem; }
+    .a-copie-grille { grid-template-columns: 1fr; }
+    .a-plus { padding: 26px 20px 24px; }
+    .a-plus-t { margin-bottom: 18px; }
+    .a-cours { grid-template-columns: 1fr; gap: 14px; padding: 12px; }
+    .a-cours b { font-size: 1.35rem; }
+    .a-lire { grid-template-columns: 1fr; gap: 0; }
+    .a-lire a { flex-direction: row; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--filet); }
+    .a-lire li:last-child a { border-bottom: 0; }
+    .a-lire img { flex: none; width: 104px; border-radius: 8px; }
+    .a-lire b { font-size: .98rem; }
+    .a-sources { grid-template-columns: 1fr; }
+    .a-fin { justify-content: center; }
+  }
+
+  /* Schémas propres à cet article : grille de statuts par version et échelle de protection */
+  .a-tuiles { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+  .a-tuiles li { padding: 14px 16px; background: #fff; border-radius: 12px; border-top: 5px solid #c9d0d8; }
+  .a-tuiles li.ok { border-top-color: #1f8a4c; }
+  .a-tuiles li.mid { border-top-color: #d99a1b; }
+  .a-tuiles li.non { border-top-color: #b5131f; background: #fdf1f1; }
+  .a-tuiles b { display: block; font-family: 'Fraunces', Georgia, serif; font-size: 1.1rem; color: var(--encre); }
+  .a-tuiles strong { display: block; margin-top: 2px; font-size: .82rem; letter-spacing: .04em; color: var(--doux); }
+  .a-tuiles p { margin-top: 8px; font-size: .86rem; line-height: 1.4; color: var(--texte); }
+  .a-tuiles li.ok strong { color: #1f6b3a; }
+  .a-tuiles li.non strong { color: #8e0f19; }
+  .a-echelle { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .a-echelle li { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 220px); gap: 6px 22px; align-items: center; }
+  .a-echelle .a-e-t { font-size: .98rem; line-height: 1.4; color: var(--encre); }
+  .a-echelle .a-e-t small { display: block; margin-top: 2px; font-size: .84rem; color: var(--doux); }
+  .a-echelle .a-e-p { height: 14px; border-radius: 7px; background: #dfe3e8; }
+  .a-echelle .a-e-p i { display: block; height: 100%; border-radius: 7px; background: var(--accent); }
+  @media (max-width: 1000px) { .a-tuiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 760px) { .a-echelle li { grid-template-columns: 1fr; } }
+</style>
+<link rel="stylesheet" href="../../../barre-section.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cybersécurité : failles critiques dans PHP">
+<meta property="og:image" content="https://ecg-prepa.fr/partage/actualites/monde-php-faille-critique-execution-code-2026.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Cybersécurité : failles critiques dans PHP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ecg-prepa.fr/partage/actualites/monde-php-faille-critique-execution-code-2026.jpg">
+<meta name="description" content="Le 21 octobre 2026, l&#x27;équipe de sécurité de PHP a publié des versions d&#x27;urgence pour corriger deux failles critiques, surnommées « php2shell », qui…">
+<link rel="canonical" href="https://ecg-prepa.fr/actualites/monde/articles/php-faille-critique-execution-code-2026.html">
+</head>
+<body class="a-page">
+<nav class="a-nav sn sn-actu">
+  <div class="nav-left"><a class="nav-logo sn-logo" href="../../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb sn-fil">
+    <a href="../../../index.html">Accueil</a><span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a><span class="sep">/</span>
+    <a href="../index-monde.html">Monde</a><span class="sep">/</span>
+    <span class="current">Cybersécurité</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+<div class="a-filet"></div>
+<main class="a-main">
+<section class="a-hero">
+<div class="a-hero-texte">
+<div class="a-tags"><span class="a-tag t0">Monde</span><span class="a-tag t1">Cybersécurité</span><span class="a-tag t2">PHP</span><span class="a-tag t3">Faille</span></div>
+<h1 class="ap-title a-titre">Cybersécurité : deux failles critiques dans PHP permettent d'exécuter du code à distance, et elles sont déjà exploitées</h1>
+<p class="a-meta">Octobre 2026 · Monde · 5 min de lecture</p>
+</div>
+<img class="a-hero-img" src="../images/php-faille-critique-execution-code-2026.webp" alt="Illustration d'un ordinateur portable affichant une page web barrée d'un triangle d'alerte rouge, à côté d'un bouclier à cadenas bleu, d'un écran de code PHP et d'une silhouette encapuchonnée en arrière-plan">
+</section>
+<section class="a-carte a-essentiel"><p class="a-lab rouge">L'essentiel en 30 secondes</p><ol>
+<li><span class="a-rond">1</span><p>Le <strong>21 octobre 2026</strong>, PHP publie en urgence des correctifs pour <strong>deux failles critiques</strong> (CVE-2026-109618 et CVE-2026-109619), notées <strong>9,2 sur 10</strong>.</p></li>
+<li><span class="a-rond">2</span><p>Un attaquant <strong>sans identifiant</strong> peut, avec une simple requête web, <strong>exécuter du code</strong> sur le serveur : la CISA américaine impose de les traiter comme exploitées.</p></li>
+<li><span class="a-rond">3</span><p>Les détails ont <strong>fuité avant la divulgation</strong>, et une <strong>troisième faille</strong>, non corrigée, a été révélée le 23 octobre.</p></li>
+</ol></section>
+<article class="a-carte a-article">
+<section class="a-chiffres" aria-label="Chiffres clés">
+<div><div class="a-chiffre rouge">9,2</div><div class="a-chiffre-txt">Note CVSS v4.0 des deux failles, sur 10</div></div>
+<div><div class="a-chiffre">22,6 M</div><div class="a-chiffre-txt">Instances exposées potentiellement vulnérables (télémétrie Palo Alto Networks)</div></div>
+<div><div class="a-chiffre">4 jours</div><div class="a-chiffre-txt">Entre les premières tentatives signalées (17 octobre) et les correctifs (21 octobre)</div></div>
+<div><div class="a-chiffre">4</div><div class="a-chiffre-txt">Branches de PHP corrigées : 8.2, 8.3, 8.4 et 8.5</div></div>
+</section>
+<p class="ap-intro a-chapo">Le 21 octobre 2026, l'équipe de sécurité de PHP a publié des versions d'urgence pour corriger deux failles critiques, surnommées « php2shell », qui permettent à un attaquant sans compte d'exécuter du code sur un serveur à distance. Les détails avaient fuité la veille, avant la date de divulgation prévue, et des tentatives d'exploitation auraient commencé dès le 17 octobre. Le 26 octobre, la CISA américaine a inscrit les deux failles à son catalogue des vulnérabilités exploitées. PHP faisant tourner une grande partie du web, des administrateurs du monde entier appliquent depuis des correctifs dans l'urgence.</p>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">01</span>Deux failles, un correctif d'urgence</h2>
+<p class="a-p">Le 21 octobre 2026, PHP a publié des versions de sécurité qui corrigent deux failles : CVE-2026-109618 et CVE-2026-109619. Elles portent chacune la note maximale de leur catégorie, 9,2 sur 10 selon le système CVSS v4.0, rapporte Akamai. Les versions corrigées sont PHP 8.5.12, 8.4.27, 8.3.36 et 8.2.35. La CISA, l'agence américaine de cybersécurité, résume le danger : ces failles « permettent une exécution de code à distance non authentifiée dans PHP », et touchent toutes les installations qui servent des requêtes web.</p>
+</div>
+<figure class="a-citation"><blockquote lang="es">« These vulnerabilities, known as “php2shell,” allow for unauthenticated remote code execution in PHP. »</blockquote><figcaption><b>CISA</b>, agence américaine de cybersécurité, alerte du 21 octobre 2026<span class="a-trad">« Ces vulnérabilités, appelées “php2shell”, permettent une exécution de code à distance non authentifiée dans PHP. »</span></figcaption></figure>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">02</span>Comment l'attaque fonctionne</h2>
+<p class="a-p">La première faille, CVE-2026-109618, tient à la gestion des erreurs de mémoire. Selon Datadog, quand une allocation échoue, PHP laisse derrière lui des données invalides que sa routine de nettoyage va ensuite traiter. La seconde, CVE-2026-109619, est une utilisation de mémoire après libération : un processus PHP peut réutiliser l'état d'une requête précédente, devenu périmé. Deux chemins sont confirmés par PHP : les traces d'erreurs fatales, sous PHP 8.5 seulement, et le suivi de progression d'un envoi de fichier, activé par défaut.</p>
+<p class="a-p">Datadog a reproduit l'attaque sur PHP 8.5.11 avec une seule requête HTTP POST non authentifiée, et conclut que l'authentification de l'application ne peut pas la bloquer. L'exploitation reste délicate : il faut calibrer la requête pour que l'allocation échoue au bon moment et contourner la protection ASLR. Dans le laboratoire de Datadog, la commande s'exécute avec les droits du compte du serveur web.</p>
+</div>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">03</span>Une fuite avant la divulgation</h2>
+<p class="a-p">La divulgation était prévue le jeudi 22 octobre. Selon watchTowr, un message annonçant deux failles critiques à venir est apparu le 20 octobre sur Hacker News, puis a été retiré, et des captures ont circulé. L'équipe de sécurité de PHP a alors avancé la sortie des correctifs au 21 octobre, vers 14 h UTC. Plusieurs chercheurs ont publié ce jour-là des détails techniques ; Wiz a démontré l'attaque contre des sites WordPress, Drupal et Joomla. Personne n'a identifié l'origine de la fuite.</p>
+<p class="a-p">Datadog affirme qu'AWS avait signalé des tentatives d'exploitation dès le 17 octobre, quatre jours avant les correctifs. Je n'ai pas pu consulter le billet d'AWS, et cette date reste donc une affirmation rapportée.</p>
+</div>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">04</span>Une exploitation déjà en cours</h2>
+<p class="a-p">Dès le 21 octobre, watchTowr dit avoir observé de l'exploitation dans la nature grâce à son réseau de pots de miel, et Datadog évoque un balayage massif et non ciblé. Huntress, de son côté, n'en avait pas vu chez ses clients à cette date. Le 25 octobre, Palo Alto Networks (Unit 42) a retiré son affirmation selon laquelle une attaque contre une agence gouvernementale européenne exploitait ces failles : il ne peut pas confirmer le lien avec les deux CVE. Le 26 octobre, la CISA a ajouté les deux failles à son catalogue des vulnérabilités exploitées. Aucun acteur n'a été identifié.</p>
+<p class="a-p">L'enjeu tient à l'exposition : Palo Alto Networks a recensé plus de 22,6 millions d'instances exposées potentiellement vulnérables, d'après sa télémétrie.</p>
+</div>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">05</span>Qui est concerné</h2>
+<p class="a-p">Tous les environnements PHP qui répondent à des requêtes web : Apache avec mod_php, PHP-FPM, php-cgi, FrankenPHP et LiteSpeed. Le cas de mod_php est jugé le plus risqué, car une requête non authentifiée peut déclencher l'attaque avant l'exécution du moindre code de l'application. Les sites bâtis sur WordPress, Drupal, Joomla ou Magento tournent sur PHP, mais les éditeurs n'avaient pas, dans les pages consultées, publié d'avis spécifique.</p>
+<p class="a-p">La situation est la plus difficile pour les versions anciennes. PHP 8.1 et antérieures ne sont plus supportées ; l'équipe a fourni des correctifs minimaux sous forme de code source pour les branches 7.4, 8.0 et 8.1, mais aucune version officielle. La CISA recommande de mettre hors ligne les systèmes PHP qui ne peuvent pas être mis à jour. Les distributions Linux ont reçu les correctifs en avance, mais certains dépôts tiers étaient en retard le 21 octobre, selon Huntress.</p>
+</div>
+<figure class="a-schema"><p class="a-schema-t">Qui est corrigé, qui ne l'est pas</p><ul class="a-tuiles">
+<li class="ok"><b>PHP 8.5</b><strong>8.5.12</strong><p>Version corrigée</p></li>
+<li class="ok"><b>PHP 8.4</b><strong>8.4.27</strong><p>Version corrigée</p></li>
+<li class="ok"><b>PHP 8.3</b><strong>8.3.36</strong><p>Version corrigée</p></li>
+<li class="ok"><b>PHP 8.2</b><strong>8.2.35</strong><p>Version corrigée</p></li>
+<li class="mid"><b>PHP 8.1</b><strong>Fin de support</strong><p>Correctif source minimal, pas de version officielle</p></li>
+<li class="mid"><b>PHP 8.0</b><strong>Fin de support</strong><p>Correctif source minimal, pas de version officielle</p></li>
+<li class="mid"><b>PHP 7.4</b><strong>Fin de support</strong><p>Correctif source minimal, pas de version officielle</p></li>
+<li class="non"><b>PHP 7.3 et avant</b><strong>Fin de support</strong><p>Aucun correctif disponible</p></li>
+</ul><figcaption class="a-src">Sources : Datadog ; watchTowr ; Huntress (citant l'équipe de sécurité de PHP) ; CISA.</figcaption></figure>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">06</span>Se protéger quand on ne peut pas mettre à jour</h2>
+<p class="a-p">Seule la mise à jour corrige réellement les failles, insiste Datadog, qui cite PHP : aucun changement de configuration ne les neutralise complètement. Des palliatifs existent : régler memory_limit à -1 bloque le chemin d'exploitation connu de la première, et désactiver le suivi de progression d'envoi (session.upload_progress.enabled=0, plus fatal_error_backtraces=0 sous PHP 8.5) limite la seconde. Un pare-feu applicatif web, comme la règle d'Akamai ou la signature de Palo Alto Networks, apporte une protection partielle.</p>
+<p class="a-p">Côté détection, Datadog conseille de chercher des serveurs web qui lancent des shells, des erreurs de dépassement de mémoire et la présence de PHP_SESSION_UPLOAD_PROGRESS dans des requêtes multipart. Une exécution réussie ne fait pas forcément planter le processus. La CISA a de son côté publié, le 23 octobre, une règle de détection de type SIGMA pour repérer des processus PHP qui lancent des shells ou téléchargent des outils.</p>
+</div>
+<figure class="a-schema"><p class="a-schema-t">Se protéger, du plus sûr au plus fragile</p><ol class="a-echelle">
+<li><span class="a-e-t">Mettre à jour vers 8.5.12, 8.4.27, 8.3.36 ou 8.2.35<small>Seule mesure qui corrige vraiment les deux failles</small></span><span class="a-e-p" role="img" aria-label="Niveau de protection indicatif"><i style="width:100%"></i></span></li>
+<li><span class="a-e-t">Régler memory_limit à -1 et désactiver le suivi de progression d'envoi<small>Bloque les chemins d'exploitation connus, à titre transitoire</small></span><span class="a-e-p" role="img" aria-label="Niveau de protection indicatif"><i style="width:55%"></i></span></li>
+<li><span class="a-e-t">Placer un pare-feu applicatif web devant le site<small>Protection partielle, selon la CISA</small></span><span class="a-e-p" role="img" aria-label="Niveau de protection indicatif"><i style="width:35%"></i></span></li>
+<li><span class="a-e-t">Rester sur PHP 8.1 ou plus ancien sans correctif<small>La CISA recommande de mettre ces systèmes hors ligne</small></span><span class="a-e-p" role="img" aria-label="Niveau de protection indicatif"><i style="width:10%"></i></span></li>
+</ol><figcaption class="a-src">Sources : Datadog ; CISA ; Akamai. Les longueurs sont indicatives.</figcaption></figure>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">07</span>Une troisième faille, sans correctif</h2>
+<p class="a-p">Le 23 octobre, PHP a divulgué une troisième faille d'exécution de code, CVE-2026-115560, dans un avis informatif. Elle ne concerne que certaines applications : celles qui configurent session.serialize_handler sur php_binary ou php_serialize, le repassent à php avec ini_set() avant session_start(), tout en laissant active la progression d'envoi. Les versions corrigées ci-dessus ne la règlent pas ; la désactivation de session.upload_progress.enabled suffit à la contourner, selon SOC Prime. PHP prévoit un correctif dans sa prochaine version de maintenance, mais n'a pas encore publié la cause technique complète, les versions exactement touchées ni de score CVSS. Aucune exploitation n'avait été signalée au 26 octobre.</p>
+</div>
+<section class="a-sec a-chrono-bloc"><h2 class="ap-sub a-h2">Chronologie</h2><p class="a-chrono-sous">Du plus récent au plus ancien</p><div class="a-defile"><ol class="a-chrono">
+<li class="recent"><span class="a-date">26 octobre 2026</span><p>La CISA ajoute les deux failles à son catalogue des vulnérabilités exploitées.</p></li>
+<li><span class="a-date">25 octobre 2026</span><p>Palo Alto Networks retire une attribution d'attaque à ces failles.</p></li>
+<li><span class="a-date">23 octobre 2026</span><p>Divulgation d'une troisième faille, CVE-2026-115560, sans correctif.</p></li>
+<li><span class="a-date">21 octobre 2026</span><p>PHP publie les versions 8.5.12, 8.4.27, 8.3.36 et 8.2.35.</p></li>
+<li><span class="a-date">20 octobre 2026</span><p>Fuite des détails avant la date de divulgation prévue.</p></li>
+<li><span class="a-date">17 octobre 2026</span><p>Premières tentatives d'exploitation signalées, selon Datadog citant AWS.</p></li>
+</ol></div></section>
+<aside class="a-analyse"><p class="a-analyse-lab">L'analyse</p><h2 class="a-analyse-t">Quand la faille circule plus vite que le correctif</h2><div class="a-analyse-corps"><p class="a-p">L'épisode illustre une fragilité de la sécurité informatique : la divulgation coordonnée, qui laisse aux éditeurs le temps de corriger avant que les détails ne circulent, repose sur le secret. Quand il se rompt, comme ici le 20 octobre, la course est lancée entre ceux qui patchent et ceux qui attaquent. Avec plus de 22 millions d'instances exposées, selon la télémétrie de Palo Alto Networks, une faille de PHP n'est pas un incident local : c'est un risque diffus pour tout ce qui repose sur un composant ordinaire du web.</p><p class="a-p">La difficulté tient aussi à la durée de vie des logiciels. Les branches anciennes de PHP restent en service longtemps après la fin de leur support, et la consigne de la CISA de les mettre hors ligne dit l'ampleur du problème. Le cas d'Unit 42, qui a retiré une attribution d'attaque, rappelle enfin que l'information elle-même est fragile en pleine crise, et la troisième faille de la semaine montre qu'un correctif n'est jamais la fin de l'histoire. Il faudra donc surveiller la prochaine version de maintenance de PHP.</p></div>
+<section class="a-copie" aria-label="Dans une copie"><p class="a-copie-t">Dans une copie</p>
+<div class="a-accroche"><h3>Accroche</h3><p>Le 21 octobre 2026, PHP publie en urgence des correctifs pour deux failles qui permettent à n'importe quel internaute d'exécuter du code sur un serveur, alors que leurs détails avaient fuité la veille. Plus de 22 millions d'instances sont potentiellement exposées. Quand les technologies les plus banales du web deviennent des points d'entrée, qui est responsable de la sécurité du numérique ?</p></div>
+<div class="a-copie-grille">
+<div><h3>Idée-force</h3><p>Le numérique repose sur des briques communes, souvent libres et maintenues par peu de monde : leur faille devient un risque collectif. La cybersécurité est un enjeu de puissance et de résilience qui mêle éditeurs, États, entreprises et utilisateurs.</p></div>
+<div><h3>Sujets où la placer</h3><ul><li>Le numérique, facteur de vulnérabilité pour les sociétés ? (culture générale)</li><li>Les logiciels libres, un bien commun fragile ? (culture générale)</li><li>La cybersécurité, nouvel enjeu de souveraineté pour les États ? (HGG)</li></ul></div>
+<div class="a-piege"><h3>Piège à éviter</h3><p>Écrire que 22,6 millions de sites ont été piratés, ou que toutes les versions de PHP sont désormais corrigées : le chiffre désigne des instances exposées potentiellement vulnérables, et seules les branches 8.2 à 8.5 ont des versions officielles corrigées. Ne pas oublier non plus la troisième faille, CVE-2026-115560, que ces correctifs ne règlent pas.</p></div>
+</div></section></aside>
+</article>
+<section class="a-carte a-plus"><h2 class="a-plus-t">Pour aller plus loin</h2>
+<h3 class="a-plus-h">Lire aussi</h3><ul class="a-lire">
+<li><a href="france-cyberattaque-frigos-supermarches.html"><img src="../images/france-cyberattaque-frigos-supermarches.webp" alt="" loading="lazy"><span><span class="a-kicker">France · Octobre 2026</span><b>France : une cyberattaque non revendiquée sabote les frigos de centaines de supermarchés</b></span></a></li>
+<li><a href="dirigeants-ia-appel-ralentissement.html"><img src="../images/dirigeants-ia-appel-ralentissement.webp" alt="" loading="lazy"><span><span class="a-kicker">Monde · Septembre 2026</span><b>Amodei, Altman, Musk et Hassabis renforcent leurs appels à ralentir le développement de l'IA face aux risques</b></span></a></li>
+<li><a href="vatican-ia-desarmer.html"><img src="../images/vatican-ia-desarmer.webp" alt="" loading="lazy"><span><span class="a-kicker">Vatican · Mai 2026</span><b>Vatican : Léon XIV lance l'alarme sur l'IA et appelle le monde à la désarmer</b></span></a></li>
+<li><a href="nvidia-double-bourse-paris.html"><img src="../images/nvidia-double-bourse-paris.webp" alt="" loading="lazy"><span><span class="a-kicker">Monde · Octobre 2026</span><b>Nvidia vaut désormais près de deux fois toute la Bourse de Paris, au seuil des 6 000 milliards</b></span></a></li>
+</ul><h3 class="a-plus-h">Sources</h3><ol class="a-sources">
+<li><span><b>CISA</b><a href="https://www.cisa.gov/news-events/alerts/2026/10/21/critical-vulnerabilities-php-require-immediate-patching" target="_blank" rel="noopener">« Critical Vulnerabilities in PHP Require Immediate Patching »</a>, 21 octobre 2026, mis à jour le 26 octobre.</span></li>
+<li><span><b>Akamai</b><a href="https://www.akamai.com/blog/security-research/critical-remote-code-execution-vulnerabilities-php-core" target="_blank" rel="noopener">« Critical Remote Code Execution Vulnerabilities in PHP Core »</a>, 21 octobre 2026.</span></li>
+<li><span><b>Datadog Security Labs</b><a href="https://securitylabs.datadoghq.com/articles/php2shell-critical-vulnerabilities-in-php/" target="_blank" rel="noopener">« PHP2Shell: Critical vulnerabilities in PHP »</a>, 21 octobre 2026, mis à jour le 23 octobre.</span></li>
+<li><span><b>watchTowr</b><a href="https://watchtowr.com/intelligence/php-cve-2026-109618-faq/" target="_blank" rel="noopener">« CVE-2026-109618: Exploited Remote Code Execution in PHP »</a>, 20 octobre 2026, mis à jour le 26 octobre.</span></li>
+<li><span><b>Huntress</b><a href="https://www.huntress.com/blog/php2shell-leaked-critical-php-vulnerabilities" target="_blank" rel="noopener">« Rapid Response: php2shell, Leaked Critical PHP Vulnerabilities »</a>, 20 octobre 2026, mis à jour le 21 octobre.</span></li>
+<li><span><b>Palo Alto Networks, Unit 42</b><a href="https://unit42.paloaltonetworks.com/cve-2026-109618-cve-2026-109619/" target="_blank" rel="noopener">« Threat Brief: Critical Vulnerabilities in PHP »</a>, 23 octobre 2026, mis à jour le 25 octobre.</span></li>
+</ol></section>
+<div class="a-fin"><a href="../tous-es.html">← Tous les articles</a><button class="a-partager" type="button" onclick="partager(this)">Partager l'article</button><a href="../index-monde.html">Monde →</a></div>
+</main>
+<script>
+function partager(btn) {
+  const url = location.href.split('#')[0], titre = document.title.replace(/^ECG Prépa — /, '');
+  const fini = t => { const v = btn.textContent; btn.textContent = t; setTimeout(() => btn.textContent = v, 2000); };
+  if (navigator.share) { navigator.share({ title: titre, url }).catch(() => {}); return; }
+  navigator.clipboard.writeText(url).then(() => fini('Lien copié'), () => {});
+}
+</script>
+</body>
+</html>
