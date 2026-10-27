@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "en",
 "rubrique": "Actu Anglais",
+"meta": "Canada",
+"titre": "Colombie-Britannique : les conservateurs gagnent la majorité et mettent fin à neuf ans de NDP",
+"url": "actualites/en/articles/canada-colombie-britannique-conservateurs-elections-2026.html",
+"image": "actualites/en/images/canada-colombie-britannique-conservateurs-elections-2026.webp",
+"date": "2026-10-27T07:55:32+00:00"
+},
+{
+"t": "en",
+"rubrique": "Actu Anglais",
 "meta": "États-Unis",
 "titre": "Midterms : Trump multiplie les meetings en terrain républicain, alors que les courses se resserrent",
 "url": "actualites/en/articles/us-midterms-trump-meetings-bastions-republicains-2026.html",
@@ -1649,15 +1658,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Guerre en Iran : la Fed relève ses taux pour la première fois en trois ans face à l'énergie chère",
 "url": "actualites/en/articles/fed-hausse-taux-iran-2026.html",
 "image": "actualites/en/images/fed-hausse-taux-iran-2026.webp",
-"date": "2026-09-18T20:00:18+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "Les États-Unis confirment pour la première fois avoir déployé une arme en orbite terrestre",
-"url": "actualites/en/articles/usa-premiere-arme-orbite-2026.html",
-"image": "actualites/en/images/usa-premiere-arme-orbite-2026.webp",
 "date": "2026-09-18T20:00:18+00:00"
 },
 {
