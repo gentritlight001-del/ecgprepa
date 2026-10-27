@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "États-Unis",
+"titre": "États-Unis : Meta devra payer 25 milliards de dollars au Nouveau-Mexique pour avoir trompé ses utilisateurs",
+"url": "actualites/en/articles/us-meta-amende-25-milliards-nouveau-mexique-2026.html",
+"image": "actualites/en/images/us-meta-amende-25-milliards-nouveau-mexique-2026.webp",
+"date": "2026-10-27T07:23:36+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Bulgarie",
@@ -1649,15 +1658,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Indépendance : les First Ministers d'Irlande du Nord, d'Écosse et du Pays de Galles se sont réunis à Cardiff",
 "url": "actualites/en/articles/uk-first-ministers-independence-cardiff-2026.html",
 "image": "actualites/en/images/uk-first-ministers-independence-cardiff-2026.webp",
-"date": "2026-09-18T20:00:18+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "Trump minimise les risques de l'IA, en pleine vague d'alertes venues de la Silicon Valley",
-"url": "actualites/en/articles/trump-minimise-risques-ia-2026.html",
-"image": "actualites/en/images/trump-minimise-risques-ia-2026.webp",
 "date": "2026-09-18T20:00:18+00:00"
 },
 {
