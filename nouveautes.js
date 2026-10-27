@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Japon",
+"titre": "Japon : la JAXA lance MMX vers Phobos pour en rapporter au moins 10 grammes d'échantillons en 2031",
+"url": "actualites/monde/articles/japon-jaxa-mmx-phobos-2026.html",
+"image": "actualites/monde/images/japon-jaxa-mmx-phobos-2026.webp",
+"date": "2026-10-27T06:43:54+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "États-Unis",
@@ -1088,15 +1097,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Suède : la gauche de Magdalena Andersson l'emporte de justesse aux législatives",
 "url": "actualites/monde/articles/suede-elections-legislatives.html",
 "image": "actualites/monde/images/suede-elections-legislatives.webp",
-"date": "2026-09-18T20:00:18+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Soudan",
-"titre": "Soudan : effondrement meurtrier d'une mine d'or au Kordofan occidental",
-"url": "actualites/monde/articles/soudan-mine-or-kordofan.html",
-"image": "actualites/monde/images/soudan-mine-or-kordofan.webp",
 "date": "2026-09-18T20:00:18+00:00"
 },
 {
