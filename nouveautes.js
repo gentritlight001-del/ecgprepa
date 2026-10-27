@@ -2485,7 +2485,7 @@ window.ECG_NOUVEAUTES = [
 "meta": "HGG 1re année · chapitre 15",
 "titre": "Les ressources, un enjeu stratégique",
 "url": "premiere_annee/hgg/chapitre-15/chapitre-15-hgg.html",
-"image": "",
+"image": "premiere_annee/hgg/chapitre-15/images/mine-chuquicamata.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
