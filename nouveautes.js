@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Monde",
+"titre": "Cybersécurité : deux failles critiques dans PHP permettent d'exécuter du code à distance, déjà exploitées",
+"url": "actualites/monde/articles/php-faille-critique-execution-code-2026.html",
+"image": "actualites/monde/images/php-faille-critique-execution-code-2026.webp",
+"date": "2026-10-27T06:51:37+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Japon",
 "titre": "Japon : la JAXA lance MMX vers Phobos pour en rapporter au moins 10 grammes d'échantillons en 2031",
 "url": "actualites/monde/articles/japon-jaxa-mmx-phobos-2026.html",
@@ -1344,15 +1353,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/monde/articles/france-blocus-etudiants.html",
 "image": "actualites/monde/images/france-blocus-etudiants.webp",
 "date": "2026-10-01T13:53:18+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Somalie",
-"titre": "Somalie : de violents combats éclatent à Baidoa, 3e offensive en six semaines dans le Sud-Ouest",
-"url": "actualites/monde/articles/somalie-combats-sud-ouest.html",
-"image": "actualites/monde/images/somalie-combats-sud-ouest.webp",
-"date": "2026-10-01T13:52:44+00:00"
 },
 {
 "t": "en",
