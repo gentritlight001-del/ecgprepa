@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Bulgarie",
+"titre": "Bulgarie : Iliana Iotova et Andrey Gyurov se qualifient pour le second tour de la présidentielle",
+"url": "actualites/monde/articles/bulgarie-presidentielle-premier-tour-iotova-gyurov-2026.html",
+"image": "actualites/monde/images/bulgarie-presidentielle-premier-tour-iotova-gyurov-2026.webp",
+"date": "2026-10-27T07:16:08+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Brésil",
 "titre": "Brésil : Lula est réélu président avec 52 % des voix contre Flávio Bolsonaro (48 %)",
 "url": "actualites/monde/articles/bresil-lula-reelu-flavio-bolsonaro-2026.html",
@@ -1217,15 +1226,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Lettonie : législatives pour les 100 sièges de la Saeima, la Liste unie en tête",
 "url": "actualites/monde/articles/lettonie-elections-saeima.html",
 "image": "actualites/monde/images/lettonie-elections-saeima.webp",
-"date": "2026-10-04T07:18:03+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "G7",
-"titre": "Carburants : le G7 annonce la libération de 100 millions de barils de diesel et de pétrole brut",
-"url": "actualites/monde/articles/g7-liberation-stocks-petrole.html",
-"image": "actualites/monde/images/g7-liberation-stocks-petrole.webp",
 "date": "2026-10-04T07:18:03+00:00"
 },
 {
