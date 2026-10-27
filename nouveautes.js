@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Venezuela",
+"titre": "Venezuela : la prix Nobel de la paix María Corina Machado rentre au pays après dix mois d'exil",
+"url": "actualites/es/articles/venezuela-machado-retour-exil-2026.html",
+"image": "actualites/es/images/venezuela-machado-retour-exil-2026.webp",
+"date": "2026-10-27T08:02:10+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "Canada",
@@ -1694,15 +1703,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Cuba au sommet des BRICS : la diplomatie du blocus s'invite à New Delhi",
 "url": "actualites/es/articles/cuba-cumbre-brics-india.html",
 "image": "actualites/es/images/cuba-cumbre-brics-india.webp",
-"date": "2026-09-18T20:00:18+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Espagne",
-"titre": "Crise migratoire à Ceuta : démission du chef de cabinet de la Délégation du gouvernement",
-"url": "actualites/es/articles/ceuta-demission-cabinet-espagne.html",
-"image": "actualites/es/images/ceuta-demission-cabinet-espagne.webp",
 "date": "2026-09-18T20:00:18+00:00"
 },
 {
