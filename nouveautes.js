@@ -2476,7 +2476,7 @@ window.ECG_NOUVEAUTES = [
 "meta": "HGG 1re année · chapitre 14",
 "titre": "Les défis du développement durable et du changement climatique",
 "url": "premiere_annee/hgg/chapitre-14/chapitre-14-hgg.html",
-"image": "",
+"image": "premiere_annee/hgg/chapitre-14/images/mer-de-glace.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
