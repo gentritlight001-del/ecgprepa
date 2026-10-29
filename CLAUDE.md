@@ -636,7 +636,7 @@ Procédure de A à Z, sans poser de question jusqu'à la mise en ligne :
   pâle sans quadrillage, coins arrondis, numéros de section en
   pastilles, nom de l'auteur dans la couleur de la fiche, **sans italique**. **Chaque auteur a ses deux couleurs**
   (`--accent`, `--accent2` sur `<body>`, jamais déjà prises) : Rousseau prune `#6b2d5c` / olive `#55702f`,
-  Hobbes bleu ardoise `#1f4a6e` / ocre `#a35a1f`, Pic de la Mirandole sarcelle `#17645e` / vermillon `#ad3a2c`, La Boétie indigo `#43398a` / ambre `#a8660c`. Garder cet habillage pour toutes les fiches (`auteur.css`,
+  Hobbes bleu ardoise `#1f4a6e` / ocre `#a35a1f`, Pic de la Mirandole sarcelle `#17645e` / vermillon `#ad3a2c`, La Boétie indigo `#43398a` / ambre `#a8660c`, Montaigne bordeaux `#7d1f2f` / azur `#2a6fb0`. Garder cet habillage pour toutes les fiches (`auteur.css`,
   `auteur.js` ; fiches lues dans `localStorage` `ecg-humanite-auteurs-lues`). Supprimer de la copie les balises `og:`,
   `twitter:`, `canonical` et réécrire la description.
 - Structure : cartouche (portrait en paysage et fiche d'identité **courte**, 4 lignes : naissance, mort,
