@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Chine",
+"titre": "Chine : le STAR 50 chute de 40 % en moins de quatre mois, la « bulle IA » a-t-elle éclaté ?",
+"url": "actualites/monde/articles/chine-star50-bulle-ia-chute-2026.html",
+"image": "actualites/monde/images/chine-star50-bulle-ia-chute-2026.webp",
+"date": "2026-10-29T09:39:41+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Monde",
 "titre": "Climat : l'OMM annonce des records mondiaux de CO₂, de méthane et de protoxyde d'azote en 2025",
 "url": "actualites/monde/articles/omm-gaz-effet-de-serre-records-2025.html",
@@ -1263,15 +1272,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/es/articles/sanchez-dissolution-cortes.html",
 "image": "actualites/es/images/sanchez-dissolution-cortes.webp",
 "date": "2026-10-05T16:32:20+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Brésil",
-"titre": "Brésil : Flávio Bolsonaro devance Lula au premier tour, second tour serré le 25 octobre",
-"url": "actualites/monde/articles/bresil-presidentielle-premier-tour.html",
-"image": "actualites/monde/images/bresil-presidentielle-premier-tour.webp",
-"date": "2026-10-05T04:48:46+00:00"
 },
 {
 "t": "cours",
