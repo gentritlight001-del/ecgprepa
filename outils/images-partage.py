@@ -246,8 +246,8 @@ def auteur_de(rel, contenu):
         return None
     chemin = os.path.normpath(os.path.join(RACINE, os.path.dirname(rel), img.group(1)))
     c = re.search(r'--accent:\s*(#[0-9a-fA-F]{3,8})', contenu)
-    ans = [re.search(r'\b(\d{3,4})\b', html.unescape(x)) for x in
-           re.findall(r'<dt>(?:Naissance|Mort)</dt><dd>([^<]*)</dd>', contenu)]
+    ans = [re.search(r'\b(\d{3,4})\b', html.unescape(re.sub(r'<[^>]+>', '', x))) for x in
+           re.findall(r'<dt>(?:Naissance|Mort)</dt><dd>(.*?)</dd>', contenu)]
     dates = '\u00a0– '.join(a.group(1) for a in ans if a)
     return 'Fiche auteur', chemin, (c.group(1) if c else '#a83a2e'), dates
 
