@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "Canada",
+"titre": "Canada : la Banque du Canada relève son taux à 2,5 %, première hausse depuis juillet 2023",
+"url": "actualites/en/articles/canada-banque-du-canada-hausse-taux-2-5-2026.html",
+"image": "actualites/en/images/canada-banque-du-canada-hausse-taux-2-5-2026.webp",
+"date": "2026-10-29T12:29:32+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Cuba",
@@ -1694,15 +1703,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Papillons : le Royaume-Uni enregistre sa 2ᵉ meilleure saison en 16 ans malgré une sécheresse record",
 "url": "actualites/en/articles/uk-butterflies-second-best-season-2026.html",
 "image": "actualites/en/images/uk-butterflies-second-best-season-2026.webp",
-"date": "2026-09-18T20:00:18+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "Guerre en Iran : la Fed relève ses taux pour la première fois en trois ans face à l'énergie chère",
-"url": "actualites/en/articles/fed-hausse-taux-iran-2026.html",
-"image": "actualites/en/images/fed-hausse-taux-iran-2026.webp",
 "date": "2026-09-18T20:00:18+00:00"
 },
 {
