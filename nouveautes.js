@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Israël",
+"titre": "Israël : le bloc de Netanyahou perd sa majorité, aucun camp n'atteint les 61 sièges à la Knesset",
+"url": "actualites/monde/articles/israel-legislatives-27-octobre-2026-impasse.html",
+"image": "actualites/monde/images/israel-legislatives-27-octobre-2026-impasse.webp",
+"date": "2026-10-29T12:49:28+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "Canada",
@@ -1272,15 +1281,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/monde/articles/bosnie-elections-generales-2026.html",
 "image": "actualites/monde/images/bosnie-elections-generales-2026.webp",
 "date": "2026-10-05T17:51:31+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Russie",
-"titre": "Sibérie : une laborantine d'un institut anti-peste meurt, près de 200 personnes en quarantaine",
-"url": "actualites/monde/articles/russie-irkoutsk-peste-pulmonaire.html",
-"image": "actualites/monde/images/russie-irkoutsk-peste-pulmonaire.webp",
-"date": "2026-10-05T17:47:29+00:00"
 },
 {
 "t": "de",
