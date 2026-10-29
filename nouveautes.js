@@ -4,6 +4,15 @@ window.ECG_NOUVEAUTES = [
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne",
+"titre": "Déchets nucléaires : la BGE réduit à moins de 5 % du territoire la recherche d'un site de stockage",
+"url": "actualites/de/articles/allemagne-dechets-nucleaires-bge-stockage-2026.html",
+"image": "actualites/de/images/allemagne-dechets-nucleaires-bge-stockage-2026.webp",
+"date": "2026-10-29T09:24:25+00:00"
+},
+{
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
 "titre": "Merz en Asie : à Singapour, Tokyo et Séoul, le chancelier cherche des partenaires hors de Chine",
 "url": "actualites/de/articles/allemagne-merz-asie-singapour-tokyo-seoul-2026.html",
 "image": "actualites/de/images/allemagne-merz-asie-singapour-tokyo-seoul-2026.webp",
@@ -1955,15 +1964,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Le grand durcissement du droit pénal de l'environnement en Allemagne",
 "url": "actualites/de/articles/crimes-ecologiques.html",
 "image": "actualites/de/images/crimes-ecologiques.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "Le renseignement allemand plante Palantir : Berlin mise sur la française ChapsVision",
-"url": "actualites/de/articles/chapsvision-palantir.html",
-"image": "actualites/de/images/chapsvision-palantir.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
