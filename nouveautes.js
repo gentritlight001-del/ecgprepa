@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Espagne",
+"titre": "Tragédie ferroviaire à Urda : la collision de deux trains à grande vitesse fait au moins 68 morts",
+"url": "actualites/es/articles/espagne-tragedie-ferroviaire-urda-tolede-2026.html",
+"image": "actualites/es/images/espagne-tragedie-ferroviaire-urda-tolede-2026.webp",
+"date": "2026-10-29T09:56:54+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Chine",
@@ -1712,15 +1721,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Les Jeux sudaméricains de Santa Fe 2026 démarrent : 4 000 athlètes venus de 15 pays",
 "url": "actualites/es/articles/juegos-suramericanos-santa-fe-2026.html",
 "image": "actualites/es/images/juegos-suramericanos-santa-fe-2026.webp",
-"date": "2026-09-18T20:00:18+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Cuba",
-"titre": "Cuba au sommet des BRICS : la diplomatie du blocus s'invite à New Delhi",
-"url": "actualites/es/articles/cuba-cumbre-brics-india.html",
-"image": "actualites/es/images/cuba-cumbre-brics-india.webp",
 "date": "2026-09-18T20:00:18+00:00"
 },
 {

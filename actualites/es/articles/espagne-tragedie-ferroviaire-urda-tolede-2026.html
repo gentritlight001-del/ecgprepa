@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Urda : la collision de deux trains à grande vitesse</title>
+<link rel="stylesheet" href="../../../fonts/fonts.css">
+<style>
+  :root {
+    --fond: #f3f4f6; --carte: #ffffff; --bord: #dfe3e8; --filet: #eef0f3;
+    --encre: #16202e; --texte: #25303e; --doux: #4f5b6b;
+    --marine: #1f3a5f;
+    /* Palette de l'article (une par article) : prune */
+    --accent: #5e2a55; --accent-fonce: #451e40; --accent-pale: #f1e8ef;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body.a-page { background: var(--fond); color: var(--encre); font-family: 'Figtree', system-ui, sans-serif; min-height: 100vh; overflow-x: hidden; }
+  a { color: var(--accent); }
+  strong { color: var(--encre); font-weight: 700; }
+
+  /* Barre du haut */
+  nav.a-nav { display: flex; align-items: center; gap: 16px; padding: 14px 32px; background: #fff; border-bottom: 1px solid var(--bord); position: sticky; top: 0; z-index: 100; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .nav-logo { font-family: 'Fraunces', Georgia, serif; font-size: 1.4rem; font-weight: 700; color: var(--encre); text-decoration: none; white-space: nowrap; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: .88rem; color: var(--doux); flex-wrap: wrap; justify-content: center; }
+  .breadcrumb a { color: var(--doux); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--accent); }
+  .breadcrumb .sep { color: #9aa5b3; }
+  .breadcrumb .current { color: var(--encre); font-weight: 600; }
+  /* Choix de la langue : petit interrupteur FR / EN, dans le ton de la barre noire */
+  .a-langues { display: flex; gap: 2px; padding: 2px; border: 1px solid #2e2e33; border-radius: 999px; background: #161617; }
+  nav.sn .a-langues .ap-lang-btn { border: 0; border-radius: 999px; background: transparent; color: #bdbdb8; font: 500 11px/1 'IBM Plex Mono', ui-monospace, monospace; letter-spacing: .1em; padding: 0 11px; height: 30px; min-height: 0; cursor: pointer; transition: background .15s, color .15s; }
+  nav.sn .a-langues .ap-lang-btn:hover { color: #fff; }
+  nav.sn .a-langues .ap-lang-btn.active { background: #f3efe4; color: #0b0b0c; }
+  nav.sn .a-langues .ap-lang-btn:focus-visible { outline: 2px solid #f3efe4; outline-offset: 2px; }
+  .a-filet { height: 6px; background: var(--accent); }
+
+  .a-main { max-width: 1216px; margin: 0 auto; padding: 40px 32px 88px; }
+  .ap-en-section { display: none; }
+
+  /* Héros : titre à gauche, photo à droite */
+  .a-hero { display: flex; flex-wrap: wrap; gap: 40px; align-items: center; }
+  .a-hero-texte { flex: 1 1 520px; min-width: 0; }
+  .a-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .a-tag { font-size: .82rem; font-weight: 700; padding: 6px 12px; border-radius: 999px; background: #e6eaef; color: var(--texte); }
+  .a-tag.t0 { background: var(--encre); color: #fff; }
+  .a-tag.t1 { background: var(--accent-pale); color: var(--accent-fonce); }
+  .a-titre { font-family: 'Fraunces', Georgia, serif; font-size: 2.15rem; line-height: 1.1; font-weight: 600; color: var(--encre); }
+  .a-sous-titre { margin-top: 14px; font-family: 'Fraunces', Georgia, serif; font-size: 1.4rem; line-height: 1.3; font-weight: 500; color: var(--doux); }
+  .a-meta { margin-top: 20px; font-size: .9rem; color: var(--doux); }
+  .a-hero-img { flex: 1 1 380px; min-width: 0; width: 100%; max-width: 480px; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 16px; display: block; }
+
+  /* Cartes */
+  .a-carte { background: var(--carte); border: 1px solid var(--bord); border-radius: 16px; }
+  .a-lab { font-size: .75rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--doux); margin-bottom: 16px; }
+  .a-lab.rouge { color: var(--accent); }
+
+  .a-essentiel { margin-top: 40px; padding: 28px 32px; }
+  .a-essentiel ol { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px 32px; }
+  .a-essentiel li { display: flex; gap: 14px; }
+  .a-essentiel p { font-size: 1rem; line-height: 1.55; color: var(--texte); }
+  .a-rond { flex: none; width: 32px; height: 32px; border-radius: 50%; background: var(--encre); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+
+  /* Article */
+  .a-article { margin-top: 24px; padding: 48px 56px 56px; }
+  .a-chiffres { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; padding-bottom: 36px; margin-bottom: 36px; border-bottom: 1px solid var(--filet); }
+  .a-chiffre { font-family: 'Fraunces', Georgia, serif; font-size: 2.5rem; font-weight: 700; line-height: 1; color: var(--encre); }
+  .a-chiffre.rouge { color: var(--accent); }
+  .a-chiffre-txt { margin-top: 8px; font-size: .9rem; line-height: 1.4; color: var(--doux); }
+  .a-chapo { font-family: 'Fraunces', Georgia, serif; font-size: 1.35rem; line-height: 1.6; color: var(--encre); margin-bottom: 44px; }
+  .a-sec { margin-bottom: 44px; display: flow-root; }
+  .a-h2 { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; font-family: 'Fraunces', Georgia, serif; font-size: 1.75rem; line-height: 1.2; font-weight: 600; color: var(--encre); }
+  .a-num { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; background: var(--accent-pale); color: var(--accent-fonce); font-family: 'Figtree', sans-serif; font-size: .82rem; font-weight: 700; }
+  .a-p { font-size: 1.19rem; line-height: 1.7; color: var(--texte); margin-bottom: 16px; }
+  .a-sec .a-p:last-child, .a-analyse .a-p:last-child { margin-bottom: 0; }
+  .a-lien { color: inherit; text-decoration: underline; text-underline-offset: 2px; text-decoration-color: var(--accent); }
+
+  /* Photo dans le texte */
+  .a-photo { float: right; width: min(400px, 42%); margin: 6px 0 14px 32px; }
+  .a-photo.gauche { float: left; margin: 6px 36px 18px 0; }
+  .a-photo img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 12px; }
+  .a-photo figcaption { margin-top: 8px; font-size: .82rem; line-height: 1.45; color: var(--doux); }
+
+  /* Citation : filet rouge, taille de lecture */
+  .a-citation { margin: 0 0 44px; padding: 4px 0 4px 26px; border-left: 3px solid var(--accent); max-width: 860px; }
+  .a-citation blockquote { font-family: 'Fraunces', Georgia, serif; font-size: 1.45rem; line-height: 1.4; font-weight: 500; color: var(--encre); }
+  .a-citation figcaption { margin-top: 12px; font-size: .9rem; line-height: 1.5; color: var(--doux); }
+  .a-citation figcaption b { color: var(--encre); font-weight: 700; }
+  .a-trad { display: block; margin-top: 4px; font-style: italic; }
+
+  /* Schémas */
+  .a-schema { margin: -12px 0 44px; padding: 26px 28px; background: #f5f6f8; border-radius: 14px; }
+  .a-schema-t { font-family: 'Fraunces', Georgia, serif; font-size: 1.2rem; font-weight: 600; color: var(--encre); margin-bottom: 16px; }
+  .a-src { margin-top: 14px; font-size: .8rem; line-height: 1.45; color: var(--doux); }
+  .a-etapes { display: flex; flex-wrap: wrap; gap: 10px; }
+  .a-etape { flex: 1 1 180px; min-width: 0; padding: 16px 18px; background: #fff; border: 2px solid var(--bord); border-radius: 12px; display: flex; flex-direction: column; gap: 4px; }
+  .a-etape.non { background: var(--accent-pale); border-color: var(--accent); }
+  .a-statut { font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #1f6b3a; }
+  .a-etape.estime .a-statut { color: #8a5a00; }
+  .a-etape.non .a-statut { color: var(--accent-fonce); }
+  .a-val { font-family: 'Fraunces', Georgia, serif; font-size: 1.4rem; font-weight: 700; color: var(--encre); }
+  .a-txt { font-size: .9rem; line-height: 1.4; color: var(--texte); }
+  .a-fleche { flex: none; align-self: center; font-size: 1.4rem; color: #9aa5b3; }
+  .a-axe-bornes { display: flex; justify-content: space-between; gap: 12px; font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--doux); margin-bottom: 14px; }
+  .a-axe { list-style: none; border-top: 3px solid; border-image: linear-gradient(90deg, var(--marine), var(--accent)) 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 20px; }
+  .a-axe li { position: relative; padding-top: 18px; }
+  .a-point { position: absolute; top: -10px; left: 0; width: 16px; height: 16px; border-radius: 50%; border: 3px solid #f5f6f8; }
+  .a-axe b { display: block; font-size: .95rem; color: var(--encre); }
+  .a-axe small { display: block; font-size: .8rem; color: var(--doux); }
+  .a-axe p { margin-top: 8px; font-size: .9rem; line-height: 1.45; color: var(--texte); }
+
+  /* Chronologie : frise horizontale, la plus récente à gauche */
+  .a-chrono-bloc .a-h2 { margin-bottom: 4px; }
+  .a-chrono-sous { font-size: .85rem; color: var(--doux); margin-bottom: 18px; }
+  .a-defile { overflow-x: auto; }
+  .a-chrono { list-style: none; min-width: 900px; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0 18px; }
+  .a-chrono li { border-top: 4px solid #c9d0d8; padding-top: 14px; }
+  .a-chrono li.recent { border-top-color: var(--accent); }
+  .a-date { display: block; font-family: 'Fraunces', Georgia, serif; font-size: 1.05rem; font-weight: 700; color: var(--encre); }
+  .a-chrono li.recent .a-date { color: var(--accent); }
+  .a-chrono p { margin-top: 8px; font-size: .9rem; line-height: 1.45; color: var(--texte); }
+
+  /* Analyse : page d'éditorial, filet noir, texte sur deux colonnes */
+  .a-analyse { margin-top: 8px; padding: 26px 0 30px; border-top: 3px solid var(--encre); border-bottom: 1px solid var(--bord); }
+  .a-analyse-lab { display: flex; align-items: center; gap: 10px; font-size: .75rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+  .a-analyse-lab::before { content: ""; width: 10px; height: 10px; background: var(--accent); }
+  .a-analyse-t { margin: 10px 0 22px; max-width: 820px; font-family: 'Fraunces', Georgia, serif; font-size: 2.1rem; line-height: 1.15; font-weight: 600; color: var(--encre); }
+  .a-analyse-corps { columns: 2 340px; column-gap: 48px; column-rule: 1px solid var(--filet); orphans: 1; widows: 1; }
+  .a-analyse-corps .a-p { font-size: 1.08rem; line-height: 1.7; margin-bottom: 14px; }
+  .a-analyse-corps .a-p:last-child { margin-bottom: 0; }
+  /* Dans une copie : accroche prête à l'emploi, idée-force, sujets, piège */
+  .a-copie { margin-top: 30px; padding: 24px 26px 26px; background: var(--fond); border-radius: 14px; }
+  .a-copie-t { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; font-size: .75rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--encre); }
+  .a-copie-t::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--encre); }
+  .a-accroche { padding: 20px 22px 18px; background: var(--carte); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; }
+  .a-copie h3 { margin-bottom: 8px; font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+  .a-accroche p { font-family: 'Fraunces', Georgia, serif; font-size: 1.18rem; line-height: 1.55; color: var(--encre); }
+  .a-copie-grille { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 14px; }
+  .a-copie-grille > div { padding: 18px 20px; background: var(--carte); border-radius: 10px; }
+  .a-copie-grille p, .a-copie-grille li { font-size: .95rem; line-height: 1.55; color: var(--texte); }
+  .a-copie-grille ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .a-copie-grille li { padding-left: 16px; position: relative; }
+  .a-copie-grille li::before { content: ""; position: absolute; left: 0; top: .6em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .a-copie-grille .a-piege { background: var(--accent-pale); }
+  .a-copie-grille .a-piege h3 { color: var(--accent-fonce); }
+  .a-analyse-corps .a-p:first-child::first-letter { float: left; margin: 6px 10px 0 0; font-family: 'Fraunces', Georgia, serif; font-size: 3.6rem; line-height: .8; font-weight: 700; color: var(--accent); }
+
+  /* Pour aller plus loin : le cours à réviser, les articles liés en vignettes, les sources */
+  .a-plus { margin-top: 24px; padding: 36px 36px 32px; }
+  .a-plus-t { font-family: 'Fraunces', Georgia, serif; font-size: 1.75rem; font-weight: 600; color: var(--encre); margin-bottom: 22px; }
+  .a-plus-h { display: flex; align-items: center; gap: 12px; margin: 34px 0 16px; font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--doux); }
+  .a-plus-h::after { content: ""; flex: 1; height: 1px; background: var(--filet); }
+  .a-kicker { display: block; font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+  .a-cours { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 28px; align-items: center; padding: 16px; background: var(--fond); border-radius: 14px; text-decoration: none; color: var(--encre); }
+  .a-cours img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 10px; display: block; }
+  .a-cours b { display: block; margin-top: 8px; font-family: 'Fraunces', Georgia, serif; font-size: 1.6rem; line-height: 1.2; font-weight: 600; }
+  .a-cours p { margin-top: 8px; font-size: 1rem; line-height: 1.55; color: var(--texte); }
+  .a-cours-btn { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; padding: 10px 16px; border-radius: 999px; background: var(--encre); color: #fff; font-size: .9rem; font-weight: 700; }
+  .a-cours:hover .a-cours-btn { background: var(--accent); }
+  .a-lire { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+  .a-lire a { display: flex; flex-direction: column; gap: 10px; height: 100%; text-decoration: none; color: var(--encre); }
+  .a-lire img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 10px; display: block; background: var(--filet); }
+  .a-lire b { font-family: 'Fraunces', Georgia, serif; font-size: 1.05rem; line-height: 1.3; font-weight: 600; }
+  .a-lire a:hover b { color: var(--accent); }
+  .a-lire .a-kicker { color: var(--doux); font-size: .72rem; }
+  .a-sources { list-style: none; counter-reset: src; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px 40px; }
+  .a-sources li { counter-increment: src; display: grid; grid-template-columns: 28px minmax(0, 1fr); font-size: .88rem; line-height: 1.5; color: var(--doux); }
+  .a-sources li::before { content: counter(src); font-weight: 700; color: var(--accent); }
+  .a-sources b { display: block; font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; color: var(--encre); }
+  .a-sources a { color: var(--encre); text-decoration: underline; text-decoration-color: var(--bord); text-underline-offset: 3px; }
+  .a-sources a:hover { text-decoration-color: var(--accent); }
+
+
+  .a-fin { margin-top: 28px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+  .a-fin a { display: inline-flex; align-items: center; min-height: 48px; font-weight: 700; color: var(--encre); text-decoration: none; }
+  .a-fin a:hover { color: var(--accent); }
+  .a-partager { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 18px; border: 1px solid var(--bord); border-radius: 999px; background: var(--carte); color: var(--encre); font: 700 .9rem 'Figtree', sans-serif; cursor: pointer; }
+  .a-partager:hover { border-color: var(--encre); }
+
+  @media (max-width: 900px) {
+    .a-axe { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 20px; border-image: none; border-top: 0; }
+    .a-axe li { border-top: 3px solid var(--bord); }
+    .a-point { top: -10px; }
+  }
+  @media (max-width: 1000px) {
+    .a-copie-grille { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .a-copie-grille .a-piege { grid-column: 1 / -1; }
+    .a-lire { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  /* Photo : sous 1000 px, plus de colonne de texte trop étroite à côté : elle passe au-dessus du texte */
+  @media (max-width: 1000px) {
+    .a-photo, .a-photo.gauche { float: none; width: 100%; max-width: 560px; margin: 4px auto 20px; }
+  }
+  @media (max-width: 760px) {
+    nav.a-nav { padding: 12px 16px; }
+    .breadcrumb { display: none; }
+    .a-main { padding: 24px 16px 64px; }
+    .a-hero { gap: 20px; }
+    .a-titre { font-size: 1.85rem; }
+    .a-sous-titre { font-size: 1.1rem; }
+    .a-essentiel { margin-top: 24px; padding: 22px 20px; }
+    .a-article { padding: 28px 20px 32px; }
+    .a-chiffres { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .a-chiffre { font-size: 1.8rem; }
+    .a-chapo { font-size: 1.15rem; margin-bottom: 32px; }
+    .a-h2 { font-size: 1.35rem; }
+    .a-p { font-size: 1.05rem; }
+    .a-photo, .a-photo.gauche { float: none; width: 100%; margin: 0 0 18px; }
+    .a-citation { padding-left: 18px; }
+    .a-citation blockquote { font-size: 1.2rem; }
+    .a-schema { padding: 20px 18px; }
+    .a-fleche { transform: rotate(90deg); width: 100%; text-align: center; }
+    .a-axe { grid-template-columns: 1fr; }
+    .a-analyse-t { font-size: 1.55rem; }
+    .a-analyse-corps .a-p { font-size: 1.02rem; }
+    .a-copie { padding: 18px 14px 16px; margin-left: -6px; margin-right: -6px; }
+    .a-accroche p { font-size: 1.05rem; }
+    .a-copie-grille { grid-template-columns: 1fr; }
+    .a-plus { padding: 26px 20px 24px; }
+    .a-plus-t { margin-bottom: 18px; }
+    .a-cours { grid-template-columns: 1fr; gap: 14px; padding: 12px; }
+    .a-cours b { font-size: 1.35rem; }
+    .a-lire { grid-template-columns: 1fr; gap: 0; }
+    .a-lire a { flex-direction: row; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--filet); }
+    .a-lire li:last-child a { border-bottom: 0; }
+    .a-lire img { flex: none; width: 104px; border-radius: 8px; }
+    .a-lire b { font-size: .98rem; }
+    .a-sources { grid-template-columns: 1fr; }
+    .a-fin { justify-content: center; }
+  }
+
+
+  /* Tableau comparatif (dans un a-schema) */
+  .a-tableau { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; font-size: .93rem; line-height: 1.45; }
+  .a-tableau th { padding: 12px 14px; text-align: left; font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--doux); background: #fff; border-bottom: 2px solid var(--bord); vertical-align: bottom; }
+  .a-tableau th:last-child { color: var(--accent); }
+  .a-tableau td { padding: 12px 14px; border-bottom: 1px solid var(--filet); color: var(--texte); vertical-align: top; }
+  .a-tableau tr:last-child td { border-bottom: 0; }
+  .a-tableau td:first-child { font-weight: 700; color: var(--encre); }
+  .a-tableau td:last-child { background: var(--accent-pale); }
+  .a-defile-t { overflow-x: auto; border-radius: 12px; }
+  @media (max-width: 520px) { .a-tableau, .a-tableau tbody, .a-tableau tr, .a-tableau td { display: block; width: 100%; } .a-tableau thead { display: none; } .a-tableau tr { padding: 10px 0; border-bottom: 1px solid var(--bord); } .a-tableau tr:last-child { border-bottom: 0; } .a-tableau td { border: 0; padding: 3px 14px; font-size: .88rem; } .a-tableau td:first-child { font-size: .95rem; padding-top: 6px; } .a-tableau td[data-l]::before { content: attr(data-l); display: block; font-size: .66rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--doux); } .a-tableau td:last-child { background: var(--accent-pale); margin-top: 4px; padding-top: 6px; padding-bottom: 6px; } }
+  /* Échange : ce que chacun obtient (dans un a-schema) */
+  .a-echange { display: grid; grid-template-columns: minmax(0, 1fr) 56px minmax(0, 1fr); gap: 12px; align-items: stretch; }
+  .a-echange > div:not(.ec-m) { background: #fff; border: 2px solid var(--bord); border-radius: 12px; padding: 14px 16px; }
+  .a-echange .ec-g { border-top: 5px solid var(--marine); }
+  .a-echange .ec-d { border-top: 5px solid var(--accent); }
+  .a-echange h4 { font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--doux); margin-bottom: 8px; }
+  .a-echange ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .a-echange li { font-size: .92rem; line-height: 1.4; color: var(--texte); padding-left: 14px; position: relative; }
+  .a-echange li::before { content: ''; position: absolute; left: 0; top: .55em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .a-echange .ec-m { align-self: center; text-align: center; font-size: 2rem; color: var(--accent); font-weight: 700; }
+  @media (max-width: 760px) { .a-echange { grid-template-columns: 1fr; } .a-echange .ec-m { transform: rotate(90deg); } }
+  .a-cours.sans-photo { grid-template-columns: 1fr; }
+  .a-etapes.dates .a-statut { color: var(--doux); }
+  .a-etapes.dates .a-etape.non .a-statut { color: var(--accent-fonce); }
+</style>
+<link rel="stylesheet" href="../../../barre-section.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Urda : la collision de deux trains à grande vitesse">
+<meta property="og:image" content="https://ecg-prepa.fr/partage/actualites/es-espagne-tragedie-ferroviaire-urda-tolede-2026.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Urda : la collision de deux trains à grande vitesse">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ecg-prepa.fr/partage/actualites/es-espagne-tragedie-ferroviaire-urda-tolede-2026.jpg">
+<meta name="description" content="Le mercredi 28 octobre 2026, vers 8 h 54, un train à grande vitesse AVE de Renfe a percuté par l&#x27;arrière un train Iryo à l&#x27;arrêt sur la ligne…">
+<link rel="canonical" href="https://ecg-prepa.fr/actualites/es/articles/espagne-tragedie-ferroviaire-urda-tolede-2026.html">
+</head>
+<body class="a-page">
+<nav class="a-nav sn sn-actu">
+  <div class="nav-left"><a class="nav-logo sn-logo" href="../../../index.html">ECG Prépa</a></div>
+  <div class="breadcrumb sn-fil">
+    <a href="../../../index.html">Accueil</a><span class="sep">/</span>
+    <a href="../../actualites.html">Actualité</a><span class="sep">/</span>
+    <a href="../index-es.html">Espagnol</a><span class="sep">/</span>
+    <a href="../espagne.html">Espagne</a><span class="sep">/</span>
+    <span class="current">Tragédie d'Urda</span>
+  </div>
+  <div class="nav-right"><div class="a-langues" role="group" aria-label="Langue de l'article">
+    <button id="ap-btn-fr" class="ap-lang-btn active" type="button" onclick="setLang('fr')" aria-pressed="true" aria-label="Français" title="Lire en français">FR</button>
+    <button id="ap-btn-es" class="ap-lang-btn" type="button" onclick="setLang('es')" aria-pressed="false" aria-label="Español" title="Leer en español">ES</button>
+  </div></div>
+</nav>
+<div class="a-filet"></div>
+<main class="a-main">
+<div class="ap-fr-section">
+<section class="a-hero">
+<div class="a-hero-texte">
+<div class="a-tags"><span class="a-tag t0">Espagne</span><span class="a-tag t1">Sécurité</span><span class="a-tag t2">Transports</span><span class="a-tag t3">Deuil national</span></div>
+<h1 class="ap-title a-titre">Espagne : à Urda, la collision de deux trains à grande vitesse fait au moins 68 morts</h1>
+<p class="a-sous-titre" lang="es">España: la colisión de dos trenes de alta velocidad en Urda deja al menos 68 muertos</p>
+<p class="a-meta">Octobre 2026 · Espagne · 5 min de lecture</p>
+</div>
+<img class="a-hero-img" src="../images/espagne-tragedie-ferroviaire-urda-tolede-2026.webp" alt="Des voitures d'un train à grande vitesse gisent de travers sur un talus, sous des caténaires, entourées de secouristes en tenue orange">
+</section>
+<section class="a-carte a-essentiel"><p class="a-lab rouge">L'essentiel en 30 secondes</p><ol>
+<li><span class="a-rond">1</span><p>Le 28 octobre, vers 8 h 54, un <strong>AVE de Renfe percute par l'arrière un train Iryo à l'arrêt</strong> près d'Urda (Tolède) : au moins 68 morts, un bilan encore provisoire.</p></li>
+<li><span class="a-rond">2</span><p>Selon le ministre Óscar Puente, après une panne du système LZB, le centre de contrôle d'Adif a donné un <strong>ordre « inexplicable »</strong> de reprise ; Iryo conteste. Une enquête judiciaire est ouverte et les boîtes noires sont saisies.</p></li>
+<li><span class="a-rond">3</span><p><strong>Trois jours de deuil national</strong>, ligne Madrid-Andalousie interrompue, grève des conducteurs maintenue : c'est le <strong>deuxième accident en neuf mois</strong> sur cette ligne, après Adamuz (46 morts).</p></li>
+</ol></section>
+<article class="a-carte a-article">
+<section class="a-chiffres" aria-label="Chiffres clés">
+<div><div class="a-chiffre rouge">68</div><div class="a-chiffre-txt">Morts au moins, selon le dernier bilan annoncé (provisoire)</div></div>
+<div><div class="a-chiffre">15</div><div class="a-chiffre-txt">Blessés très graves, parmi 53 à 107 hospitalisés selon les décomptes</div></div>
+<div><div class="a-chiffre">25 km</div><div class="a-chiffre-txt">Parcourus par l'AVE en 17 minutes avant la collision, selon Última Hora</div></div>
+<div><div class="a-chiffre">46</div><div class="a-chiffre-txt">Morts à Adamuz en janvier 2026, sur la même ligne</div></div>
+</section>
+<p class="ap-intro a-chapo">Le mercredi 28 octobre 2026, vers 8 h 54, un train à grande vitesse AVE de Renfe a percuté par l'arrière un train Iryo à l'arrêt sur la ligne Madrid-Séville, près d'Urda, dans la province de Tolède. Deux voitures ont déraillé et sont tombées dans un talus. Le bilan provisoire est d'au moins 68 morts, soit l'accident de grande vitesse le plus meurtrier d'Espagne depuis 2013, selon ABC. Les causes ne sont pas établies, mais le gouvernement met en cause un ordre « inexplicable » donné par le centre de contrôle d'Adif.</p>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">01</span>Une collision par l'arrière, en pleine campagne</h2>
+<p class="a-p">L'accident s'est produit au point kilométrique 118 de la ligne à grande vitesse Madrid-Andalousie, entre Mora, Orgaz et Urda, selon Adif, le gestionnaire du réseau. Le train Iryo, service 6076 pour Séville, était à l'arrêt ; l'AVE, parti de Madrid-Puerta de Atocha, l'a heurté par l'arrière. Plus de 500 personnes se trouvaient à bord des deux convois.</p>
+<p class="a-p">Les premiers secours sont venus des passagers eux-mêmes, dont des soignants : « grâce à eux, des équipes improvisées se sont montées », a déclaré un porte-parole de la Guardia Civil (traduction). Plus de 200 militaires de l'UME et plus de 200 gardes civils ont ensuite été mobilisés.</p>
+</div>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">02</span>Un bilan encore provisoire</h2>
+<p class="a-p">Le bilan a été revu plusieurs fois (voir le tableau). Le soir du 28 octobre, le président de Castille-La Manche, Emiliano García-Page, annonce 68 morts : 64 corps ont été extraits et quatre restent à sortir des wagons. Le lendemain, Libertad Digital rapporte 69 morts. Quinze blessés sont très graves et 53 restent hospitalisés selon la région, alors que d'autres décomptes vont jusqu'à 107 blessés. García-Page juge « non exclu » que d'autres corps soient retrouvés.</p>
+<p class="a-p">À Tolède, 25 médecins légistes travaillent à l'Institut de médecine légale, et la Guardia Civil prélève de l'ADN auprès des proches dans quatre bureaux (Madrid, Séville, Cordoue et Tolède). Des citoyens américains figurent parmi les blessés, selon le département d'État, mais l'on ignore s'il y a des étrangers parmi les morts.</p>
+</div>
+<figure class="a-schema"><p class="a-schema-t">Un bilan qui change d'heure en heure</p><div class="a-defile-t"><table class="a-tableau"><thead><tr><th>Date et heure</th><th>Bilan annoncé</th><th>Source</th></tr></thead><tbody><tr><td>29 octobre, 10 h 47</td><td data-l="Bilan annoncé">69 morts</td><td data-l="Source">Libertad Digital, après la dernière comparution de García-Page</td></tr><tr><td>28 octobre, 19 h 02</td><td data-l="Bilan annoncé">68 morts : 64 corps extraits, 4 restant à extraire</td><td data-l="Source">Emiliano García-Page, via Castilla-La Mancha Media</td></tr><tr><td>28 octobre, 15 h 35</td><td data-l="Bilan annoncé">68 morts</td><td data-l="Source">Emiliano García-Page, via Castilla-La Mancha Media</td></tr><tr><td>28 octobre, 10 h 21</td><td data-l="Bilan annoncé">39 morts</td><td data-l="Source">Urgences de Castille-La Manche, via Libertad Digital</td></tr><tr><td>28 octobre, 10 h 11</td><td data-l="Bilan annoncé">10 morts</td><td data-l="Source">El País et sources gouvernementales, via Libertad Digital</td></tr></tbody></table></div><figcaption class="a-src">Sources : Castilla-La Mancha Media et Libertad Digital (directs des 28 et 29 octobre 2026). Bilans provisoires : les chiffres peuvent encore évoluer.</figcaption></figure>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">03</span>Une panne, puis un ordre</h2>
+<p class="a-p">Vers 8 h 30, le système de signalisation automatique LZB tombe en panne sur un tronçon de plus de 60 kilomètres, près d'Urda. Plusieurs trains, six selon le ministère, sont arrêtés. « En cas de panne du système, le centre de contrôle prend le relais », explique le ministre des Transports Óscar Puente (traduction ABC) : c'est alors le centre d'Adif à Atocha qui dirige la circulation.</p>
+<p class="a-p">À 8 h 36, selon Puente, il autorise l'AVE à reprendre sa marche « à allure normale », alors qu'un signal rouge restait actif et que l'Iryo était arrêté devant. L'AVE aurait parcouru environ 25 kilomètres en 17 minutes, jusqu'à près de 200 km/h selon le ministre, qui parle d'une hypothèse, alors que la limite applicable aurait été de 40 km/h. Il juge la décision « inexplicable » et « manifestement erronée » (traduction). Selon El Mundo, Iryo affirme que son train n'avait pas reçu l'instruction de repartir ; le gouvernement le dément.</p>
+</div>
+<figure class="a-schema"><p class="a-schema-t">Le 28 octobre : de la panne à la collision</p><div class="a-etapes dates">
+<div class="a-etape ok"><span class="a-statut">7 h 54</span><span class="a-val">Départ</span><span class="a-txt">l'Iryo quitte Madrid-Puerta de Atocha pour Séville, avec 147 passagers et 5 membres d'équipage</span></div>
+<span class="a-fleche" aria-hidden="true">→</span>
+<div class="a-etape ok"><span class="a-statut">Vers 8 h 30</span><span class="a-val">Panne du LZB</span><span class="a-txt">plus de 60 km sans signalisation automatique ; plusieurs trains sont arrêtés</span></div>
+<span class="a-fleche" aria-hidden="true">→</span>
+<div class="a-etape non"><span class="a-statut">8 h 36</span><span class="a-val">L'ordre</span><span class="a-txt">le centre d'Atocha autorise la reprise « à allure normale », selon le ministre</span></div>
+<span class="a-fleche" aria-hidden="true">→</span>
+<div class="a-etape non"><span class="a-statut">8 h 53-8 h 54</span><span class="a-val">Collision</span><span class="a-txt">l'AVE percute l'Iryo à l'arrêt, environ 25 km plus loin</span></div>
+</div><figcaption class="a-src">Sources : Última Hora et Libertad Digital (28-29 octobre 2026), d'après le ministère des Transports et Iryo. Reconstitution préliminaire : l'enquête doit la confirmer.</figcaption></figure>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">04</span>Ce que disent les audios</h2>
+<p class="a-p">Les enregistrements des échanges, divulgués le 29 octobre à plusieurs médias, donnent un aperçu de la scène. Le conducteur de l'AVE signale un « défaut de transmission par blocage » ; le centre lui dicte de se déconnecter puis de se reconnecter, avant : « Reprenez la marche. En marche normale » (traduction). La conductrice de l'Iryo explique : « Le train ne me permet pas de redémarrer le système LZB, et c'est pourquoi je suis arrêtée » (traduction). Selon Libertad Digital, elle a signalé ses problèmes, mais l'AVE n'a pas été alerté avant la collision.</p>
+<p class="a-p">Selon Moncloa.com, qui en tire sa propre lecture, les deux trains n'étaient séparés que de 25 kilomètres, alors que la marche normale en exige 30 ou plus. La conductrice de l'Iryo a été testée négative à l'alcool et aux drogues, d'après la presse régionale. Rien de cela n'est une conclusion : les premières hypothèses évoquent une erreur humaine d'un opérateur d'Adif, mais « aucune conclusion n'est définitive », écrit Moncloa.com.</p>
+</div>
+<figure class="a-citation"><blockquote lang="es">« Hoy España está de luto. Toda España está de luto. »</blockquote><figcaption><b>Pedro Sánchez</b>, président du gouvernement, à Urda, 28 octobre 2026 (cité par Moncloa.com)<span class="a-trad">« Aujourd'hui, l'Espagne est en deuil. Toute l'Espagne est en deuil. »</span></figcaption></figure>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">05</span>L'enquête judiciaire</h2>
+<p class="a-p">La juge d'instruction n° 2 d'Orgaz, en garde, a interdit l'accès à la zone, ordonné la saisie des boîtes noires des deux trains et décrété le secret de l'instruction. Elle a demandé au centre d'Atocha ses données et à Adif un rapport sur les personnes chargées du contrôle. L'opérateur désigné par le ministre et le reste de l'équipe du centre ont été interrogés par la Guardia Civil, en tant que police judiciaire. Vox a déposé une plainte contre des responsables d'Adif pour homicide par imprudence. « Nous irons jusqu'au bout, et s'il y a eu des négligences, on le saura », assure Pedro Sánchez (traduction).</p>
+</div>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">06</span>Un pays en deuil</h2>
+<p class="a-p">Le décret publié au BOE instaure trois jours de deuil officiel, du 29 octobre à 0 h au 31 octobre à 23 h 59, avec drapeaux en berne sur les bâtiments publics. Le roi Felipe VI et la reine Letizia, qui ont annulé leur agenda, rendent visite aux blessés à Tolède le 29. Les cloches de l'archevêché de Tolède sonnent le glas à midi. La catastrophe survient en pleine campagne pour les élections anticipées du 29 novembre : Alberto Núñez Feijóo suspend sa précampagne, alors que Vox maintient la sienne.</p>
+</div>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">07</span>Une ligne, deux accidents en neuf mois</h2>
+<p class="a-p">La circulation est interrompue entre Madrid et l'Andalousie. Iryo a annulé ses départs, Ouigo suspend ses services jusqu'au 2 novembre au moins, et Renfe met en place des trains conventionnels via Ciudad Real, qui allongent le trajet d'une heure et demie. Le syndicat des conducteurs Semaf maintient sa grève de 24 heures du 29 octobre, convoquée le 16, avant l'accident, tout en demandant de la prudence sur les causes.</p>
+<p class="a-p">Le 18 janvier 2026, à Adamuz (Cordoue), un accident avait fait 46 morts sur la même ligne, impliquant déjà Renfe et Iryo. García-Page estime que tout indique que les causes des deux accidents ne sont pas liées, mais « ce n'est pas à moi de le dire » (traduction ABC). Le président andalou Juanma Moreno rappelle qu'« au moins 114 personnes sont mortes sur cette voie en deux accidents en neuf mois ».</p>
+</div>
+<section class="a-sec a-chrono-bloc"><h2 class="ap-sub a-h2">Chronologie</h2><p class="a-chrono-sous">Du plus récent au plus ancien</p><div class="a-defile"><ol class="a-chrono">
+<li class="recent"><span class="a-date">31 octobre 2026</span><p>Fin du deuil officiel de trois jours.</p></li>
+<li><span class="a-date">29 octobre 2026</span><p>Début du deuil, grève de Semaf, visite des rois aux blessés à Tolède.</p></li>
+<li><span class="a-date">28 octobre 2026</span><p>Collision d'Urda vers 8 h 54 : au moins 68 morts.</p></li>
+<li><span class="a-date">16 octobre 2026</span><p>Semaf convoque la grève du 29 octobre.</p></li>
+<li><span class="a-date">18 janvier 2026</span><p>Accident d'Adamuz : 46 morts sur la même ligne.</p></li>
+<li><span class="a-date">2013</span><p>Saint-Jacques-de-Compostelle : 80 morts, selon ABC.</p></li>
+</ol></div></section>
+<aside class="a-analyse"><p class="a-analyse-lab">L'analyse</p><h2 class="a-analyse-t">Une panne, puis une décision humaine</h2><div class="a-analyse-corps"><p class="a-p">La reconstitution provisoire distingue deux niveaux. Une panne du système de signalisation automatique peut arriver, c'est même pour cela qu'existent des procédures de secours. La vraie question est de savoir pourquoi l'ordre de reprise a pu être donné sans que l'on vérifie, selon la presse, où se trouvait le train qui précédait. Tant que l'enquête n'a pas tranché, on ne peut ni désigner un responsable ni exclure une défaillance du système.</p><p class="a-p">L'enjeu est aussi politique. Un deuxième accident en neuf mois sur la même ligne, à un mois des élections, place le gouvernement et le gestionnaire Adif au centre des critiques, tandis que les opérateurs Renfe et Iryo se renvoient les responsabilités. La confiance dans un réseau de grande vitesse se joue sur la transparence de l'enquête, bien plus que sur la rapidité du retour à la normale, et le contrôle de cette décision sera au cœur de l'enquête.</p></div>
+<section class="a-copie" aria-label="Dans une copie"><p class="a-copie-t">Dans une copie</p>
+<div class="a-accroche"><h3>Accroche</h3><p>Le 28 octobre 2026, un train AVE de Renfe a percuté par l'arrière un train Iryo à l'arrêt près d'Urda, dans la province de Tolède : au moins 68 morts, l'accident de grande vitesse le plus meurtrier d'Espagne depuis 2013. Neuf mois après Adamuz, où 46 personnes avaient péri sur la même ligne, la question n'est plus seulement celle d'une panne, mais celle de ce que valent les protections d'un système automatisé quand la panne rencontre la décision humaine.</p></div>
+<div class="a-copie-grille">
+<div><h3>Idée-force</h3><p>Le risque d'un système complexe se loge dans l'articulation entre la machine et l'homme : une panne anodine devient un accident quand les procédures de secours échouent. Sur un réseau géré par un seul acteur mais ouvert à plusieurs opérateurs, la sécurité est une question de coordination et de responsabilité.</p></div>
+<div><h3>Sujets où la placer</h3><ul><li>La sécurité est-elle compatible avec la recherche de la performance ? (ESH)</li><li>Le risque zéro existe-t-il ? (philo)</li><li>Qui est responsable d'une catastrophe collective ? (espagnol)</li></ul></div>
+<div class="a-piege"><h3>Piège à éviter</h3><p>Désigner un coupable ou parler d'une cause établie : à ce stade, ce sont des hypothèses (panne du LZB, ordre erroné du centre de contrôle) que l'enquête doit confirmer, et Iryo conteste la version du gouvernement. Autres erreurs : prendre le bilan (68 morts) pour définitif, ou parler de déraillement alors que c'est une collision par l'arrière, après un déraillement de deux voitures.</p></div>
+</div></section></aside>
+</article>
+<section class="a-carte a-plus"><h2 class="a-plus-t">Pour aller plus loin</h2>
+<a class="a-cours sans-photo" href="../../../deuxieme_annee/langues/espagnol/Espagne/civi-esp-6.html"><div><span class="a-kicker">Réviser le cours · Civilisation hispanophone · 2e année</span><b>Les communautés autonomes</b><p>Ni État fédéral, ni État unitaire : comment la Constitution de 1978 a inventé un modèle territorial à dix-sept vitesses.</p><span class="a-cours-btn">Ouvrir le chapitre <span aria-hidden="true">→</span></span></div></a>
+<h3 class="a-plus-h">Lire aussi</h3><ul class="a-lire">
+<li><a href="sanchez-dissolution-cortes.html"><img src="../images/sanchez-dissolution-cortes.webp" alt="" loading="lazy"><span><span class="a-kicker">Espagne · Octobre 2026</span><b>Espagne : Sánchez dissout les Cortes et convoque des élections anticipées le 29 novembre</b></span></a></li>
+<li><a href="espagne-milei-madrid-campagne-29n-2026.html"><img src="../images/espagne-milei-madrid-campagne-29n-2026.webp" alt="" loading="lazy"><span><span class="a-kicker">Espagne · Octobre 2026</span><b>Espagne : Milei s'invite dans la campagne du 29-N, reçu par Ayuso et insultant Sánchez</b></span></a></li>
+<li><a href="espagne-dana-adam-inondations-2026.html"><img src="../images/espagne-dana-adam-inondations-2026.webp" alt="" loading="lazy"><span><span class="a-kicker">Espagne · Octobre 2026</span><b>Espagne : la DANA Adam déverse plus de 700 litres d'eau par m² sur le littoral méditerranéen</b></span></a></li>
+<li><a href="espagne-reyes-visite-ceuta-2026.html"><img src="../images/espagne-reyes-visite-ceuta-2026.webp" alt="" loading="lazy"><span><span class="a-kicker">Espagne · Octobre 2026</span><b>Espagne : Felipe VI et Letizia à Ceuta, première visite d'un roi depuis 2007</b></span></a></li>
+</ul><h3 class="a-plus-h">Sources</h3><ol class="a-sources">
+<li><span><b>ABC News</b><a href="https://abcnews.com/International/10-killed-train-collision-high-speed-line-spain/story?id=137633323" target="_blank" rel="noopener">« 'Inexplicable' order probed as cause of train crash that killed at least 68 »</a>, 28 octobre 2026.</span></li>
+<li><span><b>NBC News</b><a href="https://www.nbcnews.com/world/spain/spain-train-crash-high-speed-collision-toledo-rcna606070" target="_blank" rel="noopener">« Spain train crash: Dozens dead after high-speed trains collide near Toledo »</a>, 28 octobre 2026.</span></li>
+<li><span><b>Atalayar</b><a href="https://www.atalayar.com/en/articulo/society/railway-tragedy-in-urda-at-least-64-dead-and-179-injured-in-collision-between-an-ave-and-an-iryo/20261028145814230133.html" target="_blank" rel="noopener">« Railway tragedy in Urda: At least 68 dead and 179 injured in a collision between an AVE and an Iryo »</a>, 28 octobre 2026.</span></li>
+<li><span><b>Castilla-La Mancha Media</b><a href="https://www.cmmedia.es/noticias/castilla-la-mancha/toledo/ultima-hora-accidente-tren-urda-toledo-fallecidos.html" target="_blank" rel="noopener">« Última hora del accidente de tren en Urda (Toledo) »</a>, 28 octobre 2026.</span></li>
+<li><span><b>Libertad Digital</b><a href="https://www.libertaddigital.com/espana/2026-10-28/accidente-tren-urda-toledo-alta-velocidad-iryo-renfe-7483067/" target="_blank" rel="noopener">direct du 28 octobre 2026</a>; <a href="https://www.libertaddigital.com/espana/2026-10-29/segundo-dia-accidente-tren-urda-toledo-ultima-hora-investigacion-7483738/" target="_blank" rel="noopener">direct du 29 octobre 2026</a>.</span></li>
+<li><span><b>Presse espagnole</b><a href="https://www.ultimahora.es/sucesos/ultimas/2026/10/29/2738549/tragedia-ferroviaria-toledo-deja-balance-devastador-minutos-previos-choque-claves-investigacion.html" target="_blank" rel="noopener">Última Hora : « La tragedia ferroviaria de Toledo deja un balance devastador »</a> (29 octobre 2026); <a href="https://www.moncloa.com/2026/10/29/accidente-tren-urda-fallo-lzb-3457580/" target="_blank" rel="noopener">Moncloa.com : « Accidente tren Urda: los audios destapan el fallo del LZB »</a> (29 octobre 2026); <a href="https://www.elespanol.com/espana/20261029/sigue-busqueda-cadaveres-dentro-trenes-muertos-heridos-graves-colision-urda/1003744438997_0.html" target="_blank" rel="noopener">El Español : « Sigue la búsqueda de cadáveres dentro de los trenes »</a> (29 octobre 2026).</span></li>
+</ol></section>
+<div class="a-fin"><a href="../tous-es.html">← Tous les articles</a><button class="a-partager" type="button" onclick="partager(this)">Partager l'article</button><a href="../espagne.html">Espagne →</a></div>
+</div><!-- /ap-fr-section -->
+<div class="ap-es-section">
+<section class="a-hero">
+<div class="a-hero-texte">
+<div class="a-tags"><span class="a-tag t0">España</span><span class="a-tag t1">Seguridad</span><span class="a-tag t2">Transportes</span><span class="a-tag t3">Luto nacional</span></div>
+<h1 class="ap-title a-titre">España: la colisión de dos trenes de alta velocidad en Urda deja al menos 68 muertos</h1>
+<p class="a-sous-titre" lang="fr">Espagne : à Urda, la collision de deux trains à grande vitesse fait au moins 68 morts</p>
+<p class="a-meta">Octubre de 2026 · España · 5 min de lectura</p>
+</div>
+<img class="a-hero-img" src="../images/espagne-tragedie-ferroviaire-urda-tolede-2026.webp" alt="Vagones de un tren de alta velocidad yacen torcidos en un talud, bajo la catenaria, rodeados de equipos de rescate con ropa naranja">
+</section>
+<section class="a-carte a-essentiel"><p class="a-lab rouge">Lo esencial en 30 segundos</p><ol>
+<li><span class="a-rond">1</span><p>El 28 de octubre, hacia las 8:54, un <strong>AVE de Renfe alcanza por detrás a un tren Iryo detenido</strong> cerca de Urda (Toledo): al menos 68 muertos, un balance todavía provisional.</p></li>
+<li><span class="a-rond">2</span><p>Según el ministro Óscar Puente, tras un fallo del sistema LZB, el centro de control de Adif dio una <strong>orden «inexplicable»</strong> de reanudar la marcha; Iryo lo discute. Hay una investigación judicial abierta y se han incautado las cajas negras.</p></li>
+<li><span class="a-rond">3</span><p><strong>Tres días de luto oficial</strong>, línea Madrid-Andalucía interrumpida y huelga de maquinistas mantenida: es el <strong>segundo accidente en nueve meses</strong> en esta línea, tras Adamuz (46 muertos).</p></li>
+</ol></section>
+<article class="a-carte a-article">
+<section class="a-chiffres" aria-label="Cifras clave">
+<div><div class="a-chiffre rouge">68</div><div class="a-chiffre-txt">Muertos como mínimo, según el último balance anunciado (provisional)</div></div>
+<div><div class="a-chiffre">15</div><div class="a-chiffre-txt">Heridos muy graves, entre 53 y 107 hospitalizados según los recuentos</div></div>
+<div><div class="a-chiffre">25 km</div><div class="a-chiffre-txt">Recorridos por el AVE en 17 minutos antes de la colisión, según Última Hora</div></div>
+<div><div class="a-chiffre">46</div><div class="a-chiffre-txt">Muertos en Adamuz en enero de 2026, en la misma línea</div></div>
+</section>
+<p class="ap-intro a-chapo">El miércoles 28 de octubre de 2026, hacia las 8:54, un tren de alta velocidad AVE de Renfe alcanzó por detrás a un tren Iryo detenido en la línea Madrid-Sevilla, cerca de Urda, en la provincia de Toledo. Dos coches descarrilaron y cayeron por un terraplén. El balance provisional es de al menos 68 muertos, el accidente de alta velocidad más mortífero de España desde 2013, según ABC. Las causas no están establecidas, pero el Gobierno apunta a una orden «inexplicable» dada por el centro de control de Adif.</p>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">01</span>Una colisión por alcance, en pleno campo</h2>
+<p class="a-p">El accidente se produjo en el punto kilométrico 118 de la línea de alta velocidad Madrid-Andalucía, entre Mora, Orgaz y Urda, según Adif, el gestor de la red. El tren Iryo, servicio 6076 con destino Sevilla, estaba detenido; el AVE, salido de Madrid-Puerta de Atocha, lo alcanzó por detrás. Más de 500 personas viajaban en los dos convoyes.</p>
+<p class="a-p">Los primeros auxilios los prestaron los propios pasajeros, entre ellos sanitarios: «gracias a ellos se han montado equipos improvisados», declaró un portavoz de la Guardia Civil. Después se movilizaron más de 200 militares de la UME y más de 200 guardias civiles.</p>
+</div>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">02</span>Un balance todavía provisional</h2>
+<p class="a-p">El balance se revisó varias veces (véase la tabla). La noche del 28 de octubre, el presidente de Castilla-La Mancha, Emiliano García-Page, anunció 68 muertos: 64 cuerpos habían sido extraídos y cuatro quedaban por sacar de los vagones. Al día siguiente, Libertad Digital informa de 69 muertos. Quince heridos están muy graves y 53 siguen hospitalizados según la región, aunque otros recuentos llegan a 107 heridos. García-Page considera «no descartable» que aparezcan más cuerpos.</p>
+<p class="a-p">En Toledo, 25 médicos forenses trabajan en el Instituto de Medicina Legal, y la Guardia Civil toma muestras de ADN a los familiares en cuatro oficinas (Madrid, Sevilla, Córdoba y Toledo). Entre los heridos hay ciudadanos estadounidenses, según el Departamento de Estado, pero se ignora si hay extranjeros entre los fallecidos.</p>
+</div>
+<figure class="a-schema"><p class="a-schema-t">Un balance que cambia de hora en hora</p><div class="a-defile-t"><table class="a-tableau"><thead><tr><th>Fecha y hora</th><th>Balance anunciado</th><th>Fuente</th></tr></thead><tbody><tr><td>29 de octubre, 10:47</td><td data-l="Balance anunciado">69 muertos</td><td data-l="Fuente">Libertad Digital, tras la última comparecencia de García-Page</td></tr><tr><td>28 de octubre, 19:02</td><td data-l="Balance anunciado">68 muertos: 64 cuerpos extraídos, 4 por extraer</td><td data-l="Fuente">Emiliano García-Page, vía Castilla-La Mancha Media</td></tr><tr><td>28 de octubre, 15:35</td><td data-l="Balance anunciado">68 muertos</td><td data-l="Fuente">Emiliano García-Page, vía Castilla-La Mancha Media</td></tr><tr><td>28 de octubre, 10:21</td><td data-l="Balance anunciado">39 muertos</td><td data-l="Fuente">Emergencias de Castilla-La Mancha, vía Libertad Digital</td></tr><tr><td>28 de octubre, 10:11</td><td data-l="Balance anunciado">10 muertos</td><td data-l="Fuente">El País y fuentes del Gobierno, vía Libertad Digital</td></tr></tbody></table></div><figcaption class="a-src">Fuentes: Castilla-La Mancha Media y Libertad Digital (directos del 28 y 29 de octubre de 2026). Balances provisionales: las cifras pueden seguir cambiando.</figcaption></figure>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">03</span>Un fallo y después una orden</h2>
+<p class="a-p">Hacia las 8:30, el sistema de señalización automática LZB falla en un tramo de más de 60 kilómetros, cerca de Urda. Varios trenes, seis según el ministerio, quedan detenidos. «En caso de fallo del sistema, el centro de control toma el relevo», explica el ministro de Transportes, Óscar Puente (traducción de ABC): es entonces el centro de Adif en Atocha el que dirige la circulación.</p>
+<p class="a-p">A las 8:36, según Puente, autoriza al AVE a reanudar la marcha «con normalidad», aunque seguía activa una señal roja y el Iryo estaba detenido delante. El AVE habría recorrido unos 25 kilómetros en 17 minutos, hasta cerca de 200 km/h según el ministro, que habla de una hipótesis, cuando el límite aplicable habría sido de 40 km/h. Considera la decisión «inexplicable» y «a todas luces errónea». Según El Mundo, Iryo afirma que su tren no había recibido la instrucción de reanudar la marcha; el Gobierno lo desmiente.</p>
+</div>
+<figure class="a-schema"><p class="a-schema-t">El 28 de octubre: del fallo a la colisión</p><div class="a-etapes dates">
+<div class="a-etape ok"><span class="a-statut">7:54</span><span class="a-val">Salida</span><span class="a-txt">el Iryo sale de Madrid-Puerta de Atocha hacia Sevilla, con 147 pasajeros y 5 tripulantes</span></div>
+<span class="a-fleche" aria-hidden="true">→</span>
+<div class="a-etape ok"><span class="a-statut">Hacia las 8:30</span><span class="a-val">Fallo del LZB</span><span class="a-txt">más de 60 km sin señalización automática; varios trenes se detienen</span></div>
+<span class="a-fleche" aria-hidden="true">→</span>
+<div class="a-etape non"><span class="a-statut">8:36</span><span class="a-val">La orden</span><span class="a-txt">el centro de Atocha autoriza reanudar la marcha «con normalidad», según el ministro</span></div>
+<span class="a-fleche" aria-hidden="true">→</span>
+<div class="a-etape non"><span class="a-statut">8:53-8:54</span><span class="a-val">Colisión</span><span class="a-txt">el AVE alcanza al Iryo detenido, unos 25 km más allá</span></div>
+</div><figcaption class="a-src">Fuentes: Última Hora y Libertad Digital (28-29 de octubre de 2026), a partir del Ministerio de Transportes e Iryo. Reconstrucción preliminar: la investigación debe confirmarla.</figcaption></figure>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">04</span>Lo que dicen los audios</h2>
+<p class="a-p">Las grabaciones de las comunicaciones, difundidas el 29 de octubre a varios medios, dan una idea de la escena. El maquinista del AVE comunica un «fallo de transmisión por bloqueo»; el centro le indica que se desconecte y se vuelva a conectar, y después: «Reanude marcha. Con marcha normal». La maquinista del Iryo explica: «No me está permitiendo el tren reiniciar el sistema LZB y por eso estoy detenida». Según Libertad Digital, avisó de sus problemas, pero no se alertó al AVE antes de la colisión.</p>
+<p class="a-p">Según Moncloa.com, que hace su propia lectura, los dos trenes estaban separados solo por 25 kilómetros, mientras que la marcha normal exige 30 o más. La maquinista del Iryo dio negativo en las pruebas de alcohol y drogas, según la prensa regional. Nada de esto es una conclusión: las primeras hipótesis apuntan a un error humano de un operador de Adif, pero «ninguna conclusión es definitiva a día de hoy», escribe Moncloa.com.</p>
+</div>
+<figure class="a-citation"><blockquote lang="es">«Hoy España está de luto. Toda España está de luto.»</blockquote><figcaption><b>Pedro Sánchez</b>, presidente del Gobierno, en Urda, 28 de octubre de 2026 (citado por Moncloa.com)</figcaption></figure>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">05</span>La investigación judicial</h2>
+<p class="a-p">La jueza de instrucción número 2 de Orgaz, de guardia, prohibió el acceso a la zona, ordenó la incautación de las cajas negras de los dos trenes y decretó el secreto del sumario. Pidió al centro de Atocha sus datos y a Adif un informe sobre las personas encargadas del control. El operario señalado por el ministro y el resto del equipo del centro fueron interrogados por la Guardia Civil, como policía judicial. Vox ha presentado una querella contra responsables de Adif por homicidio imprudente. «Vamos a llegar hasta el final y, si ha habido negligencias, se sabrá», asegura Pedro Sánchez.</p>
+</div>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">06</span>Un país de luto</h2>
+<p class="a-p">El decreto publicado en el BOE establece tres días de luto oficial, desde las 0:00 del 29 de octubre hasta las 23:59 del 31, con las banderas a media asta en los edificios públicos. Los reyes Felipe VI y Letizia, que han cancelado su agenda, visitan a los heridos en Toledo el día 29. Las campanas del Arzobispado de Toledo doblan a mediodía. La catástrofe llega en plena campaña para las elecciones anticipadas del 29 de noviembre: Alberto Núñez Feijóo suspende su precampaña, mientras que Vox mantiene la suya.</p>
+</div>
+<div class="a-sec">
+<h2 class="ap-sub a-h2"><span class="a-num">07</span>Una línea, dos accidentes en nueve meses</h2>
+<p class="a-p">La circulación está interrumpida entre Madrid y Andalucía. Iryo ha cancelado sus salidas, Ouigo suspende sus servicios hasta el 2 de noviembre como mínimo y Renfe pone en marcha trenes convencionales vía Ciudad Real, que alargan el trayecto una hora y media. El sindicato de maquinistas Semaf mantiene su huelga de 24 horas del 29 de octubre, convocada el 16, antes del accidente, aunque pide prudencia sobre las causas.</p>
+<p class="a-p">El 18 de enero de 2026, en Adamuz (Córdoba), un accidente causó 46 muertos en la misma línea, con Renfe e Iryo ya implicados. García-Page estima que todo indica que las causas de los dos accidentes no están relacionadas, pero «no me corresponde a mí decirlo» (traducción de ABC). El presidente andaluz, Juanma Moreno, recuerda que «en esa vía han perdido la vida al menos 114 personas en dos accidentes en tan solo nueve meses».</p>
+</div>
+<section class="a-sec a-chrono-bloc"><h2 class="ap-sub a-h2">Cronología</h2><p class="a-chrono-sous">Del más reciente al más antiguo</p><div class="a-defile"><ol class="a-chrono">
+<li class="recent"><span class="a-date">31 de octubre de 2026</span><p>Fin del luto oficial de tres días.</p></li>
+<li><span class="a-date">29 de octubre de 2026</span><p>Comienza el luto, huelga de Semaf y visita de los reyes a los heridos en Toledo.</p></li>
+<li><span class="a-date">28 de octubre de 2026</span><p>Colisión de Urda hacia las 8:54: al menos 68 muertos.</p></li>
+<li><span class="a-date">16 de octubre de 2026</span><p>Semaf convoca la huelga del 29 de octubre.</p></li>
+<li><span class="a-date">18 de enero de 2026</span><p>Accidente de Adamuz: 46 muertos en la misma línea.</p></li>
+<li><span class="a-date">2013</span><p>Santiago de Compostela: 80 muertos, según ABC.</p></li>
+</ol></div></section>
+<aside class="a-analyse"><p class="a-analyse-lab">El análisis</p><h2 class="a-analyse-t">Un fallo y después una decisión humana</h2><div class="a-analyse-corps"><p class="a-p">La reconstrucción provisional distingue dos niveles. Un fallo del sistema de señalización automática puede ocurrir, y precisamente por eso existen procedimientos de emergencia. La verdadera pregunta es por qué pudo darse la orden de reanudar la marcha sin que se comprobara, según la prensa, dónde estaba el tren que iba delante. Mientras la investigación no zanje la cuestión, no se puede señalar a un responsable ni descartar un fallo del sistema.</p><p class="a-p">Lo que está en juego es también político. Un segundo accidente en nueve meses en la misma línea, a un mes de las elecciones, sitúa al Gobierno y al gestor Adif en el centro de las críticas, mientras los operadores Renfe e Iryo se cruzan responsabilidades. La confianza en una red de alta velocidad depende de la transparencia de la investigación mucho más que de la rapidez con que se recupere la normalidad, y el control de esa decisión estará en el centro de la investigación.</p></div>
+<section class="a-copie" aria-label="En una redacción"><p class="a-copie-t">En una redacción</p>
+<div class="a-accroche"><h3>Gancho</h3><p>El 28 de octubre de 2026, un tren AVE de Renfe alcanzó por detrás a un tren Iryo detenido cerca de Urda, en la provincia de Toledo: al menos 68 muertos, el accidente de alta velocidad más mortífero de España desde 2013. Nueve meses después de Adamuz, donde murieron 46 personas en la misma línea, la cuestión ya no es solo la de un fallo técnico, sino la de qué valen las protecciones de un sistema automatizado cuando el fallo se encuentra con la decisión humana.</p></div>
+<div class="a-copie-grille">
+<div><h3>Idea fuerte</h3><p>El riesgo de un sistema complejo se aloja en la articulación entre la máquina y el ser humano: un fallo menor se convierte en accidente cuando fallan los procedimientos de emergencia. En una red gestionada por un solo actor pero abierta a varios operadores, la seguridad es una cuestión de coordinación y de responsabilidad.</p></div>
+<div><h3>Temas donde usarla</h3><ul><li>¿Es la seguridad compatible con la búsqueda del rendimiento? (ESH)</li><li>¿Existe el riesgo cero? (filosofía)</li><li>¿Quién es responsable de una catástrofe colectiva? (español)</li></ul></div>
+<div class="a-piege"><h3>Error que evitar</h3><p>Señalar a un culpable o hablar de una causa establecida: por ahora son hipótesis (fallo del LZB, orden errónea del centro de control) que la investigación debe confirmar, e Iryo discute la versión del Gobierno. Otros errores: dar por definitivo el balance (68 muertos) o hablar de descarrilamiento cuando se trata de una colisión por alcance, tras la cual dos coches descarrilaron.</p></div>
+</div></section></aside>
+</article>
+<section class="a-carte a-plus"><h2 class="a-plus-t">Para ir más lejos</h2>
+<a class="a-cours sans-photo" href="../../../deuxieme_annee/langues/espagnol/Espagne/civi-esp-6.html"><div><span class="a-kicker">Repasar el curso · Civilización hispanohablante · 2.º año</span><b>Las comunidades autónomas</b><p>Ni Estado federal ni Estado unitario: cómo la Constitución de 1978 inventó un modelo territorial a diecisiete velocidades.</p><span class="a-cours-btn">Abrir el capítulo <span aria-hidden="true">→</span></span></div></a>
+<h3 class="a-plus-h">Leer también</h3><ul class="a-lire">
+<li><a href="sanchez-dissolution-cortes.html"><img src="../images/sanchez-dissolution-cortes.webp" alt="" loading="lazy"><span><span class="a-kicker">España · Octubre de 2026</span><b>España: Sánchez disuelve las Cortes y convoca elecciones anticipadas el 29 de noviembre</b></span></a></li>
+<li><a href="espagne-milei-madrid-campagne-29n-2026.html"><img src="../images/espagne-milei-madrid-campagne-29n-2026.webp" alt="" loading="lazy"><span><span class="a-kicker">España · Octubre de 2026</span><b>España: Milei se mete en la campaña del 29-N, recibido por Ayuso e insultando a Sánchez</b></span></a></li>
+<li><a href="espagne-dana-adam-inondations-2026.html"><img src="../images/espagne-dana-adam-inondations-2026.webp" alt="" loading="lazy"><span><span class="a-kicker">España · Octubre de 2026</span><b>España: la DANA Adam descarga más de 700 litros de agua por m² en el litoral mediterráneo</b></span></a></li>
+<li><a href="espagne-reyes-visite-ceuta-2026.html"><img src="../images/espagne-reyes-visite-ceuta-2026.webp" alt="" loading="lazy"><span><span class="a-kicker">España · Octubre de 2026</span><b>España: Felipe VI y Letizia en Ceuta, primera visita de un rey desde 2007</b></span></a></li>
+</ul><h3 class="a-plus-h">Sources</h3><ol class="a-sources">
+<li><span><b>ABC News</b><a href="https://abcnews.com/International/10-killed-train-collision-high-speed-line-spain/story?id=137633323" target="_blank" rel="noopener">« 'Inexplicable' order probed as cause of train crash that killed at least 68 »</a>, 28 de octubre de 2026.</span></li>
+<li><span><b>NBC News</b><a href="https://www.nbcnews.com/world/spain/spain-train-crash-high-speed-collision-toledo-rcna606070" target="_blank" rel="noopener">« Spain train crash: Dozens dead after high-speed trains collide near Toledo »</a>, 28 de octubre de 2026.</span></li>
+<li><span><b>Atalayar</b><a href="https://www.atalayar.com/en/articulo/society/railway-tragedy-in-urda-at-least-64-dead-and-179-injured-in-collision-between-an-ave-and-an-iryo/20261028145814230133.html" target="_blank" rel="noopener">« Railway tragedy in Urda: At least 68 dead and 179 injured in a collision between an AVE and an Iryo »</a>, 28 de octubre de 2026.</span></li>
+<li><span><b>Castilla-La Mancha Media</b><a href="https://www.cmmedia.es/noticias/castilla-la-mancha/toledo/ultima-hora-accidente-tren-urda-toledo-fallecidos.html" target="_blank" rel="noopener">« Última hora del accidente de tren en Urda (Toledo) »</a>, 28 de octubre de 2026.</span></li>
+<li><span><b>Libertad Digital</b><a href="https://www.libertaddigital.com/espana/2026-10-28/accidente-tren-urda-toledo-alta-velocidad-iryo-renfe-7483067/" target="_blank" rel="noopener">directo del 28 de octubre de 2026</a>; <a href="https://www.libertaddigital.com/espana/2026-10-29/segundo-dia-accidente-tren-urda-toledo-ultima-hora-investigacion-7483738/" target="_blank" rel="noopener">directo del 29 de octubre de 2026</a>.</span></li>
+<li><span><b>Presse espagnole</b><a href="https://www.ultimahora.es/sucesos/ultimas/2026/10/29/2738549/tragedia-ferroviaria-toledo-deja-balance-devastador-minutos-previos-choque-claves-investigacion.html" target="_blank" rel="noopener">Última Hora : « La tragedia ferroviaria de Toledo deja un balance devastador »</a> (29 de octubre 2026); <a href="https://www.moncloa.com/2026/10/29/accidente-tren-urda-fallo-lzb-3457580/" target="_blank" rel="noopener">Moncloa.com : « Accidente tren Urda: los audios destapan el fallo del LZB »</a> (29 de octubre 2026); <a href="https://www.elespanol.com/espana/20261029/sigue-busqueda-cadaveres-dentro-trenes-muertos-heridos-graves-colision-urda/1003744438997_0.html" target="_blank" rel="noopener">El Español : « Sigue la búsqueda de cadáveres dentro de los trenes »</a> (29 de octubre 2026).</span></li>
+</ol></section>
+<div class="a-fin"><a href="../tous-es.html">← Todos los artículos</a><button class="a-partager" type="button" onclick="partager(this)">Compartir el artículo</button><a href="../espagne.html">España →</a></div>
+</div><!-- /ap-es-section -->
+</main>
+<script>
+function setLang(lang) {
+  ['fr', 'es'].forEach(l => {
+    const b = document.getElementById('ap-btn-' + l);
+    b.classList.toggle('active', l === lang);
+    b.setAttribute('aria-pressed', l === lang);
+  });
+  const isEn = lang === 'es';
+  document.querySelectorAll('.ap-fr-section').forEach(el => el.style.display = isEn ? 'none' : 'block');
+  document.querySelectorAll('.ap-es-section').forEach(el => el.style.display = isEn ? 'block' : 'none');
+  document.documentElement.lang = isEn ? 'es' : 'fr';
+}
+setLang('fr');
+function partager(btn) {
+  const url = location.href.split('#')[0], titre = document.title.replace(/^ECG Prépa — /, '');
+  const fini = t => { const v = btn.textContent; btn.textContent = t; setTimeout(() => btn.textContent = v, 2000); };
+  if (navigator.share) { navigator.share({ title: titre, url }).catch(() => {}); return; }
+  navigator.clipboard.writeText(url).then(() => fini(document.documentElement.lang === 'es' ? 'Enlace copiado' : 'Lien copié'), () => {});
+}
+</script>
+</body>
+</html>
