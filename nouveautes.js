@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "es",
 "rubrique": "Actu Espagnol",
+"meta": "Cuba",
+"titre": "Cuba : l'ONU rejette pour la 34e fois l'embargo américain, avec le soutien le plus bas en vingt ans",
+"url": "actualites/es/articles/cuba-onu-vote-blocus-34e-2026.html",
+"image": "actualites/es/images/cuba-onu-vote-blocus-34e-2026.webp",
+"date": "2026-10-29T10:12:31+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
 "meta": "Espagne",
 "titre": "Tragédie ferroviaire à Urda : la collision de deux trains à grande vitesse fait au moins 68 morts",
 "url": "actualites/es/articles/espagne-tragedie-ferroviaire-urda-tolede-2026.html",
@@ -1712,15 +1721,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Amnistie de Puigdemont : le Tribunal suprême maintient son refus malgré l'aval de la justice européenne",
 "url": "actualites/es/articles/puigdemont-amnistie-rejet-espagne.html",
 "image": "actualites/es/images/puigdemont-amnistie-rejet-espagne.webp",
-"date": "2026-09-18T20:00:18+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Argentine",
-"titre": "Les Jeux sudaméricains de Santa Fe 2026 démarrent : 4 000 athlètes venus de 15 pays",
-"url": "actualites/es/articles/juegos-suramericanos-santa-fe-2026.html",
-"image": "actualites/es/images/juegos-suramericanos-santa-fe-2026.webp",
 "date": "2026-09-18T20:00:18+00:00"
 },
 {
