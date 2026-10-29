@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Monde",
+"titre": "Climat : l'OMM annonce des records mondiaux de CO₂, de méthane et de protoxyde d'azote en 2025",
+"url": "actualites/monde/articles/omm-gaz-effet-de-serre-records-2025.html",
+"image": "actualites/monde/images/omm-gaz-effet-de-serre-records-2025.webp",
+"date": "2026-10-29T09:31:24+00:00"
+},
+{
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne",
@@ -1272,15 +1281,6 @@ window.ECG_NOUVEAUTES = [
 "url": "deuxieme_annee/hgg/chapitre-2-hgg.html",
 "image": "deuxieme_annee/hgg/images/monument-valley-route.webp",
 "date": "2026-10-04T15:01:52+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Lettonie",
-"titre": "Lettonie : législatives pour les 100 sièges de la Saeima, la Liste unie en tête",
-"url": "actualites/monde/articles/lettonie-elections-saeima.html",
-"image": "actualites/monde/images/lettonie-elections-saeima.webp",
-"date": "2026-10-04T07:18:03+00:00"
 },
 {
 "t": "en",
