@@ -5,7 +5,7 @@
 (function () {
   const VX = window.VOIX || null;  // durées de la voix off par écran (voix.py) : la voix fixe alors le tempo
   const OUT = VX ? .45 : .6;       // fondu de sortie d'un plan (s)
-  const VOIX_DEPART = .4, VOIX_TRAINE = .5;
+  const VOIX_DEPART = .4, VOIX_TRAINE = .8;
   const LECTURE = 3.5;            // mots lus par seconde (texte posé)
   const PINS = ['var(--a3)', 'var(--a1)', 'var(--a2)', '#c9a227'];
   const TAPE = ['rgba(242,214,117,.82)', 'rgba(214,228,222,.86)', 'rgba(239,190,160,.8)'];
