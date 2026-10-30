@@ -404,6 +404,17 @@ feuille `style.css`) ; `python3 outils/resume-chapitre/generer.py <html> <pdf>` 
 titre (pastille « Résumé »), phrase-bilan, parties I et II ; page 2 : partie III, frise de 8 dates repères aux couleurs des
 parties, 4 chiffres, puis « À retenir » (encadré sombre), « Dans une copie » et « Notions clés » (4 notions).
 
+**Carrousel « Le chapitre en 10 cartes »** (demande type : « Fais un carrousel pour le chapitre N ») : 10 cartes
+1080 × 1350 (format Instagram), habillage archives aux couleurs du chapitre : couverture, idée du chapitre + 4 chiffres,
+deux cartes par partie (photo du chapitre scotchée, sous-parties, un petit schéma : vagues, barres, deux colonnes…),
+8 dates repères (la plus récente en haut), « À retenir » (idée-force, 4 notions, « Dans une copie »). Contenu repris du
+résumé PDF et du cours, rien de nouveau. Source : `outils/carrousel/<hgg1|hgg2>-chapitreN.html` (copier
+`hgg2-chapitre1.html`, feuille `style.css`, palette dans le `:root`, texte alternatif de chaque carte dans `data-alt`) ;
+`python3 outils/carrousel/generer.py <html> <année>/hgg/carrousel/chapitre-N <scratchpad>/png` écrit les WebP du site
+et les PNG pour Instagram (envoyés au propriétaire, jamais versionnés) et signale un bloc qui touche le pied de carte.
+Sur la page : bloc `section.carr#carrousel` juste après le bilan (images seulement, aucune balise lue par l'éditeur),
+lien « Carrousel » dans le sommaire, CSS et script en fin de page (copier ceux du chapitre 1 de 2e année).
+
 **Impression** : bloc `@media print` en fin de `<style>` (fond blanc, A4 pleine largeur, punaises et scotchs gardés et
 jamais coupés grâce à `.pin-wrap`, fiches flottantes ou rangées sous le texte quand elles sont plus hautes que lui, aucun
 encadré coupé, blanc seulement en bas de page). Pas de PDF du cours proposé sur la page pour l'instant.
