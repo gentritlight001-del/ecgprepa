@@ -373,7 +373,7 @@
     }
     P.dur = Math.max(d.min || 0, h.t + (d.fin ?? 1.6)); P.k = 1;
     if (VX && VX[i + 1] != null) {                      // écran calé sur sa voix : les apparitions se resserrent dans le temps de la phrase
-      const cible = Math.max(d.min || 0, VX[i + 1] + VOIX_DEPART + VOIX_TRAINE);
+      const cible = Math.max(d.min || 0, 4, VX[i + 1] + VOIX_DEPART + VOIX_TRAINE);   // 4 s au moins pour voir l'écran
       P.k = Math.max(1, h.t / Math.max(1, cible - .3)); P.dur = cible;
     }
     P.start = debut; debut += P.dur;
