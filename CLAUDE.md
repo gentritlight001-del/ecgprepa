@@ -417,6 +417,17 @@ Quand il le demandera : bloc `section.carr#carrousel` juste après le bilan (ima
 l'éditeur), lien « Carrousel » dans le sommaire, CSS et script en fin de page : tout est prêt dans le commit `e3dcc71`
 (`git show e3dcc71 -- deuxieme_annee/hgg/chapitre-1-hgg.html`).
 
+**Vidéo « motion design » du chapitre** (demande type : « Fais la vidéo du chapitre N ») : MP4 horizontal 1920 × 1080,
+25 images/s, sans son (le propriétaire ajoute sa musique), **tout le chapitre**, texte posé et lisible (3,5 mots/s), même
+habillage archives que le carrousel. Source : `outils/video/<hgg1|hgg2>-chapitreN.html` (copier `hgg2-chapitre1.html` :
+palette dans le `:root`, `SP`, `PARTIES`, puis `PLANS`, un plan par écran, deux colonnes de blocs : texte, définition,
+fiche, chiffres qui défilent, barres, frise la plus récente en haut, photo scotchée « Doc. N », coupure, penseur, schéma
+animé de `moteur.js`) ; contenu repris du cours, rien de nouveau, pas de tiret cadratin. Le moteur (`moteur.js`, `style.css`)
+calcule les durées de lecture et les animations. `python3 outils/video/generer.py <html> --controle` (blocs qui débordent,
+titres trop longs, durée), `--images <dossier>` (une image par plan, à regarder), puis
+`python3 outils/video/generer.py <html> <scratchpad>/<nom>.mp4` (environ 0,1 s par image, en 4 tranches parallèles).
+Le MP4 est envoyé au propriétaire, **jamais versionné ni mis sur le site**.
+
 **Impression** : bloc `@media print` en fin de `<style>` (fond blanc, A4 pleine largeur, punaises et scotchs gardés et
 jamais coupés grâce à `.pin-wrap`, fiches flottantes ou rangées sous le texte quand elles sont plus hautes que lui, aucun
 encadré coupé, blanc seulement en bas de page). Pas de PDF du cours proposé sur la page pour l'instant.
