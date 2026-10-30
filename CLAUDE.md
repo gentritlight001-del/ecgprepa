@@ -449,7 +449,7 @@ s'ouvrent, liens de la frise valides, `grep -c '—'` à 0 dans le texte.
     sans barres verticales : parenthèses vides, vecteurs de la nouvelle base au-dessus
     (e'_1 ⋯ e'_n), vecteurs de l'ancienne base à droite (e_1 ⋮ e_n).
     Une couleur par colle, jamais deux fois la même ni un autre bleu : 1 vert, 2 bordeaux,
-    3 sarcelle, 4 prune, 5 terre cuite.
+    3 sarcelle, 4 prune, 5 terre cuite, 6 olive.
   - Mettre à jour la carte « Colle de la semaine » de `deuxieme_annee/maths/index.html`.
 
 ### Index des cours (`cours-ecg.html`)
