@@ -412,8 +412,10 @@ résumé PDF et du cours, rien de nouveau. Source : `outils/carrousel/<hgg1|hgg2
 `hgg2-chapitre1.html`, feuille `style.css`, palette dans le `:root`, texte alternatif de chaque carte dans `data-alt`) ;
 `python3 outils/carrousel/generer.py <html> <année>/hgg/carrousel/chapitre-N <scratchpad>/png` écrit les WebP du site
 et les PNG pour Instagram (envoyés au propriétaire, jamais versionnés) et signale un bloc qui touche le pied de carte.
-Sur la page : bloc `section.carr#carrousel` juste après le bilan (images seulement, aucune balise lue par l'éditeur),
-lien « Carrousel » dans le sommaire, CSS et script en fin de page (copier ceux du chapitre 1 de 2e année).
+**Pas encore sur le site** (choix du propriétaire, octobre 2026) : ne livrer que les PNG, sans rien mettre sur la page.
+Quand il le demandera : bloc `section.carr#carrousel` juste après le bilan (images seulement, aucune balise lue par
+l'éditeur), lien « Carrousel » dans le sommaire, CSS et script en fin de page : tout est prêt dans le commit `e3dcc71`
+(`git show e3dcc71 -- deuxieme_annee/hgg/chapitre-1-hgg.html`).
 
 **Impression** : bloc `@media print` en fin de `<style>` (fond blanc, A4 pleine largeur, punaises et scotchs gardés et
 jamais coupés grâce à `.pin-wrap`, fiches flottantes ou rangées sous le texte quand elles sont plus hautes que lui, aucun
