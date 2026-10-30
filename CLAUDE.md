@@ -427,8 +427,9 @@ calcule les durées de lecture et les animations. `python3 outils/video/generer.
 titres trop longs, durée), `--images <dossier>` (une image par plan, à regarder), puis
 `python3 outils/video/generer.py <html> <scratchpad>/<nom>.mp4` (environ 0,1 s par image, en 4 tranches parallèles).
 Le MP4 est envoyé au propriétaire, **jamais versionné ni mis sur le site**.
-Voix off (ElevenLabs, voix « Paul K », modèle Multilingual v2) : un texte par écran, sigles écrits comme ils se
-prononcent, écrans séparés par `<break time="2.5s" />`, blocs de moins de 4 500 caractères ; le propriétaire renvoie un
+Voix off (ElevenLabs, voix « Paul K », modèle Multilingual v2) : un texte par écran qui **ne relit pas l'écran** (« les gens
+savent lire ») mais dit autrement, clairement, ce qu'il faut en comprendre (le pourquoi, le lien avec l'écran d'avant, l'usage
+dans une copie), phrases courtes et orales, faits du cours seulement ; sigles écrits comme ils se prononcent, écrans séparés par `<break time="2.5s" />`, blocs de moins de 4 500 caractères ; le propriétaire renvoie un
 MP3 par bloc. **La voix fixe le tempo** (le propriétaire a trouvé la vidéo « au rythme de lecture » trop lente, il la veut
 dynamique) : `python3 outils/video/voix.py prepare --bloc <bloc.mp3>:<premier écran> … --dossier <scratchpad>/voix`
 coupe la voix écran par écran, raccourcit les silences et l'accélère de 15 % ; `generer.py … --voix <dossier>/voix.json
