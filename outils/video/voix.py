@@ -4,9 +4,9 @@
 1. Préparer la voix (un MP3 par bloc, écrans séparés par des pauses <break time="2.5s" />) :
      python3 outils/video/voix.py prepare --bloc <bloc1.mp3>:1 --bloc <bloc2.mp3>:16 ... --dossier <scratchpad>/voix
    Coupe chaque bloc aux pauses de plus de 2,2 s (un morceau par écran), raccourcit les silences entre les
-   phrases, accélère la voix (--vitesse, 1,15 par défaut, sans changer sa hauteur), écrit ecran-NNN.wav et
+   phrases, accélère la voix (--vitesse, 1,07 par défaut, sans changer sa hauteur), écrit ecran-NNN.wav et
    voix.json (durée de la voix de chaque écran ; un nouveau bloc complète le fichier).
-2. Rendre la vidéo calée sur la voix : chaque écran dure le temps de sa voix plus une demi-seconde, et ses
+2. Rendre la vidéo calée sur la voix : chaque écran dure le temps de sa voix plus 0,8 s, et ses
    éléments apparaissent dans ce temps-là :
      python3 outils/video/generer.py <source.html> <video.mp4> --voix <dossier>/voix.json [--plans 1-15]
 3. Poser la voix :
@@ -41,8 +41,8 @@ def morceaux(f):
 def prepare(a):
     dos = Path(a.dossier); dos.mkdir(parents=True, exist_ok=True)
     js = dos / 'voix.json'; durees = json.loads(js.read_text()) if js.exists() else {}
-    filtre = ('silenceremove=start_periods=1:start_threshold=-45dB:stop_periods=-1:stop_duration=0.45:'
-              f'stop_threshold=-45dB:stop_silence=0.3,atempo={a.vitesse}')
+    filtre = ('silenceremove=start_periods=1:start_threshold=-45dB:stop_periods=-1:stop_duration=0.6:'
+              f'stop_threshold=-45dB:stop_silence=0.4,atempo={a.vitesse}')
     for b in a.bloc:
         fichier, premier = b.rsplit(':', 1); premier = int(premier)
         ms = morceaux(fichier)
@@ -83,7 +83,7 @@ def poser(a):
 def main():
     ap = argparse.ArgumentParser(); sp = ap.add_subparsers(dest='cmd', required=True)
     p = sp.add_parser('prepare'); p.add_argument('--bloc', action='append', required=True)
-    p.add_argument('--dossier', required=True); p.add_argument('--vitesse', type=float, default=1.15)
+    p.add_argument('--dossier', required=True); p.add_argument('--vitesse', type=float, default=1.07)
     q = sp.add_parser('poser'); q.add_argument('source'); q.add_argument('video'); q.add_argument('sortie')
     q.add_argument('--dossier', required=True); q.add_argument('--plans'); q.add_argument('--decalage', type=float, default=0)
     a = ap.parse_args()
