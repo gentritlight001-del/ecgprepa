@@ -1,26 +1,27 @@
 #!/usr/bin/env python3
-"""Pose la voix off (fichiers ElevenLabs) sur une vidéo de chapitre déjà rendue.
+"""Voix off d'une vidéo de chapitre (MP3 ElevenLabs) : c'est la voix qui fixe le tempo de la vidéo.
 
-  python3 outils/video/voix.py <source.html> <video.mp4> <sortie.mp4> --bloc <audio.mp3>:<premier écran> [...]
-          [--decalage <s>] [--jusqua <écran>]
-
-Chaque bloc audio contient plusieurs écrans séparés par des pauses <break time="2.5s" /> : le script les
-repère (silences de plus de 2,2 s), coupe la voix écran par écran et place chaque morceau 0,6 s après le
-début de son écran. --decalage = instant de la vidéo complète où commence <video.mp4> (vidéo découpée en
-parties) ; --jusqua = dernier écran à garder (aperçu). Il signale un morceau plus long que son écran : dans
-ce cas, allonger l'écran (champ min du plan) et refaire le rendu.
+1. Préparer la voix (un MP3 par bloc, écrans séparés par des pauses <break time="2.5s" />) :
+     python3 outils/video/voix.py prepare --bloc <bloc1.mp3>:1 --bloc <bloc2.mp3>:16 ... --dossier <scratchpad>/voix
+   Coupe chaque bloc aux pauses de plus de 2,2 s (un morceau par écran), raccourcit les silences entre les
+   phrases, accélère la voix (--vitesse, 1,15 par défaut, sans changer sa hauteur), écrit ecran-NNN.wav et
+   voix.json (durée de la voix de chaque écran ; un nouveau bloc complète le fichier).
+2. Rendre la vidéo calée sur la voix : chaque écran dure le temps de sa voix plus une demi-seconde, et ses
+   éléments apparaissent dans ce temps-là :
+     python3 outils/video/generer.py <source.html> <video.mp4> --voix <dossier>/voix.json [--plans 1-15]
+3. Poser la voix :
+     python3 outils/video/voix.py poser <source.html> <video.mp4> <sortie.mp4> --dossier <dossier> [--plans 1-15]
 """
 import argparse, json, subprocess, sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from generer import ouvrir  # noqa: E402
 
-DEPART, MARGE = .6, .5
+DEPART = .4   # la voix démarre 0,4 s après le début de son écran (VOIX_DEPART de moteur.js)
 
 
 def duree(f):
-    return float(subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', f],
+    return float(subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', str(f)],
                                 capture_output=True, text=True, check=True).stdout)
 
 
@@ -37,37 +38,56 @@ def morceaux(f):
     return bornes
 
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument('source'); ap.add_argument('video'); ap.add_argument('sortie')
-    ap.add_argument('--bloc', action='append', required=True); ap.add_argument('--decalage', type=float, default=0)
-    ap.add_argument('--jusqua', type=int)
-    a = ap.parse_args()
-    from playwright.sync_api import sync_playwright
-    with sync_playwright() as pw:
-        nav, page = ouvrir(pw, a.source)
-        plans = page.evaluate('VIDEO.plans'); nav.close()
-
-    entrees, filtres, n, alerte = [], [], 0, False
-    for k, b in enumerate(a.bloc):
+def prepare(a):
+    dos = Path(a.dossier); dos.mkdir(parents=True, exist_ok=True)
+    js = dos / 'voix.json'; durees = json.loads(js.read_text()) if js.exists() else {}
+    filtre = ('silenceremove=start_periods=1:start_threshold=-45dB:stop_periods=-1:stop_duration=0.45:'
+              f'stop_threshold=-45dB:stop_silence=0.3,atempo={a.vitesse}')
+    for b in a.bloc:
         fichier, premier = b.rsplit(':', 1); premier = int(premier)
         ms = morceaux(fichier)
-        print(f'{Path(fichier).name} : {len(ms)} écrans ({premier} à {premier + len(ms) - 1})')
-        entrees += ['-i', fichier]
         for j, (d, f) in enumerate(ms):
-            i = premier - 1 + j; p = plans[i]
-            if f - d + DEPART + MARGE > p['dur']:
-                alerte = True; print(f'  ⚠ écran {i + 1} : voix de {f - d:.1f} s pour un écran de {p["dur"]:.1f} s')
-            t = max(0, p['start'] + DEPART - a.decalage)
-            filtres.append(f'[{k + 1}:a]atrim={d:.3f}:{f:.3f},asetpts=PTS-STARTPTS,adelay={int(t * 1000)}:all=1[v{n}]'); n += 1
-    fin = []
-    if a.jusqua:
-        p = plans[a.jusqua - 1]; fin = ['-t', f'{p["start"] + p["dur"] + .6 - a.decalage:.2f}']
-    filtres.append(''.join(f'[v{i}]' for i in range(n)) + f'amix=inputs={n}:normalize=0:dropout_transition=0,apad[voix]')
+            n = premier + j; sortie = dos / f'ecran-{n:03d}.wav'
+            subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-ss', f'{d:.3f}', '-to', f'{f:.3f}', '-i', fichier,
+                            '-af', filtre, '-ar', '48000', '-ac', '2', str(sortie)], check=True)
+            durees[str(n)] = round(duree(sortie), 3)
+        print(f'{Path(fichier).name} : {len(ms)} écrans ({premier} à {premier + len(ms) - 1}), '
+              f'{sum(durees[str(premier + j)] for j in range(len(ms))):.0f} s de voix')
+    js.write_text(json.dumps(durees, sort_keys=True))
+
+
+def poser(a):
+    from generer import ouvrir
+    from playwright.sync_api import sync_playwright
+    dos = Path(a.dossier)
+    with sync_playwright() as pw:
+        nav, page = ouvrir(pw, a.source, str(dos / 'voix.json'))
+        plans = page.evaluate('VIDEO.plans'); nav.close()
+    p1, p2 = (int(x) for x in a.plans.split('-')) if a.plans else (1, len(plans))
+    decalage = plans[p1 - 1]['start'] if a.plans else a.decalage
+    entrees, filtres = [], []
+    for n in range(p1, p2 + 1):
+        f = dos / f'ecran-{n:03d}.wav'
+        if not f.exists():
+            continue
+        t = plans[n - 1]['start'] + DEPART - decalage
+        entrees += ['-i', str(f)]
+        filtres.append(f'[{len(filtres) + 1}:a]adelay={int(t * 1000)}:all=1[v{len(filtres)}]')
+    filtres.append(''.join(f'[v{i}]' for i in range(len(filtres))) + f'amix=inputs={len(filtres)}:normalize=0:dropout_transition=0,apad[voix]')
     subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', a.video, *entrees, '-filter_complex', ';'.join(filtres),
-                    '-map', '0:v', '-map', '[voix]', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-shortest', *fin,
+                    '-map', '0:v', '-map', '[voix]', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-shortest',
                     '-movflags', '+faststart', a.sortie], check=True)
-    print(f'{a.sortie} écrit' + (' (avec des écrans trop courts, voir plus haut)' if alerte else ''))
+    print(f'{a.sortie} : voix de {len(filtres) - 1} écrans posée')
+
+
+def main():
+    ap = argparse.ArgumentParser(); sp = ap.add_subparsers(dest='cmd', required=True)
+    p = sp.add_parser('prepare'); p.add_argument('--bloc', action='append', required=True)
+    p.add_argument('--dossier', required=True); p.add_argument('--vitesse', type=float, default=1.15)
+    q = sp.add_parser('poser'); q.add_argument('source'); q.add_argument('video'); q.add_argument('sortie')
+    q.add_argument('--dossier', required=True); q.add_argument('--plans'); q.add_argument('--decalage', type=float, default=0)
+    a = ap.parse_args()
+    prepare(a) if a.cmd == 'prepare' else poser(a)
 
 
 if __name__ == '__main__':

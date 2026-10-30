@@ -3,7 +3,9 @@
    calcule le temps de lecture de chaque bloc et expose render(t), qui dessine l'image à l'instant t.
    Rien ne dépend de l'horloge du navigateur : chaque image est calculée, donc rendue à l'identique. */
 (function () {
-  const OUT = .6;                 // fondu de sortie d'un plan (s)
+  const VX = window.VOIX || null;  // durées de la voix off par écran (voix.py) : la voix fixe alors le tempo
+  const OUT = VX ? .45 : .6;       // fondu de sortie d'un plan (s)
+  const VOIX_DEPART = .4, VOIX_TRAINE = .5;
   const LECTURE = 3.5;            // mots lus par seconde (texte posé)
   const PINS = ['var(--a3)', 'var(--a1)', 'var(--a2)', '#c9a227'];
   const TAPE = ['rgba(242,214,117,.82)', 'rgba(214,228,222,.86)', 'rgba(239,190,160,.8)'];
@@ -369,7 +371,11 @@
       });
       if (d.flex) cols.forEach((c, k) => { if (d.flex[k]) c.style.justifyContent = d.flex[k]; });
     }
-    P.dur = Math.max(d.min || 0, h.t + (d.fin ?? 1.6));
+    P.dur = Math.max(d.min || 0, h.t + (d.fin ?? 1.6)); P.k = 1;
+    if (VX && VX[i + 1] != null) {                      // écran calé sur sa voix : les apparitions se resserrent dans le temps de la phrase
+      const cible = Math.max(d.min || 0, VX[i + 1] + VOIX_DEPART + VOIX_TRAINE);
+      P.k = Math.max(1, h.t / Math.max(1, cible - .3)); P.dur = cible;
+    }
     P.start = debut; debut += P.dur;
     P.part = d.sp ? d.sp.split('.')[0] : (d.n || null);
     scene.append(P.el); plans.push(P);
@@ -393,7 +399,8 @@
 
   function applique(an, l, p) {
     const el = an.el;
-    if (an.a === 'kb') { const q = Math.min(1, Math.max(0, l / (p.dur + OUT))); el.style.transform = `scale(${1.03 + .08 * q}) translate(${an.dx * q}%,${an.dy * q}%)`; return; }
+    if (an.a === 'kb') { const q = Math.min(1, Math.max(0, l / (p.dur + OUT))), z = VX ? .14 : .08, m = VX ? 2 : 1; el.style.transform = `scale(${1.03 + z * q}) translate(${an.dx * m * q}%,${an.dy * m * q}%)`; return; }
+    l *= p.k;
     let x = (l - an.t) / an.d; x = x < 0 ? 0 : x > 1 ? 1 : x; const e = eo(x);
     const r = an.rot || 0;
     switch (an.a) {
@@ -423,7 +430,7 @@
       p.el.style.display = vis ? 'block' : 'none';
       if (!vis) continue;
       const fo = l > p.dur ? 1 - (l - p.dur) / OUT : 1, f = eio(Math.max(0, fo));
-      p.box.style.opacity = f; p.box.style.translate = `0 ${-(1 - f) * 16}px`;
+      p.box.style.opacity = f; p.box.style.translate = VX ? `${-(1 - f) * 70}px 0` : `0 ${-(1 - f) * 16}px`;
       if (p.head) {
         const ein = p.samePrev ? 1 : eo(Math.min(1, Math.max(0, (l - .05) / .7)));
         p.head.style.opacity = (p.sameNext ? 1 : f) * ein;

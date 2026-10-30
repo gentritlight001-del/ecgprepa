@@ -427,12 +427,13 @@ calcule les durées de lecture et les animations. `python3 outils/video/generer.
 titres trop longs, durée), `--images <dossier>` (une image par plan, à regarder), puis
 `python3 outils/video/generer.py <html> <scratchpad>/<nom>.mp4` (environ 0,1 s par image, en 4 tranches parallèles).
 Le MP4 est envoyé au propriétaire, **jamais versionné ni mis sur le site**.
-Voix off (ElevenLabs, voix « Paul K », modèle Multilingual v2) : un texte par écran, au plus 2,3 mots/s de la durée de
-l'écran, sigles écrits comme ils se prononcent, écrans séparés par `<break time="2.5s" />`, blocs de moins de 4 500
-caractères. Le propriétaire renvoie un MP3 par bloc ; `python3 outils/video/voix.py <html> <video.mp4> <sortie.mp4>
---bloc <bloc.mp3>:<premier écran> [--decalage <début de la partie>] [--jusqua <écran>]` coupe la voix aux pauses et
-place chaque morceau 0,6 s après le début de son écran (il signale une voix plus longue que son écran : allonger alors
-le plan avec `min` et refaire le rendu).
+Voix off (ElevenLabs, voix « Paul K », modèle Multilingual v2) : un texte par écran, sigles écrits comme ils se
+prononcent, écrans séparés par `<break time="2.5s" />`, blocs de moins de 4 500 caractères ; le propriétaire renvoie un
+MP3 par bloc. **La voix fixe le tempo** (le propriétaire a trouvé la vidéo « au rythme de lecture » trop lente, il la veut
+dynamique) : `python3 outils/video/voix.py prepare --bloc <bloc.mp3>:<premier écran> … --dossier <scratchpad>/voix`
+coupe la voix écran par écran, raccourcit les silences et l'accélère de 15 % ; `generer.py … --voix <dossier>/voix.json
+[--plans 1-15]` fait durer chaque écran le temps de sa voix plus 0,5 s (apparitions resserrées, transitions en
+glissement) ; `voix.py poser <html> <video.mp4> <sortie.mp4> --dossier <dossier> [--plans 1-15]` pose la voix.
 
 **Impression** : bloc `@media print` en fin de `<style>` (fond blanc, A4 pleine largeur, punaises et scotchs gardés et
 jamais coupés grâce à `.pin-wrap`, fiches flottantes ou rangées sous le texte quand elles sont plus hautes que lui, aucun
