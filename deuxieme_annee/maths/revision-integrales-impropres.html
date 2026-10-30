@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="../../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Révisions d'analyse : les intégrales impropres</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false}]});"></script>
+<style>
+  :root {
+    --cream: #FBF4EF;
+    --dark: #2A140B;
+    --terra: #A8461F;
+    --terra-dark: #3A1A0D;
+    --terra-mid: #CC7650;
+    --terra-light: #F7E4DA;
+    --terra-border: #E2B39C;
+    --glow: #F2C2A8;
+    --muted: #7A5A4C;
+    --accent: #A8461F;
+    --accent-soft: #A8461F22;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--dark); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center;
+    padding: 18px 48px; border-bottom: 1px solid rgba(168,70,31,0.25);
+    background: var(--terra-dark); backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--glow); cursor: pointer; letter-spacing: 0.02em; }
+  .nav-logo a { color: inherit; text-decoration: none; }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(251,244,239,0.5); flex-wrap: wrap; }
+  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
+  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .breadcrumb a { color: inherit; text-decoration: none; }
+  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+  .breadcrumb a:hover span, .breadcrumb span:hover { color: var(--glow); }
+  .breadcrumb .sep { color: rgba(251,244,239,0.25); }
+  .breadcrumb .current { color: #FBF4EF; cursor: default; }
+
+  /* ─── HERO ─── */
+  .ch-hero {
+    background: radial-gradient(120% 140% at 15% 0%, #6A2A12 0%, var(--terra-dark) 55%, #1C0B05 100%);
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ch-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23CC7650' fill-opacity='0.18'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--glow); margin-bottom: 1.5rem; opacity: 0.9; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 4rem); color: var(--cream); font-weight: 900; max-width: 900px; margin: 0 auto 1.5rem; line-height: 1.1; position: relative; z-index: 1; }
+  .ch-hero p { color: rgba(251,244,239,0.5); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  /* ─── TOC ─── */
+  .toc-bar { background: #F8EAE1; padding: 2rem; border-bottom: 1px solid var(--terra-border); }
+  .toc-inner { max-width: 960px; margin: 0 auto; }
+  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
+  .toc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.4rem; list-style: none; }
+  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: #3A1E14; font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
+  .toc-list a:hover { border-color: var(--terra-border); background: white; color: #000; }
+  .toc-num { font-family: "DM Mono", monospace; font-size: 0.65rem; color: var(--terra); flex-shrink: 0; margin-top: 0.15rem; }
+
+  /* ─── CONTENT ─── */
+  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 3rem; }
+
+  /* PART */
+  .math-part { margin-bottom: 5rem; }
+  .math-part:last-of-type { margin-bottom: 0; }
+  .math-part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--terra); }
+  .math-part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: var(--terra-border); line-height: 1; flex-shrink: 0; }
+  .math-part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--dark); line-height: 1.25; }
+
+  /* SECTION */
+  .math-section { margin-bottom: 3.5rem; }
+  .math-section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--terra-dark); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--terra); scroll-margin-top: 2rem; }
+  .math-subsection-title { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--terra); margin: 2rem 0 0.75rem; }
+
+  /* TEXT */
+  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: #33201A; line-height: 1.85; font-weight: 300; }
+  .content strong { color: var(--dark); font-weight: 600; }
+
+  /* DÉFINITION CARD */
+  .def-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(168,70,31,0.10), 0 0 0 1px rgba(168,70,31,0.14);
+    display: flex;
+    margin: 1.4rem 0;
+  }
+  .def-accent-bar {
+    width: 5px;
+    background: linear-gradient(180deg, #D08A66 0%, #3A1A0D 100%);
+    flex-shrink: 0;
+    border-radius: 10px 0 0 10px;
+  }
+  .def-body { padding: 1.2rem 1.5rem; flex: 1; min-width: 0; }
+  @media screen { .def-body { overflow-x: auto; } }
+  .def-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.65rem; }
+  .def-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--terra); font-weight: 500; }
+  .def-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--terra-dark); }
+  .def-body p { margin-bottom: 0.5rem; font-size: 0.93rem; line-height: 1.75; }
+  .def-body p:last-child { margin-bottom: 0; }
+
+  /* PROPRIÉTÉ CARD */
+  .prop-card {
+    background: var(--terra-light);
+    border-radius: 8px;
+    border: 1px solid var(--terra-border);
+    border-left: 4px solid var(--terra);
+    padding: 1.2rem 1.5rem;
+    margin: 1.4rem 0;
+  }
+  .prop-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--terra-dark); font-weight: 700; margin-bottom: 0.6rem; }
+  .prop-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--terra-dark); margin-bottom: 0.7rem; }
+  .prop-card p { margin-bottom: 0.5rem; font-size: 0.93rem; color: var(--terra-dark); line-height: 1.75; }
+  .prop-card p:last-child { margin-bottom: 0; }
+  .prop-card ol { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .prop-card ol li { font-size: 0.93rem; color: var(--terra-dark); line-height: 1.8; margin-bottom: 0.35rem; }
+  .prop-card ul { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .prop-card ul li { font-size: 0.93rem; color: var(--terra-dark); line-height: 1.8; margin-bottom: 0.35rem; }
+
+  /* THÉORÈME CARD */
+  .thm-card {
+    background: var(--terra-dark);
+    color: var(--cream);
+    border-radius: 8px;
+    padding: 1.5rem 1.75rem;
+    margin: 1.4rem 0;
+  }
+  .thm-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--glow); margin-bottom: 0.5rem; }
+  .thm-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--cream); margin-bottom: 0.75rem; }
+  .thm-card p { color: rgba(251,244,239,0.88); font-size: 0.93rem; margin-bottom: 0.5rem; line-height: 1.75; }
+  .thm-card p:last-child { margin-bottom: 0; }
+  .thm-card ul, .thm-card ol { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .thm-card strong { color: var(--glow); font-weight: 600; }
+  .thm-card li { font-size: 0.93rem; color: rgba(251,244,239,0.88); line-height: 1.8; margin-bottom: 0.35rem; }
+
+  /* MÉTHODE CARD */
+  .meth-card {
+    background: white;
+    border: 2px solid var(--terra);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.4rem 0;
+  }
+  .meth-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--terra); font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+  .meth-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--terra-dark); margin-bottom: 0.7rem; }
+  .meth-card p { font-size: 0.93rem; line-height: 1.75; margin-bottom: 0.5rem; }
+  .meth-card p:last-child { margin-bottom: 0; }
+  .meth-card ul, .meth-card ol { padding-left: 1.4rem; margin: 0.3rem 0 0.5rem; }
+  .meth-card li { font-size: 0.93rem; line-height: 1.8; margin-bottom: 0.3rem; }
+
+  /* REMARQUE */
+  .remark { background: white; border-left: 3px solid var(--terra-border); padding: 1rem 1.4rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; font-size: 0.9rem; color: #3A1E14; line-height: 1.7; font-style: italic; }
+  .remark::before { content: 'Remarque'; font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--terra); display: block; margin-bottom: 0.3rem; }
+
+  /* FORMULE DISPLAY */
+  .formula-block {
+    background: white;
+    border: 1px solid var(--terra-border);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.2rem 0;
+    text-align: center;
+    overflow-x: auto;
+    color: var(--dark);
+  }
+  .formula-block .katex-display { margin: 0; }
+  .formula-block .katex { font-size: 1.05em; color: var(--dark); }
+
+  /* Cartes à fond blanc : toujours forcer le texte en noir/sombre,
+     même imbriquées dans un thm-card à fond sombre */
+  .def-card, .meth-card, .formula-block {
+    color: var(--dark);
+  }
+  .def-card *, .meth-card *, .formula-block * { color: inherit; }
+  .def-card .def-label, .meth-card .meth-label { color: var(--terra); }
+  .def-card .def-name, .meth-card .meth-title { color: var(--terra-dark); }
+
+  /* TABLE */
+  .math-table-wrap { overflow-x: auto; margin: 1.5rem 0; border-radius: 8px; border: 1px solid var(--terra-border); box-shadow: 0 2px 8px rgba(168,70,31,0.08); }
+  .math-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .math-table th { background: var(--terra-dark); color: var(--cream); font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.75rem 1rem; text-align: center; font-weight: 500; border: 1px solid rgba(255,255,255,0.1); }
+  .math-table td { padding: 0.65rem 1rem; text-align: center; border: 1px solid var(--terra-light); color: #33201A; vertical-align: middle; background: white; line-height: 1.6; }
+  .math-table tr:nth-child(even) td { background: #FBF4EF; }
+  .math-table tr:hover td { background: var(--terra-light); }
+  .math-table td.left { text-align: left; }
+  .math-table .katex { font-size: 0.95em; }
+
+  /* KEY FACT */
+  .math-key { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 0.6rem; padding: 0.85rem 1.1rem; background: white; border: 1px solid var(--terra-light); border-radius: 6px; }
+  .math-key-bullet { width: 6px; height: 6px; background: var(--terra); border-radius: 50%; flex-shrink: 0; margin-top: 0.55rem; }
+  .math-key > div { font-size: 0.91rem; color: #33201A; line-height: 1.75; font-weight: 300; }
+
+  /* INLINE MATH */
+  .katex { font-size: 1em; }
+  .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.2rem 0; }
+
+  /* DEUX COLONNES */
+  .two-col-formulas { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
+  .two-col-formulas .formula-block { margin: 0; }
+
+  /* TROIS COLONNES */
+  .three-col-formulas { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
+  .three-col-formulas .formula-block { margin: 0; }
+
+  /* HIGHLIGHT BOX */
+  .math-highlight { background: var(--terra-light); border-left: 4px solid var(--terra); padding: 1.25rem 1.75rem; margin: 1.5rem 0; color: var(--terra-dark); font-size: 0.93rem; line-height: 1.75; border-radius: 0 6px 6px 0; }
+
+  /* FOOTER */
+  .site-footer {
+    background: var(--terra-dark);
+    border-top: 1px solid rgba(168,70,31,0.35);
+    padding: 2.5rem 2rem;
+    text-align: center;
+  }
+  .site-footer .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--glow);
+    letter-spacing: 0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+  /* BACK TO TOP */
+  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--terra); color: var(--cream); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 4px 14px rgba(168,70,31,0.45); opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 200; }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+  .back-to-top:hover { background: var(--terra-mid); }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--terra-border); border-radius: 3px; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .two-col-formulas { grid-template-columns: 1fr; }
+    .three-col-formulas { grid-template-columns: 1fr; }
+    .content { padding: 3rem 1rem 2rem; }
+    .formula-block { padding: 0.9rem 0.6rem; }
+    .formula-block .katex { font-size: 0.86em; }
+    .def-body, .prop-card, .thm-card { padding-left: 1rem; padding-right: 1rem; }
+  }
+
+  @media print {
+    @page { size: A4; margin: 15mm 14mm 15mm 14mm; }
+    nav, .back-to-top, .toc-bar, .site-footer { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    html, body { background: white !important; color: #000 !important; font-size: 10pt; width: 100% !important; }
+    .ch-hero { background: #3A1A0D !important; padding: 0.9rem 1rem 0.7rem !important; }
+    .ch-hero::before { display: none !important; }
+    .ch-hero h1 { font-size: 16pt !important; color: #fff !important; margin-bottom: 0.3rem !important; }
+    .ch-hero .chap-label { font-size: 7pt !important; color: #F2C2A8 !important; margin-bottom: 0.4rem !important; }
+    .ch-hero p { font-size: 7pt !important; color: #F2C2A8 !important; margin: 0 !important; }
+    .content { max-width: 100% !important; padding: 0.6rem 0 !important; margin: 0 !important; }
+    .content p { font-size: 9pt !important; line-height: 1.5 !important; margin-bottom: 0.45rem !important; color: #000 !important; }
+    .math-part { margin-bottom: 0.8rem; page-break-inside: auto; }
+    .math-part-header { page-break-after: avoid; padding-bottom: 0.6rem !important; margin-bottom: 1rem !important; border-bottom: 2pt solid #A8461F !important; }
+    .math-part-num { font-size: 2rem !important; color: #E2B39C !important; }
+    .math-part-title { font-size: 13pt !important; }
+    .math-section { page-break-inside: auto; margin-bottom: 0.8rem; }
+    .math-section-title { page-break-after: avoid; font-size: 11pt !important; padding-left: 0.7rem !important; border-left: 2.5pt solid #A8461F !important; margin-bottom: 0.55rem !important; color: #3A1A0D !important; }
+    .math-subsection-title { page-break-after: avoid; font-size: 7pt !important; margin: 0.65rem 0 0.35rem !important; color: #A8461F !important; }
+    .def-card { page-break-inside: avoid; box-shadow: none !important; border: 1pt solid #E2B39C !important; display: flex !important; border-radius: 0 !important; margin: 0.55rem 0 !important; }
+    .def-accent-bar { background: #A8461F !important; width: 4px !important; border-radius: 0 !important; }
+    .def-body { padding: 0.7rem 1rem !important; }
+    .def-body p { font-size: 8.5pt !important; line-height: 1.5 !important; color: #000 !important; }
+    .prop-card { page-break-inside: avoid; background: #F7E4DA !important; border: 1pt solid #E2B39C !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .prop-card p, .prop-card li { font-size: 8.5pt !important; line-height: 1.5 !important; }
+    .thm-card { page-break-inside: avoid; background: #3A1A0D !important; padding: 0.7rem 1rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .thm-label { font-size: 6pt !important; color: #F2C2A8 !important; }
+    .thm-title { font-size: 9.5pt !important; color: #fff !important; }
+    .thm-card p, .thm-card li { font-size: 8.5pt !important; line-height: 1.5 !important; color: #FBEDE5 !important; }
+    .meth-card { page-break-inside: avoid; border: 1.5pt solid #A8461F !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
+    .meth-title { font-size: 9.5pt !important; }
+    .meth-card p, .meth-card li { font-size: 8.5pt !important; line-height: 1.5 !important; }
+    .remark { border-left: 2pt solid #E2B39C !important; padding: 0.5rem 0.8rem !important; margin: 0.5rem 0 !important; font-size: 8pt !important; border-radius: 0 !important; }
+    .formula-block { border: 1pt solid #E2B39C !important; padding: 0.55rem 0.8rem !important; margin: 0.5rem 0 !important; border-radius: 0 !important; }
+    .math-table-wrap { border: 1pt solid #E2B39C !important; border-radius: 0 !important; box-shadow: none !important; margin: 0.5rem 0 !important; }
+    .math-table th { background: #3A1A0D !important; color: #F2C2A8 !important; font-size: 6.5pt !important; padding: 0.4rem 0.6rem !important; }
+    .math-table td { font-size: 8pt !important; padding: 0.4rem 0.6rem !important; border: 0.5pt solid #F7E4DA !important; }
+    .two-col-formulas, .three-col-formulas { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 0.5rem !important; margin: 0.45rem 0 !important; }
+    .katex { font-size: 0.82em !important; }
+    .katex-display { margin: 0.15rem 0 !important; overflow: visible !important; }
+    .katex-html { white-space: normal !important; }
+    .katex .base { display: inline !important; white-space: nowrap !important; }
+    .def-body p, .prop-card p, .thm-card p, .remark, .math-key > div, .content p { overflow: visible !important; word-break: break-word !important; }
+    .formula-block { overflow: visible !important; height: auto !important; min-height: 0 !important; text-align: center !important; }
+    .formula-block .katex-display { overflow-x: visible !important; overflow-y: visible !important; text-align: center !important; }
+    .math-table td, .math-table th { overflow: visible !important; word-break: break-word !important; }
+    .katex *, .katex-html * { position: static !important; top: auto !important; bottom: auto !important; left: auto !important; right: auto !important; }
+    .math-table .katex { font-size: 0.75em !important; }
+  }
+
+  /* FIGURES */
+  .math-figure { background: white; border: 1px solid var(--terra-border); border-radius: 8px; padding: 1.2rem 1rem 0.9rem; margin: 1.4rem 0; text-align: center; }
+  .math-svg { width: 100%; max-width: 460px; height: auto; display: block; margin: 0 auto; }
+  .math-svg .ax { stroke: var(--muted); stroke-width: 1; }
+  .math-svg .axh { fill: var(--muted); }
+  .math-svg .tk { font-family: 'DM Mono', monospace; font-size: 11px; fill: var(--muted); }
+  .math-svg .lb { font-family: 'Newsreader', Georgia, serif; font-style: italic; font-size: 13px; fill: var(--terra-dark); }
+  .math-svg .cv { fill: none; stroke: var(--terra-dark); stroke-width: 2.4; stroke-linejoin: round; }
+  .math-svg .tg { fill: none; stroke: var(--terra); stroke-width: 1.4; stroke-dasharray: 6 5; }
+  .math-figure figcaption { font-size: 0.82rem; color: var(--muted); margin-top: 0.6rem; line-height: 1.6; }
+  @media print { .math-figure { page-break-inside: avoid; border: 1pt solid #E2B39C !important; padding: 0.5rem !important; margin: 0.5rem 0 !important; } .math-svg { max-width: 300px; } }
+  .math-svg .pt { fill: var(--terra-dark); }
+  .math-svg .chord { stroke: var(--terra); stroke-width: 1.6; }
+  .math-svg .dot { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 2 3; }
+  .math-svg .tv { fill: none; stroke: var(--terra-border); stroke-width: 1.2; }
+  .math-svg .tvl { stroke: var(--terra-border); stroke-width: 1.2; }
+  .math-svg .flv { stroke: var(--terra-dark); stroke-width: 1.3; }
+  .def-list { padding-left: 1.3rem; margin: 0.3rem 0 1rem; }
+  .def-list li { font-size: 0.93rem; line-height: 1.8; margin-bottom: 0.3rem; }
+  a.lien-interne { color: var(--terra); text-decoration: underline; text-underline-offset: 2px; }
+  .thm-card a.lien-interne { color: var(--glow); }
+  .math-svg .ar { fill: var(--terra-light); stroke: none; }
+  /* EXERCICES */
+  .exo-card { background: white; border: 1px solid var(--terra-border); border-left: 4px solid var(--terra-mid); border-radius: 0 8px 8px 0; padding: 1.1rem 1.5rem; margin: 1.2rem 0; scroll-margin-top: 5rem; }
+  .exo-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 0.8rem; margin-bottom: 0.6rem; }
+  .exo-num { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--terra); font-weight: 700; }
+  .exo-titre { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--terra-dark); }
+  .exo-stars { color: var(--terra); font-size: 0.85rem; letter-spacing: 0.08em; }
+  .exo-card p { font-size: 0.93rem; line-height: 1.75; margin-bottom: 0.5rem; }
+  .exo-card ol { padding-left: 1.4rem; margin: 0.3rem 0 0; }
+  .exo-card li { font-size: 0.93rem; line-height: 1.8; margin-bottom: 0.35rem; color: #33201A; }
+  .exo-card li .exo-stars { margin-right: 0.35rem; }
+  .exo-integrales { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 0.6rem; margin: 0.8rem 0 0.2rem; }
+  .exo-integrales > span { min-width: 0; overflow-x: auto; overflow-y: hidden; text-align: center; background: var(--cream); border: 1px solid var(--terra-light); border-radius: 6px; padding: 0.55rem 0.6rem; }
+  .exo-integrales > span.large { grid-column: span 2; }
+  @media (max-width: 640px) { .exo-integrales > span.large { grid-column: auto; } }
+  .exo-card ol.exo-sous { list-style: none; padding-left: 0.2rem; }
+  .exo-card ol.exo-sous b { color: var(--terra); font-weight: 600; margin-right: 0.3rem; }
+  @media print { .exo-card { page-break-inside: avoid; border: 1pt solid #E2B39C !important; padding: 0.55rem 0.8rem !important; margin: 0.5rem 0 !important; } }
+</style>
+<link rel="stylesheet" href="../../barre-section.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Révisions d&#x27;analyse : les intégrales impropres">
+<meta property="og:image" content="https://ecg-prepa.fr/partage/cours/deuxieme_annee-maths-revision-integrales-impropres.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Révisions d&#x27;analyse : les intégrales impropres">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ecg-prepa.fr/partage/cours/deuxieme_annee-maths-revision-integrales-impropres.jpg">
+<meta name="description" content="Fiche de révision de maths, 2e année ECG : définition des intégrales impropres, intégrales de Riemann, changement de variable, critères de convergence, intégrale de Gauss et fonction Gamma.">
+<link rel="canonical" href="https://ecg-prepa.fr/deuxieme_annee/maths/revision-integrales-impropres.html">
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="sn sn-cours sn-maths">
+  <div class="nav-left"><div class="nav-logo sn-logo"><a href="../../index.html">ECG Prépa</a></div></div>
+  <div class="breadcrumb sn-fil">
+    <a href="../../index.html"><span>Accueil</span></a>
+    <span class="sep">/</span>
+    <a href="../index.html"><span>2ème Année</span></a>
+    <span class="sep">/</span>
+    <a href="index.html"><span>Mathématiques</span></a>
+    <span class="sep">/</span>
+    <span class="current">Intégrales impropres</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<!-- HERO -->
+<div class="ch-hero">
+  <div class="chap-label">&#x2015;&nbsp; Révisions d'analyse · Fiche 4 &nbsp;&#x2015;</div>
+  <h1>Les intégrales impropres</h1>
+  <p>Définitions · Intégrales de référence · Calcul · Critères de convergence · Gauss et Gamma</p>
+</div>
+
+<!-- TOC -->
+<div class="toc-bar">
+  <div class="toc-inner">
+    <div class="toc-title">Table des matières</div>
+    <ul class="toc-list">
+      <li><a href="#part1"><span class="toc-num">I</span> Qu'est-ce qu'une intégrale impropre ?</a></li>
+      <li><a href="#part2"><span class="toc-num">II</span> Propriétés et calcul</a></li>
+      <li><a href="#part3"><span class="toc-num">III</span> Critères de convergence</a></li>
+      <li><a href="#part4"><span class="toc-num">IV</span> Deux intégrales à connaître : Gauss et Gamma</a></li>
+      <li><a href="#part5"><span class="toc-num">V</span> Annexes : démonstrations</a></li>
+      <li><a href="#part6"><span class="toc-num">VI</span> Exercices complémentaires</a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════════
+     PARTIE I : DÉFINITIONS
+════════════════════════════════════════ -->
+<div class="math-part" id="part1">
+  <div class="math-part-header">
+    <div class="math-part-num">I</div>
+    <div class="math-part-title">Qu'est-ce qu'une intégrale impropre ?</div>
+  </div>
+
+  <div class="math-section" id="s1-1">
+    <div class="math-section-title">1 — Intégrale sur un intervalle semi-ouvert</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 1</span><span class="def-name">Intégrale impropre sur \([a, b[\)</span></div>
+        <p>Soient \(a \lt b \leqslant +\infty\). Soit \(f\) une fonction continue sur l'intervalle semi-ouvert \([a, b[\).</p>
+        <ul class="def-list">
+          <li>On dit que l'intégrale de \(f\) sur \([a, b[\) est <strong>convergente</strong>, ou <strong>existe</strong>, si la fonction \(F : x \mapsto \displaystyle\int_a^x f(t)\,\mathrm{d}t\) admet une <strong>limite finie</strong> en \(b\). On note alors cette limite \(\displaystyle\int_{[a,b[} f\), ou \(\displaystyle\int_a^b f\), ou \(\displaystyle\int_a^b f(t)\,\mathrm{d}t\) :</li>
+        </ul>
+        <div class="formula-block">\[\int_a^b f(t)\,\mathrm{d}t = \lim_{x \to b} \int_a^x f(t)\,\mathrm{d}t.\]</div>
+        <ul class="def-list">
+          <li>On dit que l'intégrale de \(f\) sur \([a, b[\) est <strong>divergente</strong> dans le cas contraire.</li>
+        </ul>
+        <p>On définit de même la notion d'intégrale impropre sur un intervalle semi-ouvert \(]a, b]\), avec \(-\infty \leqslant a \lt b\) : on étudie alors la limite de \(x \mapsto \displaystyle\int_x^b f(t)\,\mathrm{d}t\) quand \(x\) tend vers \(a\).</p>
+      </div>
+    </div>
+
+    <figure class="math-figure">
+    <svg class="math-svg" viewBox="0 0 460 240" role="img" aria-label="Aire sous la courbe de f entre a et x, avec x qui tend vers b">
+      <path class="ar" d="M 70 200 L 70.0 60.0 L 72.0 66.7 L 74.0 72.7 L 76.0 78.3 L 78.0 83.3 L 80.0 88.0 L 82.0 92.3 L 84.0 96.3 L 86.0 100.0 L 88.0 103.4 L 90.0 106.7 L 92.0 109.7 L 94.0 112.5 L 96.0 115.2 L 98.0 117.6 L 100.0 120.0 L 102.0 122.2 L 104.0 124.3 L 106.0 126.3 L 108.0 128.2 L 110.0 130.0 L 112.0 131.7 L 114.0 133.3 L 116.0 134.9 L 118.0 136.4 L 120.0 137.8 L 122.0 139.1 L 124.0 140.4 L 126.0 141.7 L 128.0 142.9 L 130.0 144.0 L 132.0 145.1 L 134.0 146.2 L 136.0 147.2 L 138.0 148.1 L 140.0 149.1 L 142.0 150.0 L 144.0 150.9 L 146.0 151.7 L 148.0 152.5 L 150.0 153.3 L 152.0 154.1 L 154.0 154.8 L 156.0 155.6 L 158.0 156.2 L 160.0 156.9 L 162.0 157.6 L 164.0 158.2 L 166.0 158.8 L 168.0 159.4 L 170.0 160.0 L 172.0 160.6 L 174.0 161.1 L 176.0 161.6 L 178.0 162.2 L 180.0 162.7 L 182.0 163.2 L 184.0 163.6 L 186.0 164.1 L 188.0 164.6 L 190.0 165.0 L 192.0 165.4 L 194.0 165.9 L 196.0 166.3 L 198.0 166.7 L 200.0 167.1 L 202.0 167.4 L 204.0 167.8 L 206.0 168.2 L 208.0 168.5 L 210.0 168.9 L 212.0 169.2 L 214.0 169.6 L 216.0 169.9 L 218.0 170.2 L 220.0 170.5 L 222.0 170.8 L 224.0 171.1 L 226.0 171.4 L 228.0 171.7 L 230.0 172.0 L 232.0 172.3 L 234.0 172.5 L 236.0 172.8 L 238.0 173.1 L 240.0 173.3 L 242.0 173.6 L 244.0 173.8 L 246.0 174.1 L 248.0 174.3 L 250.0 174.5 L 252.0 174.8 L 254.0 175.0 L 256.0 175.2 L 258.0 175.4 L 260.0 175.7 L 260 200 Z"/>
+      <line class="ax" x1="30" y1="200" x2="444" y2="200"/><path class="axh" d="M450 200 l-8 -4 v8 z"/>
+      <line class="ax" x1="50" y1="222" x2="50" y2="22"/><path class="axh" d="M50 16 l-4 8 h8 z"/>
+      <path class="cv" d="M 70.0 60.0 L 74.0 72.7 L 78.0 83.3 L 82.0 92.3 L 86.0 100.0 L 90.0 106.7 L 94.0 112.5 L 98.0 117.6 L 102.0 122.2 L 106.0 126.3 L 110.0 130.0 L 114.0 133.3 L 118.0 136.4 L 122.0 139.1 L 126.0 141.7 L 130.0 144.0 L 134.0 146.2 L 138.0 148.1 L 142.0 150.0 L 146.0 151.7 L 150.0 153.3 L 154.0 154.8 L 158.0 156.2 L 162.0 157.6 L 166.0 158.8 L 170.0 160.0 L 174.0 161.1 L 178.0 162.2 L 182.0 163.2 L 186.0 164.1 L 190.0 165.0 L 194.0 165.9 L 198.0 166.7 L 202.0 167.4 L 206.0 168.2 L 210.0 168.9 L 214.0 169.6 L 218.0 170.2 L 222.0 170.8 L 226.0 171.4 L 230.0 172.0 L 234.0 172.5 L 238.0 173.1 L 242.0 173.6 L 246.0 174.1 L 250.0 174.5 L 254.0 175.0 L 258.0 175.4 L 262.0 175.9 L 266.0 176.3 L 270.0 176.7 L 274.0 177.0 L 278.0 177.4 L 282.0 177.8 L 286.0 178.1 L 290.0 178.5 L 294.0 178.8 L 298.0 179.1 L 302.0 179.4 L 306.0 179.7 L 310.0 180.0 L 314.0 180.3 L 318.0 180.6 L 322.0 180.8 L 326.0 181.1 L 330.0 181.3 L 334.0 181.6 L 338.0 181.8 L 342.0 182.1 L 346.0 182.3 L 350.0 182.5 L 354.0 182.7 L 358.0 182.9 L 362.0 183.1 L 366.0 183.3 L 370.0 183.5 L 374.0 183.7 L 378.0 183.9 L 382.0 184.1 L 386.0 184.3 L 390.0 184.4 L 394.0 184.6 L 398.0 184.8 L 402.0 184.9 L 406.0 185.1 L 410.0 185.3 L 414.0 185.4 L 418.0 185.6 L 422.0 185.7 L 426.0 185.9 L 430.0 186.0"/>
+      <line class="dot" x1="70" y1="200" x2="70" y2="60.0"/>
+      <line class="dot" x1="260" y1="200" x2="260" y2="175.7"/>
+      <text class="tk" x="66" y="218">a</text><text class="tk" x="256" y="218">x</text>
+      <path class="tg" d="M272 222 L 340 222"/><path class="axh" d="M346 222 l-7 -3.5 v7 z"/>
+      <text class="tk" x="352" y="226">b = +∞</text>
+      <text class="lb" x="132" y="182">F(x)</text>
+      <text class="lb" x="300" y="152">C<tspan font-size="10" dy="3">f</tspan></text>
+    </svg>
+      <figcaption>Illustration : pour \(f\) positive, \(F(x)\) est l'aire sous la courbe entre \(a\) et \(x\). L'intégrale converge si cette aire admet une limite finie quand \(x\) tend vers \(b\).</figcaption>
+    </figure>
+  </div>
+
+  <div class="math-section" id="s1-2">
+    <div class="math-section-title">2 — Les intégrales de référence</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 1</div>
+      <div class="prop-title">Intégrales de référence</div>
+      <p>Soient \(\alpha\), \(a\), \(b\) des réels vérifiant \(a \lt b\).</p>
+      <ol>
+        <li>\(\displaystyle\int_0^{+\infty} e^{-\alpha t}\,\mathrm{d}t\) converge si et seulement si \(\alpha \gt 0\) ; dans ce cas, \(\displaystyle\int_0^{+\infty} e^{-\alpha t}\,\mathrm{d}t = \frac{1}{\alpha}\).</li>
+        <li>\(\displaystyle\int_1^{+\infty} \frac{1}{t^\alpha}\,\mathrm{d}t\) converge si et seulement si \(\alpha \gt 1\) (intégrale de Riemann).</li>
+        <li>\(\displaystyle\int_0^1 \frac{1}{t^\alpha}\,\mathrm{d}t\) converge si et seulement si \(\alpha \lt 1\) (intégrale de Riemann).</li>
+        <li>Plus généralement (Riemann) :
+          \[\begin{aligned} \int_a^b \frac{\mathrm{d}t}{(t-a)^\alpha} \text{ converge} &\iff \alpha \lt 1, \\ \int_a^b \frac{\mathrm{d}t}{(b-t)^\alpha} \text{ converge} &\iff \alpha \lt 1. \end{aligned}\]</li>
+      </ol>
+    </div>
+
+    <div class="math-table-wrap">
+      <table class="math-table">
+        <tr><th>Intégrale</th><th>Converge si et seulement si</th><th>Valeur</th></tr>
+        <tr><td>\(\displaystyle\int_0^{+\infty} e^{-\alpha t}\,\mathrm{d}t\)</td><td>\(\alpha \gt 0\)</td><td>\(\dfrac{1}{\alpha}\)</td></tr>
+        <tr><td>\(\displaystyle\int_1^{+\infty} \frac{\mathrm{d}t}{t^\alpha}\)</td><td>\(\alpha \gt 1\)</td><td>\(\dfrac{1}{\alpha - 1}\)</td></tr>
+        <tr><td>\(\displaystyle\int_0^1 \frac{\mathrm{d}t}{t^\alpha}\)</td><td>\(\alpha \lt 1\)</td><td>\(\dfrac{1}{1 - \alpha}\)</td></tr>
+      </table>
+    </div>
+    <p>La démonstration de la proposition 1 est faite en <a class="lien-interne" href="#annexe1">annexe 1</a> ; les valeurs du tableau en découlent.</p>
+
+    <div class="meth-card">
+      <div class="meth-label">⚠ Attention</div>
+      <p>La divergence de l'intégrale de Riemann \(\displaystyle\int_1^{+\infty} \frac{1}{t}\,\mathrm{d}t\) montre qu'il <strong>ne suffit pas</strong> qu'une fonction \(f : [a, +\infty[ \to \mathbb{R}\) continue tende vers \(0\) en \(+\infty\) pour que l'intégrale impropre \(\displaystyle\int_a^{+\infty} f\) converge.</p>
+    </div>
+  </div>
+
+  <div class="math-section" id="s1-3">
+    <div class="math-section-title">3 — Intégrales « faussement impropres »</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 2</div>
+      <div class="prop-title">Cas où \(f\) est prolongeable par continuité</div>
+      <p>Soient \(a\) et \(b\) deux réels vérifiant \(a \lt b\), et \(f : [a, b[ \to \mathbb{R}\) une fonction continue. On suppose que \(f\) est <strong>prolongeable par continuité</strong> en \(b\). Alors l'intégrale impropre \(\displaystyle\int_a^b f\) converge.</p>
+    </div>
+
+    <div class="math-subsection-title">Exemples</div>
+    <div class="math-key"><div class="math-key-bullet"></div><div>\(\displaystyle\int_0^1 \frac{1 - e^t}{t}\,\mathrm{d}t\) : la fonction \(t \mapsto \dfrac{1 - e^t}{t}\) est continue sur \(]0, 1]\) et, comme \(e^t - 1 \underset{t \to 0}{\sim} t\), elle tend vers \(-1\) en \(0\). Elle est donc prolongeable par continuité en \(0\) : l'intégrale converge.</div></div>
+    <div class="math-key"><div class="math-key-bullet"></div><div>\(\displaystyle\int_0^1 \frac{\sin t}{t}\,\mathrm{d}t\) : la fonction \(t \mapsto \dfrac{\sin t}{t}\) est continue sur \(]0, 1]\) et, comme \(\sin t \underset{t \to 0}{\sim} t\), elle tend vers \(1\) en \(0\). L'intégrale converge.</div></div>
+  </div>
+
+  <div class="math-section" id="s1-4">
+    <div class="math-section-title">4 — Intégrale sur un intervalle ouvert</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 2</span><span class="def-name">Intégrale impropre sur \(]a, b[\)</span></div>
+        <p>Soit \(f\) une fonction continue sur un intervalle ouvert \(]a, b[\), avec \(-\infty \leqslant a \lt b \leqslant +\infty\). Soit \(c \in\, ]a, b[\).</p>
+        <p>On dit que l'intégrale \(\displaystyle\int_{]a,b[} f\) <strong>converge</strong> si <strong>chacune</strong> des intégrales \(\displaystyle\int_{]a,c]} f\) <strong>et</strong> \(\displaystyle\int_{[c,b[} f\) converge. Si c'est le cas, on définit l'intégrale de \(f\) sur \(]a, b[\) par :</p>
+        <div class="formula-block">\[\int_a^b f = \int_{]a,b[} f = \int_{]a,c]} f + \int_{[c,b[} f.\]</div>
+      </div>
+    </div>
+
+    <div class="math-key"><div class="math-key-bullet"></div><div>Cette définition <strong>ne dépend pas</strong> du choix du réel \(c \in\, ]a, b[\), d'après la relation de Chasles.</div></div>
+    <div class="math-key"><div class="math-key-bullet"></div><div>Par définition, il suffit que <strong>l'une</strong> des intégrales \(\displaystyle\int_{]a,c]} f\) et \(\displaystyle\int_{[c,b[} f\) diverge pour que l'intégrale \(\displaystyle\int_{]a,b[} f\) diverge.</div></div>
+
+    <div class="math-subsection-title">Exemples : intégrales « plusieurs fois » impropres</div>
+    <div class="math-key"><div class="math-key-bullet"></div><div>\(\displaystyle\int_{-\infty}^{+\infty} e^{-t}\,\mathrm{d}t\) <strong>diverge</strong>. En effet, \(\displaystyle\int_0^{+\infty} e^{-t}\,\mathrm{d}t\) converge (et vaut \(1\)), mais pour tout réel \(x \lt 0\), \(\displaystyle\int_x^0 e^{-t}\,\mathrm{d}t = e^{-x} - 1\), qui tend vers \(+\infty\) quand \(x\) tend vers \(-\infty\) : l'intégrale sur \(]-\infty, 0]\) diverge, et cela suffit.</div></div>
+    <div class="math-key"><div class="math-key-bullet"></div><div>\(\displaystyle\int_0^1 \frac{t - 1}{\ln t}\,\mathrm{d}t\) <strong>converge</strong>. La fonction \(t \mapsto \dfrac{t-1}{\ln t}\) est continue sur \(]0, 1[\), et l'intégrale est impropre en \(0\) et en \(1\). En \(0\), elle tend vers \(0\) (le numérateur tend vers \(-1\), le dénominateur vers \(-\infty\)). En \(1\), \(\ln t \underset{t \to 1}{\sim} t - 1\), donc elle tend vers \(1\). Prolongeable par continuité aux deux bornes, elle a une intégrale convergente sur \(]0, \tfrac12]\) et sur \([\tfrac12, 1[\).</div></div>
+    <div class="math-key"><div class="math-key-bullet"></div><div>\(\displaystyle\int_{-\infty}^{+\infty} \frac{1}{1+t^2}\,\mathrm{d}t\) <strong>converge</strong> et vaut \(\pi\). En effet, \(\displaystyle\int_0^x \frac{\mathrm{d}t}{1+t^2} = \arctan x \xrightarrow[x \to +\infty]{} \frac{\pi}{2}\) et \(\displaystyle\int_x^0 \frac{\mathrm{d}t}{1+t^2} = -\arctan x \xrightarrow[x \to -\infty]{} \frac{\pi}{2}\).</div></div>
+  </div>
+
+  <div class="math-section" id="s1-5">
+    <div class="math-section-title">5 — Fonctions continues sauf en un nombre fini de points</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 3</span><span class="def-name">Extension de la notion d'intégrale impropre (utile en probabilités)</span></div>
+        <p>Soit \(f\) une fonction continue sur un intervalle \(I = \,]a, b[\) (\(a\) éventuellement égal à \(-\infty\), \(b\) éventuellement égal à \(+\infty\)), sauf éventuellement en un nombre fini de points notés \(a_1, \ldots, a_p\), avec \(a_1 \lt \cdots \lt a_p\).</p>
+        <p>On dit que l'intégrale \(\displaystyle\int_I f\) <strong>converge</strong> si <strong>chacune</strong> des intégrales \(\displaystyle\int_{]a,a_1[} f\), \(\displaystyle\int_{]a_1,a_2[} f\), …, \(\displaystyle\int_{]a_{p-1},a_p[} f\), \(\displaystyle\int_{]a_p,b[} f\) converge. Dans ce cas, on définit l'intégrale de \(f\) sur \(I\) par :</p>
+        <div class="formula-block">\[\begin{aligned} \int_I f = \int_a^b f &= \int_{]a,a_1[} f + \int_{]a_1,a_2[} f + \cdots \\ &\quad + \int_{]a_{p-1},a_p[} f + \int_{]a_p,b[} f. \end{aligned}\]</div>
+      </div>
+    </div>
+
+    <div class="math-subsection-title">Exemple</div>
+    <p>Soit \(f : \mathbb{R} \to \mathbb{R}\) définie par \(f(x) = e^x\) si \(x \leqslant 1\) et \(f(x) = \dfrac{1}{x^2}\) si \(x \gt 1\). Elle est continue sur \(\mathbb{R}\) sauf en \(1\) (la limite à gauche vaut \(e\), la limite à droite vaut \(1\)). On étudie donc les intégrales sur \(]-\infty, 1[\) et sur \(]1, +\infty[\) :</p>
+    <div class="two-col-formulas">
+      <div class="formula-block">\[\int_x^1 e^t\,\mathrm{d}t = e - e^x \xrightarrow[x \to -\infty]{} e\]</div>
+      <div class="formula-block">\[\int_1^x \frac{\mathrm{d}t}{t^2} = 1 - \frac{1}{x} \xrightarrow[x \to +\infty]{} 1\]</div>
+    </div>
+    <p>Les deux intégrales convergent, donc \(\displaystyle\int_{-\infty}^{+\infty} f\) converge et vaut \(e + 1\).</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE II : PROPRIÉTÉS ET CALCUL
+════════════════════════════════════════ -->
+<div class="math-part" id="part2">
+  <div class="math-part-header">
+    <div class="math-part-num">II</div>
+    <div class="math-part-title">Propriétés et calcul</div>
+  </div>
+
+  <div class="math-section" id="s2-1">
+    <div class="math-section-title">1 — Les propriétés de l'intégrale</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 3</div>
+      <div class="prop-title">Extension des propriétés de l'intégrale</div>
+      <p>Soient \(I\) un intervalle, et \(f\) et \(g\) deux fonctions <strong>continues sur \(I\) sauf éventuellement en un nombre fini de points</strong>. On suppose que <strong>les intégrales \(\displaystyle\int_I f\) et \(\displaystyle\int_I g\) convergent</strong>. Les propriétés déjà connues pour les intégrales de fonctions continues sur un segment sont encore vraies :</p>
+      <ol>
+        <li><strong>Positivité</strong> : \(f \geqslant 0 \implies \displaystyle\int_I f \geqslant 0\).</li>
+        <li><strong>Linéarité</strong> : pour tout \(\lambda \in \mathbb{R}\), \(\displaystyle\int_I (\lambda f + g)\) converge et \(\displaystyle\int_I (\lambda f + g) = \lambda \int_I f + \int_I g\).</li>
+        <li><strong>Croissance</strong> : \(f \leqslant g \implies \displaystyle\int_I f \leqslant \int_I g\) (conséquence de la positivité appliquée à \(g - f\) et de la linéarité).</li>
+        <li><strong>Relation de Chasles</strong> : soient \(\alpha\), \(\beta\), \(\gamma\) trois éléments de \(I\) ou des extrémités de \(I\) (donc éventuellement égaux à \(-\infty\) ou \(+\infty\)). Alors \(\displaystyle\int_\alpha^\beta f\), \(\displaystyle\int_\beta^\gamma f\) et \(\displaystyle\int_\alpha^\gamma f\) convergent et \(\displaystyle\int_\alpha^\gamma f = \int_\alpha^\beta f + \int_\beta^\gamma f\).</li>
+      </ol>
+    </div>
+
+    <div class="meth-card">
+      <div class="meth-label">⚠ Attention à la linéarité</div>
+      <p>Il se peut que \(\displaystyle\int_I (f + g)\) converge <strong>sans</strong> que \(\displaystyle\int_I f\) et \(\displaystyle\int_I g\) convergent. On n'utilise donc la linéarité de l'intégrale qu'<strong>après s'être assuré que chacune</strong> des intégrales \(\displaystyle\int_I f\) et \(\displaystyle\int_I g\) converge.</p>
+      <p><strong>Exemple :</strong> \(\displaystyle\int_0^{+\infty} \big(1 + (-1)\big)\,\mathrm{d}t\) converge, mais \(\displaystyle\int_0^{+\infty} 1\,\mathrm{d}t\) diverge.</p>
+    </div>
+  </div>
+
+  <div class="math-section" id="s2-2">
+    <div class="math-section-title">2 — Le changement de variable</div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 4</div>
+      <div class="thm-title">Changement de variable dans une intégrale impropre</div>
+      <p>Soient \(\alpha\) et \(\beta\) deux éléments distincts de \(\mathbb{R} \cup \{-\infty, +\infty\}\), et \(\varphi\) une fonction de \(]\alpha, \beta[\) (ou \(]\beta, \alpha[\)) dans \(\mathbb{R}\), <strong>de classe \(\mathcal{C}^1\) et strictement monotone</strong>.</p>
+      <p>Ainsi, la fonction \(\varphi\) admet une limite, finie ou infinie, en \(\alpha\) et en \(\beta\). Notons \(a = \lim\limits_{\alpha} \varphi\) et \(b = \lim\limits_{\beta} \varphi\). Soit \(f\) une fonction continue de \(]a, b[\) (ou \(]b, a[\)) dans \(\mathbb{R}\).</p>
+      <p>Alors les intégrales \(\displaystyle\int_a^b f(x)\,\mathrm{d}x\) et \(\displaystyle\int_\alpha^\beta f\big(\varphi(t)\big)\varphi'(t)\,\mathrm{d}t\) sont <strong>de même nature</strong> (toutes deux convergentes ou toutes deux divergentes). En cas de convergence, elles sont égales :</p>
+      <div class="formula-block">\[\int_a^b f(x)\,\mathrm{d}x = \int_\alpha^\beta f\big(\varphi(t)\big)\,\varphi'(t)\,\mathrm{d}t.\]</div>
+    </div>
+
+    <div class="remark">Le changement de variable dans une intégrale impropre demande une hypothèse de plus que sur un segment \([a, b]\) : la <strong>stricte monotonie</strong> de \(\varphi\). C'est elle qui garantit l'existence d'une limite (finie ou infinie) de \(\varphi\) en \(\alpha\) et en \(\beta\).</div>
+
+    <div class="math-subsection-title">Exemples</div>
+    <div class="math-key"><div class="math-key-bullet"></div><div>\(\displaystyle\int_0^1 \frac{\mathrm{d}x}{\sqrt{1 - x^2}}\) avec \(x = \sin t\). La fonction \(\varphi = \sin\) est de classe \(\mathcal{C}^1\) et strictement croissante sur \(]0, \tfrac{\pi}{2}[\), de limites \(0\) et \(1\). Pour \(t \in\, ]0, \tfrac{\pi}{2}[\), \(\cos t \gt 0\), donc \(\sqrt{1 - \sin^2 t} = \cos t\) et \(\dfrac{\varphi'(t)}{\sqrt{1 - \sin^2 t}} = 1\). Comme \(\displaystyle\int_0^{\pi/2} 1\,\mathrm{d}t\) converge, l'intégrale converge et \(\displaystyle\int_0^1 \frac{\mathrm{d}x}{\sqrt{1 - x^2}} = \frac{\pi}{2}\).</div></div>
+    <div class="math-key"><div class="math-key-bullet"></div><div>\(\displaystyle\int_0^{+\infty} \frac{e^{-\sqrt{t}}}{\sqrt{t}}\,\mathrm{d}t\) avec \(x = \sqrt{t}\), c'est-à-dire \(t = x^2\). La fonction \(x \mapsto x^2\) est de classe \(\mathcal{C}^1\) et strictement croissante sur \(]0, +\infty[\), de limites \(0\) et \(+\infty\), et \(\mathrm{d}t = 2x\,\mathrm{d}x\). L'intégrale est donc de même nature que \(\displaystyle\int_0^{+\infty} \frac{e^{-x}}{x}\,2x\,\mathrm{d}x = 2\int_0^{+\infty} e^{-x}\,\mathrm{d}x\), qui converge et vaut \(2\). Donc \(\displaystyle\int_0^{+\infty} \frac{e^{-\sqrt{t}}}{\sqrt{t}}\,\mathrm{d}t = 2\).</div></div>
+    <div class="math-key"><div class="math-key-bullet"></div><div>\(\displaystyle\int_0^{+\infty} e^{-\sqrt{t}}\,\mathrm{d}t\) avec le même changement de variable : elle est de même nature que \(\displaystyle\int_0^{+\infty} 2x e^{-x}\,\mathrm{d}x\). Pour \(A \gt 0\), une intégration par parties sur le segment \([0, A]\) donne \(\displaystyle\int_0^A 2x e^{-x}\,\mathrm{d}x = \big[-2x e^{-x}\big]_0^A + 2\int_0^A e^{-x}\,\mathrm{d}x = -2A e^{-A} + 2\big(1 - e^{-A}\big)\), qui tend vers \(2\) quand \(A\) tend vers \(+\infty\). Donc \(\displaystyle\int_0^{+\infty} e^{-\sqrt{t}}\,\mathrm{d}t = 2\) (c'est aussi \(2\,\Gamma(2)\), voir la partie IV).</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE III : CRITÈRES DE CONVERGENCE
+════════════════════════════════════════ -->
+<div class="math-part" id="part3">
+  <div class="math-part-header">
+    <div class="math-part-num">III</div>
+    <div class="math-part-title">Critères de convergence</div>
+  </div>
+
+  <div class="math-section" id="s3-1">
+    <div class="math-section-title">1 — Le théorème de comparaison</div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 5</div>
+      <div class="thm-title">Comparaison pour les intégrales de fonctions positives</div>
+      <p>Soient \(I\) un intervalle de \(\mathbb{R}\), et \(f\) et \(g\) deux fonctions de \(I\) dans \(\mathbb{R}\), continues sauf éventuellement en un nombre fini de points, et <strong>positives</strong>. On suppose que \(0 \leqslant f \leqslant g\).</p>
+      <ol>
+        <li>Si \(\displaystyle\int_I g\) converge, alors \(\displaystyle\int_I f\) converge.</li>
+        <li>Si \(\displaystyle\int_I f\) diverge, alors \(\displaystyle\int_I g\) diverge.</li>
+      </ol>
+    </div>
+
+    <div class="math-subsection-title">Exemple : l'intégrale de Gauss converge</div>
+    <p>La fonction \(x \mapsto e^{-x^2/2}\) est continue et positive sur \(\mathbb{R}\). Pour \(x \geqslant 1\), on a \(x^2 \geqslant x\), donc \(0 \leqslant e^{-x^2/2} \leqslant e^{-x/2}\). Or \(\displaystyle\int_1^{+\infty} e^{-x/2}\,\mathrm{d}x\) converge (proposition 1, avec \(\alpha = \tfrac12 \gt 0\)), donc \(\displaystyle\int_1^{+\infty} e^{-x^2/2}\,\mathrm{d}x\) converge ; sur le segment \([0, 1]\), il n'y a rien à justifier. Ainsi \(\displaystyle\int_0^{+\infty} e^{-x^2/2}\,\mathrm{d}x\) converge. La fonction étant paire, le changement de variable \(x = -t\) montre que \(\displaystyle\int_{-\infty}^0 e^{-x^2/2}\,\mathrm{d}x\) converge aussi : l'intégrale de Gauss \(\displaystyle\int_{-\infty}^{+\infty} e^{-x^2/2}\,\mathrm{d}x\) converge.</p>
+  </div>
+
+  <div class="math-section" id="s3-2">
+    <div class="math-section-title">2 — La règle des équivalents</div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 6</div>
+      <div class="thm-title">Règle des équivalents (corollaire du théorème de comparaison)</div>
+      <p>Soient \(I = [a, b[\) un intervalle semi-ouvert de \(\mathbb{R}\), et \(f\) et \(g\) deux fonctions de \(I\) dans \(\mathbb{R}\), continues et <strong>positives au voisinage de \(b\)</strong>. On suppose \(f(x) \underset{x \to b}{\sim} g(x)\). Alors :</p>
+      <div class="formula-block">\[\int_a^b f \text{ converge} \iff \int_a^b g \text{ converge.}\]</div>
+      <p>Autrement dit, les intégrales \(\displaystyle\int_a^b f\) et \(\displaystyle\int_a^b g\) sont <strong>de même nature</strong>.</p>
+    </div>
+
+    <div class="math-subsection-title">Remarques</div>
+    <div class="math-key"><div class="math-key-bullet"></div><div>En pratique, il suffit de vérifier que <strong>l'une ou l'autre</strong> des deux fonctions \(f\) et \(g\) est positive au voisinage de \(b\) : l'hypothèse \(f(x) \underset{x \to b}{\sim} g(x)\) implique qu'alors l'autre est elle aussi positive au voisinage de \(b\).</div></div>
+    <div class="math-key"><div class="math-key-bullet"></div><div>On obtient bien entendu une règle analogue sur un intervalle semi-ouvert du type \(I = \,]a, b]\).</div></div>
+
+    <div class="math-subsection-title">Exemple</div>
+    <p>Nature de \(\displaystyle\int_3^{+\infty} \frac{\arctan(t) + e^{-t}}{\sin t + t\sqrt{t} - \ln t}\,\mathrm{d}t\). Pour \(t \geqslant 3\), \(t\sqrt{t} - \ln t + \sin t \geqslant t\sqrt{t} - \ln t - 1\), quantité croissante (de dérivée \(\tfrac32\sqrt{t} - \tfrac1t \gt 0\)) et positive en \(3\) (elle vaut environ \(3{,}1\)) : le dénominateur ne s'annule pas, la fonction est continue et positive sur \([3, +\infty[\). Quand \(t\) tend vers \(+\infty\), le numérateur tend vers \(\tfrac{\pi}{2}\) et le dénominateur est équivalent à \(t^{3/2}\) (\(\sin t\) et \(\ln t\) sont négligeables devant \(t^{3/2}\)). Donc la fonction est équivalente à \(\dfrac{\pi}{2}\,\dfrac{1}{t^{3/2}}\), dont l'intégrale sur \([3, +\infty[\) converge (Riemann, \(\tfrac32 \gt 1\)). L'intégrale <strong>converge</strong>.</p>
+  </div>
+
+  <div class="math-section" id="s3-3">
+    <div class="math-section-title">3 — La convergence absolue</div>
+
+    <div class="def-card">
+      <div class="def-accent-bar"></div>
+      <div class="def-body">
+        <div class="def-header"><span class="def-label">Définition 4</span><span class="def-name">Intégrale absolument convergente</span></div>
+        <p>Soient \(I\) un intervalle et \(f : I \to \mathbb{R}\) une fonction continue sauf éventuellement en un nombre fini de points. L'intégrale \(\displaystyle\int_I f\) est dite <strong>absolument convergente</strong> si l'intégrale \(\displaystyle\int_I |f|\) est convergente.</p>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 7</div>
+      <div class="prop-title">La convergence absolue implique la convergence</div>
+      <p>La convergence absolue d'une intégrale implique sa convergence.</p>
+    </div>
+
+    <div class="math-subsection-title">Exemple</div>
+    <p>\(\displaystyle\int_1^{+\infty} \frac{\cos t}{t^2}\,\mathrm{d}t\) converge : pour tout \(t \geqslant 1\), \(\left|\dfrac{\cos t}{t^2}\right| \leqslant \dfrac{1}{t^2}\), et \(\displaystyle\int_1^{+\infty} \frac{\mathrm{d}t}{t^2}\) converge (Riemann, \(2 \gt 1\)). Par comparaison de fonctions positives, l'intégrale est absolument convergente, donc convergente.</p>
+  </div>
+
+  <div class="math-section" id="s3-4">
+    <div class="math-section-title">4 — Fonction négligeable devant une autre</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 8</div>
+      <div class="prop-title">Fonction négligeable devant une autre</div>
+      <p>Soient \(f\) et \(g\) des fonctions continues de \([a, b[\) dans \(\mathbb{R}\), \(g\) <strong>positive</strong> au voisinage de \(b\), telles que \(f(x) = \underset{x \to b}{o}\big(g(x)\big)\). Alors :</p>
+      <div class="formula-block">\[\int_a^b g \text{ converge} \implies \int_a^b f \text{ converge.}\]</div>
+      <p>La contraposée : \(\displaystyle\int_a^b f\) diverge \(\implies \displaystyle\int_a^b g\) diverge.</p>
+    </div>
+
+    <div class="remark">On obtient bien entendu une règle analogue sur un intervalle semi-ouvert du type \(I = \,]a, b]\). Seule \(g\) doit être positive : \(f\) peut changer de signe.</div>
+
+    <div class="math-subsection-title">Exemples</div>
+    <div class="math-key"><div class="math-key-bullet"></div><div>\(\displaystyle\int_1^{+\infty} \frac{(\ln t)(\sin t)}{t^2}\,\mathrm{d}t\) <strong>converge</strong>. En effet, \(\left|\dfrac{(\ln t)(\sin t)}{t^2}\right| \leqslant \dfrac{\ln t}{t^2}\) et \(t^{3/2} \cdot \dfrac{\ln t}{t^2} = \dfrac{\ln t}{\sqrt{t}} \to 0\) (croissances comparées) : la fonction est négligeable devant \(\dfrac{1}{t^{3/2}}\) en \(+\infty\), fonction positive dont l'intégrale sur \([1, +\infty[\) converge (Riemann, \(\tfrac32 \gt 1\)).</div></div>
+    <div class="math-key"><div class="math-key-bullet"></div><div>\(\displaystyle\int_2^{+\infty} \frac{\mathrm{d}t}{\sqrt{t}\,(\ln t)^8}\) <strong>diverge</strong>. En effet, \(\dfrac{1/t}{1/\big(\sqrt{t}\,(\ln t)^8\big)} = \dfrac{(\ln t)^8}{\sqrt{t}} \to 0\) : on a \(\dfrac1t = \underset{t \to +\infty}{o}\!\left(\dfrac{1}{\sqrt{t}\,(\ln t)^8}\right)\), la seconde fonction étant positive. Comme \(\displaystyle\int_2^{+\infty} \frac{\mathrm{d}t}{t}\) diverge (Riemann, \(\alpha = 1\)), la contraposée de la proposition 8 donne la divergence.</div></div>
+
+    <div class="math-highlight"><strong>Pour étudier la nature d'une intégrale :</strong> repérer les bornes « impropres » et couper l'intégrale en conséquence ; si la fonction est prolongeable par continuité, conclure ; sinon, comparer à une intégrale de référence (Riemann, exponentielle) par majoration, équivalent ou négligeabilité, en vérifiant la <strong>positivité</strong> ; si la fonction change de signe, passer par la valeur absolue ou par un \(o\) devant une fonction positive.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE IV : GAUSS ET GAMMA
+════════════════════════════════════════ -->
+<div class="math-part" id="part4">
+  <div class="math-part-header">
+    <div class="math-part-num">IV</div>
+    <div class="math-part-title">Deux intégrales à connaître : Gauss et Gamma</div>
+  </div>
+
+  <div class="math-section" id="s4-1">
+    <div class="math-section-title">1 — L'intégrale de Gauss</div>
+
+    <div class="prop-card">
+      <div class="prop-label">Proposition 9</div>
+      <div class="prop-title">Valeur de l'intégrale de Gauss</div>
+      <p>L'intégrale \(\displaystyle\int_{-\infty}^{+\infty} e^{-x^2/2}\,\mathrm{d}x\) converge et vaut \(\sqrt{2\pi}\) :</p>
+      <div class="formula-block">\[\int_{-\infty}^{+\infty} e^{-\frac{x^2}{2}}\,\mathrm{d}x = \sqrt{2\pi}.\]</div>
+    </div>
+    <p>La convergence a été établie plus haut, dans la <a class="lien-interne" href="#s3-1">partie III</a> ; la valeur est admise.</p>
+  </div>
+
+  <div class="math-section" id="s4-2">
+    <div class="math-section-title">2 — La fonction Gamma</div>
+
+    <div class="thm-card">
+      <div class="thm-label">Proposition 10</div>
+      <div class="thm-title">La fonction Gamma</div>
+      <ol>
+        <li>Pour tout réel \(x \gt 0\), l'intégrale \(\Gamma(x) = \displaystyle\int_0^{+\infty} t^{x-1} e^{-t}\,\mathrm{d}t\) converge.</li>
+        <li>Pour tout \(x \gt 0\), on a \(\Gamma(x+1) = x\,\Gamma(x)\).</li>
+        <li>Pour tout \(n \in \mathbb{N}^*\), on a \(\Gamma(n) = (n-1)!\), autrement dit \(\displaystyle\int_0^{+\infty} t^n e^{-t}\,\mathrm{d}t = n!\)</li>
+      </ol>
+    </div>
+
+    <div class="remark">La fonction Gamma généralise ainsi la factorielle (définie sur \(\mathbb{N}\)) à tous les réels strictement positifs.</div>
+    <p>Ces résultats sont démontrés en <a class="lien-interne" href="#annexe2">annexe 2</a>.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE V : ANNEXES
+════════════════════════════════════════ -->
+<div class="math-part" id="part5">
+  <div class="math-part-header">
+    <div class="math-part-num">V</div>
+    <div class="math-part-title">Annexes : démonstrations</div>
+  </div>
+
+  <div class="math-section" id="annexe1">
+    <div class="math-section-title">Annexe 1 — Les intégrales de référence (proposition 1)</div>
+
+    <p><strong>1. L'exponentielle.</strong> La fonction \(t \mapsto e^{-\alpha t}\) est continue sur \([0, +\infty[\). Pour \(x \gt 0\) et \(\alpha \neq 0\), \(\displaystyle\int_0^x e^{-\alpha t}\,\mathrm{d}t = \frac{1 - e^{-\alpha x}}{\alpha}\). Si \(\alpha \gt 0\), \(e^{-\alpha x} \to 0\) et l'intégrale tend vers \(\dfrac{1}{\alpha}\). Si \(\alpha \lt 0\), \(e^{-\alpha x} \to +\infty\) et l'intégrale tend vers \(+\infty\). Si \(\alpha = 0\), l'intégrale vaut \(x\), qui tend vers \(+\infty\).</p>
+
+    <p><strong>2. Riemann en \(+\infty\).</strong> Pour \(x \gt 1\) et \(\alpha \neq 1\) :</p>
+    <div class="formula-block">\[\int_1^x \frac{\mathrm{d}t}{t^\alpha} = \left[\frac{t^{1-\alpha}}{1 - \alpha}\right]_1^x = \frac{x^{1-\alpha} - 1}{1 - \alpha}.\]</div>
+    <p>Si \(\alpha \gt 1\), \(x^{1-\alpha} \to 0\) et l'intégrale tend vers \(\dfrac{1}{\alpha - 1}\). Si \(\alpha \lt 1\), \(x^{1-\alpha} \to +\infty\) : divergence. Si \(\alpha = 1\), \(\displaystyle\int_1^x \frac{\mathrm{d}t}{t} = \ln x \to +\infty\) : divergence.</p>
+
+    <p><strong>3. Riemann en \(0\).</strong> Pour \(0 \lt x \lt 1\) et \(\alpha \neq 1\) :</p>
+    <div class="formula-block">\[\int_x^1 \frac{\mathrm{d}t}{t^\alpha} = \frac{1 - x^{1-\alpha}}{1 - \alpha}.\]</div>
+    <p>Si \(\alpha \lt 1\), \(x^{1-\alpha} \to 0\) quand \(x \to 0\) et l'intégrale tend vers \(\dfrac{1}{1 - \alpha}\). Si \(\alpha \gt 1\), \(x^{1-\alpha} \to +\infty\) : divergence. Si \(\alpha = 1\), \(\displaystyle\int_x^1 \frac{\mathrm{d}t}{t} = -\ln x \to +\infty\) : divergence. (Pour \(\alpha \leqslant 0\), l'intégrale n'est même pas impropre.)</p>
+
+    <p><strong>4. Cas général.</strong> Pour \(a \lt x \lt b\) et \(\alpha \neq 1\), \(\displaystyle\int_x^b \frac{\mathrm{d}t}{(t-a)^\alpha} = \frac{(b-a)^{1-\alpha} - (x-a)^{1-\alpha}}{1 - \alpha}\), et \(x - a \to 0^+\) quand \(x \to a\) : on conclut exactement comme au point 3 (et par \(-\ln(x - a) \to +\infty\) si \(\alpha = 1\)). Pour \(\dfrac{1}{(b-t)^\alpha}\), le calcul est symétrique : \(\displaystyle\int_a^x \frac{\mathrm{d}t}{(b-t)^\alpha} = \frac{(b-a)^{1-\alpha} - (b-x)^{1-\alpha}}{1 - \alpha}\) quand \(x \to b\).</p>
+  </div>
+
+  <div class="math-section" id="annexe2">
+    <div class="math-section-title">Annexe 2 — La fonction Gamma (proposition 10)</div>
+
+    <p><strong>1. Convergence.</strong> Soit \(x \gt 0\). La fonction \(t \mapsto t^{x-1}e^{-t}\) est continue et positive sur \(]0, +\infty[\) ; l'intégrale est impropre en \(0\) (si \(x \lt 1\)) et en \(+\infty\). On coupe en \(1\).</p>
+    <div class="math-key"><div class="math-key-bullet"></div><div><strong>En \(0\)</strong> : \(t^{x-1}e^{-t} \underset{t \to 0}{\sim} t^{x-1} = \dfrac{1}{t^{1-x}}\), et \(1 - x \lt 1\) : l'intégrale \(\displaystyle\int_0^1 \frac{\mathrm{d}t}{t^{1-x}}\) converge (Riemann), donc \(\displaystyle\int_0^1 t^{x-1}e^{-t}\,\mathrm{d}t\) converge par la règle des équivalents.</div></div>
+    <div class="math-key"><div class="math-key-bullet"></div><div><strong>En \(+\infty\)</strong> : \(t^2 \cdot t^{x-1}e^{-t} = t^{x+1}e^{-t} \to 0\) par croissances comparées, donc \(t^{x-1}e^{-t} = \underset{t \to +\infty}{o}\!\left(\dfrac{1}{t^2}\right)\), et \(\displaystyle\int_1^{+\infty} \frac{\mathrm{d}t}{t^2}\) converge : \(\displaystyle\int_1^{+\infty} t^{x-1}e^{-t}\,\mathrm{d}t\) converge par la proposition 8.</div></div>
+
+    <p><strong>2. La relation \(\Gamma(x+1) = x\,\Gamma(x)\).</strong> Soient \(x \gt 0\) et \(0 \lt \varepsilon \lt A\). On intègre par parties sur le segment \([\varepsilon, A]\), en dérivant \(t \mapsto t^x\) et en intégrant \(t \mapsto e^{-t}\) :</p>
+    <div class="formula-block">\[\begin{aligned} \int_\varepsilon^A t^x e^{-t}\,\mathrm{d}t &= \Big[-t^x e^{-t}\Big]_\varepsilon^A + x\int_\varepsilon^A t^{x-1}e^{-t}\,\mathrm{d}t \\ &= \varepsilon^x e^{-\varepsilon} - A^x e^{-A} + x\int_\varepsilon^A t^{x-1}e^{-t}\,\mathrm{d}t. \end{aligned}\]</div>
+    <p>Comme \(x \gt 0\), \(\varepsilon^x e^{-\varepsilon} \to 0\) quand \(\varepsilon \to 0\), et \(A^x e^{-A} \to 0\) quand \(A \to +\infty\) (croissances comparées). Les deux intégrales convergeant, le passage à la limite donne \(\Gamma(x+1) = x\,\Gamma(x)\).</p>
+
+    <p><strong>3. Lien avec la factorielle.</strong> On a \(\Gamma(1) = \displaystyle\int_0^{+\infty} e^{-t}\,\mathrm{d}t = 1 = 0!\). Si \(\Gamma(n) = (n-1)!\) pour un entier \(n \geqslant 1\), alors \(\Gamma(n+1) = n\,\Gamma(n) = n \cdot (n-1)! = n!\). Par récurrence, \(\Gamma(n) = (n-1)!\) pour tout \(n \in \mathbb{N}^*\).</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARTIE VI : EXERCICES
+════════════════════════════════════════ -->
+<div class="math-part" id="part6">
+  <div class="math-part-header">
+    <div class="math-part-num">VI</div>
+    <div class="math-part-title">Exercices complémentaires</div>
+  </div>
+
+  <p>Les exercices d'application du cours sont corrigés plus haut, sous forme d'exemples. Les étoiles indiquent la difficulté.</p>
+
+  <div class="exo-card" id="exo11">
+    <div class="exo-head"><span class="exo-num">Exercice 11</span><span class="exo-stars">★★☆☆</span></div>
+    <p>Déterminer la nature (convergence ou divergence) de chacune des intégrales :</p>
+    <div class="exo-integrales"><span>\(\displaystyle \int_0^{\pi/2} \tan t\,\mathrm{d}t\)</span><span>\(\displaystyle \int_0^{+\infty} \big(\ln(t+1) - \ln t\big)\,\mathrm{d}t\)</span><span>\(\displaystyle \int_0^{+\infty} \frac{\mathrm{d}t}{t(t+1)}\)</span><span>\(\displaystyle \int_1^3 \frac{\mathrm{d}t}{\sqrt{4t - 3 - t^2}}\)</span><span>\(\displaystyle \int_{-\infty}^{+\infty} \frac{\sin(e^t)}{t^2 + 1}\,\mathrm{d}t\)</span><span>\(\displaystyle \int_5^{+\infty} \frac{\sqrt{t} + 2\ln t}{t^2 - 5\sqrt[3]{t}}\,\mathrm{d}t\)</span><span class="large">\(\displaystyle \int_1^{+\infty} \left(\frac{\sqrt{t^2 + t + 1}}{t} - \left(1 + \frac{1}{2t}\right)\right)\mathrm{d}t\)</span></div>
+  </div>
+
+  <div class="exo-card" id="exo12">
+    <div class="exo-head"><span class="exo-num">Exercice 12</span><span class="exo-titre">Intégrales de Bertrand</span></div>
+    <ol>
+      <li><span class="exo-stars">★★☆☆</span> Pour quelles valeurs du réel \(\beta\) l'intégrale \(\displaystyle\int_2^{+\infty} \frac{\mathrm{d}t}{t(\ln t)^\beta}\) est-elle convergente ? Le cas échéant, la calculer.</li>
+      <li><span class="exo-stars">★★☆☆</span> Même question pour l'intégrale \(\displaystyle\int_0^{1/2} \frac{\mathrm{d}t}{t(-\ln t)^\beta}\).</li>
+      <li><span class="exo-stars">★★★☆</span> Généralisation. Pour quelles valeurs des réels \(\alpha\) et \(\beta\) l'intégrale \(\displaystyle\int_2^{+\infty} \frac{\mathrm{d}t}{t^\alpha(\ln t)^\beta}\) est-elle convergente ? On ne demande pas de calculer l'intégrale.</li>
+    </ol>
+  </div>
+
+  <div class="exo-card" id="exo13">
+    <div class="exo-head"><span class="exo-num">Exercice 13</span><span class="exo-titre">Calcul de \(\Gamma(1/2)\)</span><span class="exo-stars">★★☆☆</span></div>
+    <p>À l'aide du changement de variable \(t = x^2\), calculer \(\Gamma(1/2) = \displaystyle\int_0^{+\infty} \frac{e^{-t}}{\sqrt{t}}\,\mathrm{d}t\).</p>
+  </div>
+
+  <div class="exo-card" id="exo14">
+    <div class="exo-head"><span class="exo-num">Exercice 14</span><span class="exo-titre">Convergence et calcul d'intégrales impropres</span><span class="exo-stars">★★☆☆</span></div>
+    <p>Examiner la convergence et, le cas échéant, calculer chacune des intégrales suivantes (parfois, un changement de variable adapté est suggéré) :</p>
+    <div class="exo-integrales"><span>\(\displaystyle \int_{-\infty}^{+\infty} e^{-|t|}\,\mathrm{d}t\)</span><span>\(\displaystyle \int_0^1 t^\alpha \ln t\,\mathrm{d}t,\ \alpha \gt -1\)</span><span>\(\displaystyle \int_0^{+\infty} e^{-t}\cos t\,\mathrm{d}t\)</span><span>\(\displaystyle \int_{-1}^1 \frac{t}{\sqrt{1 - t^2}}\,\mathrm{d}t\)</span><span>\(\displaystyle \int_0^{+\infty} \frac{2}{e^t + e^{-t}}\,\mathrm{d}t,\ e^t = u\)</span><span>\(\displaystyle \int_2^{+\infty} \frac{\mathrm{d}t}{(t-1)\sqrt{t}},\ \sqrt{t} = u\)</span><span>\(\displaystyle \int_0^{+\infty} \ln\!\left(1 + \frac{1}{t^2}\right)\mathrm{d}t\)</span><span>\(\displaystyle \int_{-\infty}^{+\infty} \frac{\mathrm{d}t}{t^2 + t + 1}\)</span><span>\(\displaystyle \int_{-\infty}^{+\infty} e^{-(t^2 + t + 1)}\,\mathrm{d}t\)</span></div>
+  </div>
+
+  <div class="exo-card" id="exo15">
+    <div class="exo-head"><span class="exo-num">Exercice 15</span><span class="exo-titre">Convergence et calcul à l'aide d'une intégration par parties</span><span class="exo-stars">★★☆☆</span></div>
+    <ol>
+      <li>Calculer une primitive de la fonction \(t \mapsto \dfrac{1}{1 - t^2}\). Indication : on pourra écrire la fraction \(\dfrac{1}{1 - t^2}\) sous la forme \(\dfrac{\alpha}{1 - t} + \dfrac{\beta}{1 + t}\), où \(\alpha\) et \(\beta\) sont deux réels à déterminer.</li>
+      <li>Soient \(\varepsilon\) et \(\alpha\) deux réels vérifiant \(0 \lt \varepsilon \lt \alpha \lt 1\). À l'aide d'une intégration par parties et du résultat de la première question, calculer l'intégrale \(\displaystyle\int_\varepsilon^\alpha \frac{\ln(1 - t^2)}{t^2}\,\mathrm{d}t\).</li>
+      <li>En déduire que l'intégrale \(I = \displaystyle\int_0^1 \frac{\ln(1 - t^2)}{t^2}\,\mathrm{d}t\) converge et la calculer.</li>
+      <li>Imiter cette méthode pour prouver la convergence de \(\displaystyle\int_0^1 \frac{\ln t}{(1+t)^2}\,\mathrm{d}t\) et la calculer.</li>
+    </ol>
+  </div>
+
+  <div class="exo-card" id="exo16">
+    <div class="exo-head"><span class="exo-num">Exercice 16</span><span class="exo-titre">Convergence et calcul d'une intégrale impropre</span><span class="exo-stars">★★★☆</span></div>
+    <p>On considère l'intégrale \(I = \displaystyle\int_0^1 \frac{t - 1}{\ln t}\,\mathrm{d}t\).</p>
+    <ol>
+      <li>Justifier que l'intégrale \(I\) converge (voir les <a class="lien-interne" href="#s1-4">exemples de la partie I</a>).</li>
+      <li>À l'aide du changement de variable \(u = -\ln t\), montrer que \(I = \displaystyle\int_0^{+\infty} \frac{e^{-u} - e^{-2u}}{u}\,\mathrm{d}u\).</li>
+      <li>Soit \(\varepsilon \gt 0\). Montrer que \(\displaystyle\int_\varepsilon^{+\infty} \frac{e^{-u} - e^{-2u}}{u}\,\mathrm{d}u = \int_\varepsilon^{2\varepsilon} \frac{e^{-u}}{u}\,\mathrm{d}u\).</li>
+      <li>Démontrer que \(\displaystyle\int_\varepsilon^{2\varepsilon} \frac{e^{-u}}{u}\,\mathrm{d}u \xrightarrow[\varepsilon \to 0]{} \ln 2\). En déduire la valeur de \(I\).</li>
+    </ol>
+  </div>
+
+  <div class="exo-card" id="exo17">
+    <div class="exo-head"><span class="exo-num">Exercice 17</span><span class="exo-titre">Intégrale convergente sans limite de la fonction en \(+\infty\)</span><span class="exo-stars">★★★☆</span></div>
+    <ol>
+      <li>Justifier avec précision que la fonction \(t \mapsto \sin(t^2)\) n'admet pas de limite en \(+\infty\).</li>
+      <li>À l'aide d'une intégration par parties, justifier que l'intégrale \(\displaystyle\int_0^{+\infty} \sin(t^2)\,\mathrm{d}t\) converge.</li>
+    </ol>
+  </div>
+
+  <div class="exo-card" id="exo18">
+    <div class="exo-head"><span class="exo-num">Exercice 18</span><span class="exo-titre">L'intégrale de Dirichlet</span><span class="exo-stars">★★★☆</span></div>
+    <p>À l'aide d'une intégration par parties, démontrer que l'intégrale \(\displaystyle\int_0^{+\infty} \frac{\sin t}{t}\,\mathrm{d}t\) converge.</p>
+  </div>
+
+  <div class="exo-card" id="exo19">
+    <div class="exo-head"><span class="exo-num">Exercice 19</span><span class="exo-titre">Terme général d'une suite d'intégrales généralisées</span><span class="exo-stars">★★☆☆</span></div>
+    <p>Pour tout \(n \in \mathbb{N}\), on pose \(I_n = \displaystyle\int_1^{+\infty} \frac{(\ln x)^n}{x^3}\,\mathrm{d}x\).</p>
+    <ol>
+      <li>Démontrer que, pour tout \(n \in \mathbb{N}\), l'intégrale \(I_n\) converge et donner une relation entre \(I_{n+1}\) et \(I_n\).</li>
+      <li>En déduire, pour tout \(n \in \mathbb{N}\), une expression de \(I_n\) en fonction de \(n\).</li>
+    </ol>
+  </div>
+
+  <div class="exo-card" id="exo20">
+    <div class="exo-head"><span class="exo-num">Exercice 20</span><span class="exo-titre">Moments d'une loi exponentielle</span><span class="exo-stars">★☆☆☆</span></div>
+    <p>Soit \(\lambda \in \mathbb{R}_+^*\). À l'aide de la fonction Gamma, montrer que, pour tout \(n \in \mathbb{N}^*\), l'intégrale \(I(n, \lambda) = \displaystyle\int_0^{+\infty} t^{n-1}\lambda e^{-\lambda t}\,\mathrm{d}t\) converge et calculer sa valeur.</p>
+  </div>
+
+  <div class="exo-card" id="exo21">
+    <div class="exo-head"><span class="exo-num">Exercice 21</span><span class="exo-titre">Moments d'une loi normale</span><span class="exo-stars">★★☆☆</span></div>
+    <ol>
+      <li>Justifier que, pour tout \(n \in \mathbb{N}\), l'intégrale \(I_n = \displaystyle\int_{-\infty}^{+\infty} t^n e^{-t^2}\,\mathrm{d}t\) est convergente et que l'on a, pour tout \(n \in \mathbb{N}\), \(I_{n+2} = \dfrac{n+1}{2}\,I_n\).</li>
+      <li>Donner pour tout \(p \in \mathbb{N}\) la valeur de \(I_{2p+1}\).</li>
+      <li>Montrer que, pour tout \(p \in \mathbb{N}\), \(I_{2p} = \dfrac{(2p)!}{2^{2p}\,p!}\,I_0\). Préciser la valeur de \(I_0\).</li>
+      <li>Retrouver le résultat de la question précédente en effectuant un changement de variable et en utilisant les résultats obtenus plus haut sur la fonction \(\Gamma\).</li>
+    </ol>
+  </div>
+
+  <div class="exo-card" id="exo22">
+    <div class="exo-head"><span class="exo-num">Exercice 22</span><span class="exo-titre">Une autre forme pour les intégrales de Wallis</span><span class="exo-stars">★★★☆</span></div>
+    <p>Pour tout \(n \in \mathbb{N}\), on pose \(I_n = \displaystyle\int_0^{+\infty} \frac{\mathrm{d}t}{(1 + t^2)^{n+1}}\).</p>
+    <ol>
+      <li>Justifier que, pour tout \(n \in \mathbb{N}\), l'intégrale \(I_n\) converge.</li>
+      <li>Montrer que la suite \((I_n)_{n \in \mathbb{N}}\) est convergente.</li>
+      <li>Au moyen d'une intégration par parties, établir : \(\forall n \in \mathbb{N},\ I_n - I_{n+1} = \dfrac{1}{2n + 2}\,I_n\).</li>
+      <li>En déduire, pour tout \(n \in \mathbb{N}\), une expression de \(I_n\) au moyen de factorielles.</li>
+      <li>Pour tout \(p \in \mathbb{N}\), on définit l'intégrale de Wallis \(W_p = \displaystyle\int_0^{\pi/2} \cos^p \theta\,\mathrm{d}\theta\). À l'aide du changement de variable \(t = \tan \theta\) dans l'intégrale \(I_n\), exprimer le réel \(I_n\) au moyen d'une intégrale de Wallis.</li>
+    </ol>
+  </div>
+
+  <div class="exo-card" id="exo23">
+    <div class="exo-head"><span class="exo-num">Exercice 23</span><span class="exo-titre">Fonction définie par une intégrale dépendant d'un paramètre</span><span class="exo-stars">★★★☆</span></div>
+    <p>Pour tout réel \(x\) pour lequel cette intégrale converge, on pose :</p>
+    <div class="formula-block">\[F(x) = \int_1^{+\infty} \frac{t^{-x}}{1 + t}\,\mathrm{d}t.\]</div>
+    <ol>
+      <li>Montrer que l'intégrale ci-dessus converge si et seulement si \(x \gt 0\).</li>
+      <li>Démontrer que la fonction \(F\) est décroissante sur \(]0, +\infty[\).</li>
+      <li>Les limites de \(F\).
+        <ol class="exo-sous">
+          <li><b>3.1</b> À l'aide d'une majoration, déterminer la limite de \(F\) en \(+\infty\).</li>
+          <li><b>3.2</b> À l'aide d'une minoration, déterminer la limite de \(F\) en \(0\).</li>
+          <li><b>3.3</b> Pour tout \(x \gt 0\), calculer \(F(x) + F(x+1)\). Retrouver ainsi la valeur des limites de \(F\) en \(+\infty\) et en \(0\).</li>
+        </ol>
+      </li>
+      <li>La continuité de \(F\).
+        <ol class="exo-sous">
+          <li><b>4.1</b> Soit \(a \gt 0\). Établir, pour tout couple \((x, y) \in [a, +\infty[^2\) et tout \(t \geqslant 1\), l'inégalité \(\left|\dfrac{t^{-x}}{1+t} - \dfrac{t^{-y}}{1+t}\right| \leqslant |y - x|\,\dfrac{\ln t}{t^a(1+t)}\).</li>
+          <li><b>4.2</b> Justifier que l'intégrale \(\displaystyle\int_1^{+\infty} \frac{\ln t}{t^a(1+t)}\,\mathrm{d}t\) converge.</li>
+          <li><b>4.3</b> Démontrer que la fonction \(F\) est continue sur \(]0, +\infty[\).</li>
+        </ol>
+      </li>
+    </ol>
+  </div>
+
+  <div class="exo-card" id="exo24">
+    <div class="exo-head"><span class="exo-num">Exercice 24</span><span class="exo-titre">La fonction Bêta</span><span class="exo-stars">★★☆☆</span></div>
+    <p>Pour tous réels \(x\) et \(y\) pour lesquels cette intégrale converge, on pose :</p>
+    <div class="formula-block">\[B(x, y) = \int_0^1 t^{x-1}(1 - t)^{y-1}\,\mathrm{d}t.\]</div>
+    <ol>
+      <li>Déterminer l'ensemble des réels \(x\) et \(y\) pour lesquels l'intégrale \(B(x, y)\) converge.</li>
+      <li>Montrer, pour tous réels \(x \gt 0\) et \(y \gt 0\), la formule \(B(x, y+1) = \dfrac{y}{x}\,B(x+1, y)\).</li>
+      <li>En déduire, pour tout couple \((m, n) \in (\mathbb{N}^*)^2\), l'expression de \(B(m, n)\) : \(B(m, n) = \dfrac{(m-1)!\,(n-1)!}{(m+n-1)!}\).</li>
+    </ol>
+  </div>
+
+  <div class="exo-card" id="exo25">
+    <div class="exo-head"><span class="exo-num">Exercice 25</span><span class="exo-titre">Allure de la courbe de la fonction Gamma</span><span class="exo-stars">★★★☆</span></div>
+    <ol>
+      <li>En admettant que la fonction \(\Gamma\) est continue en \(1\), déterminer un équivalent de \(\Gamma(x)\) quand \(x\) tend vers \(0\).</li>
+      <li>Pour tout \(t \gt 0\), on note \(f_t : x \mapsto t^{x-1}e^{-t}\), définie sur \(]0, +\infty[\). On admet que la fonction \(\Gamma\) est deux fois dérivable sur \(]0, +\infty[\) et que sa dérivée seconde s'obtient en intervertissant le symbole \(\int\) et la dérivation ; ainsi, on admet : \(\forall x \gt 0,\ \Gamma''(x) = \displaystyle\int_0^{+\infty} f_t''(x)\,\mathrm{d}t\).
+        <ol class="exo-sous">
+          <li><b>2.1</b> Déterminer le signe de la fonction \(\Gamma''\).</li>
+          <li><b>2.2</b> Démontrer qu'il existe un unique réel \(x_0 \in\, ]1, 2[\) vérifiant \(\Gamma'(x_0) = 0\).</li>
+          <li><b>2.3</b> En déduire les variations de la fonction \(\Gamma\).</li>
+        </ol>
+      </li>
+      <li>À l'aide des informations collectées, donner l'allure de la courbe de la fonction \(\Gamma\) sur l'intervalle \(]0, 4]\).</li>
+    </ol>
+  </div>
+</div>
+
+</div><!-- fin .content -->
+
+<footer class="site-footer">
+  <div class="footer-logo">Révisions d'analyse : les intégrales impropres</div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut de page">↑</button>
+
+<script>
+  document.querySelectorAll('.toc-list a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
+
+</body>
+</html>
