@@ -390,7 +390,7 @@ il affiche un **second cours réécrit**, lisible en 10 minutes (≈ 2 300 mots)
 durée, plan détaillé), parties `.fc-p` (idée directrice `.fc-idee`), sous-parties `.fc-sp` : à gauche titre + chiffre clé
 (`.fc-g`, statique, pas collant), à droite arguments numérotés `.fc-arg` (idée en gras + explication, **un seul exemple**
 `.fc-ex`), une définition `.fc-def`. Contenu tiré du cours, rien de nouveau. PDF « Cours focus (PDF) » du sommaire :
-`python3 outils/cours-focus-pdf.py <page> <dossier>/cours-focus-chapitreN.pdf` (A4, sans marge de notes, 7 pages : page 1 = couverture avec le héros du cours complet et le plan, hauteur de la photo réglée par le `height` de `.t-photo img` du bloc d'impression ; puis le cours focus pleine page), à
+`python3 outils/cours-focus-pdf.py <page> <dossier>/cours-focus-chapitreN.pdf` (A4, sans marge de notes, 7 pages : héros du cours complet à sa taille normale (photo jamais agrandie, refusé), plan, puis le cours focus pleine largeur ; chaque sous-partie = titre et chiffre clé **en haut**, contenu dessous, jamais titre à gauche et texte à droite), à
 relancer après toute modification du cours focus.
 
 **Mode éditeur** (`editeur.js`, administrateur seulement) : `<script src="../../../editeur.js" data-racine="#cours" defer>`
