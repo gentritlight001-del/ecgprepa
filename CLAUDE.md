@@ -389,8 +389,9 @@ il affiche un **second cours réécrit**, lisible en 10 minutes (≈ 2 300 mots)
 `.content` (en focus, `.content` est masqué sauf le bilan ; le sommaire pointe vers `#f1`…). En-tête `.fc-tete` (problématique,
 « La réponse » `.fc-these` = la thèse en une phrase, plan détaillé ; pas de pastilles de durée, jugées inutiles), parties `.fc-p` (idée directrice `.fc-idee`), sous-parties `.fc-sp` : à gauche titre + chiffre clé
 (`.fc-g`, statique, pas collant), à droite arguments numérotés `.fc-arg` (idée en gras + explication, **un seul exemple**
-`.fc-ex`), une définition `.fc-def` ; à la fin de chaque partie, une conclusion `.fc-concl` (« Conclusion · Partie N », une ou deux phrases). Contenu tiré du cours, rien de nouveau. PDF « Cours focus (PDF) » du sommaire :
-`python3 outils/cours-focus-pdf.py <page> <dossier>/cours-focus-chapitreN.pdf` (A4, sans marge de notes, 7 pages : héros du cours complet à sa taille normale (photo jamais agrandie, refusé), plan, puis le cours focus pleine largeur ; chaque sous-partie = titre et chiffre clé **en haut**, contenu dessous, jamais titre à gauche et texte à droite), à
+`.fc-ex`), une définition `.fc-def` ; à la fin de chaque partie, une conclusion `.fc-concl` (« Conclusion · Partie N », une ou deux phrases). Contenu tiré du cours, rien de nouveau. Ce PDF **remplace le résumé** : il est publié sous `resume-chapitreN.pdf` (seul bouton « Résumé (PDF) » du sommaire, sans pied de page ; l'ancien gabarit
+`outils/resume-chapitre/hgg2-chapitre1.html` ne sert plus pour ce chapitre) :
+`python3 outils/cours-focus-pdf.py <page> <dossier>/resume-chapitreN.pdf` (A4, sans marge de notes, 7 pages : héros du cours complet à sa taille normale (photo jamais agrandie, refusé), plan, puis le cours focus pleine largeur ; chaque sous-partie = titre et chiffre clé **en haut**, contenu dessous, jamais titre à gauche et texte à droite), à
 relancer après toute modification du cours focus.
 
 **Mode éditeur** (`editeur.js`, administrateur seulement) : `<script src="../../../editeur.js" data-racine="#cours" defer>`

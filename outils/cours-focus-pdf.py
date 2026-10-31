@@ -2,12 +2,12 @@
 """PDF du cours focus d'un chapitre (mode focus imprimé, A4).
 
     python3 outils/cours-focus-pdf.py deuxieme_annee/hgg/chapitre-1-hgg.html \
-        deuxieme_annee/hgg/cours-focus-chapitre1.pdf
+        deuxieme_annee/hgg/resume-chapitre1.pdf
 
 Sert le dépôt en local, ouvre la page en mode focus (auth.js remplacé par un script
 vide), puis l'imprime avec la mise en page @media print de la page (bloc « Impression
-du cours focus »). Pied de page : chapitre et numéro de page."""
-import functools, http.server, os, re, sys, threading
+du cours focus »). Sans pied de page."""
+import functools, http.server, os, sys, threading
 from playwright.sync_api import sync_playwright
 
 RACINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,11 +20,6 @@ H = functools.partial(Silencieux, directory=RACINE)
 srv = http.server.ThreadingHTTPServer(("127.0.0.1", 0), H)
 threading.Thread(target=srv.serve_forever, daemon=True).start()
 url = "http://127.0.0.1:%d/%s" % (srv.server_address[1], rel)
-
-html = open(src, encoding="utf-8").read()
-m = re.search(r'class="fc-imp"[^>]*><span>([^<]*)</span><b>([^<]*)</b>', html)
-pied = ("%s · %s" % (m.group(2), m.group(1))) if m else "ECG Prépa"
-pied = pied.replace("&", "&amp;").replace("<", "&lt;")
 
 with sync_playwright() as p:
     try:
@@ -40,10 +35,7 @@ with sync_playwright() as p:
         sys.exit("❌ pas de cours focus (.fc) sur cette page")
     page.emulate_media(media="print")
     page.pdf(path=dst, format="A4", print_background=True,
-             margin={"top": "8mm", "bottom": "11mm", "left": "8mm", "right": "8mm"},
-             display_header_footer=True, header_template="<span></span>",
-             footer_template='<div style="width:100%;padding:0 8mm;font:8px Helvetica,Arial,sans-serif;color:#5d726b;display:flex;justify-content:space-between">'
-                             '<span>ECG Prépa · ' + pied + '</span><span><span class="pageNumber"></span> / <span class="totalPages"></span></span></div>')
+             margin={"top": "8mm", "bottom": "8mm", "left": "8mm", "right": "8mm"})
     nav.close()
 srv.shutdown()
 from pypdf import PdfReader
