@@ -442,7 +442,11 @@ mêmes plans et mêmes durées (la voix d'une version sert à l'autre), option `
 jusqu'à 145 %) pour remplir l'espace entre le titre et le pied ; les écrans spéciaux ont leur mise en page verticale
 (`.v916` dans `style.css` : couverture, cartons de partie, dates repères sur un axe vertical, fin). `--controle --format 9:16`
 signale un écran dont le texte a dû descendre sous 90 % (l'alléger) ou un élément hors cadre. Fait pour le chapitre 1 de
-2e année (octobre 2026, sans voix : crédits ElevenLabs insuffisants).
+2e année (octobre 2026, sans voix : crédits ElevenLabs insuffisants). **Version courte** (5 à 10 min, demandée par le
+propriétaire pour le 9:16 à la place des 50 min de la version complète) : source `outils/video/<hgg1|hgg2>-chapitreN-court.html`,
+copie de la source complète réduite à une vingtaine d'écrans clés repris tels quels (couverture, idée du chapitre, cartons
+de partie, 4 ou 5 écrans par partie, dates repères, bilan, fin ; liste des numéros en tête de `PLANS`), photo d'un carton de
+partie changée si elle répète celle d'un écran voisin. Fait : `hgg2-chapitre1-court.html` (23 écrans, 8 min 50).
 Voix off (ElevenLabs, voix « Paul K », modèle Multilingual v2) : un texte par écran qui **garde les mots, les noms et les chiffres de l'écran** mais ne le lit
 pas mot à mot : il les relie et les explique (le pourquoi, le lien avec l'écran d'avant, l'usage dans une copie), phrases
 courtes et orales, faits du cours seulement (une version trop détachée de l'écran a été refusée) ; sigles écrits comme ils se prononcent, écrans séparés par `<break time="2.5s" />`, blocs de moins de 4 500 caractères ; le propriétaire renvoie un
