@@ -436,8 +436,12 @@ coupe la voix écran par écran, raccourcit les silences et l'accélère de 7 % 
 [--plans 1-15]` fait durer chaque écran le temps de sa voix plus 0,8 s (4 s au moins) (apparitions resserrées, transitions en
 glissement) ; `voix.py poser <html> <video.mp4> <sortie.mp4> --dossier <dossier> [--plans 1-15]` pose la voix. Écran supprimé après l'enregistrement de la voix : `prepare … --ignorer <n° de l'écran dans le texte
 de la voix>` jette son morceau et décale les suivants (ainsi l'écran 4 « Quatre chiffres pour commencer » du chapitre 1 de
-2e année, retiré : toujours passer `--ignorer 4` avec les blocs de ce chapitre). Ordre d'apparition dans un écran = ordre des
-blocs dans `PLANS` : le caler sur l'ordre de la voix.
+2e année, retiré : toujours passer `--ignorer 4` avec les blocs de ce chapitre). **Calage sur les mots** : `prepare` transcrit aussi la voix (Whisper, `pip install faster-whisper`,
+modèle « small », `WHISPER_DIR` pour son dossier) dans `mots.json`, que `generer.py --voix` lit : chaque élément apparaît
+quand la voix dit son mot repère (champ `v` du bloc, `vs: [...]` pour les éléments d'une liste, de chiffres, d'une frise,
+de cartes ; sinon ses mots en gras, son chiffre, sa date ou ses premiers mots). Ordre des blocs dans `PLANS` = ordre de la
+voix. Vérifier avec `VIDEO.reperes()` (repère trouvé ou ✗ pour chaque élément) et poser un `v` là où la voix dit autre chose
+ou où Whisper écorche le mot (« génie » pour Gini, « conne sud » pour Cône Sud).
 
 **Impression** : bloc `@media print` en fin de `<style>` (fond blanc, A4 pleine largeur, punaises et scotchs gardés et
 jamais coupés grâce à `.pin-wrap`, fiches flottantes ou rangées sous le texte quand elles sont plus hautes que lui, aucun
