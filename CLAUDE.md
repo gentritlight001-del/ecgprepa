@@ -451,6 +451,13 @@ quand la voix dit son mot repère (champ `v` du bloc, `vs: [...]` pour les élé
 de cartes ; sinon ses mots en gras, son chiffre, sa date ou ses premiers mots). Ordre des blocs dans `PLANS` = ordre de la
 voix. Vérifier avec `VIDEO.reperes()` (repère trouvé ou ✗ pour chaque élément) et poser un `v` là où la voix dit autre chose
 ou où Whisper écorche le mot (« génie » pour Gini, « conne sud » pour Cône Sud).
+**Synthèse directe (choix du propriétaire, octobre 2026 : c'est Claude qui fait la voix)** : texte de la voix versionné dans
+`outils/video/<hgg1|hgg2>-chapitreN-voix.txt` (un bloc `[N]` par écran, numéros de `PLANS`, sans balise `<break>`), clé
+`ELEVENLABS_API_KEY` dans les secrets de l'environnement cloud (lue seulement par une nouvelle session) ;
+`python3 outils/video/voix.py synthese <texte> --dossier <scratchpad>/voix [--ecrans 1-15]` remplace `prepare` : un appel
+par écran (un écran dont le texte n'a pas changé n'est pas refait), crédits vérifiés avant, durée prévue de la vidéo à la fin
+(viser 30 à 40 min pour un chapitre : sinon raccourcir le texte, jamais accélérer au-delà de 7 %). Le texte du chapitre 1 de
+2e année (`hgg2-chapitre1-voix.txt`, 116 écrans) suit la numérotation actuelle : pas de `--ignorer` avec lui.
 
 **Impression** : bloc `@media print` en fin de `<style>` (fond blanc, A4 pleine largeur, punaises et scotchs gardés et
 jamais coupés grâce à `.pin-wrap`, fiches flottantes ou rangées sous le texte quand elles sont plus hautes que lui, aucun
