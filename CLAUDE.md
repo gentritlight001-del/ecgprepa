@@ -434,7 +434,10 @@ MP3 par bloc. **La voix fixe le tempo** (le propriétaire a trouvé la vidéo «
 dynamique) : `python3 outils/video/voix.py prepare --bloc <bloc.mp3>:<premier écran> … --dossier <scratchpad>/voix`
 coupe la voix écran par écran, raccourcit les silences et l'accélère de 7 % (15 % jugé « légèrement trop vite ») ; `generer.py … --voix <dossier>/voix.json
 [--plans 1-15]` fait durer chaque écran le temps de sa voix plus 0,8 s (4 s au moins) (apparitions resserrées, transitions en
-glissement) ; `voix.py poser <html> <video.mp4> <sortie.mp4> --dossier <dossier> [--plans 1-15]` pose la voix.
+glissement) ; `voix.py poser <html> <video.mp4> <sortie.mp4> --dossier <dossier> [--plans 1-15]` pose la voix. Écran supprimé après l'enregistrement de la voix : `prepare … --ignorer <n° de l'écran dans le texte
+de la voix>` jette son morceau et décale les suivants (ainsi l'écran 4 « Quatre chiffres pour commencer » du chapitre 1 de
+2e année, retiré : toujours passer `--ignorer 4` avec les blocs de ce chapitre). Ordre d'apparition dans un écran = ordre des
+blocs dans `PLANS` : le caler sur l'ordre de la voix.
 
 **Impression** : bloc `@media print` en fin de `<style>` (fond blanc, A4 pleine largeur, punaises et scotchs gardés et
 jamais coupés grâce à `.pin-wrap`, fiches flottantes ou rangées sous le texte quand elles sont plus hautes que lui, aucun
