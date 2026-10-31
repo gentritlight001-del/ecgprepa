@@ -29,6 +29,9 @@ def ouvrir(pw, source, voix=None):
     page.on('pageerror', lambda e: erreurs.append(str(e)))
     if voix:  # durées de la voix off par écran (voix.py prepare) : la voix fixe le tempo
         page.add_init_script(f'window.VOIX = {Path(voix).read_text()};')
+        mots = Path(voix).with_name('mots.json')     # instant de chaque mot de la voix (voix.py prepare)
+        if mots.exists():
+            page.add_init_script(f'window.VOIX_MOTS = {mots.read_text()};')
     page.goto(Path(source).resolve().as_uri())
     page.wait_for_function('window.VIDEO && document.fonts.status === "loaded"', timeout=60000)
     # Les polices ne se chargent qu'à leur premier usage : on les demande toutes avant de mesurer ou de rendre.

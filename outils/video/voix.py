@@ -6,14 +6,16 @@
    Coupe chaque bloc aux pauses de plus de 2,2 s (un morceau par écran), raccourcit les silences entre les
    phrases, accélère la voix (--vitesse, 1,07 par défaut, sans changer sa hauteur), écrit ecran-NNN.wav et
    voix.json (durée de la voix de chaque écran ; un nouveau bloc complète le fichier). --ignorer 4 jette la voix
-   de l'écran 4 du texte (écran supprimé de la vidéo) et décale les suivants.
+   de l'écran 4 du texte (écran supprimé de la vidéo) et décale les suivants. La voix est ensuite transcrite
+   (Whisper, `pip install faster-whisper`) : mots.json donne l'instant de chaque mot, pour faire apparaître chaque élément
+   quand la voix prononce son mot repère.
 2. Rendre la vidéo calée sur la voix : chaque écran dure le temps de sa voix plus 0,8 s, et ses
    éléments apparaissent dans ce temps-là :
      python3 outils/video/generer.py <source.html> <video.mp4> --voix <dossier>/voix.json [--plans 1-15]
 3. Poser la voix :
      python3 outils/video/voix.py poser <source.html> <video.mp4> <sortie.mp4> --dossier <dossier> [--plans 1-15]
 """
-import argparse, json, subprocess, sys
+import argparse, json, os, subprocess, sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
@@ -39,6 +41,20 @@ def morceaux(f):
     return bornes
 
 
+def transcrire(dos, ecrans):
+    """Instant de chaque mot de la voix (Whisper, sur le morceau déjà resserré) : mots.json, lu par generer.py."""
+    import numpy as np
+    from faster_whisper import WhisperModel
+    modele = WhisperModel('small', device='cpu', compute_type='int8', download_root=os.environ.get('WHISPER_DIR'))
+    js = dos / 'mots.json'; mots = json.loads(js.read_text()) if js.exists() else {}
+    for n in ecrans:
+        brut = subprocess.run(['ffmpeg', '-loglevel', 'error', '-i', str(dos / f'ecran-{n:03d}.wav'), '-f', 'f32le', '-ac', '1',
+                               '-ar', '16000', '-'], capture_output=True, check=True).stdout
+        segs, _ = modele.transcribe(np.frombuffer(brut, np.float32), language='fr', word_timestamps=True)
+        mots[str(n)] = [[w.word.strip(), round(w.start, 2)] for s in segs for w in s.words]
+    js.write_text(json.dumps(mots, ensure_ascii=False))
+
+
 def prepare(a):
     dos = Path(a.dossier); dos.mkdir(parents=True, exist_ok=True)
     js = dos / 'voix.json'; durees = json.loads(js.read_text()) if js.exists() else {}
@@ -60,6 +76,9 @@ def prepare(a):
         print(f'{Path(fichier).name} : {len(ms)} morceaux, écrans {faits[0]} à {faits[-1]} de la vidéo, '
               f'{sum(durees[str(n)] for n in faits):.0f} s de voix')
     js.write_text(json.dumps(durees, sort_keys=True))
+    if not a.sans_mots:
+        transcrire(dos, sorted({int(n) for n in durees}))
+        print('mots de la voix repérés (mots.json)')
 
 
 def poser(a):
@@ -90,6 +109,7 @@ def main():
     ap = argparse.ArgumentParser(); sp = ap.add_subparsers(dest='cmd', required=True)
     p = sp.add_parser('prepare'); p.add_argument('--bloc', action='append', required=True)
     p.add_argument('--ignorer', help='écrans du texte de la voix supprimés de la vidéo, ex. 4');
+    p.add_argument('--sans-mots', action='store_true', help='ne pas transcrire la voix');
     p.add_argument('--dossier', required=True); p.add_argument('--vitesse', type=float, default=1.07)
     q = sp.add_parser('poser'); q.add_argument('source'); q.add_argument('video'); q.add_argument('sortie')
     q.add_argument('--dossier', required=True); q.add_argument('--plans'); q.add_argument('--decalage', type=float, default=0)

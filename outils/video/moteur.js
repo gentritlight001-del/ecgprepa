@@ -47,6 +47,16 @@
 
   let P = null; // plan en cours de construction
   const A = (el, a, t, d = .8, x = {}) => { P.anims.push(Object.assign({ el, a, t, d }, x)); return el; };
+  /* Mots repères : chaque élément apparaît quand la voix prononce son mot repère (transcription faite par voix.py).
+     Repère d'un élément = son champ v (ou vs[i] pour les éléments d'une liste), sinon ses mots en gras, son chiffre, sa date
+     ou ses premiers mots. Sans repère trouvé, l'élément garde une apparition proportionnelle au temps de la voix. */
+  const VM = window.VOIX_MOTS || null;
+  const STOP = new Set('les des une est par pour avec dans sur aux que qui son ses leur leurs plus mais elle ils elles cette ces entre comme tout tous'.split(' '));
+  const norm = s => String(s || '').replace(/<[^>]+>|\*/g, ' ').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+    .replace(/(\d)[\s\u00a0\u202f](?=\d{3}\b)/g, '$1').split(/[^a-z0-9]+/).filter(Boolean);
+  const sig = toks => toks.filter(w => /^\d+$/.test(w) || (w.length >= 3 && !STOP.has(w)));
+  const forts = x => [...String(x || '').matchAll(/\*\*(.+?)\*\*/g)].map(m => m[1]);
+  function ancre(t, ...cues) { if (VM) P.ancres.push({ t, cues: cues.flat().filter(Boolean) }); }
   function surligne(el, t) { el.querySelectorAll('strong').forEach((s, i) => A(s, 'mark', t + .4 + i * .3, .6)); }
   function punaise(el, t) { const p = $('i', 'pin'); p.style.setProperty('--pin', PINS[pinN++ % PINS.length]); el.prepend(p); A(p, 'pop', t + .25, .5); }
   function scotch(fig, t, places) {
@@ -72,25 +82,25 @@
   const BLOCS = {
     p(b, h) {
       const e = $('p', 'b-p' + (b.fort ? ' fort' : ''), ty(b.x)); const t = h.lire(mots(b.x));
-      A(e, b.fort ? 'left' : 'up', t); surligne(e, t); return e;
+      A(e, b.fort ? 'left' : 'up', t); surligne(e, t); ancre(t, b.v, forts(b.x), b.x); return e;
     },
     def(b, h) {
       const e = $('div', 'def', `<span class="dk">Définition</span><span class="dm">${ty(b.m)}${b.qui ? ` <small>${ty(b.qui)}</small>` : ''}</span><p>${ty(b.x)}</p>`);
-      const t = h.lire(mots(b.x) + mots(b.m) + 2); A(e, 'up', t); surligne(e, t + .3); return e;
+      const t = h.lire(mots(b.x) + mots(b.m) + 2); A(e, 'up', t); surligne(e, t + .3); ancre(t, b.v, b.m, forts(b.x)); return e;
     },
     fiche(b, h) {
       const e = $('div', 'fi', `${b.kk ? `<span class="fk">${ty(b.kk)}</span>` : ''}${b.t ? `<h5>${ty(b.t)}</h5>` : ''}<p>${ty(b.x)}</p>`);
       e.style.transform = `rotate(${b.rot ?? (rnd() - .5) * 1.4}deg)`;
-      const t = h.lire(mots(b.x) + mots(b.t) + mots(b.kk) * .5); A(e, 'up', t, .8, { rot: parseFloat(e.style.transform.slice(7)) }); punaise(e, t); surligne(e, t); return e;
+      const t = h.lire(mots(b.x) + mots(b.t) + mots(b.kk) * .5); A(e, 'up', t, .8, { rot: parseFloat(e.style.transform.slice(7)) }); punaise(e, t); surligne(e, t); ancre(t, b.v, b.t, forts(b.x), b.x); return e;
     },
     duo(b, h) {
       const e = $('div', 'duo' + (b.v ? ' v' : ''));
-      [b.a, b.b].forEach(([t, x, kk]) => e.append(BLOCS.fiche({ t, x, kk }, h)));
+      [b.a, b.b].forEach(([t, x, kk], k) => e.append(BLOCS.fiche({ t, x, kk, v: b.vs && b.vs[k] }, h)));
       return e;
     },
     cards(b, h) {
       const e = $('div', 'cards'); e.style.gridTemplateColumns = `repeat(${b.cols || b.cards.length},1fr)`;
-      b.cards.forEach(([t, x, kk]) => e.append(BLOCS.fiche({ t, x, kk }, h)));
+      b.cards.forEach(([t, x, kk], k) => e.append(BLOCS.fiche({ t, x, kk, v: b.vs && b.vs[k] }, h)));
       return e;
     },
     stats(b, h) {
@@ -98,7 +108,7 @@
       b.items.forEach(([n, x], i) => {
         const f = $('div', 'fi' + ((b.r ?? -1) === i ? ' r' : ''), `<b></b><span>${ty(x)}</span>`);
         f.style.transform = `rotate(${(rnd() - .5) * 1.6}deg)`;
-        const t = h.lire(mots(x) + 2, 2.2); A(f, 'up', t, .8, { rot: parseFloat(f.style.transform.slice(7)) }); punaise(f, t);
+        const t = h.lire(mots(x) + 2, 2.2); A(f, 'up', t, .8, { rot: parseFloat(f.style.transform.slice(7)) }); punaise(f, t); ancre(t, b.vs && b.vs[i], n, x);
         const bb = f.querySelector('b'), nb = nombre(n);
         if (nb) A(bb, 'count', t + .2, 1.4, nb); else bb.innerHTML = ty(n);
         e.append(f);
@@ -109,7 +119,7 @@
       const e = $('div', 'bars'); if (b.lw) e.style.setProperty('--lw', b.lw + 'px');
       const vals = b.rows.map(r => parseFloat(String(r[1]).replace(',', '.')));
       const max = b.max || Math.max(...vals) * 1.04;
-      const t = h.lire(b.rows.length * 2.2 + mots(b.src) * .3, 3); A(e, 'up', t); punaise(e, t);
+      const t = h.lire(b.rows.length * 2.2 + mots(b.src) * .3, 3); A(e, 'up', t); punaise(e, t); ancre(t, b.v, b.rows[0][0], b.lab);
       b.rows.forEach((r, i) => {
         const row = $('div', 'row' + ((b.r || []).includes(i) ? ' r' : ''), `<span>${ty(r[0])}</span><div class="tr"><i></i></div><b></b>`);
         A(row.querySelector('i'), 'w', t + .5 + i * .22, 1.1, { v: vals[i] / max * 100 });
@@ -121,7 +131,7 @@
     },
     vbars(b, h) {
       const e = $('div', 'vb'); e.style.setProperty('--vh', (b.vh || 380) + 'px');
-      const t = h.lire(b.rows.length * 1.3 + 3, 4); A(e, 'up', t); punaise(e, t);
+      const t = h.lire(b.rows.length * 1.3 + 3, 4); A(e, 'up', t); punaise(e, t); ancre(t, b.v, b.lab);
       if (b.leg) { const l = $('div', 'leg'); b.leg.forEach(([c, n]) => { const s = $('span', '', `<i></i>${ty(n)}`); s.querySelector('i').style.setProperty('--c', c); l.append(s); }); e.append(l); }
       const cols = $('div', 'cols'), ax = $('div', 'ax');
       const vals = b.rows.map(r => parseFloat(String(r[1]).replace(/\s/g, '').replace(',', '.')));
@@ -141,7 +151,7 @@
       const t0 = h.t; A(e, 'up', t0 - .1); punaise(e, t0 - .1);
       const lis = b.ev.map(([d, t, x], i) => {
         const li = $('li', i === b.ev.length - 1 ? 'cur' : '', `<i class="dot"></i><span class="d">${ty(d)}</span><span class="t">${t ? `<b>${ty(t)}</b> ` : ''}${ty(x || '')}</span>`);
-        const s = h.lire(mots(t) + mots(x) + 1, 2); A(li, 'left', s); A(li.querySelector('.dot'), 'pop', s + .1, .5); surligne(li, s);
+        const s = h.lire(mots(t) + mots(x) + 1, 2); A(li, 'left', s); A(li.querySelector('.dot'), 'pop', s + .1, .5); surligne(li, s); ancre(s, b.vs && b.vs[i], d, t);
         return li;
       });
       A(ligne, 'gy', t0, h.t - t0);
@@ -153,14 +163,14 @@
       const t0 = h.t; A(e, 'up', t0 - .1); punaise(e, t0 - .1);
       b.items.forEach((x, i) => {
         const li = $('li', '', `<i>${b.puce || String(i + 1).padStart(2, '0')}</i><span>${ty(x)}</span>`);
-        const s = h.lire(mots(x), 2); A(li, 'left', s); surligne(li, s); e.append(li);
+        const s = h.lire(mots(x), 2); A(li, 'left', s); surligne(li, s); ancre(s, b.vs && b.vs[i], forts(x), x); e.append(li);
       });
       return e;
     },
     quote(b, h) {
       const e = $('div', 'coupure', `<span class="ck">${ty(b.kk)}</span><h5>${ty(b.t)}</h5>${b.x ? `<p>${ty(b.x)}</p>` : ''}`);
       const r = b.rot ?? (rnd() - .5) * 1.6; e.style.transform = `rotate(${r}deg)`;
-      const t = h.lire(mots(b.t) + mots(b.x) + 1); A(e, 'drop', t, .9, { rot: r }); surligne(e, t);
+      const t = h.lire(mots(b.t) + mots(b.x) + 1); A(e, 'drop', t, .9, { rot: r }); surligne(e, t); ancre(t, b.v, b.t, b.kk);
       scotch(e, t, [[{ left: '42%', top: '-18px', transform: 'rotate(-3deg)' }, -3]]);
       return e;
     },
@@ -170,7 +180,7 @@
       f.querySelector('.cadre').style.setProperty('--h', (b.h || 480) + 'px');
       if (b.pos) f.querySelector('img').style.objectPosition = b.pos;
       const r = b.rot ?? (rnd() - .5) * 2.4; f.style.transform = `rotate(${r}deg)`;
-      const t = h.lire(mots(b.cap) * .45 + 1, b.min ?? 1.6); A(f, 'drop', t, 1, { rot: r });
+      const t = h.lire(mots(b.cap) * .45 + 1, b.min ?? 1.6); A(f, 'drop', t, 1, { rot: r }); ancre(t, b.v);
       A(f.querySelector('img'), 'kb', 0, 0, { plan: true, dx: (rnd() - .5) * 4, dy: (rnd() - .5) * 3 });
       scotch(f, t, rnd() < .5 ? [[{ left: '8%', top: '-16px', transform: 'rotate(-6deg)' }, -6], [{ right: '-34px', bottom: '60px', width: '110px', transform: 'rotate(-60deg)' }, -60]]
         : [[{ right: '10%', top: '-16px', transform: 'rotate(5deg)' }, 5], [{ left: '-30px', bottom: '70px', width: '100px', transform: 'rotate(58deg)' }, 58]]);
@@ -185,13 +195,13 @@
       const e = $('div', 'portrait' + (b.mini ? ' mini' : ''));
       const pola = $('figure', 'pola', `<img src="${IMG}${b.img}" alt="">`); const r = (rnd() - .5) * 5; pola.style.transform = `rotate(${r}deg)`;
       const corps = $('div', '', `<span class="pk">${ty(b.kk)}</span><h4>${ty(b.nom)}</h4><h6>${ty(b.t)}</h6>`);
-      const t = h.lire(mots(b.t) + 3); A(pola, 'drop', t, .9, { rot: r }); scotch(pola, t, [[{ left: '30%', top: '-16px', transform: 'rotate(-4deg)' }, -4]]);
+      const t = h.lire(mots(b.t) + 3); A(pola, 'drop', t, .9, { rot: r }); ancre(t, b.v, b.nom); scotch(pola, t, [[{ left: '30%', top: '-16px', transform: 'rotate(-4deg)' }, -4]]);
       A(corps, 'up', t + .2);
-      b.x.forEach(x => { const p = $('p', '', ty(x)); const s = h.lire(mots(x)); A(p, 'up', s); surligne(p, s); corps.append(p); });
+      b.x.forEach(x => { const p = $('p', '', ty(x)); const s = h.lire(mots(x)); A(p, 'up', s); surligne(p, s); ancre(s, forts(x), x); corps.append(p); });
       e.append(pola, corps); return e;
     },
     svg(b, h) {
-      const e = $('div', 'schema'); const t = h.lire(b.mots || 12, b.min || 6); A(e, 'up', t); punaise(e, t);
+      const e = $('div', 'schema'); const t = h.lire(b.mots || 12, b.min || 6); A(e, 'up', t); punaise(e, t); ancre(t, b.v);
       SCHEMAS[b.nom](e, t, h); return e;
     }
   };
@@ -348,12 +358,47 @@
     }
   };
 
+  /* ---------- Calage sur les mots de la voix ---------- */
+  // même début de mot (accords et conjugaisons tolérés) : 5 lettres pour un mot court, la longueur moins 2 pour un long (« milliard » ≠ « millions »)
+  const egal = (a, c) => { if (/^\d+$/.test(c)) return a === c; const n = Math.min(c.length, Math.max(5, c.length - 2)); return a.length >= n && a.slice(0, n) === c.slice(0, n); };
+  function calerMots(P, i, fin) {
+    const mots = VM && VM[i + 1]; if (!mots) return null;
+    const tok = [];
+    mots.forEach(([w, s]) => norm(w).forEach(x => tok.push([x, s])));
+    for (let k = tok.length - 2; k >= 0; k--) if (/^\d+$/.test(tok[k][0]) && /^\d{3}$/.test(tok[k + 1][0])) { tok[k][0] += tok[k + 1][0]; tok.splice(k + 1, 1); }
+    const pts = [[0, 0]]; let cur = 0;
+    const cherche = cue => {
+      const c = sig(norm(cue)); if (!c.length) return -1;
+      for (let k = cur; k < tok.length; k++) {
+        if (!egal(tok[k][0], c[0])) continue;
+        if (c.length > 1 && !tok.slice(k + 1, k + 4).some(([w]) => egal(w, c[1]))) continue;
+        return k;
+      }
+      return -1;
+    };
+    P.ancres.slice().sort((a, b) => a.t - b.t).forEach(a => {
+      for (const cue of a.cues) {
+        const k = cherche(cue); if (k < 0) continue;
+        const r = VOIX_DEPART + tok[k][1] - .25, [t0, r0] = pts[pts.length - 1];
+        if (a.t > t0 + .01 && r > r0 + .1) { pts.push([a.t, r]); cur = k + 1; a.ok = cue; }
+        break;
+      }
+    });
+    const [tl, rl] = pts[pts.length - 1];
+    if (fin > tl) pts.push([fin, Math.max(rl + .1, P.dur - .3)]);
+    return pts;
+  }
+  function mapw(pts, t) {
+    for (let k = 1; k < pts.length; k++) if (t <= pts[k][0]) { const [a, b] = [pts[k - 1], pts[k]]; return a[1] + (t - a[0]) * (b[1] - a[1]) / (b[0] - a[0]); }
+    const [a] = pts.slice(-1); return a[1] + (t - a[0]);
+  }
+
   /* ---------- Construction ---------- */
   const scene = document.getElementById('scene');
   const plans = [];
   let debut = 0;
   PLANS.forEach((d, i) => {
-    P = { d, anims: [], el: $('section', 'plan'), box: $('div', 'box'), sp: d.sp || null }; P.el.append(P.box);
+    P = { d, anims: [], el: $('section', 'plan'), box: $('div', 'box'), sp: d.sp || null, ancres: [] }; P.el.append(P.box);
     const h = new Horloge(.55);
     if (d.tpl) SPECIAUX[d.tpl](d, h);
     else {
@@ -376,7 +421,14 @@
     if (VX && VX[i + 1] != null) {                      // écran calé sur sa voix : les apparitions se resserrent dans le temps de la phrase
       const cible = Math.max(d.min || 0, 4, VX[i + 1] + VOIX_DEPART + VOIX_TRAINE);   // 4 s au moins pour voir l'écran
       P.k = Math.max(1, h.t / Math.max(1, cible - .3)); P.dur = cible;
+      P.warp = calerMots(P, i, h.t);
     }
+    P.anims.forEach(an => {                              // instants réels d'apparition (calés sur la voix s'il y en a une)
+      if (an.a === 'kb') return;
+      if (!P.warp) { an.rt = an.t / P.k; an.rd = an.d / P.k; return; }
+      an.rt = mapw(P.warp, an.t);
+      an.rd = an.d > 1.5 ? Math.max(.3, mapw(P.warp, an.t + an.d) - an.rt) : an.d / Math.max(1, P.k);
+    });
     P.start = debut; debut += P.dur;
     P.part = d.sp ? d.sp.split('.')[0] : (d.n || null);
     scene.append(P.el); plans.push(P);
@@ -401,8 +453,7 @@
   function applique(an, l, p) {
     const el = an.el;
     if (an.a === 'kb') { const q = Math.min(1, Math.max(0, l / (p.dur + OUT))), z = VX ? .14 : .08, m = VX ? 2 : 1; el.style.transform = `scale(${1.03 + z * q}) translate(${an.dx * m * q}%,${an.dy * m * q}%)`; return; }
-    l *= p.k;
-    let x = (l - an.t) / an.d; x = x < 0 ? 0 : x > 1 ? 1 : x; const e = eo(x);
+    let x = (l - an.rt) / an.rd; x = x < 0 ? 0 : x > 1 ? 1 : x; const e = eo(x);
     const r = an.rot || 0;
     switch (an.a) {
       case 'up': el.style.opacity = e; el.style.transform = `translateY(${(1 - e) * 34}px) rotate(${r}deg)`; break;
@@ -464,5 +515,7 @@
     return err;
   }
 
-  window.VIDEO = { render, duree: DUREE, controle, plans: plans.map(p => ({ start: p.start, dur: p.dur, sp: p.sp || p.d.tpl })) };
+  const reperes = () => plans.map(p => p.ancres.map(a => [Math.round(a.t * 10) / 10, a.ok || null, a.cues.map(c => sig(norm(c)).slice(0, 2).join(' '))]));
+  const debug = i => ({ warp: plans[i].warp, anims: plans[i].anims.filter(a => a.a === "up").map(a => [a.t, a.rt, a.rd, a.el.textContent.slice(0, 20)]) });
+  window.VIDEO = { render, duree: DUREE, controle, reperes, debug, plans: plans.map(p => ({ start: p.start, dur: p.dur, sp: p.sp || p.d.tpl })) };
 })();
