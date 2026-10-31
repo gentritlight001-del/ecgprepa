@@ -436,6 +436,13 @@ calcule les durées de lecture et les animations. `python3 outils/video/generer.
 titres trop longs, durée), `--images <dossier>` (une image par plan, à regarder), puis
 `python3 outils/video/generer.py <html> <scratchpad>/<nom>.mp4` (environ 0,1 s par image, en 4 tranches parallèles).
 Le MP4 est envoyé au propriétaire, **jamais versionné ni mis sur le site**.
+**Version verticale 9:16** (demande type : « Fais la vidéo du chapitre N en 9:16 », pour Reels, TikTok, Shorts) : même source,
+mêmes plans et mêmes durées (la voix d'une version sert à l'autre), option `--format 9:16` sur toutes les commandes de
+`generer.py` (1080 × 1920). Le moteur empile les colonnes dans l'ordre des blocs et agrandit chaque écran (zoom des blocs,
+jusqu'à 145 %) pour remplir l'espace entre le titre et le pied ; les écrans spéciaux ont leur mise en page verticale
+(`.v916` dans `style.css` : couverture, cartons de partie, dates repères sur un axe vertical, fin). `--controle --format 9:16`
+signale un écran dont le texte a dû descendre sous 90 % (l'alléger) ou un élément hors cadre. Fait pour le chapitre 1 de
+2e année (octobre 2026, sans voix : crédits ElevenLabs insuffisants).
 Voix off (ElevenLabs, voix « Paul K », modèle Multilingual v2) : un texte par écran qui **garde les mots, les noms et les chiffres de l'écran** mais ne le lit
 pas mot à mot : il les relie et les explique (le pourquoi, le lien avec l'écran d'avant, l'usage dans une copie), phrases
 courtes et orales, faits du cours seulement (une version trop détachée de l'écran a été refusée) ; sigles écrits comme ils se prononcent, écrans séparés par `<break time="2.5s" />`, blocs de moins de 4 500 caractères ; le propriétaire renvoie un

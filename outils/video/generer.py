@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rend une vidéo de chapitre (outils/video/<source>.html) en MP4 1920 × 1080.
+"""Rend une vidéo de chapitre (outils/video/<source>.html) en MP4 1920 × 1080, ou 1080 × 1920 avec --format 9:16.
 
   python3 outils/video/generer.py <source.html> --controle
       vérifie la mise en page (blocs qui débordent, titres trop longs) et donne la durée.
@@ -8,6 +8,9 @@
   python3 outils/video/generer.py <source.html> <sortie.mp4> [--fps 25] [--workers 4] [--voix voix.json] [--plans 1-15]
       rend toutes les images (en parallèle, par tranches) et les monte avec ffmpeg ; avec --voix, chaque écran
       dure le temps de sa voix (voix.py) ; --plans ne rend qu'une suite d'écrans.
+
+--format 9:16 (toutes les commandes) : version verticale (Reels, TikTok, Shorts), mêmes plans et mêmes durées,
+colonnes empilées ; --controle signale les écrans dont le contenu a dû être trop réduit pour tenir.
 
 La page expose window.VIDEO (moteur.js) : render(t) dessine l'image à l'instant t, sans horloge.
 """
@@ -18,13 +21,14 @@ from pathlib import Path
 CHROMIUM = os.environ.get('CHROMIUM_PATH', '/opt/pw-browsers/chromium')
 
 
-def ouvrir(pw, source, voix=None):
+def ouvrir(pw, source, voix=None, fmt='16:9'):
     try:
         nav = pw.chromium.launch()
     except Exception:
         exe = next(Path(CHROMIUM).glob('chromium-*/chrome-linux/chrome'), None) if Path(CHROMIUM).is_dir() else Path(CHROMIUM)
         nav = pw.chromium.launch(executable_path=str(exe))
-    page = nav.new_page(viewport={'width': 1920, 'height': 1080})
+    page = nav.new_page(viewport={'width': 1080, 'height': 1920} if fmt == '9:16' else {'width': 1920, 'height': 1080})
+    page.add_init_script(f'window.FORMAT = "{fmt}";')
     erreurs = []
     page.on('pageerror', lambda e: erreurs.append(str(e)))
     if voix:  # durées de la voix off par écran (voix.py prepare) : la voix fixe le tempo
@@ -48,10 +52,10 @@ def ouvrir(pw, source, voix=None):
     return nav, page
 
 
-def tranche(source, debut, fin, fps, sortie, voix=None, t0=0.0):
+def tranche(source, debut, fin, fps, sortie, voix=None, t0=0.0, fmt='16:9'):
     from playwright.sync_api import sync_playwright
     with sync_playwright() as pw:
-        nav, page = ouvrir(pw, source, voix)
+        nav, page = ouvrir(pw, source, voix, fmt)
         ff = subprocess.Popen(['ffmpeg', '-loglevel', 'error', '-y', '-f', 'image2pipe', '-framerate', str(fps), '-c:v', 'mjpeg', '-i', '-',
                                '-c:v', 'libx264', '-preset', 'medium', '-crf', '18', '-pix_fmt', 'yuv420p', '-r', str(fps), sortie], stdin=subprocess.PIPE)
         for i in range(debut, fin):
@@ -67,13 +71,14 @@ def main():
     ap.add_argument('source'); ap.add_argument('sortie', nargs='?')
     ap.add_argument('--controle', action='store_true'); ap.add_argument('--images'); ap.add_argument('--temps')
     ap.add_argument('--fps', type=int, default=25); ap.add_argument('--workers', type=int, default=4)
+    ap.add_argument('--format', default='16:9', choices=['16:9', '9:16'], help='9:16 = vidéo verticale 1080 × 1920')
     ap.add_argument('--voix', help='durées de la voix (voix.py prepare)'); ap.add_argument('--plans', help='écrans à rendre, ex. 1-15')
     a = ap.parse_args()
     from playwright.sync_api import sync_playwright
 
     if a.controle or a.images:
         with sync_playwright() as pw:
-            nav, page = ouvrir(pw, a.source, a.voix)
+            nav, page = ouvrir(pw, a.source, a.voix, a.format)
             duree = page.evaluate('VIDEO.duree'); plans = page.evaluate('VIDEO.plans')
             if a.controle:
                 err = page.evaluate('VIDEO.controle()')
@@ -92,7 +97,7 @@ def main():
     if not a.sortie:
         sys.exit('Indiquer le fichier MP4 de sortie.')
     with sync_playwright() as pw:
-        nav, page = ouvrir(pw, a.source, a.voix)
+        nav, page = ouvrir(pw, a.source, a.voix, a.format)
         duree = page.evaluate('VIDEO.duree'); plans = page.evaluate('VIDEO.plans'); nav.close()
     t0 = 0.0
     if a.plans:
@@ -103,7 +108,7 @@ def main():
     tmp = Path(tempfile.mkdtemp(prefix='video-'))
     bornes = [round(n * k / a.workers) for k in range(a.workers + 1)]
     debut = time.time()
-    procs = [Process(target=tranche, args=(a.source, bornes[k], bornes[k + 1], a.fps, str(tmp / f'{k}.mp4'), a.voix, t0)) for k in range(a.workers)]
+    procs = [Process(target=tranche, args=(a.source, bornes[k], bornes[k + 1], a.fps, str(tmp / f'{k}.mp4'), a.voix, t0, a.format)) for k in range(a.workers)]
     for p in procs: p.start()
     for p in procs: p.join()
     if any(p.exitcode for p in procs):
