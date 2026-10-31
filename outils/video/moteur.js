@@ -31,9 +31,10 @@
     if (!m) return null;
     const raw = m[1].trim(), dec = (raw.split(',')[1] || '').length;
     const num = parseFloat(raw.replace(/[\s  ]/g, '').replace(',', '.'));
-    const post = String(s).slice(m.index + m[1].length);
+    const post = String(s).slice(m.index + raw.length);   // garde l'espace entre le nombre et son unité
     if (!dec && /^\d{4}$/.test(raw) && num >= 1400 && num <= 2100 && !/%|\$/.test(post)) return null;
-    return { pre: String(s).slice(0, m.index), num, dec, post: post.replace(/^ /, ' ') };
+    if (!dec && num < 10) return null;   // un petit entier qui défile resterait presque tout le temps à 0
+    return { pre: String(s).slice(0, m.index), num, dec, post };   // chiffre en nowrap : une espace ordinaire suffit
   }
   const fmt = (v, d) => v.toLocaleString('fr-FR', { minimumFractionDigits: d, maximumFractionDigits: d });
 

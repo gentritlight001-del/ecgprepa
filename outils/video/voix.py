@@ -5,7 +5,8 @@
      python3 outils/video/voix.py prepare --bloc <bloc1.mp3>:1 --bloc <bloc2.mp3>:16 ... --dossier <scratchpad>/voix
    Coupe chaque bloc aux pauses de plus de 2,2 s (un morceau par écran), raccourcit les silences entre les
    phrases, accélère la voix (--vitesse, 1,07 par défaut, sans changer sa hauteur), écrit ecran-NNN.wav et
-   voix.json (durée de la voix de chaque écran ; un nouveau bloc complète le fichier).
+   voix.json (durée de la voix de chaque écran ; un nouveau bloc complète le fichier). --ignorer 4 jette la voix
+   de l'écran 4 du texte (écran supprimé de la vidéo) et décale les suivants.
 2. Rendre la vidéo calée sur la voix : chaque écran dure le temps de sa voix plus 0,8 s, et ses
    éléments apparaissent dans ce temps-là :
      python3 outils/video/generer.py <source.html> <video.mp4> --voix <dossier>/voix.json [--plans 1-15]
@@ -43,16 +44,21 @@ def prepare(a):
     js = dos / 'voix.json'; durees = json.loads(js.read_text()) if js.exists() else {}
     filtre = ('silenceremove=start_periods=1:start_threshold=-45dB:stop_periods=-1:stop_duration=0.6:'
               f'stop_threshold=-45dB:stop_silence=0.4,atempo={a.vitesse}')
+    ignorer = {int(x) for x in (a.ignorer or '').split(',') if x}
     for b in a.bloc:
         fichier, premier = b.rsplit(':', 1); premier = int(premier)
-        ms = morceaux(fichier)
+        ms = morceaux(fichier); faits = []
         for j, (d, f) in enumerate(ms):
-            n = premier + j; sortie = dos / f'ecran-{n:03d}.wav'
+            k = premier + j                                   # numéro de l'écran dans le texte de la voix
+            if k in ignorer:
+                continue
+            n = k - sum(1 for x in ignorer if x < k)          # numéro de l'écran dans la vidéo
+            faits.append(n); sortie = dos / f'ecran-{n:03d}.wav'
             subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-ss', f'{d:.3f}', '-to', f'{f:.3f}', '-i', fichier,
                             '-af', filtre, '-ar', '48000', '-ac', '2', str(sortie)], check=True)
             durees[str(n)] = round(duree(sortie), 3)
-        print(f'{Path(fichier).name} : {len(ms)} écrans ({premier} à {premier + len(ms) - 1}), '
-              f'{sum(durees[str(premier + j)] for j in range(len(ms))):.0f} s de voix')
+        print(f'{Path(fichier).name} : {len(ms)} morceaux, écrans {faits[0]} à {faits[-1]} de la vidéo, '
+              f'{sum(durees[str(n)] for n in faits):.0f} s de voix')
     js.write_text(json.dumps(durees, sort_keys=True))
 
 
@@ -83,6 +89,7 @@ def poser(a):
 def main():
     ap = argparse.ArgumentParser(); sp = ap.add_subparsers(dest='cmd', required=True)
     p = sp.add_parser('prepare'); p.add_argument('--bloc', action='append', required=True)
+    p.add_argument('--ignorer', help='écrans du texte de la voix supprimés de la vidéo, ex. 4');
     p.add_argument('--dossier', required=True); p.add_argument('--vitesse', type=float, default=1.07)
     q = sp.add_parser('poser'); q.add_argument('source'); q.add_argument('video'); q.add_argument('sortie')
     q.add_argument('--dossier', required=True); q.add_argument('--plans'); q.add_argument('--decalage', type=float, default=0)
