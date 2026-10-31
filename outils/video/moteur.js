@@ -6,6 +6,10 @@
   const VX = window.VOIX || null;  // durées de la voix off par écran (voix.py) : la voix fixe alors le tempo
   const OUT = VX ? .45 : .6;       // fondu de sortie d'un plan (s)
   const VOIX_DEPART = .4, VOIX_TRAINE = .8;
+  /* Format vertical 9:16 (1080 × 1920, generer.py --format 9:16) : mêmes plans, mêmes durées, colonnes empilées
+     dans l'ordre des blocs, agrandies ou réduites pour remplir l'écran (VIDEO.controle signale les écrans trop petits). */
+  const V = window.FORMAT === '9:16';
+  if (V) document.documentElement.classList.add('v916');
   const LECTURE = 3.5;            // mots lus par seconde (texte posé)
   const PINS = ['var(--a3)', 'var(--a1)', 'var(--a2)', '#c9a227'];
   const TAPE = ['rgba(242,214,117,.82)', 'rgba(214,228,222,.86)', 'rgba(239,190,160,.8)'];
@@ -99,12 +103,13 @@
       return e;
     },
     cards(b, h) {
-      const e = $('div', 'cards'); e.style.gridTemplateColumns = `repeat(${b.cols || b.cards.length},1fr)`;
+      const e = $('div', 'cards'); const nc = b.cols || b.cards.length;
+      e.style.gridTemplateColumns = `repeat(${V ? (nc >= 4 ? 2 : 1) : nc},1fr)`;
       b.cards.forEach(([t, x, kk], k) => e.append(BLOCS.fiche({ t, x, kk, v: b.vs && b.vs[k] }, h)));
       return e;
     },
     stats(b, h) {
-      const e = $('div', 'stats' + (b.petit ? ' petit' : '')); e.style.setProperty('--n', b.cols || b.items.length);
+      const e = $('div', 'stats' + (b.petit ? ' petit' : '')); e.style.setProperty('--n', V ? Math.min(2, b.cols || b.items.length) : b.cols || b.items.length);
       b.items.forEach(([n, x], i) => {
         const f = $('div', 'fi' + ((b.r ?? -1) === i ? ' r' : ''), `<b></b><span>${ty(x)}</span>`);
         f.style.transform = `rotate(${(rnd() - .5) * 1.6}deg)`;
@@ -272,14 +277,14 @@
       et.style.transform = 'rotate(.5deg)'; s.append(et);
       const t = h.lire(4, 2.2); A(et, 'up', t, .9, { rot: .5 }); titreMots(et.querySelector('h1'), d.titre, t + .4, .12);
       A(et.querySelector('p'), 'up', h.lire(mots(d.sous)));
-      const tp = $('div', 'tampon', '<span>ECG Prépa</span><b>Cours</b><span>Chapitre 1</span>'); Object.assign(tp.style, { right: '170px', top: '600px' }); s.append(tp);
+      const tp = $('div', 'tampon', '<span>ECG Prépa</span><b>Cours</b><span>Chapitre 1</span>'); Object.assign(tp.style, V ? { right: '70px', top: '1500px' } : { right: '170px', top: '600px' }); s.append(tp);
       A(tp, 'stamp', h.lire(1, 1.6), .5, { rot: -14 });
     },
     these(d, h) {
       const b = corps('plein'); P.box.append(b);
       const c = $('div', 'col'); c.style.gap = '44px'; b.append(c);
       const k = $('div', 'kick', ty(d.kk)); c.append(k); A(k, 'up', .5);
-      const g = $('h2', 'grand'); g.style.fontSize = '128px'; c.append(g); titreMots(g, d.titre, .7, .1); h.lire(9);
+      const g = $('h2', 'grand'); g.style.fontSize = V ? '118px' : '128px'; c.append(g); titreMots(g, d.titre, .7, .1); h.lire(9);
       const l = $('p', 'b-p fort', ty(d.lead)); l.style.fontSize = '40px'; c.append(l); const t = h.lire(mots(d.lead)); A(l, 'left', t); surligne(l, t);
     },
     essentiel(d, h) {
@@ -317,20 +322,28 @@
       const f = BLOCS.photo({ img: d.img, cap: d.cap, h: 480, rot: 1.2, min: .2 }, new Horloge(1)); f.classList.add('pt-photo'); P.box.append(f);
     },
     dates(d, h) {
-      const k = $('div', 'kick', 'À savoir par cœur'); Object.assign(k.style, { position: 'absolute', left: '96px', top: '110px' }); P.box.append(k); A(k, 'up', .4);
-      const g = $('h2', 'grand'); Object.assign(g.style, { position: 'absolute', left: '96px', top: '150px', fontSize: '110px' }); P.box.append(g); titreMots(g, 'Les 8 dates repères', .6); h.lire(3);
+      const k = $('div', 'kick', 'À savoir par cœur'); Object.assign(k.style, { position: 'absolute', left: V ? '60px' : '96px', top: V ? '150px' : '110px' }); P.box.append(k); A(k, 'up', .4);
+      const g = $('h2', 'grand'); Object.assign(g.style, { position: 'absolute', left: V ? '60px' : '96px', top: V ? '190px' : '150px', fontSize: V ? '104px' : '110px' }); P.box.append(g); titreMots(g, 'Les 8 dates repères', .6); h.lire(3);
       const z = $('div', 'dates'); P.box.append(z);
       const axe = $('i', 'axe'); z.append(axe);
       const n = d.ev.length, t0 = h.t;
       d.ev.forEach(([an, x, c], k) => {            // la plus récente à gauche ; apparition de la plus ancienne à la plus récente
         const i = n - 1 - k, el = $('div', 'dt', `<i class="pt"></i><b>${an}</b><span>${ty(x)}</span>`);
-        el.style.setProperty('--c', c); el.style.left = (100 + i * (1528 / (n - 1))) + 'px';
+        el.style.setProperty('--c', c);
+        if (V) {                                   // axe vertical, la plus récente en haut, dates de part et d'autre
+          const gauche = i % 2 === 0, pt = el.querySelector('.pt');
+          el.style.top = (i * (1180 / (n - 1))) + 'px'; el.style.left = gauche ? '20px' : '520px'; el.classList.add(gauche ? 'g' : 'd');
+          pt.style.left = gauche ? '447px' : '-53px';
+          z.append(el); const s = h.lire(mots(x) + 2, 2); A(el, 'left', s); A(pt, 'pop', s, .5);
+          return;
+        }
+        el.style.left = (100 + i * (1528 / (n - 1))) + 'px';
         const haut = i % 2 === 0; el.style.top = haut ? '40px' : '290px';
         const pt = el.querySelector('.pt'); pt.style.top = haut ? '197px' : '-53px';
         if (haut) { el.insertBefore(el.querySelector('span'), el.querySelector('b')); }
         z.append(el); const s = h.lire(mots(x) + 2, 2); A(el, haut ? 'up' : 'down', s); A(pt, 'pop', s, .5);
       });
-      A(axe, 'gx', t0 - .3, 2);
+      A(axe, V ? 'gy' : 'gx', t0 - .3, 2);
       const leg = $('div', 'leg', PARTIES.map(pa => `<span style="--c:${pa.c}"><i></i>Partie ${pa.n}</span>`).join('')); z.append(leg); A(leg, 'fade', t0);
     },
     bilan(d, h) {
@@ -354,7 +367,7 @@
       const p = $('p', 'b-p', ty(d.x)); p.style.fontSize = '40px'; c.append(p); A(p, 'up', h.lire(mots(d.x)));
       const s = $('div', 'suite', `<img src="${IMG}../vignettes/chapitre-2.webp" alt=""><div><small>La suite · Chapitre 2</small><h5>${ty(d.suite)}</h5></div>`); c.append(s);
       A(s, 'up', h.lire(8)); h.pause(2);
-      const tp = $('div', 'tampon', '<span>ecg-prepa.fr</span><b>HGG</b><span>2e année</span>'); Object.assign(tp.style, { right: '180px', top: '300px' }); P.box.append(tp); A(tp, 'stamp', 2.6, .5, { rot: -12 });
+      const tp = $('div', 'tampon', '<span>ecg-prepa.fr</span><b>HGG</b><span>2e année</span>'); Object.assign(tp.style, V ? { right: '80px', top: '1380px' } : { right: '180px', top: '300px' }); P.box.append(tp); A(tp, 'stamp', 2.6, .5, { rot: -12 });
     }
   };
 
@@ -405,17 +418,18 @@
       const prev = PLANS[i - 1];
       const head = $('div', 'head', `<small>${ty(SP[d.sp][0])}</small><h3><i>${d.sp}</i>${ty(SP[d.sp][1])}</h3>`);
       P.el.append(head); P.head = head;
-      const b = corps(); b.style.gridTemplateColumns = d.g || '1fr'; P.box.append(b);
-      const cols = (d.g || '1fr').split(' ').map(() => { const c = $('div', 'col'); b.append(c); return c; });
+      const g = V ? '1fr' : d.g || '1fr';
+      const b = corps(); b.style.gridTemplateColumns = g; P.box.append(b);
+      const cols = g.split(' ').map(() => { const c = $('div', 'col'); b.append(c); return c; });
       d.b.forEach(bl => {
         const wrap = $('div', 'blk');
         if (bl.lab && !['bars', 'vbars', 'frise', 'list'].includes(bl.k)) { const l = $('div', 'lab', ty(bl.lab)); wrap.append(l); A(l, 'fade', h.t - .2, .5); }
         else if (bl.lab) { /* étiquette dans la fiche */ }
         const el = BLOCS[bl.k](bl, h);
         if (bl.lab && ['bars', 'vbars', 'frise', 'list'].includes(bl.k)) el.prepend($('div', 'lab', ty(bl.lab)));
-        wrap.append(el); cols[bl.c || 0].append(wrap);
+        wrap.append(el); cols[V ? 0 : bl.c || 0].append(wrap);
       });
-      if (d.flex) cols.forEach((c, k) => { if (d.flex[k]) c.style.justifyContent = d.flex[k]; });
+      if (d.flex && !V) cols.forEach((c, k) => { if (d.flex[k]) c.style.justifyContent = d.flex[k]; });
     }
     P.dur = Math.max(d.min || 0, h.t + (d.fin ?? 1.6)); P.k = 1;
     if (VX && VX[i + 1] != null) {                      // écran calé sur sa voix : les apparitions se resserrent dans le temps de la phrase
@@ -444,7 +458,7 @@
   const segs = PARTIES.map(pa => {
     const ps = plans.filter(p => p.part === pa.n);
     const a = ps[0].start, b = ps[ps.length - 1].start + ps[ps.length - 1].dur;
-    const s = $('div', 'seg', `<i></i><b>${pa.n} · ${ty(pa.court)}</b>`); s.style.setProperty('--c', pa.c); s.style.flex = String(b - a);
+    const s = $('div', 'seg', `<i></i><b>${V ? 'Partie ' + pa.n : pa.n + ' · ' + ty(pa.court)}</b>`); s.style.setProperty('--c', pa.c); s.style.flex = String(b - a);
     prog.append(s); return { el: s, a, b };
   });
   const volets = plans.filter(p => p.d.tpl === 'partie').map(p => ({ t: p.start, n: p.d.n, c: PARTIES.find(x => x.n === p.d.n).c }));
@@ -476,7 +490,33 @@
     }
   }
 
+  /* Vertical : le corps commence sous le titre de sous-partie (sur 1 à 3 lignes), puis chaque colonne trop haute est
+     agrandie (ou réduite) par zoom de ses blocs pour remplir l'espace entre le titre et le pied. Mesures faites dans l'état final du plan. */
+  let vPret = !V;
+  const ZOOM_MAX = 1.45;   // agrandissement maximal (lisibilité sur téléphone)
+  function vMiseEnPage() {
+    vPret = true;
+    for (const p of plans) {
+      p.el.style.display = 'block';
+      for (const an of p.anims) applique(an, p.dur - .01, p);
+      const b = p.box.querySelector('.body');
+      if (b && p.head) b.style.top = Math.round(p.head.getBoundingClientRect().bottom + 40) + 'px';
+      p.echelle = 9;
+      p.box.querySelectorAll('.body > .col').forEach(c => {   // zoom des blocs : le texte se recompose dans la largeur
+        const ks = [...c.children], z = x => ks.forEach(k => { k.style.zoom = x; }), larges = [...c.querySelectorAll('.stats, .stats b, .bars .row b')],
+          tient = () => c.scrollHeight <= c.clientHeight + 1 && larges.every(b => b.scrollWidth <= b.clientWidth + 1);   // chiffres sur une ligne
+        let lo = .5, hi = ZOOM_MAX;
+        z(hi); if (tient()) lo = hi;
+        else for (let n = 0; n < 9; n++) { const m = (lo + hi) / 2; z(m); if (tient()) lo = m; else hi = m; }
+        z(lo); p.echelle = Math.min(p.echelle, lo);
+      });
+      if (p.echelle === 9) p.echelle = 1;
+      p.el.style.display = 'none';
+    }
+  }
+
   function render(t) {
+    if (!vPret) vMiseEnPage();
     for (const p of plans) {
       const l = t - p.start, vis = l >= 0 && l < p.dur + OUT;
       p.el.style.display = vis ? 'block' : 'none';
@@ -501,6 +541,12 @@
     const err = [];
     plans.forEach((p, i) => {
       render(p.start + p.dur - .01);
+      if (V) {
+        if (p.echelle < .9) err.push(`plan ${i + 1} (${p.sp || p.d.tpl}) : texte réduit à ${Math.round(p.echelle * 100)} % pour tenir en 9:16 (alléger l'écran)`);
+        const r9 = p.el.getBoundingClientRect();
+        p.el.querySelectorAll('.box *:not(.pt-fond):not(.pt-num)').forEach(k => { const rk = k.getBoundingClientRect(); if (rk.width && (rk.right > r9.right + 2 || rk.bottom > r9.bottom - 90)) err.push(`plan ${i + 1} : élément hors cadre (${k.className || k.tagName})`); });
+        p.el.style.display = 'none'; return;
+      }
       p.el.querySelectorAll('.body').forEach(b => {
         const r = b.getBoundingClientRect();
         b.querySelectorAll('.col').forEach(c => {
@@ -517,5 +563,5 @@
 
   const reperes = () => plans.map(p => p.ancres.map(a => [Math.round(a.t * 10) / 10, a.ok || null, a.cues.map(c => sig(norm(c)).slice(0, 2).join(' '))]));
   const debug = i => ({ warp: plans[i].warp, anims: plans[i].anims.filter(a => a.a === "up").map(a => [a.t, a.rt, a.rd, a.el.textContent.slice(0, 20)]) });
-  window.VIDEO = { render, duree: DUREE, controle, reperes, debug, plans: plans.map(p => ({ start: p.start, dur: p.dur, sp: p.sp || p.d.tpl })) };
+  window.VIDEO = { render, duree: DUREE, controle, reperes, debug, plans: plans.map(p => ({ start: p.start, dur: p.dur, sp: p.sp || p.d.tpl })), echelles: () => plans.map(p => p.echelle) };
 })();
