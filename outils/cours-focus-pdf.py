@@ -40,9 +40,9 @@ with sync_playwright() as p:
         sys.exit("❌ pas de cours focus (.fc) sur cette page")
     page.emulate_media(media="print")
     page.pdf(path=dst, format="A4", print_background=True,
-             margin={"top": "12mm", "bottom": "14mm", "left": "12mm", "right": "12mm"},
+             margin={"top": "8mm", "bottom": "11mm", "left": "8mm", "right": "8mm"},
              display_header_footer=True, header_template="<span></span>",
-             footer_template='<div style="width:100%;padding:0 12mm;font:8px Helvetica,Arial,sans-serif;color:#5d726b;display:flex;justify-content:space-between">'
+             footer_template='<div style="width:100%;padding:0 8mm;font:8px Helvetica,Arial,sans-serif;color:#5d726b;display:flex;justify-content:space-between">'
                              '<span>ECG Prépa · ' + pied + '</span><span><span class="pageNumber"></span> / <span class="totalPages"></span></span></div>')
     nav.close()
 srv.shutdown()
