@@ -197,7 +197,7 @@
       const corps = $('div', '', `<span class="pk">${ty(b.kk)}</span><h4>${ty(b.nom)}</h4><h6>${ty(b.t)}</h6>`);
       const t = h.lire(mots(b.t) + 3); A(pola, 'drop', t, .9, { rot: r }); ancre(t, b.v, b.nom); scotch(pola, t, [[{ left: '30%', top: '-16px', transform: 'rotate(-4deg)' }, -4]]);
       A(corps, 'up', t + .2);
-      b.x.forEach(x => { const p = $('p', '', ty(x)); const s = h.lire(mots(x)); A(p, 'up', s); surligne(p, s); ancre(s, forts(x), x); corps.append(p); });
+      b.x.forEach((x, k) => { const p = $('p', '', ty(x)); const s = h.lire(mots(x)); A(p, 'up', s); surligne(p, s); ancre(s, b.vs && b.vs[k], forts(x), x); corps.append(p); });
       e.append(pola, corps); return e;
     },
     svg(b, h) {

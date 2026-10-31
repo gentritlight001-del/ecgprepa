@@ -61,6 +61,7 @@ def prepare(a):
     filtre = ('silenceremove=start_periods=1:start_threshold=-45dB:stop_periods=-1:stop_duration=0.6:'
               f'stop_threshold=-45dB:stop_silence=0.4,atempo={a.vitesse}')
     ignorer = {int(x) for x in (a.ignorer or '').split(',') if x}
+    nouveaux = []
     for b in a.bloc:
         fichier, premier = b.rsplit(':', 1); premier = int(premier)
         ms = morceaux(fichier); faits = []
@@ -69,7 +70,7 @@ def prepare(a):
             if k in ignorer:
                 continue
             n = k - sum(1 for x in ignorer if x < k)          # numéro de l'écran dans la vidéo
-            faits.append(n); sortie = dos / f'ecran-{n:03d}.wav'
+            faits.append(n); nouveaux.append(n); sortie = dos / f'ecran-{n:03d}.wav'
             subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-ss', f'{d:.3f}', '-to', f'{f:.3f}', '-i', fichier,
                             '-af', filtre, '-ar', '48000', '-ac', '2', str(sortie)], check=True)
             durees[str(n)] = round(duree(sortie), 3)
@@ -77,7 +78,7 @@ def prepare(a):
               f'{sum(durees[str(n)] for n in faits):.0f} s de voix')
     js.write_text(json.dumps(durees, sort_keys=True))
     if not a.sans_mots:
-        transcrire(dos, sorted({int(n) for n in durees}))
+        transcrire(dos, nouveaux)                     # seulement les écrans de ces blocs
         print('mots de la voix repérés (mots.json)')
 
 
