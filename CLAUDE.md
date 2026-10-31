@@ -446,7 +446,9 @@ signale un écran dont le texte a dû descendre sous 90 % (l'alléger) ou un él
 propriétaire pour le 9:16 à la place des 50 min de la version complète) : source `outils/video/<hgg1|hgg2>-chapitreN-court.html`,
 copie de la source complète réduite à une vingtaine d'écrans clés repris tels quels (couverture, idée du chapitre, cartons
 de partie, 4 ou 5 écrans par partie, dates repères, bilan, fin ; liste des numéros en tête de `PLANS`), photo d'un carton de
-partie changée si elle répète celle d'un écran voisin. Fait : `hgg2-chapitre1-court.html` (23 écrans, 8 min 50).
+partie changée si elle répète celle d'un écran voisin. Fait : `hgg2-chapitre1-court.html` (23 écrans, 8 min 50 sans voix,
+7 min 09 avec). Sa voix : `<…>-court-voix.txt`, repris des blocs de la version complète, transitions (« D'abord l'intégration
+nationale… ») et cartons de partie adaptés ; repères `v` ajoutés dans la source courte.
 Voix off (ElevenLabs, voix « Paul K », modèle Multilingual v2) : un texte par écran qui **garde les mots, les noms et les chiffres de l'écran** mais ne le lit
 pas mot à mot : il les relie et les explique (le pourquoi, le lien avec l'écran d'avant, l'usage dans une copie), phrases
 courtes et orales, faits du cours seulement (une version trop détachée de l'écran a été refusée) ; sigles écrits comme ils se prononcent, écrans séparés par `<break time="2.5s" />`, blocs de moins de 4 500 caractères ; le propriétaire renvoie un
@@ -467,7 +469,9 @@ ou où Whisper écorche le mot (« génie » pour Gini, « conne sud » pour Cô
 `ELEVENLABS_API_KEY` dans les secrets de l'environnement cloud (lue seulement par une nouvelle session) ;
 `python3 outils/video/voix.py synthese <texte> --dossier <scratchpad>/voix [--ecrans 1-15]` remplace `prepare` : un appel
 par écran (un écran dont le texte n'a pas changé n'est pas refait), crédits vérifiés avant, durée prévue de la vidéo à la fin
-(viser 30 à 40 min pour un chapitre : sinon raccourcir le texte, jamais accélérer au-delà de 7 %). Le texte du chapitre 1 de
+(viser 30 à 40 min pour un chapitre : sinon raccourcir le texte, jamais accélérer au-delà de 7 %). **Compte ElevenLabs en formule gratuite**
+(constaté fin octobre 2026, 10 000 caractères par mois) : l'API refuse « Paul K » (voix de la bibliothèque, erreur 402) ;
+le propriétaire a choisi **George** (voix incluse, `--voix-id JBFqnCBsd6RMkjVDRZzb`) tant qu'il ne repasse pas en formule payante. Le texte du chapitre 1 de
 2e année (`hgg2-chapitre1-voix.txt`, 116 écrans) suit la numérotation actuelle : pas de `--ignorer` avec lui.
 
 **Impression** : bloc `@media print` en fin de `<style>` (fond blanc, A4 pleine largeur, punaises et scotchs gardés et
