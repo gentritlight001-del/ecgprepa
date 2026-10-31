@@ -387,7 +387,7 @@ masquée (`.cote.nf`), un intertitre seul à côté d'une fiche descend avec son
 **Nouvelle formule (choisie par le propriétaire, octobre 2026, 2e année chapitre 1)** : le mode focus n'allège plus le cours,
 il affiche un **second cours réécrit**, lisible en 10 minutes (≈ 2 300 mots) : bloc `section.fc#focus` entre le sommaire et
 `.content` (en focus, `.content` est masqué sauf le bilan ; le sommaire pointe vers `#f1`…). En-tête `.fc-tete` (problématique,
-durée, plan détaillé), parties `.fc-p` (idée directrice `.fc-idee`), sous-parties `.fc-sp` : à gauche titre + chiffre clé
+« La réponse » `.fc-these` = la thèse en une phrase, plan détaillé ; pas de pastilles de durée, jugées inutiles), parties `.fc-p` (idée directrice `.fc-idee`), sous-parties `.fc-sp` : à gauche titre + chiffre clé
 (`.fc-g`, statique, pas collant), à droite arguments numérotés `.fc-arg` (idée en gras + explication, **un seul exemple**
 `.fc-ex`), une définition `.fc-def` ; à la fin de chaque partie, une conclusion `.fc-concl` (« Conclusion · Partie N », une ou deux phrases). Contenu tiré du cours, rien de nouveau. PDF « Cours focus (PDF) » du sommaire :
 `python3 outils/cours-focus-pdf.py <page> <dossier>/cours-focus-chapitreN.pdf` (A4, sans marge de notes, 7 pages : héros du cours complet à sa taille normale (photo jamais agrandie, refusé), plan, puis le cours focus pleine largeur ; chaque sous-partie = titre et chiffre clé **en haut**, contenu dessous, jamais titre à gauche et texte à droite), à
