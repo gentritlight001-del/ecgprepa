@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "Canada",
+"titre": "Canada : sommet Canada-UE à Montréal",
+"url": "actualites/en/articles/canada-sommet-ue-montreal-2026.html",
+"image": "actualites/en/images/canada-sommet-ue-montreal-2026.webp",
+"date": "2026-11-01T09:11:31+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Italie",
@@ -1695,15 +1704,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/es/articles/bolivie-nouveau-felin-leopardus-tilcayo.html",
 "image": "actualites/es/images/bolivie-nouveau-felin-leopardus-tilcayo.jpg",
 "date": "2026-09-20T07:05:53+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "Royaume-Uni",
-"titre": "Papillons : le Royaume-Uni enregistre sa 2ᵉ meilleure saison en 16 ans malgré une sécheresse record",
-"url": "actualites/en/articles/uk-butterflies-second-best-season-2026.html",
-"image": "actualites/en/images/uk-butterflies-second-best-season-2026.webp",
-"date": "2026-09-18T20:00:18+00:00"
 },
 {
 "t": "es",
