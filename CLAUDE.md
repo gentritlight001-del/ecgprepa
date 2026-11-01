@@ -436,6 +436,11 @@ calcule les durées de lecture et les animations. `python3 outils/video/generer.
 titres trop longs, durée), `--images <dossier>` (une image par plan, à regarder), puis
 `python3 outils/video/generer.py <html> <scratchpad>/<nom>.mp4` (environ 0,1 s par image, en 4 tranches parallèles).
 Le MP4 est envoyé au propriétaire, **jamais versionné ni mis sur le site**.
+Numéro du chapitre : `const CHAP = { n: 3, suite: 0 }` dans la source (couverture, tampon, bilan ; `suite` = chapitre de l'écran
+de fin et sa vignette, 0 s'il n'existe pas encore, avec `suiteK` pour l'étiquette). Titre court d'une sous-partie en 3e champ de `SP`
+(sommaire et carton d'une partie à plus de 4 sous-parties), `haut` sur la couverture pour un titre sur 3 lignes. Schémas animés de
+`moteur.js` : `metropole`, `maquila` (chapitre 1), `valse`, `venezuela`, `corridor` (chapitre 3). Fait : chapitre 3 de 2e année
+(`hgg2-chapitre3.html`, 100 écrans, 42 min sans voix, novembre 2026).
 **Version verticale 9:16** (demande type : « Fais la vidéo du chapitre N en 9:16 », pour Reels, TikTok, Shorts) : même source,
 mêmes plans et mêmes durées (la voix d'une version sert à l'autre), option `--format 9:16` sur toutes les commandes de
 `generer.py` (1080 × 1920). Le moteur empile les colonnes dans l'ordre des blocs et agrandit chaque écran (zoom des blocs,
