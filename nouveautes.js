@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "en",
 "rubrique": "Actu Anglais",
+"meta": "Royaume-Uni",
+"titre": "Royaume-Uni : Burnham et les excuses pour la traite",
+"url": "actualites/en/articles/uk-burnham-excuses-traite-esclaves-2026.html",
+"image": "actualites/en/images/uk-burnham-excuses-traite-esclaves-2026.webp",
+"date": "2026-11-01T09:27:26+00:00"
+},
+{
+"t": "en",
+"rubrique": "Actu Anglais",
 "meta": "Canada",
 "titre": "Canada : Ottawa investit dans Cohere",
 "url": "actualites/en/articles/canada-cohere-investissement-ia-2026.html",
@@ -1677,15 +1686,6 @@ window.ECG_NOUVEAUTES = [
 "url": "deuxieme_annee/hgg/chapitre-1-hgg.html",
 "image": "deuxieme_annee/hgg/images/ameriques-mediterranee-americaine.webp",
 "date": "2026-09-21T19:18:06+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "Donald Trump interdit à CNN, MS NOW et Politico l'accès à la Maison-Blanche, la liberté de la presse menacée",
-"url": "actualites/en/articles/trump-interdiction-cnn-politico-2026.html",
-"image": "actualites/en/images/trump-interdiction-cnn-politico-2026.jpg",
-"date": "2026-09-20T07:05:53+00:00"
 },
 {
 "t": "es",
