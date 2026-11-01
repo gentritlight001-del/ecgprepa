@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Suisse",
+"titre": "Suisse : Cassis en Corée du Nord",
+"url": "actualites/de/articles/suisse-cassis-coree-du-nord-2026.html",
+"image": "actualites/de/images/suisse-cassis-coree-du-nord-2026.webp",
+"date": "2026-11-01T09:38:02+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "Royaume-Uni",
@@ -1955,15 +1964,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "L'Allemagne investit 395 millions de dollars au Nigeria : un partenariat stratégique pour l'Afrique",
 "url": "actualites/de/articles/nigeria-investissement.html",
 "image": "actualites/de/images/nigeria-investissement.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "Le grand durcissement du droit pénal de l'environnement en Allemagne",
-"url": "actualites/de/articles/crimes-ecologiques.html",
-"image": "actualites/de/images/crimes-ecologiques.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
