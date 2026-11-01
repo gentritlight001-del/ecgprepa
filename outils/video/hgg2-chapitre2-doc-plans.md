@@ -82,3 +82,10 @@ Avant le rendu, `VIDEO.reperes()` (dans la page ouverte avec la voix) dit pour c
 remplacer un ✗ par le mot que Whisper a vraiment écrit (`mots.json`). Musique baissée de 18 dB pendant les phrases
 (`--baisse`), remontée entre elles ; le texte de la voix fait 4 360 caractères (crédits à vérifier : 10 000 par mois en
 formule gratuite).
+
+## Voix off posée (1er novembre 2026)
+
+Synthèse ElevenLabs (voix George, 4 907 caractères, il restait 5 640 crédits ensuite), vidéo calée sur la voix : 5 min 03.
+Repères ajoutés au tableau `CALAGE` là où Whisper écorche le mot (« 340 », « concurrents », « Apalaches », « Cécession »,
+« encarrée ») : `VIDEO.reperes()` ne signale plus aucun ✗. Mixage `doc-musique.py` (musique −18 dB sous la voix), puis son
+normalisé à −16 LUFS (`ffmpeg -c:v copy -af loudnorm=I=-16:TP=-1.5:LRA=11`) : le mixage brut sortait à −21,7 LUFS, trop bas.
