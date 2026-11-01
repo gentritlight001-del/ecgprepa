@@ -625,5 +625,19 @@
 
   const reperes = () => plans.map(p => p.ancres.map(a => [Math.round(a.t * 10) / 10, a.ok || null, a.cues.map(c => sig(norm(c)).slice(0, 2).join(' '))]));
   const debug = i => ({ warp: plans[i].warp, anims: plans[i].anims.filter(a => a.a === "up").map(a => [a.t, a.rt, a.rd, a.el.textContent.slice(0, 20)]) });
-  window.VIDEO = { render, duree: DUREE, controle, reperes, debug, plans: plans.map(p => ({ start: p.start, dur: p.dur, sp: p.sp || p.d.tpl })), echelles: () => plans.map(p => p.echelle) };
+  /* Contenu de chaque écran dans l'ordre d'apparition : [instant dans l'écran (s), type, texte] (outils/video/texte-voix.py) */
+  function contenu() {
+    const TYPES = new Set(['up', 'left', 'down', 'drop']);
+    return plans.map(p => {
+      render(p.start + p.dur - .01);
+      const an = p.anims.filter(x => TYPES.has(x.a) && x.el.nodeType === 1);
+      const els = new Set(an.map(x => x.el));
+      const r = an.filter(x => ![...els].some(e => e !== x.el && x.el.contains(e)))
+        .map(x => [Math.round(x.rt * 10) / 10, x.el.className || x.el.tagName.toLowerCase(), x.el.innerText.replace(/\s+/g, ' ').trim()])
+        .sort((a, b) => a[0] - b[0]);
+      p.el.style.display = 'none';
+      return r;
+    });
+  }
+  window.VIDEO = { render, duree: DUREE, controle, reperes, debug, contenu, plans: plans.map(p => ({ start: p.start, dur: p.dur, sp: p.sp || p.d.tpl })), echelles: () => plans.map(p => p.echelle) };
 })();
