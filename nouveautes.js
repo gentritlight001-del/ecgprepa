@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "de",
 "rubrique": "Actu Allemand",
+"meta": "Allemagne",
+"titre": "Allemagne : Gen Z regelt",
+"url": "actualites/de/articles/allemagne-gen-z-regelt-manifestations-2026.html",
+"image": "actualites/de/images/allemagne-gen-z-regelt-manifestations-2026.webp",
+"date": "2026-11-01T09:45:40+00:00"
+},
+{
+"t": "de",
+"rubrique": "Actu Allemand",
 "meta": "Suisse",
 "titre": "Suisse : Cassis en Corée du Nord",
 "url": "actualites/de/articles/suisse-cassis-coree-du-nord-2026.html",
@@ -1955,15 +1964,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Merz veut doter l'Ukraine d'un statut de membre associé à l'UE",
 "url": "actualites/de/articles/ukraine-membre-associe-ue.html",
 "image": "actualites/de/images/ukraine-membre-associe-ue.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "L'Allemagne investit 395 millions de dollars au Nigeria : un partenariat stratégique pour l'Afrique",
-"url": "actualites/de/articles/nigeria-investissement.html",
-"image": "actualites/de/images/nigeria-investissement.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
