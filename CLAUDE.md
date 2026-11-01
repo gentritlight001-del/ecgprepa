@@ -436,6 +436,14 @@ calcule les durées de lecture et les animations. `python3 outils/video/generer.
 titres trop longs, durée), `--images <dossier>` (une image par plan, à regarder), puis
 `python3 outils/video/generer.py <html> <scratchpad>/<nom>.mp4` (environ 0,1 s par image, en 4 tranches parallèles).
 Le MP4 est envoyé au propriétaire, **jamais versionné ni mis sur le site**.
+**Voix off lue par le propriétaire sur la vidéo muette** (demande type : « Fais-moi le texte de la voix off du chapitre N, c'est
+moi qui m'enregistre ») : texte `outils/video/<hgg1|hgg2>-chapitreN-voix-video.txt`, un bloc `[N]` par écran, chaque phrase sur
+une ligne `@k` = elle se dit quand le k-ième élément de l'écran apparaît (ordre d'apparition, voir
+`python3 outils/video/texte-voix.py <html> --contenu 1-20`). Chaque phrase décrit ce qui est à l'image à ce moment-là (photo,
+chiffre, frise, définition, portrait), avec les mots et les chiffres de l'écran, sans rien d'autre. `python3 outils/video/texte-voix.py
+<html> <texte> --sortie <scratchpad>/<doc>.txt` simule la lecture (2,6 mots/s ; phrase au plus 2 s en retard sur son élément,
+écran fini avant la transition) jusqu'à ✅, puis écrit le texte à lire avec l'heure de chaque phrase (envoyé au propriétaire).
+Fait : chapitre 1 de 2e année (116 écrans, 6 100 mots).
 Numéro du chapitre : `const CHAP = { n: 3, suite: 0 }` dans la source (couverture, tampon, bilan ; `suite` = chapitre de l'écran
 de fin et sa vignette, 0 s'il n'existe pas encore, avec `suiteK` pour l'étiquette). Titre court d'une sous-partie en 3e champ de `SP`
 (sommaire et carton d'une partie à plus de 4 sous-parties), `haut` sur la couverture pour un titre sur 3 lignes. Schémas animés de
