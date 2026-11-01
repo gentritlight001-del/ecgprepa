@@ -4,6 +4,15 @@ window.ECG_NOUVEAUTES = [
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "Canada",
+"titre": "Canada : Ottawa investit dans Cohere",
+"url": "actualites/en/articles/canada-cohere-investissement-ia-2026.html",
+"image": "actualites/en/images/canada-cohere-investissement-ia-2026.webp",
+"date": "2026-11-01T09:19:28+00:00"
+},
+{
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "Canada",
 "titre": "Canada : sommet Canada-UE à Montréal",
 "url": "actualites/en/articles/canada-sommet-ue-montreal-2026.html",
 "image": "actualites/en/images/canada-sommet-ue-montreal-2026.webp",
@@ -1676,15 +1685,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Donald Trump interdit à CNN, MS NOW et Politico l'accès à la Maison-Blanche, la liberté de la presse menacée",
 "url": "actualites/en/articles/trump-interdiction-cnn-politico-2026.html",
 "image": "actualites/en/images/trump-interdiction-cnn-politico-2026.jpg",
-"date": "2026-09-20T07:05:53+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "Canada",
-"titre": "Mark Carney défend et embrasse la proposition de devenir le premier « membre associé » de l'UE",
-"url": "actualites/en/articles/canada-membre-associe-ue-2026.html",
-"image": "actualites/en/images/canada-membre-associe-ue-2026.jpg",
 "date": "2026-09-20T07:05:53+00:00"
 },
 {
