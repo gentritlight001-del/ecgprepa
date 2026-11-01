@@ -128,10 +128,71 @@ svg text { font-family: "IBM Plex Sans Condensed", sans-serif; }
   };
   const fr = (v, d = 0) => v.toLocaleString('fr-FR', { minimumFractionDigits: d, maximumFractionDigits: d }).replace(/ /g, ' ');
   const img = (src, cls, parent) => { const i = $('img', cls, null, parent); i.src = src; i.alt = ''; return i; };
-  /* une séquence : n, début, fin (s), construction qui renvoie draw(lt) ; xf = fondu d'entrée */
+  /* ===== Calage sur la voix off =====
+     Sans voix, chaque séquence garde les durées du découpage (t0, t1). Avec la voix (generer.py --voix <dossier>/voix.json,
+     qui donne window.VOIX et window.VOIX_MOTS), la séquence dure : vd + durée de sa voix + 0,8 s, et son temps est
+     déformé (linéaire par morceaux) pour que chaque repère [t, mot, autre mot…] du tableau CALAGE tombe au moment où
+     la voix dit ce mot (0,25 s avant). vd = départ de la voix dans la séquence (0,4 s par défaut). VIDEO.reperes()
+     dit, pour chaque repère, le mot trouvé ou ✗ (poser alors un autre mot, celui que Whisper a vraiment écrit). */
+  const CALAGE = {
+    1: { vd: .8, rep: [[5, 'wall', 'cloche'], [10, 'hollywood']] },
+    2: { rep: [[2.2, '29200', 'vingt'], [7.6, 'tiers'], [13.2, '341', 'quarante'], [18.6, 'dette']] },
+    3: { vd: 5, rep: [[5.4, 'quoi', 'repose'], [8.0, 'train', 'decliner']] },
+    4: { rep: [[1.2, '1962'], [3.6, 'capacite'], [10.4, 'inverse']] },
+    5: { rep: [[1.6, 'puissance'], [4.6, 'faire'], [6.0, 'faire'], [7.5, 'empecher'], [9.2, 'refuser'], [11, 'pouvoir'], [12.4, 'independance']] },
+    6: { rep: [[.9, '1990'], [6.9, 'hard'], [13.2, 'soft'], [18.6, 'combiner']] },
+    7: { rep: [[3.2, 'puritains', 'colons'], [10.9, 'destinee'], [17.2, 'tableau', 'gast'], [24.5, 'exceptionnalisme']] },
+    8: { rep: [[3.4, 'louis', 'declinisme'], [12.2, '1987', 'kennedy'], [18.6, 'surcharge']] },
+    9: { rep: [[2.6, '1960'], [6.4, 'trente', '30'], [8.6, 'vingt', '21'], [11.4, '26', 'six'], [14.6, 'relatif']] },
+    10: { rep: [[9.4, 'chine'], [11.6, '2008', 'zakaria']] },
+    11: { rep: [[2.0, '2015'], [9.4, 'concurrences'], [15.3, 'economie'], [16.6, 'armee'], [18.0, 'soft']] },
+    12: { rep: [] },
+    13: { rep: [[3.6, 'facades'], [4.0, 'atlantique'], [5.0, 'pacifique'], [6.2, 'golfe'], [10.6, 'plaine'], [12.15, 'appalaches'], [13.7, 'grandes'], [15.25, 'rocheuses'], [16.8, 'pacifique']] },
+    14: { rep: [[3.4, 'achat'], [7.4, '1803', 'louisiane'], [13.6, '1867', 'alaska']] },
+    15: { rep: [[.6, 'frontier'], [8.9, '1890'], [13.6, 'trois', 'turner']] },
+    16: { rep: [[.7, 'guerres', 'violence'], [4.6, 'secession']] },
+    17: { rep: [[1.0, 'terre', 'damier'], [4.0, 'carres'], [6.6, '1862', 'homestead'], [10.6, 'aujourd', 'ciel']] },
+    18: { rep: [[4.0, 'mai', '1869'], [10.6, 'atlantique']] },
+  };
+  const VX = window.VOIX || null, VM = window.VOIX_MOTS || null, TRAINE = .8;
+  const STOP = new Set('les des une est par pour avec dans sur aux que qui son ses leur leurs plus mais elle ils elles cette ces entre comme tout tous'.split(' '));
+  const norm = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+    .replace(/(\d)[\s\u00a0\u202f.,](?=\d{3}\b)/g, '$1').split(/[^a-z0-9]+/).filter(Boolean);
+  const egal = (a, c) => { if (/^\d+$/.test(c)) return a === c; const k = Math.min(c.length, Math.max(5, c.length - 2)); return a.length >= k && a.slice(0, k) === c.slice(0, k); };
+  /* points [temps du découpage, temps réel] d'une séquence calée sur sa voix */
+  function caler(n, dur) {
+    const cal = CALAGE[n] || { rep: [] }, vd = cal.vd != null ? cal.vd : .4;
+    const v = VX && VX[n]; if (v == null) return { dur, pts: null, vd, rep: [] };
+    const reel = Math.max(4, vd + v + TRAINE);
+    const tok = []; ((VM && VM[n]) || []).forEach(([w, t]) => norm(w).forEach(x => tok.push([x, t])));
+    for (let k = tok.length - 2; k >= 0; k--) if (/^\d+$/.test(tok[k][0]) && /^\d{3}$/.test(tok[k + 1][0])) { tok[k][0] += tok[k + 1][0]; tok.splice(k + 1, 1); }
+    const pts = [[0, 0]], rep = []; let cur = 0;
+    cal.rep.forEach(([t, ...cues]) => {
+      let ok = null;
+      for (const cue of cues) {
+        const c = norm(cue).filter(w => /^\d+$/.test(w) || (w.length >= 3 && !STOP.has(w)))[0]; if (!c) continue;
+        const k = tok.findIndex(([w], i) => i >= cur && egal(w, c)); if (k < 0) continue;
+        const r = Math.min(reel - .6, vd + tok[k][1] - .25), [t0, r0] = pts[pts.length - 1];
+        if (t > t0 + .01 && r > r0 + .1) { pts.push([t, r]); cur = k + 1; ok = cue; }
+        break;
+      }
+      rep.push(`${t} s : ${ok ? '✓ ' + ok : '✗ ' + cues.join(' / ')}`);
+    });
+    pts.push([dur, Math.max(reel, pts[pts.length - 1][1] + .5)]);
+    return { dur: pts[pts.length - 1][1], pts, vd, rep };
+  }
+  /* temps réel -> temps du découpage */
+  const deforme = (pts, r) => {
+    if (!pts) return r;
+    for (let k = 1; k < pts.length; k++) if (r <= pts[k][1]) { const [a, b] = [pts[k - 1], pts[k]]; return a[0] + (r - a[1]) * (b[0] - a[0]) / (b[1] - a[1]); }
+    const a = pts[pts.length - 1]; return a[0] + (r - a[1]);
+  };
+  /* une séquence : n, début, fin (s) du découpage, construction qui renvoie draw(lt) ; xf = fondu d'entrée.
+     Les séquences s'enchaînent : le début réel est la fin de la précédente. */
   function scene(n, t0, t1, build, xf = .6) {
     const el = $('div', 'sc', null, stage);
-    SC.push({ n, t0, dur: t1 - t0, xf, el, draw: build(el, t1 - t0) });
+    const c = caler(n, t1 - t0), prev = SC[SC.length - 1];
+    SC.push({ n, t0: prev ? prev.t0 + prev.dur : 0, dur: c.dur, pts: c.pts, vd: c.vd, rep: c.rep, xf, el, draw: build(el, t1 - t0) });
   }
   /* plans successifs dans une séquence (fondu enchaîné de f secondes) */
   const plans = (lt, bornes, f = .5) => bornes.map(([a, b], i) => i === 0 ? (lt < b + f ? 1 : 0) : (lt >= a && lt < b + f ? up(lt, a, f) : 0));
@@ -615,13 +676,13 @@ svg text { font-family: "IBM Plex Sans Condensed", sans-serif; }
       if (!vis) return;
       s.el.style.opacity = s.xf ? eio(cl((t - s.t0) / s.xf)) : 1;
       s.el.style.zIndex = i + 1;
-      s.draw(t - s.t0);
+      s.draw(deforme(s.pts, t - s.t0));
     });
   }
   function controle() {
     const err = [];
     SC.forEach(s => {
-      s.el.style.visibility = 'visible'; s.el.style.opacity = 1; s.draw(s.dur - .05);
+      s.el.style.visibility = 'visible'; s.el.style.opacity = 1; s.draw(deforme(s.pts, s.dur - .05));
       s.el.querySelectorAll('.mot,.coupure,.fiche,.lt,.haut,.chiffres,.carton,.picto').forEach(e => {
         if (getComputedStyle(e).opacity === '0') return;
         const r = e.getBoundingClientRect();
@@ -631,7 +692,8 @@ svg text { font-family: "IBM Plex Sans Condensed", sans-serif; }
     });
     return err;
   }
-  window.VIDEO = { render, duree: DUREE, plans: SC.map(s => ({ n: s.n, start: s.t0, dur: s.dur })), controle };
+  const reperes = () => SC.map(s => `[${s.n}] ${s.pts ? s.rep.join(' · ') || 'aucun repère' : 'pas de voix'}`).join('\n');
+  window.VIDEO = { render, duree: DUREE, plans: SC.map(s => ({ n: s.n, start: s.t0, dur: s.dur, voix: s.vd })), controle, reperes };
   render(0);
 })();
 </script>
