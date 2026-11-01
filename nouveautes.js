@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Russie",
+"titre": "Russie : Novaya Gazeta annonce cesser ses activités le 9 novembre sous la pression des autorités",
+"url": "actualites/monde/articles/russie-novaya-gazeta-fermeture-2026.html",
+"image": "actualites/monde/images/russie-novaya-gazeta-fermeture-2026.webp",
+"date": "2026-11-01T08:44:00+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Binance",
 "titre": "Binance : le vol de 6,3 milliards de dollars confirmé, le plus grand piratage de cryptomonnaies",
 "url": "actualites/monde/articles/binance-piratage-6-3-milliards-2026.html",
@@ -1236,15 +1245,6 @@ window.ECG_NOUVEAUTES = [
 "url": "Culture-Generale/farc.html",
 "image": "Culture-Generale/images/farc.webp",
 "date": "2026-10-06T18:08:34+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Prix Nobel",
-"titre": "Nobel de médecine 2026 : Deisseroth, Hegemann et Nagel couronnés pour l'optogénétique",
-"url": "actualites/monde/articles/nobel-medecine-2026-optogenetique.html",
-"image": "actualites/monde/images/nobel-medecine-2026-optogenetique.webp",
-"date": "2026-10-06T17:58:22+00:00"
 },
 {
 "t": "en",
