@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Italie",
+"titre": "Italie : grève générale contre la vie chère",
+"url": "actualites/monde/articles/italie-greve-generale-vie-chere-meloni-2026.html",
+"image": "actualites/monde/images/italie-greve-generale-vie-chere-meloni-2026.webp",
+"date": "2026-11-01T08:58:00+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Pologne",
 "titre": "Pologne : crise du Tribunal constitutionnel",
 "url": "actualites/monde/articles/pologne-tribunal-constitutionnel-crise-2026.html",
@@ -1209,15 +1218,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/monde/articles/nobel-physique-2026-halzen-neutrinos.html",
 "image": "actualites/monde/images/nobel-physique-2026-halzen-neutrinos.webp",
 "date": "2026-10-07T06:39:03+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Kenya",
-"titre": "Kenya : un homme revenu de RDC meurt d'Ebola à Nairobi, premier cas jamais recensé",
-"url": "actualites/monde/articles/kenya-premier-deces-ebola.html",
-"image": "actualites/monde/images/kenya-premier-deces-ebola.webp",
-"date": "2026-10-07T05:33:33+00:00"
 },
 {
 "t": "en",
