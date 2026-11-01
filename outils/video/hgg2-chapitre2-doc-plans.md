@@ -38,3 +38,28 @@ Trois pistes libres de droits, de 3 à 4 minutes chacune, en MP3 :
 
 Montage : musique baissée sous la voix (environ −18 dB, remontée entre deux phrases), coupes des plans sur les temps
 forts, fondus enchaînés entre pistes.
+
+## Montage (fait le 1er novembre 2026, version sans voix)
+
+Source : `hgg2-chapitre2-doc.html` (une fonction par séquence, durées du tableau ci-dessus, 5 min 25), rendue par
+`python3 outils/video/generer.py outils/video/hgg2-chapitre2-doc.html <muet.mp4>`, puis musique posée avec ffmpeg.
+Images d'archives ajoutées dans `images/doc-hgg2-ch2/` (crédits en tête de la source), fonds de carte dans `donnees/`.
+
+Substitutions par rapport au tableau : pas de vidéo (porte-avions, Terre de nuit, locomotive) mais des photos animées
+(NYSE vers 1908, NASA Black Marble 2012, gravure du *Harper's Weekly* de juin 1869) ; pas de couverture du livre de
+Kennedy (droits) mais une fiche typographique ; pas de portrait de Turner (Commons inaccessible) mais une fiche ;
+séquence 16 : *A harvest of death* (Gettysburg, 1863) puis les ruines de Richmond (1865).
+
+Musiques fournies par le propriétaire (Pixabay, non versionnées), début dans la vidéo → fin, décalage dans la piste :
+
+| Piste | Vidéo | Décalage | Gain |
+|---|---|---|---|
+| adamasr « Dark Score » (ouverture) | 0:00 → 0:52 | 0 s | 0 dB |
+| leberch « Suspense Music » (réflexion) | 0:50 → 1:47 | 0 s | −2,5 dB |
+| leberch « Suspense » (exceptionnalisme) | 1:45 → 2:17 | 0 s | −2,5 dB |
+| leberch « Tense » (déclin) | 2:15 → 3:22 | 0 s | −2,5 dB |
+| adamasr « Dark Score » (retour du thème) | 3:20 → 3:48 | 40 s | 0 dB |
+| « Inspiring Epic Motivation Cinematic Trailer » (partie I) | 3:46 → 5:25 | 0 s | −4,5 dB |
+
+Fondus enchaînés de 2 à 2,5 s ; la piste épique est calée pour que son dernier temps fort tombe sur la coupe finale
+(5:25). Sans voix, la musique est à pleine hauteur ; avec la voix, la baisser d'environ 18 dB sous les phrases.
