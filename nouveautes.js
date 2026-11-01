@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Haïti",
+"titre": "Haïti : le Salvador déploie 2 000 soldats",
+"url": "actualites/es/articles/haiti-salvador-deploiement-2000-soldats-2026.html",
+"image": "actualites/es/images/haiti-salvador-deploiement-2000-soldats-2026.webp",
+"date": "2026-11-01T09:53:15+00:00"
+},
+{
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne",
@@ -1730,15 +1739,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Le Mexique célèbre le 216ᵉ anniversaire du Grito de Independencia",
 "url": "actualites/es/articles/mexique-grito-independencia.html",
 "image": "actualites/es/images/mexique-grito-independencia.webp",
-"date": "2026-09-18T20:00:18+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Espagne",
-"titre": "Amnistie de Puigdemont : le Tribunal suprême maintient son refus malgré l'aval de la justice européenne",
-"url": "actualites/es/articles/puigdemont-amnistie-rejet-espagne.html",
-"image": "actualites/es/images/puigdemont-amnistie-rejet-espagne.webp",
 "date": "2026-09-18T20:00:18+00:00"
 },
 {
