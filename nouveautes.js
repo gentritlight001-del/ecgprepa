@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "cg",
+"rubrique": "Culture générale",
+"meta": "Société",
+"titre": "Halloween : des feux de Samain à la fête mondialisée",
+"url": "Culture-Generale/halloween.html",
+"image": "Culture-Generale/images/halloween.webp",
+"date": "2026-11-01T12:26:39+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Haïti",
@@ -2216,15 +2225,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Hannah Arendt et la banalité du mal",
 "url": "Culture-Generale/hannah-arendt.html",
 "image": "Culture-Generale/images/hannah-arendt.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Environnement",
-"titre": "L'Accord de Paris : dix ans de diplomatie du climat",
-"url": "Culture-Generale/accords-de-paris.html",
-"image": "Culture-Generale/images/accords-de-paris.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
