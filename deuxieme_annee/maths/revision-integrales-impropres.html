@@ -11,325 +11,145 @@
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
   onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false}]});"></script>
 <style>
+  /* Gabarit « Fiches » des chapitres de maths : héros sombre, sommaire centré, colonne centrale,
+     une couleur par type d'énoncé. */
   :root {
-    --cream: #FBF4EF;
-    --dark: #2A140B;
-    --terra: #A8461F;
-    --terra-dark: #3A1A0D;
-    --terra-mid: #CC7650;
-    --terra-light: #F7E4DA;
-    --terra-border: #E2B39C;
-    --glow: #F2C2A8;
-    --muted: #7A5A4C;
-    --accent: #A8461F;
-    --accent-soft: #A8461F22;
+    --bg: #eef0f3; --card: #ffffff; --ink: #14171c; --dim: #586070; --line: #d7dbe2;
+    --def: #2350c8; --def-p: #e8eefc; --def-b: #bccbf3;
+    --thm: #d2421f; --thm-p: #fdece6; --thm-b: #f2c1b3;
+    --prop: #1b8a6b; --prop-p: #e4f5ef; --prop-b: #b9e2d4;
+    --warn: #a86a12; --warn-p: #fdf3df; --warn-b: #efd39c;
+    --vert: #9ecba0;
+    --f-t: 'Bricolage Grotesque', system-ui, sans-serif;
+    --f-b: 'Figtree', system-ui, sans-serif;
   }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body { background: var(--cream); color: var(--dark); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+  html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--f-b); font-size: 17px; line-height: 1.6; min-height: 100vh; }
+  .katex { font-size: 1.08em; }
+  .katex-display { overflow-x: auto; overflow-y: hidden; padding: 4px 0; margin: .6em 0; }
 
-  /* ─── NAV ─── */
-  nav {
-    display: flex; align-items: center;
-    padding: 18px 48px; border-bottom: 1px solid rgba(168,70,31,0.25);
-    background: var(--terra-dark); backdrop-filter: blur(16px);
-    position: sticky; top: 0; z-index: 100;
+  /* ─── Héros ─── */
+  .ch-hero { background: var(--ink); color: #f3f4f6; padding: 52px 24px 0; }
+  .hero-in { max-width: 900px; margin: 0 auto; text-align: center; }
+  .chap-label { display: inline-flex; gap: 8px; align-items: center; font: 700 13px var(--f-b); letter-spacing: .08em; text-transform: uppercase; color: var(--vert); }
+  .chap-label::before { content: ""; width: 10px; height: 10px; border-radius: 3px; background: var(--vert); }
+  .ch-hero h1 { font: 800 clamp(40px, 6.4vw, 76px)/.98 var(--f-t); letter-spacing: -.025em; margin: 14px 0 16px; text-wrap: balance; }
+  .chapo { color: #b6bcc7; max-width: 600px; margin: 0 auto 26px; font-size: 18px; }
+  .grandes { display: flex; justify-content: center; }
+  .grandes div { padding: 4px 26px; border-left: 1px solid #2c313a; }
+  .grandes div:first-child { border-left: 0; }
+  .grandes b { display: block; font: 800 32px/1.1 var(--f-t); }
+  .grandes small { color: #9aa1ad; font-size: 13px; }
+  .legende { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; padding: 16px 0 20px; margin-top: 28px; border-top: 1px solid #2c313a; }
+  .tag { display: inline-flex; align-items: center; font: 700 12px var(--f-b); letter-spacing: .06em; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; white-space: nowrap; }
+  .tag.def { background: var(--def-p); color: var(--def); }
+  .tag.thm { background: var(--thm-p); color: var(--thm); }
+  .tag.prop { background: var(--prop-p); color: var(--prop); }
+  .tag.warn { background: var(--warn-p); color: var(--warn); }
+  .tag.ex { background: #e6e9ee; color: var(--dim); }
+
+  /* ─── Sommaire centré ─── */
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+  .sommaire { margin: 36px auto 12px; }
+  .som-t { text-align: center; font: 700 13px var(--f-b); letter-spacing: .08em; text-transform: uppercase; color: var(--dim); margin-bottom: 14px; }
+  .som { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .som-p { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px 12px; }
+  .som-p > a { display: flex; gap: 10px; align-items: flex-start; font: 700 16px/1.3 var(--f-t); color: var(--ink); text-decoration: none; }
+  .som-p > a span { width: 28px; height: 28px; border-radius: 8px; background: var(--ink); color: #fff; display: grid; place-items: center; font-size: 13px; flex: none; }
+  .som-p > a:hover { color: var(--def); }
+  .som-p ol { list-style: none; margin: 8px 0 0 38px; font-size: 14.5px; }
+  .som-p ol a { color: var(--dim); text-decoration: none; display: block; padding: 2px 0; }
+  .som-p ol a:hover { color: var(--ink); }
+
+  /* ─── Parties ─── */
+  .partie { padding-top: 40px; }
+  .p-tete { display: flex; gap: 16px; align-items: center; margin-bottom: 8px; }
+  .p-num { width: 56px; height: 56px; border-radius: 14px; background: var(--ink); color: #fff; font: 800 24px var(--f-t); display: grid; place-items: center; flex: none; }
+  .p-tete small { font: 700 12px var(--f-b); letter-spacing: .08em; text-transform: uppercase; color: var(--dim); }
+  .p-tete h2 { font: 800 clamp(24px, 3.2vw, 32px)/1.12 var(--f-t); letter-spacing: -.01em; text-wrap: balance; }
+  h3 { font: 700 20px/1.3 var(--f-t); margin: 30px 0 12px; display: flex; gap: 10px; align-items: baseline; }
+  h3 i { font-style: normal; color: var(--dim); font-weight: 500; font-size: 16px; }
+  p { margin: 0 0 12px; }
+  .wrap ol.it, .wrap ul.it { padding-left: 22px; margin: 0 0 12px; }
+  .wrap li { margin-bottom: 6px; }
+
+  /* ─── Fiches d'énoncés ─── */
+  .fiche { background: var(--card); border: 1px solid var(--line); border-radius: 14px; margin: 14px 0; overflow: hidden; }
+  .fiche-t { display: flex; gap: 10px; align-items: center; padding: 11px 18px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+  .fiche-t .nm { font: 700 16.5px/1.35 var(--f-t); flex: 1 1 200px; }
+  .fiche-t .num { font-size: 13px; color: var(--dim); font-weight: 600; white-space: nowrap; }
+  .fiche-c { padding: 16px 18px 6px; }
+  .fiche.def { border-color: var(--def-b); } .fiche.def .fiche-t { background: var(--def-p); border-color: var(--def-b); }
+  .fiche.thm { border-color: var(--thm-b); box-shadow: 0 2px 0 var(--thm); } .fiche.thm .fiche-t { background: var(--thm-p); border-color: var(--thm-b); }
+  .fiche.prop { border-color: var(--prop-b); } .fiche.prop .fiche-t { background: var(--prop-p); border-color: var(--prop-b); }
+  .fiche.warn { border-color: var(--warn-b); } .fiche.warn .fiche-t { background: var(--warn-p); border-color: var(--warn-b); }
+  details { border-top: 1px dashed var(--line); }
+  summary { cursor: pointer; padding: 10px 18px; font: 600 14px var(--f-b); color: var(--dim); list-style: none; display: flex; gap: 8px; align-items: center; }
+  summary::-webkit-details-marker { display: none; }
+  summary::before { content: "+"; width: 20px; height: 20px; border-radius: 6px; background: #eceef2; display: grid; place-items: center; font-weight: 700; flex: none; }
+  details[open] summary::before { content: "−"; }
+  summary:hover { color: var(--ink); }
+  summary:focus-visible { outline: 2px solid var(--def); outline-offset: -2px; }
+  details > div { padding: 0 18px 8px; }
+  .fiche.ex details { border-top: 0; }
+  .fiche.ex summary { padding: 12px 18px; color: var(--ink); }
+  .fiche.ex summary .tag { margin-right: 4px; }
+  .rem { font-size: 15.5px; color: var(--dim); background: var(--card); border-radius: 10px; padding: 12px 16px; margin: 12px 0; }
+  .rem b.r { color: var(--ink); }
+  .rem p:last-child { margin-bottom: 0; }
+
+  /* ─── Tableau des références ─── */
+  .tabref { background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow-x: auto; margin: 14px 0; }
+  .tabref table { border-collapse: collapse; width: 100%; }
+  .tabref th { background: #f6f7f9; text-align: left; font: 700 12px var(--f-b); letter-spacing: .06em; text-transform: uppercase; color: var(--dim); padding: 10px 16px; }
+  .tabref td { padding: 10px 16px; border-top: 1px solid var(--line); }
+  .tabref td:nth-child(2) span { background: var(--prop-p); color: var(--prop); padding: 3px 8px; border-radius: 6px; }
+
+  /* ─── Méthode ─── */
+  .meth { background: var(--ink); color: #eef0f3; border-radius: 16px; padding: 22px; margin: 22px 0; }
+  .meth-t { font: 800 21px/1.25 var(--f-t); margin-bottom: 14px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .meth-t::before { content: "Méthode"; font: 700 12px var(--f-b); letter-spacing: .08em; text-transform: uppercase; background: var(--vert); color: var(--ink); padding: 4px 10px; border-radius: 6px; }
+  .meth ol { list-style: none; margin: 0; padding: 0; counter-reset: s; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+  .meth li { counter-increment: s; background: #1f242c; border-radius: 12px; padding: 12px; font-size: 14.5px; line-height: 1.45; margin: 0; }
+  .meth li::before { content: counter(s); display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--vert); color: var(--ink); font: 800 14px var(--f-t); margin-bottom: 8px; }
+
+  /* ─── Figure ─── */
+  .figbloc { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; margin: 14px 0; }
+  .figbloc svg { display: block; width: 100%; max-width: 520px; height: auto; margin: 0 auto; }
+  .figbloc figcaption { font-size: 14px; color: var(--dim); margin-top: 8px; text-align: center; }
+  .math-svg .ax { stroke: var(--ink); stroke-width: 1.4; fill: none; }
+  .math-svg .axh { fill: var(--ink); }
+  .math-svg .cv { stroke: var(--def); stroke-width: 2.6; fill: none; }
+  .math-svg .ar { fill: var(--def-p); }
+  .math-svg .dot { stroke: var(--dim); stroke-width: 1; stroke-dasharray: 2 4; }
+  .math-svg .tg { stroke: var(--thm); stroke-width: 1.4; stroke-dasharray: 5 4; fill: none; }
+  .math-svg .tk { fill: var(--dim); font: 600 13px var(--f-b); }
+  .math-svg .lb { fill: var(--def); font: 600 14px var(--f-b); }
+
+  /* ─── Fin ─── */
+  .fin { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin: 50px 0 70px; }
+  .fin a { font: 600 15px var(--f-b); color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 10px 20px; text-decoration: none; }
+  .fin a:hover { border-color: var(--ink); }
+  .back-to-top { position: fixed; right: 22px; bottom: 22px; width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--ink); color: #fff; font-size: 18px; cursor: pointer; opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 90; }
+  .back-to-top.visible { opacity: 1; pointer-events: auto; }
+
+  @media (max-width: 760px) {
+    .ch-hero { padding: 34px 16px 0; }
+    .grandes div { padding: 4px 16px; }
+    .wrap { padding: 0 16px; }
+    .som { grid-template-columns: minmax(0, 1fr); }
+    .meth ol { grid-template-columns: minmax(0, 1fr); }
+    .fiche-c { padding: 14px 14px 4px; }
+    .fiche-t, summary { padding-left: 14px; padding-right: 14px; }
+    details > div { padding: 0 14px 8px; }
+    .figbloc { padding: 12px; }
   }
-  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--glow); cursor: pointer; letter-spacing: 0.02em; }
-  .nav-logo a { color: inherit; text-decoration: none; }
-  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(251,244,239,0.5); flex-wrap: wrap; }
-  .nav-left { flex: 1 1 0; display: flex; align-items: center; }
-  .nav-right { flex: 1 1 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
-  .breadcrumb a { color: inherit; text-decoration: none; }
-  .breadcrumb span { cursor: pointer; transition: color 0.2s; }
-  .breadcrumb a:hover span, .breadcrumb span:hover { color: var(--glow); }
-  .breadcrumb .sep { color: rgba(251,244,239,0.25); }
-  .breadcrumb .current { color: #FBF4EF; cursor: default; }
-
-  /* ─── HERO ─── */
-  .ch-hero {
-    background: radial-gradient(120% 140% at 15% 0%, #6A2A12 0%, var(--terra-dark) 55%, #1C0B05 100%);
-    padding: 5rem 2rem 3.5rem;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .ch-hero::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23CC7650' fill-opacity='0.18'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-    opacity: 0.6;
-  }
-  .ch-hero .chap-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--glow); margin-bottom: 1.5rem; opacity: 0.9; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; }
-  .ch-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 4rem); color: var(--cream); font-weight: 900; max-width: 900px; margin: 0 auto 1.5rem; line-height: 1.1; position: relative; z-index: 1; }
-  .ch-hero p { color: rgba(251,244,239,0.5); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
-
-  /* ─── TOC ─── */
-  .toc-bar { background: #F8EAE1; padding: 2rem; border-bottom: 1px solid var(--terra-border); }
-  .toc-inner { max-width: 960px; margin: 0 auto; }
-  .toc-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
-  .toc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.4rem; list-style: none; }
-  .toc-list a { display: flex; align-items: flex-start; gap: 1rem; padding: 0.6rem 0.9rem; text-decoration: none; color: #3A1E14; font-size: 0.82rem; border: 1px solid transparent; border-radius: 4px; transition: all 0.18s; }
-  .toc-list a:hover { border-color: var(--terra-border); background: white; color: #000; }
-  .toc-num { font-family: "DM Mono", monospace; font-size: 0.65rem; color: var(--terra); flex-shrink: 0; margin-top: 0.15rem; }
-
-  /* ─── CONTENT ─── */
-  .content { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 3rem; }
-
-  /* PART */
-  .math-part { margin-bottom: 5rem; }
-  .math-part:last-of-type { margin-bottom: 0; }
-  .math-part-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--terra); }
-  .math-part-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: var(--terra-border); line-height: 1; flex-shrink: 0; }
-  .math-part-title { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 700; color: var(--dark); line-height: 1.25; }
-
-  /* SECTION */
-  .math-section { margin-bottom: 3.5rem; }
-  .math-section-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--terra-dark); margin-bottom: 1.4rem; padding-left: 1.2rem; border-left: 3px solid var(--terra); scroll-margin-top: 2rem; }
-  .math-subsection-title { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--terra); margin: 2rem 0 0.75rem; }
-
-  /* TEXT */
-  .content p { margin-bottom: 1.1rem; font-size: 0.97rem; color: #33201A; line-height: 1.85; font-weight: 300; }
-  .content strong { color: var(--dark); font-weight: 600; }
-
-  /* DÉFINITION CARD */
-  .def-card {
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 12px rgba(168,70,31,0.10), 0 0 0 1px rgba(168,70,31,0.14);
-    display: flex;
-    margin: 1.4rem 0;
-  }
-  .def-accent-bar {
-    width: 5px;
-    background: linear-gradient(180deg, #D08A66 0%, #3A1A0D 100%);
-    flex-shrink: 0;
-    border-radius: 10px 0 0 10px;
-  }
-  .def-body { padding: 1.2rem 1.5rem; flex: 1; min-width: 0; }
-  @media screen { .def-body { overflow-x: auto; } }
-  .def-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.65rem; }
-  .def-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--terra); font-weight: 500; }
-  .def-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--terra-dark); }
-  .def-body p { margin-bottom: 0.5rem; font-size: 0.93rem; line-height: 1.75; }
-  .def-body p:last-child { margin-bottom: 0; }
-
-  /* PROPRIÉTÉ CARD */
-  .prop-card {
-    background: var(--terra-light);
-    border-radius: 8px;
-    border: 1px solid var(--terra-border);
-    border-left: 4px solid var(--terra);
-    padding: 1.2rem 1.5rem;
-    margin: 1.4rem 0;
-  }
-  .prop-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--terra-dark); font-weight: 700; margin-bottom: 0.6rem; }
-  .prop-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--terra-dark); margin-bottom: 0.7rem; }
-  .prop-card p { margin-bottom: 0.5rem; font-size: 0.93rem; color: var(--terra-dark); line-height: 1.75; }
-  .prop-card p:last-child { margin-bottom: 0; }
-  .prop-card ol { padding-left: 1.4rem; margin-top: 0.4rem; }
-  .prop-card ol li { font-size: 0.93rem; color: var(--terra-dark); line-height: 1.8; margin-bottom: 0.35rem; }
-  .prop-card ul { padding-left: 1.4rem; margin-top: 0.4rem; }
-  .prop-card ul li { font-size: 0.93rem; color: var(--terra-dark); line-height: 1.8; margin-bottom: 0.35rem; }
-
-  /* THÉORÈME CARD */
-  .thm-card {
-    background: var(--terra-dark);
-    color: var(--cream);
-    border-radius: 8px;
-    padding: 1.5rem 1.75rem;
-    margin: 1.4rem 0;
-  }
-  .thm-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--glow); margin-bottom: 0.5rem; }
-  .thm-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--cream); margin-bottom: 0.75rem; }
-  .thm-card p { color: rgba(251,244,239,0.88); font-size: 0.93rem; margin-bottom: 0.5rem; line-height: 1.75; }
-  .thm-card p:last-child { margin-bottom: 0; }
-  .thm-card ul, .thm-card ol { padding-left: 1.4rem; margin-top: 0.4rem; }
-  .thm-card strong { color: var(--glow); font-weight: 600; }
-  .thm-card li { font-size: 0.93rem; color: rgba(251,244,239,0.88); line-height: 1.8; margin-bottom: 0.35rem; }
-
-  /* MÉTHODE CARD */
-  .meth-card {
-    background: white;
-    border: 2px solid var(--terra);
-    border-radius: 8px;
-    padding: 1.2rem 1.5rem;
-    margin: 1.4rem 0;
-  }
-  .meth-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--terra); font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
-  .meth-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--terra-dark); margin-bottom: 0.7rem; }
-  .meth-card p { font-size: 0.93rem; line-height: 1.75; margin-bottom: 0.5rem; }
-  .meth-card p:last-child { margin-bottom: 0; }
-  .meth-card ul, .meth-card ol { padding-left: 1.4rem; margin: 0.3rem 0 0.5rem; }
-  .meth-card li { font-size: 0.93rem; line-height: 1.8; margin-bottom: 0.3rem; }
-
-  /* REMARQUE */
-  .remark { background: white; border-left: 3px solid var(--terra-border); padding: 1rem 1.4rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; font-size: 0.9rem; color: #3A1E14; line-height: 1.7; font-style: italic; }
-  .remark::before { content: 'Remarque'; font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--terra); display: block; margin-bottom: 0.3rem; }
-
-  /* FORMULE DISPLAY */
-  .formula-block {
-    background: white;
-    border: 1px solid var(--terra-border);
-    border-radius: 8px;
-    padding: 1.2rem 1.5rem;
-    margin: 1.2rem 0;
-    text-align: center;
-    overflow-x: auto;
-    color: var(--dark);
-  }
-  .formula-block .katex-display { margin: 0; }
-  .formula-block .katex { font-size: 1.05em; color: var(--dark); }
-
-  /* Cartes à fond blanc : toujours forcer le texte en noir/sombre,
-     même imbriquées dans un thm-card à fond sombre */
-  .def-card, .meth-card, .formula-block {
-    color: var(--dark);
-  }
-  .def-card *, .meth-card *, .formula-block * { color: inherit; }
-  .def-card .def-label, .meth-card .meth-label { color: var(--terra); }
-  .def-card .def-name, .meth-card .meth-title { color: var(--terra-dark); }
-
-  /* TABLE */
-  .math-table-wrap { overflow-x: auto; margin: 1.5rem 0; border-radius: 8px; border: 1px solid var(--terra-border); box-shadow: 0 2px 8px rgba(168,70,31,0.08); }
-  .math-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-  .math-table th { background: var(--terra-dark); color: var(--cream); font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.75rem 1rem; text-align: center; font-weight: 500; border: 1px solid rgba(255,255,255,0.1); }
-  .math-table td { padding: 0.65rem 1rem; text-align: center; border: 1px solid var(--terra-light); color: #33201A; vertical-align: middle; background: white; line-height: 1.6; }
-  .math-table tr:nth-child(even) td { background: #FBF4EF; }
-  .math-table tr:hover td { background: var(--terra-light); }
-  .math-table td.left { text-align: left; }
-  .math-table .katex { font-size: 0.95em; }
-
-  /* KEY FACT */
-  .math-key { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 0.6rem; padding: 0.85rem 1.1rem; background: white; border: 1px solid var(--terra-light); border-radius: 6px; }
-  .math-key-bullet { width: 6px; height: 6px; background: var(--terra); border-radius: 50%; flex-shrink: 0; margin-top: 0.55rem; }
-  .math-key > div { font-size: 0.91rem; color: #33201A; line-height: 1.75; font-weight: 300; }
-
-  /* INLINE MATH */
-  .katex { font-size: 1em; }
-  .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.2rem 0; }
-
-  /* DEUX COLONNES */
-  .two-col-formulas { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
-  .two-col-formulas .formula-block { margin: 0; }
-
-  /* TROIS COLONNES */
-  .three-col-formulas { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin: 1rem 0; }
-  .three-col-formulas .formula-block { margin: 0; }
-
-  /* HIGHLIGHT BOX */
-  .math-highlight { background: var(--terra-light); border-left: 4px solid var(--terra); padding: 1.25rem 1.75rem; margin: 1.5rem 0; color: var(--terra-dark); font-size: 0.93rem; line-height: 1.75; border-radius: 0 6px 6px 0; }
-
-  /* FOOTER */
-  .site-footer {
-    background: var(--terra-dark);
-    border-top: 1px solid rgba(168,70,31,0.35);
-    padding: 2.5rem 2rem;
-    text-align: center;
-  }
-  .site-footer .footer-logo {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--glow);
-    letter-spacing: 0.02em;
-    margin-bottom: 0.5rem;
-  }
-
-  /* BACK TO TOP */
-  .back-to-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--terra); color: var(--cream); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 4px 14px rgba(168,70,31,0.45); opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; z-index: 200; }
-  .back-to-top.visible { opacity: 1; transform: translateY(0); }
-  .back-to-top:hover { background: var(--terra-mid); }
-
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--terra-border); border-radius: 3px; }
-
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-  @media (max-width: 640px) {
-    nav { padding: 14px 20px; }
-    .two-col-formulas { grid-template-columns: 1fr; }
-    .three-col-formulas { grid-template-columns: 1fr; }
-    .content { padding: 3rem 1rem 2rem; }
-    .formula-block { padding: 0.9rem 0.6rem; }
-    .formula-block .katex { font-size: 0.86em; }
-    .def-body, .prop-card, .thm-card { padding-left: 1rem; padding-right: 1rem; }
-  }
-
   @media print {
-    @page { size: A4; margin: 15mm 14mm 15mm 14mm; }
-    nav, .back-to-top, .toc-bar, .site-footer { display: none !important; }
-    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
-    html, body { background: white !important; color: #000 !important; font-size: 10pt; width: 100% !important; }
-    .ch-hero { background: #3A1A0D !important; padding: 0.9rem 1rem 0.7rem !important; }
-    .ch-hero::before { display: none !important; }
-    .ch-hero h1 { font-size: 16pt !important; color: #fff !important; margin-bottom: 0.3rem !important; }
-    .ch-hero .chap-label { font-size: 7pt !important; color: #F2C2A8 !important; margin-bottom: 0.4rem !important; }
-    .ch-hero p { font-size: 7pt !important; color: #F2C2A8 !important; margin: 0 !important; }
-    .content { max-width: 100% !important; padding: 0.6rem 0 !important; margin: 0 !important; }
-    .content p { font-size: 9pt !important; line-height: 1.5 !important; margin-bottom: 0.45rem !important; color: #000 !important; }
-    .math-part { margin-bottom: 0.8rem; page-break-inside: auto; }
-    .math-part-header { page-break-after: avoid; padding-bottom: 0.6rem !important; margin-bottom: 1rem !important; border-bottom: 2pt solid #A8461F !important; }
-    .math-part-num { font-size: 2rem !important; color: #E2B39C !important; }
-    .math-part-title { font-size: 13pt !important; }
-    .math-section { page-break-inside: auto; margin-bottom: 0.8rem; }
-    .math-section-title { page-break-after: avoid; font-size: 11pt !important; padding-left: 0.7rem !important; border-left: 2.5pt solid #A8461F !important; margin-bottom: 0.55rem !important; color: #3A1A0D !important; }
-    .math-subsection-title { page-break-after: avoid; font-size: 7pt !important; margin: 0.65rem 0 0.35rem !important; color: #A8461F !important; }
-    .def-card { page-break-inside: avoid; box-shadow: none !important; border: 1pt solid #E2B39C !important; display: flex !important; border-radius: 0 !important; margin: 0.55rem 0 !important; }
-    .def-accent-bar { background: #A8461F !important; width: 4px !important; border-radius: 0 !important; }
-    .def-body { padding: 0.7rem 1rem !important; }
-    .def-body p { font-size: 8.5pt !important; line-height: 1.5 !important; color: #000 !important; }
-    .prop-card { page-break-inside: avoid; background: #F7E4DA !important; border: 1pt solid #E2B39C !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
-    .prop-card p, .prop-card li { font-size: 8.5pt !important; line-height: 1.5 !important; }
-    .thm-card { page-break-inside: avoid; background: #3A1A0D !important; padding: 0.7rem 1rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
-    .thm-label { font-size: 6pt !important; color: #F2C2A8 !important; }
-    .thm-title { font-size: 9.5pt !important; color: #fff !important; }
-    .thm-card p, .thm-card li { font-size: 8.5pt !important; line-height: 1.5 !important; color: #FBEDE5 !important; }
-    .meth-card { page-break-inside: avoid; border: 1.5pt solid #A8461F !important; padding: 0.6rem 0.9rem !important; margin: 0.55rem 0 !important; border-radius: 0 !important; }
-    .meth-title { font-size: 9.5pt !important; }
-    .meth-card p, .meth-card li { font-size: 8.5pt !important; line-height: 1.5 !important; }
-    .remark { border-left: 2pt solid #E2B39C !important; padding: 0.5rem 0.8rem !important; margin: 0.5rem 0 !important; font-size: 8pt !important; border-radius: 0 !important; }
-    .formula-block { border: 1pt solid #E2B39C !important; padding: 0.55rem 0.8rem !important; margin: 0.5rem 0 !important; border-radius: 0 !important; }
-    .math-table-wrap { border: 1pt solid #E2B39C !important; border-radius: 0 !important; box-shadow: none !important; margin: 0.5rem 0 !important; }
-    .math-table th { background: #3A1A0D !important; color: #F2C2A8 !important; font-size: 6.5pt !important; padding: 0.4rem 0.6rem !important; }
-    .math-table td { font-size: 8pt !important; padding: 0.4rem 0.6rem !important; border: 0.5pt solid #F7E4DA !important; }
-    .two-col-formulas, .three-col-formulas { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 0.5rem !important; margin: 0.45rem 0 !important; }
-    .katex { font-size: 0.82em !important; }
-    .katex-display { margin: 0.15rem 0 !important; overflow: visible !important; }
-    .katex-html { white-space: normal !important; }
-    .katex .base { display: inline !important; white-space: nowrap !important; }
-    .def-body p, .prop-card p, .thm-card p, .remark, .math-key > div, .content p { overflow: visible !important; word-break: break-word !important; }
-    .formula-block { overflow: visible !important; height: auto !important; min-height: 0 !important; text-align: center !important; }
-    .formula-block .katex-display { overflow-x: visible !important; overflow-y: visible !important; text-align: center !important; }
-    .math-table td, .math-table th { overflow: visible !important; word-break: break-word !important; }
-    .katex *, .katex-html * { position: static !important; top: auto !important; bottom: auto !important; left: auto !important; right: auto !important; }
-    .math-table .katex { font-size: 0.75em !important; }
+    .ch-hero { background: #fff; color: var(--ink); }
+    .back-to-top, nav.sn { display: none; }
+    details > div { display: block; }
   }
-
-  /* FIGURES */
-  .math-figure { background: white; border: 1px solid var(--terra-border); border-radius: 8px; padding: 1.2rem 1rem 0.9rem; margin: 1.4rem 0; text-align: center; }
-  .math-svg { width: 100%; max-width: 460px; height: auto; display: block; margin: 0 auto; }
-  .math-svg .ax { stroke: var(--muted); stroke-width: 1; }
-  .math-svg .axh { fill: var(--muted); }
-  .math-svg .tk { font-family: 'DM Mono', monospace; font-size: 11px; fill: var(--muted); }
-  .math-svg .lb { font-family: 'Newsreader', Georgia, serif; font-style: italic; font-size: 13px; fill: var(--terra-dark); }
-  .math-svg .cv { fill: none; stroke: var(--terra-dark); stroke-width: 2.4; stroke-linejoin: round; }
-  .math-svg .tg { fill: none; stroke: var(--terra); stroke-width: 1.4; stroke-dasharray: 6 5; }
-  .math-figure figcaption { font-size: 0.82rem; color: var(--muted); margin-top: 0.6rem; line-height: 1.6; }
-  @media print { .math-figure { page-break-inside: avoid; border: 1pt solid #E2B39C !important; padding: 0.5rem !important; margin: 0.5rem 0 !important; } .math-svg { max-width: 300px; } }
-  .math-svg .pt { fill: var(--terra-dark); }
-  .math-svg .chord { stroke: var(--terra); stroke-width: 1.6; }
-  .math-svg .dot { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 2 3; }
-  .math-svg .tv { fill: none; stroke: var(--terra-border); stroke-width: 1.2; }
-  .math-svg .tvl { stroke: var(--terra-border); stroke-width: 1.2; }
-  .math-svg .flv { stroke: var(--terra-dark); stroke-width: 1.3; }
-  .def-list { padding-left: 1.3rem; margin: 0.3rem 0 1rem; }
-  .def-list li { font-size: 0.93rem; line-height: 1.8; margin-bottom: 0.3rem; }
-  a.lien-interne { color: var(--terra); text-decoration: underline; text-underline-offset: 2px; }
-  .thm-card a.lien-interne { color: var(--glow); }
-  .math-svg .ar { fill: var(--terra-light); stroke: none; }
 </style>
 <link rel="stylesheet" href="../../barre-section.css">
 <meta property="og:type" content="article">
@@ -343,9 +163,9 @@
 <meta name="description" content="Fiche de révision de maths, 2e année ECG : définition des intégrales impropres, intégrales de Riemann, changement de variable, critères de convergence, intégrale de Gauss et fonction Gamma.">
 <link rel="canonical" href="https://ecg-prepa.fr/deuxieme_annee/maths/revision-integrales-impropres.html">
 </head>
+
 <body>
 
-<!-- NAV -->
 <nav class="sn sn-cours sn-maths">
   <div class="nav-left"><div class="nav-logo sn-logo"><a href="../../index.html">ECG Prépa</a></div></div>
   <div class="breadcrumb sn-fil">
@@ -360,57 +180,54 @@
   <div class="nav-right"></div>
 </nav>
 
-<!-- HERO -->
-<div class="ch-hero">
-  <div class="chap-label">&#x2015;&nbsp; Révisions d'analyse · Fiche 4 &nbsp;&#x2015;</div>
-  <h1>Les intégrales impropres</h1>
-  <p>Définitions · Intégrales de référence · Calcul · Critères de convergence · Gauss et Gamma</p>
-</div>
-
-<!-- TOC -->
-<div class="toc-bar">
-  <div class="toc-inner">
-    <div class="toc-title">Table des matières</div>
-    <ul class="toc-list">
-      <li><a href="#part1"><span class="toc-num">I</span> Qu'est-ce qu'une intégrale impropre ?</a></li>
-      <li><a href="#part2"><span class="toc-num">II</span> Propriétés et calcul</a></li>
-      <li><a href="#part3"><span class="toc-num">III</span> Critères de convergence</a></li>
-      <li><a href="#part4"><span class="toc-num">IV</span> Deux intégrales à connaître : Gauss et Gamma</a></li>
-    </ul>
+<header class="ch-hero">
+  <div class="hero-in">
+    <span class="chap-label">Révisions d'analyse · Fiche 4</span>
+    <h1>Les intégrales impropres</h1>
+    <p class="chapo">Quand une borne est infinie ou que la fonction explose : dire si l'aire reste finie, puis la calculer.</p>
+    <div class="grandes"><div><b>4</b><small>parties</small></div><div><b>14</b><small>énoncés</small></div><div><b>25 min</b><small>de lecture</small></div></div>
+    <div class="legende"><span class="tag def">Définition</span><span class="tag thm">Théorème</span><span class="tag prop">Proposition</span><span class="tag warn">Piège</span><span class="tag ex">Exemple</span></div>
   </div>
-</div>
+</header>
 
-<div class="content">
+<div class="wrap">
 
-<!-- ═══════════════════════════════════════
-     PARTIE I : DÉFINITIONS
-════════════════════════════════════════ -->
-<div class="math-part" id="part1">
-  <div class="math-part-header">
-    <div class="math-part-num">I</div>
-    <div class="math-part-title">Qu'est-ce qu'une intégrale impropre ?</div>
+<nav class="sommaire" aria-label="Sommaire du chapitre">
+  <div class="som-t">Le chapitre</div>
+  <div class="som">
+    <div class="som-p"><a href="#part1"><span>I</span>Qu'est-ce qu'une intégrale impropre ?</a>
+      <ol><li><a href="#s1-1">Intervalle semi-ouvert</a></li><li><a href="#s1-2">Les intégrales de référence</a></li><li><a href="#s1-3">Intégrales « faussement impropres »</a></li><li><a href="#s1-4">Intervalle ouvert</a></li><li><a href="#s1-5">Continuité sauf en un nombre fini de points</a></li></ol></div>
+    <div class="som-p"><a href="#part2"><span>II</span>Propriétés et calcul</a>
+      <ol><li><a href="#s2-1">Les propriétés de l'intégrale</a></li><li><a href="#s2-2">Le changement de variable</a></li></ol></div>
+    <div class="som-p"><a href="#part3"><span>III</span>Critères de convergence</a>
+      <ol><li><a href="#s3-1">Le théorème de comparaison</a></li><li><a href="#s3-2">La règle des équivalents</a></li><li><a href="#s3-3">La convergence absolue</a></li><li><a href="#s3-4">Fonction négligeable devant une autre</a></li></ol></div>
+    <div class="som-p"><a href="#part4"><span>IV</span>Deux intégrales à connaître : Gauss et Gamma</a>
+      <ol><li><a href="#s4-1">L'intégrale de Gauss</a></li><li><a href="#s4-2">La fonction Gamma</a></li></ol></div>
   </div>
+</nav>
 
-  <div class="math-section" id="s1-1">
-    <div class="math-section-title">1 — Intégrale sur un intervalle semi-ouvert</div>
+<!-- ═══════════ PARTIE I ═══════════ -->
+<section class="partie" id="part1">
+  <div class="p-tete"><div class="p-num">I</div><div><small>Partie I</small><h2>Qu'est-ce qu'une intégrale impropre ?</h2></div></div>
 
-    <div class="def-card">
-      <div class="def-accent-bar"></div>
-      <div class="def-body">
-        <div class="def-header"><span class="def-label">Définition 1</span><span class="def-name">Intégrale impropre sur \([a, b[\)</span></div>
-        <p>Soient \(a \lt b \leqslant +\infty\). Soit \(f\) une fonction continue sur l'intervalle semi-ouvert \([a, b[\).</p>
-        <ul class="def-list">
-          <li>On dit que l'intégrale de \(f\) sur \([a, b[\) est <strong>convergente</strong>, ou <strong>existe</strong>, si la fonction \(F : x \mapsto \displaystyle\int_a^x f(t)\,\mathrm{d}t\) admet une <strong>limite finie</strong> en \(b\). On note alors cette limite \(\displaystyle\int_{[a,b[} f\), ou \(\displaystyle\int_a^b f\), ou \(\displaystyle\int_a^b f(t)\,\mathrm{d}t\) :</li>
-        </ul>
-        <div class="formula-block">\[\int_a^b f(t)\,\mathrm{d}t = \lim_{x \to b} \int_a^x f(t)\,\mathrm{d}t.\]</div>
-        <ul class="def-list">
-          <li>On dit que l'intégrale de \(f\) sur \([a, b[\) est <strong>divergente</strong> dans le cas contraire.</li>
-        </ul>
-        <p>On définit de même la notion d'intégrale impropre sur un intervalle semi-ouvert \(]a, b]\), avec \(-\infty \leqslant a \lt b\) : on étudie alors la limite de \(x \mapsto \displaystyle\int_x^b f(t)\,\mathrm{d}t\) quand \(x\) tend vers \(a\).</p>
-      </div>
+  <h3 id="s1-1"><i>I.1</i>Intégrale sur un intervalle semi-ouvert</h3>
+  <div class="fiche def">
+    <div class="fiche-t"><span class="tag def">Définition 1</span><span class="nm">Intégrale impropre sur \([a, b[\)</span></div>
+    <div class="fiche-c">
+      <p>Soient \(a \lt b \leqslant +\infty\). Soit \(f\) une fonction continue sur l'intervalle semi-ouvert \([a, b[\).</p>
+      <ul class="it">
+        <li>On dit que l'intégrale de \(f\) sur \([a, b[\) est <strong>convergente</strong>, ou <strong>existe</strong>, si la fonction \(F : x \mapsto \displaystyle\int_a^x f(t)\,\mathrm{d}t\) admet une <strong>limite finie</strong> en \(b\). On note alors cette limite \(\displaystyle\int_{[a,b[} f\), ou \(\displaystyle\int_a^b f\), ou \(\displaystyle\int_a^b f(t)\,\mathrm{d}t\) :</li>
+      </ul>
+      \[\int_a^b f(t)\,\mathrm{d}t = \lim_{x \to b} \int_a^x f(t)\,\mathrm{d}t.\]
+      <ul class="it">
+        <li>On dit que l'intégrale de \(f\) sur \([a, b[\) est <strong>divergente</strong> dans le cas contraire.</li>
+      </ul>
+      <p>On définit de même la notion d'intégrale impropre sur un intervalle semi-ouvert \(]a, b]\), avec \(-\infty \leqslant a \lt b\) : on étudie alors la limite de \(x \mapsto \displaystyle\int_x^b f(t)\,\mathrm{d}t\) quand \(x\) tend vers \(a\).</p>
     </div>
+    <details><summary>Le comprendre</summary><div><p>On regarde l'aire de \(a\) jusqu'à \(x\), puis on pousse \(x\) vers \(b\) : l'intégrale converge si cette aire se stabilise sur une valeur finie.</p></div></details>
+  </div>
 
-    <figure class="math-figure">
+  <figure class="figbloc">
     <svg class="math-svg" viewBox="0 0 460 240" role="img" aria-label="Aire sous la courbe de f entre a et x, avec x qui tend vers b">
       <path class="ar" d="M 70 200 L 70.0 60.0 L 72.0 66.7 L 74.0 72.7 L 76.0 78.3 L 78.0 83.3 L 80.0 88.0 L 82.0 92.3 L 84.0 96.3 L 86.0 100.0 L 88.0 103.4 L 90.0 106.7 L 92.0 109.7 L 94.0 112.5 L 96.0 115.2 L 98.0 117.6 L 100.0 120.0 L 102.0 122.2 L 104.0 124.3 L 106.0 126.3 L 108.0 128.2 L 110.0 130.0 L 112.0 131.7 L 114.0 133.3 L 116.0 134.9 L 118.0 136.4 L 120.0 137.8 L 122.0 139.1 L 124.0 140.4 L 126.0 141.7 L 128.0 142.9 L 130.0 144.0 L 132.0 145.1 L 134.0 146.2 L 136.0 147.2 L 138.0 148.1 L 140.0 149.1 L 142.0 150.0 L 144.0 150.9 L 146.0 151.7 L 148.0 152.5 L 150.0 153.3 L 152.0 154.1 L 154.0 154.8 L 156.0 155.6 L 158.0 156.2 L 160.0 156.9 L 162.0 157.6 L 164.0 158.2 L 166.0 158.8 L 168.0 159.4 L 170.0 160.0 L 172.0 160.6 L 174.0 161.1 L 176.0 161.6 L 178.0 162.2 L 180.0 162.7 L 182.0 163.2 L 184.0 163.6 L 186.0 164.1 L 188.0 164.6 L 190.0 165.0 L 192.0 165.4 L 194.0 165.9 L 196.0 166.3 L 198.0 166.7 L 200.0 167.1 L 202.0 167.4 L 204.0 167.8 L 206.0 168.2 L 208.0 168.5 L 210.0 168.9 L 212.0 169.2 L 214.0 169.6 L 216.0 169.9 L 218.0 170.2 L 220.0 170.5 L 222.0 170.8 L 224.0 171.1 L 226.0 171.4 L 228.0 171.7 L 230.0 172.0 L 232.0 172.3 L 234.0 172.5 L 236.0 172.8 L 238.0 173.1 L 240.0 173.3 L 242.0 173.6 L 244.0 173.8 L 246.0 174.1 L 248.0 174.3 L 250.0 174.5 L 252.0 174.8 L 254.0 175.0 L 256.0 175.2 L 258.0 175.4 L 260.0 175.7 L 260 200 Z"/>
       <line class="ax" x1="30" y1="200" x2="444" y2="200"/><path class="axh" d="M450 200 l-8 -4 v8 z"/>
@@ -424,265 +241,225 @@
       <text class="lb" x="132" y="182">F(x)</text>
       <text class="lb" x="300" y="152">C<tspan font-size="10" dy="3">f</tspan></text>
     </svg>
-      <figcaption>Illustration : pour \(f\) positive, \(F(x)\) est l'aire sous la courbe entre \(a\) et \(x\). L'intégrale converge si cette aire admet une limite finie quand \(x\) tend vers \(b\).</figcaption>
-    </figure>
-  </div>
+    <figcaption>Pour \(f\) positive, \(F(x)\) est l'aire sous la courbe entre \(a\) et \(x\). L'intégrale converge si cette aire admet une limite finie quand \(x\) tend vers \(b\).</figcaption>
+  </figure>
 
-  <div class="math-section" id="s1-2">
-    <div class="math-section-title">2 — Les intégrales de référence</div>
-
-    <div class="prop-card">
-      <div class="prop-label">Proposition 1</div>
-      <div class="prop-title">Intégrales de référence</div>
+  <h3 id="s1-2"><i>I.2</i>Les intégrales de référence</h3>
+  <div class="fiche prop">
+    <div class="fiche-t"><span class="tag prop">Proposition 1</span><span class="nm">Intégrales de référence</span></div>
+    <div class="fiche-c">
       <p>Soient \(\alpha\), \(a\), \(b\) des réels vérifiant \(a \lt b\).</p>
-      <ol>
-        <li>\(\displaystyle\int_0^{+\infty} e^{-\alpha t}\,\mathrm{d}t\) converge si et seulement si \(\alpha \gt 0\) ; dans ce cas, \(\displaystyle\int_0^{+\infty} e^{-\alpha t}\,\mathrm{d}t = \frac{1}{\alpha}\).</li>
+      <ol class="it">
+        <li>\(\displaystyle\int_0^{+\infty} e^{-\alpha t}\,\mathrm{d}t\) converge si et seulement si \(\alpha \gt 0\) ; dans ce cas, \(\displaystyle\int_0^{+\infty} e^{-\alpha t}\,\mathrm{d}t = \frac{1}{\alpha}\).</li>
         <li>\(\displaystyle\int_1^{+\infty} \frac{1}{t^\alpha}\,\mathrm{d}t\) converge si et seulement si \(\alpha \gt 1\) (intégrale de Riemann).</li>
         <li>\(\displaystyle\int_0^1 \frac{1}{t^\alpha}\,\mathrm{d}t\) converge si et seulement si \(\alpha \lt 1\) (intégrale de Riemann).</li>
-        <li>Plus généralement (Riemann) :
+        <li>Plus généralement (Riemann) :
           \[\begin{aligned} \int_a^b \frac{\mathrm{d}t}{(t-a)^\alpha} \text{ converge} &\iff \alpha \lt 1, \\ \int_a^b \frac{\mathrm{d}t}{(b-t)^\alpha} \text{ converge} &\iff \alpha \lt 1. \end{aligned}\]</li>
       </ol>
     </div>
+    <details><summary>Le comprendre</summary><div><p>En \(+\infty\), il faut que \(\frac{1}{t^\alpha}\) décroisse assez vite (\(\alpha \gt 1\)) ; en \(0\), qu'elle n'explose pas trop (\(\alpha \lt 1\)). Le cas \(\alpha = 1\) diverge dans les deux cas.</p></div></details>
+  </div>
 
-    <div class="math-table-wrap">
-      <table class="math-table">
-        <tr><th>Intégrale</th><th>Converge si et seulement si</th><th>Valeur</th></tr>
-        <tr><td>\(\displaystyle\int_0^{+\infty} e^{-\alpha t}\,\mathrm{d}t\)</td><td>\(\alpha \gt 0\)</td><td>\(\dfrac{1}{\alpha}\)</td></tr>
-        <tr><td>\(\displaystyle\int_1^{+\infty} \frac{\mathrm{d}t}{t^\alpha}\)</td><td>\(\alpha \gt 1\)</td><td>\(\dfrac{1}{\alpha - 1}\)</td></tr>
-        <tr><td>\(\displaystyle\int_0^1 \frac{\mathrm{d}t}{t^\alpha}\)</td><td>\(\alpha \lt 1\)</td><td>\(\dfrac{1}{1 - \alpha}\)</td></tr>
-      </table>
-    </div>
+  <div class="tabref">
+    <table>
+      <tr><th>Intégrale</th><th>Converge si et seulement si</th><th>Valeur</th></tr>
+      <tr><td>\(\displaystyle\int_0^{+\infty} e^{-\alpha t}\,\mathrm{d}t\)</td><td><span>\(\alpha \gt 0\)</span></td><td>\(\dfrac{1}{\alpha}\)</td></tr>
+      <tr><td>\(\displaystyle\int_1^{+\infty} \frac{\mathrm{d}t}{t^\alpha}\)</td><td><span>\(\alpha \gt 1\)</span></td><td>\(\dfrac{1}{\alpha - 1}\)</td></tr>
+      <tr><td>\(\displaystyle\int_0^1 \frac{\mathrm{d}t}{t^\alpha}\)</td><td><span>\(\alpha \lt 1\)</span></td><td>\(\dfrac{1}{1 - \alpha}\)</td></tr>
+    </table>
+  </div>
 
-    <div class="meth-card">
-      <div class="meth-label">⚠ Attention</div>
+  <div class="fiche warn">
+    <div class="fiche-t"><span class="tag warn">Piège</span><span class="nm">Tendre vers 0 ne suffit pas</span></div>
+    <div class="fiche-c">
       <p>La divergence de l'intégrale de Riemann \(\displaystyle\int_1^{+\infty} \frac{1}{t}\,\mathrm{d}t\) montre qu'il <strong>ne suffit pas</strong> qu'une fonction \(f : [a, +\infty[ \to \mathbb{R}\) continue tende vers \(0\) en \(+\infty\) pour que l'intégrale impropre \(\displaystyle\int_a^{+\infty} f\) converge.</p>
     </div>
   </div>
 
-  <div class="math-section" id="s1-3">
-    <div class="math-section-title">3 — Intégrales « faussement impropres »</div>
-
-    <div class="prop-card">
-      <div class="prop-label">Proposition 2</div>
-      <div class="prop-title">Cas où \(f\) est prolongeable par continuité</div>
+  <h3 id="s1-3"><i>I.3</i>Intégrales « faussement impropres »</h3>
+  <div class="fiche prop">
+    <div class="fiche-t"><span class="tag prop">Proposition 2</span><span class="nm">Cas où \(f\) est prolongeable par continuité</span></div>
+    <div class="fiche-c">
       <p>Soient \(a\) et \(b\) deux réels vérifiant \(a \lt b\), et \(f : [a, b[ \to \mathbb{R}\) une fonction continue. On suppose que \(f\) est <strong>prolongeable par continuité</strong> en \(b\). Alors l'intégrale impropre \(\displaystyle\int_a^b f\) converge.</p>
     </div>
   </div>
 
-  <div class="math-section" id="s1-4">
-    <div class="math-section-title">4 — Intégrale sur un intervalle ouvert</div>
-
-    <div class="def-card">
-      <div class="def-accent-bar"></div>
-      <div class="def-body">
-        <div class="def-header"><span class="def-label">Définition 2</span><span class="def-name">Intégrale impropre sur \(]a, b[\)</span></div>
-        <p>Soit \(f\) une fonction continue sur un intervalle ouvert \(]a, b[\), avec \(-\infty \leqslant a \lt b \leqslant +\infty\). Soit \(c \in\, ]a, b[\).</p>
-        <p>On dit que l'intégrale \(\displaystyle\int_{]a,b[} f\) <strong>converge</strong> si <strong>chacune</strong> des intégrales \(\displaystyle\int_{]a,c]} f\) <strong>et</strong> \(\displaystyle\int_{[c,b[} f\) converge. Si c'est le cas, on définit l'intégrale de \(f\) sur \(]a, b[\) par :</p>
-        <div class="formula-block">\[\int_a^b f = \int_{]a,b[} f = \int_{]a,c]} f + \int_{[c,b[} f.\]</div>
-      </div>
-    </div>
-
-    <div class="math-key"><div class="math-key-bullet"></div><div>Cette définition <strong>ne dépend pas</strong> du choix du réel \(c \in\, ]a, b[\), d'après la relation de Chasles.</div></div>
-    <div class="math-key"><div class="math-key-bullet"></div><div>Par définition, il suffit que <strong>l'une</strong> des intégrales \(\displaystyle\int_{]a,c]} f\) et \(\displaystyle\int_{[c,b[} f\) diverge pour que l'intégrale \(\displaystyle\int_{]a,b[} f\) diverge.</div></div>
-  </div>
-
-  <div class="math-section" id="s1-5">
-    <div class="math-section-title">5 — Fonctions continues sauf en un nombre fini de points</div>
-
-    <div class="def-card">
-      <div class="def-accent-bar"></div>
-      <div class="def-body">
-        <div class="def-header"><span class="def-label">Définition 3</span><span class="def-name">Extension de la notion d'intégrale impropre (utile en probabilités)</span></div>
-        <p>Soit \(f\) une fonction continue sur un intervalle \(I = \,]a, b[\) (\(a\) éventuellement égal à \(-\infty\), \(b\) éventuellement égal à \(+\infty\)), sauf éventuellement en un nombre fini de points notés \(a_1, \ldots, a_p\), avec \(a_1 \lt \cdots \lt a_p\).</p>
-        <p>On dit que l'intégrale \(\displaystyle\int_I f\) <strong>converge</strong> si <strong>chacune</strong> des intégrales \(\displaystyle\int_{]a,a_1[} f\), \(\displaystyle\int_{]a_1,a_2[} f\), …, \(\displaystyle\int_{]a_{p-1},a_p[} f\), \(\displaystyle\int_{]a_p,b[} f\) converge. Dans ce cas, on définit l'intégrale de \(f\) sur \(I\) par :</p>
-        <div class="formula-block">\[\begin{aligned} \int_I f = \int_a^b f &= \int_{]a,a_1[} f + \int_{]a_1,a_2[} f + \cdots \\ &\quad + \int_{]a_{p-1},a_p[} f + \int_{]a_p,b[} f. \end{aligned}\]</div>
-      </div>
+  <h3 id="s1-4"><i>I.4</i>Intégrale sur un intervalle ouvert</h3>
+  <div class="fiche def">
+    <div class="fiche-t"><span class="tag def">Définition 2</span><span class="nm">Intégrale impropre sur \(]a, b[\)</span></div>
+    <div class="fiche-c">
+      <p>Soit \(f\) une fonction continue sur un intervalle ouvert \(]a, b[\), avec \(-\infty \leqslant a \lt b \leqslant +\infty\). Soit \(c \in\, ]a, b[\).</p>
+      <p>On dit que l'intégrale \(\displaystyle\int_{]a,b[} f\) <strong>converge</strong> si <strong>chacune</strong> des intégrales \(\displaystyle\int_{]a,c]} f\) <strong>et</strong> \(\displaystyle\int_{[c,b[} f\) converge. Si c'est le cas, on définit l'intégrale de \(f\) sur \(]a, b[\) par :</p>
+      \[\int_a^b f = \int_{]a,b[} f = \int_{]a,c]} f + \int_{[c,b[} f.\]
     </div>
   </div>
-</div>
-
-<!-- ═══════════════════════════════════════
-     PARTIE II : PROPRIÉTÉS ET CALCUL
-════════════════════════════════════════ -->
-<div class="math-part" id="part2">
-  <div class="math-part-header">
-    <div class="math-part-num">II</div>
-    <div class="math-part-title">Propriétés et calcul</div>
+  <div class="rem">
+    <p><b class="r">Remarques.</b> Cette définition <strong>ne dépend pas</strong> du choix du réel \(c \in\, ]a, b[\), d'après la relation de Chasles.</p>
+    <p>Par définition, il suffit que <strong>l'une</strong> des intégrales \(\displaystyle\int_{]a,c]} f\) et \(\displaystyle\int_{[c,b[} f\) diverge pour que l'intégrale \(\displaystyle\int_{]a,b[} f\) diverge.</p>
   </div>
 
-  <div class="math-section" id="s2-1">
-    <div class="math-section-title">1 — Les propriétés de l'intégrale</div>
+  <h3 id="s1-5"><i>I.5</i>Fonctions continues sauf en un nombre fini de points</h3>
+  <div class="fiche def">
+    <div class="fiche-t"><span class="tag def">Définition 3</span><span class="nm">Extension de la notion d'intégrale impropre (utile en probabilités)</span></div>
+    <div class="fiche-c">
+      <p>Soit \(f\) une fonction continue sur un intervalle \(I = \,]a, b[\) (\(a\) éventuellement égal à \(-\infty\), \(b\) éventuellement égal à \(+\infty\)), sauf éventuellement en un nombre fini de points notés \(a_1, \ldots, a_p\), avec \(a_1 \lt \cdots \lt a_p\).</p>
+      <p>On dit que l'intégrale \(\displaystyle\int_I f\) <strong>converge</strong> si <strong>chacune</strong> des intégrales \(\displaystyle\int_{]a,a_1[} f\), \(\displaystyle\int_{]a_1,a_2[} f\), …, \(\displaystyle\int_{]a_{p-1},a_p[} f\), \(\displaystyle\int_{]a_p,b[} f\) converge. Dans ce cas, on définit l'intégrale de \(f\) sur \(I\) par :</p>
+      \[\begin{aligned} \int_I f = \int_a^b f &= \int_{]a,a_1[} f + \int_{]a_1,a_2[} f + \cdots \\ &\quad + \int_{]a_{p-1},a_p[} f + \int_{]a_p,b[} f. \end{aligned}\]
+    </div>
+  </div>
+</section>
 
-    <div class="prop-card">
-      <div class="prop-label">Proposition 3</div>
-      <div class="prop-title">Extension des propriétés de l'intégrale</div>
-      <p>Soient \(I\) un intervalle, et \(f\) et \(g\) deux fonctions <strong>continues sur \(I\) sauf éventuellement en un nombre fini de points</strong>. On suppose que <strong>les intégrales \(\displaystyle\int_I f\) et \(\displaystyle\int_I g\) convergent</strong>. Les propriétés déjà connues pour les intégrales de fonctions continues sur un segment sont encore vraies :</p>
-      <ol>
-        <li><strong>Positivité</strong> : \(f \geqslant 0 \implies \displaystyle\int_I f \geqslant 0\).</li>
-        <li><strong>Linéarité</strong> : pour tout \(\lambda \in \mathbb{R}\), \(\displaystyle\int_I (\lambda f + g)\) converge et \(\displaystyle\int_I (\lambda f + g) = \lambda \int_I f + \int_I g\).</li>
-        <li><strong>Croissance</strong> : \(f \leqslant g \implies \displaystyle\int_I f \leqslant \int_I g\) (conséquence de la positivité appliquée à \(g - f\) et de la linéarité).</li>
-        <li><strong>Relation de Chasles</strong> : soient \(\alpha\), \(\beta\), \(\gamma\) trois éléments de \(I\) ou des extrémités de \(I\) (donc éventuellement égaux à \(-\infty\) ou \(+\infty\)). Alors \(\displaystyle\int_\alpha^\beta f\), \(\displaystyle\int_\beta^\gamma f\) et \(\displaystyle\int_\alpha^\gamma f\) convergent et \(\displaystyle\int_\alpha^\gamma f = \int_\alpha^\beta f + \int_\beta^\gamma f\).</li>
+<!-- ═══════════ PARTIE II ═══════════ -->
+<section class="partie" id="part2">
+  <div class="p-tete"><div class="p-num">II</div><div><small>Partie II</small><h2>Propriétés et calcul</h2></div></div>
+
+  <h3 id="s2-1"><i>II.1</i>Les propriétés de l'intégrale</h3>
+  <div class="fiche prop">
+    <div class="fiche-t"><span class="tag prop">Proposition 3</span><span class="nm">Extension des propriétés de l'intégrale</span></div>
+    <div class="fiche-c">
+      <p>Soient \(I\) un intervalle, et \(f\) et \(g\) deux fonctions <strong>continues sur \(I\) sauf éventuellement en un nombre fini de points</strong>. On suppose que <strong>les intégrales \(\displaystyle\int_I f\) et \(\displaystyle\int_I g\) convergent</strong>. Les propriétés déjà connues pour les intégrales de fonctions continues sur un segment sont encore vraies :</p>
+      <ol class="it">
+        <li><strong>Positivité</strong> : \(f \geqslant 0 \implies \displaystyle\int_I f \geqslant 0\).</li>
+        <li><strong>Linéarité</strong> : pour tout \(\lambda \in \mathbb{R}\), \(\displaystyle\int_I (\lambda f + g)\) converge et \(\displaystyle\int_I (\lambda f + g) = \lambda \int_I f + \int_I g\).</li>
+        <li><strong>Croissance</strong> : \(f \leqslant g \implies \displaystyle\int_I f \leqslant \int_I g\) (conséquence de la positivité appliquée à \(g - f\) et de la linéarité).</li>
+        <li><strong>Relation de Chasles</strong> : soient \(\alpha\), \(\beta\), \(\gamma\) trois éléments de \(I\) ou des extrémités de \(I\) (donc éventuellement égaux à \(-\infty\) ou \(+\infty\)). Alors \(\displaystyle\int_\alpha^\beta f\), \(\displaystyle\int_\beta^\gamma f\) et \(\displaystyle\int_\alpha^\gamma f\) convergent et \(\displaystyle\int_\alpha^\gamma f = \int_\alpha^\beta f + \int_\beta^\gamma f\).</li>
       </ol>
     </div>
+  </div>
 
-    <div class="meth-card">
-      <div class="meth-label">⚠ Attention à la linéarité</div>
+  <div class="fiche warn">
+    <div class="fiche-t"><span class="tag warn">Piège</span><span class="nm">Attention à la linéarité</span></div>
+    <div class="fiche-c">
       <p>Il se peut que \(\displaystyle\int_I (f + g)\) converge <strong>sans</strong> que \(\displaystyle\int_I f\) et \(\displaystyle\int_I g\) convergent. On n'utilise donc la linéarité de l'intégrale qu'<strong>après s'être assuré que chacune</strong> des intégrales \(\displaystyle\int_I f\) et \(\displaystyle\int_I g\) converge.</p>
-      <p><strong>Exemple :</strong> \(\displaystyle\int_0^{+\infty} \big(1 + (-1)\big)\,\mathrm{d}t\) converge, mais \(\displaystyle\int_0^{+\infty} 1\,\mathrm{d}t\) diverge.</p>
+      <p><strong>Exemple :</strong> \(\displaystyle\int_0^{+\infty} \big(1 + (-1)\big)\,\mathrm{d}t\) converge, mais \(\displaystyle\int_0^{+\infty} 1\,\mathrm{d}t\) diverge.</p>
     </div>
   </div>
 
-  <div class="math-section" id="s2-2">
-    <div class="math-section-title">2 — Le changement de variable</div>
-
-    <div class="thm-card">
-      <div class="thm-label">Proposition 4</div>
-      <div class="thm-title">Changement de variable dans une intégrale impropre</div>
+  <h3 id="s2-2"><i>II.2</i>Le changement de variable</h3>
+  <div class="fiche thm">
+    <div class="fiche-t"><span class="tag thm">Théorème</span><span class="nm">Changement de variable dans une intégrale impropre</span><span class="num">Proposition 4</span></div>
+    <div class="fiche-c">
       <p>Soient \(\alpha\) et \(\beta\) deux éléments distincts de \(\mathbb{R} \cup \{-\infty, +\infty\}\), et \(\varphi\) une fonction de \(]\alpha, \beta[\) (ou \(]\beta, \alpha[\)) dans \(\mathbb{R}\), <strong>de classe \(\mathcal{C}^1\) et strictement monotone</strong>.</p>
       <p>Ainsi, la fonction \(\varphi\) admet une limite, finie ou infinie, en \(\alpha\) et en \(\beta\). Notons \(a = \lim\limits_{\alpha} \varphi\) et \(b = \lim\limits_{\beta} \varphi\). Soit \(f\) une fonction continue de \(]a, b[\) (ou \(]b, a[\)) dans \(\mathbb{R}\).</p>
-      <p>Alors les intégrales \(\displaystyle\int_a^b f(x)\,\mathrm{d}x\) et \(\displaystyle\int_\alpha^\beta f\big(\varphi(t)\big)\varphi'(t)\,\mathrm{d}t\) sont <strong>de même nature</strong> (toutes deux convergentes ou toutes deux divergentes). En cas de convergence, elles sont égales :</p>
-      <div class="formula-block">\[\int_a^b f(x)\,\mathrm{d}x = \int_\alpha^\beta f\big(\varphi(t)\big)\,\varphi'(t)\,\mathrm{d}t.\]</div>
+      <p>Alors les intégrales \(\displaystyle\int_a^b f(x)\,\mathrm{d}x\) et \(\displaystyle\int_\alpha^\beta f\big(\varphi(t)\big)\varphi'(t)\,\mathrm{d}t\) sont <strong>de même nature</strong> (toutes deux convergentes ou toutes deux divergentes). En cas de convergence, elles sont égales :</p>
+      \[\int_a^b f(x)\,\mathrm{d}x = \int_\alpha^\beta f\big(\varphi(t)\big)\,\varphi'(t)\,\mathrm{d}t.\]
     </div>
-
-    <div class="remark">Le changement de variable dans une intégrale impropre demande une hypothèse de plus que sur un segment \([a, b]\) : la <strong>stricte monotonie</strong> de \(\varphi\). C'est elle qui garantit l'existence d'une limite (finie ou infinie) de \(\varphi\) en \(\alpha\) et en \(\beta\).</div>
   </div>
-</div>
+  <div class="rem"><b class="r">Remarque.</b> Le changement de variable dans une intégrale impropre demande une hypothèse de plus que sur un segment \([a, b]\) : la <strong>stricte monotonie</strong> de \(\varphi\). C'est elle qui garantit l'existence d'une limite (finie ou infinie) de \(\varphi\) en \(\alpha\) et en \(\beta\).</div>
+</section>
 
-<!-- ═══════════════════════════════════════
-     PARTIE III : CRITÈRES DE CONVERGENCE
-════════════════════════════════════════ -->
-<div class="math-part" id="part3">
-  <div class="math-part-header">
-    <div class="math-part-num">III</div>
-    <div class="math-part-title">Critères de convergence</div>
-  </div>
+<!-- ═══════════ PARTIE III ═══════════ -->
+<section class="partie" id="part3">
+  <div class="p-tete"><div class="p-num">III</div><div><small>Partie III</small><h2>Critères de convergence</h2></div></div>
 
-  <div class="math-section" id="s3-1">
-    <div class="math-section-title">1 — Le théorème de comparaison</div>
-
-    <div class="thm-card">
-      <div class="thm-label">Proposition 5</div>
-      <div class="thm-title">Comparaison pour les intégrales de fonctions positives</div>
+  <h3 id="s3-1"><i>III.1</i>Le théorème de comparaison</h3>
+  <div class="fiche thm">
+    <div class="fiche-t"><span class="tag thm">Théorème</span><span class="nm">Comparaison pour les intégrales de fonctions positives</span><span class="num">Proposition 5</span></div>
+    <div class="fiche-c">
       <p>Soient \(I\) un intervalle de \(\mathbb{R}\), et \(f\) et \(g\) deux fonctions de \(I\) dans \(\mathbb{R}\), continues sauf éventuellement en un nombre fini de points, et <strong>positives</strong>. On suppose que \(0 \leqslant f \leqslant g\).</p>
-      <ol>
+      <ol class="it">
         <li>Si \(\displaystyle\int_I g\) converge, alors \(\displaystyle\int_I f\) converge.</li>
         <li>Si \(\displaystyle\int_I f\) diverge, alors \(\displaystyle\int_I g\) diverge.</li>
       </ol>
     </div>
+    <details><summary>Le comprendre</summary><div><p>Le mot qui compte est <strong>positives</strong> : sans cette hypothèse, le théorème ne s'applique pas.</p></div></details>
   </div>
 
-  <div class="math-section" id="s3-2">
-    <div class="math-section-title">2 — La règle des équivalents</div>
-
-    <div class="thm-card">
-      <div class="thm-label">Proposition 6</div>
-      <div class="thm-title">Règle des équivalents (corollaire du théorème de comparaison)</div>
-      <p>Soient \(I = [a, b[\) un intervalle semi-ouvert de \(\mathbb{R}\), et \(f\) et \(g\) deux fonctions de \(I\) dans \(\mathbb{R}\), continues et <strong>positives au voisinage de \(b\)</strong>. On suppose \(f(x) \underset{x \to b}{\sim} g(x)\). Alors :</p>
-      <div class="formula-block">\[\int_a^b f \text{ converge} \iff \int_a^b g \text{ converge.}\]</div>
+  <h3 id="s3-2"><i>III.2</i>La règle des équivalents</h3>
+  <div class="fiche thm">
+    <div class="fiche-t"><span class="tag thm">Théorème</span><span class="nm">Règle des équivalents (corollaire du théorème de comparaison)</span><span class="num">Proposition 6</span></div>
+    <div class="fiche-c">
+      <p>Soient \(I = [a, b[\) un intervalle semi-ouvert de \(\mathbb{R}\), et \(f\) et \(g\) deux fonctions de \(I\) dans \(\mathbb{R}\), continues et <strong>positives au voisinage de \(b\)</strong>. On suppose \(f(x) \underset{x \to b}{\sim} g(x)\). Alors :</p>
+      \[\int_a^b f \text{ converge} \iff \int_a^b g \text{ converge.}\]
       <p>Autrement dit, les intégrales \(\displaystyle\int_a^b f\) et \(\displaystyle\int_a^b g\) sont <strong>de même nature</strong>.</p>
     </div>
-
-    <div class="math-subsection-title">Remarques</div>
-    <div class="math-key"><div class="math-key-bullet"></div><div>En pratique, il suffit de vérifier que <strong>l'une ou l'autre</strong> des deux fonctions \(f\) et \(g\) est positive au voisinage de \(b\) : l'hypothèse \(f(x) \underset{x \to b}{\sim} g(x)\) implique qu'alors l'autre est elle aussi positive au voisinage de \(b\).</div></div>
-    <div class="math-key"><div class="math-key-bullet"></div><div>On obtient bien entendu une règle analogue sur un intervalle semi-ouvert du type \(I = \,]a, b]\).</div></div>
+  </div>
+  <div class="rem">
+    <p><b class="r">Remarques.</b> En pratique, il suffit de vérifier que <strong>l'une ou l'autre</strong> des deux fonctions \(f\) et \(g\) est positive au voisinage de \(b\) : l'hypothèse \(f(x) \underset{x \to b}{\sim} g(x)\) implique qu'alors l'autre est elle aussi positive au voisinage de \(b\).</p>
+    <p>On obtient bien entendu une règle analogue sur un intervalle semi-ouvert du type \(I = \,]a, b]\).</p>
   </div>
 
-  <div class="math-section" id="s3-3">
-    <div class="math-section-title">3 — La convergence absolue</div>
-
-    <div class="def-card">
-      <div class="def-accent-bar"></div>
-      <div class="def-body">
-        <div class="def-header"><span class="def-label">Définition 4</span><span class="def-name">Intégrale absolument convergente</span></div>
-        <p>Soient \(I\) un intervalle et \(f : I \to \mathbb{R}\) une fonction continue sauf éventuellement en un nombre fini de points. L'intégrale \(\displaystyle\int_I f\) est dite <strong>absolument convergente</strong> si l'intégrale \(\displaystyle\int_I |f|\) est convergente.</p>
-      </div>
-    </div>
-
-    <div class="prop-card">
-      <div class="prop-label">Proposition 7</div>
-      <div class="prop-title">La convergence absolue implique la convergence</div>
-      <p>La convergence absolue d'une intégrale implique sa convergence.</p>
+  <h3 id="s3-3"><i>III.3</i>La convergence absolue</h3>
+  <div class="fiche def">
+    <div class="fiche-t"><span class="tag def">Définition 4</span><span class="nm">Intégrale absolument convergente</span></div>
+    <div class="fiche-c">
+      <p>Soient \(I\) un intervalle et \(f : I \to \mathbb{R}\) une fonction continue sauf éventuellement en un nombre fini de points. L'intégrale \(\displaystyle\int_I f\) est dite <strong>absolument convergente</strong> si l'intégrale \(\displaystyle\int_I |f|\) est convergente.</p>
     </div>
   </div>
-
-  <div class="math-section" id="s3-4">
-    <div class="math-section-title">4 — Fonction négligeable devant une autre</div>
-
-    <div class="prop-card">
-      <div class="prop-label">Proposition 8</div>
-      <div class="prop-title">Fonction négligeable devant une autre</div>
-      <p>Soient \(f\) et \(g\) des fonctions continues de \([a, b[\) dans \(\mathbb{R}\), \(g\) <strong>positive</strong> au voisinage de \(b\), telles que \(f(x) = \underset{x \to b}{o}\big(g(x)\big)\). Alors :</p>
-      <div class="formula-block">\[\int_a^b g \text{ converge} \implies \int_a^b f \text{ converge.}\]</div>
-      <p>La contraposée : \(\displaystyle\int_a^b f\) diverge \(\implies \displaystyle\int_a^b g\) diverge.</p>
-    </div>
-
-    <div class="remark">On obtient bien entendu une règle analogue sur un intervalle semi-ouvert du type \(I = \,]a, b]\). Seule \(g\) doit être positive : \(f\) peut changer de signe.</div>
-
-    <div class="math-highlight"><strong>Pour étudier la nature d'une intégrale :</strong> repérer les bornes « impropres » et couper l'intégrale en conséquence ; si la fonction est prolongeable par continuité, conclure ; sinon, comparer à une intégrale de référence (Riemann, exponentielle) par majoration, équivalent ou négligeabilité, en vérifiant la <strong>positivité</strong> ; si la fonction change de signe, passer par la valeur absolue ou par un \(o\) devant une fonction positive.</div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════
-     PARTIE IV : GAUSS ET GAMMA
-════════════════════════════════════════ -->
-<div class="math-part" id="part4">
-  <div class="math-part-header">
-    <div class="math-part-num">IV</div>
-    <div class="math-part-title">Deux intégrales à connaître : Gauss et Gamma</div>
+  <div class="fiche prop">
+    <div class="fiche-t"><span class="tag prop">Proposition 7</span><span class="nm">La convergence absolue implique la convergence</span></div>
+    <div class="fiche-c"><p>La convergence absolue d'une intégrale implique sa convergence.</p></div>
   </div>
 
-  <div class="math-section" id="s4-1">
-    <div class="math-section-title">1 — L'intégrale de Gauss</div>
-
-    <div class="prop-card">
-      <div class="prop-label">Proposition 9</div>
-      <div class="prop-title">Valeur de l'intégrale de Gauss</div>
-      <p>L'intégrale \(\displaystyle\int_{-\infty}^{+\infty} e^{-x^2/2}\,\mathrm{d}x\) converge et vaut \(\sqrt{2\pi}\) :</p>
-      <div class="formula-block">\[\int_{-\infty}^{+\infty} e^{-\frac{x^2}{2}}\,\mathrm{d}x = \sqrt{2\pi}.\]</div>
+  <h3 id="s3-4"><i>III.4</i>Fonction négligeable devant une autre</h3>
+  <div class="fiche prop">
+    <div class="fiche-t"><span class="tag prop">Proposition 8</span><span class="nm">Fonction négligeable devant une autre</span></div>
+    <div class="fiche-c">
+      <p>Soient \(f\) et \(g\) des fonctions continues de \([a, b[\) dans \(\mathbb{R}\), \(g\) <strong>positive</strong> au voisinage de \(b\), telles que \(f(x) = \underset{x \to b}{o}\big(g(x)\big)\). Alors :</p>
+      \[\int_a^b g \text{ converge} \implies \int_a^b f \text{ converge.}\]
+      <p>La contraposée : \(\displaystyle\int_a^b f\) diverge \(\implies \displaystyle\int_a^b g\) diverge.</p>
     </div>
   </div>
+  <div class="rem"><b class="r">Remarque.</b> On obtient bien entendu une règle analogue sur un intervalle semi-ouvert du type \(I = \,]a, b]\). Seule \(g\) doit être positive : \(f\) peut changer de signe.</div>
 
-  <div class="math-section" id="s4-2">
-    <div class="math-section-title">2 — La fonction Gamma</div>
+  <div class="fiche ex">
+    <details><summary><span class="tag ex">Exemple</span>Nature de \(\displaystyle\int_1^{+\infty} \frac{\ln t}{t^2}\,\mathrm{d}t\)</summary><div>
+      <p>La fonction \(t \mapsto \frac{\ln t}{t^2}\) est continue et positive sur \([1, +\infty[\). Par croissances comparées, \(\dfrac{\ln t}{t^2} = \dfrac{\ln t}{t^{1/2}} \cdot \dfrac{1}{t^{3/2}} = \underset{t \to +\infty}{o}\left(\dfrac{1}{t^{3/2}}\right)\). Or \(\displaystyle\int_1^{+\infty} \frac{\mathrm{d}t}{t^{3/2}}\) converge (Riemann, \(\frac32 \gt 1\)) : l'intégrale <strong>converge</strong>.</p>
+    </div></details>
+  </div>
 
-    <div class="thm-card">
-      <div class="thm-label">Proposition 10</div>
-      <div class="thm-title">La fonction Gamma</div>
-      <ol>
+  <div class="meth">
+    <div class="meth-t">Étudier la nature d'une intégrale</div>
+    <ol>
+      <li>Repérer les bornes « impropres » et <strong>couper</strong> l'intégrale en conséquence.</li>
+      <li>Si la fonction est prolongeable par continuité, conclure : l'intégrale converge.</li>
+      <li>Sinon, <strong>comparer</strong> à une intégrale de référence (Riemann, exponentielle) par majoration, équivalent ou négligeabilité.</li>
+      <li>Vérifier la <strong>positivité</strong> avant d'appliquer un critère.</li>
+      <li>Si la fonction change de signe, passer par la valeur absolue ou par un \(o\) devant une fonction positive.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ═══════════ PARTIE IV ═══════════ -->
+<section class="partie" id="part4">
+  <div class="p-tete"><div class="p-num">IV</div><div><small>Partie IV</small><h2>Deux intégrales à connaître : Gauss et Gamma</h2></div></div>
+
+  <h3 id="s4-1"><i>IV.1</i>L'intégrale de Gauss</h3>
+  <div class="fiche prop">
+    <div class="fiche-t"><span class="tag prop">Proposition 9</span><span class="nm">Valeur de l'intégrale de Gauss</span></div>
+    <div class="fiche-c">
+      <p>L'intégrale \(\displaystyle\int_{-\infty}^{+\infty} e^{-x^2/2}\,\mathrm{d}x\) converge et vaut \(\sqrt{2\pi}\) :</p>
+      \[\int_{-\infty}^{+\infty} e^{-\frac{x^2}{2}}\,\mathrm{d}x = \sqrt{2\pi}.\]
+    </div>
+  </div>
+
+  <h3 id="s4-2"><i>IV.2</i>La fonction Gamma</h3>
+  <div class="fiche thm">
+    <div class="fiche-t"><span class="tag thm">Théorème</span><span class="nm">La fonction Gamma</span><span class="num">Proposition 10</span></div>
+    <div class="fiche-c">
+      <ol class="it">
         <li>Pour tout réel \(x \gt 0\), l'intégrale \(\Gamma(x) = \displaystyle\int_0^{+\infty} t^{x-1} e^{-t}\,\mathrm{d}t\) converge.</li>
         <li>Pour tout \(x \gt 0\), on a \(\Gamma(x+1) = x\,\Gamma(x)\).</li>
         <li>Pour tout \(n \in \mathbb{N}^*\), on a \(\Gamma(n) = (n-1)!\), autrement dit \(\displaystyle\int_0^{+\infty} t^n e^{-t}\,\mathrm{d}t = n!\)</li>
       </ol>
     </div>
-
-    <div class="remark">La fonction Gamma généralise ainsi la factorielle (définie sur \(\mathbb{N}\)) à tous les réels strictement positifs.</div>
   </div>
+  <div class="rem"><b class="r">Remarque.</b> La fonction Gamma généralise ainsi la factorielle (définie sur \(\mathbb{N}\)) à tous les réels strictement positifs.</div>
+</section>
+
+<div class="fin">
+  <a href="index.html">← Tous les chapitres de maths</a>
+  <a href="revision-fonctions-convexes.html">Fiche 3 · Les fonctions convexes</a>
 </div>
 
-</div><!-- fin .content -->
-
-<footer class="site-footer">
-  <div class="footer-logo">Révisions d'analyse : les intégrales impropres</div>
-</footer>
+</div>
 
 <button class="back-to-top" id="backToTop" aria-label="Retour en haut de page">↑</button>
 
 <script>
-  document.querySelectorAll('.toc-list a').forEach(a => {
-    a.addEventListener('click', e => {
-      e.preventDefault();
-      const target = document.querySelector(a.getAttribute('href'));
-      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  });
-
   const btn = document.getElementById('backToTop');
-  window.addEventListener('scroll', () => {
-    btn.classList.toggle('visible', window.scrollY > 400);
-  });
-  btn.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
+  window.addEventListener('scroll', () => { btn.classList.toggle('visible', window.scrollY > 400); });
+  btn.addEventListener('click', () => { window.scrollTo({ top: 0, behavior: 'smooth' }); });
 </script>
 
 </body>
