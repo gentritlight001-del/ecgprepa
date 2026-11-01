@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Pologne",
+"titre": "Pologne : crise du Tribunal constitutionnel",
+"url": "actualites/monde/articles/pologne-tribunal-constitutionnel-crise-2026.html",
+"image": "actualites/monde/images/pologne-tribunal-constitutionnel-crise-2026.webp",
+"date": "2026-11-01T08:52:06+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Russie",
 "titre": "Russie : Novaya Gazeta annonce cesser ses activités le 9 novembre sous la pression des autorités",
 "url": "actualites/monde/articles/russie-novaya-gazeta-fermeture-2026.html",
@@ -1209,15 +1218,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/monde/articles/kenya-premier-deces-ebola.html",
 "image": "actualites/monde/images/kenya-premier-deces-ebola.webp",
 "date": "2026-10-07T05:33:33+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Kosovo",
-"titre": "Kosovo : le Parlement élit Justina Pula présidente à quelques minutes de l'échéance",
-"url": "actualites/monde/articles/kosovo-justina-pula-presidente.html",
-"image": "actualites/monde/images/kosovo-justina-pula-presidente.webp",
-"date": "2026-10-07T05:30:22+00:00"
 },
 {
 "t": "en",
