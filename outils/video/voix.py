@@ -193,7 +193,7 @@ def poser(a):
         f = dos / f'ecran-{n:03d}.wav'
         if not f.exists():
             continue
-        t = plans[n - 1]['start'] + DEPART - decalage
+        t = plans[n - 1]['start'] + plans[n - 1].get('voix', DEPART) - decalage   # départ propre à l'écran (documentaire)
         entrees += ['-i', str(f)]
         filtres.append(f'[{len(filtres) + 1}:a]adelay={int(t * 1000)}:all=1[v{len(filtres)}]')
     filtres.append(''.join(f'[v{i}]' for i in range(len(filtres))) + f'amix=inputs={len(filtres)}:normalize=0:dropout_transition=0,apad[voix]')

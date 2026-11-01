@@ -63,3 +63,22 @@ Musiques fournies par le propriétaire (Pixabay, non versionnées), début dans 
 
 Fondus enchaînés de 2 à 2,5 s ; la piste épique est calée pour que son dernier temps fort tombe sur la coupe finale
 (5:25). Sans voix, la musique est à pleine hauteur ; avec la voix, la baisser d'environ 18 dB sous les phrases.
+
+## Voix off (préparée le 1er novembre 2026, pas encore synthétisée)
+
+La source est prête à se caler sur la voix : sans voix, elle garde les durées du tableau ; avec la voix, chaque séquence
+dure « départ de la voix + voix + 0,8 s » et ses apparitions de texte sont déplacées au moment où la voix dit le mot repère
+(tableau `CALAGE` de la source : `[temps du découpage, mot, autre mot…]`, `vd` = départ de la voix, 5 s pour la séquence 3
+qui garde son titre en silence). La musique suit les séquences, plus des minutes fixes (`doc-musique.py`, table `PISTES`).
+
+```
+python3 outils/video/voix.py synthese outils/video/hgg2-chapitre2-doc-voix.txt --dossier <scratchpad>/voix-doc --voix-id JBFqnCBsd6RMkjVDRZzb
+python3 outils/video/generer.py outils/video/hgg2-chapitre2-doc.html --controle --voix <scratchpad>/voix-doc/voix.json
+python3 outils/video/generer.py outils/video/hgg2-chapitre2-doc.html <scratchpad>/doc-muet.mp4 --voix <scratchpad>/voix-doc/voix.json
+python3 outils/video/doc-musique.py outils/video/hgg2-chapitre2-doc.html <scratchpad>/doc-muet.mp4 <scratchpad>/doc.mp4 --musiques <dossier des MP3> --voix <scratchpad>/voix-doc
+```
+
+Avant le rendu, `VIDEO.reperes()` (dans la page ouverte avec la voix) dit pour chaque repère le mot trouvé (✓) ou ✗ :
+remplacer un ✗ par le mot que Whisper a vraiment écrit (`mots.json`). Musique baissée de 18 dB pendant les phrases
+(`--baisse`), remontée entre elles ; le texte de la voix fait 4 360 caractères (crédits à vérifier : 10 000 par mois en
+formule gratuite).
