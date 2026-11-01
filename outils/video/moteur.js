@@ -14,6 +14,10 @@
   const PINS = ['var(--a3)', 'var(--a1)', 'var(--a2)', '#c9a227'];
   const TAPE = ['rgba(242,214,117,.82)', 'rgba(214,228,222,.86)', 'rgba(239,190,160,.8)'];
   let doc = 0, pinN = 0, tapeN = 0, seed = 7;
+  /* Chapitre de la source (const CHAP = { n: 3, suite: 4 } dans la page) : numéro de la couverture, du tampon, du bilan,
+     et chapitre suivant de l'écran de fin (sa vignette vignettes/chapitre-N.webp ; suite: 0 si le chapitre suivant n'existe pas encore). */
+  const CH = Object.assign({ n: 1 }, typeof CHAP !== 'undefined' ? CHAP : {});
+  const SUITE = CH.suite ?? CH.n + 1;
   const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
 
   const $ = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
@@ -264,6 +268,64 @@
       [['flv', 'var(--a1)'], ['flr', 'var(--a3)']].forEach(([id, c]) => { const m = S('marker', { id, viewBox: '0 0 10 10', refX: 6, refY: 5, markerWidth: 4, markerHeight: 4, orient: 'auto' }, defs); S('path', { d: 'M0,0 L10,5 L0,10 z', fill: c }, m); });
       fl('M165,180 C165,250 240,300 262,320', 'var(--a1)', t + 1.8, 'composants sans droits', 108, 302);
       fl('M500,330 C580,300 600,250 595,184', 'var(--a3)', t + 3.4, 'réexportation', 680, 262);
+    },
+    /* La « valse des paradigmes » : chaque modèle de développement s'achève dans une crise (HGG 2e année, chapitre 3) */
+    valse(e, t) {
+      e.append($('div', 'lab', 'La « valse des paradigmes »'));
+      const sv = S('svg', { viewBox: '0 0 760 470' }); e.append(sv);
+      const tx = (x, y, l, o) => { const el = S('text', Object.assign({ x, y, 'font-size': 21, fill: 'var(--ink)', 'text-anchor': 'middle' }, o), sv); l.forEach((m, k) => { S('tspan', { x, dy: k ? 24 : 0 }, el).textContent = m; }); return el; };
+      S('line', { x1: 20, y1: 340, x2: 740, y2: 340, stroke: 'var(--rule)', 'stroke-width': 3 }, sv);
+      const ph = [[['Agro-minier', 'exportateur'], '1929', 'Grande Dépression'], [['ISI', '(CEPAL)'], '1982', 'Crise de la dette'], [['Consensus', 'de Washington'], '1994-2001', 'Tequila, Argentine'], [['Néo-', 'extractivisme'], '2014', 'Fin du supercycle']];
+      ph.forEach(([nom, an, crise], k) => {
+        const x0 = 20 + k * 172, x1 = x0 + 158, c = k % 2 ? 'var(--a3)' : 'var(--a1)', d = t + .4 + k * 1.1;
+        const v = S('path', { d: `M${x0},340 C${x0 + 60},330 ${x1 - 60},${190 - k * 12} ${x1 - 12},${165 - k * 12} L${x1},340`, fill: 'none', stroke: c, 'stroke-width': 7, 'stroke-linejoin': 'round' }, sv);
+        A(v, 'draw', d, 1, { len: 520 });
+        A(tx(x0 + 82, 100 - k * 12, nom, { 'font-weight': 700, fill: c, 'font-size': 22 }), 'fade', d + .2, .6);
+        const pt = S('circle', { cx: x1, cy: 340, r: 9, fill: 'var(--a3)' }, sv); A(pt, 'zoom', d + .9, .5, { o: `${x1}px 340px` });
+        A(tx(Math.min(x1 - 30, 690), 380, [an], { 'font-weight': 700, 'font-size': 23 }), 'fade', d + .9, .5);
+        A(tx(Math.min(x1 - 30, 690), 408, [crise], { 'font-size': 18, fill: 'var(--dim)' }), 'fade', d + 1, .5);
+      });
+    },
+    /* La production de pétrole du Venezuela (AIE), en milliers de barils par jour */
+    venezuela(e, t) {
+      e.append($('div', 'lab', 'Pétrole du Venezuela, milliers de barils par jour'));
+      const sv = S('svg', { viewBox: '0 0 760 430' }); e.append(sv);
+      const X = a => 70 + (a - 1996) * (640 / 30), Y = v => 370 - v * (300 / 4000);
+      S('line', { x1: 50, y1: 370, x2: 740, y2: 370, stroke: 'var(--rule)', 'stroke-width': 3 }, sv);
+      [2000, 2010, 2020].forEach(a => { const l = S('text', { x: X(a), y: 405, 'font-size': 19, fill: 'var(--dim)', 'text-anchor': 'middle' }, sv); l.textContent = a; });
+      const sx = X(2019), sa = S('line', { x1: sx, y1: 60, x2: sx, y2: 370, stroke: 'var(--a3)', 'stroke-width': 3, 'stroke-dasharray': '10 8' }, sv); A(sa, 'draw', t + 2.2, .8, { len: 320 });
+      const sl = S('text', { x: sx - 10, y: 56, 'font-size': 19, 'font-weight': 700, fill: 'var(--a3)', 'text-anchor': 'end' }, sv); sl.textContent = 'Sanctions contre PDVSA, 2019'; A(sl, 'fade', t + 2.6);
+      const pts = [[1998, 3656, 'Record 1998'], [2012, 3200, '2012'], [2020, 383, 'Creux 2020'], [2025, 1034, '2025']];
+      const d = 'M' + pts.map(([a, v]) => `${X(a)},${Y(v)}`).join(' L');
+      A(S('path', { d, fill: 'none', stroke: 'var(--a1)', 'stroke-width': 7, 'stroke-linejoin': 'round' }, sv), 'draw', t + .4, 2.4, { len: 900 });
+      pts.forEach(([a, v, l], k) => {
+        const x = X(a), y = Y(v), at = t + .5 + k * .7;
+        A(S('circle', { cx: x, cy: y, r: 10, fill: k === 2 ? 'var(--a3)' : 'var(--a1)' }, sv), 'zoom', at, .5, { o: `${x}px ${y}px` });
+        const g = S('text', { x: x + (k === 3 ? -16 : 14), y: y + (k === 2 ? 30 : -18), 'font-size': 24, 'font-weight': 700, fill: 'var(--ink)', 'text-anchor': k === 3 ? 'end' : 'start' }, sv);
+        S('tspan', {}, g).textContent = v.toLocaleString('fr-FR').replace(/\s/g, ' ') + ' ';
+        S('tspan', { 'font-size': 18, 'font-weight': 400, fill: 'var(--dim)' }, g).textContent = l;
+        A(g, 'fade', at + .2, .5);
+      });
+    },
+    /* Un corridor bi-océanique et son « effet tunnel » */
+    corridor(e, t) {
+      e.append($('div', 'lab', 'Un corridor bi-océanique'));
+      const sv = S('svg', { viewBox: '0 0 760 380' }); e.append(sv);
+      const box = (x, w, l1, l2, l3, c, at) => {
+        const g = S('g', {}, sv); S('rect', { x, y: 110, width: w, height: 128, rx: 8, fill: '#fff', stroke: c, 'stroke-width': 4 }, g);
+        [[l1, 150, 24, 700, c], [l2, 182, 19, 400, 'var(--txt)'], [l3, 206, 19, 400, 'var(--txt)']].forEach(([l, y, f, w2, col]) => {
+          const tt = S('text', { x: x + w / 2, y, 'font-size': f, 'font-weight': w2, fill: col, 'text-anchor': 'middle' }, g); tt.textContent = l;
+        });
+        A(g, 'fade', at, .6);
+      };
+      const zone = S('rect', { x: 230, y: 96, width: 300, height: 156, fill: 'var(--rule)', opacity: .6 }, sv); A(zone, 'fade', t + .3, .8);
+      const zl = S('text', { x: 380, y: 80, 'font-size': 19, 'font-weight': 700, fill: 'var(--dim)', 'text-anchor': 'middle' }, sv); zl.textContent = 'INTÉRIEUR À DÉSENCLAVER'; A(zl, 'fade', t + .5);
+      const zs = S('text', { x: 380, y: 280, 'font-size': 18, fill: 'var(--dim)', 'text-anchor': 'middle' }, sv); zs.textContent = 'Andes, Amazonie, Bolivie, Paraguay'; A(zs, 'fade', t + .5);
+      const route = S('line', { x1: 220, y1: 174, x2: 540, y2: 174, stroke: 'var(--ink)', 'stroke-width': 8, 'stroke-dasharray': '22 12' }, sv); A(route, 'draw', t + 1.4, 1.2, { len: 330 });
+      box(10, 220, 'Façade atlantique', 'São Paulo,', 'Buenos Aires', 'var(--a1)', t + .8);
+      box(540, 210, 'Façade pacifique', 'ports chiliens et', 'péruviens → Asie', 'var(--a3)', t + 2.4);
+      const tl = S('text', { x: 380, y: 330, 'font-size': 22, 'font-weight': 700, fill: 'var(--a3)', 'text-anchor': 'middle' }, sv); tl.textContent = 'Effet tunnel : seules les extrémités en profitent';
+      A(tl, 'fade', t + 3.4);
     }
   };
 
@@ -273,11 +335,11 @@
     cover(d, h) {
       const s = P.box;
       const f = BLOCS.photo({ img: d.img, cap: d.cap, h: 470, rot: -.8, min: .2 }, h); f.classList.add('cv-photo'); s.append(f);
-      const et = $('div', 'cv-etiq', `<div class="piece"><b>01</b><span>Chapitre<br>HGG · 2e année</span></div><h1></h1><p>${ty(d.sous)}</p>`);
-      et.style.transform = 'rotate(.5deg)'; s.append(et);
+      const et = $('div', 'cv-etiq', `<div class="piece"><b>${String(CH.n).padStart(2, '0')}</b><span>Chapitre<br>HGG · 2e année</span></div><h1></h1><p>${ty(d.sous)}</p>`);
+      et.style.transform = 'rotate(.5deg)'; if (d.haut && !V) et.style.top = d.haut + 'px'; s.append(et);   // haut : étiquette remontée pour un titre sur 3 lignes
       const t = h.lire(4, 2.2); A(et, 'up', t, .9, { rot: .5 }); titreMots(et.querySelector('h1'), d.titre, t + .4, .12);
       A(et.querySelector('p'), 'up', h.lire(mots(d.sous)));
-      const tp = $('div', 'tampon', '<span>ECG Prépa</span><b>Cours</b><span>Chapitre 1</span>'); Object.assign(tp.style, V ? { right: '70px', top: '1500px' } : { right: '170px', top: '600px' }); s.append(tp);
+      const tp = $('div', 'tampon', `<span>ECG Prépa</span><b>Cours</b><span>Chapitre ${CH.n}</span>`); Object.assign(tp.style, V ? { right: '70px', top: '1500px' } : { right: '170px', top: '600px' }); s.append(tp);
       A(tp, 'stamp', h.lire(1, 1.6), .5, { rot: -14 });
     },
     these(d, h) {
@@ -308,7 +370,7 @@
       const k = $('div', 'kick', 'Le plan du chapitre'); k.style.marginBottom = '20px'; c.append(k); A(k, 'up', .5);
       const ol = $('ol', 'som'); c.append(ol);
       PARTIES.forEach(pa => {
-        const li = $('li', '', `<span class="rn">${pa.n}</span><div><h4>${ty(pa.titre)}</h4><p>${pa.sps.map(s => s + ' · ' + SP[s][1]).join('<br>')}</p></div>`);
+        const li = $('li', '', `<span class="rn">${pa.n}</span><div><h4>${ty(pa.titre)}</h4><p>${(pa.sps.length > 4 ? pa.sps.map(s => s + ' ' + (SP[s][2] || SP[s][1])).join('&ensp;·&ensp;') : pa.sps.map(s => s + ' · ' + (SP[s][2] || SP[s][1])).join('<br>'))}</p></div>`);
         li.style.setProperty('--c', pa.c); ol.append(li); A(li, 'left', h.lire(mots(pa.titre) + 4));
       });
     },
@@ -316,9 +378,9 @@
       const pa = PARTIES.find(x => x.n === d.n); P.el.style.setProperty('--c', pa.c);
       P.box.append($('div', 'pt-fond'));
       const num = $('div', 'pt-num', pa.n); P.box.append(num); A(num, 'fade', .3, 1.2);
-      const tx = $('div', 'pt-txt', `<div class="kick">Partie ${pa.n}</div><h2 class="grand"></h2><ol></ol>`); P.box.append(tx);
+      const nb = pa.sps.length > 4, tx = $('div', 'pt-txt' + (nb ? ' nombreux' : ''), `<div class="kick">Partie ${pa.n}</div><h2 class="grand"></h2><ol></ol>`); P.box.append(tx);
       A(tx.querySelector('.kick'), 'up', .5); titreMots(tx.querySelector('h2'), pa.titre, .7, .09); h.lire(mots(pa.titre) + 2);
-      pa.sps.forEach(s => { const li = $('li', '', `<i>${s}</i><span>${ty(SP[s][1])}</span>`); tx.querySelector('ol').append(li); A(li, 'left', h.lire(mots(SP[s][1]) * .6 + 1, 1.4)); });
+      pa.sps.forEach(s => { const li = $('li', '', `<i>${s}</i><span>${ty(nb ? SP[s][2] || SP[s][1] : SP[s][1])}</span>`); tx.querySelector('ol').append(li); A(li, 'left', h.lire(mots(SP[s][1]) * .6 + 1, 1.4)); });
       const f = BLOCS.photo({ img: d.img, cap: d.cap, h: 480, rot: 1.2, min: .2 }, new Horloge(1)); f.classList.add('pt-photo'); P.box.append(f);
     },
     dates(d, h) {
@@ -348,7 +410,7 @@
     },
     bilan(d, h) {
       const b = corps('plein'); P.box.append(b); const c = $('div', 'col'); c.style.gap = '46px'; b.append(c);
-      const k = $('div', 'kick', 'Bilan · Chapitre 1'); c.append(k); A(k, 'up', .4);
+      const k = $('div', 'kick', `Bilan · Chapitre ${CH.n}`); c.append(k); A(k, 'up', .4);
       const ph = $('p', 'bilan-ph', ty(d.phrase)); c.append(ph); const t = h.lire(mots(d.phrase)); A(ph, 'left', t); surligne(ph, t);
       const g = $('div', 'bil3'); c.append(g);
       d.items.forEach(([tt, x], i) => { const f = BLOCS.fiche({ t: tt, x, rot: 0 }, h); f.style.setProperty('--c', PARTIES[i].c); f.prepend($('span', 'gn', PARTIES[i].n)); g.append(f); });
@@ -365,7 +427,7 @@
       const b = corps('plein'); P.box.append(b); const c = $('div', 'col'); c.style.gap = '40px'; c.style.alignItems = 'flex-start'; b.append(c);
       const l = $('div', 'fin-logo', 'ECG Prépa'); c.append(l); A(l, 'up', .5);
       const p = $('p', 'b-p', ty(d.x)); p.style.fontSize = '40px'; c.append(p); A(p, 'up', h.lire(mots(d.x)));
-      const s = $('div', 'suite', `<img src="${IMG}../vignettes/chapitre-2.webp" alt=""><div><small>La suite · Chapitre 2</small><h5>${ty(d.suite)}</h5></div>`); c.append(s);
+      const s = $('div', 'suite', `${SUITE ? `<img src="${IMG}../vignettes/chapitre-${SUITE}.webp" alt="">` : ''}<div><small>${ty(d.suiteK || 'La suite · Chapitre ' + SUITE)}</small><h5>${ty(d.suite)}</h5></div>`); c.append(s);
       A(s, 'up', h.lire(8)); h.pause(2);
       const tp = $('div', 'tampon', '<span>ecg-prepa.fr</span><b>HGG</b><span>2e année</span>'); Object.assign(tp.style, V ? { right: '80px', top: '1380px' } : { right: '180px', top: '300px' }); P.box.append(tp); A(tp, 'stamp', 2.6, .5, { rot: -12 });
     }
