@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Binance",
+"titre": "Binance : le vol de 6,3 milliards de dollars confirmé, le plus grand piratage de cryptomonnaies",
+"url": "actualites/monde/articles/binance-piratage-6-3-milliards-2026.html",
+"image": "actualites/monde/images/binance-piratage-6-3-milliards-2026.webp",
+"date": "2026-11-01T08:36:19+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Israël",
 "titre": "Israël : le bloc de Netanyahou perd sa majorité, aucun camp n'atteint les 61 sièges à la Knesset",
 "url": "actualites/monde/articles/israel-legislatives-27-octobre-2026-impasse.html",
@@ -1272,15 +1281,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/es/articles/perou-elections-regionales-municipales-2026.html",
 "image": "actualites/es/images/perou-elections-regionales-municipales-2026.webp",
 "date": "2026-10-05T17:59:53+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Bosnie-Herzégovine",
-"titre": "Bosnie-Herzégovine : participation record de faiblesse, nationalistes confortés, Dodik triomphe",
-"url": "actualites/monde/articles/bosnie-elections-generales-2026.html",
-"image": "actualites/monde/images/bosnie-elections-generales-2026.webp",
-"date": "2026-10-05T17:51:31+00:00"
 },
 {
 "t": "de",
