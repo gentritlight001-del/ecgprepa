@@ -114,7 +114,6 @@ svg text { font-family: "Inter Tight", sans-serif; }
 .plan3 em { display: block; margin-top: 12px; font: italic 300 26px/1.3 "Fraunces"; color: var(--dim); }
 .etiq { position: absolute; font: 600 24px/1.2 "Inter Tight"; letter-spacing: .2em; text-transform: uppercase; color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,.9); white-space: nowrap; }
 .etiq small { display: block; margin-top: 6px; font: 400 20px/1.2 "Inter Tight"; letter-spacing: .08em; text-transform: none; color: var(--ink); }
-#grain { position: absolute; inset: 0; pointer-events: none; opacity: .07; mix-blend-mode: screen; }
 #vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,.5) 100%); }
 </style>
 </head>
@@ -519,14 +518,10 @@ svg text { font-family: "Inter Tight", sans-serif; }
     noir(S, tm, S.d);
   });
 
-  /* ===== Habillage commun : grain et vignette ===== */
+  /* ===== Habillage commun : vignette (pas de grain : il alourdit le fichier et brouille l'image) ===== */
   const vg = $('div', null, null, stage); vg.id = 'vignette';
-  const cv = $('canvas', null, null, stage); cv.id = 'grain'; cv.width = 960; cv.height = 540; const cx2 = cv.getContext('2d');
-  const tuiles = [0, 1, 2, 3].map(() => { const im = cx2.createImageData(960, 540); for (let i = 0; i < im.data.length; i += 4) { const v = Math.random() * 255; im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 255; } return im; });
-  cv.style.width = W + 'px'; cv.style.height = H + 'px';
 
   const DUREE = fin;
-  let grainCur = -1;
   function render(t) {
     const proms = [];
     for (const s of SEQS) {
@@ -542,7 +537,6 @@ svg text { font-family: "Inter Tight", sans-serif; }
         if (l.draw) { const r = l.draw(lt - l.t0, l.t1 - l.t0, lt); if (r && r.then) proms.push(r); }
       }
     }
-    const k = Math.floor(t * FPS) % 4; if (k !== grainCur) { grainCur = k; cx2.putImageData(tuiles[k], 0, 0); }
     return proms.length ? Promise.all(proms).then(() => null) : null;
   }
   function controle() {
