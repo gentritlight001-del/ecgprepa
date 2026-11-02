@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Musique (et voix off) du documentaire du chapitre 2 d'HGG 2e année (hgg2-chapitre2-doc.html).
 
-Pose les pistes de la feuille de montage (hgg2-chapitre2-doc-plans.md, section « Montage ») sur la vidéo muette,
+Pose les pistes de la table PISTES (une piste par groupe de séquences) sur la vidéo muette,
 calées sur les séquences et non sur des minutes fixes : si la voix allonge ou raccourcit une séquence, la musique suit.
 Avec la voix (--voix <dossier> de voix.py synthese), la musique est baissée de --baisse dB (18 par défaut) pendant les
 phrases et remonte entre elles (attaque 0,25 s, relâche 0,6 s ; un silence de moins de 0,45 s ne la fait pas remonter).
@@ -22,14 +22,14 @@ X = 2.2   # fondu enchaîné entre deux pistes (s)
 
 # piste (mot du nom du fichier), première et dernière séquence, décalage dans la piste (s), gain (dB)
 PISTES = [
-    ('dark-score', 1, 3, 0, 0),
-    ('suspense-music', 4, 6, 0, -2.5),
-    ('suspense-626525', 7, 7, 0, -2.5),
-    ('tense', 8, 10, 0, -2.5),
-    ('dark-score', 11, 12, 40, 0),
-    ('inspiring', 13, 18, None, -4.5),   # None : calée par la fin, son dernier temps fort (99 s) sur la coupe finale
+    ('space-music', 1, 1, 0, -1),                   # ouverture : nappe qui monte sous Winthrop
+    ('epic-cinema-trailer', 2, 2, 38, 0),           # titre : entrée dans la partie forte de la piste
+    ('documentary-inspirational', 3, 3, 0, -2),     # exceptionnalisme, siècle américain
+    ('tense', 5, 5, 0, -2.5),                       # le doute
+    ('suspense-music', 6, 8, 0, -2.5),              # problématique, puissance, déclin
+    ('adventure', 9, 12, 0, -3),                    # partie I : le territoire
 ]
-FIN_EPIQUE = 99.0
+FIN_EPIQUE = 99.0   # (premier essai) fin calée sur un temps fort, si décalage None
 
 
 def lire(f, debut, duree):

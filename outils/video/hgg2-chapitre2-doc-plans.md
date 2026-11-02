@@ -32,3 +32,29 @@ Réservées pour la suite : atlasaudio « Tragic Piano » (guerres indiennes, S�
 
 Faits ajoutés hors du cours (signalés au propriétaire) : Winthrop 1630 et sa citation, Luce (*Life*, 17 février 1941),
 le Texas et 1848, « près de dix-sept fois la France ». Le livre de Lipset est de 1996 (Norton), pas de 1995.
+
+## Montage (2 novembre 2026)
+
+Source : `hgg2-chapitre2-doc.html` (4 min 22 avec la voix). Chaque plan est calé sur un mot de la voix ; les extraits
+vidéo sont lus image par image. Commandes dans l'en-tête de la source :
+
+```
+python3 outils/video/doc-medias.py outils/video/hgg2-chapitre2-doc.html --fichier mer=<mer.mp4>
+python3 outils/video/generer.py outils/video/hgg2-chapitre2-doc.html <scratchpad>/doc-muet.mp4 --voix <scratchpad>/voix-doc/voix.json
+python3 outils/video/doc-musique.py outils/video/hgg2-chapitre2-doc.html <scratchpad>/doc-muet.mp4 <scratchpad>/doc.mp4 --musiques <mp3> --voix <scratchpad>/voix-doc
+```
+
+Archives (domaine public) : Library of Congress (gravures, portraits de Winthrop, Luce, Turner ; photos de Carol M.
+Highsmith : Manhattan, Bourse, Wall Street, Capitole, Grand Teton, Blue Ridge, Kansas, Big Sur), Wikimedia Commons
+(Trumbull, portrait officiel de D. Trump), films NARA (V-J Day à New York, 1945), Library of Congress (Ellis Island, 1906),
+NASA (Terre de nuit, relief Worldview). Vidéo de la mer : fournie par le propriétaire. La seconde vidéo fournie (ville de
+nuit) montre Istanbul (Levent) : écartée. Cartes animées : dollar, URSS en 1991, monde multipolaire, Chine et Russie,
+relief et France à l'échelle, acquisitions territoriales de 1783 à 1867 (contours simplifiés d'après les traités).
+
+Voix : séquences 3 (« exceptionnalisme américain ») et 8 (« Joseph Naille ») refaites phrase par phrase et recollées
+dans `ecran-003.wav` et `ecran-008.wav` (crédits ElevenLabs limités) : relancer `voix.py synthese` referait ces deux
+écrans en entier.
+
+Musique (`doc-musique.py`, table `PISTES`) : atlasaudio « Space Music » (1), skilsel « Epic Cinema Trailer » depuis 38 s
+(titre), skilsel « Epic Documentary Inspirational » (3), leberch « Tense » (5), leberch « Suspense Music » (6 à 8),
+skilsel « Epic Cinema Adventure » (partie I, 9 à 12) ; baissée de 18 dB sous la voix.
