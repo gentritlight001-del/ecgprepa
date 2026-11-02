@@ -4,698 +4,558 @@
 <meta charset="utf-8">
 <title>Documentaire · HGG 2e année · Chapitre 2 · Les États-Unis (5 premières minutes)</title>
 <!--
-  Montage du documentaire du chapitre 2 d'HGG 2e année : les 18 séquences de hgg2-chapitre2-doc-plans.md,
-  aux durées du découpage (5 min 25). Rendu : python3 outils/video/generer.py outils/video/hgg2-chapitre2-doc.html <sortie.mp4>
-  Chaque séquence est une fonction draw(lt) (lt = temps local en secondes) : aucune horloge, chaque image est calculée.
+  Documentaire du chapitre 2 d'HGG 2e année, version reportage (novembre 2026), habillage « cinéma sobre » :
+  archives plein cadre, petits titres en bas d'écran, cartes animées. Découpage : hgg2-chapitre2-doc-plans.md.
+  La voix off fixe le tempo : chaque séquence dure « avant + voix + après », et chaque plan est calé sur un mot de la
+  voix (S.t('mot', k) = instant du k-ième « mot » dit dans la séquence, d'après mots.json de voix.py).
 
-  Images (toutes libres) :
-  - site (deuxieme_annee/hgg/images/) : porte-avions Gerald Ford, panneau Hollywood, Pentagone, Manhattan, Falcon Heavy,
-    Capitole, Joseph Nye, Florian Louis, American Progress (John Gast, 1872), Shanghai, Monument Valley, pivots du Kansas,
-    Promontory Summit (A. J. Russell, 1869).
-  - images/doc-hgg2-ch2/ : NASA Earth Observatory, Black Marble 2012 (Amériques ; États-Unis), domaine public ;
-    Library of Congress, « No known restrictions on publication » : Raymond Aron en 1974 (U.S. News & World Report,
-    ppmsca 55499), New York Stock Exchange vers 1908 (Detroit Publishing, ds 11716), Emigrants crossing the plains
-    (F. O. C. Darley, 1869, cph 3g02634), A harvest of death, Gettysburg (T. O'Sullivan, 1863, ppmsca 12557),
-    ruines de Richmond, avril 1865 (ppmsca 34850), Harper's Weekly du 5 juin 1869 (cph 3c16354).
-  - cartes : us-atlas@3 et world-atlas@2 (ISC), dans donnees/.
+  1. Extraits vidéo :  python3 outils/video/doc-medias.py outils/video/hgg2-chapitre2-doc.html --fichier mer=<mer.mp4>
+  2. Voix :           python3 outils/video/voix.py synthese outils/video/hgg2-chapitre2-doc-voix.txt --dossier <voix> --voix-id JBFqnCBsd6RMkjVDRZzb
+  3. Contrôle :       python3 outils/video/generer.py outils/video/hgg2-chapitre2-doc.html --controle --voix <voix>/voix.json
+  4. Images :         python3 outils/video/generer.py outils/video/hgg2-chapitre2-doc.html --images <dossier> --voix <voix>/voix.json
+  5. Rendu :          python3 outils/video/generer.py outils/video/hgg2-chapitre2-doc.html <muet.mp4> --voix <voix>/voix.json
+  6. Voix + musique : python3 outils/video/doc-musique.py outils/video/hgg2-chapitre2-doc.html <muet.mp4> <final.mp4> --musiques <mp3> --voix <voix>
+
+  Sources des images et des films (domaine public sauf mention) :
+  - Vidéo de la mer : fournie par le propriétaire (Pixabay).
+  - Library of Congress, Prints & Photographs : John Winthrop, gravure de S. Harris, 1806 (cph 3c24240) ; Henry R. Luce,
+    vers 1950 (NYWTS, cph 3c24599) ; Frederick Jackson Turner (cph 3a30452) ; Emigrants crossing the plains, F. O. C. Darley,
+    1869 (cph 3g02634) ; Emigrants to the West, gravure, 1880 (cph 3c01163) ; Immigrants at Ellis Island, vers 1900
+    (Bain, ggbain 08804) ; photographies de Carol M. Highsmith (don au domaine public) : Manhattan au crépuscule, parquet du
+    New York Stock Exchange, Wall Street, rotonde du Capitole, Grand Teton (deux vues), Blue Ridge Parkway, blé du Kansas,
+    pont de Bixby Creek (Big Sur).
+  - Wikimedia Commons : John Trumbull, Declaration of Independence, 1819 (Architect of the Capitol) ; portrait officiel de
+    Donald Trump, 2025 (Maison-Blanche).
+  - Films : V-J Day Celebration in New York City, 14/08/1945 (US Naval Photographic Center, NARA, NPC-17236, archive.org) ;
+    Arrival of emigrants [i.e. immigrants], Ellis Island, 1906 (American Mutoscope & Biograph, Library of Congress) ;
+    NASA Goddard, Earth at Night, 2017 (Black Marble).
+  - NASA Worldview, BlueMarble_ShadedRelief_Bathymetry (relief des États-Unis).
+  - Site (deuxieme_annee/hgg/images/) : porte-avions Gerald R. Ford, panneau Hollywood, Capitole, Joseph Nye, Shanghai,
+    mur frontalier de Tijuana, Capitole le 6 janvier 2021 ; images/doc-hgg2-ch2/aron-1974.webp (LOC, U.S. News & World Report).
+  - Cartes : us-atlas@3 et world-atlas@2 (ISC) dans donnees/ ; acquisitions territoriales tracées à la main d'après les
+    traités (1783, 1803, 1819, 1845, 1846, 1848, 1853, 1867), contours simplifiés.
 -->
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=block" rel="stylesheet">
+<link rel="stylesheet" href="../../fonts/fonts.css">
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
 <script src="donnees/us-atlas-states-10m.js"></script>
 <script src="donnees/world-atlas-countries-110m.js"></script>
+<script src="media/doc-hgg2-ch2/clips.js"></script>
+<script type="application/json" id="clips">
+{
+  "mer": { "src": "@mer", "debut": 0, "fin": 18.8 },
+  "terre-nuit": { "src": "http://images-assets.nasa.gov/video/GSFC_20170412_Lights_m12573_EarthAtNight/GSFC_20170412_Lights_m12573_EarthAtNight~orig.mp4", "debut": 3.4, "fin": 6.6, "vitesse": 0.42, "zoom": 1.12 },
+  "vj-1945": { "src": "https://archive.org/download/NPC-17236/NPC-17236.mov", "debut": 160, "fin": 174 },
+  "ellis-1906": { "src": "https://archive.org/download/loc-film-00694368-arrival-of-emigrants-i-e-immigrants-ellis-island/00045651.mp4", "debut": 15, "fin": 33, "recadre": "1440:810:0:150" }
+}
+</script>
 <style>
-:root { --a1:#7a1e2c; --a1c:#b8404f; --or:#e0a83a; --or2:#9a6a0c; --ink:#f3ece0; --dim:#b9ad9c; --nuit:#0c0b0d; --papier:#efe6d4; --rouge:#e0483c; }
+:root { --ink:#f1ece2; --dim:#b7afa2; --or:#d9a54a; --rouge:#c8463c; --bleu:#5b8fc7; --nuit:#07080a; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { width: 1920px; height: 1080px; overflow: hidden; background: #000; }
-#stage { position: absolute; inset: 0; overflow: hidden; background: var(--nuit); font-family: "IBM Plex Sans Condensed", sans-serif; color: var(--ink); }
-.sc { position: absolute; inset: 0; overflow: hidden; opacity: 0; visibility: hidden; background: var(--nuit); }
-.lay { position: absolute; inset: 0; overflow: hidden; }
-.full { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 50%; will-change: transform; }
-.vig { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 45%, rgba(0,0,0,.55) 100%); }
-.bas { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(0,0,0,.78) 100%); }
-.gauche { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(8,6,8,.88) 0%, rgba(8,6,8,.55) 38%, rgba(8,6,8,0) 62%); }
-.droite { position: absolute; inset: 0; background: linear-gradient(270deg, rgba(8,6,8,.9) 0%, rgba(8,6,8,.6) 40%, rgba(8,6,8,0) 64%); }
-.flou { filter: blur(26px) brightness(.45) saturate(.8); transform: scale(1.15); }
-.o { opacity: 0; }
-/* Bandeau nom + fonction */
-.lt { position: absolute; left: 110px; bottom: 112px; padding-left: 26px; border-left: 7px solid var(--a1c); }
-.lt b { display: block; font: 800 64px/1 "Big Shoulders Display"; text-transform: uppercase; letter-spacing: .01em; color: #fff; }
-.lt span { display: block; margin-top: 10px; font: 600 25px/1.2 "IBM Plex Sans Condensed"; text-transform: uppercase; letter-spacing: .14em; color: var(--or); }
-.doc { position: absolute; right: 56px; bottom: 40px; font: 400 17px/1.3 "IBM Plex Mono"; color: rgba(243,236,224,.78); text-align: right; letter-spacing: .02em; text-shadow: 0 1px 6px rgba(0,0,0,.8); }
-.kick { font: 600 24px/1 "IBM Plex Sans Condensed"; text-transform: uppercase; letter-spacing: .2em; color: var(--or); }
-.titre { font: 900 150px/.9 "Big Shoulders Display"; text-transform: uppercase; color: #fff; letter-spacing: .005em; }
-.mot { position: absolute; font: 800 92px/.95 "Big Shoulders Display"; text-transform: uppercase; color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,.6); }
-.mot small { display: block; margin-top: 16px; font: 500 30px/1.25 "Newsreader"; text-transform: none; color: var(--ink); letter-spacing: 0; }
-.mot small i { color: var(--or); font-style: italic; }
-.serif { font-family: "Newsreader", serif; }
-/* Coupure de journal */
-.coupure { position: absolute; background: var(--papier); color: #231a14; padding: 46px 54px 40px; box-shadow: 0 30px 80px rgba(0,0,0,.6); }
-.coupure q { display: block; font: 500 52px/1.18 "Newsreader"; quotes: none; }
-.coupure .src { margin-top: 26px; font: 600 21px/1.3 "IBM Plex Sans Condensed"; text-transform: uppercase; letter-spacing: .12em; color: var(--a1); }
-.coupure .src i { font-style: italic; text-transform: none; letter-spacing: 0; font: italic 400 24px "Newsreader"; color: #4a3a30; }
-.coupure .suite { display: block; margin-top: 22px; font: italic 400 38px/1.25 "Newsreader"; color: #4a3a30; }
-.scotch { position: absolute; width: 170px; height: 44px; background: rgba(242,214,117,.8); top: -20px; left: 50%; margin-left: -85px; transform: rotate(-3deg); }
-/* Tirage photo */
-.tirage { position: absolute; background: #f6f1e7; padding: 18px 18px 64px; box-shadow: 0 30px 70px rgba(0,0,0,.65); }
-.tirage img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.tirage figcaption { position: absolute; left: 20px; right: 20px; bottom: 16px; font: 500 22px/1.2 "IBM Plex Sans Condensed"; color: #3b2f27; text-transform: uppercase; letter-spacing: .1em; }
-/* Chiffres */
-.chiffres { position: absolute; left: 90px; right: 90px; bottom: 80px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 34px; }
-.ch { border-top: 4px solid rgba(243,236,224,.85); padding-top: 18px; }
-.ch b { display: block; font: 900 96px/1 "Big Shoulders Display"; color: #fff; white-space: nowrap; }
-.ch span { display: block; margin-top: 10px; font: 600 24px/1.25 "IBM Plex Sans Condensed"; text-transform: uppercase; letter-spacing: .08em; color: var(--ink); }
-.ch.r { border-color: var(--rouge); }
-.ch.r b { color: var(--rouge); }
-/* Cartes à trois cases */
-.trip { position: absolute; left: 70px; right: 70px; top: 150px; bottom: 120px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
-.case { position: relative; overflow: hidden; background: #000; }
-.case img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.case .voile { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(0,0,0,.85) 100%); }
-.case .lb { position: absolute; left: 30px; right: 26px; bottom: 30px; }
-.case .lb b { display: block; font: 900 74px/.95 "Big Shoulders Display"; text-transform: uppercase; color: #fff; }
-.case .lb span { display: block; margin-top: 10px; font: 500 29px/1.2 "Newsreader"; color: var(--ink); }
-.case .lb em { display: block; margin-top: 8px; font: 600 20px/1.2 "IBM Plex Sans Condensed"; font-style: normal; text-transform: uppercase; letter-spacing: .12em; color: var(--or); }
-.case.k1 { border-top: 8px solid var(--a1c); } .case.k2 { border-top: 8px solid var(--or); } .case.k3 { border-top: 8px solid #6fa3c7; }
-.haut { position: absolute; left: 70px; top: 58px; font: 800 58px/1 "Big Shoulders Display"; text-transform: uppercase; color: #fff; }
-.haut small { font: 600 24px "IBM Plex Sans Condensed"; letter-spacing: .14em; color: var(--or); margin-left: 18px; vertical-align: middle; }
-/* Graphique en barres */
-.graph { position: absolute; left: 230px; right: 230px; top: 250px; height: 560px; display: flex; align-items: flex-end; justify-content: space-around; border-bottom: 3px solid rgba(243,236,224,.7); }
-.barre { position: relative; width: 220px; background: linear-gradient(180deg, #c9a96e, #8a6a32); height: 0; }
-.barre b { position: absolute; left: 0; right: 0; top: -92px; text-align: center; font: 900 82px/1 "Big Shoulders Display"; color: #fff; }
-.barre span { position: absolute; left: 0; right: 0; bottom: -58px; text-align: center; font: 600 34px/1 "IBM Plex Sans Condensed"; color: var(--ink); letter-spacing: .06em; }
-.barre.r { background: linear-gradient(180deg, var(--rouge), #8f231c); }
-.barre.r b { color: var(--rouge); }
-svg text { font-family: "IBM Plex Sans Condensed", sans-serif; }
-.carton { position: absolute; left: 140px; top: 50%; transform: translateY(-50%); }
-.carton .kick { font-size: 30px; }
-.carton .titre { font-size: 210px; margin-top: 18px; }
-.picto { position: absolute; width: 300px; text-align: center; }
-.picto .rond { width: 200px; height: 200px; margin: 0 auto; border-radius: 50%; border: 5px solid rgba(243,236,224,.35); display: grid; place-items: center; }
-.picto svg { width: 110px; height: 110px; }
-.picto b { display: block; margin-top: 24px; font: 800 46px/1 "Big Shoulders Display"; text-transform: uppercase; color: #fff; }
-.fiche { position: absolute; background: var(--papier); color: #231a14; padding: 34px 40px; box-shadow: 0 26px 70px rgba(0,0,0,.6); }
-.fiche .kick { color: var(--a1); font-size: 21px; }
-.fiche h3 { margin-top: 14px; font: 800 54px/1 "Big Shoulders Display"; text-transform: uppercase; color: #1c140f; }
-.fiche p { margin-top: 14px; font: 400 30px/1.3 "Newsreader"; color: #3b2f27; }
-.fiche p i { font-style: italic; }
+#stage { position: absolute; inset: 0; overflow: hidden; background: var(--nuit); color: var(--ink); font-family: "Inter Tight", sans-serif; }
+.sq, .ly { position: absolute; inset: 0; overflow: hidden; display: none; }
+.ly > img.full, .ly > .full { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 50%; }
+.voile-g { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(5,5,7,.86) 0%, rgba(5,5,7,.55) 36%, rgba(5,5,7,0) 62%); }
+.voile-d { position: absolute; inset: 0; background: linear-gradient(270deg, rgba(5,5,7,.86) 0%, rgba(5,5,7,.55) 36%, rgba(5,5,7,0) 62%); }
+.voile-b { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 52%, rgba(0,0,0,.72) 100%); }
+.sombre { position: absolute; inset: 0; background: rgba(4,4,6,.55); }
+.flou { position: absolute; inset: -60px; width: calc(100% + 120px); height: calc(100% + 120px); object-fit: cover; filter: blur(34px) brightness(.38) saturate(.7); }
+/* tirage : une image verticale posée sur son propre fond flou */
+.tirage { position: absolute; top: 90px; bottom: 90px; box-shadow: 0 40px 90px rgba(0,0,0,.7); }
+.tirage img { display: block; height: 100%; width: auto; }
+/* petit titre en bas d'écran */
+.lt { position: absolute; left: 120px; bottom: 104px; max-width: 860px; }
+.lt b { display: block; font: 600 23px/1 "Inter Tight"; letter-spacing: .24em; text-transform: uppercase; color: var(--or); }
+.lt b::before { content: ""; display: inline-block; width: 44px; height: 2px; background: var(--or); vertical-align: middle; margin-right: 18px; }
+.lt span { display: block; margin-top: 14px; font: 400 40px/1.15 "Fraunces"; color: #fff; text-shadow: 0 2px 18px rgba(0,0,0,.65); }
+/* crédit d'une œuvre */
+.doc { position: absolute; right: 64px; bottom: 44px; font: 400 17px/1.3 "Inter Tight"; letter-spacing: .04em; color: rgba(241,236,226,.72); text-align: right; text-shadow: 0 1px 8px rgba(0,0,0,.9); }
+.doc i { font-style: italic; }
+/* grands textes */
+.grand { position: absolute; font: 300 96px/1.02 "Fraunces"; color: #fff; text-shadow: 0 4px 40px rgba(0,0,0,.5); }
+.grand small { display: block; margin-top: 22px; font: 400 32px/1.3 "Fraunces"; color: var(--ink); }
+.grand em { font-style: italic; }
+.kick { font: 600 22px/1 "Inter Tight"; letter-spacing: .3em; text-transform: uppercase; color: var(--or); }
+.cit { position: absolute; font: 300 64px/1.18 "Fraunces"; color: #fff; }
+.cit .src { display: block; margin-top: 34px; font: 500 20px/1.4 "Inter Tight"; letter-spacing: .2em; text-transform: uppercase; color: var(--or); }
+.mot { opacity: 0; display: inline-block; }
+svg text { font-family: "Inter Tight", sans-serif; }
+.titre-film { position: absolute; left: 150px; top: 360px; white-space: nowrap; }
+.titre-film .kick { font-size: 20px; letter-spacing: .5em; }
+.titre-film h1 { margin-top: 34px; font: 300 150px/1 "Fraunces"; letter-spacing: .06em; color: #fff; text-transform: uppercase; }
+.titre-film p { margin-top: 28px; font: italic 300 58px/1 "Fraunces"; color: var(--ink); }
+.ligne { position: absolute; height: 2px; background: var(--or); transform-origin: 0 50%; }
+/* panneaux (triptyque) */
+.trip { position: absolute; left: 80px; right: 80px; top: 120px; bottom: 120px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+.pan { position: relative; overflow: hidden; background: #000; opacity: 0; }
+.pan img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.pan .vb { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,.85) 100%); }
+.pan .tx { position: absolute; left: 34px; right: 30px; bottom: 34px; }
+.pan .tx b { display: block; font: 400 60px/1 "Fraunces"; color: #fff; }
+.pan .tx span { display: block; margin-top: 12px; font: 600 20px/1.2 "Inter Tight"; letter-spacing: .22em; text-transform: uppercase; color: var(--or); }
+.pan .tx em { display: block; margin-top: 10px; font: italic 300 26px/1.2 "Fraunces"; color: var(--ink); }
+/* boîtes du schéma de Serge Sur */
+.verbes { position: absolute; left: 140px; right: 140px; top: 400px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; }
+.vb4 { opacity: 0; border-top: 2px solid var(--or); padding-top: 26px; }
+.vb4 b { display: block; font: 300 58px/1.05 "Fraunces"; color: #fff; }
+.vb4 span { display: block; margin-top: 16px; font: 600 19px/1.2 "Inter Tight"; letter-spacing: .22em; text-transform: uppercase; color: var(--dim); }
+/* graphique */
+.barres { position: absolute; left: 460px; right: 460px; top: 300px; height: 520px; display: flex; align-items: flex-end; justify-content: space-around; border-bottom: 2px solid rgba(241,236,226,.6); }
+.barre { position: relative; width: 190px; height: 0; background: linear-gradient(180deg, #e2b866, #9b7330); }
+.barre b { position: absolute; left: -40px; right: -40px; top: -96px; text-align: center; font: 300 80px/1 "Fraunces"; color: #fff; }
+.barre span { position: absolute; left: 0; right: 0; bottom: -56px; text-align: center; font: 600 26px/1 "Inter Tight"; letter-spacing: .14em; color: var(--ink); }
+.barre.r { background: linear-gradient(180deg, #d9574c, #8a2a22); }
+/* trois colonnes du plan */
+.plan3 { position: absolute; left: 160px; right: 160px; top: 600px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 50px; }
+.plan3 div { opacity: 0; border-top: 2px solid var(--or); padding-top: 24px; }
+.plan3 b { display: block; font: 600 20px/1 "Inter Tight"; letter-spacing: .28em; text-transform: uppercase; color: var(--or); }
+.plan3 span { display: block; margin-top: 16px; font: 300 50px/1.1 "Fraunces"; color: #fff; }
+.plan3 em { display: block; margin-top: 12px; font: italic 300 26px/1.3 "Fraunces"; color: var(--dim); }
+.etiq { position: absolute; font: 600 24px/1.2 "Inter Tight"; letter-spacing: .2em; text-transform: uppercase; color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,.9); white-space: nowrap; }
+.etiq small { display: block; margin-top: 6px; font: 400 20px/1.2 "Inter Tight"; letter-spacing: .08em; text-transform: none; color: var(--ink); }
+#grain { position: absolute; inset: 0; pointer-events: none; opacity: .07; mix-blend-mode: screen; }
+#vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,.5) 100%); }
 </style>
 </head>
 <body>
 <div id="stage"></div>
 <script>
-(function () {
-  const W = 1920, H = 1080;
-  const IMG = '../../deuxieme_annee/hgg/images/', DOC = 'images/doc-hgg2-ch2/';
+(async function () {
+  const W = 1920, H = 1080, FPS = 25;
+  const MEDIA = 'media/doc-hgg2-ch2/';
+  const IMG = 'images/doc-hgg2-ch2/', SITE = '../../deuxieme_annee/hgg/images/';
   const stage = document.getElementById('stage');
-  const SC = [];
+  const ERR = [];
   const $ = (tag, cls, html, parent) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; if (parent) parent.appendChild(e); return e; };
-  const SVGNS = 'http://www.w3.org/2000/svg';
-  const S = (tag, attrs, parent) => { const e = document.createElementNS(SVGNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+  const NS = 'http://www.w3.org/2000/svg';
+  const S_ = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
   const cl = x => Math.max(0, Math.min(1, x));
   const eo = p => 1 - Math.pow(1 - p, 3);
   const eio = p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
   const lin = (a, b, p) => a + (b - a) * p;
-  /* apparition : 0 avant a, 1 après a + d */
-  const up = (lt, a, d = .8) => eo(cl((lt - a) / d));
-  /* présence d'un élément entre a et b (fondu d'entrée et de sortie) */
-  const win = (lt, a, b, d = .7) => Math.min(up(lt, a, d), 1 - eio(cl((lt - b + d) / d)));
-  const show = (el, p, dy = 26, dx = 0) => { el.style.opacity = p; el.style.transform = `translate(${(1 - p) * dx}px, ${(1 - p) * dy}px)`; };
-  /* Ken Burns : de a {s, x, y} à b (x, y en % de la taille), mouvement doux et continu */
-  const kb = (el, lt, dur, a, b) => {
-    const p = cl(lt / dur), q = lin(0, 1, p * .15 + eio(p) * .85);
-    el.style.transform = `translate(${lin(a.x || 0, b.x || 0, q)}%, ${lin(a.y || 0, b.y || 0, q)}%) scale(${lin(a.s, b.s, q)})`;
-  };
-  const fr = (v, d = 0) => v.toLocaleString('fr-FR', { minimumFractionDigits: d, maximumFractionDigits: d }).replace(/ /g, ' ');
-  const img = (src, cls, parent) => { const i = $('img', cls, null, parent); i.src = src; i.alt = ''; return i; };
-  /* ===== Calage sur la voix off =====
-     Sans voix, chaque séquence garde les durées du découpage (t0, t1). Avec la voix (generer.py --voix <dossier>/voix.json,
-     qui donne window.VOIX et window.VOIX_MOTS), la séquence dure : vd + durée de sa voix + 0,8 s, et son temps est
-     déformé (linéaire par morceaux) pour que chaque repère [t, mot, autre mot…] du tableau CALAGE tombe au moment où
-     la voix dit ce mot (0,25 s avant). vd = départ de la voix dans la séquence (0,4 s par défaut). VIDEO.reperes()
-     dit, pour chaque repère, le mot trouvé ou ✗ (poser alors un autre mot, celui que Whisper a vraiment écrit). */
-  const CALAGE = {
-    1: { vd: .8, rep: [[5, 'wall', 'cloche'], [10, 'hollywood']] },
-    2: { rep: [[2.2, '29200', 'vingt'], [7.6, 'tiers'], [13.2, '341', '340', 'quarante'], [18.6, 'dette']] },
-    3: { vd: 5, rep: [[5.4, 'quoi', 'repose'], [8.0, 'train', 'decliner']] },
-    4: { rep: [[1.2, '1962'], [3.6, 'capacite'], [10.4, 'inverse']] },
-    5: { rep: [[1.6, 'puissance'], [4.6, 'faire'], [6.0, 'faire'], [7.5, 'empecher'], [9.2, 'refuser'], [11, 'pouvoir'], [12.4, 'independance']] },
-    6: { rep: [[.9, '1990'], [6.9, 'hard'], [13.2, 'soft'], [18.6, 'combiner']] },
-    7: { rep: [[3.2, 'puritains', 'colons'], [10.9, 'destinee'], [17.2, 'tableau', 'gast'], [24.5, 'exceptionnalisme']] },
-    8: { rep: [[3.4, 'louis', 'declinisme'], [12.2, '1987', 'kennedy'], [18.6, 'surcharge']] },
-    9: { rep: [[2.6, '1960'], [6.4, 'trente', '30'], [8.6, 'vingt', '21'], [11.4, '26', 'six'], [14.6, 'relatif']] },
-    10: { rep: [[9.4, 'chine'], [11.6, '2008', 'zakaria']] },
-    11: { rep: [[2.0, '2015'], [9.4, 'concurrences', 'concurrents'], [15.3, 'economie'], [16.6, 'armee'], [18.0, 'soft']] },
-    12: { rep: [] },
-    13: { rep: [[3.6, 'facades'], [4.0, 'atlantique'], [5.0, 'pacifique'], [6.2, 'golfe'], [10.6, 'plaine'], [12.15, 'appalaches', 'apalaches'], [13.7, 'grandes'], [15.25, 'rocheuses'], [16.8, 'pacifique']] },
-    14: { rep: [[3.4, 'achat'], [7.4, '1803', 'louisiane'], [13.6, '1867', 'alaska']] },
-    15: { rep: [[.6, 'frontier'], [8.9, '1890'], [13.6, 'trois', 'turner']] },
-    16: { rep: [[.7, 'guerres', 'violence'], [4.6, 'secession', 'cecession']] },
-    17: { rep: [[1.0, 'terre', 'damier'], [4.0, 'carres', 'encarree'], [6.6, '1862', 'homestead'], [10.6, 'aujourd', 'ciel']] },
-    18: { rep: [[4.0, 'mai', '1869'], [10.6, 'atlantique']] },
-  };
-  const VX = window.VOIX || null, VM = window.VOIX_MOTS || null, TRAINE = .8;
-  const STOP = new Set('les des une est par pour avec dans sur aux que qui son ses leur leurs plus mais elle ils elles cette ces entre comme tout tous'.split(' '));
-  const norm = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
-    .replace(/(\d)[\s\u00a0\u202f.,](?=\d{3}\b)/g, '$1').split(/[^a-z0-9]+/).filter(Boolean);
-  const egal = (a, c) => { if (/^\d+$/.test(c)) return a === c; const k = Math.min(c.length, Math.max(5, c.length - 2)); return a.length >= k && a.slice(0, k) === c.slice(0, k); };
-  /* points [temps du découpage, temps réel] d'une séquence calée sur sa voix */
-  function caler(n, dur) {
-    const cal = CALAGE[n] || { rep: [] }, vd = cal.vd != null ? cal.vd : .4;
-    const v = VX && VX[n]; if (v == null) return { dur, pts: null, vd, rep: [] };
-    const reel = Math.max(4, vd + v + TRAINE);
-    const tok = []; ((VM && VM[n]) || []).forEach(([w, t]) => norm(w).forEach(x => tok.push([x, t])));
-    for (let k = tok.length - 2; k >= 0; k--) if (/^\d+$/.test(tok[k][0]) && /^\d{3}$/.test(tok[k + 1][0])) { tok[k][0] += tok[k + 1][0]; tok.splice(k + 1, 1); }
-    const pts = [[0, 0]], rep = []; let cur = 0;
-    cal.rep.forEach(([t, ...cues]) => {
-      let ok = null;
-      for (const cue of cues) {
-        const c = norm(cue).filter(w => /^\d+$/.test(w) || (w.length >= 3 && !STOP.has(w)))[0]; if (!c) continue;
-        const k = tok.findIndex(([w], i) => i >= cur && egal(w, c)); if (k < 0) continue;
-        const r = Math.min(reel - .6, vd + tok[k][1] - .25), [t0, r0] = pts[pts.length - 1];
-        if (t > t0 + .01 && r > r0 + .1) { pts.push([t, r]); cur = k + 1; ok = cue; }
-        break;
-      }
-      rep.push(`${t} s : ${ok ? '✓ ' + ok : '✗ ' + cues.join(' / ')}`);
-    });
-    pts.push([dur, Math.max(reel, pts[pts.length - 1][1] + .5)]);
-    return { dur: pts[pts.length - 1][1], pts, vd, rep };
+  const up = (x, a, d = .7) => eo(cl((x - a) / d));
+  const show = (el, p, dy = 18) => { el.style.opacity = p; el.style.transform = `translateY(${(1 - p) * dy}px)`; };
+
+  /* ===== Voix : durées (voix.json) et instant de chaque mot (mots.json) ===== */
+  const VX = window.VOIX, VM = window.VOIX_MOTS;
+  if (!VX || !VM) throw new Error('Rendre avec --voix <dossier>/voix.json (voix.py synthese) : la voix fixe le tempo.');
+  const norm = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
+  /* ===== Séquences et plans ===== */
+  const SEQS = []; let fin = 0;
+  function sequence(n, avant, apres, build, fixe) {
+    const voix = fixe ? 0 : VX[n];
+    if (!fixe && voix == null) ERR.push(`séquence ${n} : pas de voix dans voix.json`);
+    const d = fixe || (avant + (voix || 4) + apres);
+    const el = $('div', 'sq', null, stage);
+    const toks = ((VM && VM[n]) || []).map(([w, t]) => [norm(w), t]).filter(x => x[0]);
+    const S = { n, d, el, avant, layers: [], start: fin,
+      /* instant (dans la séquence) du k-ième mot qui commence par « mot » */
+      t(mot, k = 1) {
+        const c = norm(mot); let vu = 0;
+        for (const [w, t] of toks) if (w === c || (c.length >= 4 && w.startsWith(c))) { if (++vu === k) return avant + t; }
+        ERR.push(`séquence ${n} : mot « ${mot} » (${k}) introuvable dans la voix`); return avant;
+      } };
+    build(S); SEQS.push(S); fin += d;
   }
-  /* temps réel -> temps du découpage */
-  const deforme = (pts, r) => {
-    if (!pts) return r;
-    for (let k = 1; k < pts.length; k++) if (r <= pts[k][1]) { const [a, b] = [pts[k - 1], pts[k]]; return a[0] + (r - a[1]) * (b[0] - a[0]) / (b[1] - a[1]); }
-    const a = pts[pts.length - 1]; return a[0] + (r - a[1]);
-  };
-  /* une séquence : n, début, fin (s) du découpage, construction qui renvoie draw(lt) ; xf = fondu d'entrée.
-     Les séquences s'enchaînent : le début réel est la fin de la précédente. */
-  function scene(n, t0, t1, build, xf = .6) {
-    const el = $('div', 'sc', null, stage);
-    const c = caler(n, t1 - t0), prev = SC[SC.length - 1];
-    SC.push({ n, t0: prev ? prev.t0 + prev.dur : 0, dur: c.dur, pts: c.pts, vd: c.vd, rep: c.rep, xf, el, draw: build(el, t1 - t0) });
+  /* un plan : élément visible de t0 à t1 (temps de la séquence), fondu d'entrée fi et de sortie fo */
+  function plan(S, t0, t1, el, o = {}) {
+    el.classList.add('ly'); S.el.appendChild(el);
+    const l = { t0, t1, el, fi: o.fi ?? .5, fo: o.fo ?? .5, draw: o.draw };
+    S.layers.push(l); return l;
   }
-  /* plans successifs dans une séquence (fondu enchaîné de f secondes) */
-  const plans = (lt, bornes, f = .5) => bornes.map(([a, b], i) => i === 0 ? (lt < b + f ? 1 : 0) : (lt >= a && lt < b + f ? up(lt, a, f) : 0));
-
-  /* ===== Cartes : projections et formes ===== */
-  const US = window.US_ATLAS, WORLD = window.WORLD_ATLAS;
-  const etats = topojson.feature(US, US.objects.states);
-  const nation = topojson.merge(US, US.objects.states.geometries);
-  const anneau = pts => { // polygone lon/lat, orienté pour d3 (le plus petit des deux côtés)
-    const f = { type: 'Polygon', coordinates: [[...pts, pts[0]]] };
-    if (d3.geoArea(f) > 2 * Math.PI) f.coordinates[0].reverse();
-    return f;
-  };
-  function carteUS(svg, ext) {
-    const pu = d3.geoAlbersUsa().fitExtent(ext, nation);
-    const p48 = d3.geoAlbers().scale(pu.scale()).translate(pu.translate());
-    return { pu, p48, gu: d3.geoPath(pu), g48: d3.geoPath(p48) };
+  /* Ken Burns : de a {s, x, y} à b (x, y en % du cadre) */
+  const kbT = (a, b, p) => { const q = lin(0, 1, p * .25 + eio(p) * .75); return `translate(${lin(a.x || 0, b.x || 0, q)}%, ${lin(a.y || 0, b.y || 0, q)}%) scale(${lin(a.s, b.s, q)})`; };
+  function photo(S, t0, t1, src, o = {}) {
+    const box = $('div'); const im = $('img', 'full', null, box); im.src = src; im.alt = '';
+    if (o.pos) im.style.objectPosition = o.pos;
+    if (o.filtre) im.style.filter = o.filtre;
+    (o.voiles || []).forEach(v => $('div', v, null, box));
+    const a = o.a || { s: 1.04 }, b = o.b || { s: 1.12 };
+    plan(S, t0, t1, box, { ...o, draw: (lt, d) => { im.style.transform = kbT(a, b, lt / d); if (o.draw) o.draw(lt, d); } });
+    return box;
   }
-  let clipN = 0;
-  const clipDe = (svg, d) => { const id = 'clip' + (++clipN); const c = S('clipPath', { id }, svg); S('path', { d }, c); return `url(#${id})`; };
-  const MISS = [[-95.2, 47.2], [-93.1, 44.9], [-91.2, 43], [-90.6, 41.5], [-91.4, 40.3], [-90.2, 38.6], [-89.2, 37], [-90, 35.1], [-91.1, 33], [-91.6, 31]];
+  /* image verticale : tirage net sur son propre fond flou, à gauche ou à droite */
+  function tirage(S, t0, t1, src, o = {}) {
+    const box = $('div'); const f = $('img', 'flou', null, box); f.src = src;
+    const t = $('div', 'tirage', null, box); const im = $('img', null, null, t); im.src = src;
+    t.style[o.cote === 'gauche' ? 'left' : 'right'] = (o.marge ?? 170) + 'px';
+    if (o.haut) { t.style.top = o.haut[0] + 'px'; t.style.bottom = o.haut[1] + 'px'; }
+    plan(S, t0, t1, box, { ...o, draw: (lt, d) => { const p = lt / d; t.style.transform = `translateY(${lin(14, -14, p)}px) scale(${lin(1, 1.035, p)})`; f.style.transform = `scale(${lin(1.05, 1.12, p)})`; if (o.draw) o.draw(lt, d); } });
+    return box;
+  }
+  /* extrait vidéo : une image JPEG par image du film (doc-medias.py) */
+  const N = window.CLIPS_N || {};
+  function clip(S, t0, t1, nom, o = {}) {
+    if (!N[nom]) ERR.push(`extrait « ${nom} » absent : lancer doc-medias.py`);
+    const box = $('div'); const im = $('img', 'full', null, box); im.alt = ''; let cur = -1;
+    im.src = `${MEDIA}${nom}/${String(Math.round((o.depuis || 0) * FPS) + 1).padStart(4, '0')}.jpg`;
+    if (o.filtre) im.style.filter = o.filtre;
+    (o.voiles || []).forEach(v => $('div', v, null, box));
+    const a = o.a || { s: 1 }, b = o.b || { s: 1.04 };
+    plan(S, t0, t1, box, { ...o, draw: (lt, d) => {
+      const k = Math.min((N[nom] || 1) - 1, Math.max(0, Math.round(((o.depuis || 0) + lt * (o.vitesse || 1)) * FPS)));
+      im.style.transform = kbT(a, b, lt / d);
+      if (o.draw) o.draw(lt, d);
+      if (k !== cur) { cur = k; im.src = `${MEDIA}${nom}/${String(k + 1).padStart(4, '0')}.jpg`; return im.decode().catch(() => null); }
+    } });
+    return box;
+  }
+  /* petit titre en bas d'écran */
+  function titre(S, t0, t1, kick, txt, o = {}) {
+    const box = $('div'); const lt = $('div', 'lt', `<b>${kick}</b>${txt ? `<span>${txt}</span>` : ''}`, box);
+    if (o.droite) { lt.style.left = 'auto'; lt.style.right = '120px'; lt.style.textAlign = 'right'; }
+    plan(S, t0, t1, box, { fi: .6, fo: .4, draw: lt0 => show(lt, up(lt0, 0, .8), 14) });
+  }
+  function credit(S, t0, t1, html) { const box = $('div'); $('div', 'doc', html, box); plan(S, t0, t1, box, { fi: .8, fo: .4 }); }
+  /* texte libre positionné ; apparitions [élément, instant] */
+  function texte(S, t0, t1, html, style, o = {}) {
+    const box = $('div'); const e = $('div', o.cls || 'grand', html, box); Object.assign(e.style, style);
+    plan(S, t0, t1, box, { fi: o.fi ?? .7, fo: o.fo ?? .5, draw: (lt, d) => { show(e, up(lt, 0, .9), o.dy ?? 22); if (o.draw) o.draw(lt, d, e); } });
+    return e;
+  }
+  const noir = (S, t0, t1) => plan(S, t0, t1, $('div'), { fi: 0, fo: 0 });
 
-  /* ================= 1 · 0:00-0:15 · Ouverture ================= */
-  scene(1, 0, 15, (el) => {
-    const a = $('div', 'lay', null, el), b = $('div', 'lay', null, el), c = $('div', 'lay', null, el);
-    const i1 = img(IMG + 'porte-avions-gerald-ford.webp', 'full', a), i2 = img(DOC + 'nyse-1908.webp', 'full', b), i3 = img(IMG + 'panneau-hollywood.webp', 'full', c);
-    i2.style.filter = 'sepia(.25) contrast(1.05)';
-    [a, b, c].forEach(x => $('div', 'vig', null, x));
-    const d2 = $('div', 'doc', 'New York Stock Exchange, Wall Street · Library of Congress', b);
-    return lt => {
-      const [o1, o2, o3] = plans(lt, [[0, 5], [5, 10], [10, 15]], .45);
-      a.style.opacity = o1; b.style.opacity = o2; c.style.opacity = o3;
-      kb(i1, lt, 5.5, { s: 1.04, x: 1.5 }, { s: 1.14, x: -1.5 });
-      kb(i2, lt - 5, 5.5, { s: 1.12, y: 2 }, { s: 1.04, y: -1 });
-      kb(i3, lt - 10, 5, { s: 1.03 }, { s: 1.16, y: -1 });
-      d2.style.opacity = win(lt, 5.6, 9.8);
-    };
-  }, 1.2);
+  /* ===== Fonds de carte ===== */
+  const WORLD = window.WORLD_ATLAS, US = window.US_ATLAS;
+  const pays = topojson.feature(WORLD, WORLD.objects.countries).features;
+  const etats = topojson.feature(US, US.objects.states).features;
+  const URSS = ['643', '804', '112', '498', '233', '428', '440', '268', '051', '031', '398', '860', '795', '417', '762'];
+  const UE = ['250', '276', '380', '724', '616', '528', '056', '620', '040', '203', '752', '246', '208', '372', '300', '348', '642', '100', '703', '705', '191', '440', '428', '233', '442', '196'];
+  /* carte du monde : renvoie { svg, p(id) : chemin du pays, proj } */
+  function monde(parent) {
+    const proj = d3.geoNaturalEarth1().rotate([-10, 0]).fitExtent([[50, 70], [1870, 1010]], { type: 'Sphere' });
+    const path = d3.geoPath(proj);
+    const svg = S_('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}` }, parent);
+    S_('path', { d: path(d3.geoGraticule10()), fill: 'none', stroke: 'rgba(241,236,226,.05)', 'stroke-width': 1 }, svg);
+    const g = S_('g', {}, svg); const P = {};
+    pays.forEach(f => { if (f.id === '010') return; P[f.id] = S_('path', { d: path(f), fill: '#1b1d22', stroke: '#2f333b', 'stroke-width': .8 }, g); });
+    return { svg, P, proj, path };
+  }
 
-  /* ================= 2 · 0:15-0:40 · Quatre chiffres ================= */
-  scene(2, 15, 40, (el) => {
-    const L = [['manhattan-liberty-island.webp', 0, 7.5], ['pentagone-arlington.webp', 7.5, 13], ['falcon-heavy-decollage.webp', 13, 19], ['capitole-washington.webp', 19, 25]];
-    const lays = L.map(([f]) => { const l = $('div', 'lay', null, el); const i = img(IMG + f, 'full', l); $('div', 'bas', null, l); return [l, i]; });
-    lays[1][1].style.objectPosition = '50% 40%';
-    const rouge = $('div', 'lay', null, lays[3][0]); rouge.style.background = 'radial-gradient(ellipse at 50% 40%, rgba(120,10,10,.15), rgba(70,0,0,.55))';
-    const box = $('div', 'chiffres', null, el);
-    const C = [[29200, ' Md$', 'PIB, 1<sup>er</sup> rang mondial (2024)', 2.2], [null, '1/3', 'des dépenses militaires mondiales', 7.6], [341, ' M', 'd\'habitants', 13.2], [40000, ' Md$', 'de dette publique (août 2026)', 18.6]];
-    const cs = C.map(([v, u, t], i) => { const d = $('div', 'ch' + (i === 3 ? ' r' : ''), `<b></b><span>${t}</span>`, box); return d; });
-    return lt => {
-      const op = plans(lt, L.map(x => [x[1], x[2]]), .35);
-      lays.forEach(([l, i], k) => { l.style.opacity = op[k]; kb(i, lt - L[k][1], L[k][2] - L[k][1] + .5, { s: 1.06, x: k % 2 ? 1 : -1 }, { s: 1.16, x: k % 2 ? -1 : 1 }); });
-      lays[1][1].style.filter = 'none';
-      C.forEach(([v, u, t, a], k) => {
-        const p = up(lt, a, .6); show(cs[k], p, 30);
-        const n = cl((lt - a) / 1.6);
-        cs[k].firstChild.textContent = v == null ? u : fr(Math.round(v * eo(n))).replace(/\s/g, ' ') + u;
-        cs[k].style.opacity = p * (k < 3 && lt > 18.6 ? lin(1, .55, up(lt, 18.6, .6)) : 1);
-      });
-    };
-  }, .5);
+  /* ===== Les séquences ===== */
 
-  /* ================= 3 · 0:40-0:50 · Titre et problématique ================= */
-  scene(3, 40, 50, (el) => {
-    const g = $('div', 'lay', null, el); g.style.background = '#000';
-    const i1 = img(DOC + 'terre-nuit-ameriques.webp', 'full', g); i1.style.objectFit = 'contain';
-    const u = $('div', 'lay', null, el); const i2 = img(DOC + 'etats-unis-nuit.webp', 'full', u);
-    const vo = $('div', 'lay', null, el); vo.style.background = 'radial-gradient(ellipse at 50% 55%, rgba(0,0,0,.15), rgba(0,0,0,.72))';
-    const vq = $('div', 'lay', null, el); vq.style.background = 'radial-gradient(ellipse 60% 40% at 50% 46%, rgba(0,0,0,.72), rgba(0,0,0,0))';
-    const t = $('div', null, `<div class="kick">HGG · 2<sup>e</sup> année · Chapitre 2</div><div class="titre" style="margin-top:22px">Les États-Unis</div><div class="serif" style="margin-top:22px;font:italic 400 44px Newsreader;color:#f3ece0">Pouvoir de, pouvoir sur, pouvoir limité</div>`, el);
-    Object.assign(t.style, { position: 'absolute', left: '0', right: '0', top: '330px', textAlign: 'center' });
-    const q = $('div', null, `<div class="serif" style="font:500 66px/1.15 Newsreader;color:#fff">Sur quoi repose la puissance des États-Unis ?</div><div class="serif" style="margin-top:26px;font:italic 400 58px/1.15 Newsreader;color:var(--or)">Cette puissance est-elle en train de décliner ?</div>`, el);
-    Object.assign(q.style, { position: 'absolute', left: '180px', right: '180px', top: '400px', textAlign: 'center' });
-    const doc = $('div', 'doc', 'La Terre de nuit · NASA, Black Marble 2012', el);
-    return lt => {
-      kb(i1, lt, 6, { s: 1.0, y: 0 }, { s: 2.4, x: 13, y: 22 });
-      u.style.opacity = up(lt, 4.4, 1.4); kb(i2, lt - 4.4, 6, { s: 1.02 }, { s: 1.12, y: -1 });
-      t.style.opacity = win(lt, .8, 5.3, .8); t.style.transform = `scale(${lin(.97, 1.02, cl(lt / 5.5))})`;
-      vq.style.opacity = up(lt, 5.0, .8); show(q.children[0], up(lt, 5.4, .8), 20); show(q.children[1], up(lt, 7.3, .8), 20);
-      doc.style.opacity = win(lt, .5, 9.5);
-    };
-  }, .25);
-
-  /* ================= 4 · 0:50-1:05 · Raymond Aron ================= */
-  scene(4, 50, 65, (el) => {
-    const l = $('div', 'lay', null, el); const i = img(DOC + 'aron-1974.webp', 'full', l); i.style.objectPosition = '30% 40%';
-    $('div', 'droite', null, l);
-    const lt1 = $('div', 'lt', '<b>Raymond Aron</b><span>Philosophe et sociologue · 1905-1983</span>', el);
-    const c = $('div', 'coupure', `<div class="scotch"></div><q>« La capacité d'une unité politique d'imposer sa volonté aux autres »</q><span class="suite">… ou de ne pas se laisser imposer la leur.</span><div class="src">Raymond Aron · <i>Paix et guerre entre les nations</i>, 1962</div>`, el);
-    Object.assign(c.style, { left: '1060px', top: '250px', width: '780px', transform: 'rotate(1.2deg)' });
-    const wrap = $('div', null, null, el); wrap.appendChild(c); Object.assign(wrap.style, { position: 'absolute', inset: 0 });
-    const doc = $('div', 'doc', 'Raymond Aron en 1974 · U.S. News & World Report, Library of Congress', el);
-    return lt => {
-      kb(i, lt, 15, { s: 1.04, x: -4 }, { s: 1.12, x: -6 });
-      show(lt1, win(lt, .8, 6.5), 0, -30);
-      show(wrap, up(lt, 3.6, .9), 50);
-      c.querySelector('.suite').style.opacity = up(lt, 10.4, .8);
-      doc.style.opacity = win(lt, .6, 14.4);
-    };
-  });
-
-  /* ================= 5 · 1:05-1:20 · Serge Sur ================= */
-  scene(5, 65, 80, (el) => {
-    el.style.background = 'radial-gradient(ellipse at 50% 55%, #2a1418 0%, #0d090b 75%)';
-    const h = $('div', 'haut', 'Serge Sur<small>une quadruple capacité</small>', el);
-    const svg = S('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}` }, el); svg.style.position = 'absolute';
-    const cx = 960, cy = 590;
-    const coeur = S('g', {}, svg);
-    S('circle', { cx, cy, r: 120, fill: '#7a1e2c', stroke: '#e0a83a', 'stroke-width': 4 }, coeur);
-    const tc = S('text', { x: cx, y: cy + 16, 'text-anchor': 'middle', fill: '#fff', 'font-size': 46, 'font-weight': 700 }, coeur); tc.textContent = 'PUISSANCE';
-    const B = [['Faire', -1, -1, 'le pouvoir', 0], ['Faire faire', 1, -1, 'l\'influence', 1], ['Empêcher de faire', -1, 1, 'l\'indépendance', 2], ['Refuser de faire', 1, 1, 'l\'indépendance', 2]];
-    const T = [4.6, 6.0, 7.5, 9.2];
-    const items = B.map(([t, sx, sy, _, sens], k) => {
-      const g = S('g', {}, svg);
-      const x2 = cx + sx * 470, y2 = cy + sy * 245;
-      const x1 = cx + sx * 120 * .78, y1 = cy + sy * 120 * .62;
-      const len = Math.hypot(x2 - x1 - sx * 230, y2 - y1);
-      const ln = S('line', { x1, y1, x2: x2 - sx * 230, y2: y2 - sy * 10, stroke: '#e0a83a', 'stroke-width': 5, 'stroke-dasharray': len, 'stroke-dashoffset': len }, g);
-      const bx = S('g', {}, g);
-      S('rect', { x: x2 - 230, y: y2 - 58, width: 460, height: 116, rx: 6, fill: '#efe6d4' }, bx);
-      const tt = S('text', { x: x2, y: y2 + 16, 'text-anchor': 'middle', fill: '#1c140f', 'font-size': 42, 'font-weight': 700 }, bx); tt.textContent = t.toUpperCase();
-      const sg = S('text', { x: x2, y: y2 + (sy < 0 ? -84 : 104), 'text-anchor': 'middle', fill: ['#e0a83a', '#9ec3dd', '#e98a80'][sens], 'font-size': 34, 'font-weight': 600, 'letter-spacing': 3 }, g);
-      sg.textContent = sens === 2 ? '' : sens === 0 ? 'LE POUVOIR' : 'L\'INFLUENCE';
-      return { ln, len, bx, sg };
+  /* [1] Ouverture : Winthrop, 1630, puis la puissance d'aujourd'hui */
+  sequence(1, 3.2, 1.4, S => {
+    const tw = S.t('winthrop'), tn = S.t('nous'), tp = S.t('pres'), te = S.t('premiere', 1), ta = S.t('premiere', 2), tm = S.t('monnaie') - .25, tf = S.t('pourtant') - .3;
+    clip(S, 0, tw + .3, 'mer', { fi: 1.4, a: { s: 1.02 }, b: { s: 1.08 } });
+    titre(S, .9, tw - .1, '1630', 'Océan Atlantique');
+    tirage(S, tw, tn + .2, IMG + 'winthrop-1806.webp', { fi: .6 });
+    titre(S, tw + .5, tn - .2, 'John Winthrop (1588-1649)', 'Puritain, gouverneur de la colonie de la baie du Massachusetts');
+    clip(S, tn, tp + .2, 'mer', { depuis: 9, filtre: 'brightness(.45) saturate(.6)', a: { s: 1.1 }, b: { s: 1.16 } });
+    texte(S, tn + .1, tp + .1, '<span class="mot">« We shall be as a city upon a hill.</span><br><span class="mot">The eyes of all people are upon us. »</span><span class="src mot">John Winthrop · A Model of Christian Charity · 1630</span>',
+      { left: '160px', top: '330px', right: '160px' }, { cls: 'cit', dy: 0, draw: (lt, d, e) => { const m = e.querySelectorAll('.mot'); show(m[0], up(lt, 0, .9)); show(m[1], up(lt, S.t('yeux') - tn - .2, .9)); show(m[2], up(lt, S.t('yeux') - tn + 1, .8)); } });
+    photo(S, tp, te + .2, IMG + 'manhattan-crepuscule.webp', { a: { s: 1.05, x: 1.5 }, b: { s: 1.12, x: -1.5 }, pos: '50% 70%' });
+    photo(S, te, ta + .15, IMG + 'nyse-parquet.webp', { fi: .25, a: { s: 1.06 }, b: { s: 1.16 }, voiles: ['voile-b'] });
+    titre(S, te + .1, ta, 'New York Stock Exchange', '');
+    photo(S, ta, tm + .25, SITE + 'porte-avions-gerald-ford.webp', { fi: .25, a: { s: 1.04, x: -1 }, b: { s: 1.12, x: 1 }, voiles: ['voile-b'] });
+    titre(S, ta + .1, tm, 'USS Gerald R. Ford', '');
+    /* le dollar : flux commerciaux entre les places du monde */
+    const box = $('div'); const M = monde(box); const pr = M.proj;
+    M.P['840'].setAttribute('fill', '#3a3220');
+    const villes = [[-74, 40.7], [-0.1, 51.5], [8.7, 50.1], [139.7, 35.7], [121.5, 31.2], [-46.6, -23.5], [3.4, 6.5], [72.9, 19.1], [46.7, 24.7], [151.2, -33.9], [103.8, 1.35], [114.2, 22.3], [-99.1, 19.4], [28, -26.2], [55.3, 25.3]];
+    const arcs = []; const ga = S_('g', {}, M.svg);
+    [[0, 1], [0, 3], [1, 4], [2, 5], [3, 9], [4, 8], [5, 6], [6, 7], [7, 10], [8, 1], [10, 11], [11, 0], [12, 0], [13, 2], [14, 7], [4, 0], [9, 10], [12, 5]].forEach(([i, j], k) => {
+      const a = pr(villes[i]), b = pr(villes[j]); const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2 - Math.hypot(b[0] - a[0], b[1] - a[1]) * .22;
+      const p = S_('path', { d: `M${a[0]},${a[1]} Q${mx},${my} ${b[0]},${b[1]}`, fill: 'none', stroke: '#d9a54a', 'stroke-width': 2, opacity: .85 }, ga);
+      const L = p.getTotalLength(); p.style.strokeDasharray = L; p.style.strokeDashoffset = L; arcs.push([p, L, k * .09]);
     });
-    const ind = S('text', { x: cx, y: cy + 400, 'text-anchor': 'middle', fill: '#e98a80', 'font-size': 34, 'font-weight': 600, 'letter-spacing': 3 }, svg);
-    ind.textContent = 'EMPÊCHER ET REFUSER : L\'INDÉPENDANCE';
-    const pm = S('text', { x: cx, y: cy - 400, 'text-anchor': 'middle', fill: 'rgba(243,236,224,.7)', 'font-size': 26, 'letter-spacing': 2 }, svg);
-    pm.textContent = '';
-    return lt => {
-      show(h, up(lt, .3), 0, -30);
-      const p0 = up(lt, 1.6, .8); coeur.style.opacity = p0; coeur.style.transformOrigin = `${cx}px ${cy}px`; coeur.style.transform = `scale(${lin(.6, 1, p0)})`;
-      items.forEach((it, k) => {
-        const p = up(lt, T[k], .7);
-        it.ln.setAttribute('stroke-dashoffset', it.len * (1 - p));
-        it.bx.style.opacity = up(lt, T[k] + .35, .5);
-        it.sg.style.opacity = up(lt, 11 + (k === 1 ? .7 : 0), .6);
-      });
-      ind.style.opacity = up(lt, 12.4, .6);
-    };
+    villes.forEach(v => { const q = pr(v); S_('circle', { cx: q[0], cy: q[1], r: 4, fill: '#f1ece2' }, ga); });
+    const dol = $('div', 'grand', '$<small>Le dollar, monnaie des échanges mondiaux</small>', box); Object.assign(dol.style, { left: '120px', bottom: '110px', fontSize: '150px' });
+    plan(S, tm, tf + .3, box, { fi: .3, draw: lt => { arcs.forEach(([p, L, dl]) => { p.style.strokeDashoffset = L * (1 - eo(cl((lt - dl) / 1.1))); }); show(dol, up(lt, .3, .8)); } });
+    photo(S, tf, S.d, IMG + 'capitole-rotonde.webp', { fi: .6, fo: 1.3, a: { s: 1.0 }, b: { s: 1.14 }, filtre: 'brightness(.8)' });
   });
 
-  /* ================= 6 · 1:20-1:45 · Nye, hard / soft / smart ================= */
-  scene(6, 80, 105, (el) => {
-    const a = $('div', 'lay', null, el);
-    const bg = img(IMG + 'portrait-nye.webp', 'full flou', a);
-    const t = $('figure', 'tirage', `<img src="${IMG}portrait-nye.webp" alt=""><figcaption>Joseph Nye</figcaption>`, a);
-    Object.assign(t.style, { left: '260px', top: '170px', width: '600px', height: '680px', transform: 'rotate(-2deg)' });
-    const lt1 = $('div', null, `<div class="kick">1990 · <i style="font-style:italic;text-transform:none;letter-spacing:0;font:italic 400 30px Newsreader;color:#f3ece0">Bound to Lead</i></div><div class="titre" style="font-size:118px;margin-top:20px">Joseph Nye</div><div class="serif" style="margin-top:20px;font:400 38px/1.3 Newsreader;color:#f3ece0">Politiste américain : deux façons<br>d'exercer la puissance</div>`, a);
-    Object.assign(lt1.style, { position: 'absolute', left: '980px', top: '330px' });
-    const b = $('div', 'lay', null, el); b.style.background = '#0d0a0b';
-    $('div', 'haut', 'Hard, soft, smart<small>trois visages de la puissance</small>', b);
-    const tr = $('div', 'trip', null, b);
-    const K = [['porte-avions-gerald-ford.webp', 'Hard power', 'contraindre : l\'armée, l\'argent, la pression diplomatique', 'Joseph Nye, 1990', 'k1', '50% 50%'],
-               ['panneau-hollywood.webp', 'Soft power', 'attirer : la culture, les valeurs, un modèle de société', 'Joseph Nye, 1990', 'k2', '50% 50%'],
-               ['capitole-washington.webp', 'Smart power', 'savoir combiner les deux', 'Suzanne Nossel, 2004', 'k3', '50% 50%']];
-    const cases = K.map(([f, ti, tx, au, k, pos]) => { const c = $('div', 'case ' + k, `<img src="${IMG}${f}" alt="" style="object-position:${pos}"><div class="voile"></div><div class="lb"><b>${ti}</b><span>${tx}</span><em>${au}</em></div>`, tr); return c; });
-    const T = [6.9, 13.2, 19.0];
-    return lt => {
-      a.style.opacity = 1 - up(lt, 5.8, .6);
-      kb(t.querySelector('img'), lt, 7, { s: 1.0 }, { s: 1.08 });
-      show(t, up(lt, .2, .8), 40); show(lt1, up(lt, .9, .8), 0, 40);
-      b.style.opacity = up(lt, 5.8, .6);
-      cases.forEach((c, k) => {
-        const p = up(lt, T[k] - .6, .8); c.style.opacity = p; c.style.transform = `translateY(${(1 - p) * 60}px)`;
-        const im = c.querySelector('img'); const q = cl((lt - T[k] + .6) / 14); im.style.transform = `scale(${lin(1.05, 1.15, q)})`;
-        c.querySelector('.lb').style.opacity = up(lt, T[k], .6);
-      });
-    };
+  /* [2] Titre */
+  sequence(2, 0, 0, S => {
+    clip(S, 0, S.d, 'terre-nuit', { fi: 1, fo: 1.2, a: { s: 1.0, x: 12 }, b: { s: 1.08, x: 12 } });
+    const box = $('div'); const t = $('div', 'titre-film', '<div class="kick">HGG · 2<sup>e</sup> année · Chapitre 2</div><h1>Les États-Unis</h1><p>Une puissance sans limites ?</p>', box);
+    $('div', 'voile-g', null, box); box.appendChild(t); const k = t.children;
+    plan(S, .2, S.d, box, { fi: 0, fo: 1.2, draw: lt => { show(k[0], up(lt, .8, 1)); show(k[1], up(lt, 1.3, 1.4), 30); show(k[2], up(lt, 2.8, 1.2)); } });
+  }, 7.6);
+
+  /* [3] L'exceptionnalisme et le siècle américain */
+  sequence(3, .8, 1.3, S => {
+    const te = S.t('exceptionnalisme') - .2, tl = S.t('1941') - .2, ta = S.t('ans') - .5, t91 = S.t('1991') - .2;
+    photo(S, 0, te, IMG + 'trumbull-declaration.webp', { fi: .8, a: { s: 1.02 }, b: { s: 1.14, y: 2 }, voiles: ['voile-b'] });
+    titre(S, .6, te - .1, '4 juillet 1776', "La Déclaration d'indépendance");
+    credit(S, .6, te, '<i>John Trumbull, Declaration of Independence</i>, 1819');
+    photo(S, te, tl, SITE + 'american-progress-gast.webp', { a: { s: 1.2, x: 6 }, b: { s: 1.2, x: -6 }, voiles: ['voile-g'] });
+    texte(S, te + .2, tl, '<span class="kick">Exceptionnalisme</span><br>Un modèle<br><em>universel</em>', { left: '120px', top: '300px' });
+    credit(S, te + .4, tl, '<i>John Gast, American Progress</i>, 1872 · la « destinée manifeste »');
+    tirage(S, tl, ta, IMG + 'luce-1950.webp', { cote: 'gauche', marge: 200 });
+    titre(S, tl + .5, ta, 'Henry Luce (1898-1967)', 'Patron des magazines Time et Life', { droite: true });
+    texte(S, S.t('annonce') - .2, ta, '« The American<br>Century »<small>Life, 17 février 1941</small>', { right: '170px', top: '330px', textAlign: 'right' });
+    clip(S, ta, t91 + .2, 'vj-1945', { depuis: 1, a: { s: 1.05 }, b: { s: 1.12 }, voiles: ['voile-b'] });
+    titre(S, ta + .3, t91, '14 août 1945', 'New York fête la victoire');
+    /* 1991 : l'URSS se défait, les États-Unis restent seuls */
+    const box = $('div'); const M = monde(box);
+    const urss = S_('path', { d: M.path(topojson.merge(WORLD, WORLD.objects.countries.geometries.filter(g => URSS.includes(g.id)))), fill: '#7a2a24', stroke: '#c8463c', 'stroke-width': 1.5 }, M.svg);
+    URSS.forEach(id => M.P[id] && M.P[id].setAttribute('stroke', '#5a3a36'));
+    const usa = M.P['840'];
+    const an = $('div', 'grand', '1991', box); Object.assign(an.style, { left: '120px', top: '110px', fontSize: '120px' });
+    const c = M.path.centroid(pays.find(f => f.id === '840'));
+    const lab = $('div', 'etiq', 'États-Unis<small>seule superpuissance</small>', box); Object.assign(lab.style, { left: (c[0] - 120) + 'px', top: (c[1] + 70) + 'px' });
+    const tc = S.t('chute') - t91, ts = S.t('seule') - t91;
+    plan(S, t91, S.d, box, { fi: .5, fo: .9, draw: lt => {
+      show(an, up(lt, .2, .8));
+      urss.style.opacity = 1 - up(lt, tc, 1.2);
+      const g = up(lt, ts - .6, 1); usa.setAttribute('fill', d3.interpolateRgb('#1b1d22', '#d9a54a')(g));
+      show(lab, up(lt, ts - .2, .8));
+    } });
   });
 
-  /* ================= 7 · 1:45-2:15 · American Progress ================= */
-  scene(7, 105, 135, (el) => {
-    const l = $('div', 'lay', null, el);
-    const i = img(IMG + 'american-progress-gast.webp', null, l);
-    Object.assign(i.style, { position: 'absolute', width: '2240px', top: '-330px', left: '0' });
-    $('div', 'bas', null, l);
-    const M = [
-      [2.6, 10.5, '« City upon a hill »', 'la « cité sur la colline » des colons puritains, <i>XVII<sup>e</sup> siècle</i>'],
-      [10.9, 16.5, 'Destinée manifeste', 'étendre le modèle américain vers l\'Ouest, <i>XIX<sup>e</sup> siècle</i>'],
-      [24.5, 30, 'L\'exceptionnalisme américain', 'une nation qui se croit investie d\'une mission'],
-    ].map(([a, b, t, s]) => { const m = $('div', 'mot', `${t}<small>${s}</small>`, el); Object.assign(m.style, { left: '110px', bottom: '110px', width: '1500px' }); return [a, b, m]; });
-    const cap = $('div', 'mot', `John Gast, 1872<small><i>American Progress</i> : l'allégorie du progrès guide les pionniers vers l'Ouest</small>`, el);
-    Object.assign(cap.style, { left: '110px', bottom: '110px', width: '1500px', fontSize: '72px' });
-    return lt => {
-      const w = 2240;
-      const p = eio(cl(lt / 30)) * .85 + cl(lt / 30) * .15;
-      i.style.transform = `translate(${-(w - W) * p}px, ${lin(40, -60, p)}px)`;
-      M.forEach(([a, b, m]) => show(m, win(lt, a, b), 24));
-      show(cap, win(lt, 17, 24), 24);
+  /* [5] Le doute */
+  sequence(5, 1.0, 1.6, S => {
+    const t08 = S.t('2008') - .3, tch = S.t('chine') - .3, td = S.t('doute') - .3, tam = S.t('america', 2) - .35, tr = S.t('rejet') - .25, tpo = S.t('pourtant') - .2, tfr = S.t('fracture') - .2;
+    const pole = (M, id, c0, txt, dx, dy, box) => {
+      const f = pays.find(x => x.id === id); const c = M.path.centroid(f);
+      const r = S_('circle', { cx: c[0], cy: c[1], r: 0, fill: 'none', stroke: c0, 'stroke-width': 2.5 }, M.svg);
+      const l = $('div', 'etiq', txt, box); Object.assign(l.style, { left: (c[0] + dx) + 'px', top: (c[1] + dy) + 'px' });
+      return [r, l];
     };
+    /* le monde multipolaire */
+    let box = $('div'); let M = monde(box); M.P['840'].setAttribute('fill', '#d9a54a');
+    const poles = [['156', 'Chine', 30, -20], ['356', 'Inde', -10, 40], ['076', 'Brésil', 30, 0], ['643', 'Russie', 0, -60], ['276', 'Union européenne', -80, -110]];
+    const P5 = poles.map(([id, n, dx, dy]) => pole(M, id, '#f1ece2', n, dx, dy, box));
+    const tm = S.t('multipolaire');
+    const ti = $('div', 'grand', 'Un monde <em>multipolaire</em>', box); Object.assign(ti.style, { left: '120px', bottom: '110px', fontSize: '72px' });
+    plan(S, 0, t08, box, { fi: .8, draw: lt => P5.forEach(([r, l], i) => { const p = up(lt, tm - .4 + i * .25, .9); r.setAttribute('r', 10 + 40 * p); r.style.opacity = p * (1 - .6 * cl((lt - tm - 1.2 - i * .25) / 1.5)); show(l, p); M.P[poles[i][0]].setAttribute('fill', d3.interpolateRgb('#1b1d22', '#5f6672')(p)); }) || show(ti, up(lt, tm - .2, .8)) });
+    photo(S, t08, tch, IMG + 'wall-street.webp', { a: { s: 1.05, y: 8 }, b: { s: 1.05, y: -8 }, voiles: ['voile-b'] });
+    titre(S, t08 + .3, tch, 'Septembre 2008', 'Faillite de Lehman Brothers, la crise devient mondiale');
+    /* la Chine et la Russie */
+    box = $('div'); const M2 = monde(box); M2.P['840'].setAttribute('fill', '#d9a54a');
+    const rivaux = [['156', 'Chine', 20, -10], ['643', 'Russie', 0, -50]].map(([id, n, dx, dy]) => [id, pole(M2, id, '#c8463c', n, dx, dy, box)]);
+    plan(S, tch, td, box, { draw: lt => rivaux.forEach(([id, [r, l]], i) => { const p = up(lt, .2 + i * .45, .8); M2.P[id].setAttribute('fill', d3.interpolateRgb('#1b1d22', '#a33a32')(p)); r.setAttribute('r', 14 + 50 * p); r.style.opacity = p * .9; show(l, p); }) });
+    photo(S, td, tam, SITE + 'capitole-washington.webp', { a: { s: 1.03 }, b: { s: 1.12 }, filtre: 'brightness(.85) saturate(.85)' });
+    tirage(S, tam, tr, IMG + 'trump-2025.webp', { cote: 'gauche', marge: 220, fi: .3 });
+    texte(S, tam + .25, tr, 'America<br>First', { right: '180px', top: '330px', fontSize: '150px', fontWeight: '400', textAlign: 'right' }, { fi: .2 });
+    titre(S, tam + .4, tr, 'Donald Trump', 'Président de 2017 à 2021, puis depuis 2025', { droite: true });
+    photo(S, tr, tpo, SITE + 'mur-frontiere-tijuana-san-diego.webp', { fi: .3, a: { s: 1.05, x: 2 }, b: { s: 1.12, x: -2 }, voiles: ['voile-b'] });
+    titre(S, tr + .2, tpo, 'Frontière mexicaine', 'Le mur entre Tijuana et San Diego');
+    clip(S, tpo, tfr + .2, 'ellis-1906', { depuis: 1, voiles: ['voile-b'] });
+    titre(S, tpo + .3, tfr, 'Ellis Island, 1906', 'L’arrivée des immigrants à New York');
+    photo(S, tfr, S.d, SITE + 'capitole-6-janvier-2021.webp', { fi: .3, fo: 1, a: { s: 1.04 }, b: { s: 1.13 }, voiles: ['voile-b'] });
+    titre(S, tfr + .3, S.d - .3, '6 janvier 2021', 'Le Capitole envahi par des partisans de Donald Trump');
   });
 
-  /* ================= 8 · 2:15-2:40 · Le déclinisme ================= */
-  scene(8, 135, 160, (el) => {
-    el.style.background = 'radial-gradient(ellipse at 30% 50%, #2b1a14 0%, #0c0a0a 70%)';
-    const t = $('figure', 'tirage', `<img src="${IMG}portrait-louis.webp" alt=""><figcaption>Florian Louis</figcaption>`, el);
-    Object.assign(t.style, { left: '180px', top: '170px', width: '560px', height: '640px', transform: 'rotate(2deg)' });
-    const c = $('div', 'coupure', `<div class="scotch"></div><q>« Le déclinisme est consubstantiel à l'exceptionnalisme »</q><div class="src">Florian Louis · historien</div>`, el);
-    Object.assign(c.style, { left: '880px', top: '250px', width: '880px' });
-    const cw = $('div', 'lay', null, el); cw.appendChild(c);
-    const f = $('div', 'fiche', `<div class="kick">1987 · Paul Kennedy, historien britannique</div><h3>The Rise and Fall<br>of the Great Powers</h3><p><i>Naissance et déclin des grandes puissances</i></p>`, el);
-    Object.assign(f.style, { left: '880px', top: '200px', width: '880px', transform: 'rotate(-1deg)' });
-    const fw = $('div', 'lay', null, el); fw.appendChild(f);
-    const m = $('div', 'mot', `« Imperial overstretch »<small>la <i>surcharge impériale</i>, qui a ruiné les empires avant eux</small>`, el);
-    Object.assign(m.style, { left: '880px', top: '640px', width: '960px', fontSize: '84px' });
-    return lt => {
-      show(t, up(lt, .3, .8), 40);
-      show(cw, win(lt, 3.2, 11.6), 40);
-      show(fw, up(lt, 12.2, .8), 40);
-      show(m, up(lt, 18.6, .8), 26);
-      kb(t.querySelector('img'), lt, 25, { s: 1.0 }, { s: 1.1 });
-    };
+  /* [6] La problématique */
+  sequence(6, 1.8, 1.8, S => {
+    const tj = S.t('jusqu') - .2;
+    const box = $('div'); const l3 = $('div', null, '<div class="kick" style="opacity:0;font-size:32px">Première armée</div><div class="kick" style="opacity:0;margin-top:34px;font-size:32px">Première économie</div><div class="kick" style="opacity:0;margin-top:34px;font-size:32px">Premier foyer d’influence culturelle</div>', box);
+    Object.assign(l3.style, { position: 'absolute', left: '160px', top: '420px' });
+    const tt = [S.t('premiere', 1), S.t('premiere', 2), S.t('premier', 3)];
+    plan(S, 0, tj + .3, box, { fi: .6, fo: .5, draw: lt => [...l3.children].forEach((e, i) => show(e, up(lt, tt[i] - .1, .7), 10)) });
+    const q = texte(S, tj, S.d, 'Jusqu’à quel point les États-Unis sont-ils une puissance <em>sans limites</em> ?', { left: '160px', right: '160px', top: '300px', fontSize: '76px' }, {
+      fo: 1, draw: (lt, d, e) => { e.style.transform = `translateY(${-110 * eio(cl((lt - (S.t('trois') - tj - .3)) / 1))}px)`; } });
+    const box2 = $('div'); const p3 = $('div', 'plan3', '<div><b>I</b><span>Le pouvoir de</span><em>les fondements</em></div><div><b>II</b><span>Le pouvoir sur</span><em>les manifestations dans le monde</em></div><div><b>III</b><span>Le pouvoir limité</span><em>les limites et les fragilités</em></div>', box2);
+    const tq = [S.t('fonde'), S.t('exerce'), S.t('limite', 2)].map(x => x - tj - .4);
+    plan(S, tj, S.d, box2, { fi: 0, fo: 1, draw: lt => [...p3.children].forEach((e, i) => show(e, up(lt, tq[i], .8))) });
   });
 
-  /* ================= 9 · 2:40-3:00 · Part dans le PIB mondial ================= */
-  scene(9, 160, 180, (el) => {
-    el.style.background = 'linear-gradient(180deg, #17110f 0%, #0b0909 100%)';
-    $('div', 'haut', 'Part des États-Unis dans le PIB mondial<small>Banque mondiale</small>', el);
-    const g = $('div', 'graph', null, el);
-    const D = [[1960, 40, 2.6], [2000, 30, 6.4], [2011, 21, 8.6], [2024, 26, 11.4]];
-    const bs = D.map(([y, v], k) => $('div', 'barre' + (k === 3 ? ' r' : ''), `<b></b><span>${y}</span>`, g));
-    const m = $('div', 'mot', `Un déclin relatif<small>et il n'est pas linéaire</small>`, el);
-    Object.assign(m.style, { right: '110px', top: '170px', textAlign: 'right', fontSize: '70px' });
-    return lt => {
-      D.forEach(([y, v, a], k) => {
-        const p = up(lt, a, 1.1); bs[k].style.height = (v / 40 * 470 * p) + 'px';
-        bs[k].firstChild.textContent = Math.round(v * p) + ' %';
-        bs[k].style.opacity = cl((lt - a + .3) / .3);
-      });
-      show(m, up(lt, 14.6, .8), 20);
-    };
+  /* [7] Qu'est-ce que la puissance ? */
+  sequence(7, .6, 1.0, S => {
+    const tj = S.t('juriste') - .3, t90 = S.t('1990') - .3, th = S.t('hard') - .4;
+    photo(S, 0, tj, IMG + 'aron-1974.webp', { fi: .6, a: { s: 1.03, x: -2 }, b: { s: 1.1, x: 2 }, voiles: ['voile-d'], filtre: 'grayscale(1)' });
+    titre(S, .4, tj, 'Raymond Aron (1905-1983)', 'Paix et guerre entre les nations, 1962');
+    texte(S, S.t('capacite') - .4, tj, '« La capacité d’une unité politique d’imposer sa volonté aux autres »', { right: '120px', top: '250px', width: '820px', fontSize: '54px', lineHeight: '1.2', textAlign: 'right' });
+    /* Serge Sur : quatre verbes */
+    const box = $('div'); const M = monde(box); M.svg.style.opacity = .35;
+    const h = $('div', null, '<div class="kick">Serge Sur, juriste</div><div style="margin-top:20px;font:300 66px/1.1 Fraunces;color:#fff">La puissance en quatre verbes</div>', box); Object.assign(h.style, { position: 'absolute', left: '140px', top: '170px' });
+    const v = $('div', 'verbes', '<div class="vb4"><b>Faire</b><span>le pouvoir</span></div><div class="vb4"><b>Faire faire</b><span>l’influence</span></div><div class="vb4"><b>Empêcher de faire</b><span>l’indépendance</span></div><div class="vb4"><b>Refuser de faire</b><span>l’indépendance</span></div>', box);
+    const tv = [S.t('faire', 1), S.t('faire', 2), S.t('empecher'), S.t('refuser')].map(x => x - tj - .25);
+    plan(S, tj, t90, box, { draw: lt => { show(h, up(lt, .1, .8)); [...v.children].forEach((e, i) => show(e, up(lt, tv[i], .6))); } });
+    tirage(S, t90, th, SITE + 'portrait-nye.webp', { cote: 'gauche', marge: 260, haut: [190, 190] });
+    titre(S, t90 + .5, th, 'Joseph Nye', 'Politiste américain · Bound to Lead, 1990', { droite: true });
+    /* hard, soft, smart */
+    const b2 = $('div'); $('div', 'sombre', null, b2);
+    const tr = $('div', 'trip', `<div class="pan"><img src="${SITE}porte-avions-gerald-ford.webp"><div class="vb"></div><div class="tx"><span>Contraindre</span><b>Hard power</b><em>l’armée, l’économie</em></div></div>`
+      + `<div class="pan"><img src="${SITE}panneau-hollywood.webp"><div class="vb"></div><div class="tx"><span>Attirer</span><b>Soft power</b><em>la culture, les valeurs</em></div></div>`
+      + `<div class="pan"><img src="${SITE}capitole-washington.webp"><div class="vb"></div><div class="tx"><span>Combiner</span><b>Smart power</b><em>Suzanne Nossel, 2004</em></div></div>`, b2);
+    const tp = [S.t('hard'), S.t('soft'), S.t('smart')].map(x => x - th - .3);
+    plan(S, th, S.d, b2, { fi: .4, fo: .8, draw: lt => [...tr.children].forEach((e, i) => { const p = up(lt, tp[i], .7); e.style.opacity = p; e.querySelector('img').style.transform = `scale(${lin(1.15, 1.04, cl((lt - tp[i]) / 6))})`; }) });
   });
 
-  /* ================= 10 · 3:00-3:20 · La montée des autres ================= */
-  scene(10, 180, 200, (el) => {
-    const a = $('div', 'lay', null, el); const i = img(IMG + 'shanghai-pudong.webp', 'full', a); $('div', 'bas', null, a);
-    const d1 = $('div', 'doc', 'Shanghai, le quartier de Pudong', a);
-    const b = $('div', 'lay', null, el); b.style.background = '#0b0d12';
-    const svg = S('svg', { width: W, height: H }, b);
-    const pays = topojson.feature(WORLD, WORLD.objects.countries);
-    const proj = d3.geoEqualEarth().rotate([-10, 0]).fitExtent([[140, 230], [1780, 1050]], { type: 'Sphere' });
-    const gp = d3.geoPath(proj);
-    S('path', { d: gp({ type: 'Sphere' }), fill: '#101826' }, svg);
-    const col = { '840': '#b8404f', '156': '#e0a83a', '356': '#d9a066' };
-    const P = {};
-    pays.features.forEach(f => { const p = S('path', { d: gp(f), fill: '#3a3f47', stroke: '#101826', 'stroke-width': .8 }, svg); if (col[f.id]) P[f.id] = p; });
-    const lab = (txt, ll, color, size = 40) => { const [x, y] = proj(ll); const t = S('text', { x, y, 'text-anchor': 'middle', fill: color, 'font-size': size, 'font-weight': 700, 'letter-spacing': 2, stroke: '#0b0d12', 'stroke-width': 6, 'paint-order': 'stroke' }, svg); t.textContent = txt; return t; };
-    const lUS = lab('ÉTATS-UNIS', [-100, 40], '#fff'), lCN = lab('CHINE', [103, 35], '#fff'), lIN = lab('INDE', [79, 21], '#fff', 32);
-    const z = $('div', 'mot', `Un monde « post-américain »<small>Fareed Zakaria, <i>The Post-American World</i>, 2008</small>`, b);
-    Object.assign(z.style, { left: '90px', top: '40px', fontSize: '66px' });
-    return lt => {
-      kb(i, lt, 8.5, { s: 1.04, x: -1 }, { s: 1.14, x: 1.5 });
-      d1.style.opacity = win(lt, .5, 7.8);
-      b.style.opacity = up(lt, 7.6, .8);
-      const p1 = up(lt, 8.4, .8); P['840'].setAttribute('fill', d3.interpolate('#3a3f47', col['840'])(p1)); lUS.style.opacity = p1;
-      const p2 = up(lt, 9.4, .8); P['156'].setAttribute('fill', d3.interpolate('#3a3f47', col['156'])(p2)); lCN.style.opacity = p2;
-      const p3 = up(lt, 10.4, .8); P['356'].setAttribute('fill', d3.interpolate('#3a3f47', col['356'])(p3)); lIN.style.opacity = p3;
-      show(z, up(lt, 11.6, .8), 20);
-    };
+  /* [8] Le déclin ? */
+  sequence(8, .6, 1.4, S => {
+    const t08 = S.t('2008') - .3, tc = S.t('chiffres') - .3, tn = S.t('pour') - .3;
+    const box = $('div'); const M = monde(box); M.svg.style.opacity = .25;
+    const k = $('div', null, '<div class="kick">1987 · Paul Kennedy, historien</div><div style="margin-top:22px;font:italic 300 78px/1.05 Fraunces;color:#fff">The Rise and Fall<br>of the Great Powers</div>', box); Object.assign(k.style, { position: 'absolute', left: '160px', top: '200px' });
+    const o = $('div', null, '« Imperial overstretch »<div style="margin-top:10px;font:400 30px Fraunces;color:#b7afa2">la surcharge impériale</div>', box); Object.assign(o.style, { position: 'absolute', left: '160px', top: '560px', font: '300 60px/1.1 Fraunces', color: '#d9a54a' });
+    const tr = $('div', null, '<span>Trop de bases</span><span>Trop de guerres</span><span>Trop de dépenses</span>', box); Object.assign(tr.style, { position: 'absolute', left: '160px', top: '790px', display: 'flex', gap: '60px', font: '600 22px Inter Tight', letterSpacing: '.24em', textTransform: 'uppercase', color: '#f1ece2' });
+    const tt = [S.t('trop', 1), S.t('trop', 2), S.t('trop', 3)], t87 = S.t('1987') - .3, ts = S.t('surcharge') - .3;
+    plan(S, 0, t08, box, { fi: .6, draw: lt => { show(k, up(lt, t87, .8)); show(o, up(lt, ts, .8)); [...tr.children].forEach((e, i) => { e.style.opacity = up(lt, tt[i] - .2, .5); }); } });
+    photo(S, t08, tc, SITE + 'shanghai-pudong.webp', { a: { s: 1.04, x: 2 }, b: { s: 1.12, x: -2 }, voiles: ['voile-g'] });
+    texte(S, t08 + .3, tc, '<span class="kick">2008 · Fareed Zakaria</span><br><em>The Post-American World</em><small>« la montée des autres » : un monde post-américain</small>', { left: '120px', top: '320px', fontSize: '76px' });
+    titre(S, t08 + .8, tc, 'Shanghai', 'Le quartier de Pudong', { droite: true });
+    /* part des États-Unis dans le PIB mondial */
+    const b2 = $('div'); const g = $('div', null, '<div class="kick">Part des États-Unis dans le PIB mondial</div>', b2); Object.assign(g.style, { position: 'absolute', left: '160px', top: '120px' });
+    const br = $('div', 'barres', '<div class="barre"><b>40 %</b><span>1960</span></div><div class="barre r"><b>21 %</b><span>2011</span></div><div class="barre"><b>26 %</b><span>2024</span></div>', b2);
+    $('div', 'doc', 'Banque mondiale, PIB en dollars courants, valeurs arrondies', b2);
+    const rel = $('div', 'grand', 'Un déclin <em>relatif</em>', b2); Object.assign(rel.style, { left: '160px', top: '190px', fontSize: '64px' });
+    const hb = [40, 21, 26], tb = [S.t('40', 2), S.t('21'), S.t('26')].map(x => x - tc - .3), trl = S.t('relatif') - tc - .3;
+    plan(S, tc, tn, b2, { draw: lt => { show(rel, up(lt, trl, .8)); [...br.children].forEach((e, i) => { const p = up(lt, tb[i], .9); e.style.height = (hb[i] / 40 * 460 * p) + 'px'; e.firstChild.style.opacity = p; e.lastChild.style.opacity = cl(p * 2); }); } });
+    /* Nye : le siècle américain n'est pas fini */
+    const b3 = $('div'); $('div', 'sombre', null, b3);
+    const im = $('img', null, null, b3); im.src = SITE + 'portrait-nye.webp'; Object.assign(im.style, { position: 'absolute', left: '160px', top: '230px', width: '420px', height: '420px', objectFit: 'cover', filter: 'grayscale(.2)' });
+    const tx = $('div', null, '<div class="kick">Joseph Nye · Is the American Century Over?, 2015</div><div style="margin-top:24px;font:300 72px/1.08 Fraunces;color:#fff">Le siècle américain<br><em>n’est pas fini</em></div>', b3); Object.assign(tx.style, { position: 'absolute', left: '660px', top: '230px' });
+    const tri = $('div', null, '<span>Puissance économique</span><span>Force militaire</span><span>Soft power</span>', b3); Object.assign(tri.style, { position: 'absolute', left: '660px', top: '560px', display: 'flex', gap: '56px', font: '600 22px Inter Tight', letterSpacing: '.22em', textTransform: 'uppercase', color: '#d9a54a' });
+    const tq = [S.t('puissance'), S.t('force'), S.t('soft')].map(x => x - tn - .3);
+    plan(S, tn, S.d, b3, { fi: .5, fo: 1, draw: lt => { show(tx, up(lt, .2, .8)); [...tri.children].forEach((e, i) => { e.style.opacity = up(lt, tq[i], .5); }); } });
   });
 
-  /* ================= 11 · 3:20-3:40 · Le siècle américain n'est pas fini ================= */
-  scene(11, 200, 220, (el) => {
-    el.style.background = 'radial-gradient(ellipse at 70% 50%, #1d2633 0%, #0b0d12 70%)';
-    const t = $('figure', 'tirage', `<img src="${IMG}portrait-nye.webp" alt=""><figcaption>Joseph Nye</figcaption>`, el);
-    Object.assign(t.style, { left: '1240px', top: '120px', width: '500px', height: '570px', transform: 'rotate(2deg)' });
-    const q = $('div', 'mot', `« Le siècle américain<br>n'est pas fini »<small>Joseph Nye, <i>Is the American Century Over?</i>, 2015</small>`, el);
-    Object.assign(q.style, { left: '120px', top: '150px', width: '1080px', fontSize: '96px' });
-    const s = $('div', 'serif', 'Concurrencés sur chaque terrain, mais aucun rival ne les cumule tous', el);
-    Object.assign(s.style, { position: 'absolute', left: '120px', top: '545px', width: '1050px', font: 'italic 400 38px/1.3 Newsreader', color: '#e0a83a' });
-    const ICO = [
-      ['L\'économie', '<path d="M10 90 H100" stroke="#f3ece0" stroke-width="7"/><rect x="18" y="58" width="16" height="30" fill="#f3ece0"/><rect x="46" y="40" width="16" height="48" fill="#f3ece0"/><rect x="74" y="18" width="16" height="70" fill="#f3ece0"/>'],
-      ['L\'armée', '<path d="M55 10 L92 24 V52 C92 76 75 92 55 100 C35 92 18 76 18 52 V24 Z" fill="none" stroke="#f3ece0" stroke-width="7"/><path d="M55 34 l6 13 14 1-11 9 4 14-13-8-13 8 4-14-11-9 14-1z" fill="#f3ece0"/>'],
-      ['Le soft power', '<rect x="12" y="26" width="86" height="62" rx="6" fill="none" stroke="#f3ece0" stroke-width="7"/><path d="M12 42 H98" stroke="#f3ece0" stroke-width="5"/><path d="M47 52 L70 66 L47 80 Z" fill="#f3ece0"/><path d="M24 26 l10 -14 M50 26 l10 -14 M76 26 l10 -14" stroke="#f3ece0" stroke-width="5"/>'],
-    ];
-    const pics = ICO.map(([t, d], k) => { const p = $('div', 'picto', `<div class="rond"><svg viewBox="0 0 110 110">${d}</svg></div><b>${t}</b>`, el); Object.assign(p.style, { left: (150 + k * 380) + 'px', top: '690px' }); return p; });
-    const T = [15.3, 16.6, 18.0];
-    return lt => {
-      show(t, up(lt, .2, .8), 40);
-      show(q, up(lt, 2.0, .8), 24);
-      show(s, up(lt, 9.4, .8), 16);
-      pics.forEach((p, k) => {
-        p.style.opacity = lin(.25, 1, up(lt, T[k] - .2, .5)) * up(lt, 12.6, .6);
-        const r = p.querySelector('.rond'); const on = up(lt, T[k], .5);
-        r.style.borderColor = `rgba(224,168,58,${lin(.3, 1, on)})`; r.style.background = `rgba(122,30,44,${on * .8})`;
-        r.style.transform = `scale(${lin(1, 1.08, on)})`;
-      });
-    };
+  /* [9] Carton : partie I */
+  sequence(9, 1.2, 2.4, S => {
+    photo(S, 0, S.d, IMG + 'tetons-aube.webp', { fi: 1, fo: .8, a: { s: 1.02 }, b: { s: 1.1 }, filtre: 'brightness(.62)', voiles: ['voile-g'] });
+    texte(S, .4, S.d, '<span class="kick">Partie I</span><br>Le pouvoir <em>de</em><small>Les fondements territoriaux et humains de la puissance</small>', { left: '160px', top: '360px', fontSize: '130px' }, { fo: .8 });
   });
 
-  /* ================= 12 · 3:40-3:45 · Carton de partie ================= */
-  scene(12, 220, 225, (el) => {
-    const i = img(IMG + 'monument-valley-route.webp', 'full', el);
-    $('div', 'gauche', null, el);
-    const c = $('div', 'carton', `<div class="kick">Partie I · Le pouvoir de…</div><div class="titre">Un territoire</div>`, el);
-    return lt => { kb(i, lt, 5.5, { s: 1.03 }, { s: 1.12, x: -1 }); show(c, up(lt, .4, .9), 0, -40); };
-  }, .4);
-
-  /* ================= 13 · 3:45-4:05 · Le territoire et ses façades ================= */
-  const fondCarte = el => { el.style.background = '#0d1a26'; const svg = S('svg', { width: W, height: H }, el); svg.style.position = 'absolute'; return svg; };
-  scene(13, 225, 245, (el) => {
-    const svg = fondCarte(el);
-    const { pu, p48, gu, g48 } = carteUS(svg, [[300, 150], [1800, 1000]]);
-    const dN = gu(nation);
-    S('path', { d: dN, fill: '#3b3530' }, svg);
-    S('path', { d: gu(topojson.mesh(US, US.objects.states, (a, b) => a !== b)), fill: 'none', stroke: 'rgba(243,236,224,.12)', 'stroke-width': 1 }, svg);
-    const clipNat = clipDe(svg, dN);
-    // les 5 grands ensembles (schéma simplifié)
-    const Z = [
-      ['Plaine côtière', '#5f8a5a', [[-66, 45], [-74.5, 41.5], [-77, 39.5], [-78.8, 37], [-80.5, 35], [-82.5, 33.6], [-85, 32.6], [-88, 32.8], [-91, 33.5], [-94, 33], [-97.5, 31], [-99, 28], [-97, 24], [-79, 23.5], [-64, 30]], [-80.4, 32.4], 3.7],
-      ['Appalaches', '#8a6a3c', [[-67.5, 47.5], [-71, 47], [-75, 44.5], [-78.5, 42.2], [-80.8, 40.3], [-82.5, 38.2], [-84.5, 36], [-86.5, 34], [-87.5, 33], [-85, 32.6], [-82.5, 33.6], [-80.5, 35], [-78.8, 37], [-77, 39.5], [-74.5, 41.5], [-70, 43], [-66, 45]], [-80.6, 39.6], 5.2],
-      ['Grandes Plaines', '#b39a55', [[-104.8, 49.2], [-95, 49.6], [-89, 48.8], [-84, 46.8], [-80, 43], [-78.5, 42.2], [-80.8, 40.3], [-82.5, 38.2], [-84.5, 36], [-86.5, 34], [-87.5, 33], [-88, 32.8], [-91, 33.5], [-94, 33], [-97.5, 31], [-99, 28], [-104, 29], [-104.8, 33], [-104.7, 37], [-104.8, 41], [-105.5, 45]], [-96, 40.5], 6.6],
-      ['Rocheuses', '#8b5a4a', [[-121, 49.3], [-104.8, 49.3], [-105.5, 45], [-104.8, 41], [-104.7, 37], [-104.8, 33], [-104, 29], [-108, 31], [-116, 32.4], [-117, 35], [-119.5, 38], [-121.5, 42], [-120.5, 46]], [-110.5, 41.5], 8.0],
-      ['Façade pacifique', '#4f7d93', [[-126, 49.3], [-121, 49.3], [-120.5, 46], [-121.5, 42], [-119.5, 38], [-117, 35], [-116, 32.4], [-118, 31.5], [-126, 32]], [-121.3, 39.6], 9.4],
-    ];
-    const zs = Z.map(([n, c, pts, at]) => {
-      const g = S('g', { 'clip-path': clipNat }, svg); S('path', { d: g48(anneau(pts)), fill: c, opacity: .85 }, g);
-      const [x, y] = p48(at); const t = S('text', { x, y, 'text-anchor': 'middle', fill: '#fff', 'font-size': 30, 'font-weight': 700, 'letter-spacing': 1.5, stroke: 'rgba(0,0,0,.55)', 'stroke-width': 5, 'paint-order': 'stroke' }, svg);
-      t.textContent = n.toUpperCase(); return [g, t];
+  /* [10] Le territoire : relief, façades, grands ensembles */
+  sequence(10, .6, 4.2, S => {
+    const box = $('div');
+    /* relief NASA en projection équirectangulaire (22-52° N, 128-64° O, 48 px par degré), resserrée en x par cos 38° */
+    const k = .68, cx = Math.cos(38 * Math.PI / 180), wM = 64 * 48 * cx * k, hM = 1440 * k, ox = (W - wM) / 2, oy = (H - hM) / 2;
+    const X = lon => ox + (lon + 128) * 48 * cx * k, Y = lat => oy + (52 - lat) * 48 * k;
+    const proj = d3.geoTransform({ point(l, p) { this.stream.point(X(l), Y(p)); } }); const path = d3.geoPath(proj);
+    const svg = S_('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}` }, box);
+    const g = S_('g', {}, svg);
+    S_('image', { href: IMG + 'relief-etats-unis.webp', x: ox, y: oy, width: wM, height: hM, preserveAspectRatio: 'none' }, g);
+    S_('rect', { x: 0, y: 0, width: W, height: H, fill: 'rgba(5,6,9,.28)' }, g);
+    const l48 = { type: 'FeatureCollection', features: etats.filter(f => !['02', '15', '72', '78', '66', '69', '60'].includes(f.id)) };
+    const contour = S_('path', { d: path(topojson.mesh(US, { type: 'GeometryCollection', geometries: US.objects.states.geometries.filter(x => !['02', '15', '72', '78', '66', '69', '60'].includes(x.id)) }, (a, b) => a === b)), fill: 'none', stroke: '#f1ece2', 'stroke-width': 2.5 }, g);
+    const Lc = contour.getTotalLength(); contour.style.strokeDasharray = Lc;
+    S_('path', { d: path(l48), fill: 'none', stroke: 'rgba(241,236,226,.12)', 'stroke-width': .8 }, g);
+    /* la France à la même échelle, posée sur les Grandes Plaines (longitudes corrigées de la latitude) */
+    const fr = pays.find(f => f.id === '250'); const poly = fr.geometry.coordinates.map(p => p[0]).sort((a, b) => d3.polygonArea(b) - d3.polygonArea(a))[0];
+    const f0 = d3.polygonCentroid(poly), kx = Math.cos(f0[1] * Math.PI / 180) / Math.cos(39 * Math.PI / 180);
+    const frX = poly.map(([l, p]) => [-98 + (l - f0[0]) * kx, 39 + (p - f0[1])]);
+    const frP = S_('path', { d: 'M' + frX.map(([l, p]) => `${X(l)},${Y(p)}`).join('L') + 'Z', fill: 'rgba(91,143,199,.55)', stroke: '#9cc0e6', 'stroke-width': 2 }, g);
+    const lab = (txt, lon, lat, cls = 'etiq') => { const e = $('div', cls, txt, box); Object.assign(e.style, { left: X(lon) + 'px', top: Y(lat) + 'px', transform: 'translate(-50%,-50%)' }); e.style.opacity = 0; return e; };
+    const lFr = lab('France<small>× 17 ≈ les États-Unis</small>', -98, 36.6);
+    const oceans = [lab('Océan<br>Atlantique', -70.5, 31.5), lab('Océan<br>Pacifique', -124.2, 33), lab('Golfe du Mexique', -90, 25.6)];
+    const zones = [lab('Appalaches', -80.5, 37.8), lab('Rocheuses', -108.6, 41.5), lab('Grandes Plaines', -99.5, 43.5)];
+    const sup = $('div', 'grand', 'Plus de 9 millions<br>de km²', box); Object.assign(sup.style, { left: '110px', bottom: '80px', fontSize: '60px' });
+    const fl = S_('path', { d: `M${X(-74)},${Y(36.2)} L${X(-118)},${Y(36.2)}`, stroke: '#d9a54a', 'stroke-width': 3, fill: 'none', 'marker-end': 'url(#fleche)' }, g);
+    const defs = S_('defs', {}, svg); const mk = S_('marker', { id: 'fleche', viewBox: '0 0 10 10', refX: 5, refY: 5, markerWidth: 6, markerHeight: 6, orient: 'auto' }, defs); S_('path', { d: 'M0,0 L10,5 L0,10 z', fill: '#d9a54a' }, mk);
+    const Lf = fl.getTotalLength(); fl.style.strokeDasharray = Lf;
+    const T = { c: S.t('9'), m: S.t('millions'), f: S.t('17'), a: S.t('atlantique'), p: S.t('pacifique'), g: S.t('golfe'), e: S.t('est'), ap: S.t('appalaches'), r: S.t('rocheuse'), gp: S.t('grandes') };
+    const fv = S.avant + VX[10] + .1;
+    plan(S, 0, fv + .2, box, { fi: .8, draw: lt => {
+      g.style.transform = `scale(${lin(1.05, 1, eio(cl(lt / 6)))})`; g.style.transformOrigin = '50% 50%';
+      contour.style.strokeDashoffset = Lc * (1 - eio(cl((lt - T.c + .2) / 1.8)));
+      show(sup, up(lt, T.m - .3, .8));
+      const pf = up(lt, T.f - .3, .7) * (1 - up(lt, T.a - 1.6, .6)); frP.style.opacity = pf; lFr.style.opacity = pf;
+      oceans.forEach((e, i) => show(e, up(lt, [T.a, T.p, T.g][i] - .3, .6)));
+      fl.style.strokeDashoffset = Lf * (1 - eio(cl((lt - T.e + .2) / 2.4))); fl.style.opacity = up(lt, T.e - .3, .3);
+      zones.forEach((e, i) => show(e, up(lt, [T.ap, T.r, T.gp][i] - .3, .5)));
+    } });
+    /* quatre paysages, d'est en ouest */
+    [['blue-ridge', 'Les Appalaches'], ['ble-kansas', 'Les Grandes Plaines'], ['tetons', 'Les Rocheuses'], ['big-sur-bixby', 'La côte pacifique']].forEach(([f, n], i) => {
+      const a = fv + i * 1.0, b = i === 3 ? S.d : a + 1.05;
+      photo(S, a, b, IMG + f + '.webp', { fi: .2, fo: i === 3 ? .8 : .05, a: { s: 1.06 }, b: { s: 1.12 }, voiles: ['voile-b'] });
+      titre(S, a + .1, b - .05, n, '');
     });
-    // trois façades
-    const F = [
-      ['Atlantique', [-71.5, 33.5], [[-79.5, 25], [-79.8, 28.5], [-80.5, 31], [-74.8, 35.2], [-73.5, 40], [-69.4, 41.5], [-66.3, 44.6], [-67.3, 45.3], [-70.8, 44.2], [-71.5, 42.3], [-74.5, 41.2], [-77, 38.5], [-77.5, 36], [-79.5, 33.6], [-82, 31], [-81.5, 28.5], [-80.9, 25.2]], 4.0],
-      ['Pacifique', [-129.5, 40], [[-125.5, 48.5], [-125, 43], [-124.8, 40.3], [-123.5, 37.5], [-121, 34.3], [-117.6, 32.3], [-116.8, 32.7], [-118.5, 34.5], [-121.5, 37.5], [-123, 40], [-123, 43], [-122.5, 47.5], [-122.8, 48.6]], 5.0],
-      ['Golfe du Mexique', [-89.5, 26.2], [[-81.5, 24.3], [-83.5, 27.5], [-84.5, 29.3], [-88, 29.6], [-89.5, 28.6], [-91, 28.6], [-94, 29.2], [-96.5, 27.5], [-97, 25.5], [-97.9, 25.9], [-98, 28.5], [-94.5, 30.5], [-91, 30.6], [-88, 31.2], [-85, 31.2], [-83.5, 30.6], [-82, 28.3], [-81, 25.8]], 6.2],
+  });
+
+  /* [11] La formation du territoire */
+  sequence(11, .5, 2.2, S => {
+    const box = $('div');
+    const proj = d3.geoAlbers().fitExtent([[330, 150], [1720, 990]], { type: 'FeatureCollection', features: etats.filter(f => !['02', '15', '72', '78', '66', '69', '60'].includes(f.id)) });
+    const path = d3.geoPath(proj);
+    const pAk = d3.geoConicEqualArea().rotate([154, 0]).center([-2, 58.5]).parallels([55, 65]).scale(proj.scale() * .35).translate([330, 880]);
+    const svg = S_('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}` }, box);
+    const defs = S_('defs', {}, svg); const cp = S_('clipPath', { id: 'l48' }, defs);
+    const l48 = etats.filter(f => !['02', '15', '72', '78', '66', '69', '60'].includes(f.id));
+    l48.forEach(f => S_('path', { d: path(f) }, cp));
+    l48.forEach(f => S_('path', { d: path(f), fill: '#17191e', stroke: '#2b2f37', 'stroke-width': .8 }, svg));
+    const ak = etats.find(f => f.id === '02'); const akP = S_('path', { d: d3.geoPath(pAk)(ak), fill: '#17191e', stroke: '#2b2f37', 'stroke-width': .8 }, svg);
+    const MISS = [[-95.2, 49.5], [-95.2, 47.24], [-94.2, 46.35], [-93.27, 44.98], [-91.25, 43.8], [-90.67, 42.5], [-90.57, 41.52], [-91.4, 40.4], [-90.19, 38.63], [-89.52, 37.3], [-89.18, 37.0], [-90.05, 35.15], [-91.06, 33.41], [-90.88, 32.35], [-91.4, 31.56], [-91.63, 31.0]];
+    const OUEST_LA = [[-93.85, 28.8], [-93.85, 29.7], [-93.7, 30.1], [-93.7, 31.0], [-94.04, 32.0], [-94.04, 33.55], [-95.0, 33.85], [-96.5, 33.8], [-98.0, 34.1], [-100, 34.56], [-100, 37.75], [-102.0, 38.05], [-104.6, 38.27], [-105.2, 38.45], [-106.3, 39.2]];
+    const DIVIDE = [[-106.3, 42.0], [-109.0, 42.0], [-109.7, 43.2], [-110.5, 44.3], [-111.4, 44.6], [-112.8, 44.4], [-113.5, 45.0], [-113.9, 45.7], [-112.5, 46.0], [-112.3, 46.6], [-112.7, 47.5], [-113.8, 48.5], [-114.07, 49.5]];
+    const RIO = [[-107.3, 37.8], [-106.0, 37.1], [-105.9, 36.0], [-106.6, 35.1], [-106.9, 34.0], [-107.3, 33.0], [-106.6, 31.9], [-105.0, 30.7], [-104.4, 29.6], [-103.3, 29.0], [-102.4, 29.8], [-101.0, 29.4], [-100.3, 28.6], [-99.5, 27.5], [-99.1, 26.4], [-97.15, 25.95]];
+    const GILA = [[-106.6, 31.9], [-107.2, 32.35], [-108.2, 32.55], [-109.05, 32.75], [-110, 32.9], [-111.6, 33.1], [-113, 33.0], [-114.6, 32.73]];
+    const ACQ = [
+      ['1783', 'Le territoire de 1783', '#5b8fc7', [...MISS, [-85.0, 31.0], [-84.86, 30.7], [-82.2, 30.6], [-81.4, 30.7], [-60, 30.7], [-60, 50], [-95.2, 50]], [-85.5, 38.6]],
+      ['1803', 'Louisiane', '#d9a54a', [[-114.07, 49.5], ...MISS, [-91.19, 30.45], [-90.07, 29.95], [-89.25, 29.15], [-89.0, 28.5], [-93.85, 28.5], ...OUEST_LA, ...DIVIDE], [-98, 42]],
+      ['1819', 'Floride', '#4f9d8e', [[-91.63, 31.0], [-91.19, 30.45], [-90.1, 30.38], [-89.6, 30.15], [-89.6, 24], [-60, 24], [-60, 30.7], [-81.4, 30.7], [-82.2, 30.6], [-84.86, 30.7], [-85.0, 31.0]], [-82, 28.8]],
+      ['1845', 'Texas', '#c8463c', [[-93.85, 25.0], ...OUEST_LA, ...RIO, [-96.5, 25.0]], [-99, 31.5]],
+      ['1846', 'Oregon', '#6c9a4a', [[-130, 49.5], [-114.07, 49.5], ...DIVIDE.slice().reverse().slice(0, -1), [-109.0, 42.0], [-130, 42.0]], [-119.5, 45.5]],
+      ['1848', 'Cession mexicaine', '#a8643a', [[-130, 42], [-109.0, 42.0], [-106.3, 42.0], [-106.3, 39.2], ...RIO.slice(0, 7), ...GILA.slice(1), [-117.12, 32.53], [-130, 32.53]], [-115, 37.5]],
+      ['1853', 'Achat Gadsden', '#c9b28a', [...GILA, [-114.8, 32.4], [-114.8, 30], [-106.6, 30]], [-110.5, 31.0]],
     ];
-    const fs = F.map(([n, at, band]) => {
-      const c = clipDe(svg, g48(anneau(band)));
-      const s = S('path', { d: dN, fill: 'none', stroke: '#6fd0ff', 'stroke-width': 7, 'clip-path': c, 'stroke-linejoin': 'round' }, svg);
-      const [x, y] = p48(at); const t = S('text', { x, y, 'text-anchor': 'middle', fill: '#9fdcff', 'font-size': 34, 'font-weight': 700, 'letter-spacing': 2 }, svg); t.textContent = n.toUpperCase();
-      return [s, t];
-    });
-    const km = $('div', null, `<b></b><span>millions de km²</span>`, el);
-    Object.assign(km.style, { position: 'absolute', left: '90px', top: '70px' });
-    km.firstChild.style.font = '900 120px/1 "Big Shoulders Display"'; km.firstChild.style.color = '#fff';
-    km.lastChild.style.cssText = 'display:block;font:600 28px "IBM Plex Sans Condensed";text-transform:uppercase;letter-spacing:.14em;color:#e0a83a;margin-top:6px';
-    const f3 = $('div', null, '3 façades maritimes', el);
-    f3.style.cssText = 'position:absolute;left:92px;top:250px;font:800 46px "Big Shoulders Display";text-transform:uppercase;color:#9fdcff';
-    const note = $('div', 'doc', 'Schéma simplifié des grands ensembles du relief', el);
-    return lt => {
-      const p = up(lt, .3, 1.8); km.firstChild.textContent = fr(9.15 * p, 2); km.style.opacity = up(lt, .2, .5);
-      show(f3, up(lt, 3.6, .6), 16);
-      // façades : s'allument, puis s'estompent quand viennent les ensembles
-      fs.forEach(([s, t], k) => { const a = F[k][3]; const o = up(lt, a, .6) * lin(1, .45, up(lt, 10.4, .8)); s.style.opacity = o; t.style.opacity = up(lt, a, .6); });
-      zs.forEach(([g, t], k) => { const a = 10.6 + k * 1.55; g.style.opacity = up(lt, a, .7); t.style.opacity = up(lt, a + .2, .5); });
-      note.style.opacity = up(lt, 10.6, .6);
-    };
+    const zone = (ring) => { const f = { type: 'Feature', geometry: { type: 'Polygon', coordinates: [[...ring, ring[0]]] } }; if (d3.geoArea(f) > 2 * Math.PI) f.geometry.coordinates[0].reverse(); return f; };
+    const gz = S_('g', { 'clip-path': 'url(#l48)' }, svg);
+    const Z = ACQ.map(([an, nom, c, ring, ct]) => { const p = S_('path', { d: path(zone(ring)), fill: c, opacity: 0, stroke: 'rgba(0,0,0,.35)', 'stroke-width': 1.2 }, gz); const q = proj(ct);
+      const e = $('div', 'etiq', `${an}<small>${nom}</small>`, box); Object.assign(e.style, { left: q[0] + 'px', top: q[1] + 'px', transform: 'translate(-50%,-50%)', textAlign: 'center' }); e.style.opacity = 0; return [p, e]; });
+    S_('path', { d: path(topojson.mesh(US, { type: 'GeometryCollection', geometries: US.objects.states.geometries.filter(x => !['02', '15', '72', '78', '66', '69', '60'].includes(x.id)) }, (a, b) => a === b)), fill: 'none', stroke: '#f1ece2', 'stroke-width': 1.6 }, svg);
+    const riv = S_('path', { d: path({ type: 'LineString', coordinates: MISS.slice(1).concat([[-91.19, 30.45], [-90.07, 29.95], [-89.25, 29.15]]) }), fill: 'none', stroke: '#9cc0e6', 'stroke-width': 3 }, svg);
+    const Lr = riv.getTotalLength(); riv.style.strokeDasharray = Lr;
+    const lm = $('div', 'etiq', 'Mississippi', box); const qm = proj([-89.6, 35.6]); Object.assign(lm.style, { left: (qm[0] + 14) + 'px', top: qm[1] + 'px', color: '#9cc0e6' }); lm.style.opacity = 0;
+    const qa = d3.geoPath(pAk).centroid(ak); const la = $('div', 'etiq', '1867<small>Alaska</small>', box); Object.assign(la.style, { left: qa[0] + 'px', top: (qa[1] + 70) + 'px', transform: 'translateX(-50%)', textAlign: 'center' }); la.style.opacity = 0;
+    const tit = $('div', 'grand', 'La formation<br>du territoire', box); Object.assign(tit.style, { left: '110px', top: '80px', fontSize: '60px' });
+    const tz = [S.t('1783'), S.t('1803'), S.t('superficie') + .3, S.t('texas'), S.t('texas') + .7, S.t('mexique'), S.t('1848') + .6];
+    const tms = S.t('mississippi'), tak = S.t('alaska'), tdb = S.t('double');
+    plan(S, 0, S.d, box, { fi: .7, fo: 1, draw: lt => {
+      show(tit, up(lt, .2, .8));
+      Z.forEach(([p, e], i) => { const q = up(lt, tz[i] - .3, .7); p.setAttribute('opacity', .82 * q); show(e, q, 10); });
+      riv.style.strokeDashoffset = Lr * (1 - eio(cl((lt - tms + 1.4) / 1.6))); lm.style.opacity = up(lt, tms - .2, .5);
+      const pd = cl((lt - tdb + .2) / 1.2); Z[1][0].setAttribute('stroke-width', 1.2 + 4 * Math.sin(Math.PI * pd)); Z[1][0].setAttribute('stroke', pd > 0 && pd < 1 ? '#fff3d6' : 'rgba(0,0,0,.35)');
+      const qk = up(lt, tak - .3, .7); akP.setAttribute('fill', d3.interpolateRgb('#17191e', '#7fa9c9')(qk)); show(la, qk, 10);
+    } });
   });
 
-  /* ================= 14 · 4:05-4:25 · Formation du territoire ================= */
-  scene(14, 245, 265, (el) => {
-    const svg = fondCarte(el);
-    const { pu, p48, gu, g48 } = carteUS(svg, [[300, 150], [1800, 1000]]);
-    const dN = gu(nation);
-    const fond = S('path', { d: dN, fill: '#3b3530' }, svg);
-    const autres = S('path', { d: dN, fill: '#6b6258' }, svg);
-    const clipNat = clipDe(svg, dN);
-    const P1783 = [[-95.2, 49.5], ...[[-66, 49.5], [-66, 30.7], [-81.45, 30.7], [-82.2, 30.6], [-84.9, 30.7], [-85, 31], [-91.6, 31]], ...MISS.slice().reverse().slice(1)];
-    const PLOU = [[-95.2, 49.2], ...MISS, [-89.6, 30.2], [-89.2, 28.8], [-93.8, 29.4], [-93.8, 32], [-94.04, 33.55], [-100, 34.56], [-103, 36.5], [-105.5, 38], [-106.5, 40], [-109, 42.3], [-111, 44.5], [-113.5, 47], [-114.5, 49.2]];
-    const g83 = S('g', { 'clip-path': clipNat }, svg); S('path', { d: g48(anneau(P1783)), fill: '#7a1e2c' }, g83);
-    const glo = S('g', { 'clip-path': clipNat }, svg); S('path', { d: g48(anneau(PLOU)), fill: '#c9922e' }, glo);
-    const ak = etats.features.find(f => f.id === '02');
-    const gak = S('path', { d: gu(ak), fill: '#4f7d93' }, svg);
-    S('path', { d: gu(topojson.mesh(US, US.objects.states, (a, b) => a !== b)), fill: 'none', stroke: 'rgba(243,236,224,.13)', 'stroke-width': 1 }, svg);
-    const lab = (html, x, y, c) => { const d = $('div', null, html, el); d.style.cssText = `position:absolute;left:${x}px;top:${y}px;font:800 44px/1 "Big Shoulders Display";text-transform:uppercase;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.8)`; d.firstChild && 0; return d; };
-    const [x83, y83] = p48([-81, 39.5]), [xl, yl] = p48([-99, 42.5]), [xa, ya] = pu([-150, 64]);
-    const L83 = lab(`1783<span style="display:block;margin-top:8px;font:600 22px 'IBM Plex Sans Condensed';letter-spacing:.1em;color:#f3ece0">Treize États,<br>jusqu'au Mississippi</span>`, x83 - 40, y83 - 40);
-    const LLO = lab(`1803 · Louisiane<span style="display:block;margin-top:8px;font:600 22px 'IBM Plex Sans Condensed';letter-spacing:.1em;color:#f3ece0">achetée à la France<br>la superficie double</span>`, xl - 130, yl - 40);
-    const LAK = lab(`1867 · Alaska<span style="display:block;margin-top:8px;font:600 22px 'IBM Plex Sans Condensed';letter-spacing:.1em;color:#f3ece0">acheté à la Russie</span>`, xa + 140, ya - 70);
-    const h = $('div', 'haut', 'Constituer le territoire<small>achat, annexion, conquête</small>', el);
-    const note = $('div', 'doc', 'Alaska et Hawaï hors échelle · frontières simplifiées', el);
-    return lt => {
-      show(h, up(lt, .2, .6), 0, -30);
-      g83.style.opacity = up(lt, .8, .8); show(L83, up(lt, 1.2, .6), 14);
-      autres.style.opacity = up(lt, 3.4, 1.4) * .9;
-      glo.style.opacity = up(lt, 7.4, .9); show(LLO, up(lt, 7.8, .6), 14);
-      const pa = up(lt, 13.6, .9); gak.style.opacity = pa; show(LAK, up(lt, 14.0, .6), 14);
-      gak.style.fill = '#4f7d93';
-      note.style.opacity = up(lt, 13.6, .6);
-    };
+  /* [12] Le mythe de la Frontier */
+  sequence(12, .5, 2.6, S => {
+    const tn = S.t('non') - .2, t93 = S.t('1893') - .3, tm = S.t('mais', 2) - .2;
+    photo(S, 0, tn, IMG + 'emigrants-darley-1869.webp', { fi: .6, a: { s: 1.03, x: 2 }, b: { s: 1.12, x: -2 }, voiles: ['voile-g'] });
+    texte(S, S.t('mythe') - .4, tn, '<span class="kick">Le mythe de la</span><br>Frontier', { left: '120px', top: '360px', fontSize: '140px' });
+    credit(S, .5, tn, '<i>F. O. C. Darley, Emigrants crossing the plains</i>, 1869');
+    photo(S, tn, t93, IMG + 'emigrants-ouest-1880.webp', { fi: .4, a: { s: 1.1, x: 4 }, b: { s: 1.1, x: -4 }, voiles: ['voile-b'] });
+    titre(S, tn + .3, t93, 'La Frontier', 'La zone mouvante où avancent les pionniers');
+    tirage(S, t93, tm, IMG + 'turner.webp', { cote: 'gauche', marge: 240 });
+    titre(S, t93 + .5, tm, 'Frederick Jackson Turner (1861-1932)', 'The Significance of the Frontier in American History, 1893', { droite: true });
+    texte(S, S.t('1890') - .3, tm, '<span class="kick">Recensement de 1890</span><br>La Frontier<br><em>est close</em>', { right: '180px', top: '300px', fontSize: '84px', textAlign: 'right' });
+    noir(S, tm, S.d);
   });
 
-  /* ================= 15 · 4:25-4:45 · La Frontier ================= */
-  scene(15, 265, 285, (el) => {
-    const l = $('div', 'lay', null, el); const i = img(DOC + 'emigrants-darley-1869.webp', 'full', l); $('div', 'gauche', null, l);
-    const m1 = $('div', 'mot', `La Frontier<small>pas une ligne entre deux pays : la <i>zone mouvante</i> où avance le peuplement</small>`, el);
-    Object.assign(m1.style, { left: '110px', top: '300px', width: '880px' });
-    const m2 = $('div', 'mot', `1890<small>le recensement déclare la Frontier <i>close</i></small>`, el);
-    Object.assign(m2.style, { left: '110px', top: '300px', width: '880px', fontSize: '150px' });
-    const f = $('div', 'fiche', `<div class="kick">1893 · Frederick Jackson Turner, historien</div><h3>The Significance of the Frontier in American History</h3><p>La Frontier, moteur de la démocratie américaine</p>`, el);
-    Object.assign(f.style, { left: '110px', top: '290px', width: '820px', transform: 'rotate(-1deg)' });
-    const fw = $('div', 'lay', null, el); fw.appendChild(f);
-    const doc = $('div', 'doc', 'F. O. C. Darley, <i>Emigrants crossing the plains</i>, 1869 · Library of Congress', el);
-    return lt => {
-      kb(i, lt, 20, { s: 1.06, x: 2.5 }, { s: 1.2, x: -3 });
-      show(m1, win(lt, .6, 8.6), 24); show(m2, win(lt, 8.9, 13.3), 24); show(fw, up(lt, 13.6, .8), 40);
-      doc.style.opacity = win(lt, .8, 19.5);
-    };
-  });
+  /* ===== Habillage commun : grain et vignette ===== */
+  const vg = $('div', null, null, stage); vg.id = 'vignette';
+  const cv = $('canvas', null, null, stage); cv.id = 'grain'; cv.width = 960; cv.height = 540; const cx2 = cv.getContext('2d');
+  const tuiles = [0, 1, 2, 3].map(() => { const im = cx2.createImageData(960, 540); for (let i = 0; i < im.data.length; i += 4) { const v = Math.random() * 255; im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 255; } return im; });
+  cv.style.width = W + 'px'; cv.style.height = H + 'px';
 
-  /* ================= 16 · 4:45-4:55 · Dans la violence ================= */
-  scene(16, 285, 295, (el) => {
-    const a = $('div', 'lay', null, el); const i1 = img(DOC + 'gettysburg-1863.webp', 'full', a); $('div', 'bas', null, a);
-    const b = $('div', 'lay', null, el); const i2 = img(DOC + 'richmond-1865.webp', 'full', b); $('div', 'bas', null, b);
-    [i1, i2].forEach(x => x.style.filter = 'contrast(1.05) brightness(.9)');
-    const d1 = $('div', 'doc', 'T. O\'Sullivan, <i>A harvest of death</i>, Gettysburg, juillet 1863 · Library of Congress', a);
-    const d2 = $('div', 'doc', 'Les ruines de Richmond, avril 1865 · Library of Congress', b);
-    const m0 = $('div', 'mot', `Dans la violence<small>guerres indiennes, déportations des peuples amérindiens</small>`, el);
-    Object.assign(m0.style, { left: '110px', bottom: '110px', fontSize: '76px' });
-    const m = $('div', 'mot', `1861-1865 · Guerre de Sécession<small>plus de <b class="n" style="font:900 1.6em 'Big Shoulders Display';color:#e0483c">750 000</b> morts</small>`, el);
-    Object.assign(m.style, { left: '110px', bottom: '100px', fontSize: '76px' });
-    const n = m.querySelector('.n');
-    return lt => {
-      const [o1, o2] = plans(lt, [[0, 5.4], [5.4, 10]], .6); a.style.opacity = o1; b.style.opacity = o2;
-      kb(i1, lt, 6, { s: 1.04 }, { s: 1.15, y: 1.5 }); kb(i2, lt - 5.4, 5, { s: 1.12, x: 1 }, { s: 1.04, x: -1 });
-      show(m0, win(lt, .7, 3.9), 20);
-      show(m, up(lt, 4.1, .7), 20);
-      n.textContent = fr(Math.round(750000 * eo(cl((lt - 5.6) / 2.2)) / 1000) * 1000).replace(/\s/g, ' ');
-    };
-  }, .9);
-
-  /* ================= 17 · 4:55-5:10 · Le damier ================= */
-  scene(17, 295, 310, (el) => {
-    el.style.background = '#1a1612';
-    const k = $('div', 'lay', null, el); const ik = img(IMG + 'kansas-pivots-satellite.webp', 'full', k); $('div', 'bas', null, k);
-    const svg = S('svg', { width: W, height: H }, el); svg.style.position = 'absolute';
-    const X = 1060, Y = 150, C = 780, c = C / 6;
-    const cadre = S('rect', { x: X, y: Y, width: C, height: C, fill: 'rgba(201,146,46,.12)', stroke: '#e0a83a', 'stroke-width': 6 }, svg);
-    const lignes = [];
-    for (let j = 1; j < 6; j++) { lignes.push(S('line', { x1: X + j * c, y1: Y, x2: X + j * c, y2: Y, stroke: '#e0a83a', 'stroke-width': 2.5 }, svg)); lignes.push(S('line', { x1: X, y1: Y + j * c, x2: X, y2: Y + j * c, stroke: '#e0a83a', 'stroke-width': 2.5 }, svg)); }
-    const nums = []; for (let r = 0; r < 6; r++) for (let q = 0; q < 6; q++) { const n = r % 2 ? r * 6 + 6 - q : r * 6 + q + 1; const t = S('text', { x: X + q * c + c / 2, y: Y + r * c + c / 2 + 12, 'text-anchor': 'middle', fill: 'rgba(243,236,224,.75)', 'font-size': 32, 'font-weight': 600 }, svg); t.textContent = n; nums.push(t); }
-    const c6 = S('text', { x: X + C / 2, y: Y - 22, 'text-anchor': 'middle', fill: '#f3ece0', 'font-size': 30, 'font-weight': 600, 'letter-spacing': 2 }, svg); c6.textContent = '6 MILLES (≈ 9,7 KM)';
-    const m1 = $('div', 'mot', `Land Ordinance · 1785<small>l'Ouest découpé en carrés de <i>6 milles de côté</i>, les townships, subdivisés en 36 sections</small>`, el);
-    Object.assign(m1.style, { left: '110px', top: '250px', width: '860px', fontSize: '76px' });
-    const m2 = $('div', 'mot', `Homestead Act · 1862<small>prolonge ce partage égalitaire des terres</small>`, el);
-    Object.assign(m2.style, { left: '110px', top: '580px', width: '860px', fontSize: '76px' });
-    const m3 = $('div', 'mot', `Le Kansas, vu du ciel<small>la trace de la géométrie du damier</small>`, el);
-    Object.assign(m3.style, { left: '110px', bottom: '110px', width: '1300px', fontSize: '76px' });
-    const doc = $('div', 'doc', 'Pivots d\'irrigation dans le Kansas · image satellite', el);
-    return lt => {
-      cadre.style.opacity = up(lt, .5, .6);
-      const pl = up(lt, 4.0, 1.8); lignes.forEach((l, i) => { if (l.getAttribute('x1') === l.getAttribute('x2')) l.setAttribute('y2', Y + C * pl); else l.setAttribute('x2', X + C * pl); });
-      nums.forEach((t, i) => t.style.opacity = up(lt, 5.4 + i * .03, .3));
-      c6.style.opacity = up(lt, 1.2, .6);
-      show(m1, win(lt, 1.0, 10.6), 20); show(m2, win(lt, 6.6, 10.6), 20);
-      const pk = up(lt, 10.6, 1.4);
-      k.style.opacity = pk; kb(ik, lt - 10.6, 5, { s: 1.0 }, { s: 1.08 });
-      svg.style.opacity = 1 - pk * .75; svg.style.transformOrigin = `${X + C / 2}px ${Y + C / 2}px`;
-      show(m3, up(lt, 11.4, .7), 20); doc.style.opacity = up(lt, 11.4, .6);
-    };
-  });
-
-  /* ================= 18 · 5:10-5:25 · Promontory Summit ================= */
-  scene(18, 310, 325, (el) => {
-    const a = $('div', 'lay', null, el); const i1 = img(IMG + 'transcontinental-promontory-1869.webp', 'full', a); $('div', 'bas', null, a);
-    const b = $('div', 'lay', null, el); b.style.background = '#000'; const i2 = img(DOC + 'harpers-1869.webp', 'full', b); $('div', 'bas', null, b);
-    const m0 = $('div', 'mot', `Maîtriser le territoire<small>un territoire ne devient une ressource qu'une fois maîtrisé</small>`, el);
-    Object.assign(m0.style, { left: '110px', bottom: '110px', width: '1500px', fontSize: '76px' });
-    const m1 = $('div', 'mot', `10 mai 1869<small>Promontory Summit (Utah) : le dernier rail du premier chemin de fer transcontinental</small>`, el);
-    Object.assign(m1.style, { left: '110px', bottom: '110px', width: '1500px', fontSize: '110px' });
-    const m2 = $('div', 'mot', `L'Atlantique et le Pacifique sont reliés`, el);
-    Object.assign(m2.style, { left: '110px', bottom: '120px', width: '1500px', fontSize: '76px' });
-    const d1 = $('div', 'doc', 'A. J. Russell, Promontory Summit, 10 mai 1869', a);
-    const d2 = $('div', 'doc', '<i>Harper\'s Weekly</i>, 5 juin 1869 · Library of Congress', b);
-    return lt => {
-      const [o1, o2] = plans(lt, [[0, 10.2], [10.2, 15]], .7); a.style.opacity = o1; b.style.opacity = o2;
-      kb(i1, lt, 10.8, { s: 1.03, x: -1 }, { s: 1.17, x: 1.5 }); kb(i2, lt - 10.2, 5, { s: 1.0 }, { s: 1.07 });
-      show(m0, win(lt, .4, 3.8), 20); show(m1, win(lt, 4.0, 10.2), 20); show(m2, up(lt, 10.8, .6), 20);
-      d1.style.opacity = win(lt, .5, 10); d2.style.opacity = up(lt, 10.6, .5);
-    };
-  });
-
-  /* ===== Rendu ===== */
-  const DUREE = SC[SC.length - 1].t0 + SC[SC.length - 1].dur;
+  const DUREE = fin;
+  let grainCur = -1;
   function render(t) {
-    SC.forEach((s, i) => {
-      const nx = SC[i + 1];
-      const fin = s.t0 + s.dur + (nx ? nx.xf : 0);
-      const vis = t >= s.t0 && t < fin;
-      s.el.style.visibility = vis ? 'visible' : 'hidden';
-      if (!vis) return;
-      s.el.style.opacity = s.xf ? eio(cl((t - s.t0) / s.xf)) : 1;
-      s.el.style.zIndex = i + 1;
-      s.draw(deforme(s.pts, t - s.t0));
-    });
+    const proms = [];
+    for (const s of SEQS) {
+      const on = t >= s.start && t < s.start + s.d;
+      s.el.style.display = on ? 'block' : 'none';
+      if (!on) continue;
+      const lt = t - s.start;
+      for (const l of s.layers) {
+        const vis = lt >= l.t0 && lt < l.t1;
+        l.el.style.display = vis ? 'block' : 'none';
+        if (!vis) continue;
+        l.el.style.opacity = Math.min(l.fi ? cl((lt - l.t0) / l.fi) : 1, l.fo ? cl((l.t1 - lt) / l.fo) : 1);
+        if (l.draw) { const r = l.draw(lt - l.t0, l.t1 - l.t0, lt); if (r && r.then) proms.push(r); }
+      }
+    }
+    const k = Math.floor(t * FPS) % 4; if (k !== grainCur) { grainCur = k; cx2.putImageData(tuiles[k], 0, 0); }
+    return proms.length ? Promise.all(proms).then(() => null) : null;
   }
   function controle() {
-    const err = [];
-    SC.forEach(s => {
-      s.el.style.visibility = 'visible'; s.el.style.opacity = 1; s.draw(deforme(s.pts, s.dur - .05));
-      s.el.querySelectorAll('.mot,.coupure,.fiche,.lt,.haut,.chiffres,.carton,.picto').forEach(e => {
-        if (getComputedStyle(e).opacity === '0') return;
-        const r = e.getBoundingClientRect();
-        if (r.right > W - 20 || r.bottom > H - 20 || r.left < 20 || r.top < 10) err.push(`séquence ${s.n} : bloc hors cadre (${e.className}, ${Math.round(r.left)}-${Math.round(r.right)} × ${Math.round(r.top)}-${Math.round(r.bottom)})`);
-      });
-      s.el.style.visibility = 'hidden';
-    });
+    const err = ERR.slice();
+    for (const s of SEQS) for (const l of s.layers) if (l.t1 <= l.t0 + .05) err.push(`séquence ${s.n} : plan vide (${l.t0.toFixed(2)} → ${l.t1.toFixed(2)})`);
+    /* trous noirs involontaires : instants sans aucun plan */
+    for (const s of SEQS) for (let x = .05; x < s.d; x += .1) if (!s.layers.some(l => x >= l.t0 && x < l.t1)) { err.push(`séquence ${s.n} : aucun plan à ${x.toFixed(1)} s`); break; }
     return err;
   }
-  const reperes = () => SC.map(s => `[${s.n}] ${s.pts ? s.rep.join(' · ') || 'aucun repère' : 'pas de voix'}`).join('\n');
-  window.VIDEO = { render, duree: DUREE, plans: SC.map(s => ({ n: s.n, start: s.t0, dur: s.dur, voix: s.vd })), controle, reperes };
+  await Promise.all(['300 40px Fraunces', 'italic 300 40px Fraunces', '400 40px Fraunces', '600 20px "Inter Tight"', '400 20px "Inter Tight"', '500 20px "Inter Tight"'].map(f => document.fonts.load(f, 'AÉé')));
+  window.VIDEO = { render, duree: DUREE, plans: SEQS.map(s => ({ n: s.n, start: s.start, dur: s.d, voix: s.avant })), controle };
   render(0);
-})();
+})().catch(e => { window.__erreur = String(e); throw e; });
 </script>
 </body>
 </html>
