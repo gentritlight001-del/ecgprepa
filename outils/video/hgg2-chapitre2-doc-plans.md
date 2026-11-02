@@ -1,91 +1,34 @@
 # Documentaire · HGG 2e année · Chapitre 2 · Les États-Unis : découpage des 5 premières minutes
 
-Format 1920 × 1080, 25 i/s, ton reportage. La voix (`hgg2-chapitre2-doc-voix.txt`, 713 mots, environ 5 min 10)
-fixe le tempo ; chaque séquence [N] correspond au bloc [N] de la voix.
+Version reportage refaite de zéro (novembre 2026) : remplace le premier essai du 1er novembre (habillage archives, photos
+animées). Format 1920 × 1080, 25 i/s, habillage **cinéma sobre** validé par le propriétaire : fond noir, archives plein
+cadre, petits titres en bas d'écran, **pas de sous-titres**. Durée visée pour le chapitre complet : 35 à 45 min.
 
-Les sources d'archives sont libres de droits (gouvernement fédéral américain = domaine public : DVIDS, NASA, NARA, LOC ;
-Wikimedia Commons avec licence vérifiée fichier par fichier).
-« Site » = photo déjà sur le site, dans `deuxieme_annee/hgg/images/`.
-Cartes et schémas animés : faits par Claude (fonds `us-atlas` / `world-atlas`, installés depuis npm).
+Voix : `hgg2-chapitre2-doc-voix.txt` (ElevenLabs, George, Multilingual v2, nombres écrits en lettres ; 3,7 min de voix),
+synthétisée le 2 novembre 2026 :
+`python3 outils/video/voix.py synthese outils/video/hgg2-chapitre2-doc-voix.txt --dossier <scratchpad>/voix-doc --voix-id JBFqnCBsd6RMkjVDRZzb`
+Prononciation contrôlée par transcription Whisper (small et medium) : séquence 3 réécrite après un bégaiement
+(« pas pas »). Avec les respirations musicales et le titre, environ 4 min 30.
 
-| N | Durée | Images | Texte à l'écran | Musique |
+Musiques fournies par le propriétaire (Pixabay, non versionnées) : `musique_fond_1.zip`, `musique_fond_2.zip`.
+Mixage : musique baissée d'environ 18 dB sous la voix, remontée entre les phrases, fondus de 2 s entre pistes.
+
+| N | Sujet | Images | Texte à l'écran | Musique |
 |---|---|---|---|---|
-| 1 | 0:00-0:15 | **Vidéo** : porte-avions qui appareille (DVIDS, « USS Gerald R. Ford departs Norfolk ») ; cloche du NYSE (DVIDS ou archive.org) ; panneau Hollywood (site, lent zoom) | aucun | piste A : nappe grave, pulsation |
-| 2 | 0:15-0:40 | Montage rapide : Pentagone (site), Manhattan (site), Falcon Heavy (site, ou vidéo NASA/SpaceX libre) | 4 chiffres qui s'affichent : 29 200 Md$ · 1/3 · 341 M · 40 000 Md$ (en rouge) | montée, coup sourd sur la dette |
-| 3 | 0:40-0:50 | **Vidéo** : la Terre de nuit, Amérique du Nord éclairée (NASA « Black Marble ») | Titre : « Les États-Unis · Pouvoir de, pouvoir sur, pouvoir limité » puis la problématique | silence puis thème principal |
-| 4 | 0:50-1:05 | Portrait de Raymond Aron (Commons, si licence libre ; sinon couverture *Paix et guerre entre les nations*) | Citation d'Aron en coupure de journal | piste B : pensive (piano, cordes) |
-| 5 | 1:05-1:20 | Schéma animé : 4 flèches « faire / faire faire / empêcher / refuser » | « Serge Sur : une quadruple capacité » | B |
-| 6 | 1:20-1:45 | Portrait de Nye (site) ; triptyque animé hard / soft / smart, chaque case illustrée (porte-avions, Hollywood, Capitole) | hard power · soft power · smart power (Nossel, 2004) | B |
-| 7 | 1:45-2:15 | *American Progress* de John Gast (site) en panoramique lent, de gauche à droite comme la marche vers l'Ouest | « Destinée manifeste » · « City upon a hill » | piste C : americana (cordes, cuivres doux) |
-| 8 | 2:15-2:40 | Portrait de Florian Louis (site) ; couverture du livre de Paul Kennedy (1987) | « Imperial overstretch » | tension, cordes graves |
-| 9 | 2:40-3:00 | **Graphique animé** : part des États-Unis dans le PIB mondial, 1960 40 %, 2000 30 %, 2011 21 %, 2024 26 % (Banque mondiale) | chiffres sur les barres | B, coup sur « 26 % » |
-| 10 | 3:00-3:20 | **Vidéo** : Shanghai, Pudong (site en photo, ou vidéo Commons) ; **carte animée** : poids des États-Unis et de la Chine | « Un monde post-américain ? » (Zakaria, 2008) | tension |
-| 11 | 3:20-3:40 | Portrait de Nye (site) ; trois pictogrammes qui s'allument : économie, armée, soft power | « Le siècle américain n'est pas fini » | retour du thème principal |
-| 12 | 3:40-3:45 | Carton de partie : « I · Le pouvoir de… » sur photo de Monument Valley (site) | « Partie I · Un territoire » | piste C démarre |
-| 13 | 3:45-4:05 | **Carte animée** : relief des États-Unis, trois façades qui s'allument, puis les 5 grands ensembles d'est en ouest | 9,15 M km² · Atlantique · Pacifique · golfe du Mexique | C |
-| 14 | 4:05-4:25 | **Carte animée** : la formation du territoire, 1783 puis Louisiane 1803, puis Alaska 1867 | dates sur la carte | C, accent sur 1803 |
-| 15 | 4:25-4:45 | **Vidéo/photos** : chariots de pionniers (LOC / NARA), portrait de Turner (Commons, domaine public) | « La Frontier » · 1890 · Turner 1893 | C |
-| 16 | 4:45-4:55 | Photos de la guerre de Sécession (LOC, Mathew Brady, domaine public) en lent zoom | « 1861-1865 · plus de 750 000 morts » | cordes graves, sobre |
-| 17 | 4:55-5:10 | Schéma animé : un carré de township qui se divise ; fondu vers la photo satellite des pivots du Kansas (site) | « Land Ordinance 1785 · Homestead Act 1862 » | C |
-| 18 | 5:10-5:25 | Photo d'A. J. Russell, Promontory Summit 1869 (site) ; **vidéo** d'une locomotive à vapeur (archive.org, Prelinger, ou film Edison) | « 10 mai 1869 » | final, cuivres, coupe nette |
+| 1 | Ouverture : Winthrop, 1630 | mer, l'*Arbella*, portrait de Winthrop ; puis Manhattan du ciel, porte-avions, Bourse | « We shall be as a city upon a hill » | atlasaudio « Space Music », bas, qui monte |
+| 2 | Titre (sans voix) | la Terre de nuit (NASA) | « Les États-Unis · Une puissance sans limites ? » | skilsel « Epic Cinema Trailer », coup d'entrée |
+| 3 | Exceptionnalisme, siècle américain | Trumbull, *Declaration of Independence* ; Gast, *American Progress* ; archives 1945 ; Mur de Berlin | « Exceptionnalisme » · « Le siècle américain · H. Luce, 1941 » | skilsel « Epic Documentary Inspirational » |
+| 5 | Le doute | Lehman Brothers 2008 ; défilé de Pékin ; investiture 2025 ; Capitole, 6 janvier 2021 ; Ellis Island ; mur frontalier | « America First » | leberch « Tense » |
+| 6 | La problématique | fond noir | problématique, puis pouvoir de · pouvoir sur · pouvoir limité | silence, puis leberch « Suspense Music » |
+| 7 | Qu'est-ce que la puissance ? | Aron ; schéma animé des 4 verbes de Serge Sur ; Nye ; triptyque porte-avions / Hollywood / Capitole | citation d'Aron ; hard · soft · smart power | leberch « Suspense Music » |
+| 8 | Le déclin ? | fiches des livres (Kennedy 1987, Zakaria 2008) ; Shanghai ; graphique animé | 40 % · 21 % · 26 % du PIB mondial | id. |
+| 9 | Carton de partie | fond noir | « Partie I · Le pouvoir de » | skilsel « Epic Cinema Adventure » |
+| 10 | Le territoire | **carte animée** : relief, 3 façades, grands ensembles ; vues aériennes | 9,15 M km² | id. |
+| 11 | La formation du territoire | **carte animée** des acquisitions 1783-1867 | dates sur la carte | id. |
+| 12 | Le mythe de la Frontier | chariots de pionniers, portrait de Turner | « Frontier » · 1890 · 1893 | id., coupe nette sur « Mais cette conquête a un prix. » |
 
-## Musique (fournie par le propriétaire)
+Réservées pour la suite : atlasaudio « Tragic Piano » (guerres indiennes, Sécession), « Inspiring Epic Motivation »
+(fin du chapitre), sub_clair « Earth Documentary » (paysages, ressources).
 
-Trois pistes libres de droits, de 3 à 4 minutes chacune, en MP3 :
-- **A · ouverture** : épique et tendue, percussions graves, montée (Pixabay, recherche « dramatic » ou « epic cinematic »).
-- **B · réflexion** : piano et cordes, calme, sans batterie (Pixabay « cinematic documentary » ; Lexin_Music, vitalsource).
-- **C · americana** : cordes et cuivres doux, guitare ou banjo possible, sentiment d'élan (Pixabay « americana », « western cinematic »).
-
-Montage : musique baissée sous la voix (environ −18 dB, remontée entre deux phrases), coupes des plans sur les temps
-forts, fondus enchaînés entre pistes.
-
-## Montage (fait le 1er novembre 2026, version sans voix)
-
-Source : `hgg2-chapitre2-doc.html` (une fonction par séquence, durées du tableau ci-dessus, 5 min 25), rendue par
-`python3 outils/video/generer.py outils/video/hgg2-chapitre2-doc.html <muet.mp4>`, puis musique posée avec ffmpeg.
-Images d'archives ajoutées dans `images/doc-hgg2-ch2/` (crédits en tête de la source), fonds de carte dans `donnees/`.
-
-Substitutions par rapport au tableau : pas de vidéo (porte-avions, Terre de nuit, locomotive) mais des photos animées
-(NYSE vers 1908, NASA Black Marble 2012, gravure du *Harper's Weekly* de juin 1869) ; pas de couverture du livre de
-Kennedy (droits) mais une fiche typographique ; pas de portrait de Turner (Commons inaccessible) mais une fiche ;
-séquence 16 : *A harvest of death* (Gettysburg, 1863) puis les ruines de Richmond (1865).
-
-Musiques fournies par le propriétaire (Pixabay, non versionnées), début dans la vidéo → fin, décalage dans la piste :
-
-| Piste | Vidéo | Décalage | Gain |
-|---|---|---|---|
-| adamasr « Dark Score » (ouverture) | 0:00 → 0:52 | 0 s | 0 dB |
-| leberch « Suspense Music » (réflexion) | 0:50 → 1:47 | 0 s | −2,5 dB |
-| leberch « Suspense » (exceptionnalisme) | 1:45 → 2:17 | 0 s | −2,5 dB |
-| leberch « Tense » (déclin) | 2:15 → 3:22 | 0 s | −2,5 dB |
-| adamasr « Dark Score » (retour du thème) | 3:20 → 3:48 | 40 s | 0 dB |
-| « Inspiring Epic Motivation Cinematic Trailer » (partie I) | 3:46 → 5:25 | 0 s | −4,5 dB |
-
-Fondus enchaînés de 2 à 2,5 s ; la piste épique est calée pour que son dernier temps fort tombe sur la coupe finale
-(5:25). Sans voix, la musique est à pleine hauteur ; avec la voix, la baisser d'environ 18 dB sous les phrases.
-
-## Voix off (préparée le 1er novembre 2026, pas encore synthétisée)
-
-La source est prête à se caler sur la voix : sans voix, elle garde les durées du tableau ; avec la voix, chaque séquence
-dure « départ de la voix + voix + 0,8 s » et ses apparitions de texte sont déplacées au moment où la voix dit le mot repère
-(tableau `CALAGE` de la source : `[temps du découpage, mot, autre mot…]`, `vd` = départ de la voix, 5 s pour la séquence 3
-qui garde son titre en silence). La musique suit les séquences, plus des minutes fixes (`doc-musique.py`, table `PISTES`).
-
-```
-python3 outils/video/voix.py synthese outils/video/hgg2-chapitre2-doc-voix.txt --dossier <scratchpad>/voix-doc --voix-id JBFqnCBsd6RMkjVDRZzb
-python3 outils/video/generer.py outils/video/hgg2-chapitre2-doc.html --controle --voix <scratchpad>/voix-doc/voix.json
-python3 outils/video/generer.py outils/video/hgg2-chapitre2-doc.html <scratchpad>/doc-muet.mp4 --voix <scratchpad>/voix-doc/voix.json
-python3 outils/video/doc-musique.py outils/video/hgg2-chapitre2-doc.html <scratchpad>/doc-muet.mp4 <scratchpad>/doc.mp4 --musiques <dossier des MP3> --voix <scratchpad>/voix-doc
-```
-
-Avant le rendu, `VIDEO.reperes()` (dans la page ouverte avec la voix) dit pour chaque repère le mot trouvé (✓) ou ✗ :
-remplacer un ✗ par le mot que Whisper a vraiment écrit (`mots.json`). Musique baissée de 18 dB pendant les phrases
-(`--baisse`), remontée entre elles ; le texte de la voix fait 4 360 caractères (crédits à vérifier : 10 000 par mois en
-formule gratuite).
-
-## Voix off posée (1er novembre 2026)
-
-Synthèse ElevenLabs (voix George, 4 907 caractères, il restait 5 640 crédits ensuite), vidéo calée sur la voix : 5 min 03.
-Repères ajoutés au tableau `CALAGE` là où Whisper écorche le mot (« 340 », « concurrents », « Apalaches », « Cécession »,
-« encarrée ») : `VIDEO.reperes()` ne signale plus aucun ✗. Mixage `doc-musique.py` (musique −18 dB sous la voix), puis son
-normalisé à −16 LUFS (`ffmpeg -c:v copy -af loudnorm=I=-16:TP=-1.5:LRA=11`) : le mixage brut sortait à −21,7 LUFS, trop bas.
+Faits ajoutés hors du cours (signalés au propriétaire) : Winthrop 1630 et sa citation, Luce (*Life*, 17 février 1941),
+le Texas et 1848, « près de dix-sept fois la France ». Le livre de Lipset est de 1996 (Norton), pas de 1995.
