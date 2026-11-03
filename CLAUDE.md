@@ -462,6 +462,8 @@ de partie, 4 ou 5 écrans par partie, dates repères, bilan, fin ; liste des num
 partie changée si elle répète celle d'un écran voisin. Fait : `hgg2-chapitre1-court.html` (23 écrans, 8 min 50 sans voix,
 7 min 09 avec). Sa voix : `<…>-court-voix.txt`, repris des blocs de la version complète, transitions (« D'abord l'intégration
 nationale… ») et cartons de partie adaptés ; repères `v` ajoutés dans la source courte.
+Fait aussi : `hgg2-chapitre3-court.html` (36 écrans, 14 min 08, sans voix, novembre 2026 : le propriétaire voulait 15 min au
+plus pour tout le chapitre ; « L'essentiel » et « À retenir » gardés, sommaire retiré).
 Voix off (ElevenLabs, voix « Paul K », modèle Multilingual v2) : un texte par écran qui **garde les mots, les noms et les chiffres de l'écran** mais ne le lit
 pas mot à mot : il les relie et les explique (le pourquoi, le lien avec l'écran d'avant, l'usage dans une copie), phrases
 courtes et orales, faits du cours seulement (une version trop détachée de l'écran a été refusée) ; sigles écrits comme ils se prononcent, écrans séparés par `<break time="2.5s" />`, blocs de moins de 4 500 caractères ; le propriétaire renvoie un
