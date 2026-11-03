@@ -464,6 +464,12 @@ partie changée si elle répète celle d'un écran voisin. Fait : `hgg2-chapitre
 nationale… ») et cartons de partie adaptés ; repères `v` ajoutés dans la source courte.
 Fait aussi : `hgg2-chapitre3-court.html` (36 écrans, 14 min 08, sans voix, novembre 2026 : le propriétaire voulait 15 min au
 plus pour tout le chapitre ; « L'essentiel » et « À retenir » gardés, sommaire retiré).
+**Documentaire sans voix** (préféré par le propriétaire à la vidéo de cours pour les réseaux, novembre 2026 ; demande type :
+« Fais le documentaire du chapitre N ») : 16:9, 15 min au plus, façon Arte, habillage « cinéma sobre » du documentaire du
+chapitre 2 (photos plein cadre, cartes animées d3, graphiques), propos porté par des phrases courtes à l'écran, tempo = temps
+de lecture. Modèle : `hgg2-chapitre3-doc.html` (découpage `hgg2-chapitre3-doc-plans.md`, 14 min) ; musiques fournies par
+le propriétaire (Pixabay, jamais versionnées), table `id="musique"` dans la source, mixage `doc-musique.py`. MP4 envoyé,
+jamais versionné.
 Voix off (ElevenLabs, voix « Paul K », modèle Multilingual v2) : un texte par écran qui **garde les mots, les noms et les chiffres de l'écran** mais ne le lit
 pas mot à mot : il les relie et les explique (le pourquoi, le lien avec l'écran d'avant, l'usage dans une copie), phrases
 courtes et orales, faits du cours seulement (une version trop détachée de l'écran a été refusée) ; sigles écrits comme ils se prononcent, écrans séparés par `<break time="2.5s" />`, blocs de moins de 4 500 caractères ; le propriétaire renvoie un

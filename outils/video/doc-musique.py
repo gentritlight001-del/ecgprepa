@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Musique (et voix off) du documentaire du chapitre 2 d'HGG 2e année (hgg2-chapitre2-doc.html).
+"""Musique (et voix off) des documentaires d'HGG (hgg2-chapitre2-doc.html, hgg2-chapitre3-doc.html).
+
+La table des pistes est lue dans la source (bloc <script type="application/json" id="musique">, une ligne par piste :
+[mot du nom du MP3, première séquence, dernière séquence, départ dans la piste (s), gain (dB)]) ; à défaut, PISTES.
 
 Pose les pistes de la table PISTES (une piste par groupe de séquences) sur la vidéo muette,
 calées sur les séquences et non sur des minutes fixes : si la voix allonge ou raccourcit une séquence, la musique suit.
@@ -50,6 +53,11 @@ def main():
     ap.add_argument('--baisse', type=float, default=18)
     a = ap.parse_args()
 
+    # table des pistes : bloc <script type="application/json" id="musique"> de la source s'il existe, sinon PISTES
+    import re
+    m = re.search(r'<script type="application/json" id="musique">(.*?)</script>', Path(a.source).read_text(), re.S)
+    pistes = [tuple(x) for x in json.loads(m.group(1))] if m else PISTES
+
     from generer import ouvrir
     from playwright.sync_api import sync_playwright
     dos = Path(a.voix) if a.voix else None
@@ -60,12 +68,12 @@ def main():
     N = int(total * SR); mus = np.zeros((N, 2), np.float32)
     mp3 = sorted(Path(a.musiques).glob('*.mp3'))
 
-    for k, (mot, s1, s2, dec, gain) in enumerate(PISTES):
+    for k, (mot, s1, s2, dec, gain) in enumerate(pistes):
         f = next((m for m in mp3 if mot in m.name), None)
         if not f:
             sys.exit(f'piste « {mot} » introuvable dans {a.musiques}')
         debut = plans[s1]['start']
-        fin = total if k == len(PISTES) - 1 else plans[PISTES[k + 1][1]]['start'] + X
+        fin = total if k == len(pistes) - 1 else plans[pistes[k + 1][1]]['start'] + X
         long = fin - debut
         if dec is None:
             dec = FIN_EPIQUE - long
@@ -76,7 +84,7 @@ def main():
         n = len(y); env = np.ones(n, np.float32); x = min(int(X * SR), n)
         if k:
             env[:x] = np.linspace(0, 1, x)
-        q = x if k < len(PISTES) - 1 else min(int(.8 * SR), n)
+        q = x if k < len(pistes) - 1 else min(int(.8 * SR), n)
         env[-q:] = np.minimum(env[-q:], np.linspace(1, 0, q))
         i = int(debut * SR); j = min(N, i + n)
         mus[i:j] += (y * env[:, None])[:j - i]
