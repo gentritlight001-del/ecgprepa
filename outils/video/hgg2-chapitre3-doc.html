@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Documentaire · HGG 2e année · Chapitre 3 · L'Amérique latine</title>
+<!--
+  Documentaire du chapitre 3 d'HGG 2e année (novembre 2026), habillage « cinéma sobre » du documentaire du chapitre 2
+  (archives plein cadre, cartes animées, fond noir), mais SANS VOIX : le propos est porté par des phrases courtes à
+  l'écran, posées sur les images. Le tempo vient de la lecture : chaque plan dure le temps de lire ses phrases.
+  Découpage : hgg2-chapitre3-doc-plans.md. Contenu repris du cours (deuxieme_annee/hgg/chapitre-3-hgg.html).
+
+  1. Contrôle :       python3 outils/video/generer.py outils/video/hgg2-chapitre3-doc.html --controle
+  2. Images :         python3 outils/video/generer.py outils/video/hgg2-chapitre3-doc.html --images <dossier>
+  3. Rendu muet :     python3 outils/video/generer.py outils/video/hgg2-chapitre3-doc.html <muet.mp4>
+  4. Musique :        python3 outils/video/doc-musique.py outils/video/hgg2-chapitre3-doc.html <muet.mp4> <final.mp4> --musiques <mp3>
+
+  Images : photos libres de droits déjà sur le site (Wikimedia Commons, NASA ; leurs sources sont dans les chapitres
+  d'HGG), dossiers deuxieme_annee/hgg/images/ et premiere_annee/hgg/chapitre-N/images/.
+  Cartes : world-atlas@2 countries-50m (ISC, données Natural Earth) dans donnees/.
+-->
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script src="donnees/world-atlas-countries-50m.js"></script>
+<!-- Musique (doc-musique.py) : [mot du nom du MP3, première séquence, dernière séquence, départ dans la piste (s), gain (dB)] -->
+<script type="application/json" id="musique">
+[
+  ["tragic-piano", 1, 1, 0, -2],
+  ["epic-cinema-trailer", 2, 2, 38, 0],
+  ["suspense-music", 3, 3, 0, -3],
+  ["earth-documentary", 4, 6, 0, -2],
+  ["tense", 7, 7, 0, -3],
+  ["adventure", 8, 10, 0, -4],
+  ["leberch-suspense-6", 11, 14, 0, -3],
+  ["documentary-inspirational", 15, 18, 0, -3],
+  ["inspiring-epic", 19, 19, 0, -1]
+]
+</script>
+<style>
+:root { --ink:#f1ece2; --dim:#b7afa2; --or:#d9a54a; --rouge:#c8463c; --bleu:#5b8fc7; --vert:#5fa37a; --nuit:#07080a; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: #000; }
+#stage { position: absolute; inset: 0; overflow: hidden; background: var(--nuit); color: var(--ink); font-family: "Inter Tight", sans-serif; }
+.sq, .ly { position: absolute; inset: 0; overflow: hidden; display: none; }
+.ly > img.full { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 50%; }
+.voile-g { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(5,5,7,.88) 0%, rgba(5,5,7,.6) 38%, rgba(5,5,7,0) 66%); }
+.voile-d { position: absolute; inset: 0; background: linear-gradient(270deg, rgba(5,5,7,.88) 0%, rgba(5,5,7,.6) 38%, rgba(5,5,7,0) 66%); }
+.voile-b { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,.8) 100%); }
+.sombre { position: absolute; inset: 0; background: rgba(4,4,6,.62); }
+.flou { position: absolute; inset: -60px; width: calc(100% + 120px); height: calc(100% + 120px); object-fit: cover; filter: blur(34px) brightness(.36) saturate(.7); }
+.tirage { position: absolute; top: 120px; bottom: 120px; box-shadow: 0 40px 90px rgba(0,0,0,.7); }
+.tirage img { display: block; height: 100%; width: auto; }
+/* phrase à l'écran (sous-titre éditorial) */
+.st { position: absolute; left: 120px; bottom: 100px; width: 1080px; opacity: 0; }
+.st.droite { left: auto; right: 120px; text-align: right; }
+.st.haut { bottom: auto; top: 110px; }
+.st.etroit { width: 720px; }
+.st b.k { display: block; margin-bottom: 16px; font: 600 22px/1 "Inter Tight"; letter-spacing: .24em; text-transform: uppercase; color: var(--or); }
+.st b.k::before { content: ""; display: inline-block; width: 44px; height: 2px; background: var(--or); vertical-align: middle; margin-right: 18px; }
+.st.droite b.k::before { display: none; }
+.st.droite b.k::after { content: ""; display: inline-block; width: 44px; height: 2px; background: var(--or); vertical-align: middle; margin-left: 18px; }
+.st span { display: block; font: 400 46px/1.22 "Fraunces"; color: #fff; text-shadow: 0 2px 22px rgba(0,0,0,.85); }
+.st span strong { font-weight: 400; color: #f5cf86; }
+.st span em { font-style: italic; }
+/* crédit d'une œuvre */
+.doc { position: absolute; right: 64px; bottom: 40px; font: 400 17px/1.3 "Inter Tight"; letter-spacing: .04em; color: rgba(241,236,226,.72); text-align: right; text-shadow: 0 1px 8px rgba(0,0,0,.9); }
+.doc i { font-style: italic; }
+/* grands textes et cartons */
+.grand { position: absolute; font: 300 92px/1.04 "Fraunces"; color: #fff; text-shadow: 0 4px 40px rgba(0,0,0,.5); }
+.grand small { display: block; margin-top: 24px; font: 400 34px/1.3 "Fraunces"; color: var(--ink); }
+.grand em { font-style: italic; color: #f5cf86; }
+.kick { font: 600 22px/1 "Inter Tight"; letter-spacing: .3em; text-transform: uppercase; color: var(--or); }
+.def { position: absolute; left: 160px; top: 300px; width: 1240px; }
+.def .mot { font: 300 120px/1 "Fraunces"; color: #fff; }
+.def .sens { margin-top: 40px; font: 400 48px/1.25 "Fraunces"; color: var(--ink); }
+.def .sens strong { font-weight: 400; color: #f5cf86; }
+.def .qui { margin-top: 30px; font: 600 20px/1.3 "Inter Tight"; letter-spacing: .22em; text-transform: uppercase; color: var(--dim); }
+.cit { position: absolute; left: 160px; right: 160px; top: 290px; font: 300 62px/1.2 "Fraunces"; color: #fff; }
+.cit .src { display: block; margin-top: 40px; font: 500 20px/1.4 "Inter Tight"; letter-spacing: .2em; text-transform: uppercase; color: var(--or); }
+.cit .tr { display: block; margin-top: 18px; font: italic 300 34px/1.3 "Fraunces"; color: var(--dim); }
+.titre-film { position: absolute; left: 150px; top: 340px; white-space: nowrap; }
+.titre-film .kick { font-size: 20px; letter-spacing: .5em; }
+.titre-film h1 { margin-top: 34px; font: 300 140px/1 "Fraunces"; letter-spacing: .05em; color: #fff; text-transform: uppercase; }
+.titre-film p { margin-top: 30px; font: italic 300 60px/1 "Fraunces"; color: var(--ink); }
+.etiq { position: absolute; font: 600 21px/1.2 "Inter Tight"; letter-spacing: .18em; text-transform: uppercase; color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,.95); white-space: nowrap; opacity: 0; }
+.etiq small { display: block; margin-top: 5px; font: 400 19px/1.2 "Inter Tight"; letter-spacing: .06em; text-transform: none; color: var(--ink); }
+.etiq.c { transform: translate(-50%, -50%); text-align: center; }
+svg text { font-family: "Inter Tight", sans-serif; }
+/* colonnes de plan */
+.plan3 { position: absolute; left: 160px; right: 160px; top: 560px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 50px; }
+.plan3 div, .tuiles div { opacity: 0; border-top: 2px solid var(--or); padding-top: 24px; }
+.plan3 b { display: block; font: 600 20px/1 "Inter Tight"; letter-spacing: .28em; text-transform: uppercase; color: var(--or); }
+.plan3 span { display: block; margin-top: 16px; font: 300 50px/1.1 "Fraunces"; color: #fff; }
+.plan3 em { display: block; margin-top: 12px; font: italic 300 26px/1.3 "Fraunces"; color: var(--dim); }
+/* tuiles (cycles, piliers, firmes) */
+.tuiles { position: absolute; left: 140px; right: 140px; display: grid; gap: 34px; }
+.tuiles b { display: block; font: 600 20px/1.1 "Inter Tight"; letter-spacing: .22em; text-transform: uppercase; color: var(--or); }
+.tuiles span { display: block; margin-top: 14px; font: 300 46px/1.08 "Fraunces"; color: #fff; }
+.tuiles em { display: block; margin-top: 12px; font: italic 300 25px/1.3 "Fraunces"; color: var(--dim); }
+/* chiffres */
+.chiffre { position: absolute; opacity: 0; }
+.chiffre b { display: block; font: 300 150px/1 "Fraunces"; color: #fff; letter-spacing: -.01em; }
+.chiffre b.r { color: #e8705f; }
+.chiffre b.o { color: #f5cf86; }
+.chiffre span { display: block; margin-top: 18px; font: 500 24px/1.3 "Inter Tight"; letter-spacing: .06em; color: var(--ink); max-width: 560px; }
+/* graphiques */
+.gtitre { position: absolute; left: 160px; top: 110px; }
+.gtitre .kick { display: block; }
+.gtitre div { margin-top: 18px; font: 300 58px/1.08 "Fraunces"; color: #fff; }
+.gsrc { position: absolute; left: 160px; bottom: 50px; font: 400 18px/1.3 "Inter Tight"; letter-spacing: .04em; color: rgba(241,236,226,.6); }
+.hb { position: absolute; left: 160px; right: 220px; display: grid; gap: 30px; }
+.hb .l { display: grid; grid-template-columns: 330px 1fr 300px; align-items: center; gap: 26px; }
+.hb .n { font: 500 27px/1.2 "Inter Tight"; color: var(--ink); text-align: right; }
+.hb .t { height: 46px; background: rgba(241,236,226,.07); }
+.hb .t i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #9b7330, #e2b866); }
+.hb .t i.r { background: linear-gradient(90deg, #8a2a22, #d9574c); }
+.hb .t i.b { background: linear-gradient(90deg, #2f527a, #6e9fd3); }
+.hb .v { font: 300 56px/1 "Fraunces"; color: #fff; opacity: 0; white-space: nowrap; }
+#vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,.5) 100%); }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script>
+(async function () {
+  const W = 1920, H = 1080;
+  const D2 = '../../deuxieme_annee/hgg/images/', P1 = '../../premiere_annee/hgg/';
+  const stage = document.getElementById('stage');
+  const ERR = [];
+  const $ = (tag, cls, html, parent) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; if (parent) parent.appendChild(e); return e; };
+  const NS = 'http://www.w3.org/2000/svg';
+  const S_ = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+  const cl = x => Math.max(0, Math.min(1, x));
+  const eo = p => 1 - Math.pow(1 - p, 3);
+  const eio = p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+  const lin = (a, b, p) => a + (b - a) * p;
+  const up = (x, a, d = .7) => eo(cl((x - a) / d));
+  const show = (el, p, dy = 18) => { el.style.opacity = p; el.style.transform = `translateY(${(1 - p) * dy}px)`; };
+  /* typographie française : espaces insécables */
+  const typo = s => String(s).replace(/ ([:;!?%»])/g, ' $1').replace(/« /g, '« ').replace(/(\d) (\d{3})/g, '$1 $2');
+
+  /* ===== Tempo : le temps de lire ===== */
+  const LECT = 3.0;                                   // mots lus par seconde, texte posé
+  const nmots = h => String(h).replace(/<[^>]+>/g, ' ').trim().split(/\s+/).filter(Boolean).length;
+  const lire = (h, min = 3) => Math.max(min, 1.2 + nmots(h) / LECT);
+  const X = .7;                                       // fondu enchaîné entre deux plans
+
+  /* ===== Séquences et plans ===== */
+  const SEQS = []; let fin = 0;
+  function sequence(n, nom, build) {
+    const el = $('div', 'sq', null, stage);
+    const S = { n, nom, el, layers: [], c: 0, start: fin };
+    build(S); S.d = S.c + .4; SEQS.push(S); fin += S.d;
+  }
+  function plan(S, t0, t1, el, o = {}) {
+    el.classList.add('ly'); S.el.appendChild(el);
+    const l = { t0, t1, el, fi: o.fi ?? .6, fo: o.fo ?? .6, draw: o.draw };
+    S.layers.push(l); return l;
+  }
+  /* phrases à l'écran : chaque phrase reste le temps de la lire, l'une après l'autre */
+  function phrases(S, t0, liste, o = {}) {
+    let t = t0;
+    for (const it of liste) {
+      const [k, x] = Array.isArray(it) ? it : [null, it];
+      const d = lire((k || '') + ' ' + x);
+      const box = $('div'); const st = $('div', 'st ' + (o.cls || ''), `${k ? `<b class="k">${typo(k)}</b>` : ''}<span>${typo(x)}</span>`, box);
+      if (o.w) st.style.width = o.w + 'px';
+      plan(S, t, t + d, box, { fi: 0, fo: 0, draw: (lt, dd) => { st.style.opacity = Math.min(up(lt, 0, .55), cl((dd - lt) / .45)); st.style.transform = `translateY(${(1 - up(lt, 0, .55)) * 14}px)`; } });
+      t += d;
+    }
+    return t - t0;
+  }
+  const duree = liste => liste.reduce((s, it) => s + lire(Array.isArray(it) ? (it[0] || '') + ' ' + it[1] : it), 0);
+  /* un plan d'images avec ses phrases : le fond dure avant + phrases + après (au moins o.d) */
+  function vue(S, fond, liste = [], o = {}) {
+    const av = o.avant ?? .7, ap = o.apres ?? .4;
+    const d = Math.max(o.d || 0, av + duree(liste) + ap);
+    const t0 = S.c, t1 = t0 + d;
+    const T = []; let tt = av; for (const it of liste) { T.push(tt); tt += lire(Array.isArray(it) ? (it[0] || '') + ' ' + it[1] : it); }
+    fond(t0, t1 + (o.dernier ? 0 : X), d, T);
+    phrases(S, t0 + av, liste, o);
+    S.c = t1; return [t0, t1];
+  }
+  /* Ken Burns */
+  const kbT = (a, b, p) => { const q = p * .25 + eio(p) * .75; return `translate(${lin(a.x || 0, b.x || 0, q)}%, ${lin(a.y || 0, b.y || 0, q)}%) scale(${lin(a.s, b.s, q)})`; };
+  function photo(S, src, liste, o = {}) {
+    return vue(S, (t0, t1) => {
+      const box = $('div'); const im = $('img', 'full', null, box); im.src = src; im.alt = '';
+      if (o.pos) im.style.objectPosition = o.pos;
+      if (o.filtre) im.style.filter = o.filtre;
+      (o.voiles || ['voile-b']).forEach(v => $('div', v, null, box));
+      if (o.credit) $('div', 'doc', typo(o.credit), box);
+      const a = o.a || { s: 1.04 }, b = o.b || { s: 1.13 };
+      plan(S, t0, t1, box, { fi: o.fi ?? X, fo: o.fo ?? X, draw: (lt, d) => { im.style.transform = kbT(a, b, lt / d); } });
+    }, liste, o);
+  }
+  /* image en hauteur (portrait) : tirage net sur son propre fond flou */
+  function tirage(S, src, liste, o = {}) {
+    return vue(S, (t0, t1) => {
+      const box = $('div'); const f = $('img', 'flou', null, box); f.src = src;
+      const t = $('div', 'tirage', null, box); const im = $('img', null, null, t); im.src = src;
+      t.style[o.cote === 'droite' ? 'right' : 'left'] = (o.marge ?? 170) + 'px';
+      if (o.haut) { t.style.top = o.haut[0] + 'px'; t.style.bottom = o.haut[1] + 'px'; }
+      if (o.credit) $('div', 'doc', typo(o.credit), box);
+      plan(S, t0, t1, box, { fi: X, fo: X, draw: (lt, d) => { const p = lt / d; t.style.transform = `translateY(${lin(14, -14, p)}px) scale(${lin(1, 1.035, p)})`; f.style.transform = `scale(${lin(1.05, 1.12, p)})`; } });
+    }, liste, { cls: o.cote === 'droite' ? 'etroit' : 'droite etroit', ...o });
+  }
+  /* fond construit à la main (carte, graphique, carton) : build(box) renvoie draw(lt, d) */
+  function scene(S, build, liste = [], o = {}) {
+    return vue(S, (t0, t1, d, T) => {
+      const box = $('div'); const draw = build(box, d, T);
+      plan(S, t0, t1, box, { fi: o.fi ?? X, fo: o.fo ?? X, draw });
+    }, liste, o);
+  }
+  const noir = (S, d) => { const t0 = S.c; plan(S, t0, t0 + d + X, $('div'), { fi: 0, fo: 0 }); S.c += d; };
+
+  /* ===== Cartes ===== */
+  const WA = window.WORLD_ATLAS_50;
+  const pays = topojson.feature(WA, WA.objects.countries).features;
+  const F = id => pays.find(f => f.id === id);
+  const AMLAT = ['484', '320', '084', '340', '222', '558', '188', '591', '192', '332', '214', '388', '044', '780', '630', '170', '862', '328', '740', '218', '604', '068', '076', '600', '152', '032', '858'];
+  const NOMS = { '484': 'Mexique', '076': 'Brésil', '032': 'Argentine', '152': 'Chili', '604': 'Pérou', '170': 'Colombie', '862': 'Venezuela', '068': 'Bolivie', '218': 'Équateur', '600': 'Paraguay', '858': 'Uruguay', '332': 'Haïti', '328': 'Guyana', '591': 'Panama', '192': 'Cuba' };
+  /* carte : projection ajustée à un cadre [[lon0, lat0], [lon1, lat1]] dans une zone de l'écran */
+  function carte(parent, cadre, zone, o = {}) {
+    const bbox = { type: 'Feature', geometry: { type: 'MultiPoint', coordinates: cadre } };
+    const proj = (o.proj || d3.geoMercator()).fitExtent(zone, bbox);
+    const path = d3.geoPath(proj);
+    const svg = S_('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}` }, parent);
+    const g = S_('g', {}, svg); const P = {};
+    S_('path', { d: path(d3.geoGraticule10()), fill: 'none', stroke: 'rgba(241,236,226,.05)', 'stroke-width': 1 }, g);
+    pays.forEach(f => { if (f.id === '010') return; P[f.id] = S_('path', { d: path(f), fill: AMLAT.includes(f.id) ? '#24272e' : '#15171b', stroke: '#363b45', 'stroke-width': .8 }, g); });
+    const lab = (html, ll, cls = 'etiq c', dx = 0, dy = 0) => { const q = proj(ll); const e = $('div', cls, html, parent); Object.assign(e.style, { left: (q[0] + dx) + 'px', top: (q[1] + dy) + 'px' }); return e; };
+    return { svg, g, P, proj, path, lab };
+  }
+  const teinte = (el, c0, c1, p) => el && el.setAttribute('fill', d3.interpolateRgb(c0, c1)(p));
+  /* arc animé entre deux points (lon, lat) */
+  function arc(M, a, b, o = {}) {
+    const p = M.proj(a), q = M.proj(b); const mx = (p[0] + q[0]) / 2, my = (p[1] + q[1]) / 2 - Math.hypot(q[0] - p[0], q[1] - p[1]) * (o.courbe ?? .25);
+    const e = S_('path', { d: `M${p[0]},${p[1]} Q${mx},${my} ${q[0]},${q[1]}`, fill: 'none', stroke: o.c || '#d9a54a', 'stroke-width': o.w || 3, 'stroke-linecap': 'round' }, M.svg);
+    if (o.tirets) e.setAttribute('stroke-dasharray', o.tirets);
+    const L = e.getTotalLength(); if (!o.tirets) { e.style.strokeDasharray = L; e.style.strokeDashoffset = L; }
+    return p => { if (o.tirets) e.style.opacity = p; else e.style.strokeDashoffset = L * (1 - p); };
+  }
+  function point(M, ll, o = {}) {
+    const q = M.proj(ll); const c = S_('circle', { cx: q[0], cy: q[1], r: 0, fill: o.c || '#f1ece2' }, M.svg);
+    const h = S_('circle', { cx: q[0], cy: q[1], r: 0, fill: 'none', stroke: o.c || '#f1ece2', 'stroke-width': 2 }, M.svg);
+    return p => { c.setAttribute('r', (o.r || 7) * p); h.setAttribute('r', (o.r || 7) * (1 + 3 * p)); h.style.opacity = .7 * p * (1 - p * .6); };
+  }
+  /* barres horizontales : rows = [[nom, valeur, affiché, classe]] */
+  function barres(box, rows, o = {}) {
+    const hb = $('div', 'hb', rows.map(r => `<div class="l"><div class="n">${typo(r[0])}</div><div class="t"><i class="${r[3] || ''}"></i></div><div class="v">${typo(r[2])}</div></div>`).join(''), box);
+    hb.style.top = (o.top || 360) + 'px';
+    const max = o.max || Math.max(...rows.map(r => r[1]));
+    return lt => [...hb.children].forEach((l, i) => { const p = up(lt, (o.t0 || .8) + i * (o.pas || .9), 1.1); l.querySelector('i').style.width = (rows[i][1] / max * 100 * p) + '%'; l.querySelector('.v').style.opacity = cl(p * 1.6); l.style.opacity = cl(.3 + p * 2); });
+  }
+  const gtitre = (box, k, t) => $('div', 'gtitre', `<span class="kick">${typo(k)}</span><div>${typo(t)}</div>`, box);
+  const gsrc = (box, t) => $('div', 'gsrc', typo(t), box);
+
+  /* ======================================================================
+     Les séquences
+     ====================================================================== */
+
+  /* [1] Ouverture : Potosí */
+  sequence(1, 'Ouverture · Potosí', S => {
+    photo(S, D2 + 'cerro-rico-potosi.webp', [['Potosí · Bolivie', 'Au cœur des Andes, une montagne a changé l’histoire du monde.']], { fi: 1.6, avant: 2.2, a: { s: 1.02 }, b: { s: 1.12, y: -1 } });
+    photo(S, D2 + 'potosi-gravure-mine-argent.webp', ['En 1545, les Espagnols y découvrent un immense filon d’argent : le <strong>Cerro Rico</strong>.', 'Les Amérindiens y sont soumis au <strong>travail forcé</strong>.'], { credit: '<i>Une mine d’argent à Potosí</i>, gravure, XVIIIe siècle', a: { s: 1.08, x: 3 }, b: { s: 1.18, x: -3 } });
+    scene(S, (box, d, T) => {
+      const M = carte(box, [[-95, -40], [10, 52]], [[80, 80], [1840, 1000]], { proj: d3.geoNaturalEarth1() });
+      const pp = point(M, [-65.75, -19.58], { c: '#f5cf86', r: 9 }), ps = point(M, [-5.98, 37.39], { c: '#f1ece2' });
+      const l1 = M.lab('Potosí', [-65.75, -19.58], 'etiq', 22, -14), l2 = M.lab('Séville', [-5.98, 37.39], 'etiq', 18, -12);
+      const a1 = arc(M, [-65.75, -19.58], [-5.98, 37.39], { courbe: .18, w: 4 });
+      teinte(M.P['068'], '#24272e', '#4a3c22', 1);
+      return lt => { pp(up(lt, .4, .8)); show(l1, up(lt, .5, .6)); a1(eio(cl((lt - T[1]) / 3))); ps(up(lt, T[1] + 2.8, .7)); show(l2, up(lt, T[1] + 2.9, .6)); };
+    }, [['Vers 1600', 'Potosí compte plus de <strong>200 000 habitants</strong> : l’une des plus grandes villes du monde.'], 'Son argent traverse l’Atlantique et enrichit l’Empire espagnol.'], { avant: 1.2 });
+    /* cinq siècles plus tard : quatre ressources */
+    scene(S, (box, d) => {
+      const imgs = [[P1 + 'chapitre-15/images/mine-chuquicamata.webp', 'Cuivre · Chili'], [P1 + 'chapitre-15/images/salar-atacama.webp', 'Lithium · Chili'], [D2 + 'soja-chaco-salta.webp', 'Soja · Argentine'], [D2 + 'refinerie-puerto-la-cruz-venezuela.webp', 'Pétrole · Venezuela']];
+      const L = imgs.map(([src, t]) => { const b = $('div', null, null, box); Object.assign(b.style, { position: 'absolute', inset: 0, opacity: 0 }); const im = $('img', 'full', null, b); Object.assign(im.style, { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }); im.src = src; $('div', 'voile-b', null, b); const e = $('div', 'etiq', t, b); Object.assign(e.style, { right: '120px', top: '110px', opacity: 1 }); return [b, im]; });
+      const pas = d / 4;
+      return lt => L.forEach(([b, im], i) => { const a = i * pas; b.style.opacity = i === 0 ? 1 : cl((lt - a) / .5); im.style.transform = `scale(${lin(1.04, 1.14, cl((lt - a) / (pas + .6)))})`; });
+    }, ['Cinq siècles plus tard, l’Amérique latine vit toujours de ses <strong>matières premières</strong>.', 'Cuivre, lithium, soja, pétrole : le monde vient y chercher ses ressources.']);
+    photo(S, D2 + 'avenida-paulista-sao-paulo.webp', ['Elle a connu des <strong>essors spectaculaires</strong>, et des crises tout aussi brutales.', 'Sans jamais rejoindre tout à fait les pays développés.'], { a: { s: 1.03, x: 1.5 }, b: { s: 1.12, x: -1.5 }, fo: 1.4, dernier: true, apres: 1.4 });
+  });
+
+  /* [2] Titre */
+  sequence(2, 'Titre', S => {
+    scene(S, (box, d) => {
+      const im = $('img', 'full', null, box); im.src = D2 + 'ameriques-mediterranee-americaine.webp'; Object.assign(im.style, { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(.62)' });
+      $('div', 'voile-g', null, box);
+      const t = $('div', 'titre-film', '<div class="kick">HGG · 2<sup>e</sup> année · Chapitre 3</div><h1>L’Amérique latine</h1><p>Entre émergences et crises</p>', box); const k = t.children;
+      return lt => { im.style.transform = `scale(${lin(1.02, 1.1, lt / d)})`; show(k[0], up(lt, .8, 1)); show(k[1], up(lt, 1.3, 1.4), 30); show(k[2], up(lt, 2.8, 1.2)); };
+    }, [], { d: 8, fi: 1.2, fo: 1.2, dernier: true });
+  });
+
+  /* [3] Les mots du sujet et la question */
+  sequence(3, 'Émergence, crise : la question', S => {
+    const carton = (mot, sens, qui) => box => {
+      $('div', 'sombre', null, box); box.style.background = '#08090c';
+      const e = $('div', 'def', `<div class="kick">Définition</div><div class="mot" style="margin-top:26px">${mot}</div><div class="sens">${typo(sens)}</div>${qui ? `<div class="qui">${typo(qui)}</div>` : ''}`, box); const k = e.children;
+      return lt => { show(k[0], up(lt, .2)); show(k[1], up(lt, .5, .9), 26); show(k[2], up(lt, 1.4, .9)); if (k[3]) show(k[3], up(lt, 2.4, .8)); };
+    };
+    const sEm = 'S’intégrer à l’économie mondialisée grâce à une <strong>forte croissance</strong>, pendant plusieurs années.';
+    scene(S, carton('Émergence', sEm, 'Le mot vient de la finance : « marchés émergents », Antoine van Agtmael, 1981'), [], { d: 1.6 + lire(sEm) + lire('Le mot vient de la finance marchés émergents Antoine van Agtmael 1981') + .4, fi: 1 });
+    const sCr = 'Du grec <em>krisis</em>, la décision : le moment où un système <strong>bascule</strong>.';
+    scene(S, carton('Crise', sCr, 'Une rupture brutale, qui révèle les faiblesses d’un modèle'), [], { d: 1.6 + lire(sCr) + lire('Une rupture brutale qui révèle les faiblesses d’un modèle') + .4 });
+    /* la valse des modèles : quatre noms sur la carte */
+    scene(S, box => {
+      const M = carte(box, [[-118, -56], [-34, 33]], [[960, 60], [1800, 1020]]);
+      const ids = AMLAT.slice(); const o = ids.map((id, i) => i * .05);
+      return lt => ids.forEach((id, i) => teinte(M.P[id], '#24272e', '#3a3f4a', up(lt, .3 + o[i], .8)));
+    }, [['Javier Santiso, 2005', 'Depuis les indépendances, les modèles se succèdent : une « <strong>valse des paradigmes</strong> ».'], 'La plupart des pays deviennent des pays à <strong>revenu intermédiaire</strong>…', '… mais chaque essor finit par buter sur une <strong>crise sévère</strong>.'], { cls: 'etroit' });
+    /* la question et le plan */
+    scene(S, (box, d) => {
+      box.style.background = '#08090c';
+      const q = $('div', 'grand', typo('Pourquoi l’Amérique latine ne cesse-t-elle d’<em>émerger</em>, sans y parvenir tout à fait ?'), box); Object.assign(q.style, { left: '160px', right: '160px', top: '250px', fontSize: '76px' });
+      const p3 = $('div', 'plan3', '<div><b>I</b><span>Une émergence heurtée</span><em>de la mine coloniale au néo-extractivisme</em></div><div><b>II</b><span>Des problèmes structurels</span><em>dépendance, inégalités, environnement</em></div><div><b>III</b><span>Des émergences très diverses</span><em>métropoles, pays, Brésil</em></div>', box);
+      return lt => { show(q, up(lt, .4, 1)); q.style.transform += ` translateY(${-90 * eio(cl((lt - 4.2) / 1))}px)`; [...p3.children].forEach((e, i) => show(e, up(lt, 5 + i * .9, .8))); };
+    }, [], { d: 12.5, fo: 1.2, dernier: true });
+  });
+
+  /* carton de partie */
+  const partie = (n, num, titre, sous, img, o = {}) => sequence(n, 'Partie ' + num, S => {
+    scene(S, (box, d) => {
+      const im = $('img', 'full', null, box); im.src = img; Object.assign(im.style, { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(.5)' });
+      $('div', 'voile-g', null, box);
+      const t = $('div', 'grand', `<span class="kick">Partie ${num}</span><br>${typo(titre)}<small>${typo(sous)}</small>`, box); Object.assign(t.style, { left: '160px', top: '330px', fontSize: '118px', width: '1500px' });
+      return lt => { im.style.transform = `scale(${lin(1.03, 1.11, lt / d)})`; show(t, up(lt, .5, 1.1), 24); };
+    }, [], { d: o.d || 6, fi: 1, fo: 1, dernier: true });
+  });
+
+  /* [4] Partie I */
+  partie(4, 'I', 'Une émergence <em>heurtée</em>', 'Cinq siècles d’essors et de crises, qui laissent la région à la périphérie', D2 + 'cerro-rico-potosi.webp');
+
+  /* [5] Le modèle agro-minier exportateur */
+  sequence(5, 'Le modèle agro-minier', S => {
+    scene(S, (box, d, T) => {
+      const M = carte(box, [[-110, -40], [-10, 30]], [[620, 60], [1880, 1020]]);
+      const mines = [[-65.75, -19.58, 'Potosí', 'argent'], [-44.0, -19.5, 'Minas Gerais', 'or']];
+      const plant = [[-38.5, -10.5, 'Nordeste', 'sucre'], [-74, 19.5, 'Caraïbes', 'sucre, coton']];
+      const ports = [[-38.5, -12.97], [-43.2, -22.9], [-77.03, -12.05], [-75.5, 10.4], [-76.0, 21.0]];
+      const pm = mines.map(m => point(M, m, { c: '#f5cf86', r: 9 })), pl = plant.map(m => point(M, m, { c: '#5fa37a', r: 9 }));
+      const lm = mines.map(m => M.lab(`${m[2]}<small>mine · ${m[3]}</small>`, m, 'etiq', 20, -10)), lp = plant.map(m => M.lab(`${m[2]}<small>plantation · ${m[3]}</small>`, m, 'etiq', 20, -10));
+      const ev = [[[-65.75, -19.58], [-70.3, -18.5]], [[-65.75, -19.58], [-77.03, -12.05]], [[-44, -19.5], [-43.2, -22.9]], [[-44, -19.5], [-38.5, -12.97]], [[-38.5, -10.5], [-38.5, -12.97]], [[-74, 19.5], [-76, 21]]].map(([a, b]) => arc(M, a, b, { c: '#f1ece2', w: 2, courbe: .05 }));
+      const eu = [[-38.5, -12.97], [-43.2, -22.9], [-75.5, 10.4], [-76, 21]].map(a => arc(M, a, [-10, 34], { w: 3, courbe: .15 }));
+      const retour = arc(M, [-10, 30], [-43.2, -22.9], { c: '#8fb3d9', w: 2, courbe: -.12, tirets: '8 8' });
+      const le = M.lab('Europe', [-10, 34], 'etiq', -150, 24);
+      const lr = M.lab('<small>produits manufacturés</small>', [-26, -6], 'etiq c');
+      return lt => {
+        pm.forEach((f, i) => f(up(lt, .5 + i * .4))); lm.forEach((e, i) => show(e, up(lt, .6 + i * .4)));
+        pl.forEach((f, i) => f(up(lt, T[1] + .2 + i * .4))); lp.forEach((e, i) => show(e, up(lt, T[1] + .3 + i * .4)));
+        ev.forEach((f, i) => f(eo(cl((lt - T[2] - .3 - i * .15) / 1.4))));
+        eu.forEach((f, i) => f(eio(cl((lt - T[3] - .2 - i * .2) / 2.2)))); show(le, up(lt, T[3] + 1));
+        retour(up(lt, T[3] + 2.6, 1)); show(lr, up(lt, T[3] + 2.8));
+      };
+    }, [['Le système colonial', 'Deux piliers : la <strong>mine</strong>, où travaillent de force les Amérindiens…'], '… et la <strong>plantation</strong>, où travaillent les esclaves africains de la traite.', 'Les routes partent des mines et des plantations vers les ports : un réseau <strong>en éventail</strong>.', 'Les richesses partent vers l’Europe. Les produits manufacturés reviennent.'], { cls: 'etroit', avant: .6 });
+    /* les cycles du Brésil */
+    scene(S, box => {
+      box.style.background = '#08090c';
+      gtitre(box, 'Hervé Théry, géographe', 'Le Brésil, une succession de cycles');
+      const t = $('div', 'tuiles', '<div><b>XVIe siècle</b><span>Le bois de braise</span><em>le pau-brasil donne son nom au pays</em></div><div><b>XVIe-XVIIe s.</b><span>Le sucre</span><em>les plantations du Nordeste</em></div><div><b>XVIIIe siècle</b><span>L’or</span><em>la ruée vers le Minas Gerais</em></div><div><b>XIXe siècle</b><span>Le café</span><em>la région de São Paulo</em></div>', box);
+      Object.assign(t.style, { top: '420px', gridTemplateColumns: 'repeat(4, 1fr)' });
+      return lt => [...t.children].forEach((e, i) => show(e, up(lt, .8 + i * .9, .8)));
+    }, ['Chaque cycle repose sur une ressource exportée. Un <strong>surplus considérable</strong>… mais sans développement local.'], { avant: 4.2 });
+    tirage(S, D2 + 'portrait-galeano.webp', [['Eduardo Galeano, écrivain uruguayen', '<em>Les Veines ouvertes de l’Amérique latine</em> (1971) raconte cinq siècles de <strong>pillage des ressources</strong>.']], { cote: 'gauche', marge: 230, haut: [250, 250] });
+    scene(S, carton2('Modèle agro-minier exportateur', 'Exporter des <strong>matières premières brutes</strong>, agricoles et minières, en échange de produits manufacturés.', 'Après les indépendances, il devient une économie de rente'), [], { d: 11 });
+    photo(S, P1 + 'chapitre-3/images/wall-street-octobre-1929.webp', [['1929', 'La Grande Dépression : la demande américaine et européenne s’effondre, les cours chutent.'], 'Le modèle agro-minier révèle sa <strong>dépendance</strong> aux marchés du Nord.'], { filtre: 'grayscale(1) brightness(.9)', credit: 'Wall Street, octobre 1929', a: { s: 1.05 }, b: { s: 1.14 }, fo: 1, dernier: true });
+  });
+  /* carton de définition sur fond noir (après la séquence 3, réutilisé) */
+  function carton2(mot, sens, qui) {
+    return box => {
+      box.style.background = '#08090c';
+      const e = $('div', 'def', `<div class="kick">Définition</div><div class="mot" style="margin-top:26px;font-size:${mot.length > 22 ? 86 : 120}px">${typo(mot)}</div><div class="sens">${typo(sens)}</div>${qui ? `<div class="qui">${typo(qui)}</div>` : ''}`, box); const k = e.children;
+      return lt => { show(k[0], up(lt, .2)); show(k[1], up(lt, .5, .9), 26); show(k[2], up(lt, 1.4, .9)); if (k[3]) show(k[3], up(lt, 3.6, .8)); };
+    };
+  }
+
+  /* [6] L'ISI */
+  sequence(6, 'L’industrialisation par substitution', S => {
+    scene(S, (box, d, T) => {
+      const M = carte(box, [[-118, -56], [-34, 33]], [[900, 50], [1840, 1030]]);
+      const G = [['076', 'Getúlio Vargas', 'Brésil, 1930-1945', [-52, -11]], ['484', 'Lázaro Cárdenas', 'Mexique, 1934-1940', [-104, 24]], ['032', 'Juan Perón', 'Argentine, 1946-1955', [-66, -36]]];
+      const L = G.map(g => M.lab(`${g[1]}<small>${g[2]}</small>`, g[3], 'etiq c'));
+      const pc = point(M, [-70.65, -33.45], { c: '#f5cf86', r: 9 }), lc = M.lab('CEPAL<small>Santiago, 1948</small>', [-70.65, -33.45], 'etiq', -170, -10);
+      return lt => { G.forEach((g, i) => { const p = up(lt, 1 + i * .9, .9); teinte(M.P[g[0]], '#24272e', '#4a3c22', p); show(L[i], p); }); pc(up(lt, T[1] + .3)); show(lc, up(lt, T[1] + .4)); };
+    }, [['La réponse des nationalistes', 'Produire chez soi ce que l’on importait : une stratégie <strong>autocentrée</strong>.'], ['1948', 'L’ONU crée la <strong>CEPAL</strong>, la Commission économique pour l’Amérique latine.']], { cls: 'etroit', fi: 1 });
+    tirage(S, D2 + 'portrait-prebisch.webp', [['Raúl Prebisch, économiste argentin', 'Les matières premières exportées <strong>ne paient plus</strong> les produits manufacturés importés.'], 'C’est la <strong>détérioration des termes de l’échange</strong> (1949).'], { cote: 'gauche', marge: 230, haut: [230, 230] });
+    /* schéma de principe : les termes de l'échange */
+    scene(S, box => {
+      box.style.background = '#08090c';
+      gtitre(box, 'Schéma de principe', 'Les termes de l’échange se dégradent');
+      const svg = S_('svg', { width: W, height: H }, box);
+      const x0 = 260, x1 = 1660, y0 = 860, yA = 500;
+      S_('line', { x1: x0, y1: y0, x2: x1, y2: y0, stroke: 'rgba(241,236,226,.5)', 'stroke-width': 2 }, svg);
+      const lm = S_('path', { d: `M${x0},${yA} C${x0 + 500},${yA - 40} ${x1 - 500},${yA - 170} ${x1},${yA - 240}`, fill: 'none', stroke: '#6e9fd3', 'stroke-width': 6 }, svg);
+      const lp = S_('path', { d: `M${x0},${yA} C${x0 + 500},${yA + 40} ${x1 - 500},${yA + 140} ${x1},${yA + 220}`, fill: 'none', stroke: '#e2b866', 'stroke-width': 6 }, svg);
+      [lm, lp].forEach(l => { const L = l.getTotalLength(); l.style.strokeDasharray = L; l.style.strokeDashoffset = L; l.L = L; });
+      const e1 = $('div', 'etiq', 'Prix des produits manufacturés<small>importés</small>', box); Object.assign(e1.style, { left: '1240px', top: '200px', color: '#9cc0e6' });
+      const e2 = $('div', 'etiq', 'Prix des matières premières<small>exportées</small>', box); Object.assign(e2.style, { left: '1240px', top: '760px', color: '#f5cf86' });
+      const e3 = $('div', 'etiq', 'Temps', box); Object.assign(e3.style, { left: '1690px', top: '880px', opacity: .7 });
+      return lt => { lm.style.strokeDashoffset = lm.L * (1 - eio(cl((lt - .8) / 3))); lp.style.strokeDashoffset = lp.L * (1 - eio(cl((lt - 1.4) / 3))); show(e1, up(lt, 3.4)); show(e2, up(lt, 4)); e3.style.opacity = .7 * up(lt, .6); };
+    }, ['Il faut donc <strong>industrialiser</strong> : c’est le modèle de la CEPAL.'], { avant: 5.4 });
+    scene(S, carton2('ISI', 'Industrialisation par substitution aux importations : des <strong>droits de douane</strong> élevés, sélectifs et évolutifs pour protéger l’industrie naissante.', 'Un « protectionnisme éducateur »'), [], { d: 12 });
+    /* l'État bâtisseur */
+    scene(S, box => {
+      box.style.background = '#08090c';
+      gtitre(box, 'Des États interventionnistes', 'Des entreprises publiques pour industrialiser');
+      const t = $('div', 'tuiles', '<div><b>1938 · Mexique</b><span>Pemex</span><em>Cárdenas nationalise le pétrole</em></div><div><b>1939 · Chili</b><span>CORFO</span><em>le développement industriel</em></div><div><b>1953 · Brésil</b><span>Petrobras</span><em>le pétrole brésilien</em></div><div><b>1969 · Brésil</b><span>Embraer</span><em>aujourd’hui 3e avionneur mondial</em></div>', box);
+      Object.assign(t.style, { top: '420px', gridTemplateColumns: 'repeat(4, 1fr)' });
+      return lt => [...t.children].forEach((e, i) => show(e, up(lt, .8 + i * .8, .8)));
+    }, ['Les États <strong>planifient</strong>, nationalisent et attirent les capitaux étrangers.'], { avant: 4.2 });
+    photo(S, D2 + 'congres-national-brasilia.webp', [['Brasília, 21 avril 1960', 'Une capitale sortie de rien, pour diffuser la modernité vers l’intérieur du pays.']], { a: { s: 1.06, x: 2 }, b: { s: 1.16, x: -2 }, credit: 'Le Congrès national d’Oscar Niemeyer' });
+    scene(S, box => {
+      box.style.background = '#08090c';
+      const c1 = $('div', 'chiffre', '<b class="o">6 %</b><span>de croissance par an dans les années 1970</span>', box); Object.assign(c1.style, { left: '200px', top: '300px' });
+      const c2 = $('div', 'chiffre', '<b>1935-1970</b><span>les « Quarante Glorieuses » latino-américaines (Pierre Salama)</span>', box); Object.assign(c2.style, { left: '1000px', top: '300px' });
+      return lt => { show(c1, up(lt, .5, .9), 30); show(c2, up(lt, 1.6, .9), 30); };
+    }, ['Le Mexique et le Brésil deviennent des pays <strong>semi-industrialisés</strong>.', 'Mais le modèle dépend des capitaux étrangers… et de la <strong>dette</strong>.'], { avant: 2.6, fo: 1, dernier: true });
+  });
+
+  /* [7] La dette, le néolibéralisme, la valse des crises */
+  sequence(7, 'La dette et le virage néolibéral', S => {
+    scene(S, box => {
+      box.style.background = '#08090c';
+      gtitre(box, 'La dette latino-américaine', 'Multipliée par six en dix ans');
+      const dr = barres(box, [['1970', 40, '40 Md$'], ['1980', 240, '240 Md$', 'r']], { top: 440, pas: 1.2 });
+      gsrc(box, 'Soit un tiers de la dette des pays en développement en 1980');
+      return dr;
+    }, ['Pour financer l’industrie, les États <strong>empruntent massivement</strong>.'], { avant: 3.6 });
+    scene(S, box => {
+      box.style.background = '#050506';
+      const t = $('div', 'grand', '<span class="kick">Août 1982</span><br>Le Mexique<br><em>ne peut plus payer</em>', box); Object.assign(t.style, { left: '160px', top: '300px', fontSize: '110px' });
+      return lt => show(t, up(lt, .4, 1), 26);
+    }, ['La hausse des taux d’intérêt américains rend la dette insupportable. La crise gagne tout le continent.'], { avant: 3.2 });
+    photo(S, P1 + 'chapitre-4/images/bretton-woods-hotel.webp', [['Le consensus de Washington', 'Le <strong>FMI</strong> et la Banque mondiale imposent leurs recettes aux pays endettés.'], 'Budgets équilibrés, privatisations, ouverture commerciale : les <strong>plans d’ajustement structurel</strong>.'], { filtre: 'brightness(.75)', credit: 'L’hôtel de Bretton Woods, où naissent le FMI et la Banque mondiale en 1944' });
+    scene(S, box => {
+      box.style.background = '#08090c';
+      const c1 = $('div', 'chiffre', '<b class="r">-25 %</b><span>pour les salaires, en moyenne ; jusqu’à -50 % au Mexique et au Pérou</span>', box); Object.assign(c1.style, { left: '200px', top: '300px' });
+      const c2 = $('div', 'chiffre', '<b>-1,2 %</b><span>par an pour le PIB par habitant dans les années 1980</span>', box); Object.assign(c2.style, { left: '1000px', top: '300px' });
+      return lt => { show(c1, up(lt, .5, .9), 30); show(c2, up(lt, 1.6, .9), 30); };
+    }, [['Les années 1980', 'Une « <strong>décennie perdue</strong> pour le développement » (CEPAL). L’informel et les migrations explosent.']], { avant: 2.6 });
+    photo(S, P1 + 'chapitre-5/images/la-moneda-1973.webp', [['Chili, 1973-1990', 'Sous Pinochet, les « <strong>Chicago Boys</strong> », disciples de Milton Friedman, libéralisent presque toute l’économie.'], '7 % de croissance par an entre 1984 et 1997… au prix d’<strong>inégalités creusées</strong>.'], { filtre: 'grayscale(1)', credit: 'Le palais de La Moneda bombardé, 11 septembre 1973' });
+    /* la valse des paradigmes */
+    scene(S, box => {
+      box.style.background = '#08090c';
+      gtitre(box, 'La « valse des paradigmes »', 'Chaque modèle finit dans une crise');
+      const svg = S_('svg', { width: W, height: H }, box);
+      const y0 = 700, xs = [260, 620, 980, 1340, 1700];
+      S_('line', { x1: 220, y1: y0, x2: 1740, y2: y0, stroke: 'rgba(241,236,226,.45)', 'stroke-width': 2 }, svg);
+      const mod = ['Agro-minier exportateur', 'ISI (CEPAL)', 'Consensus de Washington', 'Néo-extractivisme'], cr = [['1929', 'Grande Dépression'], ['1982', 'Crise de la dette'], ['1994-2001', 'Tequila, Argentine'], ['2014', 'Fin du supercycle']];
+      const V = mod.map((m, i) => {
+        const a = xs[i], b = xs[i + 1] - 20;
+        const p = S_('path', { d: `M${a},${y0} C${a + 160},${y0 - 30} ${b - 60},${y0 - 300} ${b},${y0 - 320} L${b},${y0}`, fill: 'none', stroke: i % 2 ? '#e2b866' : '#6e9fd3', 'stroke-width': 5, 'stroke-linejoin': 'round' }, svg);
+        const L = p.getTotalLength(); p.style.strokeDasharray = L; p.style.strokeDashoffset = L;
+        const e = $('div', 'etiq c', typo(m), box); Object.assign(e.style, { left: ((a + b) / 2 + 20) + 'px', top: (y0 - 380) + 'px', whiteSpace: 'normal', width: '300px' });
+        const k = $('div', 'etiq c', `${cr[i][0]}<small>${typo(cr[i][1])}</small>`, box); Object.assign(k.style, { left: b + 'px', top: (y0 + 60) + 'px', color: '#e8705f' });
+        return [p, L, e, k];
+      });
+      return lt => V.forEach(([p, L, e, k], i) => { const t = .8 + i * 2.6; p.style.strokeDashoffset = L * (1 - eio(cl((lt - t) / 2))); show(e, up(lt, t + .2)); show(k, up(lt, t + 1.8, .5)); });
+    }, ['ISI, puis libéralisme : aucun paradigme n’assure durablement le <strong>décollage</strong>.', 'L’Argentine compte <strong>cinq crises</strong> depuis 1975, record de la région.'], { avant: 7.4, fo: 1, dernier: true });
+  });
+
+  /* [8] La vague rose et la Chine */
+  sequence(8, 'Vague rose et Chine', S => {
+    photo(S, D2 + 'chavez-plateau-alo-presidente.webp', [['1999-2007', 'Chávez, Lula, Kirchner, Morales, Correa, Bachelet : la gauche arrive au pouvoir. C’est la « <strong>vague rose</strong> ».'], 'Elle veut une croissance plus équitable : <strong>Bolsa Família</strong> au Brésil, Misiones au Venezuela.'], { credit: 'Hugo Chávez lors de son émission « Aló Presidente »' });
+    scene(S, carton2('Néo-extractivisme', 'L’État capte une part accrue de la <strong>rente des matières premières</strong> pour financer la redistribution.', 'Eduardo Gudynas'), [], { d: 10 });
+    /* la Chine */
+    scene(S, box => {
+      const M = carte(box, [[-35, -45], [-82, 12], [125, 45], [100, 18]], [[60, 90], [1860, 880]], { proj: d3.geoNaturalEarth1().rotate([150, 0]) });
+      teinte(M.P['156'], '#15171b', '#7a2a24', 1);
+      const src = [[-65.75, -19.58], [-70.6, -27], [-56, -13], [-61, -33], [-50, -6], [-75, -10]], dst = [121.5, 31.2];
+      const A = src.map((s, i) => arc(M, s, dst, { c: '#e2b866', w: 2.5, courbe: -.12 + i * .02 }));
+      const lc = M.lab('Chine', [105, 34], 'etiq c');
+      return lt => { A.forEach((f, i) => f(eio(cl((lt - .8 - i * .25) / 2.6)))); show(lc, up(lt, .4)); };
+    }, [['Le moteur', 'La <strong>Chine</strong> achète en masse le fer, le cuivre, le soja : c’est le « supercycle » des matières premières.'], '95 % du fer exporté par le Pérou part en Chine ; la moitié du soja consommé en Chine vient du Brésil et de l’Argentine.'], { avant: 2.2 });
+    scene(S, box => {
+      box.style.background = '#08090c';
+      gtitre(box, 'Échanges avec l’Amérique latine', 'Le commerce avec la Chine multiplié par plus de 30');
+      const d = barres(box, [['Chine, 2000', 15, '15 Md$', 'r'], ['Chine, 2024', 518, '518 Md$', 'r'], ['États-Unis, 2024', 1215, '1 215 Md$', 'b']], { top: 400 });
+      gsrc(box, 'En milliards de dollars');
+      return d;
+    }, ['La Chine devient le <strong>1er partenaire</strong> du Brésil, du Chili, du Pérou et de l’Uruguay.', 'La pauvreté recule, la classe moyenne grandit… mais la région <strong>renoue avec la rente</strong>.'], { avant: 4.2 });
+    photo(S, D2 + 'chancay-port-vue-projet.webp', [['Chancay · Pérou · 2024', 'Un mégaport construit par le chinois <strong>Cosco</strong> : 25 à 30 jours jusqu’à Shanghai.']], { a: { s: 1.04, x: -2 }, b: { s: 1.12, x: 2 }, dernier: true, fo: 1 });
+  });
+
+  /* [9] La reprimarisation */
+  sequence(9, 'La reprimarisation', S => {
+    scene(S, box => {
+      box.style.background = '#08090c';
+      gtitre(box, 'La reprimarisation', 'Part des matières premières dans les exportations');
+      const d = barres(box, [['1980', 27, '27 %'], ['2013', 42, '42 %', 'r']], { top: 440, max: 50, pas: 1.2 });
+      gsrc(box, 'Au Brésil, les produits manufacturés passent de 57 % à 32 % des exportations (2000-2019)');
+      return d;
+    }, ['Le secteur primaire reprend la première place : une « <strong>modernisation conservatrice</strong> » (Jacques Chonchol).'], { avant: 3.6, fi: 1 });
+    photo(S, P1 + 'chapitre-15/images/mine-chuquicamata.webp', [['Chuquicamata · Désert d’Atacama', 'Le Chili, 1er producteur mondial de <strong>cuivre</strong>.'], 'Le cuivre, « salaire du Chili » : environ 10 % du PIB, près de la moitié des exportations.'], { a: { s: 1.05 }, b: { s: 1.16, y: 2 } });
+    scene(S, box => {
+      const M = carte(box, [[-72.5, -27.5], [-63.5, -17.5]], [[820, 70], [1820, 1010]]);
+      ['068', '152', '032'].forEach(id => { teinte(M.P[id], '#24272e', '#33383f', 1); M.P[id].setAttribute('stroke', '#8a8f99'); M.P[id].setAttribute('stroke-width', 1.6); });
+      [['BOLIVIE', [-65, -18.4]], ['CHILI', [-70.6, -26]], ['ARGENTINE', [-64.6, -26.8]]].forEach(([n, ll]) => { const e = M.lab(n, ll, 'etiq c'); e.style.opacity = .45; e.style.letterSpacing = '.4em'; });
+      const s = [[-67.5, -20.2, 'Salar d’Uyuni', 'Bolivie'], [-68.25, -23.5, 'Salar d’Atacama', 'Chili'], [-67.0, -25.4, 'Salar del Hombre Muerto', 'Argentine']];
+      const tri = S_('path', { d: 'M' + s.map(p => M.proj(p).join(',')).join('L') + 'Z', fill: 'rgba(217,165,74,.18)', stroke: '#e2b866', 'stroke-width': 3 }, M.svg);
+      const L = tri.getTotalLength(); tri.style.strokeDasharray = L;
+      const pts = s.map(p => point(M, p, { c: '#f5cf86' })), lb = s.map((p, i) => M.lab(`${typo(p[2])}<small>${p[3]}</small>`, p, 'etiq', i === 1 ? -330 : 22, -12));
+      return lt => { pts.forEach((f, i) => f(up(lt, .5 + i * .5))); lb.forEach((e, i) => show(e, up(lt, .6 + i * .5))); tri.style.strokeDashoffset = L * (1 - eio(cl((lt - 2.4) / 2))); tri.style.fillOpacity = up(lt, 4, 1); };
+    }, [['Le triangle du lithium', 'Il concentrerait plus de la <strong>moitié des ressources</strong> identifiées du métal des batteries.'], 'Groupes australiens, américains, européens… et surtout <strong>chinois</strong> s’y disputent l’accès.'], { cls: 'etroit', avant: 2.6 });
+    photo(S, P1 + 'chapitre-15/images/salar-atacama.webp', [['Salar d’Atacama', 'Les saumures s’évaporent dans d’immenses bassins : le lithium y est concentré.']], { a: { s: 1.04, x: 2 }, b: { s: 1.13, x: -2 } });
+    photo(S, D2 + 'rondonia-aretes-de-poisson.webp', [['Les fronts pionniers', 'L’agro-industrie avance sur la forêt. L’Argentine, 3e producteur mondial de soja, passe de 6,5 à une <strong>cinquantaine</strong> de millions de tonnes depuis 1988.'], 'Mais les <strong>inégalités foncières</strong> héritées de la plantation demeurent.'], { credit: 'Défrichements en « arêtes de poisson » au Rondônia (Brésil), satellite NASA', a: { s: 1.03 }, b: { s: 1.12 } });
+    photo(S, D2 + 'refinerie-puerto-la-cruz-venezuela.webp', [['L’énergie', 'La région détient <strong>19 %</strong> des réserves mondiales de pétrole : le pré-sal brésilien, Vaca Muerta en Argentine.']], { credit: 'La raffinerie de Puerto La Cruz (Venezuela)', a: { s: 1.05, x: 2 }, b: { s: 1.14, x: -2 }, dernier: true, fo: 1 });
+  });
+
+  /* [10] Ports, canal et corridors */
+  sequence(10, 'Infrastructures', S => {
+    photo(S, D2 + 'ecluses-agua-clara-panama.webp', [['Le canal de Panama', 'Depuis 1914, il relie l’Atlantique et le Pacifique : environ <strong>5 %</strong> du commerce maritime mondial.'], 'Élargi en 2016, il reste vulnérable : la sécheresse de 2023-2024 a réduit les passages.'], { fi: 1, credit: 'Les écluses d’Agua Clara, ouvertes en 2016' });
+    scene(S, (box, d, T) => {
+      const M = carte(box, [[-78, -40], [-36, -12]], [[640, 80], [1860, 1000]]);
+      const route = [[-46.63, -23.55], [-58.38, -34.6], [-68.84, -32.89], [-70.07, -32.83], [-71.62, -33.05]];
+      const line = S_('path', { d: d3.line()(route.map(p => M.proj(p))), fill: 'none', stroke: '#e2b866', 'stroke-width': 6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, M.svg);
+      const L = line.getTotalLength(); line.style.strokeDasharray = L; line.style.strokeDashoffset = L;
+      const v = [[-46.63, -23.55, 'São Paulo'], [-58.38, -34.6, 'Buenos Aires'], [-71.62, -33.05, 'Valparaíso']];
+      const pv = v.map(p => point(M, p, { c: '#f5cf86', r: 10 })), lv = v.map((p, i) => M.lab(p[2], p, 'etiq', i === 2 ? -190 : 20, -14));
+      const lp = M.lab('Paso Los Libertadores<small>la traversée des Andes</small>', [-70.07, -32.83], 'etiq', -40, 40);
+      const mid = [[-63, -33.6], [-66, -33.2]].map(p => point(M, p, { c: '#5d6470', r: 6 }));
+      const lt2 = M.lab('<small>des territoires traversés sans être desservis</small>', [-63.5, -36.5], 'etiq c');
+      return lt => { line.style.strokeDashoffset = L * (1 - eio(cl((lt - .8) / 3.4))); pv.forEach((f, i) => f(up(lt, .6 + i * 1.4))); lv.forEach((e, i) => show(e, up(lt, .7 + i * 1.4))); show(lp, up(lt, 3.2)); mid.forEach(f => f(up(lt, T[1] + .3, .6))); show(lt2, up(lt, T[1] + .6)); };
+    }, [['Les corridors bi-océaniques', 'Relier la façade atlantique, où sont les grands pôles, à la façade pacifique, tournée vers l’Asie.'], 'Mais c’est l’« <strong>effet tunnel</strong> » : seules les extrémités en profitent.'], { cls: 'etroit', avant: 1.6, dernier: true, fo: 1.2 });
+  });
+
+  /* [11] Partie II */
+  partie(11, 'II', 'Des problèmes <em>structurels</em>', 'Dépendance, inégalités, environnement : ce qui freine l’émergence', D2 + 'incendies-amazonas-2020.webp');
+
+  /* [12] La dépendance : 2014 et le Venezuela */
+  sequence(12, 'Dépendance et malédiction des ressources', S => {
+    scene(S, box => {
+      box.style.background = '#08090c';
+      gtitre(box, '2014 · La fin du supercycle', 'La croissance s’effondre');
+      const d = barres(box, [['Années 2000', 5, '5 %'], ['2014-2020', .2, '0,2 %', 'r']], { top: 440, max: 6, pas: 1.2 });
+      gsrc(box, 'Croissance annuelle du PIB de la région');
+      return d;
+    }, ['La Chine ralentit et monte en gamme : les cours chutent. La CEPAL craint une « <strong>nouvelle décennie perdue</strong> ».'], { avant: 3.6, fi: 1 });
+    scene(S, carton2('Malédiction des ressources', 'Les pays riches en ressources obtiennent souvent de <strong>moins bons résultats</strong> que les autres.', 'Richard Auty, 1993 · la « maladie hollandaise » : la rente fait monter la monnaie et ruine l’industrie'), [], { d: 12.5 });
+    photo(S, D2 + 'lac-maracaibo-satellite.webp', [['Venezuela', 'Les premières réserves de pétrole du monde : <strong>303 milliards</strong> de barils.'], 'Le pétrole fournit 25 % du PIB et 45 % des recettes de l’État.'], { credit: 'Le lac de Maracaibo vu par satellite (NASA)', a: { s: 1.03 }, b: { s: 1.12 } });
+    /* la production vénézuélienne */
+    scene(S, box => {
+      box.style.background = '#08090c';
+      gtitre(box, 'Production de pétrole du Venezuela', 'Divisée par près de dix');
+      const svg = S_('svg', { width: W, height: H }, box);
+      const pts = [[1998, 3656, 'Record 1998'], [2012, 3200, '2012'], [2020, 383, 'Creux 2020'], [2025, 1034, '2025']];
+      const x = d3.scaleLinear([1996, 2026], [240, 1700]), y = d3.scaleLinear([0, 4000], [730, 330]);
+      S_('line', { x1: 240, y1: 730, x2: 1700, y2: 730, stroke: 'rgba(241,236,226,.45)', 'stroke-width': 2 }, svg);
+      const l = S_('path', { d: d3.line().curve(d3.curveMonotoneX)(pts.map(p => [x(p[0]), y(p[1])])), fill: 'none', stroke: '#e2b866', 'stroke-width': 6 }, svg);
+      const L = l.getTotalLength(); l.style.strokeDasharray = L; l.style.strokeDashoffset = L;
+      const sx = S_('line', { x1: x(2019), y1: 290, x2: x(2019), y2: 730, stroke: '#c8463c', 'stroke-width': 2, 'stroke-dasharray': '8 8', opacity: 0 }, svg);
+      const ls = $('div', 'etiq', 'Sanctions américaines<small>contre PDVSA, 2019</small>', box); Object.assign(ls.style, { left: (x(2019) + 20) + 'px', top: '250px', color: '#e8705f' });
+      const lb = pts.map(p => { const e = $('div', 'etiq c', `${(p[1] / 1000).toFixed(1).replace('.', ',')} M<small>${p[2]}</small>`, box); Object.assign(e.style, { left: x(p[0]) + 'px', top: (y(p[1]) - 56) + 'px' }); return e; });
+      gsrc(box, 'Millions de barils par jour');
+      return lt => { l.style.strokeDashoffset = L * (1 - cl((lt - .8) / 4.5)); lb.forEach((e, i) => show(e, up(lt, .8 + [0, 2.1, 3.6, 4.6][i], .5))); sx.setAttribute('opacity', up(lt, 3.2)); show(ls, up(lt, 3.3)); };
+    }, ['Infrastructures dégradées, corruption, aucun autre secteur développé : la rente a tout <strong>étouffé</strong>.'], { avant: 6.2 });
+    photo(S, D2 + 'migrants-venezueliens-cucuta-2018.webp', [['Une polycrise', 'Le PIB s’effondre de près de <strong>80 %</strong> entre 2013 et 2022. Hyperinflation, pénuries.'], '<strong>7,7 millions</strong> de Vénézuéliens ont fui le pays : près d’un habitant sur cinq.'], { credit: 'Cúcuta (Colombie), 2018 : des familles vénézuéliennes passent la frontière', a: { s: 1.05 }, b: { s: 1.13 } });
+    photo(S, D2 + 'venezuela-fresque-petrole.webp', [['3 janvier 2026', 'Les forces américaines capturent <strong>Nicolás Maduro</strong>. Washington vise désormais le pétrole vénézuélien.']], { a: { s: 1.04, x: 2 }, b: { s: 1.12, x: -2 }, dernier: true, fo: 1 });
+  });
+
+  /* [13] Inégalités et piège du revenu intermédiaire */
+  sequence(13, 'Inégalités et revenu intermédiaire', S => {
+    scene(S, box => {
+      const im = $('img', 'full', null, box); im.src = D2 + 'sanhattan-santiago.webp'; Object.assign(im.style, { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(.32) saturate(.6)' });
+      const c = $('div', 'cit', typo('« L’Amérique latine n’est pas le continent le plus pauvre, mais peut-être bien le plus <em>injuste</em>. »') + '<span class="src">Ricardo Lagos · président du Chili de 2000 à 2006</span>', box);
+      return (lt, d) => { im.style.transform = `scale(${lin(1.03, 1.1, lt / d)})`; show(c, up(lt, .5, 1.2), 20); };
+    }, [], { d: 9.5, fi: 1 });
+    scene(S, carton2('Piège du revenu intermédiaire', 'Sortis du sous-développement, des pays voient leur <strong>rattrapage</strong> s’interrompre avant d’avoir gagné en productivité.', 'Gill et Kharas, 2007'), [], { d: 11.5 });
+    scene(S, box => {
+      box.style.background = '#08090c';
+      gtitre(box, 'Hausse du PIB par habitant, 1989-2019', 'Plutôt une stagnation qu’une émergence');
+      return barres(box, [['États-Unis', 55, '+55 %', 'b'], ['Brésil', 36, '+36 %'], ['Mexique', 34, '+34 %']], { top: 420, max: 60 });
+    }, ['Peu de recherche : hormis le Brésil (<strong>1,2 %</strong> du PIB) et le Costa Rica, aucun pays ne consacre plus de 1 % de son PIB à la R&D.'], { avant: 4 });
+    scene(S, box => {
+      box.style.background = '#08090c';
+      gtitre(box, 'L’emploi informel (OIT, 2018)', 'Hors des règles, hors des comptes');
+      return barres(box, [['Bolivie', 75.6, '75,6 %', 'r'], ['Uruguay', 24.1, '24,1 %']], { top: 440, max: 100, pas: 1.2 });
+    }, ['Trop de pauvres, une épargne qui fuit, des impôts trop faibles : un <strong>cercle vicieux</strong> de sous-investissement.'], { avant: 3.6, dernier: true, fo: 1 });
+  });
+
+  /* [14] Le coût environnemental */
+  sequence(14, 'Le coût environnemental', S => {
+    photo(S, P1 + 'chapitre-14/images/deforestation-amazonie.webp', [['L’Amazonie', 'Le néo-extractivisme a un lourd <strong>coût environnemental</strong> : déforestation, pollution, perte de biodiversité.']], { fi: 1, a: { s: 1.03 }, b: { s: 1.12 } });
+    scene(S, box => {
+      box.style.background = '#08090c';
+      gtitre(box, 'Déforestation de l’Amazonie brésilienne', 'Elle suit la politique de Brasília');
+      const d = barres(box, [['2018', 7536, '7 536 km²'], ['2021 · Bolsonaro', 13038, '13 038 km²', 'r'], ['2025 · Lula', 5796, '5 796 km²', 'b']], { top: 400 });
+      gsrc(box, 'INPE, PRODES');
+      return d;
+    }, ['En 2019, Bolsonaro répond à Macron : « <strong>A Amazônia é nossa</strong> », l’Amazonie est à nous.'], { avant: 4.4 });
+    photo(S, D2 + 'madre-de-dios-orpaillage-satellite.webp', [['Madre de Dios · Pérou', 'Le long de la route interocéanique, l’<strong>orpaillage illégal</strong> ronge l’Amazonie péruvienne.']], { credit: 'Les taches claires le long des rivières sont des chantiers d’orpaillage, satellite NASA, 2024' });
+    scene(S, box => {
+      box.style.background = '#050506';
+      const t = $('div', 'grand', '<span class="kick">Brumadinho · 25 janvier 2019</span><br>Un barrage de résidus miniers<br>de Vale cède : <em>270 morts</em>', box); Object.assign(t.style, { left: '160px', top: '300px', fontSize: '92px' });
+      return lt => show(t, up(lt, .4, 1), 26);
+    }, ['Partout, des communautés et des peuples autochtones défendent leur <strong>terre</strong> et leur <strong>eau</strong>.'], { avant: 3.4 });
+    tirage(S, D2 + 'portrait-svampa.webp', [['Maristella Svampa, sociologue argentine', 'Le « <strong>consensus des commodities</strong> » succède au consensus de Washington.']], { cote: 'gauche', marge: 230, haut: [210, 210] });
+    photo(S, D2 + 'barrage-itaipu.webp', [['Itaipu · Brésil et Paraguay', 'Pourtant, la région mise aussi sur les <strong>renouvelables</strong> : barrages, solaire de l’Atacama, écotourisme du Costa Rica.']], { a: { s: 1.04, x: -2 }, b: { s: 1.13, x: 2 }, dernier: true, fo: 1 });
+  });
+
+  /* [15] Partie III */
+  partie(15, 'III', 'Des émergences <em>très diverses</em>', 'Des métropoles, quelques puissances et beaucoup de pays pauvres', D2 + 'sanhattan-santiago.webp');
+
+  /* [16] Métropoles et interfaces */
+  sequence(16, 'Métropoles et interfaces', S => {
+    photo(S, D2 + 'avenida-paulista-sao-paulo.webp', [['L’émergence est d’abord métropolitaine', 'Le tertiaire fait plus de <strong>60 %</strong> du PIB, porté par les très grandes villes.']], { fi: 1, a: { s: 1.12, x: -2 }, b: { s: 1.04, x: 2 } });
+    scene(S, box => {
+      box.style.background = '#08090c';
+      gtitre(box, 'Les grandes métropoles', 'Des géants urbains');
+      const v = [['21 M', 'São Paulo'], ['21 M', 'Mexico'], ['15 M', 'Buenos Aires'], ['12,8 M', 'Rio de Janeiro']];
+      const C = v.map(([n, t], i) => { const e = $('div', 'chiffre', `<b class="${i < 2 ? 'o' : ''}">${typo(n)}</b><span>${t}</span>`, box); Object.assign(e.style, { left: (160 + i * 420) + 'px', top: '420px' }); e.querySelector('b').style.fontSize = '120px'; return e; });
+      return lt => C.forEach((e, i) => show(e, up(lt, .6 + i * .6, .8), 26));
+    }, ['Lima crée plus de la moitié de la richesse du Pérou, avec 29 % des habitants.'], { avant: 3.6 });
+    photo(S, D2 + 'santa-fe-mexico.webp', [['Santa Fe · Mexico', 'Mexico, São Paulo, Buenos Aires, Santiago : les seules villes « <strong>alpha</strong> » de la région.'], 'L’émergence valorise aussi les <strong>interfaces</strong> : frontières, ports, littoraux, au détriment des intérieurs.'], { a: { s: 1.04 }, b: { s: 1.13, y: -2 }, dernier: true, fo: 1 });
+  });
+
+  /* [17] Des niveaux d'émergence */
+  sequence(17, 'Des niveaux d’émergence', S => {
+    scene(S, box => {
+      const M = carte(box, [[-118, -56], [-34, 33]], [[900, 50], [1840, 1030]]);
+      const G = [
+        [['076'], '#d9a54a', 'Le Brésil, pays « émergé »', 'd’envergure mondiale'],
+        [['484', '032'], '#c8463c', 'Le Mexique et l’Argentine', 'puissances continentales'],
+        [['152', '170', '604', '862'], '#5b8fc7', 'Chili, Colombie, Pérou, Venezuela', 'pays intermédiaires, dépendants de leurs ressources'],
+        [['068', '600', '332', '320', '340', '558', '222'], '#6b6f78', 'Bolivie, Paraguay, Amérique centrale, Haïti', 'pays pauvres ; Haïti, seul PMA du continent']];
+      const leg = $('div', null, G.map(g => `<div style="opacity:0;display:flex;gap:22px;align-items:flex-start;margin-bottom:34px"><i style="flex:none;width:30px;height:30px;margin-top:6px;background:${g[1]}"></i><div><b style="display:block;font:400 38px/1.15 Fraunces;color:#fff">${typo(g[2])}</b><span style="display:block;margin-top:6px;font:500 21px/1.3 'Inter Tight';color:#b7afa2">${typo(g[3])}</span></div></div>`).join(''), box);
+      Object.assign(leg.style, { position: 'absolute', left: '140px', top: '200px', width: '760px' });
+      const t = $('div', 'kick', 'Laurent Carroué · des niveaux d’émergence', box); Object.assign(t.style, { position: 'absolute', left: '140px', top: '120px' });
+      const gy = M.lab('Guyana<small>croissance record</small>', [-58.9, 4.9], 'etiq', 22, -10);
+      const T = [1, 4.8, 8.6, 12.6];
+      return lt => { G.forEach((g, i) => { const p = up(lt, T[i], .9); g[0].forEach(id => teinte(M.P[id], '#24272e', g[1], p)); show(leg.children[i], p, 14); }); show(gy, up(lt, 17.5)); teinte(M.P['328'], '#24272e', '#e8d07a', up(lt, 17.2)); };
+    }, [], { d: 22.5, fi: 1 });
+    scene(S, box => {
+      box.style.background = '#08090c';
+      const c1 = $('div', 'chiffre', '<b class="o">Guyana</b><span>la croissance la plus rapide du monde, grâce au pétrole offshore exploité depuis 2019 par ExxonMobil</span>', box); Object.assign(c1.style, { left: '200px', top: '280px' });
+      const c2 = $('div', 'chiffre', '<b class="r">Haïti</b><span>l’IDH le plus faible du continent ; des gangs contrôlent environ 90 % de Port-au-Prince</span>', box); Object.assign(c2.style, { left: '1000px', top: '280px' });
+      return lt => { show(c1, up(lt, .5, .9), 30); show(c2, up(lt, 1.6, .9), 30); };
+    }, ['L’émergence est <strong>sélective</strong> : un pays émergé, deux puissances, beaucoup de pays pauvres.'], { avant: 4.4, dernier: true, fo: 1 });
+  });
+
+  /* [18] Le Brésil */
+  sequence(18, 'Le Brésil', S => {
+    photo(S, D2 + 'brasilia-satellite.webp', [['Le Brésil', 'Plus de 210 millions d’habitants, <strong>10e PIB mondial</strong> en 2024 : multiplié par 3 depuis 2000.']], { fi: 1, credit: 'Brasília vue par satellite', a: { s: 1.03 }, b: { s: 1.12 } });
+    scene(S, box => {
+      box.style.background = '#08090c';
+      gtitre(box, 'La « ferme du monde »… et des firmes mondiales', 'Un pays « émergé »');
+      const t = $('div', 'tuiles', '<div><b>Vale</b><span>Minerai de fer</span></div><div><b>Petrobras</b><span>Énergie</span></div><div><b>JBS</b><span>1er producteur de viande au monde</span></div><div><b>Embraer</b><span>3e avionneur mondial</span></div>', box);
+      Object.assign(t.style, { top: '580px', gridTemplateColumns: 'repeat(4, 1fr)' });
+      const a = $('div', 'tuiles', '<div><b>Soja</b><span>1re culture</span></div><div><b>Café</b><span>1er exportateur mondial</span></div><div><b>Viande bovine</b><span>1er exportateur mondial</span></div><div><b>Agro-industrie</b><span>environ un quart du PIB</span></div>', box);
+      Object.assign(a.style, { top: '310px', gridTemplateColumns: 'repeat(4, 1fr)' });
+      return lt => { [...a.children].forEach((e, i) => show(e, up(lt, .6 + i * .6, .7))); [...t.children].forEach((e, i) => show(e, up(lt, 4 + i * .6, .7))); };
+    }, [], { d: 11 });
+    photo(S, P1 + 'chapitre-14/images/cop30-belem.webp', [['Belém · novembre 2025', 'La <strong>COP30</strong> en Amazonie : le Brésil se pose en leader climatique et en porte-parole des Suds.'], 'BRICS, G20, Mercosur : une diplomatie « active et altière » sous Lula.'], { a: { s: 1.04 }, b: { s: 1.13 } });
+    scene(S, box => {
+      box.style.background = '#08090c';
+      const c1 = $('div', 'chiffre', '<b class="o">~30 %</b><span>de ses exportations partent vers la Chine</span>', box); Object.assign(c1.style, { left: '200px', top: '300px' });
+      const c2 = $('div', 'chiffre', '<b>~20e</b><span>rang mondial de la Bourse de São Paulo</span>', box); Object.assign(c2.style, { left: '1000px', top: '300px' });
+      return lt => { show(c1, up(lt, .5, .9), 30); show(c2, up(lt, 1.6, .9), 30); };
+    }, ['Mais une <strong>puissance incomplète</strong> : dépendante de la Chine, financièrement secondaire, au soft power surtout régional.'], { avant: 2.6, dernier: true, fo: 1 });
+  });
+
+  /* [19] Conclusion */
+  sequence(19, 'Conclusion', S => {
+    photo(S, D2 + 'cerro-rico-potosi.webp', [['Cinq siècles après Potosí', 'Du cuivre au lithium, l’Amérique latine exporte toujours ses ressources.'], 'Le <strong>modèle exportateur</strong> est à la fois le moteur et le frein de son émergence.'], { fi: 1.2, filtre: 'brightness(.8)', a: { s: 1.14, y: -1 }, b: { s: 1.02 } });
+    scene(S, box => {
+      box.style.background = '#08090c';
+      const t = $('div', 'grand', '<span class="kick">À retenir</span><br>Riche en ressources, l’Amérique latine ne cesse d’<em>émerger</em> sans y parvenir tout à fait.', box); Object.assign(t.style, { left: '160px', right: '160px', top: '260px', fontSize: '70px' });
+      const n = $('div', 'tuiles', '<div><b>ISI</b><em>industrialiser en remplaçant les importations</em></div><div><b>Néo-extractivisme</b><em>la rente au service de la redistribution</em></div><div><b>Reprimarisation</b><em>le retour du secteur primaire</em></div><div><b>Malédiction des ressources</b><em>riches en ressources, moins développés</em></div>', box);
+      Object.assign(n.style, { top: '660px', gridTemplateColumns: 'repeat(4, 1fr)' });
+      return lt => { show(t, up(lt, .4, 1)); [...n.children].forEach((e, i) => show(e, up(lt, 3.4 + i * .7, .7))); };
+    }, [], { d: 14 });
+    scene(S, box => {
+      box.style.background = '#08090c';
+      const t = $('div', 'grand', 'ECG Prépa<small>Le cours complet, le résumé et les flashcards du chapitre sur <b style="color:#f5cf86;font-weight:400">ecg-prepa.fr</b></small>', box); Object.assign(t.style, { left: '160px', top: '380px', fontSize: '110px' });
+      return lt => show(t, up(lt, .4, 1));
+    }, [], { d: 6, fo: 1.6, dernier: true });
+  });
+
+  /* ===== Habillage commun ===== */
+  const vg = $('div', null, null, stage); vg.id = 'vignette';
+
+  const DUREE = fin;
+  function render(t) {
+    for (const s of SEQS) {
+      const on = t >= s.start && t < s.start + s.d;
+      s.el.style.display = on ? 'block' : 'none';
+      if (!on) continue;
+      const lt = t - s.start;
+      for (const l of s.layers) {
+        const vis = lt >= l.t0 && lt < l.t1;
+        l.el.style.display = vis ? 'block' : 'none';
+        if (!vis) continue;
+        l.el.style.opacity = Math.min(l.fi ? cl((lt - l.t0) / l.fi) : 1, l.fo ? cl((l.t1 - lt) / l.fo) : 1);
+        if (l.draw) l.draw(lt - l.t0, l.t1 - l.t0, lt);
+      }
+    }
+    return null;
+  }
+  function controle() {
+    const err = ERR.slice();
+    for (const s of SEQS) for (const l of s.layers) if (l.t1 <= l.t0 + .05) err.push(`séquence ${s.n} : plan vide`);
+    for (const s of SEQS) for (let x = .05; x < s.d - .45; x += .1) if (!s.layers.some(l => x >= l.t0 && x < l.t1)) { err.push(`séquence ${s.n} : aucun plan à ${x.toFixed(1)} s`); break; }
+    /* texte qui sort de l'écran ou phrase trop longue (plus de 3 lignes) */
+    for (const s of SEQS) {
+      s.el.style.display = 'block';
+      for (const l of s.layers) {
+        l.el.style.display = 'block';
+        l.el.querySelectorAll('.st span, .grand, .def, .cit, .tuiles, .plan3, .chiffre, .etiq').forEach(e => {
+          const r = e.getBoundingClientRect();
+          if (r.width && (r.right > W - 30 || r.left < 30 || r.bottom > H - 20 || r.top < 20)) err.push(`séquence ${s.n} : « ${e.textContent.slice(0, 40)} » sort du cadre`);
+          if (e.matches('.st span') && r.height > 3.4 * 56) err.push(`séquence ${s.n} : phrase sur plus de 3 lignes : « ${e.textContent.slice(0, 50)} »`);
+        });
+        l.el.style.display = 'none';
+      }
+      s.el.style.display = 'none';
+    }
+    if (/—/.test(document.body.innerText + SEQS.map(s => s.el.innerText).join(''))) err.push('tiret cadratin dans le texte');
+    return err;
+  }
+  await Promise.all(['300 40px Fraunces', 'italic 300 40px Fraunces', '400 40px Fraunces', '600 20px "Inter Tight"', '400 20px "Inter Tight"', '500 20px "Inter Tight"'].map(f => document.fonts.load(f, 'AÉé')));
+  window.VIDEO = { render, duree: DUREE, plans: SEQS.map(s => ({ n: s.n, nom: s.nom, start: s.start, dur: s.d, sp: s.nom })), controle };
+  render(0);
+})().catch(e => { window.__erreur = String(e); throw e; });
+</script>
+</body>
+</html>
