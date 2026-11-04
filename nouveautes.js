@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Chili",
+"titre": "Chili : la kétamine représente près de 90 % des saisies de drogues synthétiques en 2026",
+"url": "actualites/es/articles/chili-ketamine-saisies-drogues-synthetiques-2026.html",
+"image": "actualites/es/images/chili-ketamine-saisies-drogues-synthetiques-2026.webp",
+"date": "2026-11-04T19:09:31+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Europe",
@@ -1749,15 +1758,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/es/articles/bolivie-nouveau-felin-leopardus-tilcayo.html",
 "image": "actualites/es/images/bolivie-nouveau-felin-leopardus-tilcayo.jpg",
 "date": "2026-09-20T07:05:53+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Mexique",
-"titre": "Le Mexique célèbre le 216ᵉ anniversaire du Grito de Independencia",
-"url": "actualites/es/articles/mexique-grito-independencia.html",
-"image": "actualites/es/images/mexique-grito-independencia.webp",
-"date": "2026-09-18T20:00:18+00:00"
 },
 {
 "t": "de",
