@@ -247,7 +247,7 @@ window.ECG_NOUVEAUTES = [
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Bulgarie",
-"titre": "Bulgarie : Iliana Iotova et Andrey Gyurov se qualifient pour le second tour de la présidentielle",
+"titre": "Bulgarie : Iliana Iotova élue présidente au second tour face à Andrey Gyurov",
 "url": "actualites/monde/articles/bulgarie-presidentielle-premier-tour-iotova-gyurov-2026.html",
 "image": "actualites/monde/images/bulgarie-presidentielle-premier-tour-iotova-gyurov-2026.webp",
 "date": "2026-10-27T07:16:08+00:00"
