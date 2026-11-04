@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Europe",
+"titre": "Cyberattaques : les frigos de supermarchés visés en Europe",
+"url": "actualites/monde/articles/europe-cyberattaques-frigos-supermarches-allemagne-2026.html",
+"image": "actualites/monde/images/europe-cyberattaques-frigos-supermarches-allemagne-2026.webp",
+"date": "2026-11-04T19:03:01+00:00"
+},
+{
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne",
@@ -1290,15 +1299,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/de/articles/saxe-anhalt-rausch-president-landtag.html",
 "image": "actualites/de/images/saxe-anhalt-rausch-president-landtag.webp",
 "date": "2026-10-07T06:43:41+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Prix Nobel",
-"titre": "Nobel de physique 2026 : Francis Halzen couronné pour ses travaux sur les neutrinos",
-"url": "actualites/monde/articles/nobel-physique-2026-halzen-neutrinos.html",
-"image": "actualites/monde/images/nobel-physique-2026-halzen-neutrinos.webp",
-"date": "2026-10-07T06:39:03+00:00"
 },
 {
 "t": "en",
