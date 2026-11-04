@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
+"titre": "Sommet du numérique à Berlin : Merz veut faire de l'Allemagne un « leader » de l'IA",
+"url": "actualites/de/articles/allemagne-digital-gipfel-berlin-ia-2026.html",
+"image": "actualites/de/images/allemagne-digital-gipfel-berlin-ia-2026.webp",
+"date": "2026-11-04T18:55:11+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "Antigua-et-Barbuda",
@@ -1964,15 +1973,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "BASF en crise : le bastion chimique allemand face au déclin industriel",
 "url": "actualites/de/articles/basf-crise-industrielle.html",
 "image": "actualites/de/images/basf-crise-industrielle.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "Merz veut doter l'Ukraine d'un statut de membre associé à l'UE",
-"url": "actualites/de/articles/ukraine-membre-associe-ue.html",
-"image": "actualites/de/images/ukraine-membre-associe-ue.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
