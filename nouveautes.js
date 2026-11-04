@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "États-Unis",
+"titre": "Midterms : les démocrates reprennent le Congrès et infligent un revers majeur à Trump",
+"url": "actualites/en/articles/us-midterms-democrats-congress-2026.html",
+"image": "actualites/en/images/us-midterms-democrats-congress-2026.webp",
+"date": "2026-11-04T19:27:50+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Chili",
@@ -1659,15 +1668,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/en/articles/uk-national-centre-information-defence-2026.html",
 "image": "actualites/en/images/uk-national-centre-information-defence-2026.webp",
 "date": "2026-09-24T20:25:41+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "Assemblée générale de l'ONU : une 81e session sur fond de crise financière et de tensions",
-"url": "actualites/en/articles/assemblee-generale-onu-2026.html",
-"image": "actualites/en/images/assemblee-generale-onu-2026.webp",
-"date": "2026-09-23T19:17:35+00:00"
 },
 {
 "t": "es",
