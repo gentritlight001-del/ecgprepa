@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "Antigua-et-Barbuda",
+"titre": "Commonwealth : au sommet d'Antigua, le roi exprime sa « tristesse » sur la traite, sans excuses",
+"url": "actualites/en/articles/commonwealth-chogm-antigua-barbuda-2026.html",
+"image": "actualites/en/images/commonwealth-chogm-antigua-barbuda-2026.webp",
+"date": "2026-11-04T18:45:45+00:00"
+},
+{
 "t": "cg",
 "rubrique": "Culture générale",
 "meta": "Société",
@@ -1677,15 +1686,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/de/articles/reunion-fraction-cdu-csu.html",
 "image": "actualites/de/images/reunion-fraction-cdu-csu.webp",
 "date": "2026-09-23T19:17:35+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "Donald Trump annonce la création d'une « AI Force » et la nomination prochaine d'un « AI Czar »",
-"url": "actualites/en/articles/trump-ai-force-czar-2026.html",
-"image": "actualites/en/images/trump-ai-force-czar-2026.jpg",
-"date": "2026-09-21T19:18:06+00:00"
 },
 {
 "t": "es",
