@@ -165,6 +165,21 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   `canonical` et la description, **mais garder** `<link rel="stylesheet" href="../../../barre-section.css">`
   (juste après le `</style>`) : sans elle, la barre du haut perd son habillage noir et son filet. Le
   lien « ← Tous les articles » de `a-fin` mène à `tous-<code>.html` de l'édition.
+- **Fiche d'actualité** (maquette validée par le propriétaire, novembre 2026) : à l'arrivée sur un article a-page,
+  le lecteur voit d'abord une fiche de 2 minutes, construite toute seule par `actualites/fiche-article.js`
+  (+ `fiche-article.css`) à partir des blocs de l'article : tags `t0`/`t1`, `a-meta`, `a-titre` ; à gauche
+  `a-essentiel` puis l'analyse entière ; à droite `a-hero-img`, `a-chiffres`, puis un bloc qui remplit la hauteur
+  restante (bouton « Lire l'article complet » et lien vidéo) ; chronologie (4 dates), « Dans une copie » (accroche,
+  idée-force, sujets, piège), « ← Tous les articles » et `a-cours`. Le script équilibre seul les deux colonnes (photo
+  plus panoramique, chiffres sur deux colonnes) : pas de vide. « Lire l'article complet » ouvre l'article entier
+  (`#article-complet`) ; une ancre ou une arrivée par la recherche ouvre directement l'article. Rien à rédiger en plus :
+  garder ces classes, `<link rel="stylesheet" href="../../fiche-article.css">` après `barre-section.css` et
+  `<script src="../../fiche-article.js"></script>` en fin de `<body>` (dans le gabarit). **Vidéo** : pour chaque nouvel
+  article, chercher une vidéo YouTube récente sur le sujet, d'une chaîne d'information sérieuse (France 24, AFP, EFE,
+  tagesschau, ZDF, BBC, CBC, RTVE, euronews, Reuters…, jamais une chaîne d'agrégation ou sensationnaliste), vérifier
+  titre et chaîne avec `curl -s "https://www.youtube.com/oembed?url=https://youtu.be/<id>&format=json"`, et l'ajouter
+  juste après le `<title>` : `<meta name="fiche-video" content="https://youtu.be/<id>" data-titre="<titre exact, sans
+  le suffixe de la chaîne>" data-chaine="<chaîne>">`. Sans vidéo fiable, ne rien mettre (le bloc garde le bouton seul).
 - **Ordre des blocs**, dans chaque langue :
   1. Barre `sn sn-actu` (fil d'Ariane : Accueil / Actualité / édition / pays / sujet court), puis `a-filet`.
   2. Héros `a-hero` : tags `a-tag` (`t0` le pays, `t1` le thème, puis 1 ou 2 mots-clés), titre `a-titre`,
@@ -236,10 +251,8 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   - « Accroche » (`a-accroche`) : un paragraphe prêt à recopier, qui part d'un fait daté et vérifié de
     l'article et finit sur la question qu'il pose. Pas de bouton « Copier ».
   - « Idée-force » : l'argument que l'article permet de défendre.
-  - « Sujets où la placer » : 3 sujets de dissertation plausibles, chacun suivi entre parenthèses de la
-    **matière du cours** en rapport avec son thème : HGG, ESH, philo, Humanité, anglais, espagnol ou
-    allemand. **Jamais « culture générale »** : c'est trop vague, il faut dire dans quelle matière le sujet
-    tombe (on varie les matières d'un sujet à l'autre quand le thème s'y prête).
+  - « Sujets où la placer » : 3 sujets de dissertation plausibles, variés (thèmes d'HGG, d'ESH, de philo,
+    de langue…), **sans matière entre parenthèses** (retirées à la demande du propriétaire, novembre 2026).
   - « Piège à éviter » (`a-piege`, fond rose) : l'erreur de fait ou d'interprétation à ne pas commettre,
     avec le bon chiffre.
   C'est le seul endroit de l'article où le ton scolaire est permis.
