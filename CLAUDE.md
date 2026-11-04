@@ -40,6 +40,9 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   `/opt/pw-browsers/chromium`. Remplacer `auth.js` par un script vide (sinon redirection
   vers la connexion).
 - Fichiers temporaires dans le scratchpad de la session, jamais dans le dépôt.
+- **Nouvelle mise en page ou refonte d'un gabarit : maquette d'abord** (toile Design), et rien n'est mis en ligne
+  avant que le propriétaire l'ait validée (une fiche d'actualité mise en ligne sans validation, novembre 2026, a été
+  retirée). La mise en ligne directe de la section 2 vaut pour le contenu, pas pour un nouveau design.
 - **Refonte d'une page : homogénéiser.** La nouvelle version remplace l'ancienne **sous le même nom de
   fichier** (jamais de copie à côté), pour que tous les liens et fils d'Ariane du site restent bons. Une
   ancienne page intermédiaire devenue inutile n'est pas supprimée : elle devient une page de renvoi
@@ -162,14 +165,6 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   `canonical` et la description, **mais garder** `<link rel="stylesheet" href="../../../barre-section.css">`
   (juste après le `</style>`) : sans elle, la barre du haut perd son habillage noir et son filet. Le
   lien « ← Tous les articles » de `a-fin` mène à `tous-<code>.html` de l'édition.
-- **Fiche d'actualité** (choisie par le propriétaire, novembre 2026) : à l'arrivée sur un article a-page, le lecteur
-  voit d'abord une fiche de 2 minutes, construite toute seule par `actualites/fiche-article.js` (+ `fiche-article.css`)
-  à partir des blocs de l'article : tags `t0`/`t1`, `a-titre`, `a-meta`, `a-hero-img`, `a-essentiel`, `a-chiffres`,
-  premier paragraphe de `a-analyse`, 4 premières dates de `a-chrono`, `a-copie-grille`, `a-cours`. Bouton « Lire
-  l'article complet » (adresse `#article-complet`, le Retour du navigateur ramène à la fiche) ; un lien avec ancre ou
-  une arrivée depuis la recherche ouvre l'article complet. Une fiche par section de langue. Rien à écrire : garder ces
-  classes, et dans le `<head>` `<link rel="stylesheet" href="../../fiche-article.css">` (après `barre-section.css`),
-  en fin de `<body>` `<script src="../../fiche-article.js"></script>` (déjà dans le gabarit).
 - **Ordre des blocs**, dans chaque langue :
   1. Barre `sn sn-actu` (fil d'Ariane : Accueil / Actualité / édition / pays / sujet court), puis `a-filet`.
   2. Héros `a-hero` : tags `a-tag` (`t0` le pays, `t1` le thème, puis 1 ou 2 mots-clés), titre `a-titre`,
