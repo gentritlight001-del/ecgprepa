@@ -179,11 +179,18 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   `ap-title`, les phrases de `ap-intro` (« L'essentiel »), `ap-ctx` (l'analyse), `ap-stat`, `ap-tl` (4 dates les plus
   récentes) et, s'il reste de la place à droite, les repères `ap-fact` ; pas de « Dans une copie » pour eux. Photo absente
   ou cassée : il prend `../images/<slug>.webp` (l'image de la carte). **Vidéo** : pour chaque nouvel
-  article, chercher une vidéo YouTube récente sur le sujet, d'une chaîne d'information sérieuse (France 24, AFP, EFE,
-  tagesschau, ZDF, BBC, CBC, RTVE, euronews, Reuters…, jamais une chaîne d'agrégation ou sensationnaliste), vérifier
+  article, chercher une vidéo YouTube récente sur le sujet (`python3 outils/chercher-video.py "<mots>"` : la recherche web ne
+  renvoie pas de vidéos), d'une chaîne d'information sérieuse (France 24, AFP, AP, EFE,
+  tagesschau, ZDF, BBC, CBC, CNA, RTVE, euronews, Reuters…, jamais une chaîne d'agrégation ou sensationnaliste), vérifier
   titre et chaîne avec `curl -s "https://www.youtube.com/oembed?url=https://youtu.be/<id>&format=json"`, et l'ajouter
   juste après le `<title>` : `<meta name="fiche-video" content="https://youtu.be/<id>" data-titre="<titre exact, sans
-  le suffixe de la chaîne>" data-chaine="<chaîne>">`. Sans vidéo fiable, ne rien mettre (le bloc garde le bouton seul).
+  le suffixe de la chaîne>" data-chaine="<chaîne>">`. L'image de la vidéo (vignette YouTube) s'affiche dans le bloc quand
+  la colonne de droite a de la place (analyse longue à gauche). **Sans vidéo fiable, mettre à la place un lien vers un
+  article de référence** (presse sérieuse : The Guardian, BBC, Reuters, AFP, Le Monde…, une page lue et vérifiée, jamais
+  une adresse devinée), juste après le `<title>` : `<meta name="fiche-lien" content="https://…" data-titre="<titre exact
+  de l'article>" data-source="<média>">` ; la fiche l'affiche sous « À lire · <média> ». Si le média est inaccessible
+  (le Guardian est bloqué pour les outils de la session), prendre un autre article de référence ou demander l'adresse au
+  propriétaire. Sans vidéo ni article fiable, ne rien mettre (le bloc garde le bouton seul).
 - **Ordre des blocs**, dans chaque langue :
   1. Barre `sn sn-actu` (fil d'Ariane : Accueil / Actualité / édition / pays / sujet court), puis `a-filet`.
   2. Héros `a-hero` : tags `a-tag` (`t0` le pays, `t1` le thème, puis 1 ou 2 mots-clés), titre `a-titre`,

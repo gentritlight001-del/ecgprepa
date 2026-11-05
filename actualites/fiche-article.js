@@ -16,7 +16,9 @@
    puis l'analyse ; à droite la photo, les chiffres et un bloc qui
    remplit la hauteur restante (« Lire l'article complet » et, si
    l'article en a une, la vidéo : <meta name="fiche-video"
-   content="https://youtu.be/…" data-titre="…" data-chaine="…">) ;
+   content="https://youtu.be/…" data-titre="…" data-chaine="…">, sinon
+   un lien vers un article de référence : <meta name="fiche-lien"
+   content="https://…" data-titre="…" data-source="…">) ;
    chronologie (4 dates, la plus récente à gauche) ; « Dans une
    copie » ; retour à la liste et cours à réviser.
    « Lire l'article complet » affiche l'article entier (adresse
@@ -35,10 +37,10 @@
 
   var ANCRE = 'article-complet';
   var T = {
-    fr: { reperes: 'Rep\u00e8res', fiche: 'Fiche de 2 min', ess: 'L’essentiel', analyse: 'L’analyse', complet: 'Lire l’article complet', video: 'En vidéo', retour: '← Revenir à la fiche', reviser: 'Réviser : ', copie: 'Dans une copie', chrono: 'Chronologie', tous: '← Tous les articles' },
-    en: { reperes: 'Key facts', fiche: '2-minute fact sheet', ess: 'The essentials', analyse: 'Analysis', complet: 'Read the full article', video: 'Video', retour: '← Back to the fact sheet', reviser: 'Revise: ', copie: 'In an essay', chrono: 'Timeline', tous: '← All articles' },
-    es: { reperes: 'Datos clave', fiche: 'Ficha de 2 min', ess: 'Lo esencial', analyse: 'El análisis', complet: 'Leer el artículo completo', video: 'En vídeo', retour: '← Volver a la ficha', reviser: 'Repasar: ', copie: 'En una redacción', chrono: 'Cronología', tous: '← Todos los artículos' },
-    de: { reperes: 'Eckdaten', fiche: '2-Minuten-Überblick', ess: 'Das Wichtigste', analyse: 'Die Analyse', complet: 'Den ganzen Artikel lesen', video: 'Im Video', retour: '← Zurück zum Überblick', reviser: 'Wiederholen: ', copie: 'Im Aufsatz', chrono: 'Chronologie', tous: '← Alle Artikel' }
+    fr: { reperes: 'Rep\u00e8res', fiche: 'Fiche de 2 min', ess: 'L’essentiel', analyse: 'L’analyse', complet: 'Lire l’article complet', video: 'En vidéo', lire: 'À lire', retour: '← Revenir à la fiche', reviser: 'Réviser : ', copie: 'Dans une copie', chrono: 'Chronologie', tous: '← Tous les articles' },
+    en: { reperes: 'Key facts', fiche: '2-minute fact sheet', ess: 'The essentials', analyse: 'Analysis', complet: 'Read the full article', video: 'Video', lire: 'Read', retour: '← Back to the fact sheet', reviser: 'Revise: ', copie: 'In an essay', chrono: 'Timeline', tous: '← All articles' },
+    es: { reperes: 'Datos clave', fiche: 'Ficha de 2 min', ess: 'Lo esencial', analyse: 'El análisis', complet: 'Leer el artículo completo', video: 'En vídeo', lire: 'Para leer', retour: '← Volver a la ficha', reviser: 'Repasar: ', copie: 'En una redacción', chrono: 'Cronología', tous: '← Todos los artículos' },
+    de: { reperes: 'Eckdaten', fiche: '2-Minuten-Überblick', ess: 'Das Wichtigste', analyse: 'Die Analyse', complet: 'Den ganzen Artikel lesen', video: 'Im Video', lire: 'Zum Lesen', retour: '← Zurück zum Überblick', reviser: 'Wiederholen: ', copie: 'Im Aufsatz', chrono: 'Chronologie', tous: '← Alle Artikel' }
   };
 
   function el(tag, cls, html) {
@@ -73,6 +75,14 @@
     url: metaVideo.getAttribute('content'),
     titre: metaVideo.getAttribute('data-titre') || '',
     chaine: metaVideo.getAttribute('data-chaine') || ''
+  } : null;
+
+  /* Sans vidéo : lien vers un article de référence */
+  var metaLien = document.querySelector('meta[name="fiche-lien"]');
+  var articleLien = !video && metaLien && /^https:\/\/[^\s"<>]+$/.test(metaLien.getAttribute('content') || '') ? {
+    url: metaLien.getAttribute('content'),
+    titre: metaLien.getAttribute('data-titre') || '',
+    source: metaLien.getAttribute('data-source') || ''
   } : null;
 
   /* ── Ancien gabarit : phrases du chapô ── */
@@ -373,6 +383,17 @@
       ajout(tv, 'span', 'fx-video-titre', video.titre);
       lv.appendChild(tv);
       plus.appendChild(lv);
+    } else if (articleLien) {
+      var la = el('a', 'fx-video sans-vignette');
+      la.href = articleLien.url;
+      la.target = '_blank';
+      la.rel = 'noopener';
+      la.appendChild(el('span', 'fx-lecture', '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l5 5v13H6z M14 3v6h6" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 13h8M9 17h8" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>'));
+      var ta = el('span', 'fx-video-txt');
+      ajout(ta, 'span', 'fx-video-lab', t.lire + (articleLien.source ? ' · ' + articleLien.source : ''));
+      ajout(ta, 'span', 'fx-video-titre', articleLien.titre);
+      la.appendChild(ta);
+      plus.appendChild(la);
     }
     droite.appendChild(plus);
 
