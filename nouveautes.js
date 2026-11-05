@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Bangladesh",
+"titre": "Bangladesh : le salaire minimum du textile",
+"url": "actualites/monde/articles/bangladesh-textile-salaire-minimum-conseil-2026.html",
+"image": "actualites/monde/images/bangladesh-textile-salaire-minimum-conseil-2026.webp",
+"date": "2026-11-05T20:59:30+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Hongrie",
 "titre": "Hongrie : les archives de la police secrète communiste ouvertes",
 "url": "actualites/monde/articles/hongrie-archives-police-secrete-communiste-2026.html",
@@ -1317,15 +1326,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/monde/articles/nobel-chimie-2026-kagan-soai.html",
 "image": "actualites/monde/images/nobel-chimie-2026-kagan-soai.webp",
 "date": "2026-10-08T18:03:48+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "France",
-"titre": "Air Liquide lance son premier rachat d'actions, 4 milliards d'euros, dans son plan BEYOND",
-"url": "actualites/monde/articles/air-liquide-rachat-actions-4-milliards.html",
-"image": "actualites/monde/images/air-liquide-rachat-actions-4-milliards.webp",
-"date": "2026-10-08T17:56:08+00:00"
 },
 {
 "t": "de",
