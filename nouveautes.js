@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Hongrie",
+"titre": "Hongrie : les archives de la police secrète communiste ouvertes",
+"url": "actualites/monde/articles/hongrie-archives-police-secrete-communiste-2026.html",
+"image": "actualites/monde/images/hongrie-archives-police-secrete-communiste-2026.webp",
+"date": "2026-11-05T20:52:24+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "Royaume-Uni",
@@ -1317,15 +1326,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/monde/articles/air-liquide-rachat-actions-4-milliards.html",
 "image": "actualites/monde/images/air-liquide-rachat-actions-4-milliards.webp",
 "date": "2026-10-08T17:56:08+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Israël / Gaza",
-"titre": "7 octobre : trois ans après, Israël commémore entre cessez-le-feu bloqué et élections",
-"url": "actualites/monde/articles/israel-7-octobre-troisieme-anniversaire.html",
-"image": "actualites/monde/images/israel-7-octobre-troisieme-anniversaire.webp",
-"date": "2026-10-08T17:49:00+00:00"
 },
 {
 "t": "de",
