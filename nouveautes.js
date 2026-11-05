@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "es",
 "rubrique": "Actu Espagnol",
+"meta": "Espagne",
+"titre": "Espagne : ouverture de la XXX Cumbre Iberoamericana",
+"url": "actualites/es/articles/espagne-cumbre-iberoamericana-madrid-ouverture-2026.html",
+"image": "actualites/es/images/espagne-cumbre-iberoamericana-madrid-ouverture-2026.webp",
+"date": "2026-11-05T20:29:37+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
 "meta": "Pérou",
 "titre": "Pérou : stérilisations forcées, l'affaire classée",
 "url": "actualites/es/articles/perou-sterilisations-forcees-classement-2026.html",
@@ -1749,15 +1758,6 @@ window.ECG_NOUVEAUTES = [
 "url": "deuxieme_annee/hgg/chapitre-1-hgg.html",
 "image": "deuxieme_annee/hgg/images/ameriques-mediterranee-americaine.webp",
 "date": "2026-09-21T19:18:06+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Espagne",
-"titre": "Espagne : la dette publique passée en dessous des 100% du PIB",
-"url": "actualites/es/articles/dette-publique-espagne-sous-100-pib.html",
-"image": "actualites/es/images/dette-publique-espagne-sous-100-pib.jpg",
-"date": "2026-09-20T07:05:53+00:00"
 },
 {
 "t": "de",
