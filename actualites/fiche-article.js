@@ -18,7 +18,7 @@
    l'article en a une, la vidéo : <meta name="fiche-video"
    content="https://youtu.be/…" data-titre="…" data-chaine="…">, sinon
    un lien vers un article de référence : <meta name="fiche-lien"
-   content="https://…" data-titre="…" data-source="…">) ;
+   content="https://…" data-titre="…" data-source="…" data-image="…" facultatif) ;
    chronologie (4 dates, la plus récente à gauche) ; « Dans une
    copie » ; retour à la liste et cours à réviser.
    « Lire l'article complet » affiche l'article entier (adresse
@@ -82,7 +82,8 @@
   var articleLien = !video && metaLien && /^https:\/\/[^\s"<>]+$/.test(metaLien.getAttribute('content') || '') ? {
     url: metaLien.getAttribute('content'),
     titre: metaLien.getAttribute('data-titre') || '',
-    source: metaLien.getAttribute('data-source') || ''
+    source: metaLien.getAttribute('data-source') || '',
+    image: /^(https:\/\/|\.\.\/)[^\s"<>]+$/.test(metaLien.getAttribute('data-image') || '') ? metaLien.getAttribute('data-image') : ''
   } : null;
 
   /* ── Ancien gabarit : phrases du chapô ── */
@@ -384,10 +385,21 @@
       lv.appendChild(tv);
       plus.appendChild(lv);
     } else if (articleLien) {
-      var la = el('a', 'fx-video sans-vignette');
+      var la = el('a', 'fx-video' + (articleLien.image ? '' : ' sans-vignette'));
       la.href = articleLien.url;
       la.target = '_blank';
       la.rel = 'noopener';
+      /* Image de l'article (data-image : fichier du site), affichée comme la vignette d'une vidéo quand il y a de la place */
+      if (articleLien.image) {
+        var vga = el('span', 'fx-vignette');
+        var via = el('img');
+        via.alt = '';
+        via.loading = 'lazy';
+        via.addEventListener('error', function () { la.classList.add('sans-vignette'); la.classList.remove('avec-vignette'); equilibrer(); });
+        via.src = articleLien.image;
+        vga.appendChild(via);
+        la.appendChild(vga);
+      }
       la.appendChild(el('span', 'fx-lecture', '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l5 5v13H6z M14 3v6h6" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 13h8M9 17h8" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>'));
       var ta = el('span', 'fx-video-txt');
       ajout(ta, 'span', 'fx-video-lab', t.lire + (articleLien.source ? ' · ' + articleLien.source : ''));
@@ -546,9 +558,9 @@
         lien.classList.add('avec-vignette');
         var exces = vide(g);
         if (exces > 4) {
-          /* Pas assez de place en 16:9 : la vignette se fait plus panoramique (2,4:1 au plus), sinon elle disparaît */
+          /* Pas assez de place en 16:9 : la vignette se fait plus panoramique (3:1 au plus), sinon elle disparaît */
           var h0 = vgn.getBoundingClientRect().height, l0 = vgn.getBoundingClientRect().width;
-          var h1 = Math.round(Math.max(l0 / 2.4, h0 - exces));
+          var h1 = Math.round(Math.max(l0 / 3, h0 - exces));
           vgn.style.aspectRatio = 'auto'; vgn.style.height = h1 + 'px';
           if (vide(g) > 4) { lien.classList.remove('avec-vignette'); vgn.style.height = ''; vgn.style.aspectRatio = ''; }
         }

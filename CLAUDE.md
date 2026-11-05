@@ -188,7 +188,9 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   la colonne de droite a de la place (analyse longue à gauche). **Sans vidéo fiable, mettre à la place un lien vers un
   article de référence** (presse sérieuse : The Guardian, BBC, Reuters, AFP, Le Monde…, une page lue et vérifiée, jamais
   une adresse devinée), juste après le `<title>` : `<meta name="fiche-lien" content="https://…" data-titre="<titre exact
-  de l'article>" data-source="<média>">` ; la fiche l'affiche sous « À lire · <média> ». Si le média est inaccessible
+  de l'article>" data-source="<média>">` ; la fiche l'affiche sous « À lire · <média> ». Facultatif :
+  `data-image="../images/<slug>-lien.webp"` (image de l'article, WebP enregistré sur le site, 1600 px au plus), affichée
+  comme la vignette d'une vidéo quand la colonne de droite a de la place. Si le média est inaccessible
   (le Guardian est bloqué pour les outils de la session), prendre un autre article de référence ou demander l'adresse au
   propriétaire. Sans vidéo ni article fiable, ne rien mettre (le bloc garde le bouton seul).
 - **Ordre des blocs**, dans chaque langue :
