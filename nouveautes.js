@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Pérou",
+"titre": "Pérou : stérilisations forcées, l'affaire classée",
+"url": "actualites/es/articles/perou-sterilisations-forcees-classement-2026.html",
+"image": "actualites/es/images/perou-sterilisations-forcees-classement-2026.webp",
+"date": "2026-11-05T20:21:06+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "États-Unis",
@@ -1748,15 +1757,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Espagne : la dette publique passée en dessous des 100% du PIB",
 "url": "actualites/es/articles/dette-publique-espagne-sous-100-pib.html",
 "image": "actualites/es/images/dette-publique-espagne-sous-100-pib.jpg",
-"date": "2026-09-20T07:05:53+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Bolivie",
-"titre": "Bolivie : le tilcayo, premier nouveau félin décrit depuis un siècle, sort des forêts des Yungas",
-"url": "actualites/es/articles/bolivie-nouveau-felin-leopardus-tilcayo.html",
-"image": "actualites/es/images/bolivie-nouveau-felin-leopardus-tilcayo.jpg",
 "date": "2026-09-20T07:05:53+00:00"
 },
 {
