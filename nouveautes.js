@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Singapour",
+"titre": "Singapour : la loi sur la brume durcie",
+"url": "actualites/monde/articles/singapour-loi-pollution-transfrontaliere-2026.html",
+"image": "actualites/monde/images/singapour-loi-pollution-transfrontaliere-2026.webp",
+"date": "2026-11-05T21:05:20+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Bangladesh",
 "titre": "Bangladesh : le salaire minimum du textile",
 "url": "actualites/monde/articles/bangladesh-textile-salaire-minimum-conseil-2026.html",
@@ -1317,15 +1326,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/monde/articles/nvidia-double-bourse-paris.html",
 "image": "actualites/monde/images/nvidia-double-bourse-paris.webp",
 "date": "2026-10-08T18:47:24+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Prix Nobel",
-"titre": "Nobel de chimie 2026 : Henri Kagan et Kenso Soai couronnés pour les molécules « miroir »",
-"url": "actualites/monde/articles/nobel-chimie-2026-kagan-soai.html",
-"image": "actualites/monde/images/nobel-chimie-2026-kagan-soai.webp",
-"date": "2026-10-08T18:03:48+00:00"
 },
 {
 "t": "de",
