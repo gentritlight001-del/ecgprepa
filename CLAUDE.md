@@ -174,7 +174,11 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   plus panoramique, chiffres sur deux colonnes) : pas de vide. « Lire l'article complet » ouvre l'article entier
   (`#article-complet`) ; une ancre ou une arrivée par la recherche ouvre directement l'article. Rien à rédiger en plus :
   garder ces classes, `<link rel="stylesheet" href="../../fiche-article.css">` après `barre-section.css` et
-  `<script src="../../fiche-article.js"></script>` en fin de `<body>` (dans le gabarit). **Vidéo** : pour chaque nouvel
+  `<script src="../../fiche-article.js"></script>` en fin de `<body>` (dans le gabarit). **Tous les articles du site** ont
+  la fiche (novembre 2026), y compris les anciens au gabarit `ap-main`/`ap-card` : le script y lit `ap-tag`, `ap-date`,
+  `ap-title`, les phrases de `ap-intro` (« L'essentiel »), `ap-ctx` (l'analyse), `ap-stat`, `ap-tl` (4 dates les plus
+  récentes) et, s'il reste de la place à droite, les repères `ap-fact` ; pas de « Dans une copie » pour eux. Photo absente
+  ou cassée : il prend `../images/<slug>.webp` (l'image de la carte). **Vidéo** : pour chaque nouvel
   article, chercher une vidéo YouTube récente sur le sujet, d'une chaîne d'information sérieuse (France 24, AFP, EFE,
   tagesschau, ZDF, BBC, CBC, RTVE, euronews, Reuters…, jamais une chaîne d'agrégation ou sensationnaliste), vérifier
   titre et chaîne avec `curl -s "https://www.youtube.com/oembed?url=https://youtu.be/<id>&format=json"`, et l'ajouter
