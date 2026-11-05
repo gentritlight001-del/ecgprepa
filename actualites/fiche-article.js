@@ -356,6 +356,17 @@
       lv.href = video.url;
       lv.target = '_blank';
       lv.rel = 'noopener';
+      /* Vignette de la vidéo (image YouTube), affichée quand la colonne de droite a de la place */
+      var idVideo = video.url.split('/').pop();
+      var vg = el('span', 'fx-vignette');
+      var vi = el('img');
+      vi.alt = '';
+      vi.loading = 'lazy';
+      vi.addEventListener('error', function () { lv.classList.add('sans-vignette'); lv.classList.remove('avec-vignette'); equilibrer(); });
+      vi.src = 'https://i.ytimg.com/vi/' + idVideo + '/hqdefault.jpg';
+      vg.appendChild(vi);
+      vg.appendChild(el('span', 'fx-vignette-lecture', '<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="#fff"/></svg>'));
+      lv.appendChild(vg);
       lv.appendChild(el('span', 'fx-lecture', '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="#fff"/></svg>'));
       var tv = el('span', 'fx-video-txt');
       ajout(tv, 'span', 'fx-video-lab', t.video + (video.chaine ? ' · ' + video.chaine : ''));
@@ -489,7 +500,11 @@
       if (ch && ch.parentNode === g) d.insertBefore(ch, d.querySelector('.fx-plus'));
       g.classList.remove('avec-chiffres');
       if (ph) ph.style.height = '';
-      if (getComputedStyle(g).display === 'contents') return;
+      var lien = d.querySelector('.fx-video');
+      var vgn = lien && lien.querySelector('.fx-vignette');
+      if (lien) lien.classList.remove('avec-vignette');
+      if (vgn) { vgn.style.height = ''; vgn.style.aspectRatio = ''; }
+      if (getComputedStyle(g).display === 'contents') { if (lien && !lien.classList.contains('sans-vignette')) lien.classList.add('avec-vignette'); return; }
       var v = vide(g);
       if (v > 4 && ph) { reduirePhoto(ph, v); v = vide(g); }
       if (v > 4) {
@@ -504,6 +519,18 @@
         g.appendChild(ch);
         g.classList.add('avec-chiffres');
         v = vide(g);
+      }
+      /* Colonne de droite plus courte que l'analyse : la vignette de la vidéo occupe la place, si elle tient */
+      if (lien && !lien.classList.contains('sans-vignette') && v <= 4) {
+        lien.classList.add('avec-vignette');
+        var exces = vide(g);
+        if (exces > 4) {
+          /* Pas assez de place en 16:9 : la vignette se fait plus panoramique (2,4:1 au plus), sinon elle disparaît */
+          var h0 = vgn.getBoundingClientRect().height, l0 = vgn.getBoundingClientRect().width;
+          var h1 = Math.round(Math.max(l0 / 2.4, h0 - exces));
+          vgn.style.aspectRatio = 'auto'; vgn.style.height = h1 + 'px';
+          if (vide(g) > 4) { lien.classList.remove('avec-vignette'); vgn.style.height = ''; vgn.style.aspectRatio = ''; }
+        }
       }
       /* Bloc des liens très haut (pas de vidéo) : les repères de l'article s'y ajoutent, s'ils tiennent */
       var rep = d.querySelector('.fx-reperes'), plus = d.querySelector('.fx-plus');
