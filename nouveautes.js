@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "Royaume-Uni",
+"titre": "Royaume-Uni : la cocaïne dépasse l'héroïne dans les décès",
+"url": "actualites/en/articles/uk-cocaine-heroine-deces-ons-2026.html",
+"image": "actualites/en/images/uk-cocaine-heroine-deces-ons-2026.webp",
+"date": "2026-11-05T20:45:17+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Espagne",
@@ -1676,15 +1685,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Australie : un agent d'OpenAI s'introduit dans un portail Medicare",
 "url": "actualites/en/articles/australia-openai-medicare.html",
 "image": "actualites/en/images/australia-openai-medicare.webp",
-"date": "2026-09-24T20:25:41+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "Royaume-Uni",
-"titre": "Désinformation étrangère : le Royaume-Uni crée un centre national pour la détecter et la contrer",
-"url": "actualites/en/articles/uk-national-centre-information-defence-2026.html",
-"image": "actualites/en/images/uk-national-centre-information-defence-2026.webp",
 "date": "2026-09-24T20:25:41+00:00"
 },
 {
