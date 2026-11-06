@@ -959,7 +959,7 @@ demande directe), sans poser de question jusqu'à la mise en ligne :
 
 Les cours de civilisation (`deuxieme_annee/langues/<langue>/<pays>/civi-*.html`) passent un à un du vieux
 gabarit sombre (« TEMPLATE UNIVERSEL v1 ») au gabarit clair « Manuel », choisi par le propriétaire. Déjà
-faits : Royaume-Uni chapitres 1 (histoire), 2 (système politique), 3 (Brexit), 4 (monarchie) et 5 (santé), Espagne chapitre 1 (histoire,
+faits : Royaume-Uni chapitres 1 (histoire), 2 (système politique), 3 (Brexit), 4 (monarchie), 5 (santé) et 6 (Welfare State), Espagne chapitre 1 (histoire,
 novembre 2026 ; images `Espagne/images/histoire-*.webp`, fiche `outils/fiche-civi/civi-esp-1.html`, en-tête rouge sombre `#7a1c17`) : s'en inspirer. Demande type :
 « Fais le chapitre sur … » + lien de la vidéo.
 
