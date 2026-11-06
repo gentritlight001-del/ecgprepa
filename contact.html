@@ -57,6 +57,7 @@ label{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.12em;text-
 input,textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.95rem;padding:14px 16px}
 textarea{min-height:170px;resize:vertical}
 input:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:0}
+.piege{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 #erreurForm{display:none;color:var(--danger);font-size:.85rem}
 #envoyer{align-self:flex-start;font-size:.95rem;padding:16px 30px;min-height:44px}
 #envoyer:disabled{opacity:.6;cursor:wait}
@@ -141,6 +142,7 @@ footer{border-top:1px solid var(--border);padding:28px 48px;display:flex;flex-wr
         <label for="message">Message</label>
         <textarea id="message" name="message" required placeholder="Décris ta demande le plus précisément possible…"></textarea>
       </div>
+      <div class="piege" aria-hidden="true"><label for="site">Ne pas remplir</label><input type="text" id="site" name="site" tabindex="-1" autocomplete="off"></div>
       <div id="erreurForm"></div>
       <button type="submit" class="pill" id="envoyer">Envoyer le message</button>
       <div class="note">Le message part directement depuis cette page, sans messagerie à configurer. Si l'envoi échoue, on te propose d'écrire à <strong>contact@ecg-prepa.fr</strong> depuis ton logiciel de mail.</div>
@@ -165,8 +167,11 @@ footer{border-top:1px solid var(--border);padding:28px 48px;display:flex;flex-wr
 
 <script>
 (function(){
-  /* Adresse de contact : à remplacer par la vraie adresse avant mise en ligne. */
+  /* Le message part par la fonction Edge « contact » (supabase/functions/contact) :
+     enregistré dans messages_contact puis envoyé par mail au propriétaire. */
   var ADRESSE_CONTACT = 'contact@ecg-prepa.fr';
+  var FONCTION_CONTACT = 'https://oeityryyejvrawjqiesm.supabase.co/functions/v1/contact';
+  var CLE_PUBLIQUE = 'sb_publishable_WMbiOSphqsGlOaAaGvmpfQ_hbOzAD_z';
 
   var motifs = document.querySelectorAll('.motif');
   var champMotif = document.getElementById('motif');
@@ -180,7 +185,7 @@ footer{border-top:1px solid var(--border);padding:28px 48px;display:flex;flex-wr
 
   function ouvrirMessagerie(motif, email, message) {
     var sujet = '[ECG Prépa] ' + motif;
-    var corps = message + (email ? '\n\n— répondre à : ' + email : '');
+    var corps = message + (email ? '\n\nRépondre à : ' + email : '');
     var lien = 'mailto:' + encodeURIComponent(ADRESSE_CONTACT) +
       '?subject=' + encodeURIComponent(sujet) +
       '&body=' + encodeURIComponent(corps);
@@ -202,31 +207,37 @@ footer{border-top:1px solid var(--border);padding:28px 48px;display:flex;flex-wr
     bouton.disabled = true;
     bouton.textContent = 'Envoi…';
 
-    if (!window.ECGAuth || !ECGAuth.client) {
-      bouton.disabled = false;
-      bouton.textContent = 'Envoyer le message';
-      ouvrirMessagerie(motif, email, message);
-      return;
-    }
-
-    ECGAuth.client().then(function (c) {
-      return c.from('messages_contact').insert({
+    fetch(FONCTION_CONTACT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: CLE_PUBLIQUE },
+      body: JSON.stringify({
         motif: motif,
         email: email,
         message: message,
-        page_origine: location.pathname
-      });
+        page_origine: location.pathname,
+        site: document.getElementById('site').value
+      })
     }).then(function (r) {
-      if (r.error) throw r.error;
+      return r.json().catch(function () { return {}; }).then(function (d) {
+        if (r.status === 429 || r.status === 400) {
+          var err = new Error(d.erreur || 'Message refusé.'); err.affiche = true; throw err;
+        }
+        if (!r.ok || !d.ok) throw new Error(d.erreur || 'Envoi impossible.');
+      });
+    }).then(function () {
       document.getElementById('formContact').style.display = 'none';
       document.getElementById('motifs').style.display = 'none';
       document.getElementById('confirmation').style.display = 'flex';
-    }).catch(function () {
-      /* La base n'est pas joignable ou la table n'existe pas encore :
-         on bascule sur la messagerie plutôt que de perdre le message. */
+    }).catch(function (e) {
       bouton.disabled = false;
       bouton.textContent = 'Envoyer le message';
-      erreurBox.textContent = 'Envoi automatique indisponible pour le moment — ouverture de ta messagerie…';
+      if (e && e.affiche) {
+        erreurBox.textContent = e.message;
+        erreurBox.style.display = 'block';
+        return;
+      }
+      /* Serveur injoignable : on bascule sur la messagerie plutôt que de perdre le message. */
+      erreurBox.textContent = 'Envoi automatique indisponible pour le moment : ouverture de ta messagerie…';
       erreurBox.style.display = 'block';
       setTimeout(function () { ouvrirMessagerie(motif, email, message); }, 900);
     });
