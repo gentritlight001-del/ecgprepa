@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "es",
 "rubrique": "Actu Espagnol",
+"meta": "Cuba",
+"titre": "Cuba : de nouvelles sanctions américaines",
+"url": "actualites/es/articles/cuba-sanctions-petrole-materiel-militaire-2026.html",
+"image": "actualites/es/images/cuba-sanctions-petrole-materiel-militaire-2026.webp",
+"date": "2026-11-06T14:57:07+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
 "meta": "Espagne",
 "titre": "Espagne : l'affaire Koldo, six arrestations",
 "url": "actualites/es/articles/espagne-affaire-koldo-six-arrestations-2026.html",
@@ -1712,15 +1721,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Venezuela – Assemblée générale de l'ONU : Delcy Rodríguez rencontre Donald Trump à New York",
 "url": "actualites/es/articles/delcy-rodriguez-trump-onu-new-york.html",
 "image": "actualites/es/images/delcy-rodriguez-trump-onu-new-york.webp",
-"date": "2026-09-23T19:17:35+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Pérou",
-"titre": "Pérou : la journaliste et candidate Susy Aponte Polo assassinée en pleine campagne régionale",
-"url": "actualites/es/articles/perou-assassinat-susy-aponte-polo.html",
-"image": "actualites/es/images/perou-assassinat-susy-aponte-polo.webp",
 "date": "2026-09-23T19:17:35+00:00"
 },
 {
