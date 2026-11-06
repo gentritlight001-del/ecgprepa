@@ -1111,6 +1111,8 @@
             trop_de_tentatives: 'Trop d\'essais. Réessaie dans une heure.',
             inactif: 'Aucun code d\'accès n\'est valable en ce moment.',
             mauvais_code: 'Ce code n\'est pas le bon.',
+            code_desactive: 'Ce code n\'est plus valable.',
+            code_epuise: 'Ce code a déjà été utilisé par le nombre maximum de personnes.',
             deja_abonne: 'Tu as déjà un abonnement Premium en cours : garde-le, ou résilie-le avant d\'utiliser un code.'
           }[d.raison] || 'Code refusé.');
         });
@@ -1272,18 +1274,48 @@
       });
     },
 
-    /* Code d'accès offert : { code, actif, maj_le, offerts } */
-    etatCode: function () {
-      return sb().then(function (c) { return T(c.rpc('etat_code_acces')); });
+    /* Codes d'accès au Premium : liste avec, pour chacun, { id, code, libelle,
+       actif, limite, cree_le, utilisations, en_cours, derniere, membres[] } */
+    codesAcces: function () {
+      return sb().then(function (c) { return T(c.rpc('codes_acces_admin')); })
+        .then(function (d) { return d || []; });
     },
 
-    /* code : nouveau code (ou null pour garder l'actuel) ; actif : true/false */
-    definirCode: function (code, actif) {
+    /* Nouveau code : libelle (facultatif) et limite (nombre de personnes, 0 ou vide = sans limite) */
+    creerCode: function (code, libelle, limite) {
       return sb().then(function (c) {
-        return T(c.rpc('definir_code_acces', { p_code: code == null ? null : String(code), p_actif: !!actif }));
-      }).then(function () {
-        return noter('reglage', (profilLocal() || {}).email, 'code d\'accès ' + (actif ? 'activé' : 'désactivé') + (code ? ' (nouveau code)' : ''));
+        return T(c.rpc('creer_code_acces', {
+          p_code: String(code || ''), p_libelle: libelle ? String(libelle) : null,
+          p_limite: limite ? parseInt(limite, 10) || null : null
+        }));
+      }).then(function (d) {
+        if (d && d.ok === false) throw new Error(d.raison === 'doublon'
+          ? 'Ce code existe déjà.' : 'Choisis un code d\'au moins 6 caractères.');
+        noter('reglage', (profilLocal() || {}).email, 'code d\'accès créé' + (libelle ? ' (' + libelle + ')' : ''));
+        return d;
       });
+    },
+
+    /* Champs à changer : { actif, libelle, limite } (limite 0 = sans limite) ; un champ absent ne change pas */
+    modifierCode: function (id, champs) {
+      champs = champs || {};
+      return sb().then(function (c) {
+        return T(c.rpc('modifier_code_acces', {
+          p_id: id,
+          p_actif: typeof champs.actif === 'boolean' ? champs.actif : null,
+          p_libelle: champs.libelle == null ? null : String(champs.libelle),
+          p_limite: champs.limite == null ? null : (parseInt(champs.limite, 10) || 0)
+        }));
+      }).then(function () {
+        if (typeof champs.actif === 'boolean')
+          noter('reglage', (profilLocal() || {}).email, 'code d\'accès ' + (champs.actif ? 'activé' : 'désactivé'));
+      });
+    },
+
+    /* Supprime un code : les accès déjà ouverts avec lui restent. */
+    supprimerCode: function (id) {
+      return sb().then(function (c) { return T(c.rpc('supprimer_code_acces', { p_id: id })); })
+        .then(function () { return noter('reglage', (profilLocal() || {}).email, 'code d\'accès supprimé'); });
     },
 
     /* Offre le Premium à un membre (sans date de fin). Ne touche jamais

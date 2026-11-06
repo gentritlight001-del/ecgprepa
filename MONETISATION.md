@@ -20,7 +20,7 @@ auth.js ── rpc mon_abonnement() ──▶ ouvre ou ferme les rubriques marqu
 
 | Fichier | Rôle |
 |---|---|
-| `supabase/premium.sql` | Table `abonnements`, colonne `premium` sur `rubriques_verrouillage`, fonctions `mon_abonnement()` et `abonnes_premium()`, code d'accès offert |
+| `supabase/premium.sql` | Table `abonnements`, colonne `premium` sur `rubriques_verrouillage`, fonctions `mon_abonnement()` et `abonnes_premium()`, code d'accès offert (remplacé par `supabase/codes-acces.sql` : plusieurs codes) |
 | `supabase/functions/stripe-paiement` | Crée la session de paiement Stripe Checkout |
 | `supabase/functions/stripe-portail` | Ouvre le portail client (carte, factures, résiliation) |
 | `supabase/functions/stripe-webhook` | Reçoit les événements Stripe et met à jour `abonnements` |
@@ -78,15 +78,22 @@ auth.js ── rpc mon_abonnement() ──▶ ouvre ou ferme les rubriques marqu
 Admin → onglet **Premium** : coche les rubriques réservées. Ou, sur n'importe quelle carte du site,
 le bouton rond **✦** (à gauche du cadenas) bascule ce chapitre précis.
 
-### 5. Offrir l'accès à quelqu'un (code d'accès)
-Admin → onglet **Premium** → bloc « Code d'accès offert » : choisis un code (6 caractères minimum)
-et active-le. Donne-le aux personnes de ton choix : dans **Mon abonnement**, elles le saisissent
-(majuscules et espaces ignorés) et obtiennent tout le Premium, gratuitement et sans date de fin.
-- 5 essais par heure et par compte, pour empêcher de deviner le code.
-- Changer ou désactiver le code n'enlève rien à ceux qui l'ont déjà utilisé.
+### 5. Offrir l'accès à quelqu'un (codes d'accès)
+Admin → onglet **Premium** → bloc « Codes d'accès au Premium » : crée autant de codes que tu veux
+(6 caractères minimum, bouton « Générer » pour en tirer un au hasard), chacun avec un nom facultatif
+(« Lycée Hoche », « Instagram »…) et une limite facultative (nombre maximum de personnes). Dans
+**Mon abonnement**, le membre saisit un code (majuscules et espaces ignorés) et obtient tout le
+Premium, gratuitement et sans date de fin.
+- Pour chaque code : nombre de personnes qui l'ont utilisé, accès encore en cours, dernière
+  utilisation, et la liste des personnes (« Qui ? »). Dans la liste des abonnés, « Offert (code) »
+  donne le nom du code ; « Offert (direct) » = Premium offert depuis l'admin.
+- Interrupteur pour couper un code, boutons pour le renommer, changer sa limite, le supprimer.
+- 5 essais par heure et par compte, pour empêcher de deviner un code.
+- Couper ou supprimer un code n'enlève rien à ceux qui l'ont déjà utilisé.
 - Pour retirer l'accès à quelqu'un : bouton **Retirer** dans la liste des abonnés.
-- Un abonné payant ne peut pas utiliser le code (son abonnement Stripe continuerait de lui être facturé).
-- Le code est stocké dans la table `code_acces`, invisible depuis le navigateur : seul un admin peut le lire.
+- Un abonné payant ne peut pas utiliser de code (son abonnement Stripe continuerait de lui être facturé).
+- Tables `codes_acces` et `codes_acces_utilisations` (`supabase/codes-acces.sql`), invisibles depuis
+  le navigateur : seul un admin peut les lire. L'ancienne table `code_acces` (code unique) n'est plus lue.
 
 ## Avant de passer en réel (checklist)
 - [ ] **Statut juridique** : vendre impose un SIRET (la micro-entreprise suffit pour commencer).
