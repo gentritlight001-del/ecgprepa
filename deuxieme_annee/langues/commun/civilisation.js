@@ -7,16 +7,16 @@
   const UI = {
     fr: { fiche: 'Fiche de synthèse', ficheTitre: 'La fiche en deux pages', ficheSous: 'À réviser ou à imprimer', surSite: 'Sur ECG Prépa', sources: 'Sources', retour: 'Tous les cours de civilisation', plusLoin: 'Pour aller plus loin', video: 'En vidéo', ess: "L'essentiel", frise: 'Chronologie', som: 'Sommaire', act: 'Acteurs clés', deb: 'Le débat', syn: 'Synthèse',
           lex: 'Lexique', sujets: 'Sujets de dissertation', ret: 'À retenir', piste: 'Piste', partie: 'Partie', def: 'Définition',
-          cours: 'Le cours', parties: 'parties', sections: 'sections', dates: 'dates', min: 'min de lecture', chap: 'Chapitre' },
+          focus: 'Mode focus', focusSous: 'Le cours en 10 minutes', focusTitre: 'Mode focus · Le cours en 10 minutes', focusAide: 'Ne garder que l’essentiel, réécrit', rep: 'La réponse', exemple: 'Exemple', concl: 'Conclusion', plan: 'Plan', cours: 'Le cours', parties: 'parties', sections: 'sections', dates: 'dates', min: 'min de lecture', chap: 'Chapitre' },
     en: { fiche: 'Summary sheet', ficheTitre: 'The sheet in two pages', ficheSous: 'To revise or print', surSite: 'On ECG Prépa', sources: 'Sources', retour: 'All civilisation courses', plusLoin: 'Further reading', video: 'Watch', ess: 'Key points', frise: 'Timeline', som: 'Contents', act: 'Key figures', deb: 'The debate', syn: 'Synthesis',
           lex: 'Glossary', sujets: 'Essay questions', ret: 'Takeaways', piste: 'Hint', partie: 'Part', def: 'Definition',
-          cours: 'The lesson', parties: 'parts', sections: 'sections', dates: 'dates', min: 'min read', chap: 'Chapter' },
+          focus: 'Focus mode', focusSous: 'The lesson in 10 minutes', focusTitre: 'Focus mode · The lesson in 10 minutes', focusAide: 'Keep only the essentials, rewritten', rep: 'The answer', exemple: 'Example', concl: 'Conclusion', plan: 'Outline', cours: 'The lesson', parties: 'parts', sections: 'sections', dates: 'dates', min: 'min read', chap: 'Chapter' },
     es: { fiche: 'Ficha de síntesis', ficheTitre: 'En dos páginas', ficheSous: 'Para repasar o imprimir', surSite: 'En ECG Prépa', sources: 'Fuentes', retour: 'Todos los cursos de civilización', plusLoin: 'Para ir más lejos', video: 'En vídeo', ess: 'Lo esencial', frise: 'Cronología', som: 'Índice', act: 'Actores clave', deb: 'El debate', syn: 'Síntesis',
           lex: 'Léxico', sujets: 'Temas de disertación', ret: 'Para recordar', piste: 'Pista', partie: 'Parte', def: 'Definición',
-          cours: 'La lección', parties: 'partes', sections: 'secciones', dates: 'fechas', min: 'min de lectura', chap: 'Capítulo' },
+          focus: 'Modo focus', focusSous: 'La lección en 10 minutos', focusTitre: 'Modo focus · La lección en 10 minutos', focusAide: 'Solo lo esencial, reescrito', rep: 'La respuesta', exemple: 'Ejemplo', concl: 'Conclusión', plan: 'Esquema', cours: 'La lección', parties: 'partes', sections: 'secciones', dates: 'fechas', min: 'min de lectura', chap: 'Capítulo' },
     de: { fiche: 'Übersicht', ficheTitre: 'Auf zwei Seiten', ficheSous: 'Zum Lernen oder Drucken', surSite: 'Auf ECG Prépa', sources: 'Quellen', retour: 'Alle Landeskunde-Kurse', plusLoin: 'Weiterführendes', video: 'Im Video', ess: 'Das Wesentliche', frise: 'Zeitleiste', som: 'Inhalt', act: 'Schlüsselfiguren', deb: 'Die Debatte', syn: 'Synthese',
           lex: 'Wortschatz', sujets: 'Aufsatzthemen', ret: 'Merksätze', piste: 'Hinweis', partie: 'Teil', def: 'Definition',
-          cours: 'Die Lektion', parties: 'Teile', sections: 'Abschnitte', dates: 'Daten', min: 'Min. Lesezeit', chap: 'Kapitel' }
+          focus: 'Fokus-Modus', focusSous: 'Die Lektion in 10 Minuten', focusTitre: 'Fokus-Modus · Die Lektion in 10 Minuten', focusAide: 'Nur das Wesentliche, neu geschrieben', rep: 'Die Antwort', exemple: 'Beispiel', concl: 'Fazit', plan: 'Gliederung', cours: 'Die Lektion', parties: 'Teile', sections: 'Abschnitte', dates: 'Daten', min: 'Min. Lesezeit', chap: 'Kapitel' }
   };
   const LANGUE = { en: 'anglais', es: 'espagnol', de: 'allemand' };
   const DRAPEAU = { fr: '🇫🇷', en: '🇬🇧', es: '🇪🇸', de: '🇩🇪' };
@@ -103,6 +103,50 @@
     return html;
   }
 
+  /* Mode focus : un second cours, réécrit, lisible en 10 minutes (COURS.focus), affiché à la place du cours complet.
+     Même principe que les chapitres d'HGG ; choix mémorisé dans localStorage « ecg-cours:focus ». */
+  function coursFocus() {
+    const F = COURS.focus, t = UI[lang];
+    if (!F) return '';
+    const sp = (s, pi, si) => `
+      <section class="fc-sp" id="f${pi + 1}-${si + 1}">
+        <div class="fc-g"><h3><i>${pi + 1}.${si + 1}</i>${L(s.titre)}</h3>
+          ${s.chiffre ? `<p class="fc-chiffre"><b>${L(s.chiffre.n)}</b><span>${L(s.chiffre.d)}</span></p>` : ''}</div>
+        <div class="fc-d">
+          ${A(s.args).map(a => `<div class="fc-arg"><p><b>${L(a.t)}</b> ${L(a.c)}</p>${a.ex ? `<p class="fc-ex"><span>${t.exemple}</span>${L(a.ex)}</p>` : ''}</div>`).join('')}
+          ${s.def ? `<p class="fc-def"><span>${t.def}</span><b>${L(s.def.mot)}</b>${L(s.def.c)}</p>` : ''}
+        </div>
+      </section>`;
+    return `<section class="fc" id="focus" aria-label="${t.focusSous}">
+      <header class="fc-tete">
+        <div class="fc-intro">
+          <p class="etiquette">${t.focusTitre}</p>
+          <p class="fc-q">${L(F.q)}</p>
+          <p class="fc-these"><span>${t.rep}</span>${L(F.these)}</p>
+        </div>
+        <ol class="fc-plan" aria-label="${t.plan}">${F.parties.map((p, pi) => `<li class="${ton(p.couleur)}"><a href="#f${pi + 1}"><small>${p.num}</small><b>${L(p.titre)}</b></a>
+          <span>${p.sps.map((s, si) => `<a href="#f${pi + 1}-${si + 1}">${pi + 1}.${si + 1} ${L(s.titre)}</a>`).join('')}</span></li>`).join('')}</ol>
+      </header>
+      ${F.parties.map((p, pi) => `<section class="fc-p ${ton(p.couleur)}" id="f${pi + 1}">
+        <header class="fc-pt"><span class="fc-num" aria-hidden="true">${p.num}</span><div><p class="fc-kick">${t.partie} ${p.num}</p><h2>${L(p.titre)}</h2><p class="fc-idee">${L(p.idee)}</p></div></header>
+        ${p.sps.map((s, si) => sp(s, pi, si)).join('')}
+        ${p.concl ? `<p class="fc-concl"><span>${t.concl} · ${t.partie} ${p.num}</span>${L(p.concl)}</p>` : ''}
+      </section>`).join('')}
+    </section>`;
+  }
+
+  function barreFocus() {
+    if (!COURS.focus) return '';
+    const t = UI[lang];
+    return `<div class="fx-barre"><button type="button" class="fx-sw" aria-pressed="${document.body.classList.contains('focus')}" title="${t.focusAide}"><i aria-hidden="true"></i>${t.focus}</button><span class="fx-aide">${t.focusSous}</span></div>`;
+  }
+
+  function reglerFocus(on, sauver) {
+    document.body.classList.toggle('focus', on);
+    document.querySelectorAll('.fx-sw').forEach(b => b.setAttribute('aria-pressed', String(on)));
+    if (sauver) { try { localStorage.setItem('ecg-cours:focus', on ? '1' : '0'); } catch (e) {} }
+  }
+
   function rendre() {
     const C = COURS, m = C.meta;
     const l2 = Object.keys(m.titre).find(k => k !== 'fr');
@@ -166,13 +210,19 @@
         </div>
         ${m.image ? `<figure class="heros-image"><img src="${m.image.src}" alt="${L(m.image.alt)}"${m.image.credit ? ` title="${m.image.credit}"` : ''}><figcaption>${L(m.image.legende)}</figcaption></figure>` : ''}
       </header>
+      ${barreFocus()}
       <section class="essentiel" id="essentiel">
         <div class="ess-texte"><h2 class="etiquette">${t.ess}</h2><p>${L(C.essentiel)}</p></div>
         ${C.chiffres ? `<div class="ess-chiffres">${C.chiffres.map(c => `<div class="chiffre"><b>${L(c.n)}</b><span>${L(c.d)}</span></div>`).join('')}</div>` : ''}
       </section>
+      ${coursFocus()}
       <div class="page"><main class="corps">${parties}</main></div>
       ${annexes.map(annexeHTML).join('')}`;
 
+    document.querySelectorAll('.fx-sw').forEach(b => b.addEventListener('click', () => {
+      reglerFocus(!document.body.classList.contains('focus'), true);
+      const barre = document.querySelector('.fx-barre'); if (barre) scrollTo(0, Math.max(0, barre.getBoundingClientRect().top + scrollY - 76));
+    }));
     document.querySelectorAll('.langues button').forEach(b => b.classList.toggle('on', b.dataset.l === lang));
     const bt = document.getElementById('bc-titre'); if (bt) bt.innerHTML = L(m.titre);
   }
@@ -184,5 +234,6 @@
     const p = document.querySelector('.progression span');
     if (p) p.style.width = (100 * scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight)) + '%';
   }, { passive: true });
+  try { if (COURS.focus && localStorage.getItem('ecg-cours:focus') === '1') document.body.classList.add('focus'); } catch (e) {}
   rendre();
 })();
