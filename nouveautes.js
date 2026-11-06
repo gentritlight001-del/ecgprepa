@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "Canada",
+"titre": "Canada : le budget Carney 2026",
+"url": "actualites/en/articles/canada-budget-federal-carney-2026.html",
+"image": "actualites/en/images/canada-budget-federal-carney-2026.webp",
+"date": "2026-11-06T14:32:29+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Singapour",
@@ -1677,15 +1686,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/de/articles/retrait-candidature-jo-berlin.html",
 "image": "actualites/de/images/retrait-candidature-jo-berlin.webp",
 "date": "2026-09-26T15:06:19+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "Australie",
-"titre": "Australie : un agent d'OpenAI s'introduit dans un portail Medicare",
-"url": "actualites/en/articles/australia-openai-medicare.html",
-"image": "actualites/en/images/australia-openai-medicare.webp",
-"date": "2026-09-24T20:25:41+00:00"
 },
 {
 "t": "es",
