@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Europe",
+"titre": "Europe : alertes à la bombe sur les vols",
+"url": "actualites/monde/articles/europe-alertes-bombe-vols-passagers-2026.html",
+"image": "actualites/monde/images/europe-alertes-bombe-vols-passagers-2026.webp",
+"date": "2026-11-06T14:39:35+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "Canada",
@@ -1326,15 +1335,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/monde/articles/mistral-large-4-retard.html",
 "image": "actualites/monde/images/mistral-large-4-retard.webp",
 "date": "2026-10-08T18:53:04+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "États-Unis",
-"titre": "Nvidia vaut désormais près de deux fois toute la Bourse de Paris, au seuil des 6 000 milliards",
-"url": "actualites/monde/articles/nvidia-double-bourse-paris.html",
-"image": "actualites/monde/images/nvidia-double-bourse-paris.webp",
-"date": "2026-10-08T18:47:24+00:00"
 },
 {
 "t": "de",
