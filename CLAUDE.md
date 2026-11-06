@@ -984,7 +984,7 @@ faits : Royaume-Uni chapitres 1 (histoire), 2 (système politique) et 3 (Brexit)
   `comparaison` (deux barres par ligne, ex. voix et sièges), `periodes` (frise de durées), `echelle`.
   **Pas de cases de faits** (`faits` : « Chef de l'État / Financement… ») : les transformer en paragraphe
   explicatif.
-- **Mode focus, fiche de cours et « Dans une copie »** (Brexit fait, novembre 2026 ; à reproduire sur les autres chapitres) : trois clés dans le bloc `COURS`.
+- **Mode focus, fiche de cours et « Dans une copie »** (faits en novembre 2026 pour les chapitres 1, 2 et 3 du Royaume-Uni ; à reproduire sur les autres chapitres) : trois clés dans le bloc `COURS`.
   `focus` = second cours réécrit en 10 minutes (question, réponse, parties, sous-parties avec chiffre clé, arguments, exemples,
   définitions, conclusions ; FR et langue étudiée ; 10 sous-parties, environ 1 500 mots), affiché à la place du cours complet par
   l'interrupteur « Mode focus » (mémorisé dans `ecg-cours:focus`, au-dessus des chiffres de « L'essentiel »). `ficheCours` = nom du PDF
