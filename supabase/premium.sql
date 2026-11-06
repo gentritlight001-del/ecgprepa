@@ -146,6 +146,10 @@ grant execute on function public.abonnes_premium() to authenticated;
 -- ══════════════════════════════════════════════════════════════════
 --  Accès offert par code
 --
+--  ⚠ Remplacé en novembre 2026 par supabase/codes-acces.sql (plusieurs
+--  codes, compteur d'utilisations). Les fonctions ci-dessous sont
+--  celles de la première version, à ne plus relancer.
+--
 --  L'administrateur choisit un code dans l'admin (onglet Premium).
 --  Un membre qui le saisit dans « Mon abonnement » obtient le
 --  Premium gratuitement, sans limite de durée, jusqu'à ce que

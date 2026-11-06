@@ -65,15 +65,38 @@
       '#p-premium .alerte header h3{color:var(--danger)}',
       '#p-premium .code-ligne{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:14px 22px 22px}',
       '#p-premium .code-ligne input{flex:1;min-width:220px;max-width:360px;font-family:"DM Mono",monospace}',
-      '#p-premium .code-etat{font-size:.8rem;color:var(--dim);padding:0 22px 4px}',
-      '#p-premium .code-etat b{color:var(--text);font-weight:500;font-family:"DM Mono",monospace}',
       '#p-premium .mini{background:none;border:1px solid var(--border);color:var(--dim);font-size:.72rem;padding:5px 10px;border-radius:7px}',
-      '#p-premium .mini:hover{border-color:var(--danger);color:var(--danger)}'
+      '#p-premium .mini:hover{border-color:var(--danger);color:var(--danger)}',
+      '#p-premium .mini.neutre:hover{border-color:var(--accent);color:var(--accent)}',
+      '#p-premium .code-ligne .court{flex:0 1 150px;min-width:120px;max-width:170px;font-family:"DM Sans",sans-serif}',
+      '#p-premium .code-ligne .nom{flex:1 1 200px;min-width:180px;max-width:280px;font-family:"DM Sans",sans-serif}',
+      '#p-premium .codes td{vertical-align:middle}',
+      '#p-premium .codes .c-code{font-family:"DM Mono",monospace;font-size:.92rem;color:var(--text);letter-spacing:.04em}',
+      '#p-premium .codes .c-nb{font-family:"Playfair Display",serif;font-size:1.6rem;font-weight:700;line-height:1;color:var(--accent)}',
+      '#p-premium .codes .c-nb small{font-family:"DM Mono",monospace;font-size:.72rem;font-weight:400;color:var(--dim);margin-left:4px}',
+      '#p-premium .codes tr.coupe .c-code,#p-premium .codes tr.coupe .c-nb{opacity:.45}',
+      '#p-premium .codes .plein{color:var(--danger)}',
+      '#p-premium .codes .acts2{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}',
+      '#p-premium .codes tr.detail td{background:var(--surface2);padding:12px 22px 16px}',
+      '#p-premium .codes .membres{display:flex;flex-direction:column;gap:6px;font-size:.8rem}',
+      '#p-premium .codes .membres div{display:flex;gap:10px;flex-wrap:wrap;align-items:baseline}',
+      '#p-premium .codes .membres .retire{color:var(--faint);text-decoration:line-through}',
+      '@media(max-width:640px){' +
+        '#p-premium .codes thead{display:none}' +
+        '#p-premium .codes tr:not(.detail){display:grid;grid-template-columns:1fr auto;gap:10px 12px;padding:16px;border-bottom:1px solid rgba(42,42,53,.55)}' +
+        '#p-premium .codes tr:not(.detail) td{display:block;padding:0;border:0}' +
+        '#p-premium .codes tr:not(.detail) td:nth-child(3){display:none}' +
+        '#p-premium .codes tr:not(.detail) td:nth-child(4){grid-column:2;grid-row:1}' +
+        '#p-premium .codes tr:not(.detail) td:nth-child(5){grid-column:1 / -1}' +
+        '#p-premium .codes .acts2{justify-content:flex-start}' +
+        '#p-premium .codes tr.detail td{display:block;padding:12px 16px}' +
+        '#p-premium .codes .membres .mono{white-space:normal}' +
+      '}'
     ].join('\n');
     document.head.appendChild(s);
   }
 
-  var etat = { rubriques: [], abonnes: [], code: null };
+  var etat = { rubriques: [], abonnes: [], codes: [], ouvert: null };
 
   function batir() {
     var hote = document.getElementById('p-premium');
@@ -83,16 +106,19 @@
     hote.innerHTML =
       '<div class="stats" id="pr-stats"></div>' +
       '<div id="pr-alerte"></div>' +
-      '<div class="bloc"><header><h3>Code d\'accès offert</h3>' +
-      '<p>Donne ce code aux personnes à qui tu veux offrir le site : en le saisissant dans « Mon abonnement », ' +
-      'elles obtiennent tout le Premium gratuitement, sans date de fin. Changer ou désactiver le code n\'enlève rien ' +
-      'à ceux qui l\'ont déjà utilisé : pour retirer un accès, utilise « Retirer » dans la liste des abonnés.</p></header>' +
-      '<div class="setting"><div><h3>Code actif</h3><p>Désactivé, plus personne ne peut l\'utiliser.</p></div>' +
-      '<button class="sw" id="pr-code-actif" aria-label="Code d\'accès actif"></button></div>' +
-      '<div class="code-etat" id="pr-code-etat"></div>' +
+      '<div class="bloc"><header><h3>Codes d\'accès au Premium</h3>' +
+      '<p>Chaque code ouvre tout le Premium gratuitement, sans date de fin, à qui le saisit dans « Mon abonnement ». ' +
+      'Crée un code par groupe ou par canal (une classe, un réseau social…) pour savoir combien de personnes chacun a fait venir. ' +
+      'Couper ou supprimer un code n\'enlève rien à ceux qui l\'ont déjà utilisé : pour retirer un accès, utilise « Retirer » dans la liste des abonnés.</p></header>' +
       '<form class="code-ligne" id="pr-code-form" autocomplete="off">' +
-      '<input type="text" id="pr-code" placeholder="Nouveau code (6 caractères minimum)" spellcheck="false">' +
-      '<button class="btn" type="submit">Enregistrer le code</button></form></div>' +
+      '<input type="text" id="pr-code" placeholder="Code (6 caractères minimum)" spellcheck="false" maxlength="40" aria-label="Nouveau code">' +
+      '<button class="btn ghost" type="button" id="pr-code-gen">Générer</button>' +
+      '<input type="text" class="nom" id="pr-code-nom" placeholder="Nom (ex. : Instagram)" maxlength="60" aria-label="Nom du code">' +
+      '<input type="text" class="court" id="pr-code-limite" inputmode="numeric" placeholder="Limite (facultatif)" aria-label="Nombre maximum de personnes">' +
+      '<button class="btn" type="submit">Créer le code</button></form>' +
+      '<div class="scroll"><table class="codes"><thead><tr><th>Code</th><th>Utilisé par</th><th>Dernière utilisation</th><th>Actif</th><th></th></tr></thead>' +
+      '<tbody id="pr-codes"></tbody></table></div>' +
+      '<div class="empty" id="pr-codes-vide" style="display:none">Aucun code pour l\'instant : crée le premier ci-dessus.</div></div>' +
       '<div class="bloc"><header><h3>Offrir le Premium à un membre</h3>' +
       '<p>Choisis un compte : il obtient tout le Premium gratuitement, sans date de fin (retirable depuis la liste des abonnés).</p></header>' +
       '<form class="code-ligne" id="pr-offrir-form" autocomplete="off">' +
@@ -134,47 +160,106 @@
     });
   }
 
+  function genererCode() {
+    var lettres = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', c = '';
+    var alea = new Uint32Array(8);
+    (window.crypto || window.msCrypto).getRandomValues(alea);
+    for (var i = 0; i < 8; i++) c += lettres[alea[i] % lettres.length];
+    return 'ECG-' + c;
+  }
+
+  function erreur(err) { toast(String((err && err.message) || err), 'err'); }
+
   function brancherCode() {
+    $('#pr-code-gen').addEventListener('click', function () { $('#pr-code').value = genererCode(); $('#pr-code-nom').focus(); });
     $('#pr-code-form').addEventListener('submit', function (e) {
       e.preventDefault();
       var v = $('#pr-code').value.trim();
+      var lim = $('#pr-code-limite').value.trim();
       if (v.length < 6) { toast('Choisis un code d\'au moins 6 caractères.', 'err'); return; }
-      Ad.definirCode(v, true).then(function () {
-        $('#pr-code').value = '';
-        toast('Code enregistré et activé.', 'ok');
+      if (lim && !/^\d+$/.test(lim)) { toast('La limite doit être un nombre de personnes.', 'err'); return; }
+      Ad.creerCode(v, $('#pr-code-nom').value.trim(), lim).then(function () {
+        $('#pr-code').value = ''; $('#pr-code-nom').value = ''; $('#pr-code-limite').value = '';
+        toast('Code « ' + v + ' » créé et actif.', 'ok');
         return rafraichir();
-      }).catch(function (err) { toast(String((err && err.message) || err), 'err'); });
+      }).catch(erreur);
     });
-    $('#pr-code-actif').addEventListener('click', function () {
-      var b = this, vers = !b.classList.contains('on');
-      if (vers && !(etat.code && etat.code.code)) { toast('Choisis d\'abord un code ci-dessous.', 'err'); return; }
-      b.disabled = true;
-      Ad.definirCode(null, vers).then(function () {
-        toast(vers ? 'Code activé.' : 'Code désactivé.', 'ok');
-        return rafraichir();
-      }).catch(function (err) { toast(String((err && err.message) || err), 'err'); })
-        .then(function () { b.disabled = false; });
+    $('#pr-codes').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-act]');
+      if (!b) return;
+      var id = Number(b.dataset.id);
+      var c = etat.codes.filter(function (x) { return x.id === id; })[0];
+      if (!c) return;
+      var act = b.dataset.act;
+      if (act === 'voir') { etat.ouvert = etat.ouvert === id ? null : id; rendreCodes(); return; }
+      if (act === 'copier') {
+        (navigator.clipboard ? navigator.clipboard.writeText(c.code) : Promise.reject())
+          .then(function () { toast('Code copié.', 'ok'); }, function () { toast('Copie impossible : ' + c.code, 'err'); });
+        return;
+      }
+      var p;
+      if (act === 'actif') {
+        b.disabled = true;
+        p = Ad.modifierCode(id, { actif: !c.actif }).then(function () { toast(c.actif ? 'Code coupé.' : 'Code réactivé.', 'ok'); });
+      } else if (act === 'renommer') {
+        var nom = prompt('Nom du code « ' + c.code + ' » (vide pour l\'enlever) :', c.libelle || '');
+        if (nom === null) return;
+        p = Ad.modifierCode(id, { libelle: nom.trim() });
+      } else if (act === 'limite') {
+        var l = prompt('Nombre maximum de personnes pour « ' + c.code + ' » (vide ou 0 = sans limite) :', c.limite || '');
+        if (l === null) return;
+        l = l.trim();
+        if (l && !/^\d+$/.test(l)) { toast('La limite doit être un nombre.', 'err'); return; }
+        p = Ad.modifierCode(id, { limite: l || 0 });
+      } else if (act === 'suppr') {
+        if (!confirm('Supprimer le code « ' + c.code + ' » ? Les ' + c.en_cours + ' accès ouverts avec lui restent, mais son compteur disparaît.')) return;
+        p = Ad.supprimerCode(id).then(function () { toast('Code supprimé.', 'ok'); });
+      }
+      if (p) p.then(rafraichir).catch(erreur).then(function () { b.disabled = false; });
     });
   }
 
-  function rendreCode() {
-    var c = etat.code;
-    var sw = $('#pr-code-actif');
-    sw.classList.toggle('on', !!(c && c.actif));
-    $('#pr-code-etat').innerHTML = !c ? '' : c.code
-      ? 'Code actuel : <b>' + esc(c.code) + '</b>' + (c.actif ? '' : ' (désactivé)') +
-        ' · ' + c.offerts + ' accès offert' + (c.offerts > 1 ? 's' : '') + ' en cours'
-      : 'Aucun code défini pour l\'instant.';
+  function rendreCodes() {
+    var tb = $('#pr-codes');
+    var liste = etat.codes || [];
+    $('#pr-codes-vide').style.display = liste.length ? 'none' : 'block';
+    tb.innerHTML = liste.map(function (c) {
+      var plein = c.limite && c.utilisations >= c.limite;
+      var ligne = '<tr class="' + (c.actif ? '' : 'coupe') + '">' +
+        '<td><div class="c-code">' + esc(c.code) + '</div>' +
+        '<div class="mono" style="margin-top:4px">' + esc(c.libelle || 'Sans nom') + ' · créé le ' + date(c.cree_le) + '</div></td>' +
+        '<td><span class="c-nb">' + c.utilisations + (c.limite ? '<small class="' + (plein ? 'plein' : '') + '">/ ' + c.limite + '</small>' : '') + '</span>' +
+        '<div class="mono" style="margin-top:4px">personne' + (c.utilisations > 1 ? 's' : '') +
+        (c.utilisations ? ' · ' + c.en_cours + ' accès en cours' : '') + (plein ? ' · <span class="plein">complet</span>' : '') + '</div></td>' +
+        '<td class="mono">' + date(c.derniere) + '</td>' +
+        '<td><button class="sw' + (c.actif ? ' on' : '') + '" data-act="actif" data-id="' + c.id + '" aria-label="Code ' + esc(c.code) + (c.actif ? ' actif' : ' coupé') + '"></button></td>' +
+        '<td><div class="acts2">' +
+        (c.utilisations ? '<button class="mini neutre" data-act="voir" data-id="' + c.id + '">' + (etat.ouvert === c.id ? 'Masquer' : 'Qui ?') + '</button>' : '') +
+        '<button class="mini neutre" data-act="copier" data-id="' + c.id + '">Copier</button>' +
+        '<button class="mini neutre" data-act="renommer" data-id="' + c.id + '">Nom</button>' +
+        '<button class="mini neutre" data-act="limite" data-id="' + c.id + '">Limite</button>' +
+        '<button class="mini" data-act="suppr" data-id="' + c.id + '">Supprimer</button>' +
+        '</div></td></tr>';
+      if (etat.ouvert === c.id) {
+        ligne += '<tr class="detail"><td colspan="5"><div class="membres">' + (c.membres || []).map(function (m) {
+          var nom = ((m.prenom || '') + ' ' + (m.nom || '')).trim();
+          return '<div class="' + (m.actif ? '' : 'retire') + '"><b style="font-weight:500">' + esc(nom || '—') + '</b>' +
+            '<span class="mono">' + esc(m.email || '') + '</span><span class="mono">' + date(m.t) + '</span>' +
+            (m.actif ? '' : '<span class="mono">accès retiré ou remplacé</span>') + '</div>';
+        }).join('') + '</div></td></tr>';
+      }
+      return ligne;
+    }).join('');
   }
 
   function rafraichir() {
     return Promise.all([
       Ad.rubriques(),
       Ad.abonnes().catch(function (e) { return { erreur: e }; }),
-      Ad.etatCode().catch(function () { return null; })
+      Ad.codesAcces().catch(function () { return null; })
     ]).then(function (r) {
       etat.rubriques = r[0] || [];
-      etat.code = r[2];
+      etat.codes = r[2] || [];
       if (r[1] && r[1].erreur) {
         etat.abonnes = [];
         $('#pr-alerte').innerHTML =
@@ -186,7 +271,7 @@
         $('#pr-alerte').innerHTML = '';
       }
       rendreStats();
-      rendreCode();
+      rendreCodes();
       rendreAbonnes();
     });
   }
@@ -224,7 +309,8 @@
         '<td><b style="font-weight:500">' + esc(((a.prenom || '') + ' ' + (a.nom || '')).trim() || '—') + '</b>' +
         '<div class="mono" style="margin-top:3px">' + esc(a.email || a.utilisateur) + '</div></td>' +
         '<td>' + esc(a.offre === 'annuel' ? 'Annuel' : a.offre === 'mensuel' ? 'Mensuel' : offert ? 'Gratuit' : '—') + '</td>' +
-        '<td><span style="color:' + couleur + '">' + esc(LIBELLES[a.statut] || a.statut) + '</span>' +
+        '<td><span style="color:' + couleur + '">' + esc(offert ? (a.code ? 'Offert (code)' : 'Offert (direct)') : (LIBELLES[a.statut] || a.statut)) + '</span>' +
+        (offert && a.code ? '<div class="mono" style="margin-top:3px">' + esc(a.code) + '</div>' : '') +
         (actif && a.annulation_prevue ? '<div class="mono" style="margin-top:3px">résilié</div>' : '') + '</td>' +
         '<td class="mono">' + date(a.fin_periode) + '</td>' +
         '<td class="mono">' + date(a.cree_le) + '</td>' +
