@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Espagne",
+"titre": "Espagne : l'affaire Koldo, six arrestations",
+"url": "actualites/es/articles/espagne-affaire-koldo-six-arrestations-2026.html",
+"image": "actualites/es/images/espagne-affaire-koldo-six-arrestations-2026.webp",
+"date": "2026-11-06T14:47:42+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Europe",
@@ -1722,15 +1731,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/de/articles/reunion-fraction-cdu-csu.html",
 "image": "actualites/de/images/reunion-fraction-cdu-csu.webp",
 "date": "2026-09-23T19:17:35+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Mexique",
-"titre": "Simulacre national : le Mexique répète le grand séisme devant 33 millions de participants",
-"url": "actualites/es/articles/mexique-simulacre-national.html",
-"image": "actualites/es/images/mexique-simulacre-national.webp",
-"date": "2026-09-21T19:18:06+00:00"
 },
 {
 "t": "de",
