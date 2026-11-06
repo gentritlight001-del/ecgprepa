@@ -42,7 +42,7 @@
       case 'image': return `<figure class="b-image ${b.format || ''}"><img src="${b.src}" alt="${L(b.alt)}" loading="lazy" width="${b.l || 1280}" height="${b.h || 853}">
         <figcaption>${b.titre ? `<b class="fig-titre">${L(b.titre)}</b>` : ''}<span>${L(b.legende)}</span></figcaption></figure>`;
       case 'images': return `<div class="b-images">${b.items.map(i => `<figure class="b-image"><img src="${i.src}" alt="${L(i.alt)}" loading="lazy" width="${i.l}" height="${i.h}"><figcaption>${i.titre ? `<b class="fig-titre">${L(i.titre)}</b>` : ''}<span>${L(i.legende)}</span></figcaption></figure>`).join('')}</div>`;
-      case 'schema': return `<figure class="b-schema"><figcaption class="b-schema-titre">${L(b.titre)}</figcaption>
+      case 'schema': return `<figure class="b-schema${b.compact ? ' compact' : ''}"><figcaption class="b-schema-titre">${L(b.titre)}</figcaption>
         <div class="b-schema-svg">${R(b.svg)}</div><p class="b-glisser" aria-hidden="true">${{ fr: 'Faire glisser le schéma →', es: 'Desliza para ver el esquema →', de: 'Zum Ansehen wischen →' }[lang] || 'Swipe to see the diagram →'}</p>${b.legende ? `<p class="b-note">${L(b.legende)}</p>` : ''}</figure>`;
       case 'graphique': {
         const series = b.series || [];
