@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "es",
 "rubrique": "Actu Espagnol",
+"meta": "Paraguay",
+"titre": "Paraguay : Peña annonce sa démission",
+"url": "actualites/es/articles/paraguay-demission-pena-ueno-bank-2026.html",
+"image": "actualites/es/images/paraguay-demission-pena-ueno-bank-2026.webp",
+"date": "2026-11-06T15:05:17+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
 "meta": "Cuba",
 "titre": "Cuba : de nouvelles sanctions américaines",
 "url": "actualites/es/articles/cuba-sanctions-petrole-materiel-militaire-2026.html",
@@ -1712,15 +1721,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "José Antonio Kast annonce l'adhésion du Chili au « Escudo de las Américas »",
 "url": "actualites/es/articles/chili-escudo-americas.html",
 "image": "actualites/es/images/chili-escudo-americas.webp",
-"date": "2026-09-23T19:17:35+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Venezuela",
-"titre": "Venezuela – Assemblée générale de l'ONU : Delcy Rodríguez rencontre Donald Trump à New York",
-"url": "actualites/es/articles/delcy-rodriguez-trump-onu-new-york.html",
-"image": "actualites/es/images/delcy-rodriguez-trump-onu-new-york.webp",
 "date": "2026-09-23T19:17:35+00:00"
 },
 {
