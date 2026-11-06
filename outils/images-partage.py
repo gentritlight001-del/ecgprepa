@@ -157,7 +157,7 @@ def image_cours(rel, contenu):
             v = re.search(r'href="%s"><span class="ci-vig"><img src="([^"]+)"' % re.escape(lien), open(RACINE + idx, encoding='utf-8').read())
             if v:
                 return os.path.normpath(os.path.join(RACINE, os.path.dirname(idx), v.group(1)))
-    m = re.search(r'"image":\s*\{\s*"src":\s*"([^"]+)"', contenu) or re.search(r'\bimage:\s*"([^"]+\.(?:webp|jpg|png))"', contenu)
+    m = re.search(r'"?\bimage"?:\s*\{\s*"?src"?:\s*"([^"]+)"', contenu) or re.search(r'\bimage:\s*"([^"]+\.(?:webp|jpg|png))"', contenu)
     if not m and '/quotidien/' in rel:
         m = re.search(r'<img src="(images/[^"]+)"', contenu)
     if m:
