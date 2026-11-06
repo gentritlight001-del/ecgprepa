@@ -210,10 +210,9 @@
         </div>
         ${m.image ? `<figure class="heros-image"><img src="${m.image.src}" alt="${L(m.image.alt)}"${m.image.credit ? ` title="${m.image.credit}"` : ''}><figcaption>${L(m.image.legende)}</figcaption></figure>` : ''}
       </header>
-      ${barreFocus()}
       <section class="essentiel" id="essentiel">
         <div class="ess-texte"><h2 class="etiquette">${t.ess}</h2><p>${L(C.essentiel)}</p></div>
-        ${C.chiffres ? `<div class="ess-chiffres">${C.chiffres.map(c => `<div class="chiffre"><b>${L(c.n)}</b><span>${L(c.d)}</span></div>`).join('')}</div>` : ''}
+        <div class="ess-cote">${barreFocus()}${C.chiffres ? `<div class="ess-chiffres">${C.chiffres.map(c => `<div class="chiffre"><b>${L(c.n)}</b><span>${L(c.d)}</span></div>`).join('')}</div>` : ''}</div>
       </section>
       ${coursFocus()}
       <div class="page"><main class="corps">${parties}</main></div>
