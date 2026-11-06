@@ -22,6 +22,14 @@ with sync_playwright() as p:
     page.pdf(path=dst, width="794px", height="1123px", print_background=True,
              margin={"top": "0", "bottom": "0", "left": "0", "right": "0"})
     nav.close()
-from pypdf import PdfReader
+from pypdf import PdfReader, PdfWriter
+# Chrome laisse un filet blanc de moins d'un point en haut et à droite : on rogne la page de 1,5 pt
+r = PdfReader(dst); w = PdfWriter()
+for pg in r.pages:
+    x, y = float(pg.mediabox.right), float(pg.mediabox.top)
+    for box in (pg.mediabox, pg.cropbox, pg.trimbox, pg.bleedbox, pg.artbox):
+        box.upper_right = (x - 1.5, y - 1.5)
+    w.add_page(pg)
+w.write(dst)
 n = len(PdfReader(dst).pages)
 print("✅ 1 page" if n == 1 and h <= 1123 else "❌ %d page(s), hauteur %d px" % (n, h))
