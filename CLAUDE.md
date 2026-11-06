@@ -959,7 +959,7 @@ demande directe), sans poser de question jusqu'à la mise en ligne :
 
 Les cours de civilisation (`deuxieme_annee/langues/<langue>/<pays>/civi-*.html`) passent un à un du vieux
 gabarit sombre (« TEMPLATE UNIVERSEL v1 ») au gabarit clair « Manuel », choisi par le propriétaire. Déjà
-faits : Royaume-Uni chapitres 1 (histoire), 2 (système politique), 3 (Brexit) et 4 (monarchie) : s'en inspirer. Demande type :
+faits : Royaume-Uni chapitres 1 (histoire), 2 (système politique), 3 (Brexit), 4 (monarchie) et 5 (santé) : s'en inspirer. Demande type :
 « Fais le chapitre sur … » + lien de la vidéo.
 
 - **Code commun** : `deuxieme_annee/langues/commun/civilisation.css` et `civilisation.js` (rendu du bloc
@@ -984,13 +984,13 @@ faits : Royaume-Uni chapitres 1 (histoire), 2 (système politique), 3 (Brexit) e
   `comparaison` (deux barres par ligne, ex. voix et sièges), `periodes` (frise de durées), `echelle`.
   **Pas de cases de faits** (`faits` : « Chef de l'État / Financement… ») : les transformer en paragraphe
   explicatif.
-- **Mode focus, fiche de cours et « Dans une copie »** (faits en novembre 2026 pour les chapitres 1 à 4 du Royaume-Uni ; à reproduire sur les autres chapitres) : trois clés dans le bloc `COURS`.
+- **Mode focus, fiche de cours et « Dans une copie »** (faits en novembre 2026 pour les chapitres 1 à 5 du Royaume-Uni ; à reproduire sur les autres chapitres) : trois clés dans le bloc `COURS`.
   `focus` = second cours réécrit en 10 minutes (question, réponse, parties, sous-parties avec chiffre clé, arguments, exemples,
   définitions, conclusions ; FR et langue étudiée ; 10 sous-parties, environ 1 500 mots), affiché à la place du cours complet par
   l'interrupteur « Mode focus » (mémorisé dans `ecg-cours:focus`, au-dessus des chiffres de « L'essentiel »). `ficheCours` = nom du PDF
   de la fiche d'une page (A4, choisie par le propriétaire sur maquette), lien « Fiche de cours (PDF) » à côté de l'interrupteur ;
   source dans `outils/fiche-civi/<chapitre>.html`, PDF avec `python3 outils/fiche-civi/generer.py <source> <pdf>` (doit rester sur une
-  page ; en-tête : **photo verticale** du chapitre recadrée en portrait (choix du propriétaire, novembre 2026 : Bayeux, Big Ben, foule du 31 janvier 2020), `object-position` réglé pour garder le sujet ; ne pas remettre d'anneau systématique, un petit graphique n'est qu'une variante occasionnelle). `copie` = « Dans une copie » comme dans les articles d'actualité (accroche qui part d'un fait daté et finit sur une question,
+  page ; en-tête : **photo verticale** du chapitre recadrée en portrait (choix du propriétaire, novembre 2026 : Bayeux, Big Ben, foule du 31 janvier 2020, cortège du couronnement, Bevan en 1948), `object-position` réglé pour garder le sujet ; ne pas remettre d'anneau systématique, un petit graphique n'est qu'une variante occasionnelle). `copie` = « Dans une copie » comme dans les articles d'actualité (accroche qui part d'un fait daté et finit sur une question,
   idée-force, 3 sujets sans matière, piège avec le bon chiffre), visible dans les deux modes. Rendu dans `civilisation.js` / `civilisation.css`.
 - **Photos** (6 à 9 par chapitre) : même méthode que les figures d'HGG (Wikimedia Commons, vignettes 1280
   ou 960 px, requêtes espacées, **chaque photo regardée**, légende fidèle à ce qu'elle montre), ou photo d'un
