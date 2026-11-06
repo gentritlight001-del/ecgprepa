@@ -984,6 +984,14 @@ faits : Royaume-Uni chapitres 1 (histoire), 2 (système politique) et 3 (Brexit)
   `comparaison` (deux barres par ligne, ex. voix et sièges), `periodes` (frise de durées), `echelle`.
   **Pas de cases de faits** (`faits` : « Chef de l'État / Financement… ») : les transformer en paragraphe
   explicatif.
+- **Mode focus, fiche de cours et « Dans une copie »** (Brexit fait, novembre 2026 ; à reproduire sur les autres chapitres) : trois clés dans le bloc `COURS`.
+  `focus` = second cours réécrit en 10 minutes (question, réponse, parties, sous-parties avec chiffre clé, arguments, exemples,
+  définitions, conclusions ; FR et langue étudiée ; 10 sous-parties, environ 1 500 mots), affiché à la place du cours complet par
+  l'interrupteur « Mode focus » (mémorisé dans `ecg-cours:focus`, au-dessus des chiffres de « L'essentiel »). `ficheCours` = nom du PDF
+  de la fiche d'une page (A4, choisie par le propriétaire sur maquette), lien « Fiche de cours (PDF) » à côté de l'interrupteur ;
+  source dans `outils/fiche-civi/<chapitre>.html`, PDF avec `python3 outils/fiche-civi/generer.py <source> <pdf>` (doit rester sur une
+  page). `copie` = « Dans une copie » comme dans les articles d'actualité (accroche qui part d'un fait daté et finit sur une question,
+  idée-force, 3 sujets sans matière, piège avec le bon chiffre), visible dans les deux modes. Rendu dans `civilisation.js` / `civilisation.css`.
 - **Photos** (6 à 9 par chapitre) : même méthode que les figures d'HGG (Wikimedia Commons, vignettes 1280
   ou 960 px, requêtes espacées, **chaque photo regardée**, légende fidèle à ce qu'elle montre), ou photo d'un
   article du site. Toujours en paysage (recadrer en 3:2 avec PIL si besoin), WebP dans `images/` du pays,
