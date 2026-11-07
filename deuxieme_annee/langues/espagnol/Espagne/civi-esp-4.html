@@ -1,896 +1,587 @@
 <!DOCTYPE html>
-<html lang="fr" data-theme="espagnol3">
+<html lang="fr" data-langue="espagnol">
 <head>
 <script src="../../../../auth.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Le Devoir de mémoire — Civilisation Hispanophone</title>
+<title>Le devoir de mémoire · Civilisation hispanophone</title>
 <link rel="stylesheet" href="../../../../fonts/fonts.css">
 
 <!-- ══════════════════════════════════════════════════════════════════════
-     TEMPLATE UNIVERSEL DE COURS DE CIVILISATION — v1
-     Pour créer un nouveau cours : dupliquer ce fichier, ne modifier QUE
-     le bloc de données (id="donnees") tout en bas. Rien d'autre à toucher.
+     GABARIT DE COURS DE CIVILISATION « MANUEL » (v2, illustré)
+     Le contenu est dans le bloc de données (id="donnees") en bas de page.
+     Blocs disponibles : p, encadre, citation, def, liste, faits, tl, stats,
+     tableau, image, images, graphique, comparaison, periodes, echelle,
+     schema. Style et rendu communs : ../../commun/civilisation.css et .js
+     Les couleurs viennent de data-langue (anglais, espagnol, allemand).
      ══════════════════════════════════════════════════════════════════════ -->
 
-<style>
-  /* ─── PALETTE DE BASE (identique au site) ─── */
-  :root{
-    --bg:#0d0d0f; --surface:#16161a; --surface2:#1e1e24; --border:#2a2a35;
-    --text:#e8e6e0; --text-dim:#8a8880; --text-faint:#4a4845;
-    --radius:14px;
-  }
-  /* ─── THÈMES PAR LANGUE — change data-theme sur <html> ─── */
-  html[data-theme="anglais"] { --a1:#c8a96e; --a2:#7c9ec9; --a3:#9ecba0; --a4:#c97c9e; --hero:#16233d; }
-  html[data-theme="anglais2"] { --a1:#c9633f; --a2:#5b8f6f; --a3:#6c8fc7; --a4:#a06bb0; --hero:#16241b; }
-  html[data-theme="espagnol"]{ --a1:#e0a93e; --a2:#c8553d; --a3:#7fae7a; --a4:#b06fa8; --hero:#3a1a18; }
-  html[data-theme="espagnol3"]{ --a1:#c9a24a; --a2:#4d7ea8; --a3:#5aa88f; --a4:#a85a6b; --hero:#101c2c; }
-  html[data-theme="espagnol4"]{ --a1:#a98ac9; --a2:#6fa89b; --a3:#cf8f5e; --a4:#c26a8e; --hero:#221a2c; }
-  html[data-theme="allemand"]{ --a1:#d8b44a; --a2:#8fa4bd; --a3:#84b58e; --a4:#c06060; --hero:#241f1a; }
-  html[data-theme="italien"] { --a1:#d5a94e; --a2:#6fae8f; --a3:#a8c07a; --a4:#c4695e; --hero:#152a24; }
-  html[data-theme="chinois"] { --a1:#d9a441; --a2:#c05a4a; --a3:#83a98f; --a4:#a97fb0; --hero:#2c1618; }
-
-  *{margin:0;padding:0;box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden}
-
-  /* ─── FOND ─── */
-  .bg-orb{position:fixed;border-radius:50%;filter:blur(140px);pointer-events:none;opacity:.08;z-index:0}
-  .orb1{width:700px;height:700px;background:var(--a1);top:-300px;right:-250px}
-  .orb2{width:600px;height:600px;background:var(--a2);bottom:-250px;left:-250px}
-
-  /* ─── BARRE DE PROGRESSION ─── */
-  #progress{position:fixed;top:0;left:0;height:2px;width:0;z-index:200;
-    background:linear-gradient(90deg,var(--a1),var(--a2),var(--a4));transition:width .1s linear}
-
-  /* ─── NAV ─── */
-  nav{display:flex;align-items:center;justify-content:space-between;gap:20px;
-    padding:16px 40px;border-bottom:1px solid var(--border);
-    background:rgba(13,13,15,.9);backdrop-filter:blur(16px);position:sticky;top:0;z-index:100}
-  .nav-logo{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--a1);cursor:pointer}
-  .breadcrumb{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--text-dim);flex-wrap:wrap}
-  .breadcrumb span{cursor:pointer;transition:color .2s}
-  .breadcrumb span:hover{color:var(--a1)}
-  .breadcrumb .sep{color:var(--text-faint);cursor:default}
-  .breadcrumb .current{color:var(--text);cursor:default}
-  .nav-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
-  .ap-lang-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);
-    color:rgba(255,255,255,.6);font-family:'DM Mono',monospace;font-size:10px;font-weight:700;
-    letter-spacing:.12em;padding:5px 14px;border-radius:4px;cursor:pointer;transition:all .2s;text-transform:uppercase}
-  .ap-lang-btn.active{background:var(--a1);border-color:var(--a1);color:#12100c}
-  .ap-lang-btn:hover:not(.active){background:rgba(255,255,255,.15);color:#fff}
-
-  /* ─── HERO ─── */
-  .hero{position:relative;z-index:1;padding:76px 40px 56px;text-align:center;overflow:hidden;
-    background:linear-gradient(160deg,var(--hero),#0d0d0f 85%);border-bottom:1px solid var(--border)}
-  .hero::after{content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);
-    width:80px;height:2px;background:var(--a1)}
-  .hero-flag{font-size:2.6rem;line-height:1;margin-bottom:18px;display:block}
-  .hero-label{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.3em;
-    text-transform:uppercase;color:var(--a1);margin-bottom:18px}
-  .hero h1{font-family:'Playfair Display',serif;font-weight:900;line-height:1.05;
-    font-size:clamp(2.4rem,6vw,4.6rem);max-width:900px;margin:0 auto 18px}
-  .hero-sub{font-size:1rem;color:var(--text-dim);max-width:640px;margin:0 auto;line-height:1.6}
-
-  /* ─── LAYOUT ─── */
-  .layout{display:flex;gap:48px;max-width:1320px;margin:0 auto;padding:48px 40px 100px;position:relative;z-index:1}
-  main{flex:1;min-width:0;max-width:840px}
-
-  /* ─── COLONNE CHRONOLOGIE ─── */
-  .rail{width:262px;flex-shrink:0;position:sticky;top:88px;align-self:flex-start;
-    max-height:calc(100vh - 118px);overflow-y:auto;padding-right:8px}
-  .rail-title{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;
-    color:var(--a1);margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid var(--border)}
-  .rail .tl{padding-left:20px;margin:0 0 0 4px}
-  .rail .tl-item{padding-bottom:16px}
-  .rail .tl-item::before{left:-26px;top:4px;width:7px;height:7px}
-  .rail .tl-d{font-size:.66rem;letter-spacing:.08em}
-  .rail .tl-c{font-size:.79rem;line-height:1.5}
-  .rail::-webkit-scrollbar{width:3px}
-  .rail::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-  .chrono-mobile{display:none}
-
-  /* ─── BLOC GÉNÉRIQUE ─── */
-  .bloc{margin-bottom:64px;scroll-margin-top:88px}
-  .bloc-head{display:flex;align-items:baseline;gap:14px;margin-bottom:24px;
-    padding-bottom:12px;border-bottom:1px solid var(--border)}
-  .bloc-kicker{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.28em;
-    text-transform:uppercase;color:var(--k,var(--a1))}
-  .bloc-title{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--text)}
-
-  /* ─── L'ESSENTIEL ─── */
-  .essentiel{background:linear-gradient(135deg,rgba(255,255,255,.045),rgba(255,255,255,.015));
-    border:1px solid var(--border);border-left:3px solid var(--a1);border-radius:var(--radius);
-    padding:28px 30px;margin-bottom:36px}
-  .essentiel-label{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.28em;
-    text-transform:uppercase;color:var(--a1);margin-bottom:14px}
-  .essentiel p{font-size:.98rem;line-height:1.75;color:var(--text);margin-bottom:0}
-  .essentiel p strong{color:var(--a1);font-weight:500}
-
-  /* ─── STATS ─── */
-  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:22px 0}
-  .stat{border-radius:10px;padding:18px 16px;text-align:center;border:1px solid rgba(255,255,255,.08);
-    background:linear-gradient(135deg,color-mix(in srgb,var(--c,var(--a1)) 26%,#101014),
-    color-mix(in srgb,var(--c,var(--a1)) 8%,#101014))}
-  .stat-n{font-family:'DM Mono',monospace;font-size:1.5rem;font-weight:500;color:var(--text);display:block;line-height:1.1}
-  .stat-d{font-size:.7rem;color:var(--text-dim);margin-top:7px;display:block;line-height:1.45}
-
-  /* ─── PARTIES ─── */
-  .partie{margin-bottom:78px;scroll-margin-top:88px}
-  .partie-head{display:flex;align-items:center;gap:22px;margin-bottom:34px;
-    padding-bottom:18px;border-bottom:2px solid var(--p)}
-  .partie-num{font-family:'Playfair Display',serif;font-size:3.4rem;font-weight:900;
-    color:var(--p);opacity:.35;line-height:.9;flex-shrink:0}
-  .partie-title{font-family:'Playfair Display',serif;font-size:clamp(1.35rem,3vw,1.95rem);
-    font-weight:700;line-height:1.2}
-  .partie-kicker{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.24em;
-    text-transform:uppercase;color:var(--p);margin-bottom:6px}
-
-  .section{margin-bottom:44px;scroll-margin-top:88px}
-  .section-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;
-    color:var(--text);margin-bottom:18px;padding-left:16px;border-left:3px solid var(--p)}
-  .section-num{color:var(--p);font-weight:900}
-
-  /* ─── TEXTE ─── */
-  .prose{font-size:.96rem;line-height:1.8;color:rgba(232,230,224,.78);margin-bottom:16px}
-  .prose strong{color:var(--text);font-weight:500}
-  .prose em{color:var(--p,var(--a1));font-style:normal;font-weight:500}
-  .es{font-family:'DM Mono',monospace;font-size:.86em;color:var(--a2)}
-
-  /* ─── LISTE ─── */
-  .liste{list-style:none;margin:14px 0 20px}
-  .liste li{font-size:.93rem;line-height:1.65;color:rgba(232,230,224,.75);
-    padding:9px 0 9px 22px;position:relative;border-bottom:1px solid rgba(255,255,255,.05)}
-  .liste li:last-child{border-bottom:none}
-  .liste li::before{content:'';position:absolute;left:0;top:17px;width:6px;height:6px;
-    border-radius:50%;background:var(--p,var(--a1))}
-  .liste li strong{color:var(--text);font-weight:500}
-
-  /* ─── FAITS CLÉS ─── */
-  .faits{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:9px;margin:20px 0}
-  .fait{background:rgba(255,255,255,.03);border:1px solid var(--border);
-    border-left:3px solid var(--p,var(--a1));border-radius:8px;padding:13px 15px}
-  .fait-l{font-family:'DM Mono',monospace;font-size:.6rem;color:var(--text-faint);
-    text-transform:uppercase;letter-spacing:.14em;margin-bottom:5px}
-  .fait-v{font-size:.86rem;font-weight:500;color:var(--text);line-height:1.4}
-
-  /* ─── CITATION ─── */
-  .citation{background:linear-gradient(135deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
-    border:1px solid var(--border);border-left:3px solid var(--a1);border-radius:0 10px 10px 0;
-    padding:20px 24px;margin:22px 0}
-  .citation p{font-family:'Playfair Display',serif;font-style:italic;font-size:1.02rem;
-    line-height:1.6;color:var(--text);margin-bottom:9px}
-  .citation cite{font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.08em;
-    color:var(--a1);font-style:normal}
-
-  /* ─── ENCADRÉ ─── */
-  .encadre{display:flex;gap:15px;align-items:flex-start;border-radius:10px;padding:17px 20px;margin:20px 0;
-    background:color-mix(in srgb,var(--c,var(--a2)) 7%,transparent);
-    border:1px solid color-mix(in srgb,var(--c,var(--a2)) 26%,transparent)}
-  .encadre-ic{font-size:1.5rem;flex-shrink:0;line-height:1.2}
-  .encadre-t{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.2em;
-    text-transform:uppercase;color:var(--c,var(--a2));margin-bottom:7px;font-weight:500}
-  .encadre-c{font-size:.89rem;line-height:1.7;color:rgba(232,230,224,.75)}
-  .encadre-c strong{color:var(--text);font-weight:500}
-
-  /* ─── DÉFINITION ─── */
-  .def{border:1px dashed var(--border);border-radius:10px;padding:15px 18px;margin:18px 0;
-    background:rgba(255,255,255,.02)}
-  .def-mot{font-family:'Playfair Display',serif;font-weight:700;font-size:1rem;color:var(--a3);margin-bottom:6px}
-  .def-c{font-size:.88rem;line-height:1.7;color:rgba(232,230,224,.72)}
-
-  /* ─── TABLEAU ─── */
-  .tbl-wrap{overflow-x:auto;margin:20px 0;border:1px solid var(--border);border-radius:10px}
-  table{width:100%;border-collapse:collapse;font-size:.83rem}
-  thead{background:rgba(255,255,255,.04)}
-  thead th{padding:11px 15px;text-align:left;font-family:'DM Mono',monospace;font-size:.6rem;
-    letter-spacing:.16em;text-transform:uppercase;color:var(--text-dim);white-space:nowrap}
-  tbody tr{border-top:1px solid var(--border)}
-  tbody tr:nth-child(even){background:rgba(255,255,255,.015)}
-  tbody td{padding:11px 15px;color:rgba(232,230,224,.75);line-height:1.5}
-  tbody td:first-child{color:var(--text);font-weight:500}
-
-  /* ─── CHRONOLOGIE ─── */
-  .tl{border-left:2px solid var(--border);padding-left:26px;margin:8px 0 8px 6px}
-  .tl-item{position:relative;padding-bottom:22px}
-  .tl-item:last-child{padding-bottom:0}
-  .tl-item::before{content:'';position:absolute;left:-33px;top:5px;width:9px;height:9px;border-radius:50%;
-    background:var(--c,var(--a1));box-shadow:0 0 0 3px rgba(13,13,15,1),0 0 0 5px color-mix(in srgb,var(--c,var(--a1)) 35%,transparent)}
-  .tl-d{font-family:'DM Mono',monospace;font-size:.72rem;font-weight:500;letter-spacing:.1em;
-    color:var(--c,var(--a1));margin-bottom:4px}
-  .tl-c{font-size:.9rem;line-height:1.6;color:rgba(232,230,224,.75)}
-  .tl-c strong{color:var(--text);font-weight:500}
-
-  /* ─── ACTEURS ─── */
-  .acteurs{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
-  .acteur{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;
-    transition:all .25s;position:relative;overflow:hidden}
-  .acteur:hover{border-color:var(--c,var(--a1));transform:translateY(-3px);background:var(--surface2)}
-  .acteur-nom{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;margin-bottom:3px}
-  .acteur-role{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
-    color:var(--c,var(--a1));margin-bottom:10px}
-  .acteur-c{font-size:.82rem;line-height:1.6;color:var(--text-dim)}
-
-  /* ─── DÉBAT ─── */
-  .debat{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  .debat-col{border:1px solid var(--border);border-radius:12px;padding:20px 22px;background:rgba(255,255,255,.02)}
-  .debat-col.oui{border-top:3px solid var(--a3)}
-  .debat-col.non{border-top:3px solid var(--a4)}
-  .debat-t{font-family:'DM Mono',monospace;font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:14px}
-  .debat-col.oui .debat-t{color:var(--a3)}
-  .debat-col.non .debat-t{color:var(--a4)}
-  .debat-col li{font-size:.87rem;line-height:1.6;color:rgba(232,230,224,.75);
-    padding:9px 0 9px 18px;position:relative;list-style:none;border-bottom:1px solid rgba(255,255,255,.05)}
-  .debat-col li:last-child{border-bottom:none}
-  .debat-col li::before{content:'';position:absolute;left:0;top:16px;width:5px;height:5px;border-radius:50%}
-  .debat-col.oui li::before{background:var(--a3)}
-  .debat-col.non li::before{background:var(--a4)}
-  .debat-col li strong{color:var(--text);font-weight:500}
-
-  /* ─── LEXIQUE ─── */
-  .lex-search{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;
-    color:var(--text);font-family:'DM Sans',sans-serif;font-size:.88rem;padding:11px 15px;margin-bottom:14px}
-  .lex-search:focus{outline:none;border-color:var(--a1)}
-  .lex-search::placeholder{color:var(--text-faint)}
-  .lex td:first-child{font-family:'DM Mono',monospace;color:var(--a2);font-weight:500}
-
-  /* ─── SUJETS ─── */
-  .sujet{border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:10px;
-    background:var(--surface);display:flex;gap:16px;align-items:flex-start;transition:all .2s}
-  .sujet:hover{border-color:var(--a4);transform:translateX(4px)}
-  .sujet-n{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:var(--text-faint);line-height:1;flex-shrink:0}
-  .sujet-q{font-size:.94rem;line-height:1.6;color:var(--text);margin-bottom:5px;font-weight:400}
-  .sujet-h{font-size:.79rem;color:var(--text-dim);line-height:1.55}
-
-  /* ─── À RETENIR ─── */
-  .retenir{background:linear-gradient(135deg,color-mix(in srgb,var(--a1) 12%,transparent),rgba(255,255,255,.02));
-    border:1px solid color-mix(in srgb,var(--a1) 30%,transparent);border-radius:var(--radius);padding:28px 30px}
-  .retenir li{font-size:.93rem;line-height:1.65;color:rgba(232,230,224,.82);
-    padding:10px 0 10px 26px;position:relative;list-style:none;border-bottom:1px solid rgba(255,255,255,.06)}
-  .retenir li:last-child{border-bottom:none}
-  .retenir li::before{content:'✓';position:absolute;left:0;top:9px;color:var(--a1);font-size:.85rem}
-  .retenir li strong{color:var(--text);font-weight:500}
-
-  /* ─── PIED DE PAGE ─── */
-  footer{text-align:center;padding:36px 40px;border-top:1px solid var(--border);
-    font-family:'DM Mono',monospace;font-size:.7rem;color:var(--text-dim);letter-spacing:.14em;
-    text-transform:uppercase}
-
-  /* ─── ANIMATION ─── */
-  .rev{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
-  .rev.vu{opacity:1;transform:none}
-  @media(prefers-reduced-motion:reduce){.rev{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}}
-  :focus-visible{outline:2px solid var(--a1);outline-offset:3px}
-
-  /* ─── RESPONSIVE ─── */
-  @media(max-width:1080px){
-    .rail{display:none}
-    .layout{padding:32px 22px 70px}
-    .chrono-mobile{display:block}
-  }
-  @media(max-width:680px){
-    nav{padding:12px 18px;flex-wrap:wrap}
-    .breadcrumb{font-size:.7rem;order:3;width:100%}
-    .hero{padding:52px 20px 40px}
-    .debat{grid-template-columns:1fr}
-    .partie-head{gap:14px}
-    .partie-num{font-size:2.4rem}
-  }
-  /* ─── IMPRESSION ─── */
-  @media print{
-    body{background:#fff;color:#111}
-    nav,.rail,#progress,.bg-orb,.nav-right{display:none!important}
-    .hero{background:none;border-bottom:2px solid #111;padding:0 0 22px}
-    .hero h1,.prose,.liste li,.bloc-title{color:#111}
-    .layout{display:block;padding:0}
-    .partie,.bloc{break-inside:avoid;page-break-inside:avoid}
-    .rev{opacity:1;transform:none}
-    .chrono-mobile{display:block!important}
-  }
-</style>
+<link rel="stylesheet" href="../../commun/civilisation.css">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Le Devoir de mémoire">
-<meta property="og:image" content="https://ecg-prepa.fr/partage/cours/deuxieme_annee-langues-espagnol-Espagne-civi-esp-4.jpg?v=202610202049">
+<meta property="og:image" content="https://ecg-prepa.fr/partage/cours/deuxieme_annee-langues-espagnol-Espagne-civi-esp-4.jpg?v=202611070647">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Le Devoir de mémoire">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://ecg-prepa.fr/partage/cours/deuxieme_annee-langues-espagnol-Espagne-civi-esp-4.jpg?v=202610202049">
+<meta name="twitter:image" content="https://ecg-prepa.fr/partage/cours/deuxieme_annee-langues-espagnol-Espagne-civi-esp-4.jpg?v=202611070647">
 <meta name="description" content="Cours de civilisation : Le Devoir de mémoire. Chronologie, acteurs clés et analyse pour l&#x27;épreuve de langue en prépa ECG.">
 <link rel="canonical" href="https://ecg-prepa.fr/deuxieme_annee/langues/espagnol/Espagne/civi-esp-4.html">
 <link rel="stylesheet" href="../../../../barre-section.css">
 </head>
 <body>
 
-<div id="progress"></div>
-<div class="bg-orb orb1"></div>
-<div class="bg-orb orb2"></div>
-
-<nav class="sn sn-cours sn-espagnol">
-  <div class="nav-logo sn-logo" onclick="location.href='../../../../index.html'">ECG Prépa</div>
-  <div class="breadcrumb sn-fil">
-    <span onclick="location.href='../../../../index.html'">Accueil</span>
-    <span class="sep">/</span>
-    <span onclick="location.href='../../../index.html'">2ème Année</span>
-    <span class="sep">/</span>
-    <span onclick="location.href='../../index.html'">Langues</span>
-    <span class="sep">/</span>
-    <span onclick="location.href='../index.html'">Civilisation</span>
-    <span class="sep">/</span>
-    <span class="current" id="bc-titre">—</span>
+<nav class="barre sn sn-cours sn-espagnol">
+  <a class="logo sn-logo" href="../../../../index.html">ECG Prépa</a>
+  <div class="ariane sn-fil" aria-label="Fil d'Ariane">
+    <a href="../../../../index.html">Accueil</a><i>/</i>
+    <a href="../../../index.html">2e année</a><i>/</i>
+    <a href="../../index.html">Langues</a><i>/</i>
+    <a href="../index.html">Civilisation</a><i>/</i>
+    <b id="bc-titre">Le devoir de mémoire</b>
   </div>
   <div class="nav-right">
-    <button id="ap-btn-fr" class="ap-lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
-    <button id="ap-btn-es" class="ap-lang-btn" onclick="setLang('es')">🇪🇸 ES</button>
+    <div class="langues" role="group" aria-label="Langue">
+      <button type="button" data-l="fr" class="on" aria-label="Français">FR</button>
+      <button type="button" data-l="es" aria-label="Español">ES</button>
+    </div>
   </div>
 </nav>
 
-<header class="hero" id="hero"></header>
+<div id="cours"></div>
 
-<div class="layout">
-  <aside class="rail" id="rail"></aside>
-  <main id="cours"></main>
-</div>
-
-<footer id="ft"></footer>
-
-
-<!-- ══════════════════════════════════════════════════════════════════
-     ⬇⬇⬇  SEULE PARTIE À MODIFIER POUR UN NOUVEAU COURS  ⬇⬇⬇
-     ══════════════════════════════════════════════════════════════════ -->
+<!-- ══════════════════════════════════════════════════════════════════════
+     ⬇⬇⬇  BLOC DE DONNÉES DU COURS  ⬇⬇⬇
+     ══════════════════════════════════════════════════════════════════════ -->
 <script id="donnees">
 const COURS = {
-
-  /* ─── 1. IDENTITÉ DU COURS ───────────────────────────────────────── */
   meta: {
-    theme:     "espagnol4",                  // anglais | anglais2 | espagnol | espagnol2 | espagnol3 | espagnol4 | allemand | italien | chinois
-    drapeau:   "🕯️",
-    chapitre:  "4",
-    label:     { fr:"Espagne · Chapitre 04", es:"España · Capítulo 04" },
-    titre:     { fr:"Le Devoir de mémoire", es:"El Deber de memoria" },
-    sousTitre: { fr:"Du « pacte de l'oubli » aux fosses communes rouvertes : comment l'Espagne est passée du silence négocié à une mémoire d'État.",
-                 es:"Del «pacto del olvido» a las fosas comunes reabiertas: cómo España pasó del silencio negociado a una memoria de Estado." }
+    theme: "espagnol",
+    drapeau: "🇪🇸",
+    chapitre: "4",
+    label: { fr: "Espagne · Chapitre 04", es: "España · Capítulo 04" },
+    titre: { fr: "Le devoir de mémoire", es: "La memoria histórica" },
+    sousTitre: {
+      fr: "Du « pacte de l'oubli » aux fosses communes rouvertes : comment l'Espagne est passée d'un silence négocié à une mémoire d'État, toujours disputée.",
+      es: "Del «pacto del olvido» a las fosas comunes reabiertas: cómo España pasó de un silencio negociado a una memoria de Estado, todavía disputada."
+    },
+    image: {
+      src: "images/memoire-exhumation-armh.webp",
+      alt: {
+        fr: "Deux bénévoles penchés sur une fosse creusée dans une pente boisée dégagent des restes humains à la main, près de caisses en plastique",
+        es: "Dos voluntarios inclinados sobre una fosa excavada en una ladera boscosa sacan a mano restos humanos, junto a cajas de plástico"
+      },
+      legende: {
+        fr: "Exhumation d'une fosse de victimes de la guerre civile par l'Association pour la récupération de la mémoire historique (ARMH), dans le Bierzo, en 2008.",
+        es: "Exhumación de una fosa de víctimas de la guerra civil por la Asociación para la Recuperación de la Memoria Histórica (ARMH), en el Bierzo, en 2008."
+      },
+      credit: "FCPB, CC BY-SA"
+    }
   },
 
-  /* ─── 2. L'ESSENTIEL + CHIFFRES CLÉS ─────────────────────────────── */
   essentiel: {
-    fr:"Le <strong>devoir de mémoire</strong> (<span class='es'>memoria histórica</span>, puis <span class='es'>memoria democrática</span>) désigne l'ensemble des revendications, des politiques publiques et des conflits liés au traitement des victimes de la guerre civile (1936-1939) et de la dictature franquiste. La Transition avait fait reposer la réconciliation sur un <em>silence négocié</em> : la <strong>loi d'amnistie de 1977</strong>, saluée à l'époque comme un geste de paix civile, empêche de fait tout jugement des crimes du régime — ce que la critique appellera le <strong>« pacte de l'oubli »</strong>. À partir de <strong>2000</strong>, la « génération des petits-enfants » rouvre les <strong>fosses communes</strong> et transforme une affaire de familles en question d'État : loi de mémoire historique de <strong>2007</strong>, exhumation de Franco du Valle de los Caídos en <strong>2019</strong>, <strong>loi de mémoire démocratique de 2022</strong> qui fait de la recherche des disparus une obligation de l'État. Mais cette mémoire officielle est aussitôt contestée : depuis 2023, plusieurs communautés autonomes gouvernées par le PP et Vox abrogent leurs lois mémorielles pour les remplacer par des <em>« lois de concorde »</em>. La mémoire n'est donc pas en Espagne un héritage apaisé, mais un enjeu politique vivant.",
-    es:"El <strong>deber de memoria</strong> (<span class='es'>memoria histórica</span>, luego <span class='es'>memoria democrática</span>) designa el conjunto de reivindicaciones, políticas públicas y conflictos ligados al tratamiento de las víctimas de la guerra civil (1936-1939) y de la dictadura franquista. La Transición había hecho descansar la reconciliación sobre un <em>silencio negociado</em>: la <strong>ley de amnistía de 1977</strong>, saludada entonces como un gesto de paz civil, impide de hecho cualquier juicio de los crímenes del régimen — lo que la crítica llamará el <strong>«pacto del olvido»</strong>. A partir del año <strong>2000</strong>, la «generación de los nietos» reabre las <strong>fosas comunes</strong> y convierte un asunto de familias en una cuestión de Estado: ley de memoria histórica de <strong>2007</strong>, exhumación de Franco del Valle de los Caídos en <strong>2019</strong>, <strong>ley de memoria democrática de 2022</strong> que convierte la búsqueda de los desaparecidos en una obligación del Estado. Pero esa memoria oficial es de inmediato impugnada: desde 2023, varias comunidades autónomas gobernadas por el PP y Vox derogan sus leyes memorialistas para sustituirlas por <em>«leyes de concordia»</em>. La memoria no es, pues, en España una herencia apaciguada, sino una cuestión política viva."
+    fr: "Le devoir de mémoire (<em>memoria histórica</em>, puis <em>memoria democrática</em>) désigne les revendications, les politiques publiques et les conflits liés aux victimes de la guerre civile et de la dictature. La Transition avait fondé la réconciliation sur un <strong>silence négocié</strong> : la loi d'amnistie de 1977, saluée comme un geste de paix civile, empêche de juger les crimes du régime, ce que la critique appellera le « pacte de l'oubli ». À partir de 2000, la <strong>génération des petits-enfants</strong> rouvre les fosses communes et fait d'une affaire de familles une question d'État : loi de 2007, exhumation de Franco en 2019, loi de mémoire démocratique de 2022 qui fait de la recherche des disparus une <strong>obligation de l'État</strong>. Cette mémoire officielle reste contestée : depuis 2023, des régions gouvernées par le PP et Vox votent des « lois de concorde ».",
+    es: "La memoria histórica (luego <em>memoria democrática</em>) designa las reivindicaciones, las políticas públicas y los conflictos ligados a las víctimas de la guerra civil y de la dictadura. La Transición había fundado la reconciliación sobre un <strong>silencio negociado</strong>: la Ley de Amnistía de 1977, celebrada como un gesto de paz civil, impide juzgar los crímenes del régimen, lo que la crítica llamará el «pacto del olvido». A partir de 2000, la <strong>generación de los nietos</strong> reabre las fosas comunes y convierte un asunto de familias en una cuestión de Estado: ley de 2007, exhumación de Franco en 2019, Ley de Memoria Democrática de 2022, que hace de la búsqueda de los desaparecidos una <strong>obligación del Estado</strong>. Esta memoria oficial sigue discutida: desde 2023, regiones gobernadas por el PP y Vox aprueban «leyes de concordia»."
   },
   chiffres: [
-    { n:"114 226", d:{ fr:"disparus recensés entre 1936 et 1951 dans l'enquête du juge Garzón (2008)", es:"desaparecidos censados entre 1936 y 1951 en la investigación del juez Garzón (2008)" } },
-    { n:"1977", d:{ fr:"loi d'amnistie : fondement juridique du « pacte de l'oubli »", es:"ley de amnistía: fundamento jurídico del «pacto del olvido»" } },
-    { n:"2019", d:{ fr:"exhumation de Franco du Valle de los Caídos, 44 ans après sa mort", es:"exhumación de Franco del Valle de los Caídos, 44 años después de su muerte" } },
-    { n:"2022", d:{ fr:"loi de mémoire démocratique : l'État se charge lui-même des exhumations", es:"ley de memoria democrática: el Estado asume las exhumaciones" } }
+    { n: "114 226", d: { fr: "disparus de 1936 à 1951 recensés par le juge Garzón en 2008", es: "desaparecidos de 1936 a 1951 recensados por el juez Garzón en 2008" } },
+    { n: "1977", d: { fr: "loi d'amnistie, fondement juridique du « pacte de l'oubli », jamais abrogée", es: "Ley de Amnistía, fundamento jurídico del «pacto del olvido», nunca derogada" } },
+    { n: { fr: "≈ 34 000", es: "≈ 34 000" }, d: { fr: "dépouilles des deux camps transférées au Valle de los Caídos", es: "restos de ambos bandos trasladados al Valle de los Caídos" } },
+    { n: { fr: "≈ 9 000", es: "≈ 9 000" }, d: { fr: "dépouilles récupérées en trois ans de loi de 2022 (bilan de novembre 2025)", es: "restos recuperados en tres años de ley de 2022 (balance de noviembre de 2025)" } }
   ],
 
-  /* ─── 3. CHRONOLOGIE ─────────────────────────────────────────────── */
-  chronologie: [
-    { d:{fr:"1940-1959",es:"1940-1959"}, c:{fr:"Construction du <strong>Valle de los Caídos</strong>, en partie par des prisonniers politiques : mausolée officiel des « caídos » du camp vainqueur.", es:"Construcción del <strong>Valle de los Caídos</strong>, en parte por presos políticos: mausoleo oficial de los «caídos» del bando vencedor."} },
-    { d:{fr:"15 octobre 1977",es:"15 de octubre de 1977"}, c:{fr:"<strong>Ley de Amnistía</strong> : elle libère les prisonniers politiques mais couvre aussi les agents de la répression.", es:"<strong>Ley de Amnistía</strong>: libera a los presos políticos pero también ampara a los agentes de la represión."} },
-    { d:{fr:"1978-1999",es:"1978-1999"}, c:{fr:"Période du <strong>« pacte de l'oubli »</strong> : la mémoire des vaincus reste familiale, locale et largement invisible.", es:"Periodo del <strong>«pacto del olvido»</strong>: la memoria de los vencidos sigue siendo familiar, local y en gran medida invisible."} },
-    { d:{fr:"Octobre 2000",es:"Octubre de 2000"}, c:{fr:"Première exhumation scientifique d'une fosse commune à <strong>Priaranza del Bierzo</strong> ; fondation de l'<strong>ARMH</strong> par Emilio Silva.", es:"Primera exhumación científica de una fosa común en <strong>Priaranza del Bierzo</strong>; fundación de la <strong>ARMH</strong> por Emilio Silva."} },
-    { d:{fr:"Novembre 2002",es:"Noviembre de 2002"}, c:{fr:"Le Congrès des députés condamne pour la première fois le <strong>coup d'État de 1936</strong> et reconnaît les victimes.", es:"El Congreso de los Diputados condena por primera vez el <strong>golpe de Estado de 1936</strong> y reconoce a las víctimas."} },
-    { d:{fr:"26 décembre 2007",es:"26 de diciembre de 2007"}, c:{fr:"<strong>Ley de Memoria Histórica</strong> (52/2007) sous Zapatero : reconnaissance des victimes, retrait des symboles, aide aux exhumations.", es:"<strong>Ley de Memoria Histórica</strong> (52/2007) bajo Zapatero: reconocimiento de las víctimas, retirada de símbolos, ayudas a las exhumaciones."} },
-    { d:{fr:"16 octobre 2008",es:"16 de octubre de 2008"}, c:{fr:"Le juge <strong>Baltasar Garzón</strong> se déclare compétent pour enquêter sur les crimes du franquisme — avant d'être dessaisi et poursuivi.", es:"El juez <strong>Baltasar Garzón</strong> se declara competente para investigar los crímenes del franquismo — antes de ser apartado y procesado."} },
-    { d:{fr:"14 avril 2010",es:"14 de abril de 2010"}, c:{fr:"Dépôt de la <strong>querella argentina</strong> à Buenos Aires : la juge María Servini ouvre une enquête au nom de la compétence universelle.", es:"Presentación de la <strong>querella argentina</strong> en Buenos Aires: la jueza María Servini abre una investigación en nombre de la jurisdicción universal."} },
-    { d:{fr:"2012",es:"2012"}, c:{fr:"Garzón est acquitté dans l'affaire de la mémoire, mais le Tribunal suprême ferme la voie judiciaire interne.", es:"Garzón es absuelto en el caso de la memoria, pero el Tribunal Supremo cierra la vía judicial interna."} },
-    { d:{fr:"2013",es:"2013"}, c:{fr:"La justice argentine émet des <strong>mandats d'arrêt internationaux</strong> contre d'anciens tortionnaires ; l'Espagne refuse les extraditions.", es:"La justicia argentina emite <strong>órdenes de detención internacionales</strong> contra antiguos torturadores; España rechaza las extradiciones."} },
-    { d:{fr:"Octobre 2018",es:"Octubre de 2018"}, c:{fr:"Premier procès des <strong>bébés volés</strong> : les faits sont jugés établis mais prescrits, le médecin est acquitté.", es:"Primer juicio de los <strong>bebés robados</strong>: los hechos se consideran probados pero prescritos, y el médico es absuelto."} },
-    { d:{fr:"24 octobre 2019",es:"24 de octubre de 2019"}, c:{fr:"<strong>Exhumation de Franco</strong> du Valle de los Caídos et transfert de sa dépouille au cimetière de Mingorrubio.", es:"<strong>Exhumación de Franco</strong> del Valle de los Caídos y traslado de sus restos al cementerio de Mingorrubio."} },
-    { d:{fr:"19 octobre 2022",es:"19 de octubre de 2022"}, c:{fr:"<strong>Ley de Memoria Democrática</strong> (20/2022) : les exhumations deviennent une obligation de l'État.", es:"<strong>Ley de Memoria Democrática</strong> (20/2022): las exhumaciones pasan a ser una obligación del Estado."} },
-    { d:{fr:"24 avril 2023",es:"24 de abril de 2023"}, c:{fr:"Exhumation de <strong>José Antonio Primo de Rivera</strong> : le Valle, rebaptisé <em>Cuelgamuros</em>, perd ses deux tombes emblématiques.", es:"Exhumación de <strong>José Antonio Primo de Rivera</strong>: el Valle, rebautizado <em>Cuelgamuros</em>, pierde sus dos tumbas emblemáticas."} },
-    { d:{fr:"2023-2026",es:"2023-2026"}, c:{fr:"Vague de <strong>« lois de concorde »</strong> régionales (PP-Vox) abrogeant les lois mémorielles autonomes ; recours devant le Tribunal constitutionnel.", es:"Oleada de <strong>«leyes de concordia»</strong> autonómicas (PP-Vox) que derogan las leyes memorialistas; recursos ante el Tribunal Constitucional."} },
-    { d:{fr:"2025",es:"2025"}, c:{fr:"Cinquantenaire de la mort de Franco : programme officiel <strong>« España en Libertad. 50 años »</strong>, plus de cent commémorations.", es:"Cincuentenario de la muerte de Franco: programa oficial <strong>«España en Libertad. 50 años»</strong>, más de cien conmemoraciones."} }
-  ],
-
-  /* ─── 4. LE COURS : PARTIES > SECTIONS > BLOCS ───────────────────── */
   parties: [
   {
-    num:"I",
-    kicker:{fr:"Les origines",es:"Los orígenes"},
-    titre:{fr:"Le silence fondateur : amnistie, « pacte de l'oubli » et mémoire asymétrique (1977-1999)",
-           es:"El silencio fundacional: amnistía, «pacto del olvido» y memoria asimétrica (1977-1999)"},
-    couleur:"var(--a2)",
-    sections:[
+    num: "I",
+    kicker: { fr: "Le silence fondateur", es: "El silencio fundacional" },
+    titre: { fr: "Amnistie, « pacte de l'oubli » et mémoire inégale (1939-1999)", es: "Amnistía, «pacto del olvido» y memoria desigual (1939-1999)" },
+    couleur: "var(--a1)",
+    sections: [
       {
-        titre:{fr:"La loi d'amnistie de 1977 : réconciliation ou impunité ?",
-               es:"La ley de amnistía de 1977: ¿reconciliación o impunidad?"},
-        blocs:[
-          { t:"p", c:{
-            fr:"Adoptée le <strong>15 octobre 1977</strong>, quatre mois après les premières élections libres, la <strong>Ley de Amnistía</strong> est d'abord une revendication de l'opposition antifranquiste : elle vide les prisons de leurs détenus politiques et permet le retour des exilés. Mais le texte comporte une seconde face : il éteint également la responsabilité pénale des <strong>fonctionnaires et agents de l'ordre public</strong> pour les actes commis dans l'exercice de leurs fonctions contre l'exercice des droits des personnes. Autrement dit, la même loi libère les victimes et protège leurs bourreaux.",
-            es:"Aprobada el <strong>15 de octubre de 1977</strong>, cuatro meses después de las primeras elecciones libres, la <strong>Ley de Amnistía</strong> es ante todo una reivindicación de la oposición antifranquista: vacía las cárceles de presos políticos y permite el regreso de los exiliados. Pero el texto tiene una segunda cara: extingue igualmente la responsabilidad penal de los <strong>funcionarios y agentes del orden público</strong> por los actos cometidos en el ejercicio de sus funciones contra el ejercicio de los derechos de las personas. Dicho de otro modo, la misma ley libera a las víctimas y protege a sus verdugos."} },
-          { t:"p", c:{
-            fr:"Cette ambivalence explique le double regard porté sur elle. Pour ses défenseurs, elle est la <strong>condition de possibilité</strong> de la Transition : sans garantie d'impunité, ni l'armée ni l'appareil judiciaire hérités du régime n'auraient laissé la démocratie s'installer. Pour ses critiques — dont, depuis 2008, le <strong>Comité des droits de l'homme des Nations unies</strong>, qui recommande son abrogation —, elle institue une <em>impunité perpétuelle</em> contraire au droit international, puisque les crimes contre l'humanité y sont réputés imprescriptibles et non amnistiables.",
-            es:"Esta ambivalencia explica la doble mirada que suscita. Para sus defensores, es la <strong>condición de posibilidad</strong> de la Transición: sin garantía de impunidad, ni el ejército ni el aparato judicial heredados del régimen habrían dejado instalarse la democracia. Para sus críticos —entre ellos, desde 2008, el <strong>Comité de Derechos Humanos de las Naciones Unidas</strong>, que recomienda su derogación—, instaura una <em>impunidad perpetua</em> contraria al derecho internacional, puesto que los crímenes contra la humanidad se consideran imprescriptibles y no amnistiables."} },
-          { t:"encadre", icon:"🤐", c:"var(--a2)",
-            titre:{fr:"Notion clé — le pacto del olvido", es:"Concepto clave — el pacto del olvido"},
-            c2:{fr:"Le <em>pacto del olvido</em> n'est pas un texte juridique mais un <strong>accord tacite</strong> entre les forces politiques de la Transition : ne pas instrumentaliser le passé, ne juger personne, ne pas rouvrir la question des responsabilités. Il repose sur une équivalence implicite — « tout le monde a souffert, tout le monde a fauté » — qui place sur le même plan la répression d'un État et la violence d'une guerre. C'est précisément cette équivalence que contestera, à partir de 2000, le mouvement mémoriel.",
-                es:"El <em>pacto del olvido</em> no es un texto jurídico sino un <strong>acuerdo tácito</strong> entre las fuerzas políticas de la Transición: no instrumentalizar el pasado, no juzgar a nadie, no reabrir la cuestión de las responsabilidades. Se apoya en una equivalencia implícita —«todos sufrieron, todos cometieron errores»— que sitúa en el mismo plano la represión de un Estado y la violencia de una guerra. Es precisamente esa equivalencia la que impugnará, a partir del año 2000, el movimiento memorialista."} },
-          { t:"def", mot:{fr:"Memoria histórica",es:"Memoria histórica"},
-            c:{fr:"Expression apparue dans les années 1990 pour désigner la reconnaissance publique des victimes de la guerre civile et du franquisme. Elle est aujourd'hui concurrencée par <em>memoria democrática</em>, retenue par la loi de 2022, qui insiste moins sur le souvenir que sur les <strong>droits des victimes</strong> : vérité, justice, réparation, garanties de non-répétition.",
-               es:"Expresión surgida en los años noventa para designar el reconocimiento público de las víctimas de la guerra civil y del franquismo. Hoy compite con <em>memoria democrática</em>, término adoptado por la ley de 2022, que insiste menos en el recuerdo que en los <strong>derechos de las víctimas</strong>: verdad, justicia, reparación y garantías de no repetición."} }
+        titre: { fr: "La loi d'amnistie de 1977 : réconciliation ou impunité ?", es: "La Ley de Amnistía de 1977: ¿reconciliación o impunidad?" },
+        blocs: [
+          { t: "p", c: {
+            fr: "Adoptée le 15 octobre 1977, quatre mois après les premières élections libres, la <strong>loi d'amnistie</strong> est d'abord une revendication de l'opposition antifranquiste : elle vide les prisons de leurs détenus politiques et permet le retour des exilés. Mais le texte a une seconde face : il éteint aussi la responsabilité pénale des fonctionnaires et agents de l'ordre public pour les délits commis contre les droits des personnes. La même loi libère les victimes et protège leurs bourreaux.",
+            es: "Aprobada el 15 de octubre de 1977, cuatro meses después de las primeras elecciones libres, la <strong>Ley de Amnistía</strong> es ante todo una reivindicación de la oposición antifranquista: vacía las cárceles de presos políticos y permite el regreso de los exiliados. Pero el texto tiene una segunda cara: extingue también la responsabilidad penal de los funcionarios y agentes del orden público por los delitos cometidos contra los derechos de las personas. La misma ley libera a las víctimas y protege a sus verdugos." } },
+          { t: "p", c: {
+            fr: "D'où un double regard. Pour ses défenseurs, elle était la condition de la Transition : sans garantie d'impunité, ni l'armée ni la justice héritées du régime n'auraient laissé la démocratie s'installer. Pour ses critiques, dont le Comité des droits de l'homme des Nations unies, qui recommande dès octobre 2008 d'envisager son abrogation, elle installe une impunité contraire au droit international, puisque les crimes contre l'humanité sont imprescriptibles et ne peuvent être amnistiés.",
+            es: "De ahí una doble mirada. Para sus defensores, era la condición de la Transición: sin garantía de impunidad, ni el ejército ni la justicia heredados del régimen habrían dejado instalarse la democracia. Para sus críticos, entre ellos el Comité de Derechos Humanos de Naciones Unidas, que recomienda ya en octubre de 2008 considerar su derogación, instaura una impunidad contraria al derecho internacional, puesto que los crímenes contra la humanidad son imprescriptibles y no pueden amnistiarse." } },
+          { t: "encadre", c: "var(--a2)",
+            titre: { fr: "Notion clé : le pacto del olvido", es: "Concepto clave: el pacto del olvido" },
+            c2: {
+              fr: "Le « pacte de l'oubli » n'est pas un texte mais un accord tacite entre les forces de la Transition : ne pas utiliser le passé dans la lutte politique, ne juger personne, ne pas rouvrir la question des responsabilités. Il repose sur une équivalence implicite, « tout le monde a souffert, tout le monde a fauté », qui met sur le même plan la répression d'un État et la violence d'une guerre. C'est cette équivalence que contestera le mouvement mémoriel à partir de 2000.",
+              es: "El «pacto del olvido» no es un texto sino un acuerdo tácito entre las fuerzas de la Transición: no utilizar el pasado en la lucha política, no juzgar a nadie, no reabrir la cuestión de las responsabilidades. Se basa en una equivalencia implícita, «todos sufrieron, todos se equivocaron», que pone en el mismo plano la represión de un Estado y la violencia de una guerra. Es esta equivalencia la que discutirá el movimiento memorialista a partir de 2000." } },
+          { t: "def", mot: { fr: "Memoria histórica", es: "Memoria histórica" }, c: {
+            fr: "Expression apparue dans les années 1990 pour désigner la reconnaissance publique des victimes de la guerre civile et du franquisme. La loi de 2022 lui préfère « mémoire démocratique », qui met l'accent sur les droits des victimes : vérité, justice, réparation et garanties de non-répétition.",
+            es: "Expresión aparecida en los años noventa para designar el reconocimiento público de las víctimas de la guerra civil y del franquismo. La ley de 2022 le prefiere «memoria democrática», que pone el acento en los derechos de las víctimas: verdad, justicia, reparación y garantías de no repetición." } }
         ]
       },
       {
-        titre:{fr:"Une mémoire asymétrique : monuments d'un côté, fossés de l'autre",
-               es:"Una memoria asimétrica: monumentos de un lado, cunetas del otro"},
-        blocs:[
-          { t:"p", c:{
-            fr:"Pendant quarante ans, la dictature avait organisé sa propre mémoire : plaques aux « <em>caídos por Dios y por España</em> » sur les églises, rues et places rebaptisées, monuments, exhumation et réinhumation soignée des morts du camp vainqueur. Les vaincus, eux, restaient là où ils étaient tombés — dans les fossés (<span class='es'>cunetas</span>), contre les murs des cimetières, dans des fosses communes non signalées. La démocratie hérite donc d'un <strong>déséquilibre matériel</strong> : d'un côté un paysage saturé de commémorations, de l'autre des morts sans nom ni sépulture.",
-            es:"Durante cuarenta años, la dictadura organizó su propia memoria: placas a los «<em>caídos por Dios y por España</em>» en las iglesias, calles y plazas rebautizadas, monumentos, exhumación y cuidadosa reinhumación de los muertos del bando vencedor. Los vencidos, en cambio, quedaban donde habían caído: en las cunetas, contra las tapias de los cementerios, en fosas comunes sin señalizar. La democracia hereda por tanto un <strong>desequilibrio material</strong>: de un lado un paisaje saturado de conmemoraciones, del otro muertos sin nombre ni sepultura."} },
-          { t:"p", c:{
-            fr:"Le <strong>Valle de los Caídos</strong> concentre cette asymétrie. Édifié entre 1940 et 1959, en partie par des <strong>prisonniers politiques</strong> qui rachetaient leur peine par le travail, il abrite près de <strong>34 000 dépouilles</strong> transférées des deux camps, souvent sans l'accord ni même l'information des familles, sous une basilique dominée par une croix de 150 mètres — et, jusqu'en 2019, par la tombe du dictateur lui-même. Un mausolée présenté comme un lieu de réconciliation, mais construit par les vaincus pour glorifier les vainqueurs.",
-            es:"El <strong>Valle de los Caídos</strong> concentra esa asimetría. Levantado entre 1940 y 1959, en parte por <strong>presos políticos</strong> que redimían su pena mediante el trabajo, alberga cerca de <strong>34 000 restos</strong> trasladados de ambos bandos, a menudo sin el consentimiento ni el conocimiento de las familias, bajo una basílica dominada por una cruz de 150 metros — y, hasta 2019, por la tumba del propio dictador. Un mausoleo presentado como lugar de reconciliación, pero construido por los vencidos para glorificar a los vencedores."} },
-          { t:"faits", items:[
-            { l:{fr:"Fondement juridique du silence",es:"Fundamento jurídico del silencio"}, v:{fr:"Ley de Amnistía du 15 octobre 1977, jamais abrogée",es:"Ley de Amnistía del 15 de octubre de 1977, nunca derogada"} },
-            { l:{fr:"Disparus estimés",es:"Desaparecidos estimados"}, v:{fr:"Plus de 100 000, soit l'un des chiffres les plus élevés au monde",es:"Más de 100 000, una de las cifras más altas del mundo"} },
-            { l:{fr:"Valle de los Caídos",es:"Valle de los Caídos"}, v:{fr:"≈ 34 000 dépouilles, chantier de 19 ans, travail forcé de prisonniers",es:"≈ 34 000 restos, obra de 19 años, trabajo forzado de presos"} }
-          ]}
+        titre: { fr: "Deux camps, deux mémoires", es: "Dos bandos, dos memorias" },
+        blocs: [
+          { t: "image", src: "images/memoire-carte-fosses.webp", l: 1280, h: 1088, format: "droite",
+            titre: { fr: "La carte des fosses", es: "El mapa de fosas" },
+            legende: { fr: "Carte des fosses de la guerre et de la dictature publiée par le ministère de la Justice (2011) : en rouge les fosses exhumées en tout ou en partie, en vert celles où rien n'a été fait, en jaune celles transférées au Valle de los Caídos.", es: "Mapa de fosas de la guerra y la dictadura publicado por el Ministerio de Justicia (2011): en rojo las fosas exhumadas total o parcialmente, en verde aquellas en las que no se ha intervenido, en amarillo las trasladadas al Valle de los Caídos." },
+            alt: { fr: "Carte de la péninsule Ibérique couverte de milliers de points rouges, verts, jaunes et blancs", es: "Mapa de la península Ibérica cubierto de miles de puntos rojos, verdes, amarillos y blancos" } },
+          { t: "p", c: {
+            fr: "La violence n'a pas frappé que d'un côté. Dans la zone républicaine, la répression des premiers mois de la guerre fait environ 50 000 victimes selon l'historien José Luis Ledesma, dont les prisonniers fusillés à <strong>Paracuellos</strong>, près de Madrid, entre le 7 novembre et le 4 décembre 1936, plus de 2 000 selon les estimations les plus basses. Mais les morts des deux camps ne connaissent pas le même sort. Dès 1940, la dictature lance la <em>Causa General</em> pour recenser les « crimes rouges », exhume ses morts, les honore et indemnise leurs familles.",
+            es: "La violencia no golpeó a un solo bando. En la zona republicana, la represión de los primeros meses de guerra causa unas 50 000 víctimas según el historiador José Luis Ledesma, entre ellas los presos fusilados en <strong>Paracuellos</strong>, cerca de Madrid, entre el 7 de noviembre y el 4 de diciembre de 1936, más de 2 000 según las estimaciones más bajas. Pero los muertos de ambos bandos no corren la misma suerte. Ya en 1940, la dictadura abre la <em>Causa General</em> para censar los «crímenes rojos», exhuma a sus muertos, los honra e indemniza a sus familias." } },
+          { t: "p", c: {
+            fr: "Pendant quarante ans, le régime organise ainsi sa propre mémoire : plaques aux « tombés pour Dieu et pour l'Espagne » sur les églises, rues rebaptisées, monuments. Les vaincus, eux, restent là où ils sont tombés : dans les fossés des routes (<em>cunetas</em>), contre les murs des cimetières, dans des fosses communes non signalées. La démocratie hérite d'un déséquilibre matériel, avec plus de 100 000 disparus selon la plupart des estimations, l'un des chiffres les plus élevés au monde. La carte ci-contre en donne l'ampleur.",
+            es: "Durante cuarenta años, el régimen organiza así su propia memoria: placas a los «caídos por Dios y por España» en las iglesias, calles rebautizadas, monumentos. Los vencidos, en cambio, se quedan donde cayeron: en las cunetas, contra las tapias de los cementerios, en fosas comunes sin señalizar. La democracia hereda un desequilibrio material, con más de 100 000 desaparecidos según la mayoría de las estimaciones, una de las cifras más altas del mundo. El mapa adjunto muestra su magnitud." } }
+        ]
+      },
+      {
+        titre: { fr: "Le Valle de los Caídos, mausolée de l'inégalité", es: "El Valle de los Caídos, mausoleo de la desigualdad" },
+        blocs: [
+          { t: "image", src: "images/memoire-cuelgamuros.webp", l: 960, h: 720, format: "gauche",
+            titre: { fr: "Cuelgamuros", es: "Cuelgamuros" },
+            legende: { fr: "L'esplanade et la croix de 150 mètres du Valle de Cuelgamuros, ancien Valle de los Caídos, dans la sierra de Guadarrama.", es: "La explanada y la cruz de 150 metros del Valle de Cuelgamuros, antiguo Valle de los Caídos, en la sierra de Guadarrama." },
+            alt: { fr: "Une immense croix de pierre se dresse sur un piton rocheux au-dessus d'une esplanade bordée d'arcades", es: "Una inmensa cruz de piedra se alza sobre un peñasco por encima de una explanada rodeada de arcos" } },
+          { t: "p", c: {
+            fr: "Le <strong>Valle de los Caídos</strong> concentre cette inégalité. Édifié de 1940 à 1958, en partie par des prisonniers politiques qui réduisaient leur peine par le travail, il reçoit à partir de 1959 près de 34 000 dépouilles des deux camps, transférées souvent sans l'accord ni même l'information des familles. Sous une basilique dominée par une croix de 150 mètres, il abrite aussi, jusqu'en 2019, la tombe du dictateur lui-même.",
+            es: "El <strong>Valle de los Caídos</strong> concentra esa desigualdad. Construido de 1940 a 1958, en parte por presos políticos que redimían pena por el trabajo, recibe a partir de 1959 cerca de 34 000 restos de ambos bandos, trasladados a menudo sin el acuerdo ni siquiera el conocimiento de las familias. Bajo una basílica dominada por una cruz de 150 metros, alberga también, hasta 2019, la tumba del propio dictador." } },
+          { t: "p", c: {
+            fr: "Présenté comme un monument de réconciliation, le mausolée a été construit par les vaincus pour glorifier les vainqueurs. Pendant toute la Transition, il reste un lieu de pèlerinage pour les nostalgiques du régime, chaque 20 novembre. Le changer, c'est toucher au cœur du compromis de 1977, ce qui explique qu'aucun gouvernement ne s'y soit attaqué avant les années 2010.",
+            es: "Presentado como un monumento de reconciliación, el mausoleo fue construido por los vencidos para glorificar a los vencedores. Durante toda la Transición sigue siendo un lugar de peregrinación para los nostálgicos del régimen, cada 20 de noviembre. Cambiarlo es tocar el corazón del compromiso de 1977, lo que explica que ningún gobierno lo abordara antes de los años 2010." } }
         ]
       }
     ]
   },
   {
-    num:"II",
-    kicker:{fr:"Le tournant",es:"El punto de inflexión"},
-    titre:{fr:"L'irruption des petits-enfants : fosses rouvertes, loi de 2007 et impasse judiciaire (2000-2013)",
-           es:"La irrupción de los nietos: fosas reabiertas, ley de 2007 y callejón judicial (2000-2013)"},
-    couleur:"var(--a4)",
-    sections:[
+    num: "II",
+    kicker: { fr: "Le réveil", es: "El despertar" },
+    titre: { fr: "Fosses rouvertes, loi de 2007 et impasse judiciaire (2000-2018)", es: "Fosas reabiertas, ley de 2007 e impasse judicial (2000-2018)" },
+    couleur: "var(--a2)",
+    sections: [
       {
-        titre:{fr:"Priaranza del Bierzo (2000) et la « génération des petits-enfants »",
-               es:"Priaranza del Bierzo (2000) y la «generación de los nietos»"},
-        blocs:[
-          { t:"p", c:{
-            fr:"En <strong>octobre 2000</strong>, le journaliste <strong>Emilio Silva</strong> fait exhumer, dans le village léonais de <strong>Priaranza del Bierzo</strong>, la fosse où son grand-père avait été jeté en 1936. C'est la <strong>première exhumation menée avec une méthodologie scientifique</strong> — archéologues, anthropologues médico-légaux, identification par ADN — et elle a un retentissement médiatique considérable. Dans la foulée naît l'<strong>ARMH</strong> (<span class='es'>Asociación para la Recuperación de la Memoria Histórica</span>), bientôt suivie de dizaines d'associations locales.",
-            es:"En <strong>octubre de 2000</strong>, el periodista <strong>Emilio Silva</strong> hace exhumar, en el pueblo leonés de <strong>Priaranza del Bierzo</strong>, la fosa donde su abuelo había sido arrojado en 1936. Es la <strong>primera exhumación realizada con metodología científica</strong> —arqueólogos, antropólogos forenses, identificación por ADN— y tiene una enorme repercusión mediática. A continuación nace la <strong>ARMH</strong> (Asociación para la Recuperación de la Memoria Histórica), seguida pronto por decenas de asociaciones locales."} },
-          { t:"p", c:{
-            fr:"Le moteur du mouvement est <strong>générationnel</strong>. Les enfants des victimes avaient vécu sous la dictature puis dans la prudence de la Transition ; leurs <strong>petits-enfants</strong>, nés en démocratie, n'ont ni peur ni dette envers le consensus de 1977. Ils réclament non pas une vengeance mais un droit élémentaire : savoir où sont les corps. Ce déplacement fait passer la question du registre <em>politique</em> (juger le franquisme) au registre <strong>humanitaire et juridique</strong> (le droit des familles à récupérer leurs morts), ce qui la rend beaucoup plus difficile à refuser.",
-            es:"El motor del movimiento es <strong>generacional</strong>. Los hijos de las víctimas habían vivido bajo la dictadura y luego en la prudencia de la Transición; sus <strong>nietos</strong>, nacidos en democracia, no tienen ni miedo ni deuda con el consenso de 1977. No reclaman una venganza sino un derecho elemental: saber dónde están los cuerpos. Ese desplazamiento traslada la cuestión del registro <em>político</em> (juzgar al franquismo) al registro <strong>humanitario y jurídico</strong> (el derecho de las familias a recuperar a sus muertos), lo que la vuelve mucho más difícil de rechazar."} },
-          { t:"encadre", icon:"🧬", c:"var(--a3)",
-            titre:{fr:"Un savoir venu d'ailleurs", es:"Un saber venido de fuera"},
-            c2:{fr:"Les techniques employées en Espagne viennent des <strong>enquêtes sur les dictatures latino-américaines</strong> (Argentine, Chili, Guatemala) et des conflits balkaniques. L'anthropologue médico-légal <strong>Francisco Etxeberria</strong>, qui a dirigé des centaines d'exhumations, incarne cette professionnalisation : elle transforme des fosses en <em>preuves</em>, et des disparus en personnes nommées.",
-                es:"Las técnicas empleadas en España proceden de las <strong>investigaciones sobre las dictaduras latinoamericanas</strong> (Argentina, Chile, Guatemala) y de los conflictos balcánicos. El antropólogo forense <strong>Francisco Etxeberria</strong>, que ha dirigido centenares de exhumaciones, encarna esa profesionalización: convierte las fosas en <em>pruebas</em> y a los desaparecidos en personas con nombre."} }
+        titre: { fr: "Priaranza del Bierzo (2000) et la génération des petits-enfants", es: "Priaranza del Bierzo (2000) y la generación de los nietos" },
+        blocs: [
+          { t: "image", src: "images/memoire-fosse-estepar.webp", l: 1280, h: 865, format: "gauche",
+            titre: { fr: "La fosse d'Estépar", es: "La fosa de Estépar" },
+            legende: { fr: "Juillet 2014, Estépar (Burgos) : la fosse de républicains tués en 1936, fouillée et numérotée par une équipe d'archéologues.", es: "Julio de 2014, Estépar (Burgos): la fosa de republicanos asesinados en 1936, excavada y numerada por un equipo de arqueólogos." },
+            alt: { fr: "Vue plongeante sur une fosse rectangulaire où des squelettes entremêlés portent des étiquettes numérotées", es: "Vista cenital de una fosa rectangular donde esqueletos entremezclados llevan etiquetas numeradas" } },
+          { t: "p", c: {
+            fr: "En octobre 2000, le journaliste <strong>Emilio Silva</strong> fait exhumer, à Priaranza del Bierzo (province de León), la fosse où son grand-père avait été jeté en 1936 avec douze autres hommes. C'est la première exhumation menée avec une méthode scientifique (archéologues, médecins légistes, identification par l'ADN), et son retentissement est considérable. Dans la foulée naît l'<strong>ARMH</strong>, l'Association pour la récupération de la mémoire historique, bientôt suivie de dizaines d'associations locales. En novembre 2002, le Congrès condamne pour la première fois le coup d'État de 1936.",
+            es: "En octubre de 2000, el periodista <strong>Emilio Silva</strong> hace exhumar, en Priaranza del Bierzo (provincia de León), la fosa donde su abuelo había sido arrojado en 1936 junto a otros doce hombres. Es la primera exhumación realizada con un método científico (arqueólogos, forenses, identificación por ADN), y su repercusión es enorme. Inmediatamente nace la <strong>ARMH</strong>, la Asociación para la Recuperación de la Memoria Histórica, seguida pronto por decenas de asociaciones locales. En noviembre de 2002, el Congreso condena por primera vez el golpe de Estado de 1936." } },
+          { t: "p", c: {
+            fr: "Le moteur du mouvement est générationnel. Les enfants des victimes avaient vécu sous la dictature puis dans la prudence de la Transition ; leurs petits-enfants, nés en démocratie, n'ont ni peur ni dette envers le consensus de 1977. Ils ne réclament pas une vengeance mais un droit élémentaire : savoir où sont les corps. La question passe ainsi du registre politique, juger le franquisme, au registre humanitaire, le droit des familles à retrouver leurs morts, ce qui la rend bien plus difficile à refuser.",
+            es: "El motor del movimiento es generacional. Los hijos de las víctimas habían vivido bajo la dictadura y luego en la prudencia de la Transición; sus nietos, nacidos en democracia, no tienen ni miedo ni deuda con el consenso de 1977. No reclaman venganza sino un derecho elemental: saber dónde están los cuerpos. La cuestión pasa así del terreno político, juzgar el franquismo, al humanitario, el derecho de las familias a recuperar a sus muertos, lo que la hace mucho más difícil de rechazar." } },
+          { t: "encadre", c: "var(--a3)",
+            titre: { fr: "Un savoir venu d'ailleurs", es: "Un saber llegado de fuera" },
+            c2: {
+              fr: "Les techniques employées en Espagne viennent des enquêtes sur les dictatures d'Amérique latine (Argentine, Chili, Guatemala) et sur les guerres des Balkans. L'anthropologue médico-légal Francisco Etxeberria, qui a dirigé des centaines d'exhumations, incarne cette professionnalisation : elle fait des fosses des preuves, et des disparus des personnes nommées.",
+              es: "Las técnicas empleadas en España proceden de las investigaciones sobre las dictaduras de América Latina (Argentina, Chile, Guatemala) y sobre las guerras de los Balcanes. El antropólogo forense Francisco Etxeberria, que ha dirigido cientos de exhumaciones, encarna esta profesionalización: convierte las fosas en pruebas, y a los desaparecidos en personas con nombre." } }
         ]
       },
       {
-        titre:{fr:"La loi de mémoire historique de 2007 : reconnaître sans juger",
-               es:"La ley de memoria histórica de 2007: reconocer sin juzgar"},
-        blocs:[
-          { t:"p", c:{
-            fr:"Portée par le gouvernement socialiste de <strong>José Luis Rodríguez Zapatero</strong> — lui-même petit-fils d'un capitaine fusillé en 1936 —, la <strong>loi 52/2007</strong>, dite <em>Ley de Memoria Histórica</em>, est la première tentative d'une politique publique de mémoire. Elle est adoptée sans le PP, qui y voit une rupture du consensus de la Transition, et sans une partie de la gauche et des nationalistes, qui la jugent trop timide.",
-            es:"Impulsada por el gobierno socialista de <strong>José Luis Rodríguez Zapatero</strong> —él mismo nieto de un capitán fusilado en 1936—, la <strong>ley 52/2007</strong>, llamada <em>Ley de Memoria Histórica</em>, es el primer intento de una política pública de memoria. Se aprueba sin el PP, que ve en ella una ruptura del consenso de la Transición, y sin parte de la izquierda y de los nacionalistas, que la consideran demasiado tímida."} },
-          { t:"liste", items:{
-            fr:[
-              "<strong>Reconnaissance</strong> des victimes des deux camps et droit à une réparation morale individuelle.",
-              "<strong>Illégitimité</strong> déclarée des tribunaux et des condamnations du franquisme — mais sans annulation juridique des sentences.",
-              "<strong>Retrait des symboles</strong> franquistes des bâtiments et espaces publics, avec des exceptions artistiques ou religieuses.",
-              "<strong>Aide aux exhumations</strong> : subventions et carte des fosses communes, l'initiative restant aux familles et aux associations.",
-              "<strong>Nationalité espagnole</strong> ouverte aux descendants d'exilés, et interdiction des actes politiques exaltant la guerre civile au Valle de los Caídos."
+        titre: { fr: "La loi de mémoire historique de 2007 : reconnaître sans juger", es: "La Ley de Memoria Histórica de 2007: reconocer sin juzgar" },
+        blocs: [
+          { t: "p", c: {
+            fr: "Portée par le gouvernement socialiste de <strong>José Luis Rodríguez Zapatero</strong>, lui-même petit-fils d'un capitaine républicain fusillé en 1936, la loi 52/2007 du 26 décembre 2007, dite loi de mémoire historique, est la première politique publique de mémoire. Elle est votée sans le PP, qui y voit une rupture du consensus de la Transition, et sans une partie de la gauche et des nationalistes, qui la jugent trop timide. Ses principales mesures sont les suivantes.",
+            es: "Impulsada por el gobierno socialista de <strong>José Luis Rodríguez Zapatero</strong>, nieto él mismo de un capitán republicano fusilado en 1936, la Ley 52/2007, de 26 de diciembre, llamada Ley de Memoria Histórica, es la primera política pública de memoria. Se aprueba sin el PP, que ve en ella una ruptura del consenso de la Transición, y sin una parte de la izquierda y de los nacionalistas, que la consideran demasiado tímida. Sus principales medidas son las siguientes." } },
+          { t: "liste", items: {
+            fr: [
+              "Reconnaissance des victimes des deux camps et droit à une réparation morale individuelle.",
+              "Tribunaux et condamnations du franquisme déclarés illégitimes, mais sentences non annulées.",
+              "Retrait des symboles franquistes des bâtiments et espaces publics, avec des exceptions artistiques ou religieuses.",
+              "Aide aux exhumations par des subventions et une carte des fosses, l'initiative restant aux familles et aux associations.",
+              "Nationalité espagnole ouverte aux petits-enfants d'exilés, et actes d'exaltation politique interdits au Valle de los Caídos."
             ],
-            es:[
-              "<strong>Reconocimiento</strong> de las víctimas de ambos bandos y derecho a una reparación moral individual.",
-              "<strong>Ilegitimidad</strong> declarada de los tribunales y condenas del franquismo — pero sin anulación jurídica de las sentencias.",
-              "<strong>Retirada de los símbolos</strong> franquistas de edificios y espacios públicos, con excepciones artísticas o religiosas.",
-              "<strong>Ayudas a las exhumaciones</strong>: subvenciones y mapa de fosas, quedando la iniciativa en manos de familias y asociaciones.",
-              "<strong>Nacionalidad española</strong> abierta a los descendientes de exiliados, y prohibición de actos políticos de exaltación de la guerra civil en el Valle de los Caídos."
-            ]
-          }},
-          { t:"encadre", icon:"⚠️", c:"var(--a4)",
-            titre:{fr:"Une loi de 2007 aux effets purement symboliques", es:"Una ley de 2007 de efectos meramente simbólicos"},
-            c2:{fr:"La loi de 2007 ne « juge » rien et n'annule aucune condamnation franquiste : elle les déclare seulement <strong>illégitimes</strong>, formule symbolique sans effet judiciaire. Elle ne transfère pas non plus la charge des exhumations à l'État — c'est précisément ce que fera la loi de 2022. Sous le gouvernement de Mariano Rajoy, son budget est d'ailleurs réduit à zéro en 2013 : une loi peut donc être maintenue tout en étant vidée de ses moyens.",
-                es:"La ley de 2007 no «juzga» nada ni anula ninguna condena franquista: solo las declara <strong>ilegítimas</strong>, fórmula simbólica sin efecto judicial. Tampoco traslada al Estado la carga de las exhumaciones — eso es precisamente lo que hará la ley de 2022. Bajo el gobierno de Mariano Rajoy su presupuesto se reduce además a cero en 2013: una ley puede, pues, mantenerse vigente y quedar vaciada de medios."} }
+            es: [
+              "Reconocimiento de las víctimas de ambos bandos y derecho a una reparación moral individual.",
+              "Tribunales y condenas del franquismo declarados ilegítimos, pero sentencias no anuladas.",
+              "Retirada de los símbolos franquistas de edificios y espacios públicos, con excepciones artísticas o religiosas.",
+              "Ayuda a las exhumaciones mediante subvenciones y un mapa de fosas, con la iniciativa en manos de familias y asociaciones.",
+              "Nacionalidad española abierta a los nietos de exiliados, y actos de exaltación política prohibidos en el Valle de los Caídos."
+            ] } },
+          { t: "encadre", c: "var(--a4)",
+            titre: { fr: "Une loi aux effets surtout symboliques", es: "Una ley de efectos sobre todo simbólicos" },
+            c2: {
+              fr: "La loi de 2007 ne juge rien et n'annule aucune condamnation : elle les déclare seulement illégitimes. Elle ne confie pas non plus les exhumations à l'État. Sous le gouvernement de Mariano Rajoy, son budget est même ramené à zéro en 2013 : une loi peut rester en vigueur tout en étant privée de moyens.",
+              es: "La ley de 2007 no juzga nada ni anula ninguna condena: solo las declara ilegítimas. Tampoco confía las exhumaciones al Estado. Con el gobierno de Mariano Rajoy, su presupuesto llega incluso a cero en 2013: una ley puede seguir en vigor y quedarse sin medios." } }
         ]
       },
       {
-        titre:{fr:"Garzón, la querella argentina et l'impasse judiciaire espagnole",
-               es:"Garzón, la querella argentina y el callejón judicial español"},
-        blocs:[
-          { t:"p", c:{
-            fr:"Le <strong>16 octobre 2008</strong>, le juge d'instruction <strong>Baltasar Garzón</strong> — connu pour avoir poursuivi Pinochet au nom de la compétence universelle — se déclare compétent pour enquêter sur les disparitions forcées commises entre 1936 et 1951, qu'il chiffre à <strong>114 226 personnes</strong>. Il qualifie ces faits de crimes contre l'humanité, donc imprescriptibles et non couverts par l'amnistie. Dessaisi quelques semaines plus tard, il est ensuite poursuivi pour <em>prévarication</em> à l'initiative d'organisations d'extrême droite.",
-            es:"El <strong>16 de octubre de 2008</strong>, el juez instructor <strong>Baltasar Garzón</strong> —conocido por haber perseguido a Pinochet en nombre de la jurisdicción universal— se declara competente para investigar las desapariciones forzadas cometidas entre 1936 y 1951, que cifra en <strong>114 226 personas</strong>. Califica esos hechos de crímenes contra la humanidad, por tanto imprescriptibles y no cubiertos por la amnistía. Apartado del caso semanas después, es luego procesado por <em>prevaricación</em> a instancias de organizaciones de extrema derecha."} },
-          { t:"p", c:{
-            fr:"En <strong>2012</strong>, le Tribunal suprême l'acquitte sur ce dossier, mais profite de l'arrêt pour verrouiller la question : les crimes du franquisme ne peuvent, selon lui, être instruits en Espagne, en raison de l'amnistie de 1977, de la prescription et du principe de non-rétroactivité de la loi pénale. La voie interne étant fermée, les victimes se tournent vers l'étranger : c'est la <strong>querella argentina</strong>, déposée à Buenos Aires en avril 2010 devant la juge <strong>María Servini</strong>. En 2013, celle-ci émet des mandats d'arrêt internationaux contre d'anciens policiers accusés de torture ; l'Espagne refuse les extraditions.",
-            es:"En <strong>2012</strong>, el Tribunal Supremo lo absuelve en ese caso, pero aprovecha la sentencia para blindar la cuestión: los crímenes del franquismo no pueden, a su juicio, instruirse en España, debido a la amnistía de 1977, la prescripción y el principio de irretroactividad de la ley penal. Cerrada la vía interna, las víctimas se dirigen al extranjero: es la <strong>querella argentina</strong>, presentada en Buenos Aires en abril de 2010 ante la jueza <strong>María Servini</strong>. En 2013, esta dicta órdenes de detención internacionales contra antiguos policías acusados de torturas; España rechaza las extradiciones."} },
-          { t:"def", mot:{fr:"Querella argentina",es:"Querella argentina"},
-            c:{fr:"Procédure ouverte en Argentine en 2010 au nom de la <strong>compétence universelle</strong>, principe selon lequel certains crimes (génocide, crimes contre l'humanité) peuvent être poursuivis par n'importe quel État. Symbole d'un renversement : le pays qui avait accueilli les enquêtes espagnoles sur ses propres dictateurs devient le refuge judiciaire des victimes espagnoles.",
-               es:"Procedimiento abierto en Argentina en 2010 en nombre de la <strong>jurisdicción universal</strong>, principio según el cual ciertos crímenes (genocidio, crímenes contra la humanidad) pueden ser perseguidos por cualquier Estado. Símbolo de una inversión: el país que había acogido las investigaciones españolas sobre sus propios dictadores se convierte en el refugio judicial de las víctimas españolas."} },
-          { t:"encadre", icon:"👶", c:"var(--a1)",
-            titre:{fr:"Un dossier connexe : les bebés robados", es:"Un caso conexo: los bebés robados"},
-            c2:{fr:"Des milliers de nouveau-nés auraient été soustraits à leurs mères — d'abord pour des motifs idéologiques sous le franquisme, puis dans des réseaux d'adoption illégale jusqu'aux années 1990. Le <strong>premier procès</strong>, en octobre 2018, s'achève par un acquittement : les faits sont jugés établis, mais <strong>prescrits</strong>. Le dossier illustre la difficulté centrale de la mémoire espagnole — la reconnaissance des faits sans conséquence judiciaire.",
-                es:"Miles de recién nacidos habrían sido sustraídos a sus madres —primero por motivos ideológicos bajo el franquismo, luego en redes de adopción ilegal hasta los años noventa—. El <strong>primer juicio</strong>, en octubre de 2018, termina en absolución: los hechos se consideran probados, pero <strong>prescritos</strong>. El caso ilustra la dificultad central de la memoria española: el reconocimiento de los hechos sin consecuencia judicial."} }
+        titre: { fr: "Garzón, la plainte argentine et l'impasse judiciaire", es: "Garzón, la querella argentina y el bloqueo judicial" },
+        blocs: [
+          { t: "image", src: "images/memoire-garzon-esma.webp", l: 1280, h: 853, format: "droite",
+            titre: { fr: "Garzón à l'ESMA", es: "Garzón en la ESMA" },
+            legende: { fr: "1er août 2005, Buenos Aires : Baltasar Garzón visite l'ESMA, ancien centre de détention clandestin de la dictature argentine, aux côtés d'une Mère de la place de Mai.", es: "1 de agosto de 2005, Buenos Aires: Baltasar Garzón visita la ESMA, antiguo centro clandestino de detención de la dictadura argentina, junto a una Madre de Plaza de Mayo." },
+            alt: { fr: "Un homme en costume sourit devant un bâtiment de briques ; derrière lui, une femme âgée au foulard blanc porte des photos de disparus", es: "Un hombre de traje sonríe ante un edificio de ladrillo; detrás, una mujer mayor con pañuelo blanco lleva fotos de desaparecidos" } },
+          { t: "p", c: {
+            fr: "Le 16 octobre 2008, le juge d'instruction <strong>Baltasar Garzón</strong>, connu pour avoir fait arrêter Pinochet à Londres en 1998 au nom de la compétence universelle, se déclare compétent pour enquêter sur les disparitions forcées commises de 1936 à 1951, qu'il chiffre à 114 226. Il les qualifie de crimes contre l'humanité, donc imprescriptibles et non couverts par l'amnistie. Dessaisi quelques semaines plus tard, il est poursuivi pour prévarication à la demande d'organisations d'extrême droite.",
+            es: "El 16 de octubre de 2008, el juez de instrucción <strong>Baltasar Garzón</strong>, conocido por haber hecho detener a Pinochet en Londres en 1998 en nombre de la jurisdicción universal, se declara competente para investigar las desapariciones forzadas cometidas de 1936 a 1951, que cifra en 114 226. Las califica de crímenes contra la humanidad, por tanto imprescriptibles y no cubiertos por la amnistía. Apartado pocas semanas después, es procesado por prevaricación a instancia de organizaciones de extrema derecha." } },
+          { t: "p", c: {
+            fr: "Le 27 février 2012, le Tribunal suprême l'acquitte, tout en fermant la porte : les crimes du franquisme ne peuvent être jugés en Espagne, à cause de l'amnistie, de la prescription et de la non-rétroactivité de la loi pénale. Garzón a d'ailleurs déjà été exclu de la magistrature au début du même mois, condamné dans une autre affaire. Les victimes se tournent alors vers l'étranger : c'est la <em>querella argentina</em>, déposée à Buenos Aires en avril 2010 devant la juge María Servini, qui lance en 2013 des mandats d'arrêt contre d'anciens policiers accusés de torture ; l'Espagne refuse de les extrader.",
+            es: "El 27 de febrero de 2012, el Tribunal Supremo lo absuelve, pero cierra la puerta: los crímenes del franquismo no pueden juzgarse en España, a causa de la amnistía, la prescripción y la irretroactividad de la ley penal. Garzón, por lo demás, ya había sido expulsado de la carrera judicial a principios de ese mismo mes, condenado en otra causa. Las víctimas se vuelven entonces hacia el extranjero: es la <em>querella argentina</em>, presentada en Buenos Aires en abril de 2010 ante la jueza María Servini, que dicta en 2013 órdenes de detención contra antiguos policías acusados de torturas; España se niega a extraditarlos." } },
+          { t: "def", mot: { fr: "Compétence universelle", es: "Jurisdicción universal" }, c: {
+            fr: "Principe selon lequel certains crimes (génocide, crimes contre l'humanité, torture) peuvent être jugés par n'importe quel État. Ironie de l'histoire : l'Argentine, dont l'Espagne avait jugé les tortionnaires, devient le refuge judiciaire des victimes espagnoles.",
+            es: "Principio según el cual ciertos crímenes (genocidio, crímenes contra la humanidad, tortura) pueden ser juzgados por cualquier Estado. Ironía de la historia: Argentina, cuyos torturadores había juzgado España, se convierte en el refugio judicial de las víctimas españolas." } },
+          { t: "encadre", c: "var(--a4)",
+            titre: { fr: "Un dossier voisin : les « bébés volés »", es: "Un caso vecino: los «bebés robados»" },
+            c2: {
+              fr: "Des nouveau-nés ont été retirés à leurs mères, d'abord pour des motifs idéologiques sous le franquisme, puis dans des réseaux d'adoption illégale jusqu'aux années 1990. Le premier procès, en octobre 2018, s'achève par un acquittement : les faits sont jugés établis, mais prescrits. Le dossier résume la difficulté espagnole : reconnaître les faits sans conséquence judiciaire.",
+              es: "Recién nacidos fueron arrebatados a sus madres, primero por motivos ideológicos bajo el franquismo y luego en redes de adopción ilegal hasta los años noventa. El primer juicio, en octubre de 2018, termina con una absolución: los hechos se consideran probados, pero prescritos. El caso resume la dificultad española: reconocer los hechos sin consecuencias judiciales." } }
         ]
       }
     ]
   },
   {
-    num:"III",
-    kicker:{fr:"Le temps présent",es:"El tiempo presente"},
-    titre:{fr:"La mémoire d'État et sa contestation : Cuelgamuros, loi de 2022 et « lois de concorde » (2019-2026)",
-           es:"La memoria de Estado y su impugnación: Cuelgamuros, ley de 2022 y «leyes de concordia» (2019-2026)"},
-    couleur:"var(--a3)",
-    sections:[
+    num: "III",
+    kicker: { fr: "La mémoire d'État", es: "La memoria de Estado" },
+    titre: { fr: "Exhumation de Franco, loi de 2022 et contre-offensive (2019-2026)", es: "Exhumación de Franco, ley de 2022 y contraofensiva (2019-2026)" },
+    couleur: "var(--a3)",
+    sections: [
       {
-        titre:{fr:"2019 : l'exhumation de Franco et la resignification de Cuelgamuros",
-               es:"2019: la exhumación de Franco y la resignificación de Cuelgamuros"},
-        blocs:[
-          { t:"p", c:{
-            fr:"Le <strong>24 octobre 2019</strong>, après un an et demi de recours judiciaires de la famille Franco, la dépouille du dictateur est extraite de la basilique du Valle de los Caídos et transférée au cimetière de <strong>Mingorrubio-El Pardo</strong>, dans une tombe familiale ordinaire. L'opération, décidée par le gouvernement de <strong>Pedro Sánchez</strong>, est retransmise en direct : elle met fin à une anomalie européenne — un dictateur enterré dans un monument d'État financé par les fonds publics.",
-            es:"El <strong>24 de octubre de 2019</strong>, tras año y medio de recursos judiciales de la familia Franco, los restos del dictador son extraídos de la basílica del Valle de los Caídos y trasladados al cementerio de <strong>Mingorrubio-El Pardo</strong>, a una tumba familiar corriente. La operación, decidida por el gobierno de <strong>Pedro Sánchez</strong>, se retransmite en directo: pone fin a una anomalía europea — un dictador enterrado en un monumento de Estado financiado con fondos públicos."} },
-          { t:"p", c:{
-            fr:"L'exhumation ouvre une seconde étape, plus discrète mais plus lourde : la <strong>resignification</strong> du site, rebaptisé <strong>Valle de Cuelgamuros</strong> par la loi de 2022. Les restes de <strong>José Antonio Primo de Rivera</strong>, fondateur de la Phalange, sont retirés du maître-autel en avril 2023 ; parallèlement, des travaux permettent de localiser dans les cryptes des caisses contenant les dépouilles de victimes républicaines réclamées par leurs familles, dont certaines ont depuis été identifiées et restituées. Le mausolée doit devenir un cimetière civil doublé d'un lieu de mémoire explicatif — un chantier techniquement complexe et politiquement inflammable.",
-            es:"La exhumación abre una segunda etapa, más discreta pero más pesada: la <strong>resignificación</strong> del recinto, rebautizado <strong>Valle de Cuelgamuros</strong> por la ley de 2022. Los restos de <strong>José Antonio Primo de Rivera</strong>, fundador de la Falange, son retirados del altar mayor en abril de 2023; en paralelo, los trabajos permiten localizar en las criptas cajas con restos de víctimas republicanas reclamadas por sus familias, algunas de las cuales han sido identificadas y devueltas. El mausoleo debe convertirse en un cementerio civil acompañado de un espacio explicativo de memoria — una obra técnicamente compleja y políticamente inflamable."} },
-          { t:"faits", items:[
-            { l:{fr:"24 octobre 2019",es:"24 de octubre de 2019"}, v:{fr:"Franco transféré à Mingorrubio-El Pardo",es:"Franco trasladado a Mingorrubio-El Pardo"} },
-            { l:{fr:"24 avril 2023",es:"24 de abril de 2023"}, v:{fr:"Primo de Rivera retiré du maître-autel",es:"Primo de Rivera retirado del altar mayor"} },
-            { l:{fr:"Nouveau statut",es:"Nuevo estatuto"}, v:{fr:"Valle de Cuelgamuros : cimetière civil et lieu de mémoire",es:"Valle de Cuelgamuros: cementerio civil y lugar de memoria"} }
-          ]}
+        titre: { fr: "2019 : Franco quitte le Valle", es: "2019: Franco sale del Valle" },
+        blocs: [
+          { t: "image", src: "images/memoire-mingorrubio.webp", l: 1280, h: 978, format: "gauche",
+            titre: { fr: "Le caveau de Mingorrubio", es: "El panteón de Mingorrubio" },
+            legende: { fr: "Le caveau familial du cimetière de Mingorrubio, à El Pardo, où reposent Franco et son épouse depuis octobre 2019.", es: "El panteón familiar del cementerio de Mingorrubio, en El Pardo, donde reposan Franco y su esposa desde octubre de 2019." },
+            alt: { fr: "Petite chapelle de granit au toit d'ardoise surmontée d'une croix, sous un ciel bleu", es: "Pequeña capilla de granito con tejado de pizarra coronada por una cruz, bajo un cielo azul" } },
+          { t: "p", c: {
+            fr: "Le 24 octobre 2019, après un an et demi de recours de la famille Franco, la dépouille du dictateur est sortie de la basilique du Valle de los Caídos et transférée au cimetière de <strong>Mingorrubio</strong>, à El Pardo, dans un caveau familial. L'opération, décidée par le gouvernement de Pedro Sánchez et retransmise en direct, met fin à une anomalie européenne : un dictateur enterré dans un monument d'État entretenu sur fonds publics.",
+            es: "El 24 de octubre de 2019, tras año y medio de recursos de la familia Franco, los restos del dictador salen de la basílica del Valle de los Caídos y se trasladan al cementerio de <strong>Mingorrubio</strong>, en El Pardo, a un panteón familiar. La operación, decidida por el gobierno de Pedro Sánchez y retransmitida en directo, pone fin a una anomalía europea: un dictador enterrado en un monumento de Estado mantenido con fondos públicos." } },
+          { t: "p", c: {
+            fr: "L'exhumation ouvre une étape plus lourde : la <em>resignificación</em> du site, rebaptisé Valle de Cuelgamuros par la loi de 2022. Les restes de José Antonio Primo de Rivera, fondateur de la Phalange, quittent le pied de l'autel le 24 avril 2023, et des équipes ouvrent les cryptes pour identifier et rendre à leurs familles des victimes républicaines. En novembre 2025, le projet retenu pour transformer le site garde la croix mais supprime l'escalier monumental et ajoute un centre d'interprétation, pour des travaux attendus à partir de 2027.",
+            es: "La exhumación abre una etapa más pesada: la <em>resignificación</em> del lugar, rebautizado Valle de Cuelgamuros por la ley de 2022. Los restos de José Antonio Primo de Rivera, fundador de la Falange, salen del pie del altar el 24 de abril de 2023, y equipos forenses abren las criptas para identificar y devolver a sus familias a víctimas republicanas. En noviembre de 2025, el proyecto elegido para transformar el lugar conserva la cruz pero suprime la escalinata monumental y añade un centro de interpretación, con obras previstas a partir de 2027." } }
         ]
       },
       {
-        titre:{fr:"La loi de mémoire démocratique de 2022 : la recherche des disparus devient une obligation de l'État",
-               es:"La ley de memoria democrática de 2022: la búsqueda de los desaparecidos se convierte en obligación del Estado"},
-        blocs:[
-          { t:"p", c:{
-            fr:"Adoptée le <strong>19 octobre 2022</strong> par une majorité étroite, la <strong>loi 20/2022</strong> remplace celle de 2007 et en corrige les principales faiblesses. Son changement de nom est en soi un programme : on ne parle plus de <em>memoria histórica</em>, notion patrimoniale, mais de <strong>memoria democrática</strong>, adossée au vocabulaire international des droits de l'homme — vérité, justice, réparation, garanties de non-répétition.",
-            es:"Aprobada el <strong>19 de octubre de 2022</strong> por una mayoría estrecha, la <strong>ley 20/2022</strong> sustituye a la de 2007 y corrige sus principales debilidades. Su cambio de nombre es en sí mismo un programa: ya no se habla de <em>memoria histórica</em>, noción patrimonial, sino de <strong>memoria democrática</strong>, apoyada en el vocabulario internacional de los derechos humanos — verdad, justicia, reparación y garantías de no repetición."} },
-          { t:"tableau",
-            head:{ fr:["Enjeu","Loi de 2007","Loi de 2022"], es:["Cuestión","Ley de 2007","Ley de 2022"] },
-            rows:{
-              fr:[
-                ["Exhumations","Initiative des familles, subventions de l'État","Obligation de l'État : plans pluriannuels et banque nationale d'ADN"],
-                ["Sentences franquistes","Déclarées « illégitimes » (portée symbolique)","Déclarées nulles de plein droit"],
-                ["Justice","Aucun organe dédié","Procureur de chambre pour les droits de l'homme et la mémoire démocratique"],
-                ["Valle de los Caídos","Interdiction des actes d'exaltation politique","Resignification et changement de nom : Valle de Cuelgamuros"],
-                ["Symboles et distinctions","Retrait des symboles publics","Retrait renforcé, révocation de titres nobiliaires franquistes"],
-                ["Enseignement","Non prévu","Contenus de mémoire démocratique inscrits dans les programmes scolaires"]
+        titre: { fr: "La loi de mémoire démocratique de 2022", es: "La Ley de Memoria Democrática de 2022" },
+        blocs: [
+          { t: "p", c: {
+            fr: "Adoptée d'une courte majorité et publiée le 20 octobre 2022, la <strong>loi 20/2022</strong> remplace celle de 2007 et en corrige les faiblesses. Son nom est un programme : on ne parle plus de mémoire « historique », notion patrimoniale, mais de mémoire « démocratique », adossée au vocabulaire international des droits de l'homme. Le tableau suivant compare les deux lois.",
+            es: "Aprobada por estrecha mayoría y publicada el 20 de octubre de 2022, la <strong>Ley 20/2022</strong> sustituye a la de 2007 y corrige sus debilidades. Su nombre es un programa: ya no se habla de memoria «histórica», noción patrimonial, sino de memoria «democrática», apoyada en el vocabulario internacional de los derechos humanos. La tabla siguiente compara ambas leyes." } },
+          { t: "tableau",
+            head: { fr: ["", "Loi de 2007", "Loi de 2022"], es: ["", "Ley de 2007", "Ley de 2022"] },
+            rows: {
+              fr: [
+                ["Exhumations", "Aux familles", "À l'État"],
+                ["Condamnations", "« Illégitimes »", "Nulles"],
+                ["Justice", "Rien", "Procureur dédié"],
+                ["Valle", "Exaltation interdite", "Resignifié"],
+                ["École", "Rien", "Au programme"]
               ],
-              es:[
-                ["Exhumaciones","Iniciativa de las familias, subvenciones del Estado","Obligación del Estado: planes plurianuales y banco nacional de ADN"],
-                ["Sentencias franquistas","Declaradas «ilegítimas» (alcance simbólico)","Declaradas nulas de pleno derecho"],
-                ["Justicia","Ningún órgano específico","Fiscal de sala para los derechos humanos y la memoria democrática"],
-                ["Valle de los Caídos","Prohibición de actos de exaltación política","Resignificación y cambio de nombre: Valle de Cuelgamuros"],
-                ["Símbolos y distinciones","Retirada de símbolos públicos","Retirada reforzada, revocación de títulos nobiliarios franquistas"],
-                ["Enseñanza","No prevista","Contenidos de memoria democrática en los currículos escolares"]
+              es: [
+                ["Exhumaciones", "Las familias", "El Estado"],
+                ["Condenas", "«Ilegítimas»", "Nulas"],
+                ["Justicia", "Nada", "Fiscalía propia"],
+                ["Valle", "Exaltación prohibida", "Resignificado"],
+                ["Escuela", "Nada", "En el programa"]
               ]
-            }
-          },
-          { t:"citation", c:{fr:"La presente ley tiene por objeto la recuperación, salvaguarda y difusión de la memoria democrática.", es:"La presente ley tiene por objeto la recuperación, salvaguarda y difusión de la memoria democrática."},
-            src:{fr:"Article 1er de la loi 20/2022 de mémoire démocratique, 19 octobre 2022", es:"Artículo 1 de la Ley 20/2022 de Memoria Democrática, 19 de octubre de 2022"} },
-          { t:"p", c:{
-            fr:"Trois ans après son entrée en vigueur, le bilan officiel fait état d'environ <strong>9 000 dépouilles récupérées</strong> et de plus de 1 600 déclarations de reconnaissance délivrées à des victimes ou à leurs familles, un rythme sans commune mesure avec la période précédente. Ses limites demeurent pourtant : la <strong>loi d'amnistie de 1977 n'est pas abrogée</strong>, aucun responsable ne sera jugé, et le dispositif reste suspendu aux majorités politiques et aux budgets qui le financent.",
-            es:"Tres años después de su entrada en vigor, el balance oficial habla de unos <strong>9 000 restos recuperados</strong> y de más de 1 600 declaraciones de reconocimiento entregadas a víctimas o a sus familias, un ritmo incomparable con el del periodo anterior. Sus límites, sin embargo, persisten: la <strong>ley de amnistía de 1977 no está derogada</strong>, ningún responsable será juzgado, y el dispositivo sigue dependiendo de las mayorías políticas y de los presupuestos que lo financian."} }
+            } },
+          { t: "p", c: {
+            fr: "Trois ans après, le bilan officiel présenté en novembre 2025 fait état d'environ 9 000 dépouilles récupérées et de 1 614 déclarations de reconnaissance remises à des victimes ou à leurs familles. En 2026, le gouvernement ajoute des crédits pour achever les exhumations encore attendues et propose des tests ADN gratuits aux familles. Les limites restent pourtant les mêmes : la loi d'amnistie de 1977 n'est pas abrogée, aucun responsable ne sera jugé, et tout dépend des majorités et des budgets.",
+            es: "Tres años después, el balance oficial presentado en noviembre de 2025 recoge unos 9 000 restos recuperados y 1 614 declaraciones de reconocimiento entregadas a víctimas o a sus familias. En 2026, el gobierno añade fondos para completar las exhumaciones aún pendientes y ofrece pruebas de ADN gratuitas a las familias. Los límites, sin embargo, siguen siendo los mismos: la Ley de Amnistía de 1977 no se deroga, ningún responsable será juzgado, y todo depende de las mayorías y de los presupuestos." } },
+          { t: "citation",
+            c: { fr: "La presente ley tiene por objeto la recuperación, salvaguarda y difusión de la memoria democrática. (La présente loi a pour objet la récupération, la sauvegarde et la diffusion de la mémoire démocratique.)", es: "La presente ley tiene por objeto la recuperación, salvaguarda y difusión de la memoria democrática." },
+            src: { fr: "Article 1er de la loi 20/2022 de mémoire démocratique", es: "Artículo 1 de la Ley 20/2022, de Memoria Democrática" } }
         ]
       },
       {
-        titre:{fr:"La contre-offensive des « lois de concorde » et la bataille du récit",
-               es:"La contraofensiva de las «leyes de concordia» y la batalla del relato"},
-        blocs:[
-          { t:"p", c:{
-            fr:"À partir de 2023, les accords de gouvernement entre le <strong>PP</strong> et <strong>Vox</strong> dans plusieurs communautés autonomes — Castille-et-León, Aragon, Communauté valencienne, Cantabrie, Estrémadure, puis Andalousie — prévoient l'abrogation des lois mémorielles régionales et leur remplacement par des <em>« lois de concorde »</em> (<span class='es'>leyes de concordia</span>). Ces textes étendent la période couverte à partir de 1931, incluent les victimes du terrorisme, évitent souvent le mot <em>dictature</em> et suppriment les organismes chargés des exhumations. Le gouvernement central saisit systématiquement le <strong>Tribunal constitutionnel</strong>, qui a déjà suspendu certaines de ces abrogations.",
-            es:"A partir de 2023, los acuerdos de gobierno entre el <strong>PP</strong> y <strong>Vox</strong> en varias comunidades autónomas —Castilla y León, Aragón, Comunidad Valenciana, Cantabria, Extremadura y después Andalucía— prevén la derogación de las leyes memorialistas autonómicas y su sustitución por <em>«leyes de concordia»</em>. Estos textos amplían el periodo cubierto desde 1931, incluyen a las víctimas del terrorismo, evitan a menudo la palabra <em>dictadura</em> y suprimen los organismos encargados de las exhumaciones. El gobierno central recurre sistemáticamente al <strong>Tribunal Constitucional</strong>, que ya ha suspendido algunas de esas derogaciones."} },
-          { t:"p", c:{
-            fr:"L'argument des partisans de la <em>concordia</em> est celui de la Transition : une mémoire d'État serait un « récit sectaire » qui rouvre les blessures et divise les Espagnols. Celui de leurs adversaires est celui du droit : reconnaître des victimes n'est pas prendre parti, et une <strong>équivalence entre dictature et démocratie</strong> revient à nier ce qui distingue l'une de l'autre. Ce conflit montre que le devoir de mémoire n'est pas, en Espagne, un débat d'historiens : c'est un <strong>enjeu électoral et institutionnel du présent</strong>.",
-            es:"El argumento de los partidarios de la <em>concordia</em> es el de la Transición: una memoria de Estado sería un «relato sectario» que reabre heridas y divide a los españoles. El de sus adversarios es el del derecho: reconocer víctimas no es tomar partido, y una <strong>equivalencia entre dictadura y democracia</strong> equivale a negar lo que las distingue. Este conflicto muestra que el deber de memoria no es, en España, un debate de historiadores: es una <strong>cuestión electoral e institucional del presente</strong>."} },
-          { t:"p", c:{
-            fr:"En parallèle, la mémoire s'est largement construite <strong>hors de l'État</strong> : par la littérature (<em>Soldados de Salamina</em> de Javier Cercas, <em>La voz dormida</em> de Dulce Chacón, les romans d'Almudena Grandes), par le cinéma (<em>La lengua de las mariposas</em>, <em>El laberinto del fauno</em>, le documentaire <em>El silencio de otros</em>) et par les associations locales. C'est cette mémoire culturelle qui a rendu politiquement possibles les lois de 2007 et 2022 — et qui reste efficace lorsque les majorités changent.",
-            es:"En paralelo, la memoria se ha construido en gran medida <strong>fuera del Estado</strong>: mediante la literatura (<em>Soldados de Salamina</em> de Javier Cercas, <em>La voz dormida</em> de Dulce Chacón, las novelas de Almudena Grandes), el cine (<em>La lengua de las mariposas</em>, <em>El laberinto del fauno</em>, el documental <em>El silencio de otros</em>) y las asociaciones locales. Es esa memoria cultural la que hizo políticamente posibles las leyes de 2007 y 2022 — y la que sigue actuando cuando cambian las mayorías."} },
-          { t:"liste", items:{
-            fr:[
-              "<strong>1977</strong> — L'amnistie fonde la réconciliation sur le silence : ni jugement, ni enquête.",
-              "<strong>2000</strong> — Priaranza del Bierzo : la société civile impose la question des fosses.",
-              "<strong>2007</strong> — L'État reconnaît les victimes, mais sans juger ni exhumer lui-même.",
-              "<strong>2019-2022</strong> — Exhumation de Franco et loi de mémoire démocratique : la mémoire devient une politique publique.",
-              "<strong>2023-2026</strong> — « Lois de concorde » régionales : la mémoire redevient un objet de conflit partisan."
+        titre: { fr: "La contre-offensive des « lois de concorde »", es: "La contraofensiva de las «leyes de concordia»" },
+        blocs: [
+          { t: "p", c: {
+            fr: "Après les élections régionales de mai 2023, les accords de gouvernement entre le PP et Vox prévoient dans plusieurs communautés autonomes de remplacer les lois mémorielles régionales par des <strong>« lois de concorde »</strong>. L'Aragon en adopte une en 2024 et la Communauté valencienne en 2025 ; ailleurs, les projets s'enlisent après le départ de Vox des gouvernements régionaux en juillet 2024. Ces textes remontent à 1931, incluent les victimes du terrorisme et suppriment les organismes chargés des exhumations. Le gouvernement central saisit le Tribunal constitutionnel, qui suspend plusieurs de leurs dispositions.",
+            es: "Tras las elecciones autonómicas de mayo de 2023, los acuerdos de gobierno entre PP y Vox prevén en varias comunidades sustituir las leyes autonómicas de memoria por <strong>«leyes de concordia»</strong>. Aragón aprueba una en 2024 y la Comunidad Valenciana en 2025; en otros lugares, los proyectos se estancan tras la salida de Vox de los gobiernos autonómicos en julio de 2024. Estos textos se remontan a 1931, incluyen a las víctimas del terrorismo y suprimen los organismos encargados de las exhumaciones. El gobierno central acude al Tribunal Constitucional, que suspende varias de sus disposiciones." } },
+          { t: "p", c: {
+            fr: "Les deux camps s'opposent sur le sens même de la mémoire, comme le résume le tableau suivant. Pour les partisans de la concorde, une mémoire d'État serait un récit partisan qui rouvre les blessures ; pour leurs adversaires, reconnaître des victimes n'est pas prendre parti, et mettre sur le même plan dictature et démocratie revient à nier ce qui les distingue.",
+            es: "Ambos bandos se oponen sobre el sentido mismo de la memoria, como resume la tabla siguiente. Para los partidarios de la concordia, una memoria de Estado sería un relato partidista que reabre heridas; para sus adversarios, reconocer a las víctimas no es tomar partido, y poner en el mismo plano dictadura y democracia equivale a negar lo que las distingue." } },
+          { t: "tableau",
+            head: { fr: ["", "Mémoire démocratique", "Concorde"], es: ["", "Memoria democrática", "Concordia"] },
+            rows: {
+              fr: [
+                ["Qui", "L'État (loi de 2022)", "PP et Vox (régions)"],
+                ["Période", "1936-1978", "Depuis 1931"],
+                ["Victimes", "Guerre et dictature", "Toutes, terrorisme compris"],
+                ["Exhumations", "Obligation de l'État", "Organismes supprimés"],
+                ["Idée-clé", "Vérité, réparation", "Concorde, pas de « récit »"]
+              ],
+              es: [
+                ["Quién", "El Estado (ley de 2022)", "PP y Vox (autonomías)"],
+                ["Periodo", "1936-1978", "Desde 1931"],
+                ["Víctimas", "Guerra y dictadura", "Todas, terrorismo incluido"],
+                ["Exhumaciones", "Obligación del Estado", "Organismos suprimidos"],
+                ["Idea clave", "Verdad, reparación", "Concordia, sin «relato»"]
+              ]
+            } }
+        ]
+      },
+      {
+        titre: { fr: "Cinquante ans après Franco : une mémoire vivante", es: "Cincuenta años después de Franco: una memoria viva" },
+        blocs: [
+          { t: "p", c: {
+            fr: "La mémoire s'est aussi construite hors de l'État : par la littérature (<em>Les Soldats de Salamine</em> de Javier Cercas, <em>La voz dormida</em> de Dulce Chacón, les romans d'Almudena Grandes), par le cinéma (<em>La Langue des papillons</em>, <em>Le Labyrinthe de Pan</em>, le documentaire <em>Le Silence des autres</em>, 2018) et par les associations locales. C'est cette mémoire culturelle qui a rendu possibles les lois de 2007 et de 2022, et qui reste active quand les majorités changent.",
+            es: "La memoria se construyó también fuera del Estado: con la literatura (<em>Soldados de Salamina</em> de Javier Cercas, <em>La voz dormida</em> de Dulce Chacón, las novelas de Almudena Grandes), con el cine (<em>La lengua de las mariposas</em>, <em>El laberinto del fauno</em>, el documental <em>El silencio de otros</em>, 2018) y con las asociaciones locales. Esa memoria cultural hizo posibles las leyes de 2007 y 2022, y sigue activa cuando cambian las mayorías." } },
+          { t: "p", c: {
+            fr: "En 2025, cinquantième anniversaire de la mort de Franco, le gouvernement organise plus de cent commémorations sous le titre « España en libertad » et demande à la justice de dissoudre la Fondation nationale Francisco Franco. Le pays reste partagé : selon le CIS, un Espagnol sur cinq juge encore « bonnes » les années de dictature. La frise ci-dessous résume un demi-siècle de politiques de mémoire, du silence à l'obligation d'État, puis à sa contestation.",
+            es: "En 2025, cincuentenario de la muerte de Franco, el gobierno organiza más de cien conmemoraciones con el título «España en libertad» y pide a la justicia la extinción de la Fundación Nacional Francisco Franco. El país sigue dividido: según el CIS, uno de cada cinco españoles juzga todavía «buenos» los años de la dictadura. La franja siguiente resume medio siglo de políticas de memoria, del silencio a la obligación de Estado y a su contestación." } },
+          { t: "periodes", debut: 1975, fin: 2027, pas: 10,
+            titre: { fr: "Cinquante ans de politiques de mémoire", es: "Cincuenta años de políticas de memoria" },
+            items: [
+              { l: { fr: "Pacte de l'oubli", es: "Pacto del olvido" }, d: "1977-2000", a: 1977, b: 2000, c: "var(--c4)" },
+              { l: { fr: "Mouvement des familles", es: "Movimiento de las familias" }, d: { fr: "depuis 2000", es: "desde 2000" }, a: 2000, b: 2026.9, c: "var(--c2)" },
+              { l: { fr: "Loi de mémoire historique", es: "Ley de Memoria Histórica" }, d: "2007-2022", a: 2007, b: 2022, c: "var(--c3)" },
+              { l: { fr: "Budget ramené à zéro", es: "Presupuesto a cero" }, d: { fr: "2013-2018", es: "2013-2018" }, a: 2013, b: 2018, c: "var(--c1)" },
+              { l: { fr: "Loi de mémoire démocratique", es: "Ley de Memoria Democrática" }, d: { fr: "depuis 2022", es: "desde 2022" }, a: 2022, b: 2026.9, c: "var(--c3)" },
+              { l: { fr: "Lois de concorde", es: "Leyes de concordia" }, d: { fr: "depuis 2024", es: "desde 2024" }, a: 2024, b: 2026.9, c: "var(--c1)" }
             ],
-            es:[
-              "<strong>1977</strong> — La amnistía funda la reconciliación sobre el silencio: ni juicio ni investigación.",
-              "<strong>2000</strong> — Priaranza del Bierzo: la sociedad civil impone la cuestión de las fosas.",
-              "<strong>2007</strong> — El Estado reconoce a las víctimas, pero sin juzgar ni exhumar por sí mismo.",
-              "<strong>2019-2022</strong> — Exhumación de Franco y ley de memoria democrática: la memoria se convierte en política pública.",
-              "<strong>2023-2026</strong> — «Leyes de concordia» autonómicas: la memoria vuelve a ser objeto de conflicto partidista."
-            ]
-          }}
+            legende: { fr: "Le budget de la loi de 2007 est réduit à zéro sous Mariano Rajoy (2013) et rétabli après l'arrivée de Pedro Sánchez (2018). Les lois de concorde sont celles d'Aragon (2024) et de Valence (2025).", es: "El presupuesto de la ley de 2007 queda a cero con Mariano Rajoy (2013) y se restablece tras la llegada de Pedro Sánchez (2018). Las leyes de concordia son las de Aragón (2024) y Valencia (2025)." } }
         ]
       }
     ]
   }
   ],
 
-  /* ─── 5. ACTEURS CLÉS ─────────────────────────────────────────────── */
-  acteurs: [
-    { nom:"Emilio Silva", c:"var(--a2)", role:{fr:"Fondateur de l'ARMH",es:"Fundador de la ARMH"},
-      d:{fr:"Journaliste à l'origine de l'exhumation de Priaranza del Bierzo (2000), point de départ du mouvement mémoriel contemporain.",
-         es:"Periodista impulsor de la exhumación de Priaranza del Bierzo (2000), punto de partida del movimiento memorialista contemporáneo."} },
-    { nom:"Baltasar Garzón", c:"var(--a4)", role:{fr:"Juge d'instruction",es:"Juez instructor"},
-      d:{fr:"Tente en 2008 d'instruire les disparitions du franquisme comme crimes contre l'humanité ; dessaisi puis poursuivi, il finit acquitté sur ce dossier.",
-         es:"Intenta en 2008 instruir las desapariciones del franquismo como crímenes contra la humanidad; apartado y luego procesado, acaba absuelto en ese caso."} },
-    { nom:"J. L. Rodríguez Zapatero", c:"var(--a1)", role:{fr:"Président du gouvernement (2004-2011)",es:"Presidente del Gobierno (2004-2011)"},
-      d:{fr:"Fait adopter la loi de mémoire historique de 2007, première politique publique de mémoire depuis la Transition.",
-         es:"Impulsa la aprobación de la ley de memoria histórica de 2007, primera política pública de memoria desde la Transición."} },
-    { nom:"María Servini", c:"var(--a3)", role:{fr:"Juge fédérale argentine",es:"Jueza federal argentina"},
-      d:{fr:"Instruit depuis 2010 la querella argentina au nom de la compétence universelle, seule enquête judiciaire ouverte sur les crimes franquistes.",
-         es:"Instruye desde 2010 la querella argentina en nombre de la jurisdicción universal, única investigación judicial abierta sobre los crímenes franquistas."} },
-    { nom:"Francisco Etxeberria", c:"var(--a2)", role:{fr:"Anthropologue médico-légal",es:"Antropólogo forense"},
-      d:{fr:"A dirigé des centaines d'exhumations et professionnalisé la recherche des disparus, transformant les fosses en preuves scientifiques.",
-         es:"Ha dirigido centenares de exhumaciones y profesionalizado la búsqueda de desaparecidos, convirtiendo las fosas en pruebas científicas."} },
-    { nom:"Pedro Sánchez", c:"var(--a4)", role:{fr:"Président du gouvernement (depuis 2018)",es:"Presidente del Gobierno (desde 2018)"},
-      d:{fr:"Ordonne l'exhumation de Franco en 2019 et fait adopter la loi de mémoire démocratique de 2022, qui confie les exhumations à l'État.",
-         es:"Ordena la exhumación de Franco en 2019 y hace aprobar la ley de memoria democrática de 2022, que encomienda las exhumaciones al Estado."} }
-  ],
-
-  /* ─── 6. CONTROVERSE ─────────────────────────────────────────────── */
-  debat: {
-    question: {fr:"Le « pacte de l'oubli » était-il le prix nécessaire de la démocratie espagnole ?",
-               es:"¿Fue el «pacto del olvido» el precio necesario de la democracia española?"},
-    oui: {
-      titre:{fr:"Oui : une condition de survie", es:"Sí: una condición de supervivencia"},
-      items:{
-        fr:[
-          "En 1977, l'<strong>armée, la police et la magistrature</strong> restent franquistes : toute politique d'épuration risquait de provoquer une réaction militaire, comme le montrera le 23-F.",
-          "L'amnistie était une <strong>revendication de l'opposition</strong> elle-même, y compris du PCE, et non une concession imposée par le seul régime sortant.",
-          "Le pari a réussi : l'Espagne sort de quarante ans de dictature <strong>sans nouvelle guerre civile</strong> et construit une démocratie stable en quelques années."
-        ],
-        es:[
-          "En 1977, el <strong>ejército, la policía y la judicatura</strong> siguen siendo franquistas: cualquier política de depuración arriesgaba provocar una reacción militar, como mostrará el 23-F.",
-          "La amnistía era una <strong>reivindicación de la propia oposición</strong>, incluido el PCE, y no una concesión impuesta solo por el régimen saliente.",
-          "La apuesta funcionó: España sale de cuarenta años de dictadura <strong>sin una nueva guerra civil</strong> y construye una democracia estable en pocos años."
-        ]
-      }
+  focus: {
+    q: {
+      fr: "Comment l'Espagne est-elle passée d'un oubli négocié à une mémoire d'État, et pourquoi cette mémoire reste-t-elle un champ de bataille ?",
+      es: "¿Cómo pasó España de un olvido negociado a una memoria de Estado, y por qué esa memoria sigue siendo un campo de batalla?"
     },
-    non: {
-      titre:{fr:"Non : un silence payé par les victimes", es:"No: un silencio pagado por las víctimas"},
-      items:{
-        fr:[
-          "L'oubli n'a pas été choisi par les victimes mais <strong>négocié en leur nom</strong> : elles n'ont eu ni vérité, ni justice, ni sépulture.",
-          "Le <strong>droit international</strong> considère les disparitions forcées comme des crimes continus et imprescriptibles ; l'ONU demande depuis 2008 l'abrogation de la loi de 1977.",
-          "Le silence n'a rien apaisé durablement : la question ressurgit intacte en 2000, preuve qu'elle avait été <strong>différée, non résolue</strong>."
-        ],
-        es:[
-          "El olvido no fue elegido por las víctimas sino <strong>negociado en su nombre</strong>: no tuvieron ni verdad, ni justicia, ni sepultura.",
-          "El <strong>derecho internacional</strong> considera las desapariciones forzadas como crímenes continuados e imprescriptibles; la ONU pide desde 2008 la derogación de la ley de 1977.",
-          "El silencio no apaciguó nada de forma duradera: la cuestión resurge intacta en el año 2000, prueba de que había sido <strong>aplazada, no resuelta</strong>."
-        ]
-      }
+    these: {
+      fr: "L'amnistie de 1977 a fondé la démocratie sur un <strong>silence</strong> qui laissait les vaincus dans les fosses ; à partir de 2000, les <strong>petits-enfants</strong> imposent la question, que l'État reprend en 2007 puis en 2022 ; mais, faute de justice et de consensus, la mémoire reste un <strong>enjeu partisan</strong>, contesté par les lois de concorde.",
+      es: "La amnistía de 1977 fundó la democracia sobre un <strong>silencio</strong> que dejaba a los vencidos en las fosas; a partir de 2000, los <strong>nietos</strong> imponen la cuestión, que el Estado asume en 2007 y luego en 2022; pero, a falta de justicia y de consenso, la memoria sigue siendo un <strong>asunto partidista</strong>, discutido por las leyes de concordia."
     },
-    synthese: {fr:"Le débat oppose une lecture <em>contextuelle</em>, qui juge le pacte de 1977 à l'aune des rapports de force de l'époque, à une lecture <em>juridique</em>, qui l'évalue au regard des standards internationaux actuels sur les crimes contre l'humanité. Une position intermédiaire, majoritaire chez les historiens, distingue l'amnistie de 1977 — compréhensible dans son contexte — de sa <strong>prolongation indéfinie</strong> après la consolidation démocratique : ce n'est pas le silence de 1977 qui pose problème, mais son maintien en 2026.",
-               es:"El debate enfrenta una lectura <em>contextual</em>, que juzga el pacto de 1977 según las relaciones de fuerza de la época, con una lectura <em>jurídica</em>, que lo evalúa a la luz de los estándares internacionales actuales sobre crímenes contra la humanidad. Una posición intermedia, mayoritaria entre los historiadores, distingue la amnistía de 1977 —comprensible en su contexto— de su <strong>prolongación indefinida</strong> tras la consolidación democrática: el problema no es el silencio de 1977, sino su mantenimiento en 2026."}
+    parties: [
+      {
+        num: "I", couleur: "var(--a1)",
+        titre: { fr: "Amnistie, « pacte de l'oubli » et mémoire inégale (1939-1999)", es: "Amnistía, «pacto del olvido» y memoria desigual (1939-1999)" },
+        idee: { fr: "La dictature honore ses morts et efface ceux des vaincus ; la Transition, pour réussir, choisit de ne juger personne.", es: "La dictadura honra a sus muertos y borra a los de los vencidos; la Transición, para triunfar, elige no juzgar a nadie." },
+        sps: [
+          {
+            titre: { fr: "L'amnistie de 1977", es: "La amnistía de 1977" },
+            chiffre: { n: { fr: "15 oct. 1977", es: "15 oct. 1977" }, d: { fr: "loi d'amnistie, jamais abrogée", es: "Ley de Amnistía, nunca derogada" } },
+            args: [
+              { t: { fr: "Une loi à double face.", es: "Una ley de doble cara." },
+                c: { fr: "Elle libère les prisonniers politiques, réclamés par l'opposition, mais protège aussi les agents de la répression.", es: "Libera a los presos políticos, reclamados por la oposición, pero protege también a los agentes de la represión." } },
+              { t: { fr: "Paix civile ou impunité ?", es: "¿Paz civil o impunidad?" },
+                c: { fr: "Condition de la Transition pour les uns, contraire au droit international pour les autres : l'ONU recommande en 2008 d'envisager son abrogation.", es: "Condición de la Transición para unos, contraria al derecho internacional para otros: la ONU recomienda en 2008 considerar su derogación." },
+                ex: { fr: "Les crimes contre l'humanité sont imprescriptibles et ne peuvent être amnistiés.", es: "Los crímenes contra la humanidad son imprescriptibles y no pueden amnistiarse." } },
+              { t: { fr: "Un accord tacite.", es: "Un acuerdo tácito." },
+                c: { fr: "Le « pacte de l'oubli » repose sur l'idée que tout le monde a souffert et fauté, sans distinguer un État répressif d'une violence de guerre.", es: "El «pacto del olvido» se basa en la idea de que todos sufrieron y se equivocaron, sin distinguir un Estado represor de una violencia de guerra." } }
+            ],
+            def: { mot: { fr: "Pacto del olvido", es: "Pacto del olvido" }, c: { fr: "accord tacite de la Transition pour ne pas juger ni utiliser le passé.", es: "acuerdo tácito de la Transición para no juzgar ni utilizar el pasado." } }
+          },
+          {
+            titre: { fr: "Deux camps, deux mémoires", es: "Dos bandos, dos memorias" },
+            chiffre: { n: { fr: "+ de 100 000", es: "+ de 100 000" }, d: { fr: "disparus selon la plupart des estimations", es: "desaparecidos según la mayoría de las estimaciones" } },
+            args: [
+              { t: { fr: "Des violences dans les deux camps.", es: "Violencias en ambos bandos." },
+                c: { fr: "La répression républicaine fait environ 50 000 victimes, dont les fusillés de Paracuellos (novembre-décembre 1936).", es: "La represión republicana causa unas 50 000 víctimas, entre ellas los fusilados de Paracuellos (noviembre-diciembre de 1936)." } },
+              { t: { fr: "Un traitement inégal.", es: "Un trato desigual." },
+                c: { fr: "Le régime exhume et honore ses morts (Causa General, 1940) ; les vaincus restent dans les fossés et les fosses communes.", es: "El régimen exhuma y honra a sus muertos (Causa General, 1940); los vencidos se quedan en las cunetas y las fosas comunes." },
+                ex: { fr: "Les plaques aux « tombés pour Dieu et pour l'Espagne » couvrent les églises du pays.", es: "Las placas a los «caídos por Dios y por España» cubren las iglesias del país." } },
+              { t: { fr: "Un héritage matériel.", es: "Una herencia material." },
+                c: { fr: "La démocratie hérite d'un paysage saturé de monuments franquistes et de milliers de fosses non signalées.", es: "La democracia hereda un paisaje saturado de monumentos franquistas y de miles de fosas sin señalizar." } }
+            ]
+          },
+          {
+            titre: { fr: "Le Valle de los Caídos", es: "El Valle de los Caídos" },
+            chiffre: { n: { fr: "≈ 34 000", es: "≈ 34 000" }, d: { fr: "dépouilles des deux camps transférées au Valle", es: "restos de ambos bandos trasladados al Valle" } },
+            args: [
+              { t: { fr: "Un mausolée construit par les vaincus.", es: "Un mausoleo construido por los vencidos." },
+                c: { fr: "Bâti de 1940 à 1958, en partie par des prisonniers politiques, il reçoit des dépouilles souvent sans l'accord des familles.", es: "Construido de 1940 a 1958, en parte por presos políticos, recibe restos a menudo sin el acuerdo de las familias." } },
+              { t: { fr: "Une réconciliation de façade.", es: "Una reconciliación de fachada." },
+                c: { fr: "Présenté comme un lieu de paix, il glorifie les vainqueurs et abrite la tombe de Franco jusqu'en 2019.", es: "Presentado como un lugar de paz, glorifica a los vencedores y alberga la tumba de Franco hasta 2019." },
+                ex: { fr: "Chaque 20 novembre, les nostalgiques du régime s'y rassemblent pendant des décennies.", es: "Cada 20 de noviembre, los nostálgicos del régimen se reúnen allí durante décadas." } },
+              { t: { fr: "Un symbole intouchable.", es: "Un símbolo intocable." },
+                c: { fr: "Le transformer revient à toucher au compromis de 1977 : aucun gouvernement ne s'y risque avant les années 2010.", es: "Transformarlo equivale a tocar el compromiso de 1977: ningún gobierno se arriesga antes de los años 2010." } }
+            ]
+          }
+        ],
+        concl: { fr: "La démocratie espagnole est née d'un oubli voulu, mais cet oubli était inégal : il protégeait la mémoire des vainqueurs et laissait celle des vaincus sous terre.", es: "La democracia española nació de un olvido buscado, pero ese olvido era desigual: protegía la memoria de los vencedores y dejaba bajo tierra la de los vencidos." }
+      },
+      {
+        num: "II", couleur: "var(--a2)",
+        titre: { fr: "Fosses rouvertes, loi de 2007 et impasse judiciaire (2000-2018)", es: "Fosas reabiertas, ley de 2007 e impasse judicial (2000-2018)" },
+        idee: { fr: "La société civile rouvre les fosses et obtient une reconnaissance symbolique, mais la justice espagnole refuse de juger.", es: "La sociedad civil reabre las fosas y obtiene un reconocimiento simbólico, pero la justicia española se niega a juzgar." },
+        sps: [
+          {
+            titre: { fr: "La génération des petits-enfants", es: "La generación de los nietos" },
+            chiffre: { n: { fr: "Oct. 2000", es: "Oct. 2000" }, d: { fr: "exhumation de Priaranza del Bierzo, naissance de l'ARMH", es: "exhumación de Priaranza del Bierzo, nace la ARMH" } },
+            args: [
+              { t: { fr: "Une exhumation fondatrice.", es: "Una exhumación fundacional." },
+                c: { fr: "Emilio Silva fait ouvrir la fosse de son grand-père avec des méthodes scientifiques ; des dizaines d'associations suivent.", es: "Emilio Silva hace abrir la fosa de su abuelo con métodos científicos; decenas de asociaciones siguen su ejemplo." } },
+              { t: { fr: "Un droit, pas une vengeance.", es: "Un derecho, no una venganza." },
+                c: { fr: "Nés en démocratie, les petits-enfants réclament de savoir où sont les corps : la question devient humanitaire.", es: "Nacidos en democracia, los nietos reclaman saber dónde están los cuerpos: la cuestión se vuelve humanitaria." },
+                ex: { fr: "En novembre 2002, le Congrès condamne pour la première fois le coup d'État de 1936.", es: "En noviembre de 2002, el Congreso condena por primera vez el golpe de 1936." } },
+              { t: { fr: "Un savoir importé.", es: "Un saber importado." },
+                c: { fr: "Les techniques viennent des enquêtes sur l'Argentine, le Chili ou les Balkans, et font des fosses des preuves.", es: "Las técnicas proceden de las investigaciones sobre Argentina, Chile o los Balcanes, y convierten las fosas en pruebas." } }
+            ]
+          },
+          {
+            titre: { fr: "La loi de 2007", es: "La ley de 2007" },
+            chiffre: { n: "52/2007", d: { fr: "loi de mémoire historique, 26 décembre 2007", es: "Ley de Memoria Histórica, 26 de diciembre de 2007" } },
+            args: [
+              { t: { fr: "Reconnaître les victimes.", es: "Reconocer a las víctimas." },
+                c: { fr: "Zapatero fait voter reconnaissance des victimes, retrait des symboles et aide aux exhumations, sans le PP.", es: "Zapatero aprueba reconocimiento de las víctimas, retirada de símbolos y ayuda a las exhumaciones, sin el PP." } },
+              { t: { fr: "Sans juger ni exhumer.", es: "Sin juzgar ni exhumar." },
+                c: { fr: "Les condamnations sont déclarées illégitimes mais pas annulées, et les familles gardent la charge des fouilles.", es: "Las condenas se declaran ilegítimas pero no se anulan, y las familias siguen a cargo de las excavaciones." },
+                ex: { fr: "Sous Rajoy, le budget de la loi est ramené à zéro en 2013.", es: "Con Rajoy, el presupuesto de la ley queda a cero en 2013." } },
+              { t: { fr: "Une loi contestée des deux côtés.", es: "Una ley discutida por ambos lados." },
+                c: { fr: "Rupture du consensus pour la droite, loi trop timide pour une partie de la gauche et des nationalistes.", es: "Ruptura del consenso para la derecha, ley demasiado tímida para parte de la izquierda y de los nacionalistas." } }
+            ]
+          },
+          {
+            titre: { fr: "L'impasse judiciaire", es: "El bloqueo judicial" },
+            chiffre: { n: "114 226", d: { fr: "disparus recensés par le juge Garzón en 2008", es: "desaparecidos recensados por el juez Garzón en 2008" } },
+            args: [
+              { t: { fr: "Garzón tente de juger.", es: "Garzón intenta juzgar." },
+                c: { fr: "En 2008, il qualifie les disparitions de crimes contre l'humanité ; dessaisi, poursuivi, il est acquitté en 2012, mais le Tribunal suprême ferme la voie judiciaire.", es: "En 2008 califica las desapariciones de crímenes contra la humanidad; apartado y procesado, es absuelto en 2012, pero el Tribunal Supremo cierra la vía judicial." } },
+              { t: { fr: "Le recours à l'étranger.", es: "El recurso al extranjero." },
+                c: { fr: "La querella argentina, ouverte en 2010, émet des mandats d'arrêt en 2013 ; l'Espagne refuse d'extrader.", es: "La querella argentina, abierta en 2010, dicta órdenes de detención en 2013; España se niega a extraditar." },
+                ex: { fr: "Le procès des « bébés volés » (2018) : faits établis mais prescrits.", es: "El juicio de los «bebés robados» (2018): hechos probados pero prescritos." } },
+              { t: { fr: "Une reconnaissance sans justice.", es: "Un reconocimiento sin justicia." },
+                c: { fr: "Amnistie, prescription et non-rétroactivité empêchent tout procès en Espagne.", es: "Amnistía, prescripción e irretroactividad impiden cualquier juicio en España." } }
+            ],
+            def: { mot: { fr: "Compétence universelle", es: "Jurisdicción universal" }, c: { fr: "possibilité pour un État de juger des crimes contre l'humanité commis ailleurs.", es: "posibilidad de que un Estado juzgue crímenes contra la humanidad cometidos en otro lugar." } }
+          }
+        ],
+        concl: { fr: "En vingt ans, la mémoire des vaincus est sortie du cercle familial, mais l'État la reconnaît sans la juger.", es: "En veinte años, la memoria de los vencidos salió del círculo familiar, pero el Estado la reconoce sin juzgarla." }
+      },
+      {
+        num: "III", couleur: "var(--a3)",
+        titre: { fr: "Exhumation de Franco, loi de 2022 et contre-offensive (2019-2026)", es: "Exhumación de Franco, ley de 2022 y contraofensiva (2019-2026)" },
+        idee: { fr: "L'État prend la mémoire en charge, mais la droite régionale la conteste : la mémoire devient un enjeu de majorité.", es: "El Estado asume la memoria, pero la derecha autonómica la discute: la memoria se convierte en un asunto de mayorías." },
+        sps: [
+          {
+            titre: { fr: "Franco quitte le Valle", es: "Franco sale del Valle" },
+            chiffre: { n: { fr: "24 oct. 2019", es: "24 oct. 2019" }, d: { fr: "Franco transféré à Mingorrubio", es: "Franco trasladado a Mingorrubio" } },
+            args: [
+              { t: { fr: "La fin d'une anomalie.", es: "El fin de una anomalía." },
+                c: { fr: "Après un an et demi de recours, le dictateur quitte le monument d'État pour un caveau familial.", es: "Tras año y medio de recursos, el dictador sale del monumento de Estado hacia un panteón familiar." } },
+              { t: { fr: "Resignifier Cuelgamuros.", es: "Resignificar Cuelgamuros." },
+                c: { fr: "Primo de Rivera est exhumé en 2023, les cryptes sont ouvertes pour identifier les victimes républicaines.", es: "Primo de Rivera es exhumado en 2023 y se abren las criptas para identificar a las víctimas republicanas." },
+                ex: { fr: "Le projet retenu en novembre 2025 garde la croix mais supprime l'escalier monumental.", es: "El proyecto elegido en noviembre de 2025 conserva la cruz pero suprime la escalinata monumental." } },
+              { t: { fr: "Un geste politique.", es: "Un gesto político." },
+                c: { fr: "Décidée par Pedro Sánchez et retransmise en direct, l'exhumation divise la classe politique.", es: "Decidida por Pedro Sánchez y retransmitida en directo, la exhumación divide a la clase política." } }
+            ]
+          },
+          {
+            titre: { fr: "La loi de 2022", es: "La ley de 2022" },
+            chiffre: { n: { fr: "≈ 9 000", es: "≈ 9 000" }, d: { fr: "dépouilles récupérées en trois ans", es: "restos recuperados en tres años" } },
+            args: [
+              { t: { fr: "Une obligation d'État.", es: "Una obligación del Estado." },
+                c: { fr: "La loi 20/2022 confie les exhumations à l'État, annule les condamnations franquistes et crée un procureur dédié.", es: "La Ley 20/2022 confía las exhumaciones al Estado, anula las condenas franquistas y crea una fiscalía dedicada." } },
+              { t: { fr: "Des résultats réels.", es: "Resultados reales." },
+                c: { fr: "En novembre 2025, le bilan officiel compte environ 9 000 dépouilles récupérées et 1 614 déclarations de reconnaissance.", es: "En noviembre de 2025, el balance oficial cuenta unos 9 000 restos recuperados y 1 614 declaraciones de reconocimiento." },
+                ex: { fr: "En 2026, des tests ADN gratuits sont proposés aux familles.", es: "En 2026 se ofrecen pruebas de ADN gratuitas a las familias." } },
+              { t: { fr: "Toujours pas de procès.", es: "Todavía sin juicios." },
+                c: { fr: "L'amnistie de 1977 reste en vigueur : aucun responsable ne sera jugé.", es: "La amnistía de 1977 sigue vigente: ningún responsable será juzgado." } }
+            ],
+            def: { mot: { fr: "Memoria democrática", es: "Memoria democrática" }, c: { fr: "mémoire fondée sur les droits des victimes : vérité, justice, réparation, non-répétition.", es: "memoria basada en los derechos de las víctimas: verdad, justicia, reparación, no repetición." } }
+          },
+          {
+            titre: { fr: "Les lois de concorde", es: "Las leyes de concordia" },
+            chiffre: { n: "2024-2025", d: { fr: "lois de concorde en Aragon puis à Valence", es: "leyes de concordia en Aragón y luego en Valencia" } },
+            args: [
+              { t: { fr: "Une contre-offensive régionale.", es: "Una contraofensiva autonómica." },
+                c: { fr: "Après 2023, PP et Vox remplacent des lois mémorielles régionales par des lois remontant à 1931 et englobant le terrorisme.", es: "Tras 2023, PP y Vox sustituyen leyes autonómicas de memoria por leyes que se remontan a 1931 e incluyen el terrorismo." } },
+              { t: { fr: "Un conflit de récits.", es: "Un conflicto de relatos." },
+                c: { fr: "Concorde et réconciliation d'un côté, droits des victimes et distinction entre dictature et démocratie de l'autre.", es: "Concordia y reconciliación por un lado, derechos de las víctimas y distinción entre dictadura y democracia por otro." },
+                ex: { fr: "Le Tribunal constitutionnel suspend plusieurs articles de la loi valencienne en 2025.", es: "El Tribunal Constitucional suspende varios artículos de la ley valenciana en 2025." } },
+              { t: { fr: "Une mémoire suspendue aux élections.", es: "Una memoria pendiente de las elecciones." },
+                c: { fr: "Lois et budgets changent avec les majorités : la mémoire est devenue un enjeu électoral.", es: "Leyes y presupuestos cambian con las mayorías: la memoria se ha convertido en un asunto electoral." } }
+            ]
+          },
+          {
+            titre: { fr: "Cinquante ans après", es: "Cincuenta años después" },
+            chiffre: { n: "2025", d: { fr: "cinquantenaire de la mort de Franco, « España en libertad »", es: "cincuentenario de la muerte de Franco, «España en libertad»" } },
+            args: [
+              { t: { fr: "Une mémoire culturelle.", es: "Una memoria cultural." },
+                c: { fr: "Romans (Cercas, Chacón, Grandes) et films (Le Labyrinthe de Pan, Le Silence des autres) ont préparé les lois.", es: "Novelas (Cercas, Chacón, Grandes) y películas (El laberinto del fauno, El silencio de otros) prepararon las leyes." } },
+              { t: { fr: "Un pays toujours partagé.", es: "Un país todavía dividido." },
+                c: { fr: "Plus de cent commémorations en 2025, mais un Espagnol sur cinq juge encore « bonnes » les années de dictature.", es: "Más de cien conmemoraciones en 2025, pero uno de cada cinco españoles juzga todavía «buenos» los años de la dictadura." },
+                ex: { fr: "Le gouvernement demande en 2025 la dissolution de la Fondation Francisco Franco.", es: "El gobierno pide en 2025 la extinción de la Fundación Francisco Franco." } },
+              { t: { fr: "Une question européenne.", es: "Una cuestión europea." },
+                c: { fr: "Comme l'Argentine ou l'Allemagne, l'Espagne montre qu'une démocratie doit un jour regarder son passé.", es: "Como Argentina o Alemania, España muestra que una democracia debe un día mirar su pasado." } }
+            ]
+          }
+        ],
+        concl: { fr: "Le devoir de mémoire est devenu une politique d'État, mais il n'a pas trouvé de consensus : en Espagne, le passé reste un enjeu du présent.", es: "La memoria se ha convertido en una política de Estado, pero no ha encontrado consenso: en España, el pasado sigue siendo un asunto del presente." }
+      }
+    ]
   },
 
-  /* ─── 7. LEXIQUE BILINGUE ─────────────────────────────────────────── */
+  ficheCours: "fiche-civi-esp-4.pdf",
+
+  copie: {
+    accroche: {
+      fr: "En novembre 2025, trois ans après l'entrée en vigueur de la loi de mémoire démocratique, le gouvernement espagnol annonce avoir récupéré environ 9 000 dépouilles dans les fosses de la guerre civile et de la dictature, alors que plus de 100 000 personnes restent disparues. Un demi-siècle après la mort de Franco, une démocratie peut-elle encore se construire sans avoir rendu leurs morts aux vaincus ?",
+      es: "En noviembre de 2025, tres años después de la entrada en vigor de la Ley de Memoria Democrática, el gobierno español anuncia haber recuperado unos 9 000 restos de las fosas de la guerra civil y la dictadura, mientras más de 100 000 personas siguen desaparecidas. Medio siglo después de la muerte de Franco, ¿puede una democracia seguir construyéndose sin haber devuelto sus muertos a los vencidos?"
+    },
+    idee: {
+      fr: "En Espagne, la mémoire n'est pas un héritage apaisé mais un enjeu politique : le silence de 1977 a permis la démocratie en laissant les vaincus sans sépulture, et la mémoire d'État construite depuis 2007 reconnaît les victimes sans juger les coupables, ce qui la laisse à la merci des majorités.",
+      es: "En España, la memoria no es una herencia apaciguada sino un asunto político: el silencio de 1977 permitió la democracia dejando a los vencidos sin sepultura, y la memoria de Estado construida desde 2007 reconoce a las víctimas sin juzgar a los culpables, lo que la deja a merced de las mayorías."
+    },
+    sujets: {
+      fr: [
+        "L'oubli peut-il être une condition de la paix ?",
+        "La mémoire est-elle l'affaire de l'État ?",
+        "Faut-il juger le passé pour se réconcilier ?"
+      ],
+      es: [
+        "¿Puede el olvido ser una condición de la paz?",
+        "¿Es la memoria un asunto del Estado?",
+        "¿Hay que juzgar el pasado para reconciliarse?"
+      ]
+    },
+    piege: {
+      fr: "Ne pas dire que la loi d'amnistie de 1977 a été imposée par le régime : c'était d'abord une revendication de l'opposition, PCE compris, qui voulait libérer les prisonniers politiques. Ne pas confondre non plus les deux lois : celle de 2007 déclare les condamnations franquistes « illégitimes », celle de 2022 les déclare nulles et confie les exhumations à l'État.",
+      es: "No decir que la Ley de Amnistía de 1977 fue impuesta por el régimen: era ante todo una reivindicación de la oposición, PCE incluido, que quería liberar a los presos políticos. Tampoco confundir las dos leyes: la de 2007 declara «ilegítimas» las condenas franquistas, la de 2022 las declara nulas y confía las exhumaciones al Estado."
+    }
+  },
+
   lexique: [
-    { es:"Memoria histórica", fr:"Reconnaissance publique des victimes de la guerre civile et du franquisme ; nom de la loi de 2007." },
-    { es:"Memoria democrática", fr:"Terme retenu par la loi de 2022, centré sur les droits des victimes : vérité, justice, réparation, non-répétition." },
-    { es:"Pacto del olvido", fr:"« Pacte de l'oubli » : accord tacite de la Transition consistant à ne pas juger ni instrumentaliser le passé." },
-    { es:"Ley de Amnistía (1977)", fr:"Loi amnistiant les délits politiques mais aussi les actes de répression commis par les agents de l'État." },
-    { es:"Fosa común", fr:"Fosse commune où furent jetées les victimes de la répression ; plus de deux mille sites recensés." },
-    { es:"Cuneta", fr:"Fossé de bord de route, lieu emblématique des exécutions sommaires et des corps abandonnés." },
-    { es:"Desaparecido", fr:"Personne enlevée puis exécutée sans que le sort ni le lieu de sépulture soient reconnus par l'État." },
-    { es:"Exhumación", fr:"Ouverture d'une fosse et récupération des restes en vue de leur identification et de leur restitution." },
-    { es:"ARMH", fr:"Association pour la récupération de la mémoire historique, fondée en 2000 par Emilio Silva." },
-    { es:"Valle de Cuelgamuros", fr:"Nouveau nom du Valle de los Caídos depuis la loi de 2022, dans le cadre de sa resignification." },
-    { es:"Resignificación", fr:"Transformation du sens d'un lieu franquiste par le contexte, l'explication historique et le retrait des symboles." },
-    { es:"Querella argentina", fr:"Plainte déposée en Argentine en 2010, seule enquête judiciaire ouverte sur les crimes du franquisme." },
-    { es:"Bebés robados", fr:"Nouveau-nés soustraits à leurs mères, d'abord pour des motifs idéologiques, puis par des réseaux d'adoption illégale." },
-    { es:"Ley de Concordia", fr:"Loi régionale portée par le PP et Vox depuis 2023 pour remplacer les lois mémorielles autonomes." },
-    { es:"Simbología franquista", fr:"Plaques, statues, noms de rues et distinctions hérités de la dictature, dont la loi impose le retrait." }
+    { es: "Memoria histórica", fr: "Reconnaissance publique des victimes de la guerre et du franquisme ; nom de la loi de 2007." },
+    { es: "Memoria democrática", fr: "Notion de la loi de 2022, centrée sur les droits des victimes : vérité, justice, réparation." },
+    { es: "Pacto del olvido", fr: "Accord tacite de la Transition pour ne pas juger ni utiliser le passé." },
+    { es: "Ley de Amnistía", fr: "Loi de 1977 qui amnistie opposants et agents de la répression." },
+    { es: "Fosa común", fr: "Fosse commune où furent jetées les victimes de la répression." },
+    { es: "Cuneta", fr: "Fossé de bord de route, lieu des exécutions sommaires et des corps abandonnés." },
+    { es: "Desaparecido", fr: "Personne tuée dont le sort et la sépulture n'ont jamais été reconnus." },
+    { es: "Exhumación", fr: "Ouverture d'une fosse pour récupérer, identifier et rendre les restes." },
+    { es: "ARMH", fr: "Association pour la récupération de la mémoire historique, fondée en 2000 par Emilio Silva." },
+    { es: "Causa General", fr: "Enquête du régime franquiste, ouverte en 1940, sur les « crimes rouges »." },
+    { es: "Caídos por Dios y por España", fr: "Formule des plaques franquistes honorant les morts du camp vainqueur." },
+    { es: "Valle de Cuelgamuros", fr: "Nouveau nom du Valle de los Caídos depuis la loi de 2022." },
+    { es: "Resignificación", fr: "Transformation du sens d'un lieu franquiste par l'explication historique." },
+    { es: "Jurisdicción universal", fr: "Possibilité de juger des crimes contre l'humanité commis dans un autre pays." },
+    { es: "Querella argentina", fr: "Plainte déposée à Buenos Aires en 2010, seule enquête judiciaire sur les crimes du franquisme." },
+    { es: "Prescripción", fr: "Extinction de l'action en justice après un certain délai." },
+    { es: "Bebés robados", fr: "Nouveau-nés retirés à leurs mères sous le franquisme et jusqu'aux années 1990." },
+    { es: "Ley de Concordia", fr: "Loi régionale du PP et de Vox (Aragon 2024, Valence 2025) remplaçant une loi mémorielle." },
+    { es: "Simbología franquista", fr: "Plaques, statues, noms de rues et distinctions hérités de la dictature." },
+    { es: "Banco Nacional de ADN", fr: "Fichier génétique créé par la loi de 2022 pour identifier les disparus." },
+    { es: "Reparación", fr: "Mesures de reconnaissance et d'indemnisation des victimes." },
+    { es: "Lesa humanidad", fr: "Crimes contre l'humanité, imprescriptibles en droit international." },
+    { es: "Nietos de la memoria", fr: "La génération des petits-enfants des victimes, moteur du mouvement depuis 2000." },
+    { es: "España en libertad", fr: "Programme officiel des cinquante ans de la mort de Franco (2025)." }
   ],
 
-  /* ─── 8. SUJETS POSSIBLES ─────────────────────────────────────────── */
-  sujets: [
-    { q:{fr:"Le devoir de mémoire est-il compatible avec l'esprit de la Transition espagnole ?",
-         es:"¿Es el deber de memoria compatible con el espíritu de la Transición española?"},
-      h:{fr:"Opposer la logique du consensus de 1977 et celle des droits des victimes ; discuter l'idée d'une « dette » de la démocratie.",
-         es:"Contraponer la lógica del consenso de 1977 y la de los derechos de las víctimas; discutir la idea de una «deuda» de la democracia."} },
-    { q:{fr:"Dans quelle mesure la mémoire est-elle devenue en Espagne un instrument de la lutte partisane ?",
-         es:"¿En qué medida se ha convertido la memoria en España en un instrumento de la lucha partidista?"},
-      h:{fr:"Mobiliser la loi de 2007, celle de 2022 et les « lois de concorde » régionales depuis 2023.",
-         es:"Recurrir a la ley de 2007, la de 2022 y las «leyes de concordia» autonómicas desde 2023."} },
-    { q:{fr:"L'Espagne a-t-elle réglé sa question mémorielle en exhumant Franco du Valle de los Caídos ?",
-         es:"¿Resolvió España su cuestión memorial al exhumar a Franco del Valle de los Caídos?"},
-      h:{fr:"Distinguer geste symbolique et politique de fond ; évoquer la resignification de Cuelgamuros et les fosses encore ouvertes.",
-         es:"Distinguir gesto simbólico y política de fondo; evocar la resignificación de Cuelgamuros y las fosas aún abiertas."} },
-    { q:{fr:"Peut-on parler d'une impunité du franquisme dans l'Espagne démocratique ?",
-         es:"¿Se puede hablar de impunidad del franquismo en la España democrática?"},
-      h:{fr:"Analyser la loi d'amnistie de 1977, l'affaire Garzón, la querella argentina et les observations des Nations unies.",
-         es:"Analizar la ley de amnistía de 1977, el caso Garzón, la querella argentina y las observaciones de Naciones Unidas."} }
-  ],
-
-  /* ─── 9. À RETENIR ───────────────────────────────────────────────── */
-  retenir: {
-    fr:[
-      "La Transition a fondé la réconciliation sur un <strong>silence négocié</strong>, dont la <strong>loi d'amnistie de 1977</strong> — toujours en vigueur — est le pilier juridique.",
-      "Le <strong>« pacte de l'oubli »</strong> est un accord tacite, non un texte de loi : il repose sur une équivalence implicite entre victimes et bourreaux.",
-      "Le tournant date de l'an <strong>2000</strong> : l'exhumation de <strong>Priaranza del Bierzo</strong> et la création de l'ARMH imposent la question des fosses communes.",
-      "Le moteur du mouvement est <strong>générationnel</strong> : ce sont les petits-enfants, nés en démocratie, qui réclament vérité et sépulture.",
-      "La <strong>loi de 2007</strong> reconnaît les victimes et déclare les sentences franquistes « illégitimes », mais laisse les exhumations aux familles.",
-      "L'échec de l'instruction de <strong>Garzón</strong> (2008-2012) ferme la voie judiciaire interne et déplace le combat vers la <strong>querella argentina</strong>.",
-      "L'<strong>exhumation de Franco</strong> (2019) puis la <strong>loi de mémoire démocratique de 2022</strong> font de la recherche des disparus une obligation de l'État.",
-      "Depuis 2023, les <strong>« lois de concorde »</strong> du PP et de Vox dans les communautés autonomes montrent que la mémoire reste un conflit politique ouvert."
+  plusLoin: {
+    liens: [
+      { type: { fr: "Civilisation · Espagne · Chapitre 02", es: "Civilización · España · Capítulo 02" }, titre: { fr: "Le franquisme", es: "El franquismo" }, href: "civi-esp-2.html" },
+      { type: { fr: "Civilisation · Espagne · Chapitre 03", es: "Civilización · España · Capítulo 03" }, titre: { fr: "La Transition démocratique", es: "La Transición democrática" }, href: "civi-esp-3.html" },
+      { type: { fr: "Civilisation · Espagne · Chapitre 05", es: "Civilización · España · Capítulo 05" }, titre: { fr: "La monarchie espagnole", es: "La monarquía española" }, href: "civi-esp-5.html" },
+      { type: { fr: "Civilisation · Espagne · Chapitre 11", es: "Civilización · España · Capítulo 11" }, titre: { fr: "Vox et la nouvelle extrême droite", es: "Vox y la nueva extrema derecha" }, href: "civi-esp-11.html" },
+      { type: { fr: "Civilisation · Argentine · Chapitre 01", es: "Civilización · Argentina · Capítulo 01" }, titre: { fr: "L'histoire de l'Argentine", es: "La historia de Argentina" }, href: "../Argentine/civi-argentine-1.html" }
     ],
-    es:[
-      "La Transición fundó la reconciliación sobre un <strong>silencio negociado</strong>, cuyo pilar jurídico es la <strong>ley de amnistía de 1977</strong>, aún vigente.",
-      "El <strong>«pacto del olvido»</strong> es un acuerdo tácito, no un texto legal: se apoya en una equivalencia implícita entre víctimas y verdugos.",
-      "El punto de inflexión es el año <strong>2000</strong>: la exhumación de <strong>Priaranza del Bierzo</strong> y la creación de la ARMH imponen la cuestión de las fosas comunes.",
-      "El motor del movimiento es <strong>generacional</strong>: son los nietos, nacidos en democracia, quienes reclaman verdad y sepultura.",
-      "La <strong>ley de 2007</strong> reconoce a las víctimas y declara «ilegítimas» las sentencias franquistas, pero deja las exhumaciones en manos de las familias.",
-      "El fracaso de la instrucción de <strong>Garzón</strong> (2008-2012) cierra la vía judicial interna y desplaza la lucha hacia la <strong>querella argentina</strong>.",
-      "La <strong>exhumación de Franco</strong> (2019) y la <strong>ley de memoria democrática de 2022</strong> convierten la búsqueda de los desaparecidos en obligación del Estado.",
-      "Desde 2023, las <strong>«leyes de concordia»</strong> del PP y Vox en las comunidades autónomas muestran que la memoria sigue siendo un conflicto político abierto."
+    sources: [
+      { fr: "Ministère de la Politique territoriale et de la Mémoire démocratique, <a href=\"https://mptmd.gob.es/content/dam/mpt/prensa/notas_de_prensa/notas/2025/11/20251118_NP_3A%C3%91OSLMD.pdf\" target=\"_blank\" rel=\"noopener\">bilan des trois ans de la loi de mémoire démocratique</a>, 18 novembre 2025.", es: "Ministerio de Política Territorial y Memoria Democrática, <a href=\"https://mptmd.gob.es/content/dam/mpt/prensa/notas_de_prensa/notas/2025/11/20251118_NP_3A%C3%91OSLMD.pdf\" target=\"_blank\" rel=\"noopener\">balance de los tres años de la Ley de Memoria Democrática</a>, 18 de noviembre de 2025." },
+      { fr: "BOE, <a href=\"https://www.boe.es/eli/es/l/2022/10/19/20\" target=\"_blank\" rel=\"noopener\">loi 20/2022 de mémoire démocratique</a> ; loi 52/2007 de mémoire historique ; loi 46/1977 d'amnistie.", es: "BOE, <a href=\"https://www.boe.es/eli/es/l/2022/10/19/20\" target=\"_blank\" rel=\"noopener\">Ley 20/2022, de Memoria Democrática</a>; Ley 52/2007, de Memoria Histórica; Ley 46/1977, de Amnistía." },
+      { fr: "Público, <a href=\"https://www.publico.es/actualidad/onu-amonesto-tres-veces-espana.html\" target=\"_blank\" rel=\"noopener\">La ONU amonestó tres veces a España por su ley de amnistía</a> (observations du Comité des droits de l'homme, octobre 2008).", es: "Público, <a href=\"https://www.publico.es/actualidad/onu-amonesto-tres-veces-espana.html\" target=\"_blank\" rel=\"noopener\">La ONU amonestó tres veces a España por su ley de amnistía</a> (observaciones del Comité de Derechos Humanos, octubre de 2008)." },
+      { fr: "Legal Today, <a href=\"https://www.legaltoday.com/actualidad-juridica/noticias-de-derecho/el-tc-admite-el-recurso-de-inconstitucionalidad-del-gobierno-a-la-ley-de-concordia-valenciana-y-suspende-varios-articulos-2025-05-28/\" target=\"_blank\" rel=\"noopener\">El TC admite el recurso del Gobierno a la ley de concordia valenciana y suspende varios artículos</a>, 28 mai 2025.", es: "Legal Today, <a href=\"https://www.legaltoday.com/actualidad-juridica/noticias-de-derecho/el-tc-admite-el-recurso-de-inconstitucionalidad-del-gobierno-a-la-ley-de-concordia-valenciana-y-suspende-varios-articulos-2025-05-28/\" target=\"_blank\" rel=\"noopener\">El TC admite el recurso del Gobierno a la ley de concordia valenciana y suspende varios artículos</a>, 28 de mayo de 2025." },
+      { fr: "Paul Preston, <em>The Spanish Holocaust</em>, 2011 ; José Luis Ledesma, travaux sur la violence dans la zone républicaine.", es: "Paul Preston, <em>El holocausto español</em>, 2011; José Luis Ledesma, trabajos sobre la violencia en la zona republicana." },
+      { fr: "Images : <a href=\"https://commons.wikimedia.org/wiki/File:Exhumaci%C3%B3n_ARMH_2.jpg\" target=\"_blank\" rel=\"noopener\">exhumation de l'ARMH</a> (FCPB, CC BY-SA), <a href=\"https://commons.wikimedia.org/wiki/File:Mapadefosas-mjusticia-es.jpg\" target=\"_blank\" rel=\"noopener\">carte des fosses</a> (ministère de la Justice, CC BY 3.0), <a href=\"https://commons.wikimedia.org/wiki/File:Pontifical_Basilica_of_the_Holy_Cross.jpg\" target=\"_blank\" rel=\"noopener\">Cuelgamuros</a> (Yair Haklai, CC BY-SA 4.0), <a href=\"https://commons.wikimedia.org/wiki/File:Spanish_Civil_War_-_Mass_grave_-_Est%C3%A9par,_Burgos.jpg\" target=\"_blank\" rel=\"noopener\">fosse d'Estépar</a> (Mario Modesto Mata, CC BY-SA 4.0), <a href=\"https://commons.wikimedia.org/wiki/File:Baltasar_Garz%C3%B3n_-_Visitando_ESMA_-_Argentina_-_1AGO05_-presidenciagovar.jpg\" target=\"_blank\" rel=\"noopener\">Garzón à l'ESMA</a> (Présidence de la Nation argentine, CC BY 2.5 AR), <a href=\"https://commons.wikimedia.org/wiki/File:El_Pardo,_Cementerio_de_Mingorrubio,_Pante%C3%B3n_de_Francisco_Franco_3.jpg\" target=\"_blank\" rel=\"noopener\">caveau de Mingorrubio</a> (Zarateman, CC0), Wikimedia Commons.",
+        es: "Imágenes: <a href=\"https://commons.wikimedia.org/wiki/File:Exhumaci%C3%B3n_ARMH_2.jpg\" target=\"_blank\" rel=\"noopener\">exhumación de la ARMH</a> (FCPB, CC BY-SA), <a href=\"https://commons.wikimedia.org/wiki/File:Mapadefosas-mjusticia-es.jpg\" target=\"_blank\" rel=\"noopener\">mapa de fosas</a> (Ministerio de Justicia, CC BY 3.0), <a href=\"https://commons.wikimedia.org/wiki/File:Pontifical_Basilica_of_the_Holy_Cross.jpg\" target=\"_blank\" rel=\"noopener\">Cuelgamuros</a> (Yair Haklai, CC BY-SA 4.0), <a href=\"https://commons.wikimedia.org/wiki/File:Spanish_Civil_War_-_Mass_grave_-_Est%C3%A9par,_Burgos.jpg\" target=\"_blank\" rel=\"noopener\">fosa de Estépar</a> (Mario Modesto Mata, CC BY-SA 4.0), <a href=\"https://commons.wikimedia.org/wiki/File:Baltasar_Garz%C3%B3n_-_Visitando_ESMA_-_Argentina_-_1AGO05_-presidenciagovar.jpg\" target=\"_blank\" rel=\"noopener\">Garzón en la ESMA</a> (Presidencia de la Nación Argentina, CC BY 2.5 AR), <a href=\"https://commons.wikimedia.org/wiki/File:El_Pardo,_Cementerio_de_Mingorrubio,_Pante%C3%B3n_de_Francisco_Franco_3.jpg\" target=\"_blank\" rel=\"noopener\">panteón de Mingorrubio</a> (Zarateman, CC0), Wikimedia Commons." }
     ]
   }
 };
 </script>
-<!-- ══════════════════════════════════════════════════════════════════
-     ⬆⬆⬆  FIN DES DONNÉES — NE RIEN MODIFIER EN DESSOUS  ⬆⬆⬆
-     ══════════════════════════════════════════════════════════════════ -->
 
-
-<script>
-/* ─── Utilitaires ─── */
-const $ = (s,r=document)=>r.querySelector(s);
-let LANG = 'fr';
-/* T() : renvoie la version dans la langue courante, ou la valeur telle quelle */
-const T = v => (v && typeof v==='object' && !Array.isArray(v) && ('fr' in v||'es' in v)) ? (v[LANG] ?? v.fr) : v;
-
-/* ─── Libellés d'interface ─── */
-const UI = {
-  fr:{ chrono:"Chronologie",
-       essentiel:"L'essentiel", reperes:"Repères", quiEstQui:"Qui est qui", acteurs:"Acteurs clés",
-       controverse:"Controverse", vocab:"Vocabulaire", lexique:"Lexique bilingue",
-       filtrer:"Filtrer le lexique…", terme:"Terme", trad:"Traduction / usage",
-       entrainement:"Entraînement", sujets:"Sujets possibles", memoriser:"Mémoriser",
-       retenir:"À retenir", synthese:"Synthèse", chapitre:"Chapitre" },
-  es:{ chrono:"Cronología",
-       essentiel:"Lo esencial", reperes:"Hitos", quiEstQui:"Quién es quién", acteurs:"Actores clave",
-       controverse:"Controversia", vocab:"Vocabulario", lexique:"Glosario bilingüe",
-       filtrer:"Filtrar el glosario…", terme:"Término", trad:"Traducción / uso",
-       entrainement:"Entrenamiento", sujets:"Posibles temas", memoriser:"Memorizar",
-       retenir:"Para recordar", synthese:"Síntesis", chapitre:"Capítulo" }
-};
-const t = k => UI[LANG][k];
-
-/* ─── Rendu des blocs de contenu ─── */
-function bloc(b){
-  switch(b.t){
-    case 'p':      return `<p class="prose">${T(b.c)}</p>`;
-    case 'liste':  return `<ul class="liste">${T(b.items).map(i=>`<li>${i}</li>`).join('')}</ul>`;
-    case 'faits':  return `<div class="faits">${T(b.items).map(i=>
-                     `<div class="fait"><div class="fait-l">${T(i.l)}</div><div class="fait-v">${T(i.v)}</div></div>`).join('')}</div>`;
-    case 'stats':  return `<div class="stats">${b.items.map(i=>
-                     `<div class="stat" style="--c:${i.c||'var(--a1)'}"><span class="stat-n">${T(i.n)}</span><span class="stat-d">${T(i.d)}</span></div>`).join('')}</div>`;
-    case 'citation':return `<blockquote class="citation"><p>« ${T(b.c)} »</p><cite>${T(b.src)}</cite></blockquote>`;
-    case 'encadre':return `<div class="encadre" style="--c:${b.c||'var(--a2)'}"><div class="encadre-ic">${b.icon||'💡'}</div>
-                     <div><div class="encadre-t">${T(b.titre)}</div><div class="encadre-c">${T(b.c2)}</div></div></div>`;
-    case 'def':    return `<div class="def"><div class="def-mot">${T(b.mot)}</div><div class="def-c">${T(b.c)}</div></div>`;
-    case 'tableau':return `<div class="tbl-wrap"><table><thead><tr>${T(b.head).map(h=>`<th>${h}</th>`).join('')}</tr></thead>
-                     <tbody>${T(b.rows).map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
-    case 'tl':     return `<div class="tl">${T(b.items).map(i=>
-                     `<div class="tl-item"><div class="tl-d">${T(i.d)}</div><div class="tl-c">${T(i.c)}</div></div>`).join('')}</div>`;
-    default:       return '';
-  }
-}
-
-/* ─── En-tête ─── */
-function rendreHero(){
-  const m = COURS.meta;
-  document.documentElement.dataset.theme = m.theme;
-  document.documentElement.lang = LANG;
-  document.title = T(m.titre) + ' — Civilisation';
-  $('#bc-titre').textContent = m.titre.fr ?? m.titre;   // la nav reste en français
-  $('#ft').textContent = `${t('chapitre')} ${m.chapitre}${LANG==='fr'?' : ':': '}${T(m.titre)}`;
-  $('#hero').innerHTML = `
-    <span class="hero-flag">${m.drapeau}</span>
-    <div class="hero-label">${T(m.label)}</div>
-    <h1>${T(m.titre)}</h1>
-    <p class="hero-sub">${T(m.sousTitre)}</p>`;
-}
-
-/* ─── Corps du cours ─── */
-function rendreCours(){
-  const c = COURS, out = [];
-
-  out.push(`<section class="bloc rev" id="s-essentiel">
-    <div class="essentiel"><div class="essentiel-label">${t('essentiel')}</div><p>${T(c.essentiel)}</p></div>
-    <div class="stats">${c.chiffres.map((x,i)=>
-      `<div class="stat" style="--c:var(--a${(i%4)+1})"><span class="stat-n">${T(x.n)}</span><span class="stat-d">${T(x.d)}</span></div>`).join('')}</div>
-  </section>`);
-
-  if(c.chronologie?.length){
-    out.push(`<section class="bloc rev chrono-mobile" id="s-chrono">
-      <div class="bloc-head"><span class="bloc-kicker">${t('reperes')}</span><h2 class="bloc-title">${t('chrono')}</h2></div>
-      ${bloc({t:'tl',items:c.chronologie})}</section>`);
-  }
-
-  c.parties.forEach((p,pi)=>{
-    let html = `<section class="partie rev" id="p-${pi}" style="--p:${p.couleur}">
-      <div class="partie-head"><div class="partie-num">${p.num}</div>
-      <div><div class="partie-kicker">${T(p.kicker)}</div><h2 class="partie-title">${T(p.titre)}</h2></div></div>`;
-    p.sections.forEach((s,si)=>{
-      html += `<div class="section" id="p-${pi}-${si}"><h3 class="section-title"><span class="section-num">${si+1}.</span> ${T(s.titre)}</h3>
-        ${s.blocs.map(bloc).join('')}</div>`;
-    });
-    out.push(html+`</section>`);
-  });
-
-  if(c.acteurs?.length){
-    out.push(`<section class="bloc rev" id="s-acteurs">
-      <div class="bloc-head"><span class="bloc-kicker">${t('quiEstQui')}</span><h2 class="bloc-title">${t('acteurs')}</h2></div>
-      <div class="acteurs">${c.acteurs.map(a=>
-        `<div class="acteur" style="--c:${a.c}"><div class="acteur-nom">${a.nom}</div>
-         <div class="acteur-role">${T(a.role)}</div><div class="acteur-c">${T(a.d)}</div></div>`).join('')}</div></section>`);
-  }
-
-
-  if(c.lexique?.length){
-    out.push(`<section class="bloc rev" id="s-lexique">
-      <div class="bloc-head"><span class="bloc-kicker" style="--k:var(--a2)">${t('vocab')}</span>
-      <h2 class="bloc-title">${t('lexique')}</h2></div>
-      <input class="lex-search" id="lex-search" placeholder="${t('filtrer')}" aria-label="${t('filtrer')}">
-      <div class="tbl-wrap"><table class="lex"><thead><tr><th>${t('terme')}</th><th>${t('trad')}</th></tr></thead>
-      <tbody id="lex-body">${c.lexique.map(l=>`<tr><td>${l.es}</td><td>${l.fr}</td></tr>`).join('')}</tbody></table></div>
-    </section>`);
-  }
-
-
-  if(c.retenir?.length){
-    out.push(`<section class="bloc rev" id="s-retenir">
-      <div class="bloc-head"><span class="bloc-kicker">${t('memoriser')}</span><h2 class="bloc-title">${t('retenir')}</h2></div>
-      <div class="retenir"><ul>${T(c.retenir).map(r=>`<li>${r}</li>`).join('')}</ul></div></section>`);
-  }
-
-  $('#cours').innerHTML = out.join('');
-}
-
-/* ─── Colonne chronologie ─── */
-function rendreRail(){
-  if(!COURS.chronologie?.length){ $('#rail')?.remove(); return; }
-  $('#rail').innerHTML = `<div class="rail-title">${t('chrono')}</div>${bloc({t:'tl',items:COURS.chronologie})}`;
-}
-
-/* ─── Recherche dans le lexique ─── */
-function brancherLexique(){
-  const ls = $('#lex-search'); if(!ls) return;
-  ls.addEventListener('input', ()=>{
-    const q = ls.value.toLowerCase().trim();
-    $('#lex-body').querySelectorAll('tr').forEach(tr=>{
-      tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
-    });
-  });
-}
-
-/* ─── Changement de langue ─── */
-function setLang(lang){
-  LANG = lang;
-  $('#ap-btn-fr').classList.toggle('active', lang==='fr');
-  $('#ap-btn-es').classList.toggle('active', lang==='es');
-  rendreHero(); rendreCours(); rendreRail();
-  document.querySelectorAll('.rev').forEach(el=>el.classList.add('vu'));
-  brancherLexique();
-}
-
-/* ─── Démarrage ─── */
-function demarrer(){
-  rendreHero(); rendreCours(); rendreRail(); brancherLexique();
-
-  const maj = ()=>{
-    const h = document.body.scrollHeight - innerHeight;
-    $('#progress').style.width = (h>0 ? (scrollY/h)*100 : 0) + '%';
-  };
-  addEventListener('scroll', maj, {passive:true}); maj();
-
-  if(!('IntersectionObserver' in window)){
-    document.querySelectorAll('.rev').forEach(el=>el.classList.add('vu'));
-    return;
-  }
-  const io = new IntersectionObserver(es=>es.forEach(x=>{
-    if(x.isIntersecting){ x.target.classList.add('vu'); io.unobserve(x.target); }
-  }), {threshold:.06});
-  document.querySelectorAll('.rev').forEach(el=>io.observe(el));
-}
-
-demarrer();
-</script>
+<script src="../../commun/civilisation.js"></script>
 </body>
 </html>
