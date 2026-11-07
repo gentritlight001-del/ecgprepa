@@ -959,7 +959,7 @@ demande directe), sans poser de question jusqu'à la mise en ligne :
 
 Les cours de civilisation (`deuxieme_annee/langues/<langue>/<pays>/civi-*.html`) passent un à un du vieux
 gabarit sombre (« TEMPLATE UNIVERSEL v1 ») au gabarit clair « Manuel », choisi par le propriétaire. Déjà
-faits : Royaume-Uni chapitres 1 (histoire), 2 (système politique), 3 (Brexit), 4 (monarchie), 5 (santé), 6 (Welfare State) et 7 (Commonwealth), Espagne chapitres 1 (histoire), 2
+faits : Royaume-Uni chapitres 1 (histoire), 2 (système politique), 3 (Brexit), 4 (monarchie), 5 (santé), 6 (Welfare State), 7 (Commonwealth) et 8 (Special Relationship), Espagne chapitres 1 (histoire), 2
 (franquisme) et 3 (Transition) (novembre 2026 ; images `Espagne/images/histoire-*.webp`, `franquisme-*.webp`, `transition-*.webp`, fiches `outils/fiche-civi/civi-esp-N.html`, en-tête rouge sombre `#7a1c17`) : s'en inspirer. Demande type :
 « Fais le chapitre sur … » + lien de la vidéo.
 
@@ -985,7 +985,7 @@ faits : Royaume-Uni chapitres 1 (histoire), 2 (système politique), 3 (Brexit), 
   `comparaison` (deux barres par ligne, ex. voix et sièges), `periodes` (frise de durées), `echelle`.
   **Pas de cases de faits** (`faits` : « Chef de l'État / Financement… ») : les transformer en paragraphe
   explicatif.
-- **Mode focus, fiche de cours et « Dans une copie »** (faits en novembre 2026 pour les chapitres 1 à 7 du Royaume-Uni et les chapitres 1 à 3 de l'Espagne ; à reproduire sur les autres chapitres) : trois clés dans le bloc `COURS`.
+- **Mode focus, fiche de cours et « Dans une copie »** (faits en novembre 2026 pour les chapitres 1 à 8 du Royaume-Uni et les chapitres 1 à 3 de l'Espagne ; à reproduire sur les autres chapitres) : trois clés dans le bloc `COURS`.
   `focus` = second cours réécrit en 10 minutes (question, réponse, parties, sous-parties avec chiffre clé, arguments, exemples,
   définitions, conclusions ; FR et langue étudiée ; 10 sous-parties, environ 1 500 mots), affiché à la place du cours complet par
   l'interrupteur « Mode focus » (mémorisé dans `ecg-cours:focus`, au-dessus des chiffres de « L'essentiel »). `ficheCours` = nom du PDF
