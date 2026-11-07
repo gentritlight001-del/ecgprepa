@@ -226,7 +226,7 @@ body.sans #tir .gnum{display:block}
 
 # Chapitres de civilisation (langues, 2e année) qui ont une photo : maquette B « Plein cadre » choisie par
 # le propriétaire (novembre 2026). Photo du chapitre en plein cadre, assombrie à gauche, logo « ECG Prépa »
-# en haut, pastille « Civilisation · <pays> », titre blanc en Fraunces, « Chapitre N · 2e année »,
+# en haut, pastille « Civilisation · <pays> », titre blanc en Fraunces (1 ou 2 lignes, jamais 3), « Chapitre N · 2e année »,
 # « ecg-prepa.fr · Cours » en bas et filet ; pastille et filet à la couleur de la langue (COULEURS).
 GABARIT_PLEIN = """<!doctype html><html lang="fr"><head><meta charset="utf-8">
 <link rel="stylesheet" href="file://%(racine)sfonts/fonts.css">
@@ -461,7 +461,7 @@ def main():
                   const i = document.getElementById('img');
                   i.onload = i.onerror = () => document.fonts.ready.then(() => {
                     let taille = 74; t.style.fontSize = taille + 'px';
-                    while (taille > 44 && t.offsetHeight > taille * 1.02 * 3 + 4) { taille -= 2; t.style.fontSize = taille + 'px'; }
+                    while (taille > 36 && t.offsetHeight > taille * 1.02 * 2 + 4) { taille -= 2; t.style.fontSize = taille + 'px'; }
                     ok(); });
                   i.src = img; })""", [pastille, titre, 'file://' + img, couleur, meta])
                 page_plein.screenshot(path=RACINE + sortie, type='jpeg', quality=84)
