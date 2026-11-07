@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "es",
 "rubrique": "Actu Espagnol",
+"meta": "Chili",
+"titre": "Chili : des lycéens contre le ministre Rabat",
+"url": "actualites/es/articles/chili-lyceens-rabat-reductions-peines-2026.html",
+"image": "actualites/es/images/chili-lyceens-rabat-reductions-peines-2026.webp",
+"date": "2026-11-07T22:09:22+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
 "meta": "Paraguay",
 "titre": "Paraguay : Peña annonce sa démission",
 "url": "actualites/es/articles/paraguay-demission-pena-ueno-bank-2026.html",
@@ -1713,15 +1722,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/de/articles/retrait-candidature-jo-berlin.html",
 "image": "actualites/de/images/retrait-candidature-jo-berlin.webp",
 "date": "2026-09-26T15:06:19+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Chili",
-"titre": "José Antonio Kast annonce l'adhésion du Chili au « Escudo de las Américas »",
-"url": "actualites/es/articles/chili-escudo-americas.html",
-"image": "actualites/es/images/chili-escudo-americas.webp",
-"date": "2026-09-23T19:17:35+00:00"
 },
 {
 "t": "de",
