@@ -972,8 +972,10 @@ faits : Royaume-Uni chapitres 1 (histoire), 2 (système politique), 3 (Brexit), 
 - **Vidéo** : chaque chapitre a sa vidéo, donnée par le propriétaire avec la demande. Lien `meta.video`
   dans le héros : adresse courte `https://youtu.be/<id>` (sans `?si=`, `?is=` ni autre paramètre), titre
   exact et chaîne lus avec `curl -s "https://www.youtube.com/oembed?url=https://youtu.be/<id>&format=json"`,
-  et la même vidéo **en tête des sources** de « Pour aller plus loin ». Si aucun lien n'est donné, le
-  demander au propriétaire dans la réponse (et l'ajouter dès qu'il arrive).
+  et la même vidéo **en tête des sources** de « Pour aller plus loin ». Si aucun lien n'est donné, **proposer
+  2 ou 3 vidéos** dans la réponse (`python3 outils/chercher-video.py "<mots>"`, chaînes sérieuses : BBC, FT, Bloomberg,
+  Reuters, France 24, institutions ; titre et chaîne vérifiés par oEmbed, durée et année indiquées, la plus adaptée
+  recommandée en premier) et l'ajouter dès que le propriétaire en choisit une (ou qu'il envoie la sienne).
 - **Structure** : héros (label, titre de 2 lignes au plus, sous-titre, lien vidéo, photo `meta.image` avec
   légende, sans source affichée) ; « L'essentiel » + 4 chiffres ; les parties ; le
   lexique (**nombre pair** d'entrées, deux colonnes) ; « Pour aller plus loin » (`plusLoin` : « Sur ECG
