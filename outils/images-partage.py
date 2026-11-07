@@ -224,6 +224,46 @@ body.sans #tir .gnum{display:block}
 <div id="url">ecg-prepa.fr · Cours</div></body></html>"""
 
 
+# Chapitres de civilisation (langues, 2e année) qui ont une photo : maquette B « Plein cadre » choisie par
+# le propriétaire (novembre 2026). Photo du chapitre en plein cadre, assombrie à gauche, logo « ECG Prépa »
+# en haut, pastille « Civilisation · <pays> », titre blanc en Fraunces, « Chapitre N · 2e année »,
+# « ecg-prepa.fr · Cours » en bas et filet ; pastille et filet à la couleur de la langue (COULEURS).
+GABARIT_PLEIN = """<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<link rel="stylesheet" href="file://%(racine)sfonts/fonts.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1200px;height:630px;overflow:hidden;position:relative;background:#0b0b0c}
+#img{position:absolute;inset:0;width:100%%;height:100%%;object-fit:cover;object-position:60%% 30%%;display:block}
+#voile{position:absolute;inset:0;background:linear-gradient(90deg,rgba(11,11,12,.92) 0%%,rgba(11,11,12,.72) 42%%,rgba(11,11,12,.12) 78%%)}
+#c{position:absolute;inset:0;padding:54px 64px 58px;display:flex;flex-direction:column;justify-content:space-between}
+#logo{font-family:'Playfair Display',serif;font-weight:700;font-size:30px;color:#fff}
+#mil{display:flex;flex-direction:column;gap:18px;max-width:640px}
+#label{align-self:flex-start;padding:7px 13px;color:#fff;font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:16px;letter-spacing:.14em;text-transform:uppercase}
+#title{font-family:'Fraunces',serif;font-weight:700;line-height:1.02;letter-spacing:-.02em;color:#fff;text-shadow:0 2px 20px rgba(0,0,0,.35)}
+#meta{font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:19px;letter-spacing:.08em;color:#e6e2d8}
+#url{font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:17px;letter-spacing:.16em;text-transform:uppercase;color:#d6d2c8}
+#filet{position:absolute;left:0;right:0;bottom:0;height:8px}
+</style></head><body>
+<img id="img" alt=""><div id="voile"></div>
+<div id="c"><div id="logo">ECG Prépa</div><div id="mil"><span id="label"></span><div id="title"></div><div id="meta"></div></div>
+<div id="url">ecg-prepa.fr · Cours</div></div><div id="filet"></div></body></html>"""
+
+PAYS = {'royaume-uni': 'Royaume-Uni', 'etats-unis': 'États-Unis', 'canada': 'Canada', 'allemagne': 'Allemagne',
+        'autriche': 'Autriche', 'suisse': 'Suisse', 'espagne': 'Espagne', 'argentine': 'Argentine', 'chili': 'Chili',
+        'cuba': 'Cuba', 'mexique': 'Mexique'}
+
+
+def plein_de(rel, contenu, cours):
+    """Chapitre de civilisation avec photo : (pastille, image, couleur, ligne du bas), sinon None."""
+    p = rel.split('/')
+    if not cours or not cours[1] or len(p) != 5 or p[1] != 'langues' or not p[-1].startswith('civi-'):
+        return None
+    m = re.search(r'"?\blabel"?:\s*\{\s*"?fr"?:\s*"([^"·]+?)\s*·', contenu)
+    pays = m.group(1).strip() if m else PAYS.get(p[3].lower(), p[3].replace('-', ' ').title())
+    meta = ('Chapitre ' + cours[4] + ' · ' if cours[4] else '') + '2e année'
+    return 'Civilisation · ' + pays, cours[1], cours[2], meta
+
+
 def archive_de(rel, contenu):
     """Chapitre d'HGG : (année, numéro, image ou None, couleur), sinon None."""
     m = re.match(r'(premiere|deuxieme)_annee/hgg/(?:chapitre-\d+/)?chapitre-(\d+)-hgg\.html$', rel)
@@ -361,6 +401,8 @@ def main():
     gab_photo.write(GABARIT_PHOTO % {'racine': RACINE}); gab_photo.close()
     gab_visuel = tempfile.NamedTemporaryFile('w', suffix='.html', delete=False, encoding='utf-8')
     gab_visuel.write(GABARIT_VISUEL % {'racine': RACINE}); gab_visuel.close()
+    gab_plein = tempfile.NamedTemporaryFile('w', suffix='.html', delete=False, encoding='utf-8')
+    gab_plein.write(GABARIT_PLEIN % {'racine': RACINE}); gab_plein.close()
     gab_archive = tempfile.NamedTemporaryFile('w', suffix='.html', delete=False, encoding='utf-8')
     gab_archive.write(GABARIT_ARCHIVE % {'racine': RACINE}); gab_archive.close()
     with sync_playwright() as pw:
@@ -375,6 +417,9 @@ def main():
         page_visuel = nav.new_page(viewport={'width': 1200, 'height': 630})
         page_visuel.goto('file://' + gab_visuel.name)
         page_visuel.evaluate('document.fonts.ready')
+        page_plein = nav.new_page(viewport={'width': 1200, 'height': 630})
+        page_plein.goto('file://' + gab_plein.name)
+        page_plein.evaluate('document.fonts.ready')
         page_archive = nav.new_page(viewport={'width': 1200, 'height': 630})
         page_archive.goto('file://' + gab_archive.name)
         page_archive.evaluate('document.fonts.ready')
@@ -385,6 +430,9 @@ def main():
             photo = None if archive else photo_de(rel, contenu)
             visuel = None if photo or archive else (visuel_de(rel, contenu) or auteur_de(rel, contenu) or cours_de(rel, contenu))
             cours = None if photo or visuel or archive else cours_ecg(rel, contenu, lab)
+            plein = plein_de(rel, contenu, cours)
+            if plein:
+                cours = None
             if archive:
                 annee, num, img, couleur = archive
                 titre = insecables(re.sub(r'^(?:HGG\s*)?Chapitre\s*\d+\s*[:—–-]\s*', '', titre))
@@ -402,6 +450,21 @@ def main():
                   i.onload = i.onerror = () => document.fonts.ready.then(() => ok()); i.src = img; })""",
                                       [titre, (img if not img or img.startswith('data:') else 'file://' + img), taille, couleur, annee, num])
                 page_archive.screenshot(path=RACINE + sortie, type='jpeg', quality=84)
+            elif plein:
+                pastille, img, couleur, meta = plein
+                titre = insecables(re.sub(r'\s*·\s*Civilisation \w+$', '', titre)); meta = insecables(meta)
+                page_plein.evaluate("""([rub, titre, img, couleur, meta]) => new Promise(ok => {
+                  const l = document.getElementById('label'); l.textContent = rub; l.style.background = couleur;
+                  document.getElementById('filet').style.background = couleur;
+                  document.getElementById('meta').textContent = meta;
+                  const t = document.getElementById('title'); t.textContent = titre;
+                  const i = document.getElementById('img');
+                  i.onload = i.onerror = () => document.fonts.ready.then(() => {
+                    let taille = 74; t.style.fontSize = taille + 'px';
+                    while (taille > 44 && t.offsetHeight > taille * 1.02 * 3 + 4) { taille -= 2; t.style.fontSize = taille + 'px'; }
+                    ok(); });
+                  i.src = img; })""", [pastille, titre, 'file://' + img, couleur, meta])
+                page_plein.screenshot(path=RACINE + sortie, type='jpeg', quality=84)
             elif cours:
                 pastille, img, couleur, meta, num = cours
                 titre = re.sub(r'\s*·\s*Civilisation \w+$', '', titre)
