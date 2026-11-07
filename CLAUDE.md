@@ -959,7 +959,7 @@ demande directe), sans poser de question jusqu'à la mise en ligne :
 
 Les cours de civilisation (`deuxieme_annee/langues/<langue>/<pays>/civi-*.html`) passent un à un du vieux
 gabarit sombre (« TEMPLATE UNIVERSEL v1 ») au gabarit clair « Manuel », choisi par le propriétaire. Déjà
-faits : Royaume-Uni chapitres 1 (histoire), 2 (système politique), 3 (Brexit), 4 (monarchie), 5 (santé), 6 (Welfare State), 7 (Commonwealth), 8 (Special Relationship) et 9 (pauvreté), Espagne chapitres 1 (histoire), 2
+faits : Royaume-Uni chapitres 1 (histoire), 2 (système politique), 3 (Brexit), 4 (monarchie), 5 (santé), 6 (Welfare State), 7 (Commonwealth), 8 (Special Relationship), 9 (pauvreté) et 10 (immigration), Espagne chapitres 1 (histoire), 2
 (franquisme), 3 (Transition), 4 (mémoire) et 5 (monarchie) (novembre 2026 ; images `Espagne/images/histoire-*.webp`, `franquisme-*.webp`, `transition-*.webp`, `memoire-*.webp`, `monarchie-*.webp`, fiches `outils/fiche-civi/civi-esp-N.html`, en-tête rouge sombre `#7a1c17`) : s'en inspirer. Demande type :
 « Fais le chapitre sur … » + lien de la vidéo.
 
@@ -986,7 +986,7 @@ faits : Royaume-Uni chapitres 1 (histoire), 2 (système politique), 3 (Brexit), 
   Un `tableau` doit tenir à 390 px sans défilement (la feuille commune réduit les marges des cellules sur téléphone ; sinon raccourcir les cellules).
   **Pas de cases de faits** (`faits` : « Chef de l'État / Financement… ») : les transformer en paragraphe
   explicatif.
-- **Mode focus, fiche de cours et « Dans une copie »** (faits en novembre 2026 pour les chapitres 1 à 9 du Royaume-Uni et les chapitres 1 à 5 de l'Espagne ; à reproduire sur les autres chapitres) : trois clés dans le bloc `COURS`.
+- **Mode focus, fiche de cours et « Dans une copie »** (faits en novembre 2026 pour les chapitres 1 à 10 du Royaume-Uni et les chapitres 1 à 5 de l'Espagne ; à reproduire sur les autres chapitres) : trois clés dans le bloc `COURS`.
   `focus` = second cours réécrit en 10 minutes (question, réponse, parties, sous-parties avec chiffre clé, arguments, exemples,
   définitions, conclusions ; FR et langue étudiée ; 10 sous-parties, environ 1 500 mots), affiché à la place du cours complet par
   l'interrupteur « Mode focus » (mémorisé dans `ecg-cours:focus`, au-dessus des chiffres de « L'essentiel »). `ficheCours` = nom du PDF
