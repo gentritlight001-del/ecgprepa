@@ -7,16 +7,16 @@
   const UI = {
     fr: { fiche: 'Fiche de synthèse', ficheTitre: 'La fiche en deux pages', ficheSous: 'À réviser ou à imprimer', surSite: 'Sur ECG Prépa', sources: 'Sources', retour: 'Tous les cours de civilisation', plusLoin: 'Pour aller plus loin', video: 'En vidéo', ess: "L'essentiel", frise: 'Chronologie', som: 'Sommaire', act: 'Acteurs clés', deb: 'Le débat', syn: 'Synthèse',
           lex: 'Lexique', sujets: 'Sujets de dissertation', ret: 'À retenir', piste: 'Piste', partie: 'Partie', def: 'Définition',
-          cours: 'Le cours', parties: 'parties', sections: 'sections', dates: 'dates', min: 'min de lecture', chap: 'Chapitre' },
+          ficheCours: 'Fiche de cours (PDF)', copie: 'Dans une copie', accroche: 'Accroche', idee: 'Idée-force', sujetsCopie: 'Sujets où la placer', piege: 'Piège à éviter', focus: 'Mode focus', focusSous: 'Le cours en 10 minutes', focusTitre: 'Mode focus · Le cours en 10 minutes', focusAide: 'Ne garder que l’essentiel, réécrit', rep: 'La réponse', exemple: 'Exemple', concl: 'Conclusion', plan: 'Plan', cours: 'Le cours', parties: 'parties', sections: 'sections', dates: 'dates', min: 'min de lecture', chap: 'Chapitre' },
     en: { fiche: 'Summary sheet', ficheTitre: 'The sheet in two pages', ficheSous: 'To revise or print', surSite: 'On ECG Prépa', sources: 'Sources', retour: 'All civilisation courses', plusLoin: 'Further reading', video: 'Watch', ess: 'Key points', frise: 'Timeline', som: 'Contents', act: 'Key figures', deb: 'The debate', syn: 'Synthesis',
           lex: 'Glossary', sujets: 'Essay questions', ret: 'Takeaways', piste: 'Hint', partie: 'Part', def: 'Definition',
-          cours: 'The lesson', parties: 'parts', sections: 'sections', dates: 'dates', min: 'min read', chap: 'Chapter' },
+          ficheCours: 'Course sheet (PDF)', copie: 'In an essay', accroche: 'Opening hook', idee: 'Key idea', sujetsCopie: 'Essay questions where to use it', piege: 'Pitfall to avoid', focus: 'Focus mode', focusSous: 'The lesson in 10 minutes', focusTitre: 'Focus mode · The lesson in 10 minutes', focusAide: 'Keep only the essentials, rewritten', rep: 'The answer', exemple: 'Example', concl: 'Conclusion', plan: 'Outline', cours: 'The lesson', parties: 'parts', sections: 'sections', dates: 'dates', min: 'min read', chap: 'Chapter' },
     es: { fiche: 'Ficha de síntesis', ficheTitre: 'En dos páginas', ficheSous: 'Para repasar o imprimir', surSite: 'En ECG Prépa', sources: 'Fuentes', retour: 'Todos los cursos de civilización', plusLoin: 'Para ir más lejos', video: 'En vídeo', ess: 'Lo esencial', frise: 'Cronología', som: 'Índice', act: 'Actores clave', deb: 'El debate', syn: 'Síntesis',
           lex: 'Léxico', sujets: 'Temas de disertación', ret: 'Para recordar', piste: 'Pista', partie: 'Parte', def: 'Definición',
-          cours: 'La lección', parties: 'partes', sections: 'secciones', dates: 'fechas', min: 'min de lectura', chap: 'Capítulo' },
+          ficheCours: 'Ficha del curso (PDF)', copie: 'En una redacción', accroche: 'Gancho', idee: 'Idea clave', sujetsCopie: 'Temas donde usarla', piege: 'Error que evitar', focus: 'Modo focus', focusSous: 'La lección en 10 minutos', focusTitre: 'Modo focus · La lección en 10 minutos', focusAide: 'Solo lo esencial, reescrito', rep: 'La respuesta', exemple: 'Ejemplo', concl: 'Conclusión', plan: 'Esquema', cours: 'La lección', parties: 'partes', sections: 'secciones', dates: 'fechas', min: 'min de lectura', chap: 'Capítulo' },
     de: { fiche: 'Übersicht', ficheTitre: 'Auf zwei Seiten', ficheSous: 'Zum Lernen oder Drucken', surSite: 'Auf ECG Prépa', sources: 'Quellen', retour: 'Alle Landeskunde-Kurse', plusLoin: 'Weiterführendes', video: 'Im Video', ess: 'Das Wesentliche', frise: 'Zeitleiste', som: 'Inhalt', act: 'Schlüsselfiguren', deb: 'Die Debatte', syn: 'Synthese',
           lex: 'Wortschatz', sujets: 'Aufsatzthemen', ret: 'Merksätze', piste: 'Hinweis', partie: 'Teil', def: 'Definition',
-          cours: 'Die Lektion', parties: 'Teile', sections: 'Abschnitte', dates: 'Daten', min: 'Min. Lesezeit', chap: 'Kapitel' }
+          ficheCours: 'Kursblatt (PDF)', copie: 'Im Aufsatz', accroche: 'Einstieg', idee: 'Leitgedanke', sujetsCopie: 'Themen, wo man es nutzt', piege: 'Falle', focus: 'Fokus-Modus', focusSous: 'Die Lektion in 10 Minuten', focusTitre: 'Fokus-Modus · Die Lektion in 10 Minuten', focusAide: 'Nur das Wesentliche, neu geschrieben', rep: 'Die Antwort', exemple: 'Beispiel', concl: 'Fazit', plan: 'Gliederung', cours: 'Die Lektion', parties: 'Teile', sections: 'Abschnitte', dates: 'Daten', min: 'Min. Lesezeit', chap: 'Kapitel' }
   };
   const LANGUE = { en: 'anglais', es: 'espagnol', de: 'allemand' };
   const DRAPEAU = { fr: '🇫🇷', en: '🇬🇧', es: '🇪🇸', de: '🇩🇪' };
@@ -42,8 +42,8 @@
       case 'image': return `<figure class="b-image ${b.format || ''}"><img src="${b.src}" alt="${L(b.alt)}" loading="lazy" width="${b.l || 1280}" height="${b.h || 853}">
         <figcaption>${b.titre ? `<b class="fig-titre">${L(b.titre)}</b>` : ''}<span>${L(b.legende)}</span></figcaption></figure>`;
       case 'images': return `<div class="b-images">${b.items.map(i => `<figure class="b-image"><img src="${i.src}" alt="${L(i.alt)}" loading="lazy" width="${i.l}" height="${i.h}"><figcaption>${i.titre ? `<b class="fig-titre">${L(i.titre)}</b>` : ''}<span>${L(i.legende)}</span></figcaption></figure>`).join('')}</div>`;
-      case 'schema': return `<figure class="b-schema"><figcaption class="b-schema-titre">${L(b.titre)}</figcaption>
-        <div class="b-schema-svg">${R(b.svg)}</div><p class="b-glisser" aria-hidden="true">${lang === 'fr' ? 'Faire glisser le schéma →' : 'Swipe to see the diagram →'}</p>${b.legende ? `<p class="b-note">${L(b.legende)}</p>` : ''}</figure>`;
+      case 'schema': return `<figure class="b-schema${b.compact ? ' compact' : ''}"><figcaption class="b-schema-titre">${L(b.titre)}</figcaption>
+        <div class="b-schema-svg">${R(b.svg)}</div><p class="b-glisser" aria-hidden="true">${{ fr: 'Faire glisser le schéma →', es: 'Desliza para ver el esquema →', de: 'Zum Ansehen wischen →' }[lang] || 'Swipe to see the diagram →'}</p>${b.legende ? `<p class="b-note">${L(b.legende)}</p>` : ''}</figure>`;
       case 'graphique': {
         const series = b.series || [];
         const leg = series.length > 1 ? `<ul class="g-legende">${series.map(x => `<li><i style="background:${x.c}"></i>${L(x.l)}</li>`).join('')}</ul>` : '';
@@ -103,6 +103,50 @@
     return html;
   }
 
+  /* Mode focus : un second cours, réécrit, lisible en 10 minutes (COURS.focus), affiché à la place du cours complet.
+     Même principe que les chapitres d'HGG ; choix mémorisé dans localStorage « ecg-cours:focus ». */
+  function coursFocus() {
+    const F = COURS.focus, t = UI[lang];
+    if (!F) return '';
+    const sp = (s, pi, si) => `
+      <section class="fc-sp" id="f${pi + 1}-${si + 1}">
+        <div class="fc-g"><h3><i>${pi + 1}.${si + 1}</i>${L(s.titre)}</h3>
+          ${s.chiffre ? `<p class="fc-chiffre"><b>${L(s.chiffre.n)}</b><span>${L(s.chiffre.d)}</span></p>` : ''}</div>
+        <div class="fc-d">
+          ${A(s.args).map(a => `<div class="fc-arg"><p><b>${L(a.t)}</b> ${L(a.c)}</p>${a.ex ? `<p class="fc-ex"><span>${t.exemple}</span>${L(a.ex)}</p>` : ''}</div>`).join('')}
+          ${s.def ? `<p class="fc-def"><span>${t.def}</span><b>${L(s.def.mot)}</b>${L(s.def.c)}</p>` : ''}
+        </div>
+      </section>`;
+    return `<section class="fc" id="focus" aria-label="${t.focusSous}">
+      <header class="fc-tete">
+        <div class="fc-intro">
+          <p class="etiquette">${t.focusTitre}</p>
+          <p class="fc-q">${L(F.q)}</p>
+          <p class="fc-these"><span>${t.rep}</span>${L(F.these)}</p>
+        </div>
+        <ol class="fc-plan" aria-label="${t.plan}">${F.parties.map((p, pi) => `<li class="${ton(p.couleur)}"><a href="#f${pi + 1}"><small>${p.num}</small><b>${L(p.titre)}</b></a>
+          <span>${p.sps.map((s, si) => `<a href="#f${pi + 1}-${si + 1}">${pi + 1}.${si + 1} ${L(s.titre)}</a>`).join('')}</span></li>`).join('')}</ol>
+      </header>
+      ${F.parties.map((p, pi) => `<section class="fc-p ${ton(p.couleur)}" id="f${pi + 1}">
+        <header class="fc-pt"><span class="fc-num" aria-hidden="true">${p.num}</span><div><p class="fc-kick">${t.partie} ${p.num}</p><h2>${L(p.titre)}</h2><p class="fc-idee">${L(p.idee)}</p></div></header>
+        ${p.sps.map((s, si) => sp(s, pi, si)).join('')}
+        ${p.concl ? `<p class="fc-concl"><span>${t.concl} · ${t.partie} ${p.num}</span>${L(p.concl)}</p>` : ''}
+      </section>`).join('')}
+    </section>`;
+  }
+
+  function barreFocus() {
+    if (!COURS.focus) return '';
+    const t = UI[lang];
+    return `<div class="fx-barre"><button type="button" class="fx-sw" aria-pressed="${document.body.classList.contains('focus')}" title="${t.focusAide}"><i aria-hidden="true"></i>${t.focus}</button>${COURS.ficheCours ? `<a class="fx-fiche" href="${COURS.ficheCours}" target="_blank" rel="noopener"><svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 1.5h5.5L13 5v9.5H4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M6.5 8h4M6.5 11h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>${t.ficheCours}</a>` : `<span class="fx-aide">${t.focusSous}</span>`}</div>`;
+  }
+
+  function reglerFocus(on, sauver) {
+    document.body.classList.toggle('focus', on);
+    document.querySelectorAll('.fx-sw').forEach(b => b.setAttribute('aria-pressed', String(on)));
+    if (sauver) { try { localStorage.setItem('ecg-cours:focus', on ? '1' : '0'); } catch (e) {} }
+  }
+
   function rendre() {
     const C = COURS, m = C.meta;
     const l2 = Object.keys(m.titre).find(k => k !== 'fr');
@@ -133,6 +177,11 @@
         <div class="debat-cols">${['oui', 'non'].map(k => `<div class="debat-col debat-${k}"><h3>${L(C.debat[k].titre)}</h3>
           <ul>${A(C.debat[k].items).map(i => `<li>${L(i)}</li>`).join('')}</ul></div>`).join('')}</div>
         <div class="debat-syn"><p class="etiquette">${t.syn}</p><p>${L(C.debat.synthese)}</p></div>`]);
+    if (C.copie) annexes.push(['copie', t.copie, `<div class="cop">
+        <div class="cop-g"><div class="cop-acc"><p class="cop-t">${t.accroche}</p><p>${L(C.copie.accroche)}</p></div>
+          <div><p class="cop-t">${t.idee}</p><p>${L(C.copie.idee)}</p></div></div>
+        <div class="cop-d"><div><p class="cop-t">${t.sujetsCopie}</p><ol class="cop-sujets">${A(C.copie.sujets).map(x => `<li>${L(x)}</li>`).join('')}</ol></div>
+          <div class="cop-piege"><p class="cop-t">${t.piege}</p><p>${L(C.copie.piege)}</p></div></div></div>`]);
     if (C.lexique) annexes.push(['lexique', t.lex, `<dl class="lex-liste">${C.lexique.map(x => `<div><dt lang="${l2}">${x[l2] ?? ''}</dt><dd>${typo(x.fr)}</dd></div>`).join('')}</dl>`]);
     if (C.sujets) annexes.push(['sujets', t.sujets, `<ol class="sujets-liste">${C.sujets.map(s => `<li><details><summary>${L(s.q)}</summary><p><b>${t.piste}${lang === 'fr' ? ' ' : ''}:</b> ${L(s.h)}</p></details></li>`).join('')}</ol>`]);
     if (C.retenir) annexes.push(['retenir', t.ret, `<ul class="ret-liste">${A(C.retenir).map(r => `<li>${L(r)}</li>`).join('')}</ul>`]);
@@ -168,14 +217,30 @@
       </header>
       <section class="essentiel" id="essentiel">
         <div class="ess-texte"><h2 class="etiquette">${t.ess}</h2><p>${L(C.essentiel)}</p></div>
-        ${C.chiffres ? `<div class="ess-chiffres">${C.chiffres.map(c => `<div class="chiffre"><b>${L(c.n)}</b><span>${L(c.d)}</span></div>`).join('')}</div>` : ''}
+        <div class="ess-cote">${barreFocus()}${C.chiffres ? `<div class="ess-chiffres">${C.chiffres.map(c => `<div class="chiffre"><b>${L(c.n)}</b><span>${L(c.d)}</span></div>`).join('')}</div>` : ''}</div>
       </section>
+      ${coursFocus()}
       <div class="page"><main class="corps">${parties}</main></div>
       ${annexes.map(annexeHTML).join('')}`;
 
+    document.querySelectorAll('.fx-sw').forEach(b => b.addEventListener('click', () => {
+      reglerFocus(!document.body.classList.contains('focus'), true);
+      const barre = document.querySelector('.fx-barre'); if (barre) scrollTo(0, Math.max(0, barre.getBoundingClientRect().top + scrollY - 76));
+    }));
     document.querySelectorAll('.langues button').forEach(b => b.classList.toggle('on', b.dataset.l === lang));
     const bt = document.getElementById('bc-titre'); if (bt) bt.innerHTML = L(m.titre);
+    etiquettesGraph();
   }
+
+  /* Graphiques : la valeur d'un segment trop étroit (téléphone) est masquée ; elle reste dans l'infobulle. */
+  function etiquettesGraph() {
+    document.querySelectorAll('.g-seg').forEach(s => {
+      const b = s.querySelector('b'); if (!b) return;
+      b.style.visibility = '';
+      if (b.offsetWidth > s.clientWidth - 10) b.style.visibility = 'hidden';
+    });
+  }
+  addEventListener('resize', etiquettesGraph);
 
   document.querySelectorAll('.langues button').forEach(b => b.addEventListener('click', () => {
     lang = b.dataset.l; const y = scrollY; rendre(); scrollTo(0, y);
@@ -184,5 +249,6 @@
     const p = document.querySelector('.progression span');
     if (p) p.style.width = (100 * scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight)) + '%';
   }, { passive: true });
+  try { if (COURS.focus && localStorage.getItem('ecg-cours:focus') === '1') document.body.classList.add('focus'); } catch (e) {}
   rendre();
 })();

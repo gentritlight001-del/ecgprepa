@@ -80,7 +80,7 @@ directement après chaque modification, sans attendre un nouveau « mets en lign
    `ch-hero-media` recadrée, pastille « Cours N », titre, « L'Humanité · 2e année »). Les pages de cours de 1re et 2e année aussi (pastille de la
    matière ou de la langue, titre, « Chapitre N · 1re année », couleur fixe par matière dans `COULEURS` du script) :
    image du héros si elle est stockée sur le site, sinon la vignette `.ci-vig` de l'index de la matière (ou de l'autre
-   année), sinon l'image du bloc de données ; sans image, grand numéro du chapitre au trait. **Chapitres d'HGG** (1re et 2e année) : modèle propre « dossier d'archives » choisi par le propriétaire (`GABARIT_ARCHIVE`) : chemise kraft avec onglet « HGG · année », photo du héros (`.t-photo`) en tirage panoramique scotché, fiche de titre (grand numéro, titre en Big Shoulders) qui chevauche la photo, tampon « ECG Prépa · Cours », à la couleur du chapitre (`--a1`), sinon l'ocre de l'HGG ; après la refonte d'un chapitre, lancer `--refaire` sur sa page. Les autres pages gardent un aplat de couleur. Regarder l'image produite : si le
+   année), sinon l'image du bloc de données ; sans image, grand numéro du chapitre au trait. **Chapitres de civilisation avec photo** (`civi-*.html` au gabarit « Manuel ») : modèle propre, la **maquette B « Plein cadre »** choisie par le propriétaire (novembre 2026, `GABARIT_PLEIN`) : photo du chapitre (`meta.image`) en plein cadre assombrie à gauche, logo, pastille « Civilisation · <pays> », titre blanc en Fraunces sur 1 ou 2 lignes, **jamais 3** (taille réduite seule jusqu'à ce qu'il tienne), « Chapitre N · 2e année », « ecg-prepa.fr · Cours » et filet, à la couleur de la langue ; après la refonte d'un chapitre, lancer `--refaire` sur sa page. **Chapitres d'HGG** (1re et 2e année) : modèle propre « dossier d'archives » choisi par le propriétaire (`GABARIT_ARCHIVE`) : chemise kraft avec onglet « HGG · année », photo du héros (`.t-photo`) en tirage panoramique scotché, fiche de titre (grand numéro, titre en Big Shoulders) qui chevauche la photo, tampon « ECG Prépa · Cours », à la couleur du chapitre (`--a1`), sinon l'ocre de l'HGG ; après la refonte d'un chapitre, lancer `--refaire` sur sa page. Les autres pages gardent un aplat de couleur. Regarder l'image produite : si le
    visage ou le sujet de la photo passe sous le titre, le signaler au propriétaire.
    Pour **refaire** l'image d'une page qui en a déjà une (photo ou titre changés) :
    `python3 outils/images-partage.py --refaire <page>` (l'adresse prend `?v=<date et heure>`, sinon
@@ -959,7 +959,8 @@ demande directe), sans poser de question jusqu'à la mise en ligne :
 
 Les cours de civilisation (`deuxieme_annee/langues/<langue>/<pays>/civi-*.html`) passent un à un du vieux
 gabarit sombre (« TEMPLATE UNIVERSEL v1 ») au gabarit clair « Manuel », choisi par le propriétaire. Déjà
-faits : Royaume-Uni chapitres 1 (histoire), 2 (système politique) et 3 (Brexit) : s'en inspirer. Demande type :
+faits : Royaume-Uni chapitres 1 (histoire), 2 (système politique), 3 (Brexit), 4 (monarchie), 5 (santé), 6 (Welfare State), 7 (Commonwealth), 8 (Special Relationship), 9 (pauvreté), 10 (immigration), 11 (genre), 12 (multiculturalisme), 13 (City de Londres), 14 (médias) et 15 (logement), Espagne chapitres 1 (histoire), 2
+(franquisme), 3 (Transition), 4 (mémoire), 5 (monarchie), 6 (communautés autonomes), 7 (nationalisme catalan), 8 (Pays basque et ETA), 9 (fragmentation politique), 10 (corruption politique) et 11 (Vox) (novembre 2026 ; images `Espagne/images/histoire-*.webp`, `franquisme-*.webp`, `transition-*.webp`, `memoire-*.webp`, `monarchie-*.webp`, `autonomies-*.webp`, `catalanisme-*.webp`, `eta-*.webp`, `fragmentation-*.webp`, `corruption-*.webp`, `vox-*.webp`, fiches `outils/fiche-civi/civi-esp-N.html`, en-tête rouge sombre `#7a1c17`) : s'en inspirer. Demande type :
 « Fais le chapitre sur … » + lien de la vidéo.
 
 - **Code commun** : `deuxieme_annee/langues/commun/civilisation.css` et `civilisation.js` (rendu du bloc
@@ -971,8 +972,10 @@ faits : Royaume-Uni chapitres 1 (histoire), 2 (système politique) et 3 (Brexit)
 - **Vidéo** : chaque chapitre a sa vidéo, donnée par le propriétaire avec la demande. Lien `meta.video`
   dans le héros : adresse courte `https://youtu.be/<id>` (sans `?si=`, `?is=` ni autre paramètre), titre
   exact et chaîne lus avec `curl -s "https://www.youtube.com/oembed?url=https://youtu.be/<id>&format=json"`,
-  et la même vidéo **en tête des sources** de « Pour aller plus loin ». Si aucun lien n'est donné, le
-  demander au propriétaire dans la réponse (et l'ajouter dès qu'il arrive).
+  et la même vidéo **en tête des sources** de « Pour aller plus loin ». Si aucun lien n'est donné, **proposer
+  2 ou 3 vidéos** dans la réponse (`python3 outils/chercher-video.py "<mots>"`, chaînes sérieuses : BBC, FT, Bloomberg,
+  Reuters, France 24, institutions ; titre et chaîne vérifiés par oEmbed, durée et année indiquées, la plus adaptée
+  recommandée en premier) et l'ajouter dès que le propriétaire en choisit une (ou qu'il envoie la sienne).
 - **Structure** : héros (label, titre de 2 lignes au plus, sous-titre, lien vidéo, photo `meta.image` avec
   légende, sans source affichée) ; « L'essentiel » + 4 chiffres ; les parties ; le
   lexique (**nombre pair** d'entrées, deux colonnes) ; « Pour aller plus loin » (`plusLoin` : « Sur ECG
@@ -980,10 +983,19 @@ faits : Royaume-Uni chapitres 1 (histoire), 2 (système politique) et 3 (Brexit)
   crédits des photos). **Pas** de chronologie latérale, d'acteurs clés, de débat, de sujets de dissertation,
   d'« À retenir », de sommaire, de barre de recherche dans le lexique ni de fiche de synthèse.
 - **Blocs** : `p`, `encadre` (notion clé, analyse), `citation`, `def`, `liste`, `tableau`, `stats`, `tl`,
-  `image`, `images` (deux photos côte à côte), `schema` (SVG en ligne), `graphique` (barres empilées),
+  `image`, `images` (deux photos côte à côte), `schema` (SVG en ligne ; `compact: true` pour un petit SVG qui se réduit sur téléphone au lieu de défiler, 560 px au plus sur ordinateur), `graphique` (barres empilées),
   `comparaison` (deux barres par ligne, ex. voix et sièges), `periodes` (frise de durées), `echelle`.
+  Un `tableau` doit tenir à 390 px sans défilement (la feuille commune réduit les marges des cellules sur téléphone ; sinon raccourcir les cellules).
   **Pas de cases de faits** (`faits` : « Chef de l'État / Financement… ») : les transformer en paragraphe
   explicatif.
+- **Mode focus, fiche de cours et « Dans une copie »** (faits en novembre 2026 pour les chapitres 1 à 15 du Royaume-Uni et les chapitres 1 à 11 de l'Espagne ; à reproduire sur les autres chapitres) : trois clés dans le bloc `COURS`.
+  `focus` = second cours réécrit en 10 minutes (question, réponse, parties, sous-parties avec chiffre clé, arguments, exemples,
+  définitions, conclusions ; FR et langue étudiée ; 10 sous-parties, environ 1 500 mots), affiché à la place du cours complet par
+  l'interrupteur « Mode focus » (mémorisé dans `ecg-cours:focus`, au-dessus des chiffres de « L'essentiel »). `ficheCours` = nom du PDF
+  de la fiche d'une page (A4, choisie par le propriétaire sur maquette), lien « Fiche de cours (PDF) » à côté de l'interrupteur ;
+  source dans `outils/fiche-civi/<chapitre>.html`, PDF avec `python3 outils/fiche-civi/generer.py <source> <pdf>` (doit rester sur une
+  page ; en-tête : **photo verticale** du chapitre recadrée en portrait (choix du propriétaire, novembre 2026 : Bayeux, Big Ben, foule du 31 janvier 2020, cortège du couronnement, Bevan en 1948), `object-position` réglé pour garder le sujet ; ne pas remettre d'anneau systématique, un petit graphique n'est qu'une variante occasionnelle). `copie` = « Dans une copie » comme dans les articles d'actualité (accroche qui part d'un fait daté et finit sur une question,
+  idée-force, 3 sujets sans matière, piège avec le bon chiffre), visible dans les deux modes. Rendu dans `civilisation.js` / `civilisation.css`.
 - **Photos** (6 à 9 par chapitre) : même méthode que les figures d'HGG (Wikimedia Commons, vignettes 1280
   ou 960 px, requêtes espacées, **chaque photo regardée**, légende fidèle à ce qu'elle montre), ou photo d'un
   article du site. Toujours en paysage (recadrer en 3:2 avec PIL si besoin), WebP dans `images/` du pays,
