@@ -309,7 +309,11 @@
         b.appendChild(lab);
         var modele = sens === 'version' ? typo(t.fr) : t.en;
         var notes = (t.notes || []).map(function (n) { return '<li>' + typo(n) + '</li>'; }).join('');
-        var r = el('div', 'encadre proposition', '<div class="encadre-titre">Proposition</div><div class="modele">' + modele + '</div>' + (notes ? '<ul>' + notes + '</ul>' : ''));
+        // autres : 1 ou 2 traductions tout aussi justes, seulement quand la phrase en admet vraiment plusieurs
+        var autres = (t.autres || []).map(function (a) { return '<li>' + (sens === 'version' ? typo(a) : a) + '</li>'; }).join('');
+        var r = el('div', 'encadre proposition', '<div class="encadre-titre">' + (autres ? 'Propositions' : 'Proposition') + '</div><div class="modele">' + modele + '</div>' +
+          (autres ? '<div class="autres"><div class="autres-titre">Aussi juste</div><ul>' + autres + '</ul></div>' : '') +
+          (notes ? '<ul>' + notes + '</ul>' : ''));
         var bv = el('button', 'devoiler', 'Voir la proposition'); bv.type = 'button';
         bv.addEventListener('click', function () {
           var vue = r.classList.toggle('vue');
