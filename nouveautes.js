@@ -19,15 +19,6 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-11-08T08:16:21+00:00"
 },
 {
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "Allemagne : le DAX recule après son record",
-"url": "actualites/de/articles/allemagne-dax-record-selloff-tech-ia-2026.html",
-"image": "actualites/de/images/allemagne-dax-record-selloff-tech-ia-2026.webp",
-"date": "2026-11-08T08:09:21+00:00"
-},
-{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Belgique",
@@ -1973,6 +1964,15 @@ window.ECG_NOUVEAUTES = [
 "titre": "L'Allemagne échoue au Conseil de sécurité de l'ONU : un camouflet diplomatique inédit",
 "url": "actualites/de/articles/allemagne-conseil-securite-onu.html",
 "image": "actualites/de/images/allemagne-conseil-securite-onu.webp",
+"date": "2026-09-11T19:03:33+00:00"
+},
+{
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
+"titre": "La fin du SCAF : l'avion de combat européen enterré par la guerre Dassault-Airbus",
+"url": "actualites/de/articles/scaf-fin-projet.html",
+"image": "actualites/de/images/scaf-fin-projet.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
