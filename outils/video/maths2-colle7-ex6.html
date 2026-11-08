@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Colle 7 · Exercice 6 · Un produit scalaire intégral (vidéo)</title>
+<!--
+  Vidéo « motion design » d'un exercice de colle de maths (2e année, colle 7, exercice 6 du PDF « Exercices traités »).
+  Moteur autonome (pas moteur.js, fait pour l'HGG) mais même interface window.VIDEO : rendu avec
+    python3 outils/video/generer.py outils/video/maths2-colle7-ex6.html --controle
+    python3 outils/video/generer.py outils/video/maths2-colle7-ex6.html --images <scratchpad>/img
+    python3 outils/video/generer.py outils/video/maths2-colle7-ex6.html <scratchpad>/colle7-ex6.mp4
+  KaTeX : outils/colles/.katex (créé par outils/colles/generer.py, ignoré par git).
+  Une scène = <section class="scene" data-dur="…">, chaque élément animé a data-in (seconde d'apparition dans la scène),
+  data-a (up, fade, pop, wipe, draw), data-d (durée de l'animation), data-out (disparition). Surlignage d'une partie de
+  formule : \htmlClass{hl hA}{…} et data-hl='{"hA": 2}' sur la scène. Le MP4 n'est jamais versionné.
+-->
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../colles/.katex/katex.min.css">
+<script src="../colles/.katex/katex.min.js"></script>
+<script src="../colles/.katex/contrib/auto-render.min.js"></script>
+<style>
+:root {
+  --bg: #12100b; --bg2: #1b170f; --or: #e2b23c; --or-f: #946c0a; --creme: #f4ecd8; --dim: #a89c80;
+  --vert: #7cc68f; --rouge: #ef6a55; --bleu: #64b8c9; --ligne: rgba(226,178,60,.22);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); }
+body { font-family: 'IBM Plex Sans', sans-serif; color: var(--creme); -webkit-font-smoothing: antialiased; }
+#stage { position: relative; width: 1920px; height: 1080px; overflow: hidden;
+  background: radial-gradient(ellipse at 30% 20%, #221c10 0%, var(--bg) 60%); }
+#grille { position: absolute; inset: -80px; opacity: .55;
+  background-image: linear-gradient(rgba(226,178,60,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(226,178,60,.06) 1px, transparent 1px);
+  background-size: 80px 80px; }
+/* habillage fixe */
+#logo { position: absolute; left: 80px; top: 52px; font: 700 30px 'Playfair Display', serif; color: var(--creme); z-index: 5; }
+#logo b { color: var(--or); }
+#etiq { position: absolute; right: 80px; top: 58px; font: 500 20px 'IBM Plex Mono', monospace; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--dim); z-index: 5; }
+#etiq span { color: var(--or); }
+#etapes { position: absolute; left: 80px; bottom: 50px; display: flex; gap: 36px; z-index: 5;
+  font: 500 19px 'IBM Plex Mono', monospace; letter-spacing: .1em; text-transform: uppercase; color: rgba(168,156,128,.55); }
+#etapes .on { color: var(--or); }
+#etapes .fait { color: var(--vert); }
+#etapes .fait i { background: var(--vert); color: var(--bg); }
+#etapes i { font-style: normal; display: inline-block; width: 30px; height: 30px; line-height: 28px; text-align: center;
+  border: 1.5px solid currentColor; border-radius: 50%; margin-right: 10px; font-size: 16px; }
+#barre { position: absolute; left: 0; bottom: 0; height: 6px; background: var(--or); z-index: 5; }
+#piste { position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: rgba(226,178,60,.12); }
+
+/* scènes */
+.scene { position: absolute; inset: 0; padding: 150px 120px 120px; display: block; }
+.kick { font: 500 22px 'IBM Plex Mono', monospace; letter-spacing: .16em; text-transform: uppercase; color: var(--or); margin-bottom: 22px; }
+.kick b { display: inline-block; background: var(--or); color: var(--bg); padding: 4px 12px; border-radius: 6px; margin-right: 14px; font-weight: 600; }
+h2.titre { font: 600 64px/1.1 'Fraunces', serif; margin-bottom: 40px; letter-spacing: -.01em; }
+h2.titre em { font-style: normal; color: var(--or); }
+.ligne { font-size: 38px; line-height: 1.45; margin-bottom: 26px; }
+.ligne.petit { font-size: 32px; color: var(--dim); }
+.big { font-size: 50px; text-align: center; margin: 26px 0 34px; }
+.carte { background: rgba(255,255,255,.035); border: 1.5px solid var(--ligne); border-radius: 22px; padding: 30px 40px; }
+.carte.or { border-color: var(--or); background: rgba(226,178,60,.07); }
+.carte .kick { margin-bottom: 12px; font-size: 19px; }
+.ok { color: var(--vert); }
+.ko { color: var(--rouge); }
+.coche { display: inline-flex; align-items: center; gap: 16px; font: 600 36px 'IBM Plex Sans'; color: var(--vert);
+  border: 2px solid var(--vert); border-radius: 60px; padding: 12px 34px; background: rgba(124,198,143,.08); }
+.coche::before { content: '✓'; font-size: 38px; }
+.cols { display: grid; grid-template-columns: 1fr 700px; gap: 70px; align-items: start; }
+.mark { background: linear-gradient(rgba(226,178,60,.35), rgba(226,178,60,.35)) no-repeat 0 85% / 0% 40%; padding: 0 4px; }
+.katex { font-size: 1.08em; }
+.hl { border-radius: 6px; padding: 0 1px; }
+.anim { will-change: opacity, transform; }
+svg text { font-family: 'IBM Plex Sans', sans-serif; }
+
+/* scène 1 */
+.s-titre { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding-top: 80px; }
+.s-titre h1 { font: 600 170px/1 'Fraunces', serif; letter-spacing: -.02em; margin: 10px 0 40px; }
+.s-titre h1 span { color: var(--or); }
+.s-titre .big { font-size: 64px; margin: 0 0 40px; }
+.s-titre .sous { font-size: 36px; color: var(--dim); }
+
+/* énoncé */
+.enonce { max-width: 1500px; margin: 0 auto; padding: 44px 60px; }
+.enonce .ligne { font-size: 42px; }
+.q { display: flex; gap: 26px; align-items: baseline; font-size: 42px; margin-top: 26px; }
+.q b { font: 600 34px 'IBM Plex Mono'; color: var(--bg); background: var(--or); border-radius: 50%; width: 56px; height: 56px;
+  display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.ref { margin-top: 36px; text-align: center; font: 500 22px 'IBM Plex Mono'; letter-spacing: .1em; color: var(--dim); text-transform: uppercase; }
+
+/* tableau IPP */
+.ipp { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px 60px; font-size: 40px; max-width: 1240px; margin: 0 auto 36px; }
+.ipp div { background: rgba(255,255,255,.035); border-radius: 16px; padding: 14px 30px; border-left: 5px solid var(--or); }
+.ipp div.v { border-left-color: var(--bleu); }
+.eq { font-size: 44px; text-align: center; margin: 22px 0; }
+
+/* résultat */
+.res { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.cadre { border: 3px solid var(--or); border-radius: 26px; padding: 40px 80px; font-size: 76px; background: rgba(226,178,60,.07);
+  box-shadow: 0 0 80px rgba(226,178,60,.15); }
+.cadre .pour { font-size: 34px; color: var(--dim); margin-bottom: 10px; font-family: 'IBM Plex Sans'; }
+.chaine { display: flex; gap: 26px; align-items: center; font-size: 40px; margin-top: 20px; }
+.chaine .g { background: rgba(255,255,255,.05); border: 1.5px solid var(--ligne); border-radius: 16px; padding: 12px 26px; }
+.chaine .fl { color: var(--or); font-size: 34px; }
+
+/* pièges */
+.pieges { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 50px; margin-top: 20px; }
+.piege { display: flex; gap: 26px; align-items: flex-start; font-size: 38px; line-height: 1.4; }
+.piege b.n { font: 600 56px/1 'Fraunces', serif; color: var(--or); flex: none; width: 54px; }
+.piege .carte { padding: 30px 38px; flex: 1; min-height: 250px; }
+
+/* fin */
+.s-fin { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.s-fin .logo { font: 700 120px 'Playfair Display', serif; }
+.s-fin .logo b { color: var(--or); }
+.s-fin .ligne { color: var(--dim); }
+
+/* feuille de route (exercice 6) */
+.route { display: grid; grid-template-columns: repeat(5, 1fr); gap: 26px; }
+.route div { background: rgba(255,255,255,.035); border: 1.5px solid var(--ligne); border-radius: 20px; padding: 26px 22px;
+  font: 600 34px/1.2 'Fraunces', serif; text-align: center; }
+.route b { display: flex; align-items: center; justify-content: center; width: 54px; height: 54px; margin: 0 auto 16px; border-radius: 50%;
+  background: var(--or); color: var(--bg); font: 600 30px 'IBM Plex Mono'; }
+.route small { display: block; margin-top: 12px; font: 400 25px/1.35 'IBM Plex Sans'; color: var(--dim); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="grille"></div>
+  <div id="logo">ECG <b>Prépa</b></div>
+  <div id="etiq">Colle 7 · <span>Exercice 6</span></div>
+  <div id="piste"></div><div id="barre"></div>
+  <div id="etapes"><span data-p="1"><i>1</i>Convergence</span><span data-p="2"><i>2</i>Symétrique</span><span data-p="3"><i>3</i>Bilinéaire</span><span data-p="4"><i>4</i>Positive</span><span data-p="5"><i>5</i>Défini</span></div>
+
+  <!-- 1. Titre -->
+  <section class="scene s-titre" data-dur="7">
+    <div class="kick anim" data-in="0.3">Colle n° 7 · Maths · 2e année</div>
+    <h1 class="anim" data-v="produit" data-in="0.7" data-a="pop" data-d="0.9" style="font-size:132px">Un produit <span>scalaire</span></h1>
+    <div class="big anim" data-v="phi" data-in="1.7" data-a="wipe" data-d="1.4">\(\displaystyle \varphi(P, Q) = \int_0^{+\infty} P(t)\,Q(t)\,e^{-t}\,\mathrm{d}t\)</div>
+    <div class="sous anim" data-v="travaille" data-in="3.2">sur \(\mathbb{R}[x]\), l'espace des polynômes</div>
+  </section>
+
+  <!-- 2. Énoncé et feuille de route -->
+  <section class="scene" data-dur="16">
+    <div class="kick anim" data-in="0.2">L'énoncé</div>
+    <div class="carte enonce anim" data-in="0.6" style="padding:30px 50px">
+      <div class="ligne" style="margin:0">Montrer que \(\displaystyle \varphi : (P, Q) \mapsto \int_0^{+\infty} P(t)\,Q(t)\,e^{-t}\,\mathrm{d}t\) est un produit scalaire sur \(\mathbb{R}[x]\).</div>
+    </div>
+    <div class="ligne petit anim" data-v="feuille" data-in="3" style="text-align:center;margin:34px 0 22px">La feuille de route&nbsp;: cinq vérifications</div>
+    <div class="route">
+      <div class="anim" data-v="bien" data-in="4" data-a="pop"><b>1</b>Bien définie<small>l'intégrale converge</small></div>
+      <div class="anim" data-v="symetrique" data-in="5.6" data-a="pop"><b>2</b>Symétrique<small>\(\varphi(P, Q) = \varphi(Q, P)\)</small></div>
+      <div class="anim" data-v="bilin" data-in="7.2" data-a="pop"><b>3</b>Bilinéaire<small>linéaire à droite et à gauche</small></div>
+      <div class="anim" data-v="positive" data-in="8.8" data-a="pop"><b>4</b>Positive<small>\(\varphi(P, P) \geqslant 0\)</small></div>
+      <div class="anim" data-v="defini" data-in="10.4" data-a="pop"><b>5</b>Définie<small>\(\varphi(P, P) = 0 \Rightarrow P = 0\)</small></div>
+    </div>
+    <div class="ref anim" data-v="exemple" data-in="12.5">Cours · exemple 6, page 2</div>
+  </section>
+
+  <!-- 3. Bien définie -->
+  <section class="scene" data-dur="22" data-part="1">
+    <div class="kick anim" data-in="0.2"><b>1</b>Bien définie</div>
+    <h2 class="titre anim" data-in="0.4">D'abord&nbsp;: l'intégrale <em>converge-t-elle</em>&nbsp;?</h2>
+    <div class="cols">
+      <div>
+        <div class="ligne anim" data-v="produit" data-in="1.2">\(PQ\) est un polynôme&nbsp;: \(\displaystyle P(t)\,Q(t) = \sum_{k=0}^{m} c_k\, t^k\).</div>
+        <div class="carte anim" data-v="exercice" data-in="4" style="margin-bottom:28px">
+          <div class="kick">Exercice 3 · la fonction Γ</div>
+          <div style="font-size:40px">\(\displaystyle \int_0^{+\infty} t^k e^{-t}\,\mathrm{d}t = \Gamma(k+1) = k!\) converge</div>
+        </div>
+        <div class="ligne anim" data-v="inearite" data-in="9">Par linéarité, \(\varphi(P, Q)\) converge et vaut \(\displaystyle \sum_{k=0}^{m} c_k\, k!\)</div>
+        <div class="anim" data-v="reel" data-in="15.5" data-a="pop"><span class="coche">\(\varphi(P, Q)\) est bien un réel</span></div>
+      </div>
+      <svg id="g3" viewBox="0 0 700 560" width="700" height="560" class="anim" data-v="exercice" data-in="3.4" data-a="fade">
+        <defs><clipPath id="c3"><rect x="60" y="20" width="630" height="480"/></clipPath></defs>
+        <line class="anim" data-a="draw" data-in="3.5" x1="60" y1="500" x2="690" y2="500" stroke="#a89c80" stroke-width="2.5"/>
+        <line class="anim" data-a="draw" data-in="3.5" x1="60" y1="500" x2="60" y2="15" stroke="#a89c80" stroke-width="2.5"/>
+        <text x="675" y="535" fill="#a89c80" font-size="26">t</text>
+        <text x="48" y="535" fill="#a89c80" font-size="24">0</text>
+        <path id="g3k0" class="anim" data-v="puissance" data-in="4.6" data-a="draw" clip-path="url(#c3)" fill="none" stroke="#a89c80" stroke-width="4"/>
+        <path id="g3k1" class="anim" data-v="converge" data-in="5.4" data-a="draw" clip-path="url(#c3)" fill="none" stroke="#64b8c9" stroke-width="4"/>
+        <path id="g3k2" class="anim" data-v="gamma" data-in="6.2" data-a="draw" clip-path="url(#c3)" fill="none" stroke="#7cc68f" stroke-width="4"/>
+        <path id="g3k3" class="anim" data-v="factorial" data-in="7" data-a="draw" clip-path="url(#c3)" fill="none" stroke="#e2b23c" stroke-width="5"/>
+        <g font-size="26" text-anchor="end">
+          <text x="670" y="70" fill="#a89c80" class="anim" data-v="puissance" data-in="4.6" data-a="fade">k = 0 · aire 1</text>
+          <text x="670" y="106" fill="#64b8c9" class="anim" data-v="converge" data-in="5.4" data-a="fade">k = 1 · aire 1</text>
+          <text x="670" y="142" fill="#7cc68f" class="anim" data-v="gamma" data-in="6.2" data-a="fade">k = 2 · aire 2</text>
+          <text x="670" y="178" fill="#e2b23c" class="anim" data-v="factorial" data-in="7" data-a="fade">k = 3 · aire 6</text>
+        </g>
+        <text x="670" y="222" fill="#a89c80" font-size="22" text-anchor="end" class="anim" data-v="graphique" data-in="7.6" data-a="fade">courbes de t ↦ tᵏ e⁻ᵗ</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- 4. Symétrie -->
+  <section class="scene" data-dur="10" data-part="2" data-hl='{"hA": "p de t", "hB": "que q"}'>
+    <div class="kick anim" data-in="0.2"><b>2</b>Symétrie</div>
+    <h2 class="titre anim" data-in="0.4">Le produit de deux réels <em>commute</em></h2>
+    <div class="eq anim" data-v="integrale" data-in="1.4" data-a="wipe" data-d="1.6" style="margin-top:60px">\(\displaystyle \varphi(P, Q) = \int_0^{+\infty} \htmlClass{hl hA}{P(t)\,Q(t)}\,e^{-t}\,\mathrm{d}t = \int_0^{+\infty} \htmlClass{hl hB}{Q(t)\,P(t)}\,e^{-t}\,\mathrm{d}t = \varphi(Q, P)\)</div>
+    <div class="anim" data-v="donc" data-in="5" data-a="pop" style="text-align:center;margin-top:50px"><span class="coche">\(\varphi\) est symétrique</span></div>
+  </section>
+
+  <!-- 5. Bilinéarité -->
+  <section class="scene" data-dur="20" data-part="3" data-hl='{"hL": "obtient"}'>
+    <div class="kick anim" data-in="0.2"><b>3</b>Bilinéarité</div>
+    <h2 class="titre anim" data-in="0.4">Linéaire à droite, <em>puis la symétrie</em></h2>
+    <div class="ligne petit anim" data-v="prend" data-in="1.2" style="text-align:center">Soient \(P, Q, R \in \mathbb{R}[x]\) et \(\lambda \in \mathbb{R}\).</div>
+    <div class="eq anim" data-v="phi de p" data-in="2.4" data-a="wipe" data-d="1.6">\(\displaystyle \varphi(P, \lambda Q + R) = \int_0^{+\infty} P(t)\big(\lambda Q(t) + R(t)\big)\,e^{-t}\,\mathrm{d}t\)</div>
+    <div class="eq anim" data-v="developpe" data-in="5.6" data-a="wipe" data-d="1.6">\(\displaystyle \phantom{\varphi(P, \lambda Q + R)} = \htmlClass{hl hL}{\lambda \int_0^{+\infty} P(t)\,Q(t)\,e^{-t}\,\mathrm{d}t + \int_0^{+\infty} P(t)\,R(t)\,e^{-t}\,\mathrm{d}t}\)</div>
+    <div class="ligne petit anim" data-v="decoupage" data-in="8.6" style="text-align:center">linéarité de l'intégrale&nbsp;: les deux intégrales convergent (étape 1)</div>
+    <div class="eq anim" data-v="reconnait" data-in="11" data-a="wipe" data-d="1.2">\(\displaystyle \phantom{\varphi(P, \lambda Q + R)} = \lambda\,\varphi(P, Q) + \varphi(P, R)\)</div>
+    <div class="anim" data-v="droite" data-in="14" data-a="pop" style="text-align:center;margin-top:20px"><span class="coche">Linéaire à droite, donc à gauche par symétrie&nbsp;: bilinéaire</span></div>
+  </section>
+
+  <!-- 6. Positivité -->
+  <section class="scene" data-dur="14" data-part="4">
+    <div class="kick anim" data-in="0.2"><b>4</b>Positivité</div>
+    <h2 class="titre anim" data-in="0.4">Un carré <em>ne descend jamais</em> sous l'axe</h2>
+    <div class="cols">
+      <div>
+        <div class="big anim" data-v="phi" data-in="1.2" data-a="wipe" data-d="1.3" style="text-align:left">\(\displaystyle \varphi(P, P) = \int_0^{+\infty} P(t)^2\, e^{-t}\,\mathrm{d}t\)</div>
+        <div class="ligne anim" data-v="carre" data-in="4">\(P(t)^2 \geqslant 0\) et \(e^{-t} &gt; 0\)&nbsp;: l'intégrande est positif.</div>
+        <div class="ligne petit anim" data-v="l integral d" data-in="6.5">Une intégrale (convergente) d'une fonction positive est positive.</div>
+        <div class="anim" data-v="ou nul" data-in="9" data-a="pop"><span class="coche">\(\varphi(P, P) \geqslant 0\)</span></div>
+      </div>
+      <svg id="g6" viewBox="0 0 700 560" width="700" height="560" class="anim" data-in="1" data-a="fade">
+        <defs><clipPath id="c6"><rect x="60" y="20" width="630" height="480"/></clipPath></defs>
+        <path id="g6a" class="anim" data-v="graphique" data-in="5" data-a="fade" clip-path="url(#c6)" fill="rgba(226,178,60,.22)" stroke="none"/>
+        <line class="anim" data-a="draw" data-in="1.1" x1="60" y1="500" x2="690" y2="500" stroke="#a89c80" stroke-width="2.5"/>
+        <line class="anim" data-a="draw" data-in="1.1" x1="60" y1="500" x2="60" y2="15" stroke="#a89c80" stroke-width="2.5"/>
+        <text x="675" y="535" fill="#a89c80" font-size="26">t</text>
+        <text x="48" y="535" fill="#a89c80" font-size="24">0</text>
+        <path id="g6c" class="anim" data-v="integral" data-in="2" data-a="draw" data-d="2" clip-path="url(#c6)" fill="none" stroke="#e2b23c" stroke-width="5" stroke-linecap="round"/>
+        <text x="670" y="70" fill="#e2b23c" font-size="28" text-anchor="end" class="anim" data-in="2" data-a="fade">t ↦ P(t)² e⁻ᵗ</text>
+        <text x="670" y="106" fill="#a89c80" font-size="22" text-anchor="end" class="anim" data-in="2" data-a="fade">exemple : P = X(X − 2)</text>
+        <text id="g6t" x="0" y="440" fill="#f4ecd8" font-size="26" text-anchor="middle" class="anim" data-v="graphique" data-in="5.4" data-a="fade">aire ≥ 0</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- 7. Défini : intégrale nulle sur [0, A] -->
+  <section class="scene" data-dur="22" data-part="5" data-fn="ecrase" data-fn-v="segment de" data-fn-t="13">
+    <div class="kick anim" data-in="0.2"><b>5</b>Caractère défini</div>
+    <h2 class="titre anim" data-in="0.4">Si <em>φ(P, P) = 0</em>&nbsp;: passer par un segment</h2>
+    <div class="cols">
+      <div>
+        <div class="ligne anim" data-v="pour" data-in="1.4">Pour tout \(A &gt; 0\)&nbsp;:</div>
+        <div class="big anim" data-v="integral" data-in="2.4" data-a="wipe" data-d="1.4" style="text-align:left;font-size:44px">\(\displaystyle 0 \leqslant \int_0^{A} P(t)^2 e^{-t}\,\mathrm{d}t \leqslant \varphi(P, P) = 0\)</div>
+        <div class="carte anim" data-v="theoreme" data-in="7" style="margin-bottom:24px">
+          <div class="kick">Théorème · sur un segment</div>
+          <div style="font-size:34px;line-height:1.4">Une fonction <b>continue</b>, <b>positive</b> et d'intégrale nulle sur \([0, A]\) est nulle sur \([0, A]\).</div>
+        </div>
+        <div class="ligne anim" data-v="comme" data-in="13">Donc \(P(t)^2 e^{-t} = 0\), et comme \(e^{-t} &gt; 0\)&nbsp;:</div>
+        <div class="anim" data-v="jamais" data-in="16" data-a="pop"><span class="coche">\(P(t) = 0\) pour tout \(t \in [0, A]\)</span></div>
+      </div>
+      <svg id="g7" viewBox="0 0 700 560" width="700" height="560" class="anim" data-in="1.2" data-a="fade">
+        <defs><clipPath id="c7"><rect x="60" y="20" width="630" height="480"/></clipPath></defs>
+        <path id="g7a" class="anim" data-v="integral" data-in="2.6" data-a="fade" clip-path="url(#c7)" fill="rgba(226,178,60,.22)" stroke="none"/>
+        <line x1="60" y1="500" x2="690" y2="500" stroke="#a89c80" stroke-width="2.5"/>
+        <line x1="60" y1="500" x2="60" y2="15" stroke="#a89c80" stroke-width="2.5"/>
+        <text x="675" y="535" fill="#a89c80" font-size="26">t</text>
+        <text x="48" y="535" fill="#a89c80" font-size="24">0</text>
+        <path id="g7c" clip-path="url(#c7)" fill="none" stroke="#e2b23c" stroke-width="5" stroke-linecap="round"/>
+        <g class="anim" data-v="grand" data-in="1.6" data-a="fade">
+          <line id="g7A" x1="0" y1="20" x2="0" y2="500" stroke="#f4ecd8" stroke-width="2.5" stroke-dasharray="10 9"/>
+          <text id="g7At" x="0" y="535" fill="#f4ecd8" font-size="26" text-anchor="middle" font-style="italic">A</text>
+        </g>
+        <text id="g7t" x="0" y="440" fill="#f4ecd8" font-size="26" text-anchor="middle" class="anim" data-v="integral" data-in="2.6" data-a="fade">aire = 0</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- 8. Défini : une infinité de racines -->
+  <section class="scene" data-dur="17" data-part="5" data-fn="racines" data-fn-v="faisant" data-fn-t="2">
+    <div class="kick anim" data-in="0.2"><b>5</b>Caractère défini</div>
+    <h2 class="titre anim" data-in="0.4">Une infinité de <em>racines</em></h2>
+    <svg id="g8" viewBox="0 0 1680 220" width="1680" height="220" class="anim" data-in="1" data-a="fade" style="display:block;margin:10px 0 30px">
+      <rect id="g8s" x="40" y="80" width="0" height="60" rx="8" fill="rgba(226,178,60,.16)"/>
+      <line x1="40" y1="110" x2="1660" y2="110" stroke="#a89c80" stroke-width="3"/>
+      <text x="40" y="180" fill="#a89c80" font-size="28" text-anchor="middle">0</text>
+      <text x="1650" y="180" fill="#a89c80" font-size="28" text-anchor="end">+∞</text>
+      <g id="g8p"></g>
+      <g id="g8A"><line x1="0" y1="64" x2="0" y2="156" stroke="#f4ecd8" stroke-width="3" stroke-dasharray="8 7"/><text x="0" y="48" fill="#f4ecd8" font-size="28" text-anchor="middle" font-style="italic">A</text></g>
+    </svg>
+    <div class="ligne anim" data-v="faisant" data-in="2" style="text-align:center">\(P\) s'annule sur \([0, A]\) pour <b>tout</b> \(A &gt; 0\)&nbsp;: donc sur tout \([0, +\infty[\).</div>
+    <div class="carte anim" data-v="rappel" data-in="7" style="max-width:1300px;margin:30px auto">
+      <div class="kick">Rappel</div>
+      <div class="ligne" style="margin:0">Un polynôme non nul de degré \(n\) a au plus \(n\) racines.</div>
+    </div>
+    <div class="anim" data-v="ici" data-in="11" data-a="pop" style="text-align:center"><span class="coche">\(P\) a une infinité de racines&nbsp;: \(P = 0\)</span></div>
+  </section>
+
+  <!-- 9. Conclusion -->
+  <section class="scene res" data-dur="16" data-part="6" style="justify-content:center">
+    <div class="cadre anim" data-v="produit" data-in="0.4" data-a="pop" data-d="0.9" style="font-size:62px">\(\varphi\) est un produit scalaire sur \(\mathbb{R}[x]\)</div>
+    <div class="ligne anim" data-v="passage" data-in="4" style="margin-top:56px">Au passage, pour les monômes&nbsp;:</div>
+    <div class="big anim" data-v="phi" data-in="5.4" data-a="wipe" data-d="1.2" style="margin:6px 0 20px">\(\displaystyle \varphi(X^i, X^j) = \int_0^{+\infty} t^{\,i+j} e^{-t}\,\mathrm{d}t = (i + j)!\)</div>
+    <div class="chaine">
+      <span class="g anim" data-v="norme" data-in="9" data-a="pop">\(\|X\|^2 = \varphi(X, X) = 2\)</span><span class="fl anim" data-v="donc" data-in="10">→</span>
+      <span class="g anim" data-v="donc" data-in="10.4" data-a="pop">\(\|X\| = \sqrt{2}\)</span>
+    </div>
+  </section>
+
+  <!-- 10. Réflexes -->
+  <section class="scene" data-dur="16">
+    <div class="kick anim" data-in="0.2">Pour la colle</div>
+    <h2 class="titre anim" data-in="0.4">Les <em>4 réflexes</em> à montrer</h2>
+    <div class="pieges">
+      <div class="piege anim" data-v="1" data-in="1.2"><b class="n">1</b><div class="carte">Une intégrale sur \([0, +\infty[\)&nbsp;: vérifier qu'elle converge avant les axiomes.</div></div>
+      <div class="piege anim" data-v="2" data-in="4.2"><b class="n">2</b><div class="carte">Prouver la linéarité d'un seul côté&nbsp;: la symétrie donne l'autre.</div></div>
+      <div class="piege anim" data-v="3" data-in="7.2"><b class="n">3</b><div class="carte">« Continue, positive, d'intégrale nulle » ne vaut que sur un segment \([0, A]\).</div></div>
+      <div class="piege anim" data-v="4" data-in="10.2"><b class="n">4</b><div class="carte">Finir par les racines&nbsp;: une infinité de racines, donc le polynôme est nul.</div></div>
+    </div>
+  </section>
+
+  <!-- 11. Fin -->
+  <section class="scene s-fin" data-dur="6">
+    <div class="logo anim" data-in="0.3" data-a="pop">ECG <b>Prépa</b></div>
+    <div class="ligne anim" data-v="exercices" data-in="1.2" style="margin-top:20px">Colle 7 · Intégrales impropres et début de l'algèbre bilinéaire</div>
+    <div class="ligne anim" data-v="pdf" data-in="2" style="color:var(--or)">Tous les exercices rédigés en PDF sur ecg-prepa.fr</div>
+  </section>
+</div>
+
+<script>
+(() => {
+  renderMathInElement(document.body, {
+    delimiters: [{ left: '\\[', right: '\\]', display: true }, { left: '\\(', right: '\\)', display: false }],
+    trust: true, strict: false, throwOnError: false,
+  });
+
+  const clamp = v => Math.max(0, Math.min(1, v));
+  const easeOut = p => 1 - Math.pow(1 - p, 3);
+  const easeInOut = p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+  const back = p => { const c = 1.7; return 1 + (c + 1) * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2); };
+  const virgule = v => v.toFixed(2).replace('.', ',');
+
+  // Courbes : t ↦ y dans un repère [t0, t1] × [0, ymax] posé sur la zone (gx, gy, gw, gh) du SVG.
+  function chemin(f, t0, t1, ymax, gx, gy, gw, gh, n = 240) {
+    let d = '';
+    for (let i = 0; i <= n; i++) {
+      const t = t0 + (t1 - t0) * (i / n);
+      const y = Math.min(f(t), ymax * 1.6);
+      d += (i ? 'L' : 'M') + (gx + gw * (t - t0) / (t1 - t0)).toFixed(1) + ' ' + (gy + gh - gh * y / ymax).toFixed(1);
+    }
+    return d;
+  }
+  // Scène 3 : t ∈ [0, 10], y ∈ [0, 1.5]
+  const fact = [1, 1, 2, 6];
+  [0, 1, 2, 3].forEach(k => document.getElementById('g3k' + k).setAttribute('d', chemin(t => Math.pow(t, k) * Math.exp(-t), 0, 10, 1.5, 60, 20, 630, 480)));
+  // Scènes 6 et 7 : g(t) = P(t)² e^{-t} avec P = X(X − 2), t ∈ [0, 14], y ∈ [0, 1.75]
+  const g = t => Math.pow(t * (t - 2), 2) * Math.exp(-t);
+  const T67 = t => 60 + 630 * t / 14, Y67 = y => 500 - 480 * y / 1.75;
+  const aire = (f, a, b) => chemin(f, a, b, 1.75, 60, 20, 630, 480) + `L${T67(b).toFixed(1)} 500 L${T67(a).toFixed(1)} 500 Z`;
+  document.getElementById('g6c').setAttribute('d', chemin(g, 0, 14, 1.75, 60, 20, 630, 480));
+  document.getElementById('g6a').setAttribute('d', aire(g, 0, 14));
+  document.getElementById('g6t').setAttribute('x', T67(5.2)); document.getElementById('g6t').setAttribute('y', Y67(.55));
+  const A7 = 9;
+  document.getElementById('g7A').setAttribute('x1', T67(A7)); document.getElementById('g7A').setAttribute('x2', T67(A7));
+  document.getElementById('g7At').setAttribute('x', T67(A7));
+  document.getElementById('g7t').setAttribute('x', T67(4.6)); document.getElementById('g7t').setAttribute('y', Y67(.5));
+
+  const FN = {
+    ecrase(sc, l) {   // la seule fonction continue positive d'aire nulle sur [0, A] est la fonction nulle : la courbe s'écrase
+      const c = 1 - easeInOut(clamp((l - 13) / 2.2));
+      sc.querySelector('#g7c').setAttribute('d', chemin(t => c * g(t), 0, 14, 1.75, 60, 20, 630, 480));
+      sc.querySelector('#g7a').setAttribute('d', aire(t => c * g(t), 0, A7));
+    },
+    racines(sc, l) {  // A avance vers +∞ : les racines de P remplissent [0, A]
+      const xA = 120 + 1500 * easeInOut(clamp((l - 1.5) / 5.5));
+      sc.querySelector('#g8s').setAttribute('width', xA - 40);
+      const gA = sc.querySelector('#g8A');
+      gA.querySelector('line').setAttribute('x1', xA); gA.querySelector('line').setAttribute('x2', xA);
+      gA.querySelector('text').setAttribute('x', xA);
+      const box = sc.querySelector('#g8p');
+      if (!box.childElementCount) for (let x = 40; x <= 1620; x += 30) box.insertAdjacentHTML('beforeend', `<circle cx="${x}" cy="110" r="7" fill="#e2b23c"/>`);
+      [...box.children].forEach(cc => { cc.style.opacity = +cc.getAttribute('cx') <= xA ? 1 : 0; });
+    },
+  };
+
+  const scenes = [...document.querySelectorAll('.scene')];
+  const plans = scenes.map(el => {
+    const p = { el, dur: +el.dataset.dur, hl: JSON.parse(el.dataset.hl || '{}'), part: el.dataset.part || '', decal: 0, manque: [] };
+    p.items = [...el.querySelectorAll('[data-in]')].map(e => ({
+      e, t: +e.dataset.in, a: e.dataset.a || (e.classList.contains('mark') ? 'mark' : 'up'),
+      d: +(e.dataset.d || (e.dataset.a === 'draw' ? 1.4 : e.dataset.a === 'pop' ? .7 : e.dataset.a === 'wipe' ? 1 : .6)),
+      out: e.dataset.out ? +e.dataset.out : null,
+    }));
+    return p;
+  });
+
+  // Voix off (voix.py synthese) : chaque écran dure le temps de sa voix, et chaque élément data-v apparaît quand la
+  // voix prononce son mot repère (mots.json, transcrit par Whisper) ; les autres éléments suivent au prorata.
+  const DEPART = .4;
+  const norm = w => w.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  function trouve(mots, cle, depuis) {
+    const k = cle.split(' ').map(norm);
+    for (let j = depuis; j <= mots.length - k.length; j++)
+      if (k.every((x, q) => norm(mots[j + q][0]).startsWith(x))) return j;
+    return -1;
+  }
+  if (window.VOIX) plans.forEach((p, i) => {
+    const voix = window.VOIX[i + 1], mots = (window.VOIX_MOTS || {})[i + 1] || [];
+    if (voix == null) return;
+    const k = (DEPART + voix) / Math.max(1, p.dur - 1.5);
+    let curseur = 0;
+    [...p.items].sort((a, b) => a.t - b.t).forEach(it => {
+      const cle = it.e.dataset.v, j = cle ? trouve(mots, cle, curseur) : -1;
+      if (cle && j < 0) p.manque.push(cle);
+      if (j >= 0) { it.t = DEPART + mots[j][1] - .15; curseur = j; } else it.t *= k;
+    });
+    for (const [cl, t0] of Object.entries(p.hl)) {
+      const j = typeof t0 === 'string' ? trouve(mots, t0, 0) : -1;
+      if (typeof t0 === 'string' && j < 0) p.manque.push(t0);
+      p.hl[cl] = j >= 0 ? DEPART + mots[j][1] - .1 : typeof t0 === 'number' ? t0 * k : 1e9;
+    }
+    if (p.el.dataset.fnV) {
+      const j = trouve(mots, p.el.dataset.fnV, 0);
+      if (j >= 0) p.decal = DEPART + mots[j][1] - +p.el.dataset.fnT; else p.manque.push(p.el.dataset.fnV);
+    }
+    p.dur = Math.max(4, DEPART + voix + .9, ...p.items.map(it => it.t + it.d + .8));
+  });
+  let debut = 0;
+  plans.forEach(p => { p.start = debut; debut += p.dur; });
+  const DUREE = debut + .5;
+  const longueurs = new Map();
+  plans.forEach(p => { p.el.style.display = ''; });
+  plans.forEach(p => p.items.forEach(it => { if (it.a === 'draw' && it.e.getTotalLength) longueurs.set(it.e, it.e.getTotalLength()); }));
+  plans.forEach(p => { p.el.style.display = 'none'; });
+
+  const barre = document.getElementById('barre'), grille = document.getElementById('grille');
+  const etapes = [...document.querySelectorAll('#etapes [data-p]')], etapesBox = document.getElementById('etapes');
+
+  function anim(it, l) {
+    const p = clamp((l - it.t) / it.d), e = it.e;
+    let o = 1, tr = '';
+    if (it.a === 'up') { o = easeOut(p); tr = `translateY(${(1 - easeOut(p)) * 34}px)`; }
+    else if (it.a === 'fade') o = easeOut(p);
+    else if (it.a === 'pop') { o = clamp(p * 2.5); tr = `scale(${.82 + .18 * back(p)})`; }
+    else if (it.a === 'wipe') { o = clamp(p * 4); e.style.clipPath = `inset(-30px ${(1 - easeInOut(p)) * 100}% -30px -30px)`; }
+    else if (it.a === 'draw') { const L = longueurs.get(e) || 1; e.style.strokeDasharray = L; e.style.strokeDashoffset = L * (1 - easeInOut(p)); o = p > 0 ? 1 : 0; }
+    else if (it.a === 'mark') { e.style.backgroundSize = `${easeInOut(p) * 100}% 40%`; return; }
+    if (it.out != null) o *= 1 - clamp((l - it.out) / .4);
+    e.style.opacity = o;
+    if (e instanceof SVGElement) { if (tr) e.style.transformBox = 'fill-box', e.style.transformOrigin = 'center'; }
+    e.style.transform = tr;
+  }
+
+  function render(t) {
+    barre.style.width = (100 * clamp(t / (DUREE - .5))) + '%';
+    grille.style.transform = `translate(${-(t * 6) % 80}px, ${-(t * 3) % 80}px)`;
+    let actif = null;
+    plans.forEach(p => {
+      const l = t - p.start;
+      const vis = l >= 0 && (l < p.dur || (p === plans[plans.length - 1] && l < p.dur + 1));
+      p.el.style.display = vis ? '' : 'none';
+      if (!vis) return;
+      actif = p;
+      const fin = p === plans[plans.length - 1] ? 1 : 1 - clamp((l - (p.dur - .4)) / .4);
+      const ent = clamp(l / .45);
+      p.el.style.opacity = Math.min(easeOut(ent), fin);
+      p.el.style.transform = `translateY(${(1 - easeOut(ent)) * 18 - (1 - fin) * 18}px)`;
+      p.items.forEach(it => anim(it, l));
+      for (const [cl, t0] of Object.entries(p.hl)) {
+        const q = easeOut(clamp((l - t0) / .5));
+        p.el.querySelectorAll('.' + cl).forEach(s => {
+          s.style.background = `rgba(226,178,60,${.28 * q})`;
+          s.style.boxShadow = `0 0 0 ${2 * q}px rgba(226,178,60,${.8 * q})`;
+        });
+      }
+      if (p.el.dataset.fn) FN[p.el.dataset.fn](p.el, l - p.decal);
+    });
+    const part = actif ? actif.part : '';
+    etapesBox.style.opacity = part ? 1 : 0;
+    etapes.forEach(s => { s.classList.toggle('on', s.dataset.p === part); s.classList.toggle('fait', +s.dataset.p < +part); });
+  }
+
+  function controle() {
+    const err = [];
+    plans.forEach((p, i) => p.manque.forEach(m => err.push(`plan ${i + 1} : repère de voix « ${m} » introuvable`)));
+    document.querySelectorAll('.katex-error').forEach(e => err.push('KaTeX : ' + (e.title || e.textContent)));
+    plans.forEach((p, i) => {
+      render(p.start + p.dur - .5);
+      p.el.querySelectorAll('.anim, .ligne, .carte, .eq, .big, .cadre').forEach(e => {
+        const r = e.getBoundingClientRect();
+        if (!r.width || e instanceof SVGElement && e.tagName !== 'svg') return;
+        if (r.left < 40 || r.right > 1880 || r.top < 110 || r.bottom > 1020)
+          err.push(`plan ${i + 1} : « ${(e.textContent || e.id).trim().slice(0, 40)} » sort du cadre (${Math.round(r.left)}, ${Math.round(r.top)}, ${Math.round(r.right)}, ${Math.round(r.bottom)})`);
+        if (e.scrollWidth > e.clientWidth + 2 && getComputedStyle(e).display !== 'inline')
+          err.push(`plan ${i + 1} : « ${(e.textContent || '').trim().slice(0, 40)} » déborde en largeur`);
+      });
+    });
+    return [...new Set(err)];
+  }
+
+  render(0);
+  window.VIDEO = { render, duree: DUREE, controle, plans: plans.map(p => ({ start: p.start, dur: p.dur, voix: DEPART })) };
+})();
+</script>
+</body>
+</html>

@@ -586,7 +586,8 @@ s'ouvrent, liens de la frise valides, `grep -c '—'` à 0 dans le texte.
     (ElevenLabs, ou `--piper <voix.onnx>` quand les crédits manquent : voix locale gratuite `fr_FR-tom-medium` de
     rhasspy/piper-voices, choisie en novembre 2026, moins naturelle), puis `generer.py … --voix <dossier>/voix.json` (chaque
     scène dure le temps de sa voix ; un élément `data-v="<mot>"` apparaît quand la voix dit ce mot, d'après `mots.json` ;
-    `--controle` signale un repère introuvable) et `voix.py poser`. Fait : colle 7, exercice 3 (5 min, voix Piper).
+    `--controle` signale un repère introuvable) et `voix.py poser`. Fait : colle 7, exercices 3 (5 min) et 6 (4 min 30, feuille de route des
+    5 axiomes cochée en bas d'écran), voix Piper.
 
 ### Index des cours (`cours-ecg.html`)
 
