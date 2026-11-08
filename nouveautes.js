@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "cours",
 "rubrique": "Cours",
+"meta": "HGG 2e année · chapitre 4",
+"titre": "Géopolitique du Proche et du Moyen-Orient",
+"url": "deuxieme_annee/hgg/chapitre-4-hgg.html",
+"image": "deuxieme_annee/hgg/images/jerusalem-mur-dome-du-rocher.webp",
+"date": "2026-11-08T17:22:06+00:00"
+},
+{
+"t": "cours",
+"rubrique": "Cours",
 "meta": "Maths 2e année · chapitre 2",
 "titre": "Algèbre bilinéaire, produit scalaire et espaces euclidiens",
 "url": "deuxieme_annee/maths/chapitre2.html",
@@ -2549,15 +2558,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Décolonisations et Tiers-Monde",
 "url": "premiere_annee/hgg/chapitre-6/chapitre-6-hgg.html",
 "image": "premiere_annee/hgg/chapitre-6/images/conference-bandung-1955.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cours",
-"rubrique": "Cours",
-"meta": "HGG 1re année · chapitre 7",
-"titre": "Le monde dans les années 1990",
-"url": "premiere_annee/hgg/chapitre-7/chapitre-7-hgg.html",
-"image": "premiere_annee/hgg/chapitre-7/images/tempete-du-desert-1991.webp",
 "date": "2026-09-11T19:03:33+00:00"
 }
 ];
