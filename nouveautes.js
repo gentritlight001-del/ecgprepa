@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "es",
 "rubrique": "Actu Espagnol",
+"meta": "Uruguay",
+"titre": "Uruguay : León XIV lance sa tournée",
+"url": "actualites/es/articles/uruguay-leon-xiv-tournee-amerique-sud-2026.html",
+"image": "actualites/es/images/uruguay-leon-xiv-tournee-amerique-sud-2026.webp",
+"date": "2026-11-08T07:21:04+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
 "meta": "Chili",
 "titre": "Chili : des lycéens contre le ministre Rabat",
 "url": "actualites/es/articles/chili-lyceens-rabat-reductions-peines-2026.html",
@@ -1677,15 +1686,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/en/articles/uk-raf-fairford-arrests-2026.html",
 "image": "actualites/en/images/uk-raf-fairford-arrests-2026.webp",
 "date": "2026-09-27T16:25:32+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Espagne",
-"titre": "Espagne : 20 000 manifestants à Madrid pour des élections anticipées et « en défense de Ceuta »",
-"url": "actualites/es/articles/manifestation-madrid-ceuta-elections.html",
-"image": "actualites/es/images/manifestation-madrid-ceuta-elections.webp",
-"date": "2026-09-27T12:59:31+00:00"
 },
 {
 "t": "cg",
