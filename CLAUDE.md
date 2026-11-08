@@ -341,7 +341,7 @@ page pays ou région :
 
 - Chaque matière a sa page d'index, par exemple `deuxieme_annee/maths/index.html`, qui
   liste les chapitres (`chapter-item`).
-- Index de 1re année (HGG, maths, ESH, philo, anglais, espagnol, allemand) et de 2e année (HGG, maths, ESH, philo ; pas les langues), et liste des cours d'Humanité (`humanite/cours-humanite/Cours/cours.html`, ligne grisée `.ci-prochain` « Prochain cours bientôt en ligne » à garder en fin de liste) : habillage « atlas
+- Index de 1re année (HGG, maths, ESH, philo, anglais, espagnol, allemand) et de 2e année (HGG, maths, ESH, philo ; pas les langues), : habillage « atlas
   nocturne » choisi par le propriétaire (`cours-index.css`, `<body class="ci">`, fond noir, titres
   Fraunces, un dessin au trait par matière, une seule liste sans parties ni suivi de lecture, rangée en colonnes : 1, 2, 3… descendent la colonne de gauche, la suite reprend à droite).
   Ajouter un chapitre = copier une ligne `chapter-item` de `.ci-liste` et mettre à jour le compteur
@@ -603,6 +603,13 @@ s'ouvrent, liens de la frise valides, `grep -c '—'` à 0 dans le texte.
   ces deux éléments par les boutons « Lire le cours → » / « Résumé en PDF ». Ne jamais ajouter de cours inventé.
   Auteurs (`#autCar`, rempli par le script) : 3 fiches entières (portrait en haut, années, nom, thèse) et le début de la
   4e, sans carte réduite ; thèse sur **2 lignes au plus** (au-delà, coupée : l'écrire en 80 caractères environ).
+- **Liste des cours** (`humanite/cours-humanite/Cours/cours.html`, lien « Tous les cours → ») : même habillage « cabinet
+  clair » (maquette validée, novembre 2026), plus l'atlas nocturne. Héros « Penser l'humanité » (boutons « Commencer par le
+  cours 1 → » et « Fiches auteurs », photos des cours en tirages de travers), « 01 · Le programme du cours » (une ligne
+  `li.cr-cours` par cours : grand numéro, photo, « Cours N », titre, phrase, boutons ; cours pas encore en ligne :
+  `.bientot`, étiquette « Bientôt en ligne » sur la photo, « Cours en préparation », titre en `h3.ci-prochain` lu par
+  `outils/recherche.py` pour « Contenus à créer »), « 02 · Avec le cours » (Fiches auteurs, Les œuvres). Pas de cadre de
+  chiffres. Un nouveau cours : copier une ligne, et mettre à jour sa carte dans le carrousel de `humanite.html`.
 
 ### Index de la culture générale (`culture-generale.html`)
 
