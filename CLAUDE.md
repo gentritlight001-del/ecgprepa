@@ -878,7 +878,9 @@ Contenu d'un jour (le bloc de données du 10 octobre 2026 sert de modèle) :
   dans le navigateur d'un jour à l'autre.
 - **Traduction** : version de 3 phrases du texte, thème de **3 phrases** construites avec les
   mots du vocabulaire du jour et la grammaire étudiée (**pas d'indice** pour le thème : champ `indice` non affiché),
-  chacune avec traduction proposée et 2 ou 3 remarques.
+  chacune avec traduction proposée et 2 ou 3 remarques. **Quand la phrase admet vraiment plusieurs bonnes traductions**
+  (autre construction, autre mot aussi juste), ajouter `autres: ["…"]` (1 ou 2 traductions, même langue que la
+  proposition), affichées sous « Aussi juste » ; jamais une variante fausse, bancale ou à un mot près.
 - **Durées** : une par étape dans `DUREES` (`quotidien.js`) ; le total en tête est leur somme
   (30 min, chiffre rond à garder).
 - **Chapeau** (`chapo`) : une phrase qui dit le sujet, sans annoncer la grammaire.
