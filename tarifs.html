@@ -283,10 +283,20 @@ footer{border-top:1px solid var(--border);padding:28px 48px;display:flex;flex-wr
   cgv.addEventListener('change', maj);
   ren.addEventListener('change', maj);
 
-  if (!connecte) {
+  function visiteur() {
+    connecte = false;
+    $('entrer').style.display = '';
     btn.textContent = 'Se connecter pour s\'abonner';
     btn.disabled = false;
+  }
+  if (!connecte) {
+    visiteur();
   } else {
+    /* Profil en mémoire mais session expirée : on repasse en visiteur,
+       sinon le paiement échouait avec une erreur. */
+    A.pret().then(function (c) { return c.auth.getSession(); }).then(function (r) {
+      if (!(r && r.data && r.data.session)) visiteur();
+    }).catch(function () {});
     maj();
     A.premium.statut().then(function (st) {
       if (!st.premium) return;
