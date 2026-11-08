@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Nouvelle-Zélande",
+"titre": "Nouvelle-Zélande : élections au coude-à-coude, la décision dépend des votes spéciaux et d'Opportunity",
+"url": "actualites/monde/articles/nouvelle-zelande-elections-generales-2026.html",
+"image": "actualites/monde/images/nouvelle-zelande-elections-generales-2026.webp",
+"date": "2026-11-08T08:16:21+00:00"
+},
+{
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne",
@@ -1326,15 +1335,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/monde/articles/ue-statue-trump-orange-plague.html",
 "image": "actualites/monde/images/ue-statue-trump-orange-plague.webp",
 "date": "2026-10-10T19:16:02+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Brésil",
-"titre": "Brésil : mandat d'arrêt contre Eduardo Bolsonaro, condamné pour avoir sollicité Washington",
-"url": "actualites/monde/articles/bresil-eduardo-bolsonaro-mandat-arret.html",
-"image": "actualites/monde/images/bresil-eduardo-bolsonaro-mandat-arret.webp",
-"date": "2026-10-10T19:12:49+00:00"
 },
 {
 "t": "en",
