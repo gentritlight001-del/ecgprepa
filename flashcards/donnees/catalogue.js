@@ -12,8 +12,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-11-08",
+  "maj": "2026-11-09",
   "parties": [
+   {
+    "id": "2026-11-09",
+    "nom": "Jour 18 · Carney's Second Budget Spends Canada's Oil Windfall",
+    "n": 30,
+    "date": "2026-11-09"
+   },
    {
     "id": "2026-11-08",
     "nom": "Jour 17 · US Measles Cases Reach Their Highest Level Since 1991",
@@ -23,7 +29,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-27",
     "nom": "Jour 16 · Parti Québécois Returns to Power as the CAQ Is Wiped Out",
-    "n": 30,
+    "n": 28,
     "date": "2026-10-27"
    },
    {
@@ -47,7 +53,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-22",
     "nom": "Jour 12 · Severe Drought Declared in Southern England",
-    "n": 30,
+    "n": 29,
     "date": "2026-10-22"
    },
    {
@@ -83,7 +89,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-16",
     "nom": "Jour 6 · Burnham in Berlin as the Kensington Treaty Takes Effect",
-    "n": 24,
+    "n": 22,
     "date": "2026-10-16"
    },
    {
@@ -101,7 +107,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-12",
     "nom": "Jour 3 · Hurricane Isaias Hits Florida",
-    "n": 28,
+    "n": 26,
     "date": "2026-10-12"
    },
    {
@@ -117,8 +123,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 468,
-  "v": "c37a7d1239"
+  "n": 491,
+  "v": "3f7e50e37c"
  },
  {
   "id": "espagnol",
