@@ -595,6 +595,14 @@ s'ouvrent, liens de la frise valides, `grep -c '—'` à 0 dans le texte.
 - Rien à y mettre à jour quand une fiche s'ajoute : le script de la page lit les tableaux `OEUVRES` des index
   Littérature, Cinéma, Art et Musique (chiffres du héros, jauges de « Votre parcours », cartes des rubriques), la
   frise de `fiches-auteurs.html` et `nouveautes.js`. Seule reste écrite à la main la carte du cours (nouveau cours).
+- **01 et 02 en carrousel** (maquette validée par le propriétaire, novembre 2026). Cours (`#coursCar`) : le cours affiché
+  en grande carte (image + panneau noir), les autres en carte étroite (photo, « Cours N », titre) ; flèche ronde blanche à
+  droite, clic sur une carte étroite ou glissement du doigt pour défiler ; pas de compteur ni de points. Un cours = un
+  `.cours-item` (`article.cours-une` + `button.cours-tuile`) ; un cours pas encore en ligne garde sa grande carte avec la
+  pastille « Bientôt en ligne » et « Cours en préparation » à la place des boutons. Mettre en ligne un cours : remplacer
+  ces deux éléments par les boutons « Lire le cours → » / « Résumé en PDF ». Ne jamais ajouter de cours inventé.
+  Auteurs (`#autCar`, rempli par le script) : 3 fiches entières (portrait en haut, années, nom, thèse) et le début de la
+  4e, sans carte réduite ; thèse sur **2 lignes au plus** (au-delà, coupée : l'écrire en 80 caractères environ).
 
 ### Index de la culture générale (`culture-generale.html`)
 
