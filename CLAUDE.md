@@ -575,6 +575,12 @@ s'ouvrent, liens de la frise valides, `grep -c '—'` à 0 dans le texte.
     en HTML + KaTeX, `\MatEtiq` pour la matrice de passage). Nouvelle colle : copier le dossier de la
     précédente, puis regarder chaque page du PDF. Sources gardées à partir de la colle 7.
   - Mettre à jour la carte « Colle de la semaine » de `deuxieme_annee/maths/index.html`.
+  - **Vidéo d'un exercice de colle** (demande type : « Fais une vidéo courte de l'exercice N de la colle M ») : motion
+    design 16:9, 2 à 3 min, sans son, fond sombre à l'accent de la colle, formules KaTeX qui s'écrivent, courbes
+    animées, coches de validation, « réflexes à montrer » en fin. Source `outils/video/maths2-colleM-exN.html` (copier
+    `maths2-colle7-ex3.html` : moteur autonome dans la page, une `section.scene` par écran, `data-in` / `data-a`) ;
+    rendu avec `outils/video/generer.py` (`--controle`, `--images`, puis le MP4 dans le scratchpad). Contenu repris du
+    PDF « Exercices traités ». MP4 envoyé au propriétaire, jamais versionné.
 
 ### Index des cours (`cours-ecg.html`)
 
