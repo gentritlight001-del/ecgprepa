@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Belgique",
+"titre": "Belgique : démission refusée",
+"url": "actualites/monde/articles/belgique-roi-refuse-demission-de-wever-2026.html",
+"image": "actualites/monde/images/belgique-roi-refuse-demission-de-wever-2026.webp",
+"date": "2026-11-08T08:00:19+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Macao",
 "titre": "Macao : Au Kam San condamné pour subversion",
 "url": "actualites/monde/articles/macao-au-kam-san-condamne-subversion-2026.html",
@@ -1317,15 +1326,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/monde/articles/bresil-eduardo-bolsonaro-mandat-arret.html",
 "image": "actualites/monde/images/bresil-eduardo-bolsonaro-mandat-arret.webp",
 "date": "2026-10-10T19:12:49+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Prix Nobel",
-"titre": "Nobel de la paix 2026 : la juriste sud-africaine Navi Pillay couronnée pour le droit international",
-"url": "actualites/monde/articles/nobel-paix-2026-pillay.html",
-"image": "actualites/monde/images/nobel-paix-2026-pillay.webp",
-"date": "2026-10-10T19:09:46+00:00"
 },
 {
 "t": "en",
