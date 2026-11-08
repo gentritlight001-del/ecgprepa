@@ -32,7 +32,7 @@
 /* Changer ce numéro vide les caches chez tous les visiteurs (voir
    « activate »). Avec la stratégie « réseau d'abord », ce n'est plus
    nécessaire pour publier une mise à jour du contenu. */
-var VERSION = 'v11';
+var VERSION = 'v12';
 var CACHE_SOCLE   = 'ecg-prepa-socle-'   + VERSION;
 var CACHE_PAGES   = 'ecg-prepa-pages-'   + VERSION;
 var CACHE_IMAGES  = 'ecg-prepa-images-'  + VERSION;
@@ -66,7 +66,15 @@ self.addEventListener('install', function (evenement) {
   evenement.waitUntil(
     caches.open(CACHE_SOCLE).then(function (cache) {
       /* « reload » : jamais la copie périmée du cache du navigateur. */
-      return cache.addAll(SOCLE.map(function (u) { return new Request(u, { cache: 'reload' }); }));
+      /* Cloudflare redirige login.html vers /login (308) : la réponse
+         est rangée « propre » (voir propre()), sinon le navigateur la
+         refuse au clic et affiche une page d'erreur. */
+      return Promise.all(SOCLE.map(function (u) {
+        return fetch(new Request(u, { cache: 'reload' })).then(function (r) {
+          if (!r.ok) throw new Error(u + ' : ' + r.status);
+          return cache.put(u, propre(r));
+        });
+      }));
     }).then(function () {
       /* Passe en contrôle dès l'installation suivante, sans attendre
          la fermeture de tous les onglets ouverts. */
@@ -103,6 +111,15 @@ function cleDe(requete) {
   return new Request(requete.url.split('#')[0]);
 }
 
+/* Une réponse obtenue après une redirection (login.html → /login sur
+   Cloudflare) ne peut pas servir de réponse à un clic : Chrome la
+   refuse (« ERR_FAILED ») et affiche sa page d'erreur un instant. On
+   en fait une copie neuve, identique mais sans la marque « redirigée ». */
+function propre(reponse) {
+  if (!reponse || !reponse.redirected) return reponse;
+  return new Response(reponse.body, { status: reponse.status, statusText: reponse.statusText, headers: reponse.headers });
+}
+
 /* Réponse identique, mais marquée « no-cache » : sinon le navigateur
    garde le fichier en mémoire 4 h (max-age imposé par Cloudflare) et
    ne repasse même plus par ce service worker pour le redemander. */
@@ -120,7 +137,8 @@ function telechargerEtRanger(requete, nomCache, revalider) {
      et de la culture générale, remplacées sous le même nom). */
   var demande = revalider ? new Request(requete.url, { cache: 'no-cache' }) : requete;
   return fetch(demande).then(function (reponse) {
-    if (reponse && reponse.ok && reponse.type === 'basic' && !reponse.redirected) {
+    if (reponse && reponse.ok && reponse.type === 'basic') {
+      reponse = propre(reponse);
       var copie = reponse.clone();
       caches.open(nomCache).then(function (cache) { cache.put(cleDe(requete), copie); });
     }
@@ -133,7 +151,7 @@ function telechargerEtRanger(requete, nomCache, revalider) {
 function reseauDabord(requete, nomCache, secours, revalider) {
   return telechargerEtRanger(requete, nomCache, revalider).catch(function () {
     return caches.match(cleDe(requete), { ignoreVary: true }).then(function (r) {
-      return r || (secours ? secours() : Response.error());
+      return propre(r) || (secours ? secours().then(propre) : Response.error());
     });
   });
 }
@@ -171,7 +189,7 @@ self.addEventListener('fetch', function (evenement) {
     if (t && Date.now() - t < PRECHARGE_MS) {
       delete precharges[cle];
       evenement.respondWith(caches.match(cleDe(requete), { ignoreVary: true }).then(function (r) {
-        return r || reseauDabord(requete, CACHE_PAGES, secoursHtml);
+        return propre(r) || reseauDabord(requete, CACHE_PAGES, secoursHtml);
       }));
       return;
     }

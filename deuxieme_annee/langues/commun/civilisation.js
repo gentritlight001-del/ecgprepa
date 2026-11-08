@@ -229,7 +229,18 @@
     }));
     document.querySelectorAll('.langues button').forEach(b => b.classList.toggle('on', b.dataset.l === lang));
     const bt = document.getElementById('bc-titre'); if (bt) bt.innerHTML = L(m.titre);
+    etiquettesGraph();
   }
+
+  /* Graphiques : la valeur d'un segment trop étroit (téléphone) est masquée ; elle reste dans l'infobulle. */
+  function etiquettesGraph() {
+    document.querySelectorAll('.g-seg').forEach(s => {
+      const b = s.querySelector('b'); if (!b) return;
+      b.style.visibility = '';
+      if (b.offsetWidth > s.clientWidth - 10) b.style.visibility = 'hidden';
+    });
+  }
+  addEventListener('resize', etiquettesGraph);
 
   document.querySelectorAll('.langues button').forEach(b => b.addEventListener('click', () => {
     lang = b.dataset.l; const y = scrollY; rendre(); scrollTo(0, y);

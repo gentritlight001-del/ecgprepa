@@ -80,7 +80,7 @@ directement après chaque modification, sans attendre un nouveau « mets en lign
    `ch-hero-media` recadrée, pastille « Cours N », titre, « L'Humanité · 2e année »). Les pages de cours de 1re et 2e année aussi (pastille de la
    matière ou de la langue, titre, « Chapitre N · 1re année », couleur fixe par matière dans `COULEURS` du script) :
    image du héros si elle est stockée sur le site, sinon la vignette `.ci-vig` de l'index de la matière (ou de l'autre
-   année), sinon l'image du bloc de données ; sans image, grand numéro du chapitre au trait. **Chapitres d'HGG** (1re et 2e année) : modèle propre « dossier d'archives » choisi par le propriétaire (`GABARIT_ARCHIVE`) : chemise kraft avec onglet « HGG · année », photo du héros (`.t-photo`) en tirage panoramique scotché, fiche de titre (grand numéro, titre en Big Shoulders) qui chevauche la photo, tampon « ECG Prépa · Cours », à la couleur du chapitre (`--a1`), sinon l'ocre de l'HGG ; après la refonte d'un chapitre, lancer `--refaire` sur sa page. Les autres pages gardent un aplat de couleur. Regarder l'image produite : si le
+   année), sinon l'image du bloc de données ; sans image, grand numéro du chapitre au trait. **Chapitres de civilisation avec photo** (`civi-*.html` au gabarit « Manuel ») : modèle propre, la **maquette B « Plein cadre »** choisie par le propriétaire (novembre 2026, `GABARIT_PLEIN`) : photo du chapitre (`meta.image`) en plein cadre assombrie à gauche, logo, pastille « Civilisation · <pays> », titre blanc en Fraunces sur 1 ou 2 lignes, **jamais 3** (taille réduite seule jusqu'à ce qu'il tienne), « Chapitre N · 2e année », « ecg-prepa.fr · Cours » et filet, à la couleur de la langue ; après la refonte d'un chapitre, lancer `--refaire` sur sa page. **Chapitres d'HGG** (1re et 2e année) : modèle propre « dossier d'archives » choisi par le propriétaire (`GABARIT_ARCHIVE`) : chemise kraft avec onglet « HGG · année », photo du héros (`.t-photo`) en tirage panoramique scotché, fiche de titre (grand numéro, titre en Big Shoulders) qui chevauche la photo, tampon « ECG Prépa · Cours », à la couleur du chapitre (`--a1`), sinon l'ocre de l'HGG ; après la refonte d'un chapitre, lancer `--refaire` sur sa page. Les autres pages gardent un aplat de couleur. Regarder l'image produite : si le
    visage ou le sujet de la photo passe sous le titre, le signaler au propriétaire.
    Pour **refaire** l'image d'une page qui en a déjà une (photo ou titre changés) :
    `python3 outils/images-partage.py --refaire <page>` (l'adresse prend `?v=<date et heure>`, sinon
@@ -341,7 +341,7 @@ page pays ou région :
 
 - Chaque matière a sa page d'index, par exemple `deuxieme_annee/maths/index.html`, qui
   liste les chapitres (`chapter-item`).
-- Index de 1re année (HGG, maths, ESH, philo, anglais, espagnol, allemand) et de 2e année (HGG, maths, ESH, philo ; pas les langues), et liste des cours d'Humanité (`humanite/cours-humanite/Cours/cours.html`, ligne grisée `.ci-prochain` « Prochain cours bientôt en ligne » à garder en fin de liste) : habillage « atlas
+- Index de 1re année (HGG, maths, ESH, philo, anglais, espagnol, allemand) et de 2e année (HGG, maths, ESH, philo ; pas les langues), : habillage « atlas
   nocturne » choisi par le propriétaire (`cours-index.css`, `<body class="ci">`, fond noir, titres
   Fraunces, un dessin au trait par matière, une seule liste sans parties ni suivi de lecture, rangée en colonnes : 1, 2, 3… descendent la colonne de gauche, la suite reprend à droite).
   Ajouter un chapitre = copier une ligne `chapter-item` de `.ci-liste` et mettre à jour le compteur
@@ -595,6 +595,21 @@ s'ouvrent, liens de la frise valides, `grep -c '—'` à 0 dans le texte.
 - Rien à y mettre à jour quand une fiche s'ajoute : le script de la page lit les tableaux `OEUVRES` des index
   Littérature, Cinéma, Art et Musique (chiffres du héros, jauges de « Votre parcours », cartes des rubriques), la
   frise de `fiches-auteurs.html` et `nouveautes.js`. Seule reste écrite à la main la carte du cours (nouveau cours).
+- **01 et 02 en carrousel** (maquette validée par le propriétaire, novembre 2026). Cours (`#coursCar`) : le cours affiché
+  en grande carte (image + panneau noir), les autres en carte étroite (photo, « Cours N », titre) ; flèche ronde blanche à
+  droite, clic sur une carte étroite ou glissement du doigt pour défiler ; pas de compteur ni de points. Un cours = un
+  `.cours-item` (`article.cours-une` + `button.cours-tuile`) ; un cours pas encore en ligne garde sa grande carte avec la
+  pastille « Bientôt en ligne » et « Cours en préparation » à la place des boutons. Mettre en ligne un cours : remplacer
+  ces deux éléments par les boutons « Lire le cours → » / « Résumé en PDF ». Ne jamais ajouter de cours inventé.
+  Auteurs (`#autCar`, rempli par le script) : 3 fiches entières (portrait en haut, années, nom, thèse) et le début de la
+  4e, sans carte réduite ; thèse sur **2 lignes au plus** (au-delà, coupée : l'écrire en 80 caractères environ).
+- **Liste des cours** (`humanite/cours-humanite/Cours/cours.html`, lien « Tous les cours → ») : même habillage « cabinet
+  clair » (maquette validée, novembre 2026), plus l'atlas nocturne. Héros « Penser l'humanité » (boutons « Commencer par le
+  cours 1 → » et « Fiches auteurs », photos des cours en tirages de travers), « 01 · Le programme du cours » (une ligne
+  `li.cr-cours` par cours : grand numéro, photo, « Cours N », titre, phrase, boutons ; cours pas encore en ligne :
+  `.bientot`, étiquette « Bientôt en ligne » sur la photo, « Cours en préparation », titre en `h3.ci-prochain` lu par
+  `outils/recherche.py` pour « Contenus à créer »), « 02 · Avec le cours » (Fiches auteurs, Les œuvres). Pas de cadre de
+  chiffres. Un nouveau cours : copier une ligne, et mettre à jour sa carte dans le carrousel de `humanite.html`.
 
 ### Index de la culture générale (`culture-generale.html`)
 
@@ -960,7 +975,7 @@ demande directe), sans poser de question jusqu'à la mise en ligne :
 Les cours de civilisation (`deuxieme_annee/langues/<langue>/<pays>/civi-*.html`) passent un à un du vieux
 gabarit sombre (« TEMPLATE UNIVERSEL v1 ») au gabarit clair « Manuel », choisi par le propriétaire. Déjà
 faits : Royaume-Uni chapitres 1 (histoire), 2 (système politique), 3 (Brexit), 4 (monarchie), 5 (santé), 6 (Welfare State), 7 (Commonwealth), 8 (Special Relationship), 9 (pauvreté), 10 (immigration), 11 (genre), 12 (multiculturalisme), 13 (City de Londres), 14 (médias) et 15 (logement), Espagne chapitres 1 (histoire), 2
-(franquisme), 3 (Transition), 4 (mémoire), 5 (monarchie), 6 (communautés autonomes) et 7 (nationalisme catalan) (novembre 2026 ; images `Espagne/images/histoire-*.webp`, `franquisme-*.webp`, `transition-*.webp`, `memoire-*.webp`, `monarchie-*.webp`, `autonomies-*.webp`, `catalanisme-*.webp`, fiches `outils/fiche-civi/civi-esp-N.html`, en-tête rouge sombre `#7a1c17`) : s'en inspirer. Demande type :
+(franquisme), 3 (Transition), 4 (mémoire), 5 (monarchie), 6 (communautés autonomes), 7 (nationalisme catalan), 8 (Pays basque et ETA), 9 (fragmentation politique), 10 (corruption politique) et 11 (Vox) (novembre 2026 ; images `Espagne/images/histoire-*.webp`, `franquisme-*.webp`, `transition-*.webp`, `memoire-*.webp`, `monarchie-*.webp`, `autonomies-*.webp`, `catalanisme-*.webp`, `eta-*.webp`, `fragmentation-*.webp`, `corruption-*.webp`, `vox-*.webp`, fiches `outils/fiche-civi/civi-esp-N.html`, en-tête rouge sombre `#7a1c17`) : s'en inspirer. Demande type :
 « Fais le chapitre sur … » + lien de la vidéo.
 
 - **Code commun** : `deuxieme_annee/langues/commun/civilisation.css` et `civilisation.js` (rendu du bloc
@@ -988,7 +1003,7 @@ faits : Royaume-Uni chapitres 1 (histoire), 2 (système politique), 3 (Brexit), 
   Un `tableau` doit tenir à 390 px sans défilement (la feuille commune réduit les marges des cellules sur téléphone ; sinon raccourcir les cellules).
   **Pas de cases de faits** (`faits` : « Chef de l'État / Financement… ») : les transformer en paragraphe
   explicatif.
-- **Mode focus, fiche de cours et « Dans une copie »** (faits en novembre 2026 pour les chapitres 1 à 15 du Royaume-Uni et les chapitres 1 à 7 de l'Espagne ; à reproduire sur les autres chapitres) : trois clés dans le bloc `COURS`.
+- **Mode focus, fiche de cours et « Dans une copie »** (faits en novembre 2026 pour les chapitres 1 à 15 du Royaume-Uni et les chapitres 1 à 11 de l'Espagne ; à reproduire sur les autres chapitres) : trois clés dans le bloc `COURS`.
   `focus` = second cours réécrit en 10 minutes (question, réponse, parties, sous-parties avec chiffre clé, arguments, exemples,
   définitions, conclusions ; FR et langue étudiée ; 10 sous-parties, environ 1 500 mots), affiché à la place du cours complet par
   l'interrupteur « Mode focus » (mémorisé dans `ecg-cours:focus`, au-dessus des chiffres de « L'essentiel »). `ficheCours` = nom du PDF

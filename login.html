@@ -232,7 +232,9 @@
     if (next) { try { var u = new URL(next, location.href); if (u.origin === location.origin || location.protocol === 'file:') target = u.href; } catch(e){} }
     location.replace(target);
   }
-  if (A.current()) { go(); return; }
+  /* Déjà connecté (vraie session, pas seulement un profil en mémoire) :
+     on repart vers le site. */
+  A.sessionActive().then(function(ok){ if (ok) go(); });
 
   /* Onglets */
   function moveLine(){
@@ -303,8 +305,9 @@
     A.login(email.value, pass.value, document.getElementById('li-remember').checked)
       .then(go)
       .catch(function(err){
-        say(String(err), 'err');
-        (String(err).indexOf('Mot de passe') === 0 ? pass : email).classList.add('bad');
+        err = typeof err === 'string' ? err : 'Connexion au serveur impossible. Vérifie ta connexion internet et réessaie.';
+        say(err, 'err');
+        if (/incorrect/.test(err)) pass.classList.add('bad');
         btn.disabled = false; btn.textContent = 'Se connecter';
       });
   });
@@ -331,10 +334,18 @@
     A.signup(prenom.value, nom.value, email.value, pw.value)
       .then(function(user){
         say('Compte créé. Connexion en cours…', 'ok');
-        return A.login(user.email, pw.value, true).then(function(){ setTimeout(go, 600); });
+        return A.login(user.email, pw.value, true).then(function(){ setTimeout(go, 600); }, function(err){
+          /* Le compte existe déjà : un nouvel essai d'inscription échouerait.
+             On passe sur l'onglet Connexion, adresse déjà remplie. */
+          show('login');
+          document.getElementById('li-email').value = email.value.trim();
+          btn.disabled = false; btn.textContent = 'Créer mon compte';
+          say('Ton compte est bien créé. ' + (typeof err === 'string' ? err : 'Connecte-toi pour continuer.'), 'err');
+        });
       })
       .catch(function(err){
-        say(String(err), 'err');
+        err = typeof err === 'string' ? err : 'Connexion au serveur impossible. Vérifie ta connexion internet et réessaie.';
+        say(err, 'err');
         if (String(err).indexOf('Un compte existe') === 0) email.classList.add('bad');
         btn.disabled = false; btn.textContent = 'Créer mon compte';
       });

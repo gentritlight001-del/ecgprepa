@@ -1,6 +1,87 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "États-Unis",
+"titre": "Bourse : le krach des valeurs tech et IA, né des midterms, secoue les marchés du monde entier",
+"url": "actualites/monde/articles/bourse-krach-tech-ia-midterms-2026.html",
+"image": "actualites/monde/images/bourse-krach-tech-ia-midterms-2026.webp",
+"date": "2026-11-08T08:24:13+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Nouvelle-Zélande",
+"titre": "Nouvelle-Zélande : élections au coude-à-coude, tout dépend des votes spéciaux et d'Opportunity",
+"url": "actualites/monde/articles/nouvelle-zelande-elections-generales-2026.html",
+"image": "actualites/monde/images/nouvelle-zelande-elections-generales-2026.webp",
+"date": "2026-11-08T08:16:21+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Belgique",
+"titre": "Belgique : démission refusée",
+"url": "actualites/monde/articles/belgique-roi-refuse-demission-de-wever-2026.html",
+"image": "actualites/monde/images/belgique-roi-refuse-demission-de-wever-2026.webp",
+"date": "2026-11-08T08:00:19+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Macao",
+"titre": "Macao : Au Kam San condamné pour subversion",
+"url": "actualites/monde/articles/macao-au-kam-san-condamne-subversion-2026.html",
+"image": "actualites/monde/images/macao-au-kam-san-condamne-subversion-2026.webp",
+"date": "2026-11-08T07:49:31+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Chine",
+"titre": "Chine : une loi sur l'Antarctique",
+"url": "actualites/monde/articles/chine-antarctique-loi-activites-2026.html",
+"image": "actualites/monde/images/chine-antarctique-loi-activites-2026.webp",
+"date": "2026-11-08T07:43:45+00:00"
+},
+{
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "États-Unis",
+"titre": "États-Unis : la rougeole au plus haut depuis 1991",
+"url": "actualites/en/articles/us-rougeole-cdc-5182-cas-2026.html",
+"image": "actualites/en/images/us-rougeole-cdc-5182-cas-2026.webp",
+"date": "2026-11-08T07:36:53+00:00"
+},
+{
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
+"titre": "Allemagne : l'Union choisit Aigner",
+"url": "actualites/de/articles/allemagne-aigner-candidate-presidence-federale-2026.html",
+"image": "actualites/de/images/allemagne-aigner-candidate-presidence-federale-2026.webp",
+"date": "2026-11-08T07:29:43+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Uruguay",
+"titre": "Uruguay : León XIV lance sa tournée",
+"url": "actualites/es/articles/uruguay-leon-xiv-tournee-amerique-sud-2026.html",
+"image": "actualites/es/images/uruguay-leon-xiv-tournee-amerique-sud-2026.webp",
+"date": "2026-11-08T07:21:04+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Chili",
+"titre": "Chili : des lycéens contre le ministre Rabat",
+"url": "actualites/es/articles/chili-lyceens-rabat-reductions-peines-2026.html",
+"image": "actualites/es/images/chili-lyceens-rabat-reductions-peines-2026.webp",
+"date": "2026-11-07T22:09:22+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Paraguay",
@@ -1247,33 +1328,6 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-10-10T19:18:57+00:00"
 },
 {
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Union européenne",
-"titre": "Une statue satirique de Trump nu et doré est exposée au Parlement européen, à Strasbourg",
-"url": "actualites/monde/articles/ue-statue-trump-orange-plague.html",
-"image": "actualites/monde/images/ue-statue-trump-orange-plague.webp",
-"date": "2026-10-10T19:16:02+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Brésil",
-"titre": "Brésil : mandat d'arrêt contre Eduardo Bolsonaro, condamné pour avoir sollicité Washington",
-"url": "actualites/monde/articles/bresil-eduardo-bolsonaro-mandat-arret.html",
-"image": "actualites/monde/images/bresil-eduardo-bolsonaro-mandat-arret.webp",
-"date": "2026-10-10T19:12:49+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Prix Nobel",
-"titre": "Nobel de la paix 2026 : la juriste sud-africaine Navi Pillay couronnée pour le droit international",
-"url": "actualites/monde/articles/nobel-paix-2026-pillay.html",
-"image": "actualites/monde/images/nobel-paix-2026-pillay.webp",
-"date": "2026-10-10T19:09:46+00:00"
-},
-{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "Royaume-Uni",
@@ -1344,24 +1398,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/en/articles/trump-super-intelligence-onu.html",
 "image": "actualites/en/images/trump-super-intelligence-onu.webp",
 "date": "2026-10-08T19:01:47+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Ghana",
-"titre": "Ghana : le Cabinet approuve une candidature officielle aux BRICS, adhésion encore incertaine",
-"url": "actualites/monde/articles/ghana-candidature-brics.html",
-"image": "actualites/monde/images/ghana-candidature-brics.webp",
-"date": "2026-10-08T18:56:44+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "France",
-"titre": "Mistral AI dévoile Large 4, un modèle à 1 000 milliards de paramètres, pour revenir dans la course",
-"url": "actualites/monde/articles/mistral-large-4-retard.html",
-"image": "actualites/monde/images/mistral-large-4-retard.webp",
-"date": "2026-10-08T18:53:04+00:00"
 },
 {
 "t": "de",
@@ -1670,15 +1706,6 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-09-27T16:25:32+00:00"
 },
 {
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Espagne",
-"titre": "Espagne : 20 000 manifestants à Madrid pour des élections anticipées et « en défense de Ceuta »",
-"url": "actualites/es/articles/manifestation-madrid-ceuta-elections.html",
-"image": "actualites/es/images/manifestation-madrid-ceuta-elections.webp",
-"date": "2026-09-27T12:59:31+00:00"
-},
-{
 "t": "cg",
 "rubrique": "Culture générale",
 "meta": "Environnement",
@@ -1686,15 +1713,6 @@ window.ECG_NOUVEAUTES = [
 "url": "Culture-Generale/developpement-durable.html",
 "image": "Culture-Generale/images/developpement-durable.webp",
 "date": "2026-09-27T12:39:18+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "Trump accueille Xi Jinping à la Maison-Blanche pour une visite d'État sous haute pompe",
-"url": "actualites/en/articles/trump-xi-jinping-maison-blanche-2026.html",
-"image": "actualites/en/images/trump-xi-jinping-maison-blanche-2026.webp",
-"date": "2026-09-26T15:06:19+00:00"
 },
 {
 "t": "de",
@@ -1713,15 +1731,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/de/articles/retrait-candidature-jo-berlin.html",
 "image": "actualites/de/images/retrait-candidature-jo-berlin.webp",
 "date": "2026-09-26T15:06:19+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Chili",
-"titre": "José Antonio Kast annonce l'adhésion du Chili au « Escudo de las Américas »",
-"url": "actualites/es/articles/chili-escudo-americas.html",
-"image": "actualites/es/images/chili-escudo-americas.webp",
-"date": "2026-09-23T19:17:35+00:00"
 },
 {
 "t": "de",
@@ -1964,15 +1973,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "La fin du SCAF : l'avion de combat européen enterré par la guerre Dassault-Airbus",
 "url": "actualites/de/articles/scaf-fin-projet.html",
 "image": "actualites/de/images/scaf-fin-projet.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "BASF en crise : le bastion chimique allemand face au déclin industriel",
-"url": "actualites/de/articles/basf-crise-industrielle.html",
-"image": "actualites/de/images/basf-crise-industrielle.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
