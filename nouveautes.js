@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "cours",
+"rubrique": "Cours",
+"meta": "Maths 2e année · chapitre 2",
+"titre": "Algèbre bilinéaire, produit scalaire et espaces euclidiens",
+"url": "deuxieme_annee/maths/chapitre2.html",
+"image": "",
+"date": "2026-11-08T16:39:44+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "États-Unis",
@@ -2549,15 +2558,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Le monde dans les années 1990",
 "url": "premiere_annee/hgg/chapitre-7/chapitre-7-hgg.html",
 "image": "premiere_annee/hgg/chapitre-7/images/tempete-du-desert-1991.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cours",
-"rubrique": "Cours",
-"meta": "HGG 1re année · chapitre 8",
-"titre": "Le monde actuel, ordre et désordre mondial",
-"url": "premiere_annee/hgg/chapitre-8/chapitre-8-hgg.html",
-"image": "premiere_annee/hgg/chapitre-8/images/bakhmout-2023.webp",
 "date": "2026-09-11T19:03:33+00:00"
 }
 ];
