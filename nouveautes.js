@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
+"titre": "Allemagne : l'Union choisit Aigner",
+"url": "actualites/de/articles/allemagne-aigner-candidate-presidence-federale-2026.html",
+"image": "actualites/de/images/allemagne-aigner-candidate-presidence-federale-2026.webp",
+"date": "2026-11-08T07:29:43+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Uruguay",
@@ -1964,15 +1973,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "La fin du SCAF : l'avion de combat européen enterré par la guerre Dassault-Airbus",
 "url": "actualites/de/articles/scaf-fin-projet.html",
 "image": "actualites/de/images/scaf-fin-projet.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "BASF en crise : le bastion chimique allemand face au déclin industriel",
-"url": "actualites/de/articles/basf-crise-industrielle.html",
-"image": "actualites/de/images/basf-crise-industrielle.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
