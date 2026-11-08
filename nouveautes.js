@@ -3,8 +3,17 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "États-Unis",
+"titre": "Bourse : le krach des valeurs tech et IA, né des midterms, secoue les marchés du monde entier",
+"url": "actualites/monde/articles/bourse-krach-tech-ia-midterms-2026.html",
+"image": "actualites/monde/images/bourse-krach-tech-ia-midterms-2026.webp",
+"date": "2026-11-08T08:24:13+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Nouvelle-Zélande",
-"titre": "Nouvelle-Zélande : élections au coude-à-coude, la décision dépend des votes spéciaux et d'Opportunity",
+"titre": "Nouvelle-Zélande : élections au coude-à-coude, tout dépend des votes spéciaux et d'Opportunity",
 "url": "actualites/monde/articles/nouvelle-zelande-elections-generales-2026.html",
 "image": "actualites/monde/images/nouvelle-zelande-elections-generales-2026.webp",
 "date": "2026-11-08T08:16:21+00:00"
@@ -1326,15 +1335,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/monde/articles/cote-ivoire-gisement-or-boundiali.html",
 "image": "actualites/monde/images/cote-ivoire-gisement-or-boundiali.webp",
 "date": "2026-10-10T19:18:57+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Union européenne",
-"titre": "Une statue satirique de Trump nu et doré est exposée au Parlement européen, à Strasbourg",
-"url": "actualites/monde/articles/ue-statue-trump-orange-plague.html",
-"image": "actualites/monde/images/ue-statue-trump-orange-plague.webp",
-"date": "2026-10-10T19:16:02+00:00"
 },
 {
 "t": "en",
