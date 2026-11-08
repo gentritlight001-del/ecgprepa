@@ -482,6 +482,7 @@
 
   /* ─── Chargement du client Supabase (une seule fois) ─── */
   var _sb = null;
+  var _sessionActive = null; /* page de connexion : promesse « vraie session ? » */
   function chargerLib() {
     if (window.supabase && window.supabase.createClient) return Promise.resolve(window.supabase);
     return new Promise(function (ok, ko) {
@@ -936,13 +937,25 @@
       }, function (e) { throw typeof e === 'string' ? e : 'Connexion au serveur impossible.'; });
     },
 
-    /* ─── Connexion ─── */
+    /* ─── Connexion ───
+       Toujours rejetée avec une phrase en français (jamais un objet
+       Error ni un message technique en anglais). Le client Supabase
+       peut échouer sur son verrou interne quand plusieurs onglets du
+       site sont ouverts (« lock … timed out ») : on réessaie une fois. */
     login: function (email, password) {
       email = String(email || '').trim().toLowerCase();
       var client;
+      var RESEAU = 'Connexion au serveur impossible. Vérifie ta connexion internet et réessaie.';
+      var estReseau = function (m) { return /fetch|network|load failed|timed? ?out|lock/i.test(m); };
+      var connecter = function (essai) {
+        return client.auth.signInWithPassword({ email: email, password: password }).catch(function (e) {
+          if (essai === 0) return new Promise(function (ok) { setTimeout(ok, 800); }).then(function () { return connecter(1); });
+          throw e;
+        });
+      };
       return sb().then(function (c) {
         client = c;
-        return c.auth.signInWithPassword({ email: email, password: password });
+        return connecter(0);
       }).then(function (r) {
         if (r.error) {
           var m = String(r.error.message || '');
@@ -951,23 +964,30 @@
             throw 'Adresse e-mail ou mot de passe incorrect.';
           }
           if (/Email not confirmed/i.test(m)) throw 'Confirme d\'abord ton adresse e-mail (vérifie tes courriels).';
-          if (/rate limit|too many/i.test(m)) throw 'Trop de tentatives. Réessaie dans quelques minutes.';
-          throw m;
+          if (/rate limit|too many/i.test(m) || r.error.status === 429) throw 'Trop de tentatives. Réessaie dans quelques minutes.';
+          if (!m || estReseau(m) || !r.error.status) throw RESEAU;
+          throw 'Connexion impossible : ' + m;
         }
         return client.rpc('demarrer_session', { p_agent: agent(), p_plateforme: plateforme() });
       }).then(function (r) {
         var d = r && r.data;
         if (!d || !d.ok) {
-          var raison = (d && d.statut) || 'anonyme';
-          return client.auth.signOut().then(function () {
-            throw MOTIFS[raison] || 'Connexion refusée.';
-          });
+          /* Erreur de la requête elle-même (réseau) : ce n'est pas un refus du compte. */
+          var motif = (r && r.error) ? RESEAU : (MOTIFS[(d && d.statut) || 'anonyme'] || 'Connexion refusée.');
+          return client.auth.signOut().catch(function () {}).then(function () { throw motif; });
         }
         memoriser(d.profil);
         ecrire(K_SID, d.session);
         return d.profil;
+      }).catch(function (e) {
+        if (typeof e === 'string') throw e;
+        throw RESEAU;
       });
     },
+
+    /* La page de connexion demande s'il existe déjà une vraie session
+       (pas seulement le profil gardé en mémoire dans le navigateur). */
+    sessionActive: function () { return _sessionActive || Promise.resolve(false); },
 
     /* ─── Déconnexion ─── */
     logout: function () {
@@ -1691,18 +1711,27 @@
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', afficherRaison);
     else afficherRaison();
 
-    /* Nettoie une éventuelle session résiduelle et gère le retour
-       depuis un courriel de réinitialisation. */
-    sb().then(function (c) {
+    /* Gère le retour depuis un courriel de réinitialisation, sinon
+       regarde s'il existe une vraie session : si oui (et un profil
+       connu), la page renvoie vers le site (Auth.sessionActive) ;
+       sinon, le profil gardé en mémoire est périmé et on l'efface.
+       Avant, la page se fiait au seul profil en mémoire : avec une
+       session expirée, « Se connecter » renvoyait aussitôt à l'accueil. */
+    _sessionActive = sb().then(function (c) {
       if (estRetourRecuperation()) {
         if (document.readyState === 'loading') {
           document.addEventListener('DOMContentLoaded', formulaireNouveauMotDePasse);
         } else formulaireNouveauMotDePasse();
-        return;
+        return false;
       }
-      memoriser(null);
+      return c.auth.getSession().then(function (r) {
+        if (r && r.data && r.data.session && profilLocal()) return true;
+        memoriser(null); effacer(K_SID);
+        return false;
+      });
     }).catch(function () {
       alerteReseau('Impossible de joindre le serveur de comptes. Vérifie ta connexion.');
+      return false;
     });
     return;
   }
@@ -1832,6 +1861,16 @@
      Si la table des verrous est illisible, on laisse passer, comme
      pour un membre. */
   function visiteur() {
+    /* Plus de session : le profil gardé en mémoire est périmé (session
+       expirée, déconnexion dans un autre onglet…). On l'efface, sinon le
+       site croit le membre connecté : pas de bouton « Se connecter », et
+       la page de connexion le renvoyait aussitôt à l'accueil. */
+    if (profilLocal()) {
+      memoriser(null); effacer(K_SID);
+      var ancienBadge = document.getElementById('ecg-account-badge');
+      if (ancienBadge) ancienBadge.parentNode.removeChild(ancienBadge);
+    }
+    document.dispatchEvent(new CustomEvent('ecg:visiteur'));
     return client.from('rubriques_verrouillage').select('*')
       .then(function (r) {
         var etat = {}, prem = {}, lignes = {};
