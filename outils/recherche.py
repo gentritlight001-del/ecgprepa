@@ -298,7 +298,7 @@ def a_faire(pages):
             if h:
                 ajouter(rel, 'Fiche auteur : ' + texte(h.group(1)))
         # Emplacements vides annoncés (« Premier dossier bientôt disponible », « Prochain cours bientôt en ligne »…).
-        for m in re.finditer(r'class="(?:ix-dos-vide|ci-venir|ci-prochain)"[^>]*>(.*?)</(?:div|p)>', corps, re.S):
+        for m in re.finditer(r'class="(?:ix-dos-vide|ci-venir|ci-prochain)"[^>]*>(.*?)</(?:div|p|h3)>', corps, re.S):
             ajouter(rel, texte(m.group(1)))
     with open(RACINE + 'a-faire.json', 'w', encoding='utf-8') as f:
         json.dump({'genere': 'outils/recherche.py, ne pas modifier à la main', 'pages': res},
