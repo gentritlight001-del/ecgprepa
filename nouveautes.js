@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Chine",
+"titre": "Chine : une loi sur l'Antarctique",
+"url": "actualites/monde/articles/chine-antarctique-loi-activites-2026.html",
+"image": "actualites/monde/images/chine-antarctique-loi-activites-2026.webp",
+"date": "2026-11-08T07:43:45+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "États-Unis",
@@ -1389,15 +1398,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/monde/articles/ghana-candidature-brics.html",
 "image": "actualites/monde/images/ghana-candidature-brics.webp",
 "date": "2026-10-08T18:56:44+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "France",
-"titre": "Mistral AI dévoile Large 4, un modèle à 1 000 milliards de paramètres, pour revenir dans la course",
-"url": "actualites/monde/articles/mistral-large-4-retard.html",
-"image": "actualites/monde/images/mistral-large-4-retard.webp",
-"date": "2026-10-08T18:53:04+00:00"
 },
 {
 "t": "de",
