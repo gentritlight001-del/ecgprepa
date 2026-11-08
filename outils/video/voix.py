@@ -7,6 +7,7 @@
    Un appel par écran (MP3 gardés dans <dossier>/brut, un écran dont le texte n'a pas changé n'est pas refait),
    puis le même traitement que « prepare » (silences raccourcis, voix accélérée) et la transcription des mots.
    Affiche les crédits restants avant de lancer et la durée prévue de la vidéo à la fin.
+   Sans crédits : --piper <voix.onnx> (pip install piper-tts, voix fr_FR-tom-medium de rhasspy/piper-voices).
 1. Ou préparer la voix envoyée en MP3 par le propriétaire (un MP3 par bloc, écrans séparés par des pauses <break time="2.5s" />) :
      python3 outils/video/voix.py prepare --bloc <bloc1.mp3>:1 --bloc <bloc2.mp3>:16 ... --dossier <scratchpad>/voix
    Coupe chaque bloc aux pauses de plus de 2,2 s (un morceau par écran), raccourcit les silences entre les
@@ -90,8 +91,31 @@ def plage(x, tous):
     return sorted(r & set(tous))
 
 
+def synthese_piper(a):
+    """Voix locale Piper (gratuite, hors ligne) quand les crédits ElevenLabs manquent : --piper <voix.onnx>."""
+    textes = lire_texte(a.texte); ecrans = plage(a.ecrans, textes)
+    dos = Path(a.dossier); brut = dos / 'brut'; brut.mkdir(parents=True, exist_ok=True)
+    for n in ecrans:
+        subprocess.run([sys.executable, '-m', 'piper', '-m', a.piper, '-f', str(brut / f'ecran-{n:03d}.wav')],
+                       input=textes[n], text=True, check=True, capture_output=True)
+        print(f'écran {n} : {len(textes[n])} caractères')
+    js = dos / 'voix.json'; durees = json.loads(js.read_text()) if js.exists() else {}
+    for n in ecrans:
+        sortie = dos / f'ecran-{n:03d}.wav'
+        subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', str(brut / f'ecran-{n:03d}.wav'),
+                        '-af', FILTRE.format(v=a.vitesse), '-ar', '48000', '-ac', '2', str(sortie)], check=True)
+        durees[str(n)] = round(duree(sortie), 3)
+    js.write_text(json.dumps(durees, sort_keys=True))
+    print(f'voix de {len(durees)} écrans : {sum(durees.values()) / 60:.1f} min')
+    if not a.sans_mots:
+        transcrire(dos, ecrans)
+        print('mots de la voix repérés (mots.json)')
+
+
 def synthese(a):
     import hashlib, requests, time
+    if a.piper:
+        return synthese_piper(a)
     cle = os.environ.get('ELEVENLABS_API_KEY')
     if not cle:
         sys.exit("ELEVENLABS_API_KEY absente : ajouter la clé dans les secrets de l'environnement, puis ouvrir une nouvelle session.")
@@ -213,6 +237,7 @@ def main():
     y.add_argument('--ecrans', help='écrans à synthétiser, ex. 1-15,20'); y.add_argument('--voix', default='Paul K')
     y.add_argument('--voix-id'); y.add_argument('--modele', default='eleven_multilingual_v2')
     y.add_argument('--vitesse', type=float, default=1.07); y.add_argument('--sans-mots', action='store_true')
+    y.add_argument('--piper', help='voix Piper locale (.onnx) au lieu d\'ElevenLabs')
     q = sp.add_parser('poser'); q.add_argument('source'); q.add_argument('video'); q.add_argument('sortie')
     q.add_argument('--dossier', required=True); q.add_argument('--plans'); q.add_argument('--decalage', type=float, default=0)
     a = ap.parse_args()

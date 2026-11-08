@@ -581,6 +581,12 @@ s'ouvrent, liens de la frise valides, `grep -c '—'` à 0 dans le texte.
     `maths2-colle7-ex3.html` : moteur autonome dans la page, une `section.scene` par écran, `data-in` / `data-a`) ;
     rendu avec `outils/video/generer.py` (`--controle`, `--images`, puis le MP4 dans le scratchpad). Contenu repris du
     PDF « Exercices traités ». MP4 envoyé au propriétaire, jamais versionné.
+    Avec voix off : texte `maths2-colleM-exN-voix.txt` (un bloc `[N]` par scène, symboles écrits pour l'oreille :
+    « Gamma de x plus un », « grand A », « E C G Prépa point F R »), `voix.py synthese … --dossier <scratchpad>/voix`
+    (ElevenLabs, ou `--piper <voix.onnx>` quand les crédits manquent : voix locale gratuite `fr_FR-tom-medium` de
+    rhasspy/piper-voices, choisie en novembre 2026, moins naturelle), puis `generer.py … --voix <dossier>/voix.json` (chaque
+    scène dure le temps de sa voix ; un élément `data-v="<mot>"` apparaît quand la voix dit ce mot, d'après `mots.json` ;
+    `--controle` signale un repère introuvable) et `voix.py poser`. Fait : colle 7, exercice 3 (5 min, voix Piper).
 
 ### Index des cours (`cours-ecg.html`)
 
