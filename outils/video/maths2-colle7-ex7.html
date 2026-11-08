@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Colle 7 · Exercice 7 · Cauchy-Schwarz en probabilités (vidéo)</title>
+<!--
+  Vidéo « motion design » d'un exercice de colle de maths (2e année, colle 7, exercice 7 du PDF « Exercices traités »).
+  Moteur autonome (pas moteur.js, fait pour l'HGG) mais même interface window.VIDEO : rendu avec
+    python3 outils/video/generer.py outils/video/maths2-colle7-ex7.html --controle
+    python3 outils/video/generer.py outils/video/maths2-colle7-ex7.html --images <scratchpad>/img
+    python3 outils/video/generer.py outils/video/maths2-colle7-ex7.html <scratchpad>/colle7-ex7.mp4
+  KaTeX : outils/colles/.katex (créé par outils/colles/generer.py, ignoré par git).
+  Une scène = <section class="scene" data-dur="…">, chaque élément animé a data-in (seconde d'apparition dans la scène),
+  data-a (up, fade, pop, wipe, draw), data-d (durée de l'animation), data-out (disparition). Surlignage d'une partie de
+  formule : \htmlClass{hl hA}{…} et data-hl='{"hA": 2}' sur la scène. Le MP4 n'est jamais versionné.
+-->
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../colles/.katex/katex.min.css">
+<script src="../colles/.katex/katex.min.js"></script>
+<script src="../colles/.katex/contrib/auto-render.min.js"></script>
+<style>
+:root {
+  --bg: #12100b; --bg2: #1b170f; --or: #e2b23c; --or-f: #946c0a; --creme: #f4ecd8; --dim: #a89c80;
+  --vert: #7cc68f; --rouge: #ef6a55; --bleu: #64b8c9; --ligne: rgba(226,178,60,.22);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); }
+body { font-family: 'IBM Plex Sans', sans-serif; color: var(--creme); -webkit-font-smoothing: antialiased; }
+#stage { position: relative; width: 1920px; height: 1080px; overflow: hidden;
+  background: radial-gradient(ellipse at 30% 20%, #221c10 0%, var(--bg) 60%); }
+#grille { position: absolute; inset: -80px; opacity: .55;
+  background-image: linear-gradient(rgba(226,178,60,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(226,178,60,.06) 1px, transparent 1px);
+  background-size: 80px 80px; }
+/* habillage fixe */
+#logo { position: absolute; left: 80px; top: 52px; font: 700 30px 'Playfair Display', serif; color: var(--creme); z-index: 5; }
+#logo b { color: var(--or); }
+#etiq { position: absolute; right: 80px; top: 58px; font: 500 20px 'IBM Plex Mono', monospace; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--dim); z-index: 5; }
+#etiq span { color: var(--or); }
+#etapes { position: absolute; left: 80px; bottom: 50px; display: flex; gap: 36px; z-index: 5;
+  font: 500 19px 'IBM Plex Mono', monospace; letter-spacing: .1em; text-transform: uppercase; color: rgba(168,156,128,.55); }
+#etapes .on { color: var(--or); }
+#etapes .fait { color: var(--vert); }
+#etapes .fait i { background: var(--vert); color: var(--bg); }
+#etapes i { font-style: normal; display: inline-block; width: 30px; height: 30px; line-height: 28px; text-align: center;
+  border: 1.5px solid currentColor; border-radius: 50%; margin-right: 10px; font-size: 16px; }
+#barre { position: absolute; left: 0; bottom: 0; height: 6px; background: var(--or); z-index: 5; }
+#piste { position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: rgba(226,178,60,.12); }
+
+/* scènes */
+.scene { position: absolute; inset: 0; padding: 150px 120px 120px; display: block; }
+.kick { font: 500 22px 'IBM Plex Mono', monospace; letter-spacing: .16em; text-transform: uppercase; color: var(--or); margin-bottom: 22px; }
+.kick b { display: inline-block; background: var(--or); color: var(--bg); padding: 4px 12px; border-radius: 6px; margin-right: 14px; font-weight: 600; }
+h2.titre { font: 600 64px/1.1 'Fraunces', serif; margin-bottom: 40px; letter-spacing: -.01em; }
+h2.titre em { font-style: normal; color: var(--or); }
+.ligne { font-size: 38px; line-height: 1.45; margin-bottom: 26px; }
+.ligne.petit { font-size: 32px; color: var(--dim); }
+.big { font-size: 50px; text-align: center; margin: 26px 0 34px; }
+.carte { background: rgba(255,255,255,.035); border: 1.5px solid var(--ligne); border-radius: 22px; padding: 30px 40px; }
+.carte.or { border-color: var(--or); background: rgba(226,178,60,.07); }
+.carte .kick { margin-bottom: 12px; font-size: 19px; }
+.ok { color: var(--vert); }
+.ko { color: var(--rouge); }
+.coche { display: inline-flex; align-items: center; gap: 16px; font: 600 36px 'IBM Plex Sans'; color: var(--vert);
+  border: 2px solid var(--vert); border-radius: 60px; padding: 12px 34px; background: rgba(124,198,143,.08); }
+.coche::before { content: '✓'; font-size: 38px; }
+.cols { display: grid; grid-template-columns: 1fr 700px; gap: 70px; align-items: start; }
+.mark { background: linear-gradient(rgba(226,178,60,.35), rgba(226,178,60,.35)) no-repeat 0 85% / 0% 40%; padding: 0 4px; }
+.katex { font-size: 1.08em; }
+.hl { border-radius: 6px; padding: 0 1px; }
+.anim { will-change: opacity, transform; }
+svg text { font-family: 'IBM Plex Sans', sans-serif; }
+
+/* scène 1 */
+.s-titre { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding-top: 80px; }
+.s-titre h1 { font: 600 170px/1 'Fraunces', serif; letter-spacing: -.02em; margin: 10px 0 40px; }
+.s-titre h1 span { color: var(--or); }
+.s-titre .big { font-size: 64px; margin: 0 0 40px; }
+.s-titre .sous { font-size: 36px; color: var(--dim); }
+
+/* énoncé */
+.enonce { max-width: 1500px; margin: 0 auto; padding: 44px 60px; }
+.enonce .ligne { font-size: 42px; }
+.q { display: flex; gap: 26px; align-items: baseline; font-size: 42px; margin-top: 26px; }
+.q b { font: 600 34px 'IBM Plex Mono'; color: var(--bg); background: var(--or); border-radius: 50%; width: 56px; height: 56px;
+  display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.ref { margin-top: 36px; text-align: center; font: 500 22px 'IBM Plex Mono'; letter-spacing: .1em; color: var(--dim); text-transform: uppercase; }
+
+/* tableau IPP */
+.ipp { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px 60px; font-size: 40px; max-width: 1240px; margin: 0 auto 36px; }
+.ipp div { background: rgba(255,255,255,.035); border-radius: 16px; padding: 14px 30px; border-left: 5px solid var(--or); }
+.ipp div.v { border-left-color: var(--bleu); }
+.eq { font-size: 44px; text-align: center; margin: 22px 0; }
+
+/* résultat */
+.res { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.cadre { border: 3px solid var(--or); border-radius: 26px; padding: 40px 80px; font-size: 76px; background: rgba(226,178,60,.07);
+  box-shadow: 0 0 80px rgba(226,178,60,.15); }
+.cadre .pour { font-size: 34px; color: var(--dim); margin-bottom: 10px; font-family: 'IBM Plex Sans'; }
+.chaine { display: flex; gap: 26px; align-items: center; font-size: 40px; margin-top: 20px; }
+.chaine .g { background: rgba(255,255,255,.05); border: 1.5px solid var(--ligne); border-radius: 16px; padding: 12px 26px; }
+.chaine .fl { color: var(--or); font-size: 34px; }
+
+/* pièges */
+.pieges { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 50px; margin-top: 20px; }
+.piege { display: flex; gap: 26px; align-items: flex-start; font-size: 38px; line-height: 1.4; }
+.piege b.n { font: 600 56px/1 'Fraunces', serif; color: var(--or); flex: none; width: 54px; }
+.piege .carte { padding: 30px 38px; flex: 1; min-height: 250px; }
+
+/* fin */
+.s-fin { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.s-fin .logo { font: 700 120px 'Playfair Display', serif; }
+.s-fin .logo b { color: var(--or); }
+.s-fin .ligne { color: var(--dim); }
+
+/* exercice 7 */
+.vecs { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; max-width: 1500px; margin: 30px auto 0; }
+.vecs > div { background: rgba(226,178,60,.07); border: 2px solid var(--or); border-radius: 20px; padding: 24px 34px; font-size: 42px; text-align: center; }
+.vecs > div.v { background: rgba(100,184,201,.07); border-color: var(--bleu); }
+.vecs .kick { display: block; margin-bottom: 8px; font-size: 20px; }
+.trois { display: grid; grid-template-columns: 1.75fr 1fr 1fr; gap: 30px; margin-top: 90px; }
+.trois .carte { font-size: 38px; text-align: center; padding: 36px 22px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="grille"></div>
+  <div id="logo">ECG <b>Prépa</b></div>
+  <div id="etiq">Colle 7 · <span>Exercice 7</span></div>
+  <div id="piste"></div><div id="barre"></div>
+  <div id="etapes"><span data-p="1"><i>1</i>L'outil</span><span data-p="2"><i>2</i>Les vecteurs</span><span data-p="3"><i>3</i>Le calcul</span><span data-p="4"><i>4</i>L'inégalité</span><span data-p="5"><i>5</i>Interprétation</span></div>
+
+  <!-- 1. Titre -->
+  <section class="scene s-titre" data-dur="7">
+    <div class="kick anim" data-in="0.3">Colle n° 7 · Maths · 2e année</div>
+    <h1 class="anim" data-v="inegalite" data-in="0.7" data-a="pop" data-d="0.9" style="font-size:124px">Cauchy-Schwarz <span>en probas</span></h1>
+    <div class="big anim" data-v="carre" data-in="1.7" data-a="wipe" data-d="1.4">\(\displaystyle \Big(\sum_{i=1}^{n} x_i\, \mathbb{P}(X = x_i)\Big)^2 \leqslant \sum_{i=1}^{n} x_i^2\, \mathbb{P}(X = x_i)\)</div>
+    <div class="sous anim" data-v="derriere" data-in="3.2">Une inégalité qui cache une variance</div>
+  </section>
+
+  <!-- 2. Énoncé -->
+  <section class="scene" data-dur="11">
+    <div class="kick anim" data-in="0.2">L'énoncé</div>
+    <div class="carte enonce anim" data-in="0.6">
+      <div class="ligne">\(X\) est une variable aléatoire à valeurs dans \(\{x_1, \dots, x_n\}\).</div>
+      <div class="q anim" data-v="premiere" data-in="2.6"><b>1</b><span>Montrer que \(\displaystyle \Big(\sum_{i=1}^{n} x_i\, \mathbb{P}(X = x_i)\Big)^2 \leqslant \sum_{i=1}^{n} x_i^2\, \mathbb{P}(X = x_i)\).</span></div>
+      <div class="q anim" data-v="deuxieme" data-in="4.6"><b>2</b><span>Interpréter ce résultat.</span></div>
+    </div>
+    <div class="ref anim" data-v="exercice" data-in="6.5">Programme de colle · exercice 8</div>
+  </section>
+
+  <!-- 3. Rappel : Cauchy-Schwarz -->
+  <section class="scene" data-dur="18" data-part="1" data-fn="angle" data-fn-v="regardez" data-fn-t="3">
+    <div class="kick anim" data-in="0.2"><b>1</b>L'outil</div>
+    <h2 class="titre anim" data-in="0.4">L'inégalité de <em>Cauchy-Schwarz</em></h2>
+    <div class="cols">
+      <div>
+        <div class="ligne anim" data-v="dans" data-in="1.2">Dans \(\mathbb{R}^n\), avec le produit scalaire usuel&nbsp;:</div>
+        <div class="ligne anim" data-v="somme" data-in="2.2" style="text-align:center">\(\displaystyle \langle u, v \rangle = \sum_{i=1}^{n} u_i v_i\)</div>
+        <div class="cadre anim" data-v="dit" data-in="3.4" data-a="pop" style="font-size:56px;text-align:center;margin:10px 0 30px">\(\langle u, v \rangle^2 \leqslant \|u\|^2\, \|v\|^2\)</div>
+        <div class="ligne petit anim" data-v="pourquoi" data-in="7">Pourquoi&nbsp;? \(\langle u, v \rangle = \|u\|\,\|v\| \cos\theta\), et un cosinus reste <span style="white-space:nowrap">entre \(-1\) et \(1\)</span>.</div>
+        <div class="ligne anim" data-v="retenez" data-in="11">Le réflexe&nbsp;: une somme de produits \(\sum a_i b_i\) est un produit scalaire.</div>
+      </div>
+      <svg id="g3" viewBox="0 0 700 560" width="700" height="560" class="anim" data-v="pourquoi" data-in="5" data-a="fade">
+        <circle cx="300" cy="300" r="200" fill="none" stroke="rgba(226,178,60,.18)" stroke-width="2" stroke-dasharray="6 8"/>
+        <line id="g3proj" x1="300" y1="300" x2="300" y2="300" stroke="#e2b23c" stroke-width="12" stroke-linecap="round" opacity=".45"/>
+        <line id="g3perp" x1="0" y1="0" x2="0" y2="0" stroke="#a89c80" stroke-width="2" stroke-dasharray="7 7"/>
+        <line x1="300" y1="300" x2="560" y2="300" stroke="#64b8c9" stroke-width="5"/>
+        <polygon points="560,300 540,290 540,310" fill="#64b8c9"/>
+        <text x="572" y="290" fill="#64b8c9" font-size="34" font-style="italic">v</text>
+        <line id="g3u" x1="300" y1="300" x2="0" y2="0" stroke="#e2b23c" stroke-width="5"/>
+        <polygon id="g3uh" points="0,0 0,0 0,0" fill="#e2b23c"/>
+        <text id="g3ut" x="0" y="0" fill="#e2b23c" font-size="34" font-style="italic">u</text>
+        <path id="g3arc" fill="none" stroke="#f4ecd8" stroke-width="2"/>
+        <text x="40" y="530" fill="#a89c80" font-size="26">cos θ =</text>
+        <text id="g3cos" x="150" y="530" fill="#f4ecd8" font-size="30" font-weight="600">1,00</text>
+        <rect x="260" y="510" width="400" height="16" rx="8" fill="rgba(255,255,255,.08)"/>
+        <rect id="g3jauge" x="460" y="510" width="0" height="16" rx="8" fill="#e2b23c"/>
+        <line x1="460" y1="500" x2="460" y2="536" stroke="#a89c80" stroke-width="2"/>
+        <text x="260" y="555" fill="#a89c80" font-size="20">−1</text>
+        <text x="650" y="555" fill="#a89c80" font-size="20" text-anchor="end">1</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- 4. Le choix des vecteurs -->
+  <section class="scene" data-dur="18" data-part="2" data-hl='{"hU": "racine", "hV": "fois racine"}'>
+    <div class="kick anim" data-in="0.2"><b>2</b>Les vecteurs</div>
+    <h2 class="titre anim" data-in="0.4">Faire apparaître <em>un produit scalaire</em></h2>
+    <div class="ligne anim" data-v="note" data-in="1.2" style="text-align:center">On note \(p_i = \mathbb{P}(X = x_i)\)&nbsp;: \(p_i \geqslant 0\) et \(\displaystyle \sum_{i=1}^{n} p_i = 1\).</div>
+    <div class="big anim" data-v="astuce" data-in="3.4" data-a="wipe" data-d="1.4">\(x_i\, p_i = \htmlClass{hl hU}{x_i \sqrt{p_i}} \times \htmlClass{hl hV}{\sqrt{p_i}}\)</div>
+    <div class="ligne petit anim" data-v="existe" data-in="6" style="text-align:center">La racine existe car \(p_i \geqslant 0\)&nbsp;: on coupe \(p_i\) en deux.</div>
+    <div class="vecs">
+      <div class="anim" data-v="vecteur u" data-in="8.5" data-a="pop"><span class="kick" style="color:var(--or)">Vecteur u</span>\(u = \big(x_1 \sqrt{p_1}, \dots, x_n \sqrt{p_n}\big)\)</div>
+      <div class="anim v" data-v="vecteur v" data-in="10" data-a="pop"><span class="kick" style="color:var(--bleu)">Vecteur v</span>\(v = \big(\sqrt{p_1}, \dots, \sqrt{p_n}\big)\)</div>
+    </div>
+  </section>
+
+  <!-- 5. Le calcul -->
+  <section class="scene" data-dur="17" data-part="3">
+    <div class="kick anim" data-in="0.2"><b>3</b>Le calcul</div>
+    <h2 class="titre anim" data-in="0.4">Trois quantités à <em>reconnaître</em></h2>
+    <div class="trois">
+      <div class="carte anim" data-v="abord" data-in="1.4" data-a="pop"><div class="kick">Le produit scalaire</div>\(\displaystyle \langle u, v \rangle = \sum_{i=1}^{n} x_i \sqrt{p_i}\,\sqrt{p_i} = \sum_{i=1}^{n} x_i\, p_i\)</div>
+      <div class="carte anim" data-v="ensuite" data-in="5.5" data-a="pop"><div class="kick">La norme de u</div>\(\displaystyle \|u\|^2 = \sum_{i=1}^{n} x_i^2\, p_i\)</div>
+      <div class="carte anim" data-v="enfin" data-in="9" data-a="pop"><div class="kick">La norme de v</div>\(\displaystyle \|v\|^2 = \sum_{i=1}^{n} p_i = 1\)</div>
+    </div>
+    <div class="ligne petit anim" data-v="loi" data-in="12" style="text-align:center;margin-top:60px">Le \(1\) vient de la loi de \(X\)&nbsp;: les probabilités somment à 1.</div>
+  </section>
+
+  <!-- 6. Conclusion de la question 1 -->
+  <section class="scene res" data-dur="12" data-part="4" style="justify-content:center">
+    <div class="kick anim" data-in="0.2">Cauchy-Schwarz, appliqué</div>
+    <div class="big anim" data-v="carre" data-in="1" data-a="wipe" data-d="1.6">\(\displaystyle \Big(\sum_{i=1}^{n} x_i\, p_i\Big)^2 \leqslant \Big(\sum_{i=1}^{n} x_i^2\, p_i\Big)\Big(\sum_{i=1}^{n} p_i\Big) = \sum_{i=1}^{n} x_i^2\, p_i\)</div>
+    <div class="anim" data-v="demontree" data-in="5" data-a="pop"><span class="coche">L'inégalité est démontrée</span></div>
+  </section>
+
+  <!-- 7. Interprétation -->
+  <section class="scene" data-dur="22" data-part="5">
+    <div class="kick anim" data-in="0.2"><b>5</b>Interprétation</div>
+    <h2 class="titre anim" data-in="0.4">Une <em>variance</em> est toujours positive</h2>
+    <div class="cols">
+      <div>
+        <div class="ligne anim" data-v="transfert" data-in="1.2">Théorème de transfert&nbsp;:</div>
+        <div class="ligne anim" data-v="somme" data-in="2.4" style="font-size:36px">\(\displaystyle \mathbb{E}(X) = \sum_{i=1}^{n} x_i\, p_i \qquad \mathbb{E}(X^2) = \sum_{i=1}^{n} x_i^2\, p_i\)</div>
+        <div class="cadre anim" data-v="ecrit" data-in="5.5" data-a="pop" style="font-size:52px;text-align:center;margin:10px 0 30px">\(\mathbb{E}(X)^2 \leqslant \mathbb{E}(X^2)\)</div>
+        <div class="ligne anim" data-v="formule" data-in="9">König-Huygens&nbsp;: \(\mathbb{V}(X) = \mathbb{E}(X^2) - \mathbb{E}(X)^2 \geqslant 0\).</div>
+        <div class="ligne petit anim" data-v="exemple" data-in="12">Exemple&nbsp;: \(X\) vaut \(-1\), \(2\), \(4\) avec probabilités \(0{,}5\), \(0{,}3\), \(0{,}2\).</div>
+      </div>
+      <svg id="g7" viewBox="0 0 700 560" width="700" height="560" class="anim" data-v="exemple" data-in="12" data-a="fade">
+        <line x1="60" y1="470" x2="680" y2="470" stroke="#a89c80" stroke-width="2.5"/>
+        <line class="anim" data-a="draw" data-v="carre de l" data-in="13.5" x1="200" y1="470" x2="200" y2="402.6" stroke="#64b8c9" stroke-width="110"/>
+        <line class="anim" data-a="draw" data-d="1.8" data-v="esperance de x au" data-in="15" x1="480" y1="470" x2="480" y2="62" stroke="#e2b23c" stroke-width="110"/>
+        <text x="200" y="510" fill="#64b8c9" font-size="28" text-anchor="middle" class="anim" data-v="carre de l" data-in="13.5" data-a="fade">E(X)²</text>
+        <text x="200" y="387" fill="#f4ecd8" font-size="30" text-anchor="middle" class="anim" data-v="carre de l" data-in="13.5" data-a="fade">0,81</text>
+        <text x="480" y="510" fill="#e2b23c" font-size="28" text-anchor="middle" class="anim" data-v="esperance de x au" data-in="15" data-a="fade">E(X²)</text>
+        <text x="480" y="46" fill="#f4ecd8" font-size="30" text-anchor="middle" class="anim" data-v="esperance de x au" data-in="16.5" data-a="fade">4,9</text>
+        <g class="anim" data-v="ecart" data-in="17.5" data-a="fade">
+          <line x1="300" y1="402.6" x2="560" y2="402.6" stroke="#7cc68f" stroke-width="2" stroke-dasharray="8 7"/>
+          <line x1="575" y1="402.6" x2="575" y2="62" stroke="#7cc68f" stroke-width="3"/>
+          <line x1="565" y1="402.6" x2="585" y2="402.6" stroke="#7cc68f" stroke-width="3"/>
+          <line x1="565" y1="62" x2="585" y2="62" stroke="#7cc68f" stroke-width="3"/>
+          <text x="595" y="240" fill="#7cc68f" font-size="28">V(X)</text>
+          <text x="595" y="276" fill="#7cc68f" font-size="28">= 4,09</text>
+        </g>
+      </svg>
+    </div>
+  </section>
+
+  <!-- 8. Le cas d'égalité -->
+  <section class="scene" data-dur="16" data-part="6">
+    <div class="kick anim" data-in="0.2">Pour aller plus loin</div>
+    <h2 class="titre anim" data-in="0.4">Et le cas <em>d'égalité</em>&nbsp;?</h2>
+    <div class="ligne anim" data-v="il y" data-in="1.4">Égalité dans Cauchy-Schwarz \(\iff\) \(u\) et \(v\) colinéaires&nbsp;: \(u = \lambda v\) (car \(v \neq 0\)).</div>
+    <div class="ligne anim" data-v="alors" data-in="5">Alors \(x_i \sqrt{p_i} = \lambda \sqrt{p_i}\), donc \(x_i = \lambda\) dès que \(p_i &gt; 0\).</div>
+    <div class="anim" data-v="autrement" data-in="9" data-a="pop" style="text-align:center;margin-top:40px"><span class="coche">\(\mathbb{V}(X) = 0 \iff X\) est presque sûrement constante</span></div>
+  </section>
+
+  <!-- 9. Réflexes -->
+  <section class="scene" data-dur="16">
+    <div class="kick anim" data-in="0.2">Pour la colle</div>
+    <h2 class="titre anim" data-in="0.4">Les <em>4 réflexes</em> à montrer</h2>
+    <div class="pieges">
+      <div class="piege anim" data-v="1" data-in="1.2"><b class="n">1</b><div class="carte">Une somme \(\sum a_i b_i\)&nbsp;: penser au produit scalaire usuel de \(\mathbb{R}^n\).</div></div>
+      <div class="piege anim" data-v="2" data-in="4.2"><b class="n">2</b><div class="carte">Couper \(p_i\) en \(\sqrt{p_i} \times \sqrt{p_i}\), possible car \(p_i \geqslant 0\).</div></div>
+      <div class="piege anim" data-v="3" data-in="7.2"><b class="n">3</b><div class="carte">Ne pas oublier \(\|v\|^2 = \sum p_i = 1\)&nbsp;: c'est lui qui simplifie.</div></div>
+      <div class="piege anim" data-v="4" data-in="10.2"><b class="n">4</b><div class="carte">Interpréter&nbsp;: transfert, puis König-Huygens, \(\mathbb{V}(X) \geqslant 0\).</div></div>
+    </div>
+  </section>
+
+  <!-- 10. Fin -->
+  <section class="scene s-fin" data-dur="6">
+    <div class="logo anim" data-in="0.3" data-a="pop">ECG <b>Prépa</b></div>
+    <div class="ligne anim" data-v="exercices" data-in="1.2" style="margin-top:20px">Colle 7 · Intégrales impropres et début de l'algèbre bilinéaire</div>
+    <div class="ligne anim" data-v="pdf" data-in="2" style="color:var(--or)">Tous les exercices rédigés en PDF sur ecg-prepa.fr</div>
+  </section>
+</div>
+
+<script>
+(() => {
+  renderMathInElement(document.body, {
+    delimiters: [{ left: '\\[', right: '\\]', display: true }, { left: '\\(', right: '\\)', display: false }],
+    trust: true, strict: false, throwOnError: false,
+  });
+
+  const clamp = v => Math.max(0, Math.min(1, v));
+  const easeOut = p => 1 - Math.pow(1 - p, 3);
+  const easeInOut = p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+  const back = p => { const c = 1.7; return 1 + (c + 1) * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2); };
+  const virgule = v => v.toFixed(2).replace('.', ',');
+
+  // Courbes : t ↦ y dans un repère [t0, t1] × [0, ymax] posé sur la zone (gx, gy, gw, gh) du SVG.
+  function chemin(f, t0, t1, ymax, gx, gy, gw, gh, n = 240) {
+    let d = '';
+    for (let i = 0; i <= n; i++) {
+      const t = t0 + (t1 - t0) * (i / n);
+      const y = Math.min(f(t), ymax * 1.6);
+      d += (i ? 'L' : 'M') + (gx + gw * (t - t0) / (t1 - t0)).toFixed(1) + ' ' + (gy + gh - gh * y / ymax).toFixed(1);
+    }
+    return d;
+  }
+  const FN = {
+    angle(sc, l) {   // u tourne autour de v : cos θ reste entre −1 et 1
+      const th = 1.0 + (l > 0 ? 2 * Math.PI * clamp(l / 12) * 0.9 : 0);
+      const ox = 300, oy = 300, r = 200, ux = ox + r * Math.cos(th), uy = oy - r * Math.sin(th);
+      const u = sc.querySelector('#g3u'); u.setAttribute('x2', ux); u.setAttribute('y2', uy);
+      const a = Math.atan2(uy - oy, ux - ox), hx = ux, hy = uy;
+      const p1 = [hx - 20 * Math.cos(a) + 10 * Math.sin(a), hy - 20 * Math.sin(a) - 10 * Math.cos(a)];
+      const p2 = [hx - 20 * Math.cos(a) - 10 * Math.sin(a), hy - 20 * Math.sin(a) + 10 * Math.cos(a)];
+      sc.querySelector('#g3uh').setAttribute('points', `${hx},${hy} ${p1} ${p2}`);
+      const t = sc.querySelector('#g3ut'); t.setAttribute('x', ux + 18 * Math.cos(a) - 10); t.setAttribute('y', uy + 18 * Math.sin(a) + 10);
+      const c = Math.cos(th), px = ox + r * c;
+      const pr = sc.querySelector('#g3proj'); pr.setAttribute('x2', px);
+      const pp = sc.querySelector('#g3perp'); pp.setAttribute('x1', ux); pp.setAttribute('y1', uy); pp.setAttribute('x2', px); pp.setAttribute('y2', oy);
+      const th2 = ((th % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI), big = th2 > Math.PI ? 1 : 0;
+      sc.querySelector('#g3arc').setAttribute('d', `M${ox + 60} ${oy} A60 60 0 ${big} 0 ${ox + 60 * Math.cos(th2)} ${oy - 60 * Math.sin(th2)}`);
+      sc.querySelector('#g3cos').textContent = (c < 0 ? '−' : '') + Math.abs(c).toFixed(2).replace('.', ',');
+      const j = sc.querySelector('#g3jauge'); j.setAttribute('x', c >= 0 ? 460 : 460 + 200 * c); j.setAttribute('width', 200 * Math.abs(c));
+    },
+  };
+
+  const scenes = [...document.querySelectorAll('.scene')];
+  const plans = scenes.map(el => {
+    const p = { el, dur: +el.dataset.dur, hl: JSON.parse(el.dataset.hl || '{}'), part: el.dataset.part || '', decal: 0, manque: [] };
+    p.items = [...el.querySelectorAll('[data-in]')].map(e => ({
+      e, t: +e.dataset.in, a: e.dataset.a || (e.classList.contains('mark') ? 'mark' : 'up'),
+      d: +(e.dataset.d || (e.dataset.a === 'draw' ? 1.4 : e.dataset.a === 'pop' ? .7 : e.dataset.a === 'wipe' ? 1 : .6)),
+      out: e.dataset.out ? +e.dataset.out : null,
+    }));
+    return p;
+  });
+
+  // Voix off (voix.py synthese) : chaque écran dure le temps de sa voix, et chaque élément data-v apparaît quand la
+  // voix prononce son mot repère (mots.json, transcrit par Whisper) ; les autres éléments suivent au prorata.
+  const DEPART = .4;
+  const norm = w => w.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  function trouve(mots, cle, depuis) {
+    const k = cle.split(' ').map(norm);
+    for (let j = depuis; j <= mots.length - k.length; j++)
+      if (k.every((x, q) => norm(mots[j + q][0]).startsWith(x))) return j;
+    return -1;
+  }
+  if (window.VOIX) plans.forEach((p, i) => {
+    const voix = window.VOIX[i + 1], mots = (window.VOIX_MOTS || {})[i + 1] || [];
+    if (voix == null) return;
+    const k = (DEPART + voix) / Math.max(1, p.dur - 1.5);
+    let curseur = 0;
+    [...p.items].sort((a, b) => a.t - b.t).forEach(it => {
+      const cle = it.e.dataset.v, j = cle ? trouve(mots, cle, curseur) : -1;
+      if (cle && j < 0) p.manque.push(cle);
+      if (j >= 0) { it.t = DEPART + mots[j][1] - .15; curseur = j; } else it.t *= k;
+    });
+    for (const [cl, t0] of Object.entries(p.hl)) {
+      const j = typeof t0 === 'string' ? trouve(mots, t0, 0) : -1;
+      if (typeof t0 === 'string' && j < 0) p.manque.push(t0);
+      p.hl[cl] = j >= 0 ? DEPART + mots[j][1] - .1 : typeof t0 === 'number' ? t0 * k : 1e9;
+    }
+    if (p.el.dataset.fnV) {
+      const j = trouve(mots, p.el.dataset.fnV, 0);
+      if (j >= 0) p.decal = DEPART + mots[j][1] - +p.el.dataset.fnT; else p.manque.push(p.el.dataset.fnV);
+    }
+    p.dur = Math.max(4, DEPART + voix + .9, ...p.items.map(it => it.t + it.d + .8));
+  });
+  let debut = 0;
+  plans.forEach(p => { p.start = debut; debut += p.dur; });
+  const DUREE = debut + .5;
+  const longueurs = new Map();
+  plans.forEach(p => { p.el.style.display = ''; });
+  plans.forEach(p => p.items.forEach(it => { if (it.a === 'draw' && it.e.getTotalLength) longueurs.set(it.e, it.e.getTotalLength()); }));
+  plans.forEach(p => { p.el.style.display = 'none'; });
+
+  const barre = document.getElementById('barre'), grille = document.getElementById('grille');
+  const etapes = [...document.querySelectorAll('#etapes [data-p]')], etapesBox = document.getElementById('etapes');
+
+  function anim(it, l) {
+    const p = clamp((l - it.t) / it.d), e = it.e;
+    let o = 1, tr = '';
+    if (it.a === 'up') { o = easeOut(p); tr = `translateY(${(1 - easeOut(p)) * 34}px)`; }
+    else if (it.a === 'fade') o = easeOut(p);
+    else if (it.a === 'pop') { o = clamp(p * 2.5); tr = `scale(${.82 + .18 * back(p)})`; }
+    else if (it.a === 'wipe') { o = clamp(p * 4); e.style.clipPath = `inset(-30px ${(1 - easeInOut(p)) * 100}% -30px -30px)`; }
+    else if (it.a === 'draw') { const L = longueurs.get(e) || 1; e.style.strokeDasharray = L; e.style.strokeDashoffset = L * (1 - easeInOut(p)); o = p > 0 ? 1 : 0; }
+    else if (it.a === 'mark') { e.style.backgroundSize = `${easeInOut(p) * 100}% 40%`; return; }
+    if (it.out != null) o *= 1 - clamp((l - it.out) / .4);
+    e.style.opacity = o;
+    if (e instanceof SVGElement) { if (tr) e.style.transformBox = 'fill-box', e.style.transformOrigin = 'center'; }
+    e.style.transform = tr;
+  }
+
+  function render(t) {
+    barre.style.width = (100 * clamp(t / (DUREE - .5))) + '%';
+    grille.style.transform = `translate(${-(t * 6) % 80}px, ${-(t * 3) % 80}px)`;
+    let actif = null;
+    plans.forEach(p => {
+      const l = t - p.start;
+      const vis = l >= 0 && (l < p.dur || (p === plans[plans.length - 1] && l < p.dur + 1));
+      p.el.style.display = vis ? '' : 'none';
+      if (!vis) return;
+      actif = p;
+      const fin = p === plans[plans.length - 1] ? 1 : 1 - clamp((l - (p.dur - .4)) / .4);
+      const ent = clamp(l / .45);
+      p.el.style.opacity = Math.min(easeOut(ent), fin);
+      p.el.style.transform = `translateY(${(1 - easeOut(ent)) * 18 - (1 - fin) * 18}px)`;
+      p.items.forEach(it => anim(it, l));
+      for (const [cl, t0] of Object.entries(p.hl)) {
+        const q = easeOut(clamp((l - t0) / .5));
+        p.el.querySelectorAll('.' + cl).forEach(s => {
+          s.style.background = `rgba(226,178,60,${.28 * q})`;
+          s.style.boxShadow = `0 0 0 ${2 * q}px rgba(226,178,60,${.8 * q})`;
+        });
+      }
+      if (p.el.dataset.fn) FN[p.el.dataset.fn](p.el, l - p.decal);
+    });
+    const part = actif ? actif.part : '';
+    etapesBox.style.opacity = part ? 1 : 0;
+    etapes.forEach(s => { s.classList.toggle('on', s.dataset.p === part); s.classList.toggle('fait', +s.dataset.p < +part); });
+  }
+
+  function controle() {
+    const err = [];
+    plans.forEach((p, i) => p.manque.forEach(m => err.push(`plan ${i + 1} : repère de voix « ${m} » introuvable`)));
+    document.querySelectorAll('.katex-error').forEach(e => err.push('KaTeX : ' + (e.title || e.textContent)));
+    plans.forEach((p, i) => {
+      render(p.start + p.dur - .5);
+      p.el.querySelectorAll('.anim, .ligne, .carte, .eq, .big, .cadre').forEach(e => {
+        const r = e.getBoundingClientRect();
+        if (!r.width || e instanceof SVGElement && e.tagName !== 'svg') return;
+        if (r.left < 40 || r.right > 1880 || r.top < 110 || r.bottom > 1020)
+          err.push(`plan ${i + 1} : « ${(e.textContent || e.id).trim().slice(0, 40)} » sort du cadre (${Math.round(r.left)}, ${Math.round(r.top)}, ${Math.round(r.right)}, ${Math.round(r.bottom)})`);
+        if (e.scrollWidth > e.clientWidth + 2 && getComputedStyle(e).display !== 'inline')
+          err.push(`plan ${i + 1} : « ${(e.textContent || '').trim().slice(0, 40)} » déborde en largeur`);
+      });
+    });
+    return [...new Set(err)];
+  }
+
+  render(0);
+  window.VIDEO = { render, duree: DUREE, controle, plans: plans.map(p => ({ start: p.start, dur: p.dur, voix: DEPART })) };
+})();
+</script>
+</body>
+</html>
