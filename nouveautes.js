@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "États-Unis",
+"titre": "États-Unis : la rougeole au plus haut depuis 1991",
+"url": "actualites/en/articles/us-rougeole-cdc-5182-cas-2026.html",
+"image": "actualites/en/images/us-rougeole-cdc-5182-cas-2026.webp",
+"date": "2026-11-08T07:36:53+00:00"
+},
+{
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne",
@@ -1704,15 +1713,6 @@ window.ECG_NOUVEAUTES = [
 "url": "Culture-Generale/developpement-durable.html",
 "image": "Culture-Generale/images/developpement-durable.webp",
 "date": "2026-09-27T12:39:18+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "Trump accueille Xi Jinping à la Maison-Blanche pour une visite d'État sous haute pompe",
-"url": "actualites/en/articles/trump-xi-jinping-maison-blanche-2026.html",
-"image": "actualites/en/images/trump-xi-jinping-maison-blanche-2026.webp",
-"date": "2026-09-26T15:06:19+00:00"
 },
 {
 "t": "de",
