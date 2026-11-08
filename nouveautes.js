@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Macao",
+"titre": "Macao : Au Kam San condamné pour subversion",
+"url": "actualites/monde/articles/macao-au-kam-san-condamne-subversion-2026.html",
+"image": "actualites/monde/images/macao-au-kam-san-condamne-subversion-2026.webp",
+"date": "2026-11-08T07:49:31+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Chine",
 "titre": "Chine : une loi sur l'Antarctique",
 "url": "actualites/monde/articles/chine-antarctique-loi-activites-2026.html",
@@ -1389,15 +1398,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/en/articles/trump-super-intelligence-onu.html",
 "image": "actualites/en/images/trump-super-intelligence-onu.webp",
 "date": "2026-10-08T19:01:47+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Ghana",
-"titre": "Ghana : le Cabinet approuve une candidature officielle aux BRICS, adhésion encore incertaine",
-"url": "actualites/monde/articles/ghana-candidature-brics.html",
-"image": "actualites/monde/images/ghana-candidature-brics.webp",
-"date": "2026-10-08T18:56:44+00:00"
 },
 {
 "t": "de",
