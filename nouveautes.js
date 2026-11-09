@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Pays-Bas",
+"titre": "Pays-Bas : plus de 200 000 manifestants à Amsterdam contre la politique israélienne à Gaza",
+"url": "actualites/monde/articles/pays-bas-red-line-amsterdam-gaza-2026.html",
+"image": "actualites/monde/images/pays-bas-red-line-amsterdam-gaza-2026.webp",
+"date": "2026-11-09T20:19:28+00:00"
+},
+{
 "t": "cours",
 "rubrique": "Cours",
 "meta": "HGG 2e année · chapitre 4",
@@ -1335,15 +1344,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/es/articles/panama-seisme-7-7-octobre-2026.html",
 "image": "actualites/es/images/panama-seisme-7-7-octobre-2026.webp",
 "date": "2026-10-10T19:21:53+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Côte d'Ivoire",
-"titre": "Côte d'Ivoire : un gisement d'or de 115 tonnes présenté à Boundiali, dans le nord du pays",
-"url": "actualites/monde/articles/cote-ivoire-gisement-or-boundiali.html",
-"image": "actualites/monde/images/cote-ivoire-gisement-or-boundiali.webp",
-"date": "2026-10-10T19:18:57+00:00"
 },
 {
 "t": "en",
