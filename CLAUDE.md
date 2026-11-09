@@ -793,16 +793,24 @@ Procédure de A à Z, sans poser de question jusqu'à la mise en ligne :
   Hobbes bleu ardoise `#1f4a6e` / ocre `#a35a1f`, Pic de la Mirandole sarcelle `#17645e` / vermillon `#ad3a2c`, La Boétie indigo `#43398a` / ambre `#a8660c`, Montaigne bordeaux `#7d1f2f` / azur `#2a6fb0`. Garder cet habillage pour toutes les fiches (`auteur.css`,
   `auteur.js` ; fiches lues dans `localStorage` `ecg-humanite-auteurs-lues`). Supprimer de la copie les balises `og:`,
   `twitter:`, `canonical` et réécrire la description.
-- Structure : cartouche (portrait en paysage et fiche d'identité **courte**, 4 lignes : naissance, mort,
-  œuvres clés, concepts, valeurs brèves qui tiennent si possible sur une ligne (titres sans dates) ; définition
-  d'environ 5 lignes à 1280 px, pour que le texte de gauche et la fiche d'identité aient des hauteurs proches ; pas de lieux et dates sous le titre ; vidéo `.f-video` sous la définition si le
-  propriétaire en donne une, adresse courte `https://youtu.be/<id>`, aussi en tête des sources ; WebP dans `images/`), 01 L'essentiel, 02 Comprendre (mots expliqués au survol), 03 « <Auteur> et
-  l'humanité », 04 Avec et contre l'auteur, 05 Dans une copie, 06 Plus loin + sources. **Pas de schéma** ni de
-  section « citations à placer ».
-- « <Auteur> et l'humanité » (`.f-args`) : 8 questions du thème de l'Humanité, et pour chacune **seulement**
-  « L'argument » (un paragraphe prêt à mettre dans la copie : la thèse de l'auteur, expliquée, avec ses
-  citations et la référence de l'œuvre) et « Comment l'interpréter » (1 ou 2 phrases). Rien d'autre :
-  le propriétaire veut du concret, sans étapes, onglets ni encadrés en plus.
+- **Nouveau gabarit (novembre 2026, maquette validée par le propriétaire, fait pour Rousseau)** : `rousseau.html` +
+  feuille commune `fiche-auteur.css` (tout le CSS, portée `.pg`, teintes calculées depuis `--accent`/`--accent2`) ;
+  les autres fiches (`auteur.css`) seront refaites une à une sur ce modèle (demande type : « Refais la fiche de X au
+  nouveau modèle »). But : la **pensée de l'auteur sur l'humanité**, ses notions, expliquées et **illustrées de schémas**,
+  pas sa vie. Ordre : héros (kicker « Fiche auteur n° NN · Philosophe », sans durée ; nom ; « Sa thèse en une phrase » ;
+  lien vidéo ; à droite portrait 4:3 + fiche d'identité de 3 lignes : naissance, mort, œuvres clés) ; « L'essentiel en
+  30 secondes » (3 cartes fléchées = les 3 idées de l'auteur, une par partie, titres sur 2 lignes, + « Si vous ne retenez
+  qu'une phrase ») ; **3 parties**, chacune ouverte par un bandeau (numéro, titre, « L'idée en clair ») ; dans chaque partie,
+  des blocs titrés (`.bloc-t`) **toujours introduits par 2 ou 3 phrases** (`p.intro`, même espace de 16 px avant et
+  après), notions **par deux** côte à côte (définition simple, citation exacte, « À retenir »), schémas sans tableau
+  (comparaison en cartes, fourche, transformation fléchée, escalier, face-à-face avec un adversaire, chaînes problème →
+  solution) ; puis « Huit questions du thème » (`<details>`, la 1re ouverte, réponse courte visible, intro de 2 lignes) ;
+  « Avec et contre » (6 cartes `.f-acteur` de l'ancien modèle : « Ce qu'il défend » / « Face à Rousseau », une phrase
+  chacune, longueurs égales) ; « Dans une copie » et « Pour aller plus loin » repris de l'ancien modèle (`.f-copie`,
+  `.f-plus`) ; l'accroche part de l'auteur lui-même (une citation, une œuvre), jamais d'un autre exemple. Pas de frise de
+  la vie, pas de récapitulatif des notions, pas de durée.
+- Ancien gabarit (fiches pas encore refaites) : cartouche, 01 L'essentiel, 02 Comprendre (mots au survol), 03
+  « <Auteur> et l'humanité », 04 Avec et contre, 05 Dans une copie, 06 Plus loin + sources.
 - **Citations vérifiées mot pour mot sur le texte original** (Wikisource), jamais de mémoire.
 
 ### Les langues au quotidien (1re année) : anglais, espagnol, allemand
