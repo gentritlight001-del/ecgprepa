@@ -12,8 +12,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-11-09",
+  "maj": "2026-11-10",
   "parties": [
+   {
+    "id": "2026-11-10",
+    "nom": "Jour 19 · Cocaine Overtakes Heroin in Drug Deaths in England and Wales",
+    "n": 30,
+    "date": "2026-11-10"
+   },
    {
     "id": "2026-11-09",
     "nom": "Jour 18 · Carney's Second Budget Spends Canada's Oil Windfall",
@@ -35,19 +41,19 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-26",
     "nom": "Jour 15 · Trump Says Iran Could “Take Out” Los Angeles or San Diego",
-    "n": 30,
+    "n": 29,
     "date": "2026-10-26"
    },
    {
     "id": "2026-10-25",
     "nom": "Jour 14 · Zelenskyy in London as Burnham Pledges Unwavering Support",
-    "n": 30,
+    "n": 29,
     "date": "2026-10-25"
    },
    {
     "id": "2026-10-23",
     "nom": "Jour 13 · Ireland's Biggest Public Sector Strike Since 2009",
-    "n": 30,
+    "n": 29,
     "date": "2026-10-23"
    },
    {
@@ -123,8 +129,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 491,
-  "v": "3f7e50e37c"
+  "n": 518,
+  "v": "5c8e9d8779"
  },
  {
   "id": "espagnol",
