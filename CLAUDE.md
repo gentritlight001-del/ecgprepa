@@ -809,6 +809,12 @@ Procédure de A à Z, sans poser de question jusqu'à la mise en ligne :
   chacune, longueurs égales) ; « Dans une copie » et « Pour aller plus loin » repris de l'ancien modèle (`.f-copie`,
   `.f-plus`) ; l'accroche part de l'auteur lui-même (une citation, une œuvre), jamais d'un autre exemple. Pas de frise de
   la vie, pas de récapitulatif des notions, pas de durée.
+- **Fiche PDF d'une page** (« infographie », choisie par le propriétaire parmi 4 propositions, novembre 2026) : source
+  `outils/fiche-auteur/<slug>.html` (copier `rousseau.html` : en-tête noir avec portrait rond, 1 « Ce qui fait l'homme »
+  (tuiles et fourche), 2 schéma à 4 étapes avec pictogrammes et étiquettes de résultat **alignées en bas**, 3 remèdes,
+  4 trois citations, puis sujets et pièges), PDF avec `python3 outils/fiche-civi/generer.py outils/fiche-auteur/<slug>.html
+  "humanite/cours-humanite/Fiches auteurs/fiche-<slug>.pdf"` (doit rester sur une page). Lien sur la fiche : seconde
+  pastille `.chip` sous la vidéo dans `.hero-b` (« Fiche à imprimer · PDF, une page »).
 - Ancien gabarit (fiches pas encore refaites) : cartouche, 01 L'essentiel, 02 Comprendre (mots au survol), 03
   « <Auteur> et l'humanité », 04 Avec et contre, 05 Dans une copie, 06 Plus loin + sources.
 - **Citations vérifiées mot pour mot sur le texte original** (Wikisource), jamais de mémoire.
