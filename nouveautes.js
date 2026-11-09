@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Espagne",
+"titre": "Espagne : El Hierro déclare l'urgence sociale face à l'afflux de migrants en cayucos aux Canaries",
+"url": "actualites/es/articles/espagne-el-hierro-urgence-sociale-cayucos-2026.html",
+"image": "actualites/es/images/espagne-el-hierro-urgence-sociale-cayucos-2026.webp",
+"date": "2026-11-09T20:25:46+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Pays-Bas",
@@ -1685,15 +1694,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Les États-Unis interdisent l'entrée de près d'un milliard de dollars de produits canadiens",
 "url": "actualites/en/articles/canada-us-import-ban-2026.html",
 "image": "actualites/en/images/canada-us-import-ban-2026.webp",
-"date": "2026-10-01T13:52:44+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Espagne",
-"titre": "Espagne : après l'expulsion de Maricarmen, deux décrets logement soumis au vote du Congrès",
-"url": "actualites/es/articles/espagne-crise-logement-maricarmen.html",
-"image": "actualites/es/images/espagne-crise-logement-maricarmen.webp",
 "date": "2026-10-01T13:52:44+00:00"
 },
 {
