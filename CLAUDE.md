@@ -808,7 +808,11 @@ Procédure de A à Z, sans poser de question jusqu'à la mise en ligne :
   « Avec et contre » (6 cartes `.f-acteur` de l'ancien modèle : « Ce qu'il défend » / « Face à Rousseau », une phrase
   chacune, longueurs égales) ; « Dans une copie » et « Pour aller plus loin » repris de l'ancien modèle (`.f-copie`,
   `.f-plus`) ; l'accroche part de l'auteur lui-même (une citation, une œuvre), jamais d'un autre exemple. Pas de frise de
-  la vie, pas de récapitulatif des notions, pas de durée.
+  la vie, pas de récapitulatif des notions, pas de durée. **Des schémas propres à chaque auteur** (demande du propriétaire) :
+  partir de ce que l'auteur dit, jamais reprendre d'office ceux de Rousseau (Hobbes : machine à désirs `.machine`, trois
+  causes `.trio`, preuves du quotidien `.preuves`, frontispice commenté `.front`, bilan du contrat `.bilan`, face-à-face avec
+  Aristote) ; même règle pour la fiche PDF. Une refonte s'assemble avec le corps neuf (héros, essentiel, 3 parties) + les
+  8 questions, « Dans une copie » et « Plus loin » de l'ancienne page.
 - **Fiche PDF d'une page** (« infographie », choisie par le propriétaire parmi 4 propositions, novembre 2026) : source
   `outils/fiche-auteur/<slug>.html` (copier `rousseau.html` : en-tête noir avec portrait rond, 1 « Ce qui fait l'homme »
   (tuiles et fourche), 2 schéma à 4 étapes avec pictogrammes et étiquettes de résultat **alignées en bas**, 3 remèdes,
