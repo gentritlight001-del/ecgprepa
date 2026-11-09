@@ -804,7 +804,7 @@ Procédure de A à Z, sans poser de question jusqu'à la mise en ligne :
   des blocs titrés (`.bloc-t`) **toujours introduits par 2 ou 3 phrases** (`p.intro`, même espace de 16 px avant et
   après), notions **par deux** côte à côte (définition simple, citation exacte, « À retenir »), schémas sans tableau
   (comparaison en cartes, fourche, transformation fléchée, escalier, face-à-face avec un adversaire, chaînes problème →
-  solution) ; puis « Huit questions du thème » (`<details>`, la 1re ouverte, réponse courte visible, intro de 2 lignes) ;
+  solution) ; puis « Huit questions du thème » (`<details>`, toutes fermées à l'arrivée, réponse courte visible, intro de 2 lignes) ;
   « Avec et contre » (6 cartes `.f-acteur` de l'ancien modèle : « Ce qu'il défend » / « Face à Rousseau », une phrase
   chacune, longueurs égales) ; « Dans une copie » et « Pour aller plus loin » repris de l'ancien modèle (`.f-copie`,
   `.f-plus`) ; l'accroche part de l'auteur lui-même (une citation, une œuvre), jamais d'un autre exemple. Pas de frise de
