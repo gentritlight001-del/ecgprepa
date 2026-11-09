@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Terminale · La dérivation (vidéo)</title>
+<!--
+  Mini vidéo « motion design » sans son : les bases de la dérivation (Terminale), même moteur que les vidéos de la
+  colle 7 (maths2-colle7-ex7.html), palette violette. Rendu :
+    python3 outils/video/generer.py outils/video/maths-terminale-derivation.html --controle
+    python3 outils/video/generer.py outils/video/maths-terminale-derivation.html --images <scratchpad>/img
+    python3 outils/video/generer.py outils/video/maths-terminale-derivation.html <scratchpad>/derivation.mp4
+  KaTeX : outils/colles/.katex (créé par outils/colles/generer.py, ignoré par git). Le MP4 n'est jamais versionné.
+-->
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../colles/.katex/katex.min.css">
+<script src="../colles/.katex/katex.min.js"></script>
+<script src="../colles/.katex/contrib/auto-render.min.js"></script>
+<style>
+:root {
+  --bg: #0d0b14; --bg2: #161222; --or: #b78cff; --or-f: #6c45b8; --creme: #f1eefa; --dim: #a49cbb;
+  --vert: #7cc68f; --rouge: #ef6a55; --bleu: #5fd3c4; --ligne: rgba(183,140,255,.22);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); }
+body { font-family: 'IBM Plex Sans', sans-serif; color: var(--creme); -webkit-font-smoothing: antialiased; }
+#stage { position: relative; width: 1920px; height: 1080px; overflow: hidden;
+  background: radial-gradient(ellipse at 30% 20%, #1d1730 0%, var(--bg) 60%); }
+#grille { position: absolute; inset: -80px; opacity: .55;
+  background-image: linear-gradient(rgba(183,140,255,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(183,140,255,.06) 1px, transparent 1px);
+  background-size: 80px 80px; }
+/* habillage fixe */
+#logo { position: absolute; left: 80px; top: 52px; font: 700 30px 'Playfair Display', serif; color: var(--creme); z-index: 5; }
+#logo b { color: var(--or); }
+#etiq { position: absolute; right: 80px; top: 58px; font: 500 20px 'IBM Plex Mono', monospace; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--dim); z-index: 5; }
+#etiq span { color: var(--or); }
+#etapes { position: absolute; left: 80px; bottom: 50px; display: flex; gap: 36px; z-index: 5;
+  font: 500 19px 'IBM Plex Mono', monospace; letter-spacing: .1em; text-transform: uppercase; color: rgba(164,156,187,.55); }
+#etapes .on { color: var(--or); }
+#etapes .fait { color: var(--vert); }
+#etapes .fait i { background: var(--vert); color: var(--bg); }
+#etapes i { font-style: normal; display: inline-block; width: 30px; height: 30px; line-height: 28px; text-align: center;
+  border: 1.5px solid currentColor; border-radius: 50%; margin-right: 10px; font-size: 16px; }
+#barre { position: absolute; left: 0; bottom: 0; height: 6px; background: var(--or); z-index: 5; }
+#piste { position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: rgba(183,140,255,.12); }
+
+/* scènes */
+.scene { position: absolute; inset: 0; padding: 150px 120px 120px; display: block; }
+.kick { font: 500 22px 'IBM Plex Mono', monospace; letter-spacing: .16em; text-transform: uppercase; color: var(--or); margin-bottom: 22px; }
+.kick b { display: inline-block; background: var(--or); color: var(--bg); padding: 4px 12px; border-radius: 6px; margin-right: 14px; font-weight: 600; }
+h2.titre { font: 600 64px/1.1 'Fraunces', serif; margin-bottom: 40px; letter-spacing: -.01em; }
+h2.titre em { font-style: normal; color: var(--or); }
+.ligne { font-size: 38px; line-height: 1.45; margin-bottom: 26px; }
+.ligne.petit { font-size: 32px; color: var(--dim); }
+.big { font-size: 50px; text-align: center; margin: 26px 0 34px; }
+.carte { background: rgba(255,255,255,.035); border: 1.5px solid var(--ligne); border-radius: 22px; padding: 30px 40px; }
+.carte.or { border-color: var(--or); background: rgba(183,140,255,.07); }
+.carte .kick { margin-bottom: 12px; font-size: 19px; }
+.ok { color: var(--vert); }
+.ko { color: var(--rouge); }
+.coche { display: inline-flex; align-items: center; gap: 16px; font: 600 36px 'IBM Plex Sans'; color: var(--vert);
+  border: 2px solid var(--vert); border-radius: 60px; padding: 12px 34px; background: rgba(124,198,143,.08); }
+.coche::before { content: '✓'; font-size: 38px; }
+.cols { display: grid; grid-template-columns: 1fr 700px; gap: 70px; align-items: start; }
+.mark { background: linear-gradient(rgba(183,140,255,.35), rgba(183,140,255,.35)) no-repeat 0 85% / 0% 40%; padding: 0 4px; }
+.katex { font-size: 1.08em; }
+.hl { border-radius: 6px; padding: 0 1px; }
+.anim { will-change: opacity, transform; }
+svg text { font-family: 'IBM Plex Sans', sans-serif; }
+
+/* scène 1 */
+.s-titre { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding-top: 80px; }
+.s-titre h1 { font: 600 170px/1 'Fraunces', serif; letter-spacing: -.02em; margin: 10px 0 40px; }
+.s-titre h1 span { color: var(--or); }
+.s-titre .big { font-size: 64px; margin: 0 0 40px; }
+.s-titre .sous { font-size: 36px; color: var(--dim); }
+
+/* énoncé */
+.enonce { max-width: 1500px; margin: 0 auto; padding: 44px 60px; }
+.enonce .ligne { font-size: 42px; }
+.q { display: flex; gap: 26px; align-items: baseline; font-size: 42px; margin-top: 26px; }
+.q b { font: 600 34px 'IBM Plex Mono'; color: var(--bg); background: var(--or); border-radius: 50%; width: 56px; height: 56px;
+  display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.ref { margin-top: 36px; text-align: center; font: 500 22px 'IBM Plex Mono'; letter-spacing: .1em; color: var(--dim); text-transform: uppercase; }
+
+/* tableau IPP */
+.ipp { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px 60px; font-size: 40px; max-width: 1240px; margin: 0 auto 36px; }
+.ipp div { background: rgba(255,255,255,.035); border-radius: 16px; padding: 14px 30px; border-left: 5px solid var(--or); }
+.ipp div.v { border-left-color: var(--bleu); }
+.eq { font-size: 44px; text-align: center; margin: 22px 0; }
+
+/* résultat */
+.res { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.cadre { border: 3px solid var(--or); border-radius: 26px; padding: 40px 80px; font-size: 76px; background: rgba(183,140,255,.07);
+  box-shadow: 0 0 80px rgba(183,140,255,.15); }
+.cadre .pour { font-size: 34px; color: var(--dim); margin-bottom: 10px; font-family: 'IBM Plex Sans'; }
+.chaine { display: flex; gap: 26px; align-items: center; font-size: 40px; margin-top: 20px; }
+.chaine .g { background: rgba(255,255,255,.05); border: 1.5px solid var(--ligne); border-radius: 16px; padding: 12px 26px; }
+.chaine .fl { color: var(--or); font-size: 34px; }
+
+/* pièges */
+.pieges { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 50px; margin-top: 20px; }
+.piege { display: flex; gap: 26px; align-items: flex-start; font-size: 38px; line-height: 1.4; }
+.piege b.n { font: 600 56px/1 'Fraunces', serif; color: var(--or); flex: none; width: 54px; }
+.piege .carte { padding: 30px 38px; flex: 1; min-height: 250px; }
+
+/* fin */
+.s-fin { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.s-fin .logo { font: 700 120px 'Playfair Display', serif; }
+.s-fin .logo b { color: var(--or); }
+.s-fin .ligne { color: var(--dim); }
+
+/* dérivation (Terminale) */
+.cols.c2 { grid-template-columns: 1fr 700px; }
+.mesure { font: 500 26px 'IBM Plex Mono', monospace; }
+.usu { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 50px; max-width: 1560px; margin: 10px auto 0; }
+.usu > div { display: grid; grid-template-columns: 1fr 60px 1.25fr; align-items: center; font-size: 38px;
+  background: rgba(255,255,255,.035); border-radius: 16px; padding: 14px 30px; border-left: 5px solid var(--or); }
+.usu > div .fl { color: var(--or); text-align: center; font-size: 34px; }
+.usu > div.v { border-left-color: var(--bleu); }
+.ops { display: grid; grid-template-columns: 1fr 1fr; gap: 24px 44px; max-width: 1600px; margin: 0 auto; }
+.ops .carte { font-size: 40px; text-align: center; padding: 22px 30px; }
+.ops .carte .kick { font-size: 18px; margin-bottom: 6px; }
+.tv { display: grid; grid-template-columns: 110px repeat(7, 1fr); font-size: 34px; border: 1.5px solid var(--ligne);
+  border-radius: 16px; overflow: hidden; margin-top: 24px; }
+.tv > div { display: flex; align-items: center; justify-content: center; height: 70px; border-top: 1.5px solid var(--ligne); }
+.tv > div.h { border-top: none; }
+.tv > div.lab { background: rgba(183,140,255,.08); color: var(--or); border-right: 1.5px solid var(--ligne); font-size: 30px; }
+.tv > div.f { height: 150px; }
+.tv .haut { align-self: flex-start; padding-top: 14px; }
+.tv .bas { align-self: flex-end; padding-bottom: 14px; }
+.tv .fl { font-size: 46px; }
+.tv .fl.ok { color: var(--vert); }
+.tv .fl.ko { color: var(--rouge); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="grille"></div>
+  <div id="logo">ECG <b>Prépa</b></div>
+  <div id="etiq">Terminale · <span>Dérivation</span></div>
+  <div id="piste"></div><div id="barre"></div>
+  <div id="etapes"><span data-p="1"><i>1</i>L'idée</span><span data-p="2"><i>2</i>Les formules</span><span data-p="3"><i>3</i>Un exemple</span><span data-p="4"><i>4</i>Les variations</span></div>
+
+  <!-- 1. Titre -->
+  <section class="scene s-titre" data-dur="7">
+    <div class="kick anim" data-in="0.3">Maths · Les bases de Terminale</div>
+    <h1 class="anim" data-v="derivation" data-in="0.7" data-a="pop" data-d="0.9">La <span>dérivation</span></h1>
+    <div class="big anim" data-v="seule" data-in="1.7" data-a="wipe" data-d="1.4">\(\displaystyle f'(a) = \lim_{h \to 0} \frac{f(a+h) - f(a)}{h}\)</div>
+    <div class="sous anim" data-v="nombre" data-in="3.2">Un nombre dérivé, c'est une pente</div>
+  </section>
+
+  <!-- 2. Taux d'accroissement -> tangente -->
+  <section class="scene" data-dur="19" data-part="1" data-fn="secante" data-fn-v="regardez" data-fn-t="6">
+    <div class="kick anim" data-in="0.2"><b>1</b>L'idée</div>
+    <h2 class="titre anim" data-in="0.4">De la sécante à <em>la tangente</em></h2>
+    <div class="cols c2">
+      <div>
+        <div class="ligne anim" data-v="on part" data-in="1.2">On relie le point \(A\) d'abscisse \(a\) à un point voisin \(M\) d'abscisse \(a+h\).</div>
+        <div class="ligne anim" data-v="la pente" data-in="3">La pente de la droite \((AM)\) est le <span class="mark anim" data-v="taux" data-in="4">taux d'accroissement</span>&nbsp;:</div>
+        <div class="big anim" data-in="5" data-a="wipe" data-d="1.2" style="margin:10px 0 30px">\(\displaystyle \tau(h) = \frac{f(a+h) - f(a)}{h}\)</div>
+        <div class="ligne anim" data-v="quand" data-in="8">Quand \(h\) tend vers \(0\), \(M\) glisse vers \(A\) et la sécante devient la <b style="color:var(--bleu)">tangente</b>.</div>
+        <div class="ligne petit anim" data-v="ici" data-in="13.5">Ici \(f(x) = \frac{x^2}{4} + \frac12\) et \(a = 2\)&nbsp;: les pentes tendent vers \(1\).</div>
+      </div>
+      <svg id="g2" viewBox="0 0 700 560" width="700" height="560" class="anim" data-in="1.6" data-a="fade">
+        <defs><clipPath id="g2clip"><rect x="40" y="20" width="640" height="480"/></clipPath></defs>
+        <line x1="40" y1="490" x2="680" y2="490" stroke="#a49cbb" stroke-width="2"/>
+        <line x1="160" y1="20" x2="160" y2="510" stroke="#a49cbb" stroke-width="2"/>
+        <path id="g2f" fill="none" stroke="#f1eefa" stroke-width="4" clip-path="url(#g2clip)"/>
+        <line id="g2tan" x1="0" y1="0" x2="0" y2="0" stroke="#5fd3c4" stroke-width="4" stroke-dasharray="14 10" clip-path="url(#g2clip)" opacity="0"/>
+        <line id="g2sec" x1="0" y1="0" x2="0" y2="0" stroke="#b78cff" stroke-width="4" clip-path="url(#g2clip)"/>
+        <line id="g2h" x1="0" y1="490" x2="0" y2="490" stroke="#b78cff" stroke-width="2" stroke-dasharray="6 7" opacity=".7"/>
+        <circle id="g2A" r="10" fill="#f1eefa"/>
+        <circle id="g2M" r="10" fill="#b78cff"/>
+        <text id="g2At" fill="#f1eefa" font-size="30" font-style="italic">A</text>
+        <text id="g2Mt" fill="#b78cff" font-size="30" font-style="italic">M</text>
+        <text x="60" y="545" fill="#a49cbb" font-size="26">h =</text>
+        <text id="g2hv" x="112" y="545" fill="#f1eefa" font-size="28" font-weight="600">2,50</text>
+        <text x="330" y="545" fill="#a49cbb" font-size="26">pente =</text>
+        <text id="g2pv" x="436" y="545" fill="#b78cff" font-size="28" font-weight="600">1,63</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- 3. Nombre dérivé et tangente -->
+  <section class="scene" data-dur="15" data-part="1" data-hl='{"hP": 6.2, "hB": 7.6}'>
+    <div class="kick anim" data-in="0.2"><b>1</b>L'idée</div>
+    <h2 class="titre anim" data-in="0.4">Le nombre dérivé, <em>pente de la tangente</em></h2>
+    <div class="ligne anim" data-v="si ce" data-in="1.2" style="text-align:center">Si le taux d'accroissement a une limite finie, \(f\) est <b>dérivable en \(a\)</b> et&nbsp;:</div>
+    <div class="cadre anim" data-v="cette limite" data-in="2.6" data-a="pop" style="font-size:58px;text-align:center;margin:20px auto 40px;width:max-content">\(\displaystyle f'(a) = \lim_{h \to 0} \frac{f(a+h) - f(a)}{h}\)</div>
+    <div class="ligne anim" data-v="on en" data-in="4.8" style="text-align:center">Équation de la tangente en \(a\)&nbsp;:</div>
+    <div class="big anim" data-in="5.4" data-a="wipe" data-d="1.2" style="margin-top:6px">\(y = \htmlClass{hl hP}{f'(a)}\,(x - a) + \htmlClass{hl hB}{f(a)}\)</div>
+    <div class="ligne petit anim" data-v="exemple" data-in="9.5" style="text-align:center">Avec \(f(x) = \frac{x^2}{4} + \frac12\) en \(a = 2\)&nbsp;: \(f(2) = \frac32\), \(f'(2) = 1\), donc \(y = x - \frac12\).</div>
+  </section>
+
+  <!-- 4. Dérivées usuelles -->
+  <section class="scene" data-dur="16" data-part="2">
+    <div class="kick anim" data-in="0.2"><b>2</b>Les formules</div>
+    <h2 class="titre anim" data-in="0.4">Les <em>dérivées usuelles</em></h2>
+    <div class="usu">
+      <div class="anim" data-v="constante" data-in="1.2"><span>\(k\)</span><span class="fl">→</span><span>\(0\)</span></div>
+      <div class="anim v" data-v="reste" data-in="6"><span>\(\mathrm{e}^x\)</span><span class="fl">→</span><span>\(\mathrm{e}^x\)</span></div>
+      <div class="anim" data-v="puissance" data-in="2.4"><span>\(x^n\)</span><span class="fl">→</span><span>\(n\,x^{n-1}\)</span></div>
+      <div class="anim v" data-v="logarithm" data-in="7.2"><span>\(\ln x\)</span><span class="fl">→</span><span>\(\dfrac{1}{x}\)&nbsp; <small style="color:var(--dim);font-size:26px">(\(x &gt; 0\))</small></span></div>
+      <div class="anim" data-v="donne moins" data-in="3.6"><span>\(\dfrac{1}{x}\)</span><span class="fl">→</span><span>\(-\dfrac{1}{x^2}\)</span></div>
+      <div class="anim v" data-v="cosinus" data-in="8.4"><span>\(\cos x\)</span><span class="fl">→</span><span>\(-\sin x\)</span></div>
+      <div class="anim" data-v="racine" data-in="4.8"><span>\(\sqrt{x}\)</span><span class="fl">→</span><span>\(\dfrac{1}{2\sqrt{x}}\)&nbsp; <small style="color:var(--dim);font-size:26px">(\(x &gt; 0\))</small></span></div>
+      <div class="anim v" data-v="et sinus" data-in="9.6"><span>\(\sin x\)</span><span class="fl">→</span><span>\(\cos x\)</span></div>
+    </div>
+  </section>
+
+  <!-- 5. Opérations -->
+  <section class="scene" data-dur="17" data-part="2">
+    <div class="kick anim" data-in="0.2"><b>2</b>Les formules</div>
+    <h2 class="titre anim" data-in="0.4">Dériver <em>sommes, produits, composées</em></h2>
+    <div class="ops">
+      <div class="carte anim" data-v="somme" data-in="1.2" data-a="pop"><div class="kick">Somme</div>\((u + v)' = u' + v'\)</div>
+      <div class="carte or anim" data-v="produit" data-in="2.8" data-a="pop"><div class="kick">Produit</div>\((uv)' = u'v + uv'\)</div>
+      <div class="carte anim" data-v="quotient" data-in="4.4" data-a="pop"><div class="kick">Quotient</div>\(\left(\dfrac{u}{v}\right)' = \dfrac{u'v - uv'}{v^2}\)</div>
+      <div class="carte anim" data-v="composee" data-in="6" data-a="pop"><div class="kick">Composée</div>\(\big(g(u)\big)' = u' \times g'(u)\)</div>
+      <div class="carte anim" data-v="ainsi" data-in="7.6" data-a="pop"><div class="kick">Exponentielle</div>\(\left(\mathrm{e}^{u}\right)' = u'\,\mathrm{e}^{u}\)</div>
+      <div class="carte anim" data-v="logarithm" data-in="9.2" data-a="pop"><div class="kick">Logarithme</div>\(\big(\ln u\big)' = \dfrac{u'}{u}\)</div>
+    </div>
+  </section>
+
+  <!-- 6. Exemple -->
+  <section class="scene" data-dur="19" data-part="3" data-hl='{"hU": 7.4, "hV": 8.4}'>
+    <div class="kick anim" data-in="0.2"><b>3</b>Un exemple</div>
+    <h2 class="titre anim" data-in="0.4">Dériver \(f(x) = (2x + 1)\,\mathrm{e}^{-x}\)</h2>
+    <div class="ligne anim" data-v="produit" data-in="1.2" style="text-align:center">C'est un produit \(uv\)&nbsp;: on pose les quatre morceaux.</div>
+    <div class="ipp">
+      <div class="anim" data-v="vau" data-in="2.4">\(u(x) = 2x + 1\)</div>
+      <div class="v anim" data-v="v vau" data-in="3.4">\(v(x) = \mathrm{e}^{-x}\)</div>
+      <div class="anim" data-v="prime vau" data-in="4.4">\(u'(x) = 2\)</div>
+      <div class="v anim" data-v="et v" data-in="5.4">\(v'(x) = -\mathrm{e}^{-x}\) <small style="color:var(--dim);font-size:26px">(composée)</small></div>
+    </div>
+    <div class="eq anim" data-v="on applique" data-in="7" data-a="wipe" data-d="1.4">\(f'(x) = \htmlClass{hl hU}{2\,\mathrm{e}^{-x}} \htmlClass{hl hV}{- (2x + 1)\,\mathrm{e}^{-x}}\)</div>
+    <div class="eq anim" data-v="factorise" data-in="10.5" data-a="wipe" data-d="1.2">\(f'(x) = (2 - 2x - 1)\,\mathrm{e}^{-x} = \)<span class="cadre" style="font-size:44px;padding:6px 26px;margin-left:12px">\((1 - 2x)\,\mathrm{e}^{-x}\)</span></div>
+    <div class="ligne petit anim" data-in="13.5" style="text-align:center">On factorise par \(\mathrm{e}^{-x}\)&nbsp;: c'est lui qui rend le signe facile à lire.</div>
+    <div class="anim" data-v="comme" data-in="15" data-a="pop" style="text-align:center;margin-top:18px"><span class="coche">\(f\) croît jusqu'à \(x = \frac12\), puis décroît</span></div>
+  </section>
+
+  <!-- 7. Signe et variations -->
+  <section class="scene" data-dur="21" data-part="4" data-fn="variations" data-fn-v="regardez" data-fn-t="2.5">
+    <div class="kick anim" data-in="0.2"><b>4</b>Les variations</div>
+    <h2 class="titre anim" data-in="0.4">Le signe de \(f'\) donne <em>les variations</em></h2>
+    <div class="cols c2">
+      <div>
+        <div class="ligne anim" data-v="le signe" data-in="1.2">\(f' &gt; 0\) sur un intervalle&nbsp;: <span class="ok">\(f\) croissante</span>. \(f' &lt; 0\)&nbsp;: <span class="ko" style="white-space:nowrap">\(f\) décroissante</span>.</div>
+        <div class="ligne petit anim" data-v="prenons" data-in="3.4">\(f(x) = x^3 - 3x\), \(f'(x) = 3x^2 - 3 = 3(x - 1)(x + 1)\)</div>
+        <div class="tv anim" data-v="tableau" data-in="9" data-a="fade">
+          <div class="lab h">\(x\)</div><div class="h">\(-\infty\)</div><div class="h"></div><div class="h">\(-1\)</div><div class="h"></div><div class="h">\(1\)</div><div class="h"></div><div class="h">\(+\infty\)</div>
+          <div class="lab">\(f'(x)\)</div><div></div><div class="ok">\(+\)</div><div>\(0\)</div><div class="ko">\(-\)</div><div>\(0\)</div><div class="ok">\(+\)</div><div></div>
+          <div class="lab f">\(f(x)\)</div><div class="f"><span class="bas">\(-\infty\)</span></div><div class="f"><span class="fl ok">↗</span></div><div class="f"><span class="haut">\(2\)</span></div><div class="f"><span class="fl ko">↘</span></div><div class="f"><span class="bas">\(-2\)</span></div><div class="f"><span class="fl ok">↗</span></div><div class="f"><span class="haut">\(+\infty\)</span></div>
+        </div>
+      </div>
+      <svg id="g7" viewBox="0 0 700 560" width="700" height="560" class="anim" data-in="1.6" data-a="fade">
+        <defs><clipPath id="g7clip"><rect x="20" y="20" width="660" height="500"/></clipPath></defs>
+        <line x1="20" y1="270" x2="680" y2="270" stroke="#a49cbb" stroke-width="2"/>
+        <line x1="350" y1="20" x2="350" y2="520" stroke="#a49cbb" stroke-width="2"/>
+        <path id="g7f" fill="none" stroke="#f1eefa" stroke-width="4" clip-path="url(#g7clip)"/>
+        <line id="g7tan" x1="0" y1="0" x2="0" y2="0" stroke-width="5" stroke-linecap="round" clip-path="url(#g7clip)"/>
+        <circle id="g7P" r="11" fill="#f1eefa"/>
+        <text x="40" y="548" fill="#a49cbb" font-size="26">f′(x) =</text>
+        <text id="g7v" x="140" y="548" font-size="28" font-weight="600" fill="#7cc68f">+6,00</text>
+        <text id="g7s" x="300" y="548" font-size="26" fill="#7cc68f">f croissante</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- 8. Réflexes -->
+  <section class="scene" data-dur="16">
+    <div class="kick anim" data-in="0.2">À retenir</div>
+    <h2 class="titre anim" data-in="0.4">Les <em>4 réflexes</em></h2>
+    <div class="pieges">
+      <div class="piege anim" data-v="pente" data-in="1.2"><b class="n">1</b><div class="carte">\(f'(a)\) est la pente de la tangente en \(a\)&nbsp;: \(y = f'(a)(x - a) + f(a)\).</div></div>
+      <div class="piege anim" data-v="produit" data-in="4.2"><b class="n">2</b><div class="carte">Un produit se dérive en \(u'v + uv'\), <span class="ko">jamais en \(u'v'\)</span>.</div></div>
+      <div class="piege anim" data-v="factoris" data-in="7.2"><b class="n">3</b><div class="carte">Factoriser \(f'(x)\) avant d'étudier son signe&nbsp;: \(\mathrm{e}^{-x} &gt; 0\) ne change rien.</div></div>
+      <div class="piege anim" data-v="s annule" data-in="10.2"><b class="n">4</b><div class="carte">\(f'\) s'annule sans changer de signe&nbsp;? Pas d'extremum (\(x^3\) en \(0\)).</div></div>
+    </div>
+  </section>
+
+  <!-- 9. Fin -->
+  <section class="scene s-fin" data-dur="6">
+    <div class="logo anim" data-in="0.3" data-a="pop">ECG <b>Prépa</b></div>
+    <div class="ligne anim" data-in="1.2" style="margin-top:20px">Les bases de Terminale · La dérivation</div>
+    <div class="ligne anim" data-in="2" style="color:var(--or)">ecg-prepa.fr</div>
+  </section>
+</div>
+
+<script>
+(() => {
+  renderMathInElement(document.body, {
+    delimiters: [{ left: '\\[', right: '\\]', display: true }, { left: '\\(', right: '\\)', display: false }],
+    trust: true, strict: false, throwOnError: false,
+  });
+
+  const clamp = v => Math.max(0, Math.min(1, v));
+  const easeOut = p => 1 - Math.pow(1 - p, 3);
+  const easeInOut = p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+  const back = p => { const c = 1.7; return 1 + (c + 1) * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2); };
+  const virgule = v => v.toFixed(2).replace('.', ',');
+
+  // Courbes : t ↦ y dans un repère [t0, t1] × [0, ymax] posé sur la zone (gx, gy, gw, gh) du SVG.
+  function chemin(f, t0, t1, ymax, gx, gy, gw, gh, n = 240) {
+    let d = '';
+    for (let i = 0; i <= n; i++) {
+      const t = t0 + (t1 - t0) * (i / n);
+      const y = Math.min(f(t), ymax * 1.6);
+      d += (i ? 'L' : 'M') + (gx + gw * (t - t0) / (t1 - t0)).toFixed(1) + ' ' + (gy + gh - gh * y / ymax).toFixed(1);
+    }
+    return d;
+  }
+  const FN = {
+    secante(sc, l) {   // M glisse vers A : la pente de (AM) tend vers f'(2) = 1
+      const f = x => x * x / 4 + .5, X = x => 160 + 100 * x, Y = y => 490 - 65 * y, a = 2;
+      const path = sc.querySelector('#g2f');
+      if (!path.getAttribute('d')) path.setAttribute('d', chemin(f, -1.2, 5.2, 7, 40, 490 - 65 * 7, 640, 65 * 7));
+      const p = easeInOut(clamp((l - 6) / 7)), h = 2.5 - 2.49 * p, s = (f(a + h) - f(a)) / h;
+      const ligne = (el, pente) => { el.setAttribute('x1', X(-1.5)); el.setAttribute('y1', Y(f(a) + pente * (-1.5 - a)));
+        el.setAttribute('x2', X(5.5)); el.setAttribute('y2', Y(f(a) + pente * (5.5 - a))); };
+      ligne(sc.querySelector('#g2sec'), s); ligne(sc.querySelector('#g2tan'), 1);
+      sc.querySelector('#g2tan').setAttribute('opacity', clamp((l - 12.5) / .8));
+      sc.querySelector('#g2sec').setAttribute('opacity', 1 - .7 * clamp((l - 12.5) / .8));
+      const A = sc.querySelector('#g2A'), M = sc.querySelector('#g2M');
+      A.setAttribute('cx', X(a)); A.setAttribute('cy', Y(f(a))); M.setAttribute('cx', X(a + h)); M.setAttribute('cy', Y(f(a + h)));
+      const At = sc.querySelector('#g2At'); At.setAttribute('x', X(a) - 40); At.setAttribute('y', Y(f(a)) + 10);
+      const Mt = sc.querySelector('#g2Mt'); Mt.setAttribute('x', X(a + h) + 16); Mt.setAttribute('y', Y(f(a + h)) + 34);
+      const g = sc.querySelector('#g2h'); g.setAttribute('x1', X(a)); g.setAttribute('x2', X(a + h)); g.setAttribute('y1', Y(f(a))); g.setAttribute('y2', Y(f(a)));
+      sc.querySelector('#g2hv').textContent = p >= 1 ? '→ 0' : virgule(h);
+      sc.querySelector('#g2pv').textContent = p >= 1 ? '→ 1 = f′(2)' : virgule(s);
+    },
+    variations(sc, l) {   // un point parcourt x³ − 3x : tangente verte quand f′ > 0, rouge quand f′ < 0
+      const f = x => x * x * x - 3 * x, d = x => 3 * x * x - 3, X = x => 350 + 130 * x, Y = y => 270 - 62 * y;
+      const path = sc.querySelector('#g7f');
+      if (!path.getAttribute('d')) path.setAttribute('d', chemin(x => f(x) + 4, -2.5, 2.5, 8, 25, 270 - 62 * 4, 650, 62 * 8));
+      const x = -2.1 + 4.2 * easeInOut(clamp((l - 2.5) / 9)), s = d(x);
+      const c = Math.abs(s) < .06 ? '#f1eefa' : s > 0 ? '#7cc68f' : '#ef6a55', k = .75 / Math.sqrt(1 + s * s);
+      const t = sc.querySelector('#g7tan');
+      t.setAttribute('x1', X(x - k)); t.setAttribute('y1', Y(f(x) - s * k)); t.setAttribute('x2', X(x + k)); t.setAttribute('y2', Y(f(x) + s * k));
+      t.setAttribute('stroke', c);
+      const P = sc.querySelector('#g7P'); P.setAttribute('cx', X(x)); P.setAttribute('cy', Y(f(x)));
+      const v = sc.querySelector('#g7v'); v.textContent = (s < -.005 ? '−' : '+') + Math.abs(s).toFixed(2).replace('.', ','); v.setAttribute('fill', c);
+      const st = sc.querySelector('#g7s'); st.setAttribute('fill', c);
+      st.textContent = Math.abs(s) < .06 ? 'tangente horizontale' : s > 0 ? 'f croissante' : 'f décroissante';
+    },
+  };
+
+  const scenes = [...document.querySelectorAll('.scene')];
+  const plans = scenes.map(el => {
+    const p = { el, dur: +el.dataset.dur, hl: JSON.parse(el.dataset.hl || '{}'), part: el.dataset.part || '', decal: 0, manque: [] };
+    p.items = [...el.querySelectorAll('[data-in]')].map(e => ({
+      e, t: +e.dataset.in, a: e.dataset.a || (e.classList.contains('mark') ? 'mark' : 'up'),
+      d: +(e.dataset.d || (e.dataset.a === 'draw' ? 1.4 : e.dataset.a === 'pop' ? .7 : e.dataset.a === 'wipe' ? 1 : .6)),
+      out: e.dataset.out ? +e.dataset.out : null,
+    }));
+    return p;
+  });
+
+  // Voix off (voix.py synthese) : chaque écran dure le temps de sa voix, et chaque élément data-v apparaît quand la
+  // voix prononce son mot repère (mots.json, transcrit par Whisper) ; les autres éléments suivent au prorata.
+  const DEPART = .4;
+  const norm = w => w.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  function trouve(mots, cle, depuis) {
+    const k = cle.split(' ').map(norm);
+    for (let j = depuis; j <= mots.length - k.length; j++)
+      if (k.every((x, q) => norm(mots[j + q][0]).startsWith(x))) return j;
+    return -1;
+  }
+  if (window.VOIX) plans.forEach((p, i) => {
+    const voix = window.VOIX[i + 1], mots = (window.VOIX_MOTS || {})[i + 1] || [];
+    if (voix == null) return;
+    const k = (DEPART + voix) / Math.max(1, p.dur - 1.5);
+    let curseur = 0;
+    [...p.items].sort((a, b) => a.t - b.t).forEach(it => {
+      const cle = it.e.dataset.v, j = cle ? trouve(mots, cle, curseur) : -1;
+      if (cle && j < 0) p.manque.push(cle);
+      if (j >= 0) { it.t = DEPART + mots[j][1] - .15; curseur = j; } else it.t *= k;
+    });
+    for (const [cl, t0] of Object.entries(p.hl)) {
+      const j = typeof t0 === 'string' ? trouve(mots, t0, 0) : -1;
+      if (typeof t0 === 'string' && j < 0) p.manque.push(t0);
+      p.hl[cl] = j >= 0 ? DEPART + mots[j][1] - .1 : typeof t0 === 'number' ? t0 * k : 1e9;
+    }
+    if (p.el.dataset.fnV) {
+      const j = trouve(mots, p.el.dataset.fnV, 0);
+      if (j >= 0) p.decal = DEPART + mots[j][1] - +p.el.dataset.fnT; else p.manque.push(p.el.dataset.fnV);
+    }
+    p.dur = Math.max(4, DEPART + voix + .9, ...p.items.map(it => it.t + it.d + .8));
+  });
+  let debut = 0;
+  plans.forEach(p => { p.start = debut; debut += p.dur; });
+  const DUREE = debut + .5;
+  const longueurs = new Map();
+  plans.forEach(p => { p.el.style.display = ''; });
+  plans.forEach(p => p.items.forEach(it => { if (it.a === 'draw' && it.e.getTotalLength) longueurs.set(it.e, it.e.getTotalLength()); }));
+  plans.forEach(p => { p.el.style.display = 'none'; });
+
+  const barre = document.getElementById('barre'), grille = document.getElementById('grille');
+  const etapes = [...document.querySelectorAll('#etapes [data-p]')], etapesBox = document.getElementById('etapes');
+
+  function anim(it, l) {
+    const p = clamp((l - it.t) / it.d), e = it.e;
+    let o = 1, tr = '';
+    if (it.a === 'up') { o = easeOut(p); tr = `translateY(${(1 - easeOut(p)) * 34}px)`; }
+    else if (it.a === 'fade') o = easeOut(p);
+    else if (it.a === 'pop') { o = clamp(p * 2.5); tr = `scale(${.82 + .18 * back(p)})`; }
+    else if (it.a === 'wipe') { o = clamp(p * 4); e.style.clipPath = `inset(-30px ${(1 - easeInOut(p)) * 100}% -30px -30px)`; }
+    else if (it.a === 'draw') { const L = longueurs.get(e) || 1; e.style.strokeDasharray = L; e.style.strokeDashoffset = L * (1 - easeInOut(p)); o = p > 0 ? 1 : 0; }
+    else if (it.a === 'mark') { e.style.backgroundSize = `${easeInOut(p) * 100}% 40%`; return; }
+    if (it.out != null) o *= 1 - clamp((l - it.out) / .4);
+    e.style.opacity = o;
+    if (e instanceof SVGElement) { if (tr) e.style.transformBox = 'fill-box', e.style.transformOrigin = 'center'; }
+    e.style.transform = tr;
+  }
+
+  function render(t) {
+    barre.style.width = (100 * clamp(t / (DUREE - .5))) + '%';
+    grille.style.transform = `translate(${-(t * 6) % 80}px, ${-(t * 3) % 80}px)`;
+    let actif = null;
+    plans.forEach(p => {
+      const l = t - p.start;
+      const vis = l >= 0 && (l < p.dur || (p === plans[plans.length - 1] && l < p.dur + 1));
+      p.el.style.display = vis ? '' : 'none';
+      if (!vis) return;
+      actif = p;
+      const fin = p === plans[plans.length - 1] ? 1 : 1 - clamp((l - (p.dur - .4)) / .4);
+      const ent = clamp(l / .45);
+      p.el.style.opacity = Math.min(easeOut(ent), fin);
+      p.el.style.transform = `translateY(${(1 - easeOut(ent)) * 18 - (1 - fin) * 18}px)`;
+      p.items.forEach(it => anim(it, l));
+      for (const [cl, t0] of Object.entries(p.hl)) {
+        const q = easeOut(clamp((l - t0) / .5));
+        p.el.querySelectorAll('.' + cl).forEach(s => {
+          s.style.background = `rgba(183,140,255,${.28 * q})`;
+          s.style.boxShadow = `0 0 0 ${2 * q}px rgba(183,140,255,${.8 * q})`;
+        });
+      }
+      if (p.el.dataset.fn) FN[p.el.dataset.fn](p.el, l - p.decal);
+    });
+    const part = actif ? actif.part : '';
+    etapesBox.style.opacity = part ? 1 : 0;
+    etapes.forEach(s => { s.classList.toggle('on', s.dataset.p === part); s.classList.toggle('fait', +s.dataset.p < +part); });
+  }
+
+  function controle() {
+    const err = [];
+    plans.forEach((p, i) => p.manque.forEach(m => err.push(`plan ${i + 1} : repère de voix « ${m} » introuvable`)));
+    document.querySelectorAll('.katex-error').forEach(e => err.push('KaTeX : ' + (e.title || e.textContent)));
+    plans.forEach((p, i) => {
+      render(p.start + p.dur - .5);
+      p.el.querySelectorAll('.anim, .ligne, .carte, .eq, .big, .cadre').forEach(e => {
+        const r = e.getBoundingClientRect();
+        if (!r.width || e instanceof SVGElement && e.tagName !== 'svg') return;
+        if (r.left < 40 || r.right > 1880 || r.top < 110 || r.bottom > 1020)
+          err.push(`plan ${i + 1} : « ${(e.textContent || e.id).trim().slice(0, 40)} » sort du cadre (${Math.round(r.left)}, ${Math.round(r.top)}, ${Math.round(r.right)}, ${Math.round(r.bottom)})`);
+        if (e.scrollWidth > e.clientWidth + 2 && getComputedStyle(e).display !== 'inline')
+          err.push(`plan ${i + 1} : « ${(e.textContent || '').trim().slice(0, 40)} » déborde en largeur`);
+      });
+    });
+    return [...new Set(err)];
+  }
+
+  render(0);
+  window.VIDEO = { render, duree: DUREE, controle, plans: plans.map(p => ({ start: p.start, dur: p.dur, voix: DEPART })) };
+})();
+</script>
+</body>
+</html>
