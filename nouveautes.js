@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Monde",
+"titre": "COP31 : la conférence sur le climat s'ouvre à Antalya, avec un bras de fer sur le financement",
+"url": "actualites/monde/articles/cop31-antalya-ouverture-financement-climatique-2026.html",
+"image": "actualites/monde/images/cop31-antalya-ouverture-financement-climatique-2026.webp",
+"date": "2026-11-10T19:56:12+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Venezuela",
@@ -1308,15 +1317,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/monde/articles/france-cyberattaque-frigos-supermarches.html",
 "image": "actualites/monde/images/france-cyberattaque-frigos-supermarches.webp",
 "date": "2026-10-14T17:33:09+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Prix Nobel",
-"titre": "Nobel d'économie 2026 : Robert Hall et Michael Woodford couronnés pour la stabilisation",
-"url": "actualites/monde/articles/nobel-economie-2026-hall-woodford.html",
-"image": "actualites/monde/images/nobel-economie-2026-hall-woodford.webp",
-"date": "2026-10-14T17:27:00+00:00"
 },
 {
 "t": "en",
