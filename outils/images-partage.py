@@ -15,7 +15,8 @@ Articles d'actualité au gabarit « a-page » (maquette B) : photo de une en ple
 assombrie à gauche, pastille rouge du pays, titre blanc, filet rouge en bas. Fiches d'œuvres et
 fiches auteurs de l'Humanité avec visuel : visuel flou en fond, visuel net à droite, pastille et filet à la couleur
 de la fiche. Chapitres d'HGG : modèle « dossier d'archives » (chemise kraft, photo du héros scotchée, fiche de titre
-à grand numéro, tampon), à la couleur du chapitre. Autres pages : aplat de couleur et titre.
+à grand numéro, tampon), à la couleur du chapitre. Fiches auteurs : modèle « Frise des siècles » (portrait rond, nom, début de la thèse, vie de
+l'auteur sur une frise de 1400 à 2000). Autres pages : aplat de couleur et titre.
 
 Prérequis : playwright (voir newsletter/outils/installer.sh). Le chemin de Chromium
 peut être donné avec la variable CHROMIUM_PATH.
@@ -294,6 +295,57 @@ def auteur_de(rel, contenu):
     return 'Fiche auteur', chemin, (c.group(1) if c else '#a83a2e'), dates
 
 
+# Fiches auteurs de l'Humanité : maquette D « Frise des siècles », choisie par le propriétaire (novembre 2026).
+# Fond vert nuit, logo, « Fiche auteur n° NN · Philosophe », prénom en blanc et nom à la couleur de la fiche
+# (éclaircie), début de la thèse en une phrase, portrait rond cerclé de la couleur, et en bas une frise de
+# 1400 à 2000 où la vie de l'auteur est une barre (comme l'index fiches-auteurs.html). Filet à la couleur.
+GABARIT_FRISE = """<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<link rel="stylesheet" href="file://%(racine)sfonts/fonts.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1200px;height:630px;overflow:hidden;position:relative;background:#1b221d;color:#f3f5ef;-webkit-font-smoothing:antialiased}
+.mono{font-family:'IBM Plex Mono',monospace;font-weight:500;letter-spacing:.14em;text-transform:uppercase}
+#g{position:absolute;left:80px;top:52px;width:700px}
+#logo{font-family:'Playfair Display',serif;font-weight:700;font-size:30px}
+#k{font-size:16px;color:color-mix(in srgb,var(--c) 45%%,#fff);margin-top:58px}
+h1{font-family:'Fraunces',serif;font-weight:700;font-size:80px;line-height:.98;letter-spacing:-.02em;margin-top:14px}
+h1 span{display:block;color:color-mix(in srgb,var(--c) 55%%,#fff)}
+#th{font-family:'Fraunces',serif;font-weight:500;font-size:26px;line-height:1.25;margin-top:20px;color:#d7dcd3}
+#por{position:absolute;right:80px;top:70px;width:300px;height:300px;border-radius:50%%;object-fit:cover;border:6px solid var(--c)}
+#frise{position:absolute;left:0;right:0;bottom:84px;height:60px}
+#frise .axe{position:absolute;left:80px;right:80px;top:28px;height:2px;background:#4a554d}
+#frise i{position:absolute;top:22px;width:2px;height:14px;background:#6d786f}
+#frise em{position:absolute;top:42px;transform:translateX(-50%%);font-style:normal;font-family:'IBM Plex Mono',monospace;font-size:14px;color:#8e998f}
+#vie{position:absolute;top:20px;height:18px;min-width:18px;border-radius:9px;background:color-mix(in srgb,var(--c) 70%%,#fff);box-shadow:0 0 0 3px #1b221d}
+#lab{position:absolute;top:-14px;font-family:'IBM Plex Mono',monospace;font-size:15px;color:#fff;white-space:nowrap}
+#url{position:absolute;left:80px;bottom:30px;font-size:15px;color:#8e998f}
+#filet{position:absolute;left:0;right:0;bottom:0;height:8px;background:var(--c)}
+</style></head><body>
+<div id="g"><div id="logo">ECG Prépa</div><div id="k" class="mono"></div><h1 id="nom"></h1><p id="th"></p></div>
+<img id="por" alt="">
+<div id="frise"><div class="axe"></div><div id="ticks"></div><div id="vie"></div><div id="lab"></div></div>
+<div id="url" class="mono">ecg-prepa.fr · L'Humanité</div>
+<div id="filet"></div></body></html>"""
+
+
+def frise_de(rel, contenu):
+    """Fiche auteur au gabarit 2026 : données de la maquette « Frise des siècles », sinon None."""
+    a = auteur_de(rel, contenu)
+    h1 = re.search(r'<h1[^>]*>(.*?)<span>(.*?)</span>\s*</h1>', contenu, re.S)
+    ans = [re.search(r'\b(\d{3,4})\b', html.unescape(re.sub(r'<[^>]+>', '', x))) for x in
+           re.findall(r'<dt>(?:Naissance|Mort)</dt><dd>(.*?)</dd>', contenu)]
+    if not a or not h1 or len(ans) < 2 or not all(ans):
+        return None
+    txt = lambda x: html.unescape(re.sub(r'<[^>]+>', '', x)).strip()
+    num = re.search(r'Fiche auteur n°(?:&nbsp;|\s)*(\d+)', contenu)
+    typ = re.search(r'<body[^>]*data-type="([^"]+)"', contenu)
+    these = re.search(r'<div class="these">.*?<p>(.*?)</p>', contenu, re.S)
+    th = re.split(r'\s*:\s', txt(these.group(1)).replace('\u00a0', ' '), maxsplit=1)[0].rstrip('. ') + '.' if these else ''
+    kick = 'Fiche auteur' + (' n°\u00a0' + num.group(1) if num else '') + (' · ' + typ.group(1) if typ else '')
+    return dict(img=a[1], couleur=a[2], prenom=txt(h1.group(1)), nom=txt(h1.group(2)), kick=kick,
+                these=insecables(th), nait=int(ans[0].group(1)), mort=int(ans[1].group(1)))
+
+
 def insecables(t):
     """Typographie française : espace insécable avant « : ; ! ? » », après « et n°."""
     t = re.sub(r' ([:;!?»])', '\u00a0\\1', t)
@@ -407,6 +459,8 @@ def main():
     gab_plein.write(GABARIT_PLEIN % {'racine': RACINE}); gab_plein.close()
     gab_archive = tempfile.NamedTemporaryFile('w', suffix='.html', delete=False, encoding='utf-8')
     gab_archive.write(GABARIT_ARCHIVE % {'racine': RACINE}); gab_archive.close()
+    gab_frise = tempfile.NamedTemporaryFile('w', suffix='.html', delete=False, encoding='utf-8')
+    gab_frise.write(GABARIT_FRISE % {'racine': RACINE}); gab_frise.close()
     with sync_playwright() as pw:
         chemin = os.environ.get('CHROMIUM_PATH') or ('/opt/pw-browsers/chromium' if os.path.exists('/opt/pw-browsers/chromium') else None)
         nav = pw.chromium.launch(executable_path=chemin) if chemin else pw.chromium.launch()
@@ -425,6 +479,9 @@ def main():
         page_archive = nav.new_page(viewport={'width': 1200, 'height': 630})
         page_archive.goto('file://' + gab_archive.name)
         page_archive.evaluate('document.fonts.ready')
+        page_frise = nav.new_page(viewport={'width': 1200, 'height': 630})
+        page_frise.goto('file://' + gab_frise.name)
+        page_frise.evaluate('document.fonts.ready')
         for rel, contenu, (cle, lab, titre, fond, fg, accent, logo) in travail:
             sortie = 'partage/' + cle + '.jpg'
             os.makedirs(os.path.dirname(RACINE + sortie), exist_ok=True)
@@ -435,7 +492,31 @@ def main():
             plein = plein_de(rel, contenu, cours)
             if plein:
                 cours = None
-            if archive:
+            frise = frise_de(rel, contenu)
+            if frise:
+                h1 = re.search(r'<h1[^>]*>(.*?)</h1>', contenu, re.S)
+                titre = html.unescape(re.sub(r'<[^>]+>', '', h1.group(1))).strip()
+                page_frise.evaluate("""(d) => new Promise(ok => {
+                  document.body.style.setProperty('--c', d.couleur);
+                  document.getElementById('k').textContent = d.kick;
+                  const h = document.getElementById('nom'); h.textContent = d.prenom + ' ';
+                  const s = document.createElement('span'); s.textContent = d.nom; h.appendChild(s);
+                  const th = document.getElementById('th'); th.textContent = d.these;
+                  const X = a => 80 + (a - 1400) / 600 * 1040;
+                  document.getElementById('ticks').innerHTML = [1400, 1500, 1600, 1700, 1800, 1900, 2000].map(a =>
+                    '<i style="left:' + X(a) + 'px"></i><em style="left:' + X(a) + 'px">' + a + '</em>').join('');
+                  const v = document.getElementById('vie'); v.style.left = X(d.nait) + 'px'; v.style.width = (X(d.mort) - X(d.nait)) + 'px';
+                  const l = document.getElementById('lab'); l.textContent = d.nait + ' – ' + d.mort; l.style.left = X(d.nait) + 'px';
+                  const i = document.getElementById('por');
+                  i.onload = i.onerror = () => document.fonts.ready.then(() => {
+                    let t = 80; h.style.fontSize = t + 'px';
+                    while (t > 52 && (h.scrollWidth > h.clientWidth || h.offsetHeight > t * .98 * 2 + 4)) { t -= 2; h.style.fontSize = t + 'px'; }
+                    let u = 26; th.style.fontSize = u + 'px';
+                    while (u > 18 && th.offsetHeight > u * 1.25 * 2 + 4) { u -= 1; th.style.fontSize = u + 'px'; }
+                    ok(); });
+                  i.src = d.img; })""", dict(frise, img='file://' + frise['img']))
+                page_frise.screenshot(path=RACINE + sortie, type='jpeg', quality=86)
+            elif archive:
                 annee, num, img, couleur = archive
                 titre = insecables(re.sub(r'^(?:HGG\s*)?Chapitre\s*\d+\s*[:—–-]\s*', '', titre))
                 n = len(titre)
@@ -553,6 +634,7 @@ def main():
     os.unlink(gab_photo.name)
     os.unlink(gab_visuel.name)
     os.unlink(gab_archive.name)
+    os.unlink(gab_frise.name)
     print('%d image(s) de partage créée(s) dans partage/.' % len(travail))
 
 

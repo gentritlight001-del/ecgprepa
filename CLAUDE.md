@@ -75,8 +75,12 @@ directement après chaque modification, sans attendre un nouveau « mets en lign
    en bas et filet ; pastille et filet à la couleur d'accent de l'article (`--accent`). Les fiches d'œuvres de
    l'Humanité qui ont un visuel (`ch-hero-visuel` : affiche, couverture, œuvre, pochette) suivent le même esprit :
    visuel flou et assombri en fond, visuel net à droite, pastille de la rubrique, titre, « auteur · année » (`.meta`),
-   « ecg-prepa.fr · L'Humanité », pastille et filet à la couleur de la fiche (`--c`). Les fiches auteurs aussi (portrait
-   `f-portrait`, pastille « Fiche auteur », nom du `<h1>`, années de naissance et de mort, couleur `--accent`). Et les cours d'Humanité (image du héros
+   « ecg-prepa.fr · L'Humanité », pastille et filet à la couleur de la fiche (`--c`). **Fiches auteurs** : modèle propre, la
+   **maquette D « Frise des siècles »** choisie par le propriétaire (novembre 2026, `GABARIT_FRISE`) : fond vert nuit, logo,
+   « Fiche auteur n° NN · Philosophe », prénom en blanc et nom du `<h1>` (`<span>`) à la couleur de la fiche, début de « Sa thèse
+   en une phrase » (avant le deux-points), portrait de `.idc` en rond cerclé de `--accent`, frise de 1400 à 2000 où la vie de
+   l'auteur (naissance et mort de la fiche d'identité) est une barre, filet à la couleur ; après la refonte d'une fiche, lancer
+   `--refaire` sur sa page. Et les cours d'Humanité (image du héros
    `ch-hero-media` recadrée, pastille « Cours N », titre, « L'Humanité · 2e année »). Les pages de cours de 1re et 2e année aussi (pastille de la
    matière ou de la langue, titre, « Chapitre N · 1re année », couleur fixe par matière dans `COULEURS` du script) :
    image du héros si elle est stockée sur le site, sinon la vignette `.ci-vig` de l'index de la matière (ou de l'autre
