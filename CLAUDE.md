@@ -793,7 +793,7 @@ Procédure de A à Z, sans poser de question jusqu'à la mise en ligne :
   Hobbes bleu ardoise `#1f4a6e` / ocre `#a35a1f`, Pic de la Mirandole sarcelle `#17645e` / vermillon `#ad3a2c`, La Boétie indigo `#43398a` / ambre `#a8660c`, Montaigne bordeaux `#7d1f2f` / azur `#2a6fb0`. Garder cet habillage pour toutes les fiches (`auteur.css`,
   `auteur.js` ; fiches lues dans `localStorage` `ecg-humanite-auteurs-lues`). Supprimer de la copie les balises `og:`,
   `twitter:`, `canonical` et réécrire la description.
-- **Nouveau gabarit (novembre 2026, maquette validée par le propriétaire, fait pour Rousseau)** : `rousseau.html` +
+- **Nouveau gabarit (novembre 2026, maquette validée par le propriétaire, fait pour Rousseau, Hobbes, Montaigne et La Boétie)** : `rousseau.html` +
   feuille commune `fiche-auteur.css` (tout le CSS, portée `.pg`, teintes calculées depuis `--accent`/`--accent2`) ;
   les autres fiches (`auteur.css`) seront refaites une à une sur ce modèle (demande type : « Refais la fiche de X au
   nouveau modèle »). But : la **pensée de l'auteur sur l'humanité**, ses notions, expliquées et **illustrées de schémas**,
@@ -812,7 +812,7 @@ Procédure de A à Z, sans poser de question jusqu'à la mise en ligne :
   partir de ce que l'auteur dit, jamais reprendre d'office ceux de Rousseau (Hobbes : machine à désirs `.machine`, trois
   causes `.trio`, preuves du quotidien `.preuves`, frontispice commenté `.front`, bilan du contrat `.bilan`, face-à-face avec
   Aristote ; Montaigne : cercles du moi à l'humain `.cercles`, « je peins le passage » `.passage`, un mot deux sens
-  `.deux-sens`, miroir des cannibales `.miroir`, scène de Rouen `.scene`, balance du « Que sais-je ? » `.emb`, deux têtes `.tetes`) ; même règle pour la fiche PDF. Une refonte s'assemble avec le corps neuf (héros, essentiel, 3 parties) + les
+  `.deux-sens`, miroir des cannibales `.miroir`, scène de Rouen `.scene`, balance du « Que sais-je ? » `.emb`, deux têtes `.tetes` ; La Boétie : énigme du nombre `.jauge`, un seul contre tous `.uncontre`, deux chiens de Lycurgue `.origine`, appâts de la servitude `.appats`, pyramide des complices `.pyramide`, colosse sans base `.colosse`, crainte ou estime `.liens`) ; même règle pour la fiche PDF. Une refonte s'assemble avec le corps neuf (héros, essentiel, 3 parties) + les
   8 questions, « Dans une copie » et « Plus loin » de l'ancienne page.
 - **Fiche PDF d'une page** (« infographie », choisie par le propriétaire parmi 4 propositions, novembre 2026) : source
   `outils/fiche-auteur/<slug>.html` (copier `rousseau.html` : en-tête noir avec portrait rond, 1 « Ce qui fait l'homme »
