@@ -332,10 +332,13 @@ def frise_de(rel, contenu):
     """Fiche auteur au gabarit 2026 : données de la maquette « Frise des siècles », sinon None."""
     a = auteur_de(rel, contenu)
     h1 = re.search(r'<h1[^>]*>(.*?)<span>(.*?)</span>\s*</h1>', contenu, re.S)
-    ans = [re.search(r'\b(\d{3,4})\b', html.unescape(re.sub(r'<[^>]+>', '', x))) for x in
+    dds = [html.unescape(re.sub(r'<[^>]+>', '', x)) for x in
            re.findall(r'<dt>(?:Naissance|Mort)</dt><dd>(.*?)</dd>', contenu)]
+    ans = [re.search(r'\b(\d{3,4})\b', x) for x in dds]
     if not a or not h1 or len(ans) < 2 or not all(ans):
         return None
+    # années avant notre ère (Aristote) : négatives, et frise élargie à l'Antiquité
+    an = [int(m.group(1)) * (-1 if 'av. J.-C.' in x else 1) for m, x in zip(ans, dds)]
     txt = lambda x: html.unescape(re.sub(r'<[^>]+>', '', x)).strip()
     num = re.search(r'Fiche auteur n°(?:&nbsp;|\s)*(\d+)', contenu)
     typ = re.search(r'<body[^>]*data-type="([^"]+)"', contenu)
@@ -343,7 +346,9 @@ def frise_de(rel, contenu):
     th = re.split(r'\s*:\s', txt(these.group(1)).replace('\u00a0', ' '), maxsplit=1)[0].rstrip('. ') + '.' if these else ''
     kick = 'Fiche auteur' + (' n°\u00a0' + num.group(1) if num else '') + (' · ' + typ.group(1) if typ else '')
     return dict(img=a[1], couleur=a[2], prenom=txt(h1.group(1)), nom=txt(h1.group(2)), kick=kick,
-                these=insecables(th), nait=int(ans[0].group(1)), mort=int(ans[1].group(1)))
+                these=insecables(th), nait=an[0], mort=an[1],
+                debut=1400 if an[0] >= 1400 else -500,
+                lab=(f'{-an[0]} – {-an[1]} av. J.-C.' if an[1] < 0 else f'{an[0]} – {an[1]}'))
 
 
 def insecables(t):
@@ -502,11 +507,12 @@ def main():
                   const h = document.getElementById('nom'); h.textContent = d.prenom + ' ';
                   const s = document.createElement('span'); s.textContent = d.nom; h.appendChild(s);
                   const th = document.getElementById('th'); th.textContent = d.these;
-                  const X = a => 80 + (a - 1400) / 600 * 1040;
-                  document.getElementById('ticks').innerHTML = [1400, 1500, 1600, 1700, 1800, 1900, 2000].map(a =>
-                    '<i style="left:' + X(a) + 'px"></i><em style="left:' + X(a) + 'px">' + a + '</em>').join('');
-                  const v = document.getElementById('vie'); v.style.left = X(d.nait) + 'px'; v.style.width = (X(d.mort) - X(d.nait)) + 'px';
-                  const l = document.getElementById('lab'); l.textContent = d.nait + ' – ' + d.mort; l.style.left = X(d.nait) + 'px';
+                  const X = a => 80 + (a - d.debut) / (2000 - d.debut) * 1040;
+                  const pas = d.debut < 1400 ? [-500, 0, 500, 1000, 1500, 2000] : [1400, 1500, 1600, 1700, 1800, 1900, 2000];
+                  document.getElementById('ticks').innerHTML = pas.map(a =>
+                    '<i style="left:' + X(a) + 'px"></i><em style="left:' + X(a) + 'px">' + (a < 0 ? -a + ' av. J.-C.' : a) + '</em>').join('');
+                  const v = document.getElementById('vie'); v.style.left = X(d.nait) + 'px'; v.style.width = Math.max(6, X(d.mort) - X(d.nait)) + 'px';
+                  const l = document.getElementById('lab'); l.textContent = d.lab; l.style.left = X(d.nait) + 'px';
                   const i = document.getElementById('por');
                   i.onload = i.onerror = () => document.fonts.ready.then(() => {
                     let t = 80; h.style.fontSize = t + 'px';
