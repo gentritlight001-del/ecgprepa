@@ -12,8 +12,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-11-10",
+  "maj": "2026-11-11",
   "parties": [
+   {
+    "id": "2026-11-11",
+    "nom": "Jour 20 · Australia Plans an AI Safety Regulator and Six Mandatory Guardrails",
+    "n": 30,
+    "date": "2026-11-11"
+   },
    {
     "id": "2026-11-10",
     "nom": "Jour 19 · Cocaine Overtakes Heroin in Drug Deaths in England and Wales",
@@ -23,7 +29,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-11-09",
     "nom": "Jour 18 · Carney's Second Budget Spends Canada's Oil Windfall",
-    "n": 30,
+    "n": 29,
     "date": "2026-11-09"
    },
    {
@@ -95,7 +101,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-16",
     "nom": "Jour 6 · Burnham in Berlin as the Kensington Treaty Takes Effect",
-    "n": 22,
+    "n": 21,
     "date": "2026-10-16"
    },
    {
@@ -125,12 +131,12 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-10",
     "nom": "Jour 1 · Trump Renames AI “Super Intelligence”",
-    "n": 24,
+    "n": 23,
     "date": "2026-10-10"
    }
   ],
-  "n": 518,
-  "v": "5c8e9d8779"
+  "n": 545,
+  "v": "47777829cf"
  },
  {
   "id": "espagnol",
