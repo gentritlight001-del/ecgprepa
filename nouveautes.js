@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Cuba",
+"titre": "Cuba : la loi 186 réduit de 27 à 21 les organismes centraux et fusionne plusieurs ministères",
+"url": "actualites/es/articles/cuba-loi-186-reforme-administration-centrale-2026.html",
+"image": "actualites/es/images/cuba-loi-186-reforme-administration-centrale-2026.webp",
+"date": "2026-11-10T19:36:02+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Chypre",
@@ -1668,15 +1677,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/en/articles/canada-journee-verite-reconciliation-2026.html",
 "image": "actualites/en/images/canada-journee-verite-reconciliation-2026.webp",
 "date": "2026-10-02T06:16:22+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Colombie",
-"titre": "Colombie : De la Espriella accélère la méga-prison « Renacer », première d'un projet de dix",
-"url": "actualites/es/articles/colombie-mega-prison-haute-securite.html",
-"image": "actualites/es/images/colombie-mega-prison-haute-securite.webp",
-"date": "2026-10-01T13:53:39+00:00"
 },
 {
 "t": "en",
