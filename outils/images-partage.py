@@ -279,9 +279,11 @@ def archive_de(rel, contenu):
 
 def auteur_de(rel, contenu):
     """Fiche auteur de l'Humanité : (« Fiche auteur », portrait, couleur, « naissance – mort »), sinon None."""
-    if '/Fiches auteurs/' not in rel or 'class="f-portrait"' not in contenu:
+    if '/Fiches auteurs/' not in rel or ('class="f-portrait"' not in contenu and 'class="idc"' not in contenu):
         return None
-    img = re.search(r'<figure class="f-portrait">\s*<img src="([^"]+)"', contenu)
+    # ancien gabarit (f-portrait) ou nouveau (portrait dans la fiche d'identité .idc)
+    img = (re.search(r'<figure class="f-portrait">\s*<img src="([^"]+)"', contenu)
+           or re.search(r'<aside class="idc"[^>]*>\s*<figure>\s*<img src="([^"]+)"', contenu))
     if not img:
         return None
     chemin = os.path.normpath(os.path.join(RACINE, os.path.dirname(rel), img.group(1)))
