@@ -790,10 +790,10 @@ Procédure de A à Z, sans poser de question jusqu'à la mise en ligne :
   pâle sans quadrillage, coins arrondis, numéros de section en
   pastilles, nom de l'auteur dans la couleur de la fiche, **sans italique**. **Chaque auteur a ses deux couleurs**
   (`--accent`, `--accent2` sur `<body>`, jamais déjà prises) : Rousseau prune `#6b2d5c` / olive `#55702f`,
-  Hobbes bleu ardoise `#1f4a6e` / ocre `#a35a1f`, Pic de la Mirandole sarcelle `#17645e` / vermillon `#ad3a2c`, La Boétie indigo `#43398a` / ambre `#a8660c`, Montaigne bordeaux `#7d1f2f` / azur `#2a6fb0`. Garder cet habillage pour toutes les fiches (`auteur.css`,
+  Hobbes bleu ardoise `#1f4a6e` / ocre `#a35a1f`, Pic de la Mirandole sarcelle `#17645e` / vermillon `#ad3a2c`, La Boétie indigo `#43398a` / ambre `#a8660c`, Montaigne bordeaux `#7d1f2f` / azur `#2a6fb0`, Kant brun `#5e3a1e` / framboise `#b0336b`. Garder cet habillage pour toutes les fiches (`auteur.css`,
   `auteur.js` ; fiches lues dans `localStorage` `ecg-humanite-auteurs-lues`). Supprimer de la copie les balises `og:`,
   `twitter:`, `canonical` et réécrire la description.
-- **Nouveau gabarit (novembre 2026, maquette validée par le propriétaire, fait pour Rousseau, Hobbes, Montaigne, La Boétie et Pic de la Mirandole)** : `rousseau.html` +
+- **Nouveau gabarit (novembre 2026, maquette validée par le propriétaire, fait pour Rousseau, Hobbes, Montaigne, La Boétie, Pic de la Mirandole et Kant)** : `rousseau.html` +
   feuille commune `fiche-auteur.css` (tout le CSS, portée `.pg`, teintes calculées depuis `--accent`/`--accent2`) ;
   les fiches suivantes seront faites sur ce modèle (demande type : « Refais la fiche de X au
   nouveau modèle »). But : la **pensée de l'auteur sur l'humanité**, ses notions, expliquées et **illustrées de schémas**,
@@ -812,8 +812,9 @@ Procédure de A à Z, sans poser de question jusqu'à la mise en ligne :
   partir de ce que l'auteur dit, jamais reprendre d'office ceux de Rousseau (Hobbes : machine à désirs `.machine`, trois
   causes `.trio`, preuves du quotidien `.preuves`, frontispice commenté `.front`, bilan du contrat `.bilan`, face-à-face avec
   Aristote ; Montaigne : cercles du moi à l'humain `.cercles`, « je peins le passage » `.passage`, un mot deux sens
-  `.deux-sens`, miroir des cannibales `.miroir`, scène de Rouen `.scene`, balance du « Que sais-je ? » `.emb`, deux têtes `.tetes` ; La Boétie : énigme du nombre `.jauge`, un seul contre tous `.uncontre`, deux chiens de Lycurgue `.origine`, appâts de la servitude `.appats`, pyramide des complices `.pyramide`, colosse sans base `.colosse`, crainte ou estime `.liens` ; Pic de la Mirandole : étages du monde `.etages`, fausses raisons barrées `.rayees`, quatre semences `.semences`, échelle de Jacob `.echelle`, confluence des sagesses `.confluence`, affaire des 900 thèses `.affaire`) ; même règle pour la fiche PDF. Une refonte s'assemble avec le corps neuf (héros, essentiel, 3 parties) + les
-  8 questions, « Dans une copie » et « Plus loin » de l'ancienne page.
+  `.deux-sens`, miroir des cannibales `.miroir`, scène de Rouen `.scene`, balance du « Que sais-je ? » `.emb`, deux têtes `.tetes` ; La Boétie : énigme du nombre `.jauge`, un seul contre tous `.uncontre`, deux chiens de Lycurgue `.origine`, appâts de la servitude `.appats`, pyramide des complices `.pyramide`, colosse sans base `.colosse`, crainte ou estime `.liens` ; Pic de la Mirandole : étages du monde `.etages`, fausses raisons barrées `.rayees`, quatre semences `.semences`, échelle de Jacob `.echelle`, confluence des sagesses `.confluence`, affaire des 900 thèses `.affaire` ; Kant : quatre paliers de l'éducation `.paliers`, la tutelle `.tutelle`, l'arbre et la forêt `.foret`, prix ou dignité `.prixdig`, formule de l'humanité mot à mot `.formule`, deux cas `.cas2`, test de l'universalisation `.test`, hétéronomie ou autonomie `.deuxlois`) ; même règle pour la fiche PDF. Une refonte s'assemble avec le corps neuf (héros, essentiel, 3 parties) + les
+  8 questions, « Dans une copie » et « Plus loin » de l'ancienne page ; une fiche neuve (Kant) les écrit en entier. L'image de partage
+  (`outils/images-partage.py`) lit aussi le portrait du nouveau gabarit (`.idc`).
 - **Fiche PDF d'une page** (« infographie », choisie par le propriétaire parmi 4 propositions, novembre 2026) : source
   `outils/fiche-auteur/<slug>.html` (copier `rousseau.html` : en-tête noir avec portrait rond, 1 « Ce qui fait l'homme »
   (tuiles et fourche), 2 schéma à 4 étapes avec pictogrammes et étiquettes de résultat **alignées en bas**, 3 remèdes,
