@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Chine",
+"titre": "Chine : Pékin prolonge jusqu'au 10 janvier la suspension de ses restrictions sur les terres rares",
+"url": "actualites/monde/articles/chine-etats-unis-terres-rares-suspension-prolongee-2026.html",
+"image": "actualites/monde/images/chine-etats-unis-terres-rares-suspension-prolongee-2026.webp",
+"date": "2026-11-10T19:24:15+00:00"
+},
+{
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne",
@@ -1335,15 +1344,6 @@ window.ECG_NOUVEAUTES = [
 "url": "Culture-Generale/gaz-naturel-liquefie.html",
 "image": "Culture-Generale/images/gaz-naturel-liquefie.webp",
 "date": "2026-10-11T11:12:37+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Inde",
-"titre": "Inde : New Delhi sous verrouillage sécuritaire face à la manifestation du « parti des cafards »",
-"url": "actualites/monde/articles/inde-delhi-verrouillage-cafards.html",
-"image": "actualites/monde/images/inde-delhi-verrouillage-cafards.webp",
-"date": "2026-10-11T08:45:05+00:00"
 },
 {
 "t": "en",
