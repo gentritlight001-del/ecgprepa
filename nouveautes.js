@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "États-Unis",
+"titre": "Nvidia ouvre une enquête sur son PDG Jensen Huang après des soupçons d'espionnage chinois",
+"url": "actualites/monde/articles/nvidia-enquete-jensen-huang-espionnage-chine-2026.html",
+"image": "actualites/monde/images/nvidia-enquete-jensen-huang-espionnage-chine-2026.webp",
+"date": "2026-11-10T05:42:12+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Espagne",
@@ -1335,15 +1344,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/en/articles/us-trump-poutine-accord-diesel.html",
 "image": "actualites/en/images/us-trump-poutine-accord-diesel.webp",
 "date": "2026-10-10T19:28:55+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "États-Unis",
-"titre": "Les États-Unis sanctionnent la Cour pénale internationale en tant qu'institution, une première",
-"url": "actualites/monde/articles/cpi-sanctions-americaines-institution.html",
-"image": "actualites/monde/images/cpi-sanctions-americaines-institution.webp",
-"date": "2026-10-10T19:26:24+00:00"
 },
 {
 "t": "es",
