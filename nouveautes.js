@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
+"titre": "Allemagne : le 9 novembre, Steinmeier commémore la République, les pogroms et le Mur à Weimar",
+"url": "actualites/de/articles/allemagne-9-novembre-commemorations-steinmeier-2026.html",
+"image": "actualites/de/images/allemagne-9-novembre-commemorations-steinmeier-2026.webp",
+"date": "2026-11-10T19:19:02+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "Australie",
@@ -1982,15 +1991,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "L'Allemagne échoue au Conseil de sécurité de l'ONU : un camouflet diplomatique inédit",
 "url": "actualites/de/articles/allemagne-conseil-securite-onu.html",
 "image": "actualites/de/images/allemagne-conseil-securite-onu.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "La fin du SCAF : l'avion de combat européen enterré par la guerre Dassault-Airbus",
-"url": "actualites/de/articles/scaf-fin-projet.html",
-"image": "actualites/de/images/scaf-fin-projet.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
