@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "Australie",
+"titre": "Australie : Albanese annonce un régulateur de la sûreté de l'IA et six garde-fous obligatoires",
+"url": "actualites/en/articles/australia-albanese-regulateur-surete-ia-2026.html",
+"image": "actualites/en/images/australia-albanese-regulateur-surete-ia-2026.webp",
+"date": "2026-11-10T19:11:56+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "États-Unis",
@@ -1713,15 +1722,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/de/articles/suisse-initiative-neutralite.html",
 "image": "actualites/de/images/suisse-initiative-neutralite.webp",
 "date": "2026-09-27T16:33:13+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "Royaume-Uni",
-"titre": "Incident de sécurité : cinq hommes arrêtés près de la base aérienne de RAF Fairford",
-"url": "actualites/en/articles/uk-raf-fairford-arrests-2026.html",
-"image": "actualites/en/images/uk-raf-fairford-arrests-2026.webp",
-"date": "2026-09-27T16:25:32+00:00"
 },
 {
 "t": "cg",
