@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "es",
 "rubrique": "Actu Espagnol",
+"meta": "Venezuela",
+"titre": "Venezuela : PDVSA et ExxonMobil signent un mémorandum d'entente sur la coopération énergétique",
+"url": "actualites/es/articles/venezuela-pdvsa-exxonmobil-memorandum-2026.html",
+"image": "actualites/es/images/venezuela-pdvsa-exxonmobil-memorandum-2026.webp",
+"date": "2026-11-10T19:43:02+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
 "meta": "Cuba",
 "titre": "Cuba : la loi 186 réduit de 27 à 21 les organismes centraux et fusionne plusieurs ministères",
 "url": "actualites/es/articles/cuba-loi-186-reforme-administration-centrale-2026.html",
@@ -1632,15 +1641,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/en/articles/us-autowarcom-hegseth-drones-2026.html",
 "image": "actualites/en/images/us-autowarcom-hegseth-drones-2026.webp",
 "date": "2026-10-02T06:40:29+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Argentine",
-"titre": "Javier Milei à Paris : reçu par Macron, il vante l'Argentine aux investisseurs français",
-"url": "actualites/es/articles/argentine-milei-paris-argentina-week.html",
-"image": "actualites/es/images/argentine-milei-paris-argentina-week.webp",
-"date": "2026-10-02T06:40:14+00:00"
 },
 {
 "t": "de",
