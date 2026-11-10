@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Chypre",
+"titre": "Chypre : les deux dirigeants conviennent d'ouvrir deux nouveaux passages dans la zone tampon de l'ONU",
+"url": "actualites/monde/articles/chypre-deux-nouveaux-points-passage-zone-tampon-2026.html",
+"image": "actualites/monde/images/chypre-deux-nouveaux-points-passage-zone-tampon-2026.webp",
+"date": "2026-11-10T19:28:48+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Chine",
 "titre": "Chine : Pékin prolonge jusqu'au 10 janvier la suspension de ses restrictions sur les terres rares",
 "url": "actualites/monde/articles/chine-etats-unis-terres-rares-suspension-prolongee-2026.html",
@@ -1317,15 +1326,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/es/articles/espagne-fete-nationale-hispanidad-2026.html",
 "image": "actualites/es/images/espagne-fete-nationale-hispanidad-2026.webp",
 "date": "2026-10-13T18:28:46+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Arabie saoudite",
-"titre": "Arabie saoudite : l'aéroport de Riyad frappé à plusieurs reprises par les Houthis, 13 morts",
-"url": "actualites/monde/articles/arabie-aeroport-riyad-attaque-houthie.html",
-"image": "actualites/monde/images/arabie-aeroport-riyad-attaque-houthie.webp",
-"date": "2026-10-12T04:59:25+00:00"
 },
 {
 "t": "cg",
