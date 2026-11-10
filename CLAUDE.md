@@ -134,6 +134,9 @@ si inchangé) et réécrit leur en-tête en `no-cache` pour que Chrome ne les ga
 pas retirer ce mécanisme (`sansCacheNavigateur`). Le vrai remède, côté tableau de bord
 Cloudflare (que seul le propriétaire peut régler) : Caching → Configuration → Browser Cache TTL
 → « Respect Existing Headers ».
+**Remplacer une image** (portrait, photo) : toujours sous un **nouveau nom de fichier** (`sartre-2.webp`), jamais par-dessus
+l'ancien : les images sont servies avec `max-age=86400, stale-while-revalidate=604800` et les navigateurs garderaient
+l'ancienne jusqu'à 8 jours (constaté pour le portrait de Sartre, novembre 2026). Mettre à jour toutes les références (`grep -rn`).
 
 ## 3. Articles d'actualité
 
