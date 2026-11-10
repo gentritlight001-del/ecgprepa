@@ -811,7 +811,8 @@ Procédure de A à Z, sans poser de question jusqu'à la mise en ligne :
   la vie, pas de récapitulatif des notions, pas de durée. **Des schémas propres à chaque auteur** (demande du propriétaire) :
   partir de ce que l'auteur dit, jamais reprendre d'office ceux de Rousseau (Hobbes : machine à désirs `.machine`, trois
   causes `.trio`, preuves du quotidien `.preuves`, frontispice commenté `.front`, bilan du contrat `.bilan`, face-à-face avec
-  Aristote) ; même règle pour la fiche PDF. Une refonte s'assemble avec le corps neuf (héros, essentiel, 3 parties) + les
+  Aristote ; Montaigne : cercles du moi à l'humain `.cercles`, « je peins le passage » `.passage`, un mot deux sens
+  `.deux-sens`, miroir des cannibales `.miroir`, scène de Rouen `.scene`, balance du « Que sais-je ? » `.emb`, deux têtes `.tetes`) ; même règle pour la fiche PDF. Une refonte s'assemble avec le corps neuf (héros, essentiel, 3 parties) + les
   8 questions, « Dans une copie » et « Plus loin » de l'ancienne page.
 - **Fiche PDF d'une page** (« infographie », choisie par le propriétaire parmi 4 propositions, novembre 2026) : source
   `outils/fiche-auteur/<slug>.html` (copier `rousseau.html` : en-tête noir avec portrait rond, 1 « Ce qui fait l'homme »
