@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Haïti",
+"titre": "Haïti : le Salvador et la police haïtienne frappent le quartier général du gang 400 Mawozo",
+"url": "actualites/es/articles/haiti-salvador-operation-400-mawozo-2026.html",
+"image": "actualites/es/images/haiti-salvador-operation-400-mawozo-2026.webp",
+"date": "2026-11-11T13:26:10+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Ukraine",
@@ -1640,15 +1649,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Mexique : 58 ans après Tlatelolco, marche vers le Zócalo et promesse de « plus jamais »",
 "url": "actualites/es/articles/mexique-tlatelolco-58-ans.html",
 "image": "actualites/es/images/mexique-tlatelolco-58-ans.webp",
-"date": "2026-10-04T07:18:03+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Espagne",
-"titre": "Espagne : seul pays de l'UE à voter contre le nouveau règlement sur les retours de migrants",
-"url": "actualites/es/articles/espagne-reglement-retours-ue.html",
-"image": "actualites/es/images/espagne-reglement-retours-ue.webp",
 "date": "2026-10-04T07:18:03+00:00"
 },
 {
