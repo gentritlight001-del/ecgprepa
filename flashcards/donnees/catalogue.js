@@ -12,8 +12,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-11-11",
+  "maj": "2026-11-12",
   "parties": [
+   {
+    "id": "2026-11-12",
+    "nom": "Jour 21 · Drones, Sensors, AI: London Invests £90 Million Against Russian Submarines",
+    "n": 30,
+    "date": "2026-11-12"
+   },
    {
     "id": "2026-11-11",
     "nom": "Jour 20 · Australia Plans an AI Safety Regulator and Six Mandatory Guardrails",
@@ -35,7 +41,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-11-08",
     "nom": "Jour 17 · US Measles Cases Reach Their Highest Level Since 1991",
-    "n": 30,
+    "n": 29,
     "date": "2026-11-08"
    },
    {
@@ -47,13 +53,13 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-26",
     "nom": "Jour 15 · Trump Says Iran Could “Take Out” Los Angeles or San Diego",
-    "n": 29,
+    "n": 28,
     "date": "2026-10-26"
    },
    {
     "id": "2026-10-25",
     "nom": "Jour 14 · Zelenskyy in London as Burnham Pledges Unwavering Support",
-    "n": 29,
+    "n": 28,
     "date": "2026-10-25"
    },
    {
@@ -65,7 +71,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-22",
     "nom": "Jour 12 · Severe Drought Declared in Southern England",
-    "n": 29,
+    "n": 28,
     "date": "2026-10-22"
    },
    {
@@ -101,7 +107,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-16",
     "nom": "Jour 6 · Burnham in Berlin as the Kensington Treaty Takes Effect",
-    "n": 21,
+    "n": 20,
     "date": "2026-10-16"
    },
    {
@@ -135,8 +141,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 545,
-  "v": "47777829cf"
+  "n": 570,
+  "v": "db1da52743"
  },
  {
   "id": "espagnol",
