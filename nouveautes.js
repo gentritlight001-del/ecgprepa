@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Ukraine",
+"titre": "Abou Dhabi : Russes et Ukrainiens reprennent les pourparlers sous médiation américaine",
+"url": "actualites/monde/articles/ukraine-russie-pourparlers-abou-dhabi-2026.html",
+"image": "actualites/monde/images/ukraine-russie-pourparlers-abou-dhabi-2026.webp",
+"date": "2026-11-11T13:15:53+00:00"
+},
+{
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne",
@@ -1335,15 +1344,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/monde/articles/nvidia-investit-doctolib.html",
 "image": "actualites/monde/images/nvidia-investit-doctolib.webp",
 "date": "2026-10-14T17:38:18+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "France",
-"titre": "France : une cyberattaque non revendiquée sabote les frigos de centaines de supermarchés",
-"url": "actualites/monde/articles/france-cyberattaque-frigos-supermarches.html",
-"image": "actualites/monde/images/france-cyberattaque-frigos-supermarches.webp",
-"date": "2026-10-14T17:33:09+00:00"
 },
 {
 "t": "en",
