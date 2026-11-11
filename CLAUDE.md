@@ -284,6 +284,12 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   - « Lire aussi » (`a-lire`) : **4 articles** du site, les plus proches du sujet, en vignettes : image de
     l'article, kicker « Pays · Mois année », son `cardTitle` (traduit dans la version étrangère).
   - « Sources » (`a-sources`, numérotées) : média en `<b>`, titre en lien, date. 4 à 6 sources.
+  - **Crédit de la photo de une** (demandé par le propriétaire, novembre 2026), discret, juste après la liste des sources
+    et dans chaque langue : `<p class="a-credit">Photo de une : <photographe> / <agence>, via <média>.</p>` (« Cover
+    photo: … », « Foto de portada: … », « Titelbild: … »), avec dans le `<style>` de l'article
+    `.a-credit { margin-top: 16px; font-size: .78rem; line-height: 1.5; color: var(--doux); }`. Le crédit se lit dans la
+    légende de la page d'où vient la photo (« Photo : » de la demande) ; retrouvé nulle part, écrire seulement « via <média> »
+    et le signaler au propriétaire. Jamais de crédit deviné.
 - **Longueur** : **1 100 à 1 300 mots de texte courant** (chapô, sections, analyse, hors chiffres,
   schémas, chronologie et « Dans une copie ») dans la version française ; la version étrangère suit
   le même contenu. Compter avant de mettre en ligne. Une recherche web poussée (plusieurs sources par
