@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "États-Unis",
+"titre": "États-Unis : la Chambre enterre la tentative de destitution du ministre de la Guerre Pete Hegseth",
+"url": "actualites/en/articles/us-destitution-hegseth-massie-2026.html",
+"image": "actualites/en/images/us-destitution-hegseth-massie-2026.webp",
+"date": "2026-11-11T12:05:37+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Monde",
@@ -1703,15 +1712,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Trump réunit les patrons de l'IA à la Maison-Blanche, qui signent un accord d'autorégulation",
 "url": "actualites/en/articles/trump-ai-summit-white-house-2026.html",
 "image": "actualites/en/images/trump-ai-summit-white-house-2026.webp",
-"date": "2026-10-01T13:52:44+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "Canada",
-"titre": "Les États-Unis interdisent l'entrée de près d'un milliard de dollars de produits canadiens",
-"url": "actualites/en/articles/canada-us-import-ban-2026.html",
-"image": "actualites/en/images/canada-us-import-ban-2026.webp",
 "date": "2026-10-01T13:52:44+00:00"
 },
 {
