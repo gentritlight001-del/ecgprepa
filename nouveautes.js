@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "en",
 "rubrique": "Actu Anglais",
+"meta": "Royaume-Uni",
+"titre": "Royaume-Uni : 90 millions de livres pour des drones et de l'IA contre les sous-marins russes",
+"url": "actualites/en/articles/uk-atlantic-net-drones-sous-marins-russes-2026.html",
+"image": "actualites/en/images/uk-atlantic-net-drones-sous-marins-russes-2026.webp",
+"date": "2026-11-11T12:42:10+00:00"
+},
+{
+"t": "en",
+"rubrique": "Actu Anglais",
 "meta": "États-Unis",
 "titre": "États-Unis : la Chambre enterre la tentative de destitution du ministre de la Guerre Pete Hegseth",
 "url": "actualites/en/articles/us-destitution-hegseth-massie-2026.html",
@@ -1703,15 +1712,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Irak : les derniers soldats américains ont quitté Erbil, 23 ans après l'invasion de 2003",
 "url": "actualites/en/articles/us-iraq-withdrawal-complete-2026.html",
 "image": "actualites/en/images/us-iraq-withdrawal-complete-2026.webp",
-"date": "2026-10-01T13:52:44+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "Trump réunit les patrons de l'IA à la Maison-Blanche, qui signent un accord d'autorégulation",
-"url": "actualites/en/articles/trump-ai-summit-white-house-2026.html",
-"image": "actualites/en/images/trump-ai-summit-white-house-2026.webp",
 "date": "2026-10-01T13:52:44+00:00"
 },
 {
