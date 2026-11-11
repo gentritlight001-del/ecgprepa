@@ -205,7 +205,7 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   2. Héros `a-hero` : tags `a-tag` (`t0` le pays, `t1` le thème, puis 1 ou 2 mots-clés), titre `a-titre`,
      sous-titre `a-sous-titre` = le même titre dans l'autre langue (avec `lang`), `a-meta`
      « Mois année · Pays · 5 min de lecture » (« 5 min read »…), photo `a-hero-img` (la photo fournie, sans légende ni texte
-     par-dessus).
+     par-dessus ; seulement la ligne de crédit dessous, voir « Pour aller plus loin »).
   3. `a-essentiel` « L'essentiel en 30 secondes » : 3 points de 2 à 3 lignes, mots clés en `<strong>`.
   4. `<article class="a-carte a-article">` : `a-chiffres` (4 chiffres vérifiés, le plus marquant en
      `rouge`), chapô `a-chapo`, puis **6 à 8 sections** `a-sec` numérotées (`a-h2` + `a-num` 01, 02…) :
@@ -284,12 +284,13 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   - « Lire aussi » (`a-lire`) : **4 articles** du site, les plus proches du sujet, en vignettes : image de
     l'article, kicker « Pays · Mois année », son `cardTitle` (traduit dans la version étrangère).
   - « Sources » (`a-sources`, numérotées) : média en `<b>`, titre en lien, date. 4 à 6 sources.
-  - **Crédit de la photo de une** (demandé par le propriétaire, novembre 2026), discret, juste après la liste des sources
-    et dans chaque langue : `<p class="a-credit">Photo de une : <photographe> / <agence>, via <média>.</p>` (« Cover
-    photo: … », « Foto de portada: … », « Titelbild: … »), avec dans le `<style>` de l'article
-    `.a-credit { margin-top: 16px; font-size: .78rem; line-height: 1.5; color: var(--doux); }`. Le crédit se lit dans la
-    légende de la page d'où vient la photo (« Photo : » de la demande) ; retrouvé nulle part, écrire seulement « via <média> »
-    et le signaler au propriétaire. Jamais de crédit deviné.
+  - **Crédit de la photo de une** (demandé par le propriétaire, novembre 2026) : petite ligne grise de 11 px alignée à
+    droite **sous la photo du héros**, dans chaque langue : `<figure class="a-hero-fig"><img class="a-hero-img" …><figcaption
+    class="a-hero-credit">Photo : <photographe> / <agence>, via <média></figcaption></figure>` (« Photo: … » en anglais,
+    « Foto: … » en espagnol et en allemand). Le CSS est dans `actualites/fiche-article.css` (rien à ajouter à l'article) et la
+    fiche d'actualité recopie le crédit sous sa photo (`.fx-credit`). Le crédit se lit dans la légende de la page d'où vient
+    la photo (« Photo : » de la demande) ; retrouvé nulle part, écrire seulement « via <média> » et le signaler au
+    propriétaire. Jamais de crédit deviné.
 - **Longueur** : **1 100 à 1 300 mots de texte courant** (chapô, sections, analyse, hors chiffres,
   schémas, chronologie et « Dans une copie ») dans la version française ; la version étrangère suit
   le même contenu. Compter avant de mettre en ligne. Une recherche web poussée (plusieurs sources par

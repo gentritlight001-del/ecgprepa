@@ -161,6 +161,7 @@
         ps: tous(an, '.a-analyse-corps .a-p').map(function (p) { return p.innerHTML; })
       } : null,
       image: zone.querySelector('.a-hero-img'),
+      credit: ((zone.querySelector('.a-hero-credit') || {}).textContent || '').trim(),
       chiffres: tous(zone, '.a-chiffres > div').filter(function (x) { return x.querySelector('.a-chiffre'); }).map(function (x) {
         var v = x.querySelector('.a-chiffre');
         return { v: texte(v), l: texte(x.querySelector('.a-chiffre-txt')), fort: v.classList.contains('rouge') };
@@ -339,6 +340,7 @@
       im.addEventListener('load', function () { equilibrer(); });
       im.src = sources[0];
       droite.appendChild(im);
+      if (d.credit) ajout(droite, 'p', 'fx-credit', d.credit);
     }
     if (d.chiffres.length) {
       var bCh = el('div', 'fx-chiffres');
