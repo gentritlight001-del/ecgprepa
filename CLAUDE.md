@@ -1091,13 +1091,21 @@ Une application de flashcards à la racine : `flashcards/index.html` (`flashcard
 ouverte par « Mes flashcards » dans le menu du compte (`auth.js`, avec la pastille des cartes à réviser
 du jour). L'ancienne adresse `premiere_annee/langues/flashcards/index.html` renvoie vers elle (ancre gardée).
 
-- **Mes paquets** : paquets de la bibliothèque ajoutés par l'élève et paquets perso (cartes créées une à
-  une, liste importée : tabulation, `;` ou `|`, copie d'un paquet tout fait). Une carte d'un paquet tout
-  fait peut être ignorée. Révision espacée façon Anki (À revoir / Difficile / Bien / Facile, étapes de 1 et
-  10 min puis intervalles en jours, 20 nouvelles cartes par jour et par paquet par défaut), entraînement
-  libre, sens inversable et réponse tapée pour le vocabulaire, parties ou jours à cocher, export Anki /
-  Quizlet, sauvegarde et restauration en fichier. Données dans `localStorage`
-  `ecg-flashcards:v1:<e-mail>`.
+- **Refonte de novembre 2026** (maquette validée par le propriétaire, qui trouvait l'ancien espace incompréhensible :
+  ne pas rajouter d'options). Quatre écrans seulement, fond noir, carte crème, accent doré `#e2b866` :
+  **accueil** (nombre de cartes à revoir aujourd'hui et bouton « Commencer la révision », série de jours, « Mes paquets »
+  en lignes avec jauge acquises / en cours / pas encore vues, « Mon rythme » : 10, 20 ou 40 nouvelles cartes par jour
+  **tous paquets confondus**, sauvegarde en fichier), **ajouter un paquet** (`#ajouter/<matière>`, un bouton « Ajouter »
+  par chapitre, « Mes propres cartes » : cartes écrites une à une ou liste collée), **un paquet** (`#paquet/<id>` :
+  « Réviser », « Tout parcourir, sans noter », trois compteurs, parties à cocher, liste des cartes avec leur date de
+  retour) et **la révision** (grande carte de 1 100 px sur ordinateur, question en très gros).
+- **Les cartes qui reviennent** : trois réponses, chacune dit ce qui va se passer. « Je ne savais pas » : la carte revient
+  dans la même séance, 4 cartes plus loin, jusqu'à ce qu'elle soit sue. « J'ai hésité » : elle revient demain. « Je
+  savais » : son délai s'allonge (3 jours pour une carte sue du premier coup, puis 7, 16, 37…, 365 au plus). « Acquise » =
+  délai de 7 jours ou plus. Les cartes en retard passent en premier. Plus de délais en minutes ni de quatrième bouton.
+  Retirés à la refonte : couleurs des paquets, copie dans un paquet perso, bouton « ignorer », export Anki, sens inversé,
+  réponse tapée. Données dans `localStorage` `ecg-flashcards:v1:<e-mail>` (même format qu'avant : la progression des
+  élèves est gardée ; `auth.js` y lit la pastille du menu).
 - **Bibliothèque** : générée par `python3 outils/flashcards.py` dans `flashcards/donnees/` (`catalogue.js`
   + un fichier par paquet, chargé à la demande ; ne jamais les modifier à la main). Il lit le vocabulaire
   des pages du jour de langues (un paquet par langue, une partie par jour) et le tableau `const DECK`
