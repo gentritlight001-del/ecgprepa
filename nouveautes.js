@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
+"titre": "Allemagne : Merz reçoit Péter Magyar, nouveau départ germano-hongrois sauf sur le budget de l'UE",
+"url": "actualites/de/articles/allemagne-hongrie-magyar-merz-berlin-2026.html",
+"image": "actualites/de/images/allemagne-hongrie-magyar-merz-berlin-2026.webp",
+"date": "2026-11-11T12:58:44+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "Royaume-Uni",
@@ -1982,15 +1991,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Sécheresse historique : le niveau extrêmement bas du Rhin bouleverse le transport et l'industrie allemande",
 "url": "actualites/de/articles/rhin-secheresse-industrie.html",
 "image": "actualites/de/images/rhin-secheresse-industrie.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "L'Allemagne échoue au Conseil de sécurité de l'ONU : un camouflet diplomatique inédit",
-"url": "actualites/de/articles/allemagne-conseil-securite-onu.html",
-"image": "actualites/de/images/allemagne-conseil-securite-onu.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
