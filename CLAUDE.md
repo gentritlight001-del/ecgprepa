@@ -313,6 +313,9 @@ puis `recherche.py`.
 
 ### Image
 
+La demande peut venir de la page admin « Idées pour le site » (type « Nouvel article », demande à copier : sujet,
+édition, note, « Source : » et « Photo : »). « Photo : » donne la photo de une par un lien (la télécharger et la
+regarder) ou seulement son crédit (demander alors le fichier au propriétaire s'il n'est pas joint).
 Enregistrer la photo de une fournie en WebP sous `actualites/<code>/images/<slug>.webp`, en largeur 1600 px maximum :
 
 ```python

@@ -203,7 +203,7 @@
   .art-res .info { font-size: 13px; font-weight: 400; color: var(--gris); padding: 8px 4px; }
   .demande { margin-top: 18px; padding: 14px; border-radius: 12px; background: #eef7f8; border: 1px solid #c9e6ea; }
   .demande p { font-size: 13px; font-weight: 600; color: #0b5a63; margin-bottom: 6px; }
-  .demande blockquote { font-size: 14px; line-height: 1.5; color: var(--encre); margin-bottom: 10px; white-space: pre-wrap; }
+  .demande blockquote { font-size: 14px; line-height: 1.5; color: var(--encre); margin-bottom: 10px; white-space: pre-wrap; overflow-wrap: anywhere; }
   .fiche-vide { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: var(--gris); padding: 0 20px; }
   .fiche-vide strong { font-family: 'Bricolage Grotesque', sans-serif; font-size: 22px; color: var(--encre); margin-bottom: 6px; }
 
@@ -499,6 +499,8 @@
     const optRubs = Object.keys(s.subs).map(k => `<option value="${k}"${k === a.sub ? ' selected' : ''}>${esc(s.subs[k])}</option>`).join('');
     const url = urlSure(a.link || '');
     const maj = a.sec === 'articles' && a.type === 'maj';
+    const nouvelArticle = a.sec === 'articles' && !maj;
+    const photoUrl = /^https?:\/\//i.test((a.photo || '').trim()) ? a.photo.trim() : '';
     f.innerHTML = `
       <div class="fiche-haut">
         <button type="button" class="btn-icone fermer" id="f-fermer" aria-label="Revenir à la liste">
@@ -536,7 +538,14 @@
           ${url ? `<a href="${esc(url)}" target="_blank" rel="noopener">Ouvrir<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a>` : ''}
         </div>
       </div>
-      ${maj && a.article ? `<div class="demande">
+      ${nouvelArticle ? `<div class="champ">
+        <label for="f-photo">Source de la photo</label>
+        <div class="lien-ligne">
+          <input type="text" id="f-photo" placeholder="Lien de la photo, ou son crédit (AFP, Wikimedia Commons…)" value="${esc(a.photo || '')}">
+          ${photoUrl ? `<a href="${esc(photoUrl)}" target="_blank" rel="noopener">Ouvrir<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a>` : ''}
+        </div>
+      </div>` : ''}
+      ${(maj && a.article) || nouvelArticle ? `<div class="demande">
         <p>La demande à faire à Claude</p>
         <blockquote id="f-demande">${esc(demande(a))}</blockquote>
         <button type="button" id="f-copier">Copier la demande</button>
@@ -549,7 +558,12 @@
     const titre = $('f-titre');
     const ajuster = () => { titre.style.height = 'auto'; titre.style.height = titre.scrollHeight + 'px'; };
     ajuster();
-    titre.addEventListener('input', () => { a.title = titre.value.replace(/\n/g, ' '); ajuster(); enregistrer(); rafraichirLigne(a); rendreCote(); });
+    const majDemande = () => { if ($('f-demande')) $('f-demande').textContent = demande(a); };
+    titre.addEventListener('input', () => { a.title = titre.value.replace(/\n/g, ' '); ajuster(); enregistrer(); rafraichirLigne(a); rendreCote(); majDemande(); });
+    if ($('f-photo')) {
+      $('f-photo').addEventListener('input', e => { a.photo = e.target.value; enregistrer(); majDemande(); });
+      $('f-photo').addEventListener('change', () => rendreFiche());
+    }
     titre.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('f-note').focus(); } });
     $('f-note').addEventListener('input', e => {
       a.note = e.target.value; enregistrer();
@@ -559,7 +573,7 @@
     $('f-partie').addEventListener('change', e => {
       a.sec = e.target.value; a.sub = Object.keys(SECTIONS[a.sec].subs)[0]; enregistrer(); tout();
     });
-    $('f-rub').addEventListener('change', e => { a.sub = e.target.value; enregistrer(); rendreListe(); });
+    $('f-rub').addEventListener('change', e => { a.sub = e.target.value; enregistrer(); rendreListe(); majDemande(); });
     f.querySelectorAll('.seg button[data-p]').forEach(b => b.addEventListener('click', () => { a.prio = b.dataset.p; enregistrer(); tout(); }));
     f.querySelectorAll('.seg button[data-type]').forEach(b => b.addEventListener('click', () => {
       if (b.dataset.type === 'maj') a.type = 'maj'; else delete a.type;
@@ -645,6 +659,15 @@
   function demande(a) {
     const r = a.article || {};
     const note = (a.note || '').trim();
+    if (a.type !== 'maj') {
+      /* Nouvel article : la demande type de CLAUDE.md, section 3. */
+      const lignes = ['Rédige un article d’actualité sur le sujet suivant : ' + ((a.title || '').trim() || '…')];
+      lignes.push('Édition : ' + (EDITIONS[a.sub] || 'Mondiale').toLowerCase());
+      if (note) lignes.push(note);
+      if ((a.link || '').trim()) lignes.push('Source : ' + urlSure(a.link.trim()));
+      if ((a.photo || '').trim()) lignes.push('Photo : ' + a.photo.trim());
+      return lignes.join('\n');
+    }
     return 'Actualise l’article « ' + r.titre + ' » (https://ecg-prepa.fr/' + r.url + ')' + (note ? ' :\n' + note : '.');
   }
 
