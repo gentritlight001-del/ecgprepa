@@ -1,16 +1,18 @@
 /* Espace flashcards d'ECG Prépa (flashcards/index.html).
 
-   - Bibliothèque : paquets prêts à l'emploi lus dans donnees/catalogue.js (généré par
+   - Accueil : les cartes à revoir aujourd'hui (tous paquets confondus) et « Mes paquets ».
+   - Ajouter un paquet : paquets prêts à l'emploi lus dans donnees/catalogue.js (généré par
      outils/flashcards.py) ; les cartes d'un paquet (donnees/<id>.js) sont chargées à la demande.
-   - Mes paquets : paquets de la bibliothèque ajoutés par l'élève + paquets perso (cartes créées,
-     importées ou copiées). On peut ignorer une carte d'un paquet tout fait.
-   - Révision espacée (inspirée d'Anki / SM-2) : étapes d'apprentissage de 1 et 10 min, puis
-     intervalles en jours qui grandissent avec la facilité de la carte. Entraînement libre à côté.
-   - Tout est gardé dans le navigateur (localStorage « ecg-flashcards:v1:<e-mail> »), avec
-     sauvegarde et restauration en fichier. Le paquet « À revoir » des pages du jour de langues
-     (ecg-<langue>-quotidien-a-revoir) reste synchronisé.
-   - Les cartes perso créées dans un chapitre (surligneur, « + Ma carte ») rejoignent le paquet
-     du chapitre. */
+     On peut aussi créer un paquet perso (cartes écrites une à une ou liste collée).
+   - Révision : trois réponses. « Je ne savais pas » : la carte revient dans la même séance,
+     quelques cartes plus loin. « J'ai hésité » : elle revient demain. « Je savais » : son délai
+     s'allonge (1, 3, 7, 16, 37 jours…). Une carte est « acquise » à partir de 7 jours de délai.
+     Les nouvelles cartes arrivent selon le rythme choisi (10, 20 ou 40 par jour, tous paquets
+     confondus). « Tout parcourir » feuillette un paquet sans rien noter.
+   - Tout est gardé dans le navigateur (localStorage « ecg-flashcards:v1:<e-mail> », lu aussi par
+     auth.js pour la pastille du menu), avec sauvegarde et restauration en fichier. Le paquet
+     « À revoir » des pages du jour de langues (ecg-<langue>-quotidien-a-revoir) reste synchronisé.
+   - Les cartes perso créées dans un chapitre (« + Ma carte ») rejoignent le paquet du chapitre. */
 (function () {
   'use strict';
 
@@ -19,24 +21,22 @@
   CATALOGUE.forEach(function (p) { LIB[p.id] = p; });
 
   var MATIERES = [
-    { id: 'langues', nom: 'Langues', c: '#7c9ec9', bientot: 'Le vocabulaire des textes du jour' },
-    { id: 'hgg', nom: 'HGG', c: '#c8a96e' },
-    { id: 'esh', nom: 'ESH', c: '#8fc79a' },
-    { id: 'maths', nom: 'Maths', c: '#6fb7c9' },
-    { id: 'philo', nom: 'Philosophie', c: '#a99ad6' },
-    { id: 'humanite', nom: 'Humanité', c: '#c97c9e' }
+    { id: 'hgg', nom: 'HGG' },
+    { id: 'langues', nom: 'Langues' },
+    { id: 'humanite', nom: 'Humanité' },
+    { id: 'philo', nom: 'Philosophie' },
+    { id: 'esh', nom: 'ESH' },
+    { id: 'maths', nom: 'Maths' }
   ];
   var MAT = {};
   MATIERES.forEach(function (m) { MAT[m.id] = m; });
-  var COULEURS = ['#e0a46a', '#7c9ec9', '#8fc79a', '#c97c9e', '#a99ad6', '#6fb7c9', '#d9c36a', '#e07a7a'];
   var ANNEE = { 0: '', 1: '1re année', 2: '2e année' };
+  var RYTHMES = [[10, 'Tranquille'], [20, 'Normal'], [40, 'Intensif']];
 
-  var MIN = 60000, JOUR = 86400000;
-  var PAS = [1, 10];        // étapes d'apprentissage (minutes)
-  var PAS_RE = [10];        // réapprentissage après un oubli
-  var MAITRISE = 21;        // intervalle (jours) à partir duquel une carte est « maîtrisée »
+  var JOUR = 86400000;
+  var ACQUISE = 7;          // délai (jours) à partir duquel une carte est « acquise »
+  var RETOUR = 4;           // une carte ratée revient après ce nombre de cartes
 
-  /* ─── Petits outils ─── */
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
@@ -66,13 +66,12 @@
     try { var v = JSON.parse(localStorage.getItem(cle) || 'null'); return v == null ? defaut : v; } catch (e) { return defaut; }
   }
   var ICO = {
-    crayon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
-    poubelle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>',
-    oeil: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>',
-    barre: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><path d="M3 3l18 18"/></svg>',
-    fermer: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
-    plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
-    jouer: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5Z"/></svg>'
+    crayon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
+    poubelle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>',
+    fermer: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+    plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
+    jouer: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l13-7.5Z"/></svg>',
+    loupe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>'
   };
 
   /* ─── Données de l'élève ─── */
@@ -111,21 +110,19 @@
   function paquet(id) {
     var l = LIB[id];
     if (l) {
-      var p = Object.assign({ perso: false, couleur: (MAT[l.matiere] || {}).c || '#c8a96e' }, l);
+      var p = Object.assign({ perso: false }, l);
       var mes = cartesDuChapitre(id);
       if (mes.length) p.parties = l.parties.concat([{ id: 'mes', nom: 'Mes cartes du chapitre', n: mes.length }]);
       return p;
     }
     var q = perso(id);
     if (!q) return null;
-    return { id: q.id, perso: true, titre: q.titre, court: q.titre, matiere: 'perso', type: 'perso', annee: 0,
-             couleur: q.couleur || COULEURS[0], recto: 'Recto', verso: 'Verso', parties: [], n: q.cartes.length };
+    return { id: q.id, perso: true, titre: q.titre, court: '', matiere: 'perso', type: 'perso', annee: 0, parties: [], n: q.cartes.length };
   }
-  function bidirectionnel(p) { return p && (p.type === 'vocabulaire' || p.type === 'perso'); }
   function etiquette(p) {
-    if (p.perso) return 'Paquet perso';
+    if (p.perso) return 'Mes cartes';
     var m = MAT[p.matiere] ? MAT[p.matiere].nom : p.matiere;
-    return m + (ANNEE[p.annee] ? ' · ' + ANNEE[p.annee] : '');
+    return m + (ANNEE[p.annee] ? ' · ' + ANNEE[p.annee] : '') + (p.type === 'cours' && p.court ? ' · ' + p.court : '');
   }
 
   /* ─── Cartes ─── */
@@ -152,7 +149,7 @@
     app.innerHTML = '<p class="fc-vide">Chargement…</p>';
     chargerCartes(ids).then(f);
   }
-  /* Cartes perso créées dans les chapitres (surligneur des pages de cours) */
+  /* Cartes perso créées dans les chapitres (pages de cours) */
   var CHAP = null;
   function cartesDuChapitre(id) {
     var l = LIB[id];
@@ -177,87 +174,95 @@
       return { i: 'm-' + c.id, r: String(c.q), v: String(c.a), x: '', g: 'mes', s: 'Ma carte' };
     });
   }
+  /* Toutes les cartes d'un paquet, sans celles que l'élève avait écartées */
   function cartesDe(id) {
-    var q = perso(id);
-    if (q) return q.cartes.map(function (c) { return { i: c.i, r: c.r, v: c.v, x: c.x || '', g: '', s: '' }; });
-    return ((window.ECG_FC_CARTES || {})[id] || []).concat(cartesDuChapitre(id));
-  }
-  function motsARevoir(id) {
-    var l = LIB[id], set = {};
-    if (l && l.revoir) lireJSON(l.revoir, []).forEach(function (m) { if (m && m.en) set[norme(m.en)] = 1; });
-    return set;
+    var q = perso(id), cs;
+    if (q) cs = q.cartes.map(function (c) { return { i: c.i, r: c.r, v: c.v, x: c.x || '', g: '', s: '' }; });
+    else cs = ((window.ECG_FC_CARTES || {})[id] || []).concat(cartesDuChapitre(id));
+    return cs.filter(function (c) { return !D.ign[id + '/' + c.i]; });
   }
   function partiesChoisies(id) {
     var sel = D.prefs.parties[id];
     return Array.isArray(sel) && sel.length ? sel : null;
   }
-  /* Cartes retenues pour réviser : sans les cartes ignorées, limitées aux parties choisies */
+  /* Cartes retenues pour réviser : limitées aux parties cochées */
   function selection(id) {
     var sel = partiesChoisies(id);
-    var revoir = sel && sel.indexOf('revoir') !== -1 ? motsARevoir(id) : null;
-    return cartesDe(id).filter(function (c) {
-      if (D.ign[id + '/' + c.i]) return false;
-      return !sel || sel.indexOf(c.g) !== -1 || (revoir && revoir[norme(c.v)]);
-    });
+    var cs = cartesDe(id);
+    if (!sel) return cs;
+    var dans = cs.filter(function (c) { return sel.indexOf(c.g) !== -1; });
+    return dans.length ? dans : cs;
   }
 
-  /* ─── Répétition espacée ─── */
-  function nouvRestantes(id) {
-    var j = D.nouv[jourCle()] || {};
-    return Math.max(0, (D.prefs.nouv || 20) - (j[id] || 0));
+  /* ─── Les cartes qui reviennent ─── */
+  function etat(id, c) { return D.srs[id + '/' + c.i]; }
+  function vue(st) { return !!(st && st.s); }
+  function acquise(st) { return vue(st) && st.s === 2 && st.i >= ACQUISE; }
+  function rythme() {
+    var n = D.prefs.nouv || 20, mieux = RYTHMES[0][0];
+    RYTHMES.forEach(function (r) { if (Math.abs(r[0] - n) < Math.abs(mieux - n)) mieux = r[0]; });
+    return mieux;
+  }
+  function nouvReste() {
+    var j = D.nouv[jourCle()] || {}, faites = 0;
+    Object.keys(j).forEach(function (k) { faites += j[k] || 0; });
+    return Math.max(0, rythme() - faites);
   }
   function stats(id, cartes) {
     var fin = finJour(Date.now());
-    var o = { total: 0, nouv: 0, due: 0, m: 0, e: 0 };
+    var o = { total: 0, nouv: 0, due: 0, a: 0, e: 0 };
     (cartes || selection(id)).forEach(function (c) {
       o.total++;
-      var st = D.srs[id + '/' + c.i];
-      if (!st || !st.s) { o.nouv++; return; }
+      var st = etat(id, c);
+      if (!vue(st)) { o.nouv++; return; }
       if (st.d <= fin) o.due++;
-      if (st.s === 2 && st.i >= MAITRISE) o.m++; else o.e++;
+      if (acquise(st)) o.a++; else o.e++;
     });
-    o.nouvDispo = Math.min(o.nouv, nouvRestantes(id));
-    o.aFaire = o.due + o.nouvDispo;
     return o;
   }
-  /* Nouvel état d'une carte après une note : 1 à revoir, 2 difficile, 3 bien, 4 facile */
-  function noter(avant, note, now) {
-    var st = avant && avant.s ? Object.assign({}, avant) : { s: 0, p: 0, i: 0, e: 250, n: 0, l: 0, d: 0 };
-    st.n = (st.n || 0) + 1;
-    function diplome(i) {
-      st.s = 2; st.p = 0;
-      st.i = Math.min(365, Math.max(1, Math.round(i)));
-      st.d = plusJours(now, st.i);
+  /* Nouvelles cartes du jour réparties entre les paquets, une à une */
+  function quota(ids, plus) {
+    var reste = plus || nouvReste(), dispo = {}, q = {}, encore = true;
+    ids.forEach(function (id) { dispo[id] = stats(id).nouv; q[id] = 0; });
+    while (reste > 0 && encore) {
+      encore = false;
+      ids.forEach(function (id) { if (reste > 0 && q[id] < dispo[id]) { q[id]++; reste--; encore = true; } });
     }
-    if (st.s === 2) {
-      var i = st.i || 1, e = st.e / 100;
-      if (note === 1) {
-        st.l = (st.l || 0) + 1; st.e = Math.max(130, st.e - 20);
-        st.i = Math.max(1, Math.round(i * 0.3)); st.s = 3; st.p = 0; st.d = now + PAS_RE[0] * MIN;
-      } else if (note === 2) { st.e = Math.max(130, st.e - 15); diplome(Math.max(i + 1, i * 1.2)); }
-      else if (note === 3) diplome(Math.max(i + 1, i * e));
-      else { st.e += 15; diplome(Math.max(i + 2, i * e * 1.3)); }
+    return q;
+  }
+  /* Nouvel état d'une carte après une réponse : 1 je ne savais pas, 2 j'ai hésité, 3 je savais */
+  function noter(avant, note, now) {
+    var st = vue(avant) ? Object.assign({}, avant) : { s: 0, p: 0, i: 0, e: 230, n: 0, l: 0, d: 0 };
+    var revision = st.s === 2, oubliee = st.s === 3, nouvelle = st.s === 0;
+    st.n = (st.n || 0) + 1; st.p = 0;
+    if (note === 1) {
+      if (revision) { st.l = (st.l || 0) + 1; st.e = Math.max(130, st.e - 20); st.i = Math.max(1, Math.round(st.i * 0.3)); st.s = 3; }
+      else if (nouvelle) st.s = 1;
+      st.d = now;
       return st;
     }
-    var re = st.s === 3, pas = re ? PAS_RE : PAS;
-    if (st.s === 0) { st.s = 1; st.p = 0; }
-    if (note === 1) { st.p = 0; st.d = now + pas[0] * MIN; }
-    else if (note === 2) { st.d = now + (st.p === 0 && pas.length > 1 ? (pas[0] + pas[1]) / 2 : pas[st.p]) * MIN; }
-    else if (note === 3) {
-      if (st.p + 1 < pas.length) { st.p++; st.d = now + pas[st.p] * MIN; }
-      else diplome(re ? st.i : 1);
-    } else diplome(re ? st.i + 1 : 4);
+    var i;
+    if (note === 2) {
+      if (revision) { st.e = Math.max(130, st.e - 15); i = 1; st.i = Math.max(1, Math.round(st.i * 0.6)); }
+      else { i = 1; st.i = oubliee ? Math.max(1, st.i) : 1; }
+      st.s = 2; st.d = plusJours(now, i);
+      return st;
+    }
+    if (!revision) i = oubliee ? Math.max(1, st.i) : nouvelle ? 3 : 1;
+    else i = st.i <= 1 ? 3 : Math.max(st.i + 1, Math.round(st.i * Math.min(st.e || 230, 280) / 100));
+    st.s = 2; st.i = Math.min(365, i); st.d = plusJours(now, st.i);
     return st;
   }
-  function delai(st, now) {
-    if (st.s !== 2) {
-      var m = Math.max(1, Math.round((st.d - now) / MIN));
-      return m < 60 ? m + '\u00a0min' : Math.round(m / 60) + '\u00a0h';
-    }
-    var i = st.i;
-    if (i < 31) return i + '\u00a0j';
-    if (i < 365) return Math.round(i / 30) + '\u00a0mois';
-    return '1\u00a0an';
+  function dansJours(n) {
+    if (n <= 0) return 'aujourd’hui';
+    if (n === 1) return 'demain';
+    if (n < 31) return 'dans ' + n + ' jours';
+    if (n < 365) return 'dans ' + Math.round(n / 30) + ' mois';
+    return 'dans 1 an';
+  }
+  function retourDe(st) {
+    if (!vue(st)) return 'Pas encore vue';
+    return 'Revient ' + dansJours(Math.round((debutJour(st.d) - debutJour(Date.now())) / JOUR));
   }
   function serie() {
     var n = 0, d = Date.now();
@@ -265,17 +270,15 @@
     while (D.hist[jourCle(d)]) { n++; d = plusJours(d, -1); }
     return n;
   }
-  /* Cartes à revoir chacun des 7 prochains jours (aujourd'hui compris) */
+  /* Cartes déjà vues qui reviendront demain et après-demain */
   function prevision(ids) {
-    var now = Date.now(), fins = [], out = [0, 0, 0, 0, 0, 0, 0];
-    for (var k = 0; k < 7; k++) fins.push(finJour(plusJours(now, k)));
+    var now = Date.now(), f0 = finJour(now), f1 = finJour(plusJours(now, 1)), f2 = finJour(plusJours(now, 2)), out = [0, 0];
     ids.forEach(function (id) {
       selection(id).forEach(function (c) {
-        var st = D.srs[id + '/' + c.i];
-        if (!st || !st.s) return;
-        for (var k = 0; k < 7; k++) if (st.d <= fins[k]) { out[k]++; break; }
+        var st = etat(id, c);
+        if (!vue(st) || st.d <= f0) return;
+        if (st.d <= f1) out[0]++; else if (st.d <= f2) out[1]++;
       });
-      out[0] += stats(id).nouvDispo;
     });
     return out;
   }
@@ -297,427 +300,282 @@
   var app = document.getElementById('app');
   var S = null;           // séance en cours
   var vueCourante = '';
-
-  function onglets(actif) {
-    var due = 0;
-    D.mes.forEach(function (id) { due += stats(id).aFaire; });
-    return '<nav class="fc-onglets" aria-label="Sections">' +
-      '<a href="#" class="' + (actif === 'mes' ? 'actif' : '') + '">Mes paquets' + (due ? '<b>' + due + '</b>' : '') + '</a>' +
-      '<a href="#bibliotheque" class="' + (actif === 'biblio' ? 'actif' : '') + '">Bibliothèque</a></nav>';
-  }
-  function barreMaitrise(s) {
-    var tot = s.total || 1;
-    return '<div class="maitrise" role="img" aria-label="' + s.m + ' maîtrisées, ' + s.e + ' en cours, ' + s.nouv + ' nouvelles">' +
-      '<i class="m" style="width:' + (100 * s.m / tot) + '%"></i><i class="e" style="width:' + (100 * s.e / tot) + '%"></i></div>';
-  }
-  function legende(s) {
-    return '<div class="legende"><span class="m">' + s.m + ' maîtrisée' + (s.m > 1 ? 's' : '') + '</span><span class="e">' + s.e +
-      ' en cours</span><span>' + pl(s.nouv, 'nouvelle') + '</span></div>';
-  }
+  var recherche = '', limiteListe = 12, partiesOuvertes = false;
 
   function rendre() {
     var h = location.hash.replace(/^#/, '');
     try { h = decodeURIComponent(h); } catch (e) { /* tel quel */ }
-    var morceaux = h.split('/'), vue = morceaux[0], arg = morceaux.slice(1).join('/');
-    document.body.classList.toggle('etude', vue === 'seance' && !!S);
-    if (vue !== 'seance') S = null;
+    var morceaux = h.split('/'), v = morceaux[0], arg = morceaux.slice(1).join('/');
+    document.body.classList.toggle('etude', v === 'seance' && !!S);
+    if (v !== 'seance') S = null;
+    if (h !== vueCourante) { recherche = ''; limiteListe = 12; partiesOuvertes = false; }
     vueCourante = h;
-    if (LIB[vue] || perso(vue)) return pagePaquet(vue);       // ancien lien : flashcards/#anglais
-    if (vue === 'paquet') return pagePaquet(arg);
-    if (vue === 'bibliotheque') return pageBiblio(arg);
-    if (vue === 'seance' && S) return rendreSeance();
-    if (vue === 'seance') { location.replace('#'); return; }
+    if (LIB[v] || perso(v)) return pagePaquet(v);              // ancien lien : flashcards/#anglais
+    if (v === 'paquet') return pagePaquet(arg);
+    if (v === 'ajouter' || v === 'bibliotheque') return pageAjouter(arg);
+    if (v === 'seance' && S) return rendreSeance();
+    if (v === 'seance') { location.replace('#'); return; }
     return pageAccueil();
   }
   window.addEventListener('hashchange', function () { rendre(); window.scrollTo(0, 0); });
   function aller(h) { if (location.hash.replace(/^#/, '') === h) rendre(); else location.hash = h; }
-
-  /* ─── Accueil : mes paquets ─── */
-  function tuile(id) {
-    var p = paquet(id), s = stats(id), sel = partiesChoisies(id);
-    return '<article class="paquet" style="--c:' + p.couleur + '">' +
-      '<div class="paquet-tag">' + t(etiquette(p)) + (p.court && !p.perso && p.court !== p.titre && p.type === 'cours' ? ' · ' + t(p.court) : '') + '</div>' +
-      '<h3><a href="#paquet/' + encodeURIComponent(id) + '">' + t(p.titre) + '</a></h3>' +
-      '<div class="paquet-compte"><span class="due"><b>' + s.due + '</b> à réviser</span><span><b>' + s.nouvDispo + '</b> nouvelle' + (s.nouvDispo > 1 ? 's' : '') +
-      '</span><span>' + pl(s.total, 'carte') + (sel ? ' (sélection)' : '') + '</span></div>' +
-      barreMaitrise(s) +
-      '<div class="paquet-actions">' +
-      (s.aFaire ? '<button type="button" class="btn plein petit" data-a="reviser" data-id="' + esc(id) + '">' + ICO.jouer + 'Réviser · ' + s.aFaire + '</button>'
-        : '<button type="button" class="btn petit" data-a="libre" data-id="' + esc(id) + '"' + (s.total ? '' : ' disabled') + '>Entraînement libre</button>') +
-      '<a class="btn petit" href="#paquet/' + encodeURIComponent(id) + '">' + (p.perso ? 'Gérer les cartes' : 'Ouvrir') + '</a></div></article>';
+  function fil(nom) {
+    var c = document.querySelector('.breadcrumb');
+    if (!c) return;
+    c.innerHTML = '<a href="../index.html">Accueil</a><span class="sep">/</span>' +
+      (nom ? '<a href="#">Flashcards</a><span class="sep">/</span><span class="current">' + t(nom) + '</span>' : '<span class="current">Flashcards</span>');
+  }
+  function jauge(s) {
+    var tt = s.total || 1;
+    return '<span class="jauge"><i class="a" style="width:' + (100 * s.a / tt) + '%"></i><i class="e" style="width:' + (100 * s.e / tt) + '%"></i></span>';
   }
 
+  /* ─── Accueil ─── */
   function pageAccueil() {
     avecCartes(D.mes, function () {
-      if (vueCourante !== '' && vueCourante !== 'accueil') return;
-      var due = 0, nouv = 0, encours = 0, maitr = 0, total = 0;
-      D.mes.forEach(function (id) { var s = stats(id); due += s.due; nouv += s.nouvDispo; encours += s.e; maitr += s.m; total += s.total; });
-      var aFaire = due + nouv, prev = prevision(D.mes), max = Math.max.apply(null, prev.concat([1]));
-      var auj = D.hist[jourCle()] || 0, ser = serie();
-      var noms = ['Auj.', 'Dem.'];
-      for (var k = 2; k < 7; k++) noms.push(new Date(plusJours(Date.now(), k)).toLocaleDateString('fr-FR', { weekday: 'short' }).replace('.', ''));
-
-      var revue;
+      fil('');
+      var Q = quota(D.mes), due = 0, nouv = 0, actifs = 0, lignes = '';
+      D.mes.forEach(function (id) {
+        var p = paquet(id), s = stats(id), n = s.due + Q[id];
+        due += s.due; nouv += Q[id];
+        if (n) actifs++;
+        lignes += '<div class="ligne"><a class="ligne-nom" href="#paquet/' + esc(id) + '"><small>' + t(etiquette(p)) + '</small><b>' + t(p.titre) + '</b></a>' +
+          '<div class="ligne-prog">' + jauge(s) + '<span>' + t(s.total ? pl(s.a, 'acquise') + ' · ' + s.e + ' en cours · ' + (s.nouv ? pl(s.nouv, 'pas encore vue', 'pas encore vues') : 'tout a été vu') : 'Aucune carte pour l’instant') + '</span></div>' +
+          (n ? '<button type="button" class="btn plein" data-a="reviser" data-id="' + esc(id) + '" data-n="' + Q[id] + '">Réviser · ' + n + '</button>'
+             : '<a class="btn" href="#paquet/' + esc(id) + '">' + (s.total ? 'À jour' : 'Ouvrir') + '</a>') + '</div>';
+      });
+      var total = due + nouv, prev = prevision(D.mes), ser = serie();
+      var date = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+      var hero;
       if (!D.mes.length) {
-        revue = '<div><div class="gros">0<small>paquet pour l’instant</small></div><p class="detail" style="margin-top:12px">' +
-          t('Ajoute des paquets tout faits depuis la bibliothèque (langues, chapitres d’HGG, Humanité) ou crée tes propres cartes.') + '</p></div>' +
-          '<div class="paquet-actions"><a class="btn plein grand" href="#bibliotheque">Parcourir la bibliothèque</a><button type="button" class="btn grand" data-a="creer">Créer un paquet</button></div>';
-      } else if (aFaire) {
-        revue = '<div><div class="gros">' + aFaire + '<small>carte' + (aFaire > 1 ? 's' : '') + ' à réviser aujourd’hui</small></div>' +
-          '<p class="detail" style="margin-top:12px"><b>' + due + '</b> révision' + (due > 1 ? 's' : '') + ' prévue' + (due > 1 ? 's' : '') + ' et <b>' + nouv + '</b> nouvelle' + (nouv > 1 ? 's' : '') + typo(' carte' + (nouv > 1 ? 's' : '') + ' : chaque carte revient juste avant que tu l’oublies.') + '</p></div>' +
-          '<div class="paquet-actions"><button type="button" class="btn plein grand" data-a="tout">' + ICO.jouer + 'Réviser maintenant</button></div>';
+        hero = '<h1>Tes flashcards</h1><p class="hero-txt">' + t('Choisis les chapitres que tu veux apprendre. Chaque jour, le site te montre les cartes à revoir : celles que tu sais reviennent de plus en plus rarement, celles que tu oublies reviennent vite.') + '</p>' +
+          '<div><a class="btn plein gros" href="#ajouter">' + ICO.plus + 'Choisir mes premiers paquets</a></div>';
+      } else if (total) {
+        hero = '<h1 class="compte"><b>' + total + '</b> ' + (total > 1 ? 'cartes à revoir' : 'carte à revoir') + '</h1>' +
+          '<p class="hero-txt">' + t('Environ ' + pl(Math.max(1, Math.round(total / 5)), 'minute') + '. ' +
+            (due && nouv ? pl(due, 'carte') + ' qui ' + (due > 1 ? 'reviennent' : 'revient') + ' et ' + pl(nouv, 'nouvelle') : due ? pl(due, 'carte') + ' qui ' + (due > 1 ? 'reviennent' : 'revient') : pl(nouv, 'nouvelle carte', 'nouvelles cartes')) +
+            (actifs > 1 ? ', dans ' + actifs + ' paquets.' : '.')) + '</p>' +
+          '<div><button type="button" class="btn plein gros" data-a="tout">' + ICO.jouer + 'Commencer la révision</button></div>';
       } else {
-        revue = '<div><div class="gros">0<small>carte à réviser</small></div><p class="detail" style="margin-top:12px">' +
-          typo('Tout est à jour. ') + (prev[1] ? 'Demain\u00a0: <b>' + pl(prev[1], 'carte') + '</b>.' : '') + ' ' + t('Tu peux t’entraîner librement sur un paquet en attendant.') + '</p></div>' +
-          '<div class="paquet-actions"><a class="btn grand" href="#bibliotheque">Ajouter un paquet</a></div>';
+        hero = '<h1>' + t('Tout est à jour') + '</h1><p class="hero-txt">' + t(prev[0] ? 'Rien d’autre à revoir aujourd’hui. Demain : ' + pl(prev[0], 'carte prévue', 'cartes prévues') + '.' : 'Rien à revoir aujourd’hui. Les cartes reviendront d’elles-mêmes au bon moment.') + '</p>' +
+          '<div><a class="btn gros" href="#ajouter">' + ICO.plus + 'Ajouter un paquet</a></div>';
       }
-
-      var html = onglets('mes') +
-        '<header><div class="fc-sur">Espace de révision</div><h1>Flashcards</h1>' +
-        '<p class="fc-lead">' + t('Tes cartes et les paquets du site, révisés au bon moment : ce que tu sais revient de plus en plus rarement, ce que tu oublies revient vite.') + '</p></header>' +
-        '<section class="fc-tableau"><div class="fc-revue">' + revue + '</div>' +
-        '<div class="fc-chiffres">' +
-        '<div class="fc-chiffre"><b>' + ser + '</b><span>jour' + (ser > 1 ? 's' : '') + ' de suite</span></div>' +
-        '<div class="fc-chiffre"><b>' + auj + '</b><span>carte' + (auj > 1 ? 's' : '') + ' vue' + (auj > 1 ? 's' : '') + ' aujourd’hui</span></div>' +
-        '<div class="fc-chiffre"><b>' + maitr + '</b><span>maîtrisée' + (maitr > 1 ? 's' : '') + ' sur ' + total + '</span></div>' +
-        '<div class="fc-chiffre"><b>' + encours + '</b><span>en cours d’apprentissage</span></div>' +
-        '<div class="fc-prevision"><h3>Les 7 prochains jours</h3><div class="fc-barres">' +
-        prev.map(function (n, k) { return '<div class="fc-barre" title="' + pl(n, 'carte') + '"><em>' + (n || '') + '</em><i style="height:' + Math.round(48 * n / max) + 'px"></i>' + noms[k] + '</div>'; }).join('') +
-        '</div></div></div></section>' +
-        '<section><div class="fc-tete-section"><h2>Mes paquets</h2><p>' + pl(D.mes.length, 'paquet') + '</p></div><div class="fc-grille">' +
-        D.mes.map(tuile).join('') +
-        '<article class="paquet nouveau"><h3>Créer un paquet</h3><p>' + t('Tes propres cartes : une par une, ou toute une liste collée d’un coup.') + '</p><button type="button" class="btn" data-a="creer">' + ICO.plus + 'Nouveau paquet</button></article>' +
-        '<article class="paquet nouveau"><h3>Paquets tout faits</h3><p>' + t('Vocabulaire des langues au quotidien, chapitres d’HGG, Humanité ; bientôt l’ESH, les maths et la philo.') + '</p><a class="btn" href="#bibliotheque">Bibliothèque</a></article>' +
-        '</div></section>' +
-        reglages();
-      app.innerHTML = html;
+      var jours = '';
+      for (var k = 6; k >= 0; k--) {
+        var ms = plusJours(Date.now(), -k), fait = !!D.hist[jourCle(ms)];
+        jours += '<div class="jour' + (fait ? ' fait' : '') + (k === 0 ? ' auj' : '') + '"><b>' + new Date(ms).getDate() + '</b><span>' + (k === 0 ? 'auj.' : new Date(ms).toLocaleDateString('fr-FR', { weekday: 'short' }).replace('.', '')) + '</span></div>';
+      }
+      var r = rythme();
+      app.innerHTML =
+        '<section class="accueil-haut"><div class="hero"><div class="sur">' + t('Aujourd’hui · ' + date) + '</div>' + hero + '</div>' +
+        '<aside class="semaine"><div class="serie"><b>' + ser + '</b><span>' + (ser > 1 ? 'jours de suite' : 'jour de suite') + '</span></div><div class="jours">' + jours + '</div>' +
+        '<p>' + t(prev[0] || prev[1] ? 'Demain : ' + pl(prev[0], 'carte prévue', 'cartes prévues') + '. Après-demain : ' + prev[1] + '.' : 'Quelques minutes par jour suffisent.') + '</p></aside></section>' +
+        '<section class="bloc"><div class="bloc-tete"><h2>Mes paquets</h2>' + (D.mes.length ? '<div class="legende"><span class="a">Acquises</span><span class="e">En cours</span><span>Pas encore vues</span></div>' : '') + '</div>' +
+        lignes + '<a class="ajout" href="#ajouter">' + ICO.plus + 'Ajouter un paquet</a></section>' +
+        '<section class="pied-accueil"><div><b>Mon rythme</b><span>' + t('Le nombre de nouvelles cartes par jour, tous paquets confondus.') + '</span></div>' +
+        '<div class="choix" role="group" aria-label="Mon rythme">' + RYTHMES.map(function (x) {
+          return '<button type="button" data-a="rythme" data-v="' + x[0] + '" class="' + (x[0] === r ? 'actif' : '') + '" aria-pressed="' + (x[0] === r) + '">' + x[1] + ' · ' + x[0] + '</button>';
+        }).join('') + '</div></section>' +
+        '<p class="sauvegarde">' + t('Ta progression est gardée dans ce navigateur.') + ' <button type="button" class="lien" data-a="sauvegarde">Télécharger une sauvegarde</button> · <button type="button" class="lien" data-a="restaurer">Restaurer</button></p>';
     });
   }
 
-  function reglages() {
-    var n = D.prefs.nouv || 20;
-    return '<section><div class="fc-tete-section"><h2>Réglages</h2></div><div class="fc-reglages">' +
-      '<div class="fc-panneau"><h3>Nouvelles cartes par jour</h3><p>' + t('Par paquet. 20 est un bon rythme ; baisse-le si les révisions s’accumulent.') + '</p>' +
-      '<select data-a="nouv" aria-label="Nouvelles cartes par jour">' + [5, 10, 15, 20, 30, 50, 100].map(function (v) { return '<option value="' + v + '"' + (v === n ? ' selected' : '') + '>' + v + '</option>'; }).join('') + '</select></div>' +
-      '<div class="fc-panneau"><h3>Sauvegarde</h3><p>' + t('Ta progression est gardée dans ce navigateur. Fais une sauvegarde pour la retrouver sur un autre appareil.') + '</p>' +
-      '<div class="fc-outils"><button type="button" class="btn petit" data-a="sauvegarde">Télécharger</button><button type="button" class="btn petit" data-a="restaurer">Restaurer</button></div></div>' +
-      '<div class="fc-panneau"><h3>Comment ça marche ?</h3><p>' + t('Après chaque carte, dis si tu la savais : « À revoir » la fait revenir dans la séance, « Bien » l’éloigne d’un jour, puis de 3, 7, 18 jours… Quelques minutes par jour suffisent.') + '</p></div>' +
-      '</div></section>';
-  }
-
-  /* ─── Bibliothèque ─── */
-  function pageBiblio(matiere) {
-    if (!charges(D.mes)) return avecCartes(D.mes, function () { if (vueCourante.split('/')[0] === 'bibliotheque') pageBiblio(matiere); });
+  /* ─── Ajouter un paquet ─── */
+  function pageAjouter(matiere) {
+    fil('Ajouter un paquet');
     var parMat = {};
     CATALOGUE.forEach(function (p) { (parMat[p.matiere] = parMat[p.matiere] || []).push(p); });
-    if (!MAT[matiere]) matiere = MATIERES.filter(function (m) { return parMat[m.id]; })[0] ? MATIERES.filter(function (m) { return parMat[m.id]; })[0].id : 'langues';
-    var m = MAT[matiere], liste = parMat[matiere] || [];
-    var html = onglets('biblio') +
-      '<header><div class="fc-sur">Bibliothèque</div><h1>Paquets tout faits</h1>' +
-      '<p class="fc-lead">' + t('Ajoute un paquet à tes révisions : il se met à jour tout seul (nouveaux textes du jour, nouveaux chapitres) et ta progression est gardée.') + '</p></header>' +
-      '<nav class="fc-matieres" aria-label="Matières">' + MATIERES.map(function (x) {
-        var n = (parMat[x.id] || []).length;
-        return '<a class="matiere' + (x.id === matiere ? ' actif' : '') + (n ? '' : ' bientot') + '" style="--c:' + x.c + '" href="#bibliotheque/' + x.id + '"><b>' + t(x.nom) + '</b><span>' + (n ? pl(n, 'paquet') : 'Bientôt') + '</span></a>';
-      }).join('') + '</nav>';
-    if (!liste.length) {
-      html += '<div class="fc-bientot"><b>' + t(m.nom) + ' : bientôt</b>' +
-        t('Les cartes des chapitres de ' + (matiere === 'maths' ? 'maths' : matiere === 'philo' ? 'philosophie' : m.nom) + ' arriveront ici au fil de leur mise en ligne. En attendant, crée ton propre paquet.') +
-        '<div style="margin-top:16px"><button type="button" class="btn" data-a="creer">' + ICO.plus + 'Créer un paquet</button></div></div>';
-    } else {
-      var groupes = {};
-      liste.forEach(function (p) { (groupes[p.annee] = groupes[p.annee] || []).push(p); });
-      Object.keys(groupes).sort().forEach(function (a) {
-        var ps = groupes[a], tous = ps.every(function (p) { return estMien(p.id); });
-        var nom = matiere === 'langues' ? 'Au quotidien · 1re année' : matiere === 'humanite' ? 'Cours' : ANNEE[a] || 'Paquets';
-        html += '<section class="fc-groupe"><div class="fc-groupe-tete"><h3>' + t(nom) + '</h3>' +
-          (ps.length > 1 ? '<button type="button" class="lien' + (tous ? ' dim' : '') + '" data-a="tout-ajouter" data-ids="' + esc(ps.map(function (p) { return p.id; }).join(',')) + '"' + (tous ? ' disabled' : '') + '>' + (tous ? 'Tous ajoutés' : 'Tout ajouter') + '</button>' : '') + '</div>' +
-          ps.map(function (p) {
-            var mien = estMien(p.id);
-            var sous = pl(p.n, 'carte') + ' · ' + (p.type === 'vocabulaire' ? pl(p.parties.length, 'texte') + ' du jour' : pl(p.parties.length, 'partie'));
-            return '<div class="ligne" style="--c:' + m.c + '"><div class="ligne-num">' + t(p.court) + '</div>' +
-              '<div class="ligne-titre"><a href="#paquet/' + encodeURIComponent(p.id) + '">' + t(p.titre) + '</a><small>' + sous + '</small></div>' +
-              '<div class="ligne-actions"><a class="btn petit" href="#paquet/' + encodeURIComponent(p.id) + '">Voir</a>' +
-              (mien ? '<button type="button" class="btn petit ok" data-a="retirer" data-id="' + esc(p.id) + '" title="Retirer de mes paquets">✓ Dans mes paquets</button>'
-                : '<button type="button" class="btn petit plein" data-a="ajouter" data-id="' + esc(p.id) + '">' + ICO.plus + 'Ajouter</button>') +
-              '</div></div>';
-          }).join('') + '</section>';
-      });
-    }
-    app.innerHTML = html;
+    if (!parMat[matiere]) matiere = (MATIERES.filter(function (m) { return parMat[m.id]; })[0] || {}).id;
+    var groupes = {}, html = '';
+    (parMat[matiere] || []).forEach(function (p) { (groupes[p.annee] = groupes[p.annee] || []).push(p); });
+    Object.keys(groupes).sort(function (a, b) { return (+a || 9) - (+b || 9); }).forEach(function (a) {
+      var ps = groupes[a], manque = ps.filter(function (p) { return !estMien(p.id); });
+      var nom = matiere === 'langues' ? 'Le vocabulaire des textes du jour' : (ANNEE[a] || MAT[matiere].nom) + ' · ' + pl(ps.length, ps[0].court.indexOf('Cours') === 0 ? 'cours' : 'chapitre', ps[0].court.indexOf('Cours') === 0 ? 'cours' : 'chapitres');
+      html += '<div class="groupe"><div class="groupe-tete"><h3>' + t(nom) + '</h3>' +
+        (ps.length > 1 && manque.length ? '<button type="button" class="lien" data-a="tout-ajouter" data-ids="' + esc(manque.map(function (p) { return p.id; }).join(',')) + '">Tout ajouter</button>' : '') + '</div>' +
+        ps.map(function (p) {
+          var mien = estMien(p.id);
+          return '<div class="ligne"><span class="num">' + esc(p.num || p.court.slice(0, 2).toUpperCase()) + '</span>' +
+            '<a class="ligne-nom" href="#paquet/' + esc(p.id) + '"><b>' + t(p.titre) + '</b><small>' + pl(p.n, 'carte') + '</small></a>' +
+            '<button type="button" class="btn ' + (mien ? 'ok' : 'plein') + '" data-a="' + (mien ? 'retirer' : 'ajouter') + '" data-id="' + esc(p.id) + '" aria-pressed="' + mien + '">' + (mien ? 'Ajouté ✓' : 'Ajouter') + '</button></div>';
+        }).join('') + '</div>';
+    });
+    app.innerHTML = '<a class="retour" href="#">← Mes paquets</a><h1>Ajouter un paquet</h1>' +
+      '<p class="hero-txt">' + t('Choisis les chapitres que tu veux apprendre. Leurs cartes entrent dans ta révision du jour.') + '</p>' +
+      '<nav class="matieres" aria-label="Matières">' + MATIERES.map(function (m) {
+        return parMat[m.id] ? '<a href="#ajouter/' + m.id + '" class="' + (m.id === matiere ? 'actif' : '') + '">' + m.nom + '</a>' : '<span>' + m.nom + ' · bientôt</span>';
+      }).join('') + '</nav>' + html +
+      '<div class="perso-bloc"><div><h3>Mes propres cartes</h3><p>' + t('Crée un paquet à toi : écris tes cartes une à une, ou colle une liste (une ligne par carte, la question puis la réponse).') + '</p></div>' +
+      '<button type="button" class="btn clair" data-a="creer">Créer un paquet</button></div>';
   }
 
   /* ─── Page d'un paquet ─── */
-  var recherche = '';
   function pagePaquet(id) {
     var p = paquet(id);
-    if (!p) { app.innerHTML = onglets('') + '<p class="fc-vide">' + t('Ce paquet n’existe pas ou a été supprimé.') + ' <a class="lien" href="#">Retour à mes paquets</a></p>'; return; }
-    avecCartes([id], function () {
-      if (vueCourante !== 'paquet/' + id && vueCourante !== id) return;
-      dessinerPaquet(p);
-    });
+    if (!p) { aller(''); return; }
+    avecCartes([id], function () { dessinerPaquet(paquet(id)); });
   }
   function dessinerPaquet(p) {
-    var id = p.id, s = stats(id), mien = estMien(id), toutes = cartesDe(id);
-    var sel = partiesChoisies(id) || [];
-    var revoirN = p.revoir ? Object.keys(motsARevoir(id)).length : 0;
-    var lien = p.lien ? '<a href="../' + esc(p.lien) + '">' + (p.type === 'vocabulaire' ? 'Les textes du jour' : 'Ouvrir le ' + (p.matiere === 'humanite' ? 'cours' : 'chapitre')) + ' →</a>' : '';
-    var html = '<a class="fc-retour" href="' + (mien ? '#' : '#bibliotheque/' + p.matiere) + '">← ' + (mien ? 'Mes paquets' : 'Bibliothèque') + '</a>' +
-      '<header class="fc-paquet-tete" style="--c:' + p.couleur + '"><div><div class="fc-sur">' + t(etiquette(p)) + (p.type === 'cours' ? ' · ' + t(p.court) : '') + '</div>' +
-      '<h1>' + t(p.titre) + '</h1><div class="infos"><span><b>' + toutes.length + '</b> carte' + (toutes.length > 1 ? 's' : '') + '</span>' +
-      '<span><b>' + s.due + '</b> à réviser</span><span><b>' + s.nouv + '</b> jamais vue' + (s.nouv > 1 ? 's' : '') + '</span>' + lien + '</div></div>' +
-      '<div class="fc-lancer">' +
-      '<button type="button" class="btn plein grand" data-a="reviser" data-id="' + esc(id) + '"' + (s.aFaire ? '' : ' disabled') + '>' + ICO.jouer + (s.aFaire ? 'Réviser · ' + s.aFaire : 'Rien à réviser') + '</button>' +
-      '<button type="button" class="btn" data-a="libre" data-id="' + esc(id) + '"' + (s.total ? '' : ' disabled') + '>Entraînement libre · ' + s.total + '</button>' +
-      (p.perso ? '' : mien ? '<button type="button" class="btn ok" data-a="retirer" data-id="' + esc(id) + '">✓ Dans mes paquets</button>'
-        : '<button type="button" class="btn" data-a="ajouter" data-id="' + esc(id) + '">' + ICO.plus + 'Ajouter à mes paquets</button>') +
-      '</div></header>' +
-      '<div>' + barreMaitrise(s) + '<div style="margin-top:8px">' + legende(s) + '</div></div>';
-
-    var panneau = '';
-    if (p.parties.length > 1 || revoirN) {
-      panneau += '<div class="fc-reglage"><span>' + (p.type === 'vocabulaire' ? 'Textes' : 'Parties') + '</span><div class="puces">' +
-        '<button type="button" class="puce' + (sel.length ? '' : ' actif') + '" data-a="partie" data-id="' + esc(id) + '" data-g="">Tout</button>' +
-        (revoirN ? '<button type="button" class="puce revoir' + (sel.indexOf('revoir') !== -1 ? ' actif' : '') + '" data-a="partie" data-id="' + esc(id) + '" data-g="revoir">À revoir<small>' + revoirN + '</small></button>' : '') +
-        p.parties.map(function (g) {
-          return '<button type="button" class="puce' + (sel.indexOf(g.id) !== -1 ? ' actif' : '') + '" data-a="partie" data-id="' + esc(id) + '" data-g="' + esc(g.id) + '" title="' + esc(typo(g.nom)) + '">' +
-            t(p.type === 'vocabulaire' ? g.nom.split(' · ')[0] + ' · ' + dateCourte(new Date(g.id + 'T12:00:00').getTime()) : g.nom) + '<small>' + g.n + '</small></button>';
-        }).join('') + '</div></div>';
+    var id = p.id, s = stats(id), toutes = cartesDe(id), q = quota([id])[id], n = s.due + q;
+    fil(p.titre);
+    var actions = '';
+    if (s.total) {
+      actions = (n ? '<button type="button" class="btn plein gros" data-a="reviser" data-id="' + esc(id) + '">Réviser · ' + pl(n, 'carte') + '</button>'
+        : s.nouv ? '<button type="button" class="btn plein gros" data-a="avance" data-id="' + esc(id) + '">Voir 10 nouvelles cartes</button>'
+        : '<span class="btn gros inerte">À jour : rien à revoir aujourd’hui</span>') +
+        '<button type="button" class="btn" data-a="libre" data-id="' + esc(id) + '">Tout parcourir, sans noter</button>';
     }
-    if (bidirectionnel(p)) {
-      var sens = D.prefs.sens[id] || 'normal', saisie = !!D.prefs.saisie[id];
-      var a = p.recto, b = p.verso;
-      panneau += '<div class="fc-reglage"><span>Sens</span><div class="puces">' +
-        [['normal', a + ' → ' + b], ['inverse', b + ' → ' + a], ['mixte', 'Les deux']].map(function (x) {
-          return '<button type="button" class="puce' + (sens === x[0] ? ' actif' : '') + '" data-a="sens" data-id="' + esc(id) + '" data-v="' + x[0] + '">' + t(x[1]) + '</button>';
-        }).join('') + '</div></div>' +
-        '<div class="fc-reglage"><span>Réponse</span><div class="puces">' +
-        '<button type="button" class="puce' + (saisie ? '' : ' actif') + '" data-a="saisie" data-id="' + esc(id) + '" data-v="0">Je retourne la carte</button>' +
-        '<button type="button" class="puce' + (saisie ? ' actif' : '') + '" data-a="saisie" data-id="' + esc(id) + '" data-v="1">Je tape la réponse</button></div></div>';
+    var parties = '';
+    if (p.parties.length > 1) {
+      var sel = partiesChoisies(id), limite = partiesOuvertes ? 1000 : 6;
+      parties = '<section class="bloc"><div class="bloc-tete"><h2>Ce que je révise</h2><p>' + t('Décoche une partie pas encore vue en classe.') + '</p></div>' +
+        p.parties.slice(0, limite).map(function (g) {
+          var sg = stats(id, toutes.filter(function (c) { return c.g === g.id; }));
+          return '<label class="partie"><input type="checkbox" data-a="partie" data-id="' + esc(id) + '" data-g="' + esc(g.id) + '"' + (!sel || sel.indexOf(g.id) !== -1 ? ' checked' : '') + '>' +
+            '<span class="partie-nom">' + t(g.nom) + '</span>' + jauge(sg) + '<span class="partie-n">' + pl(sg.total, 'carte') + '</span></label>';
+        }).join('') +
+        (p.parties.length > limite ? '<button type="button" class="voir-plus" data-a="parties-plus">Voir les ' + (p.parties.length - limite) + ' autres parties</button>' : '') + '</section>';
     }
-    var outils = '<div class="fc-outils">' +
-      (p.perso ? '<button type="button" class="btn petit" data-a="importer" data-id="' + esc(id) + '">Importer une liste</button>' +
-                 '<button type="button" class="btn petit" data-a="renommer" data-id="' + esc(id) + '">Renommer</button>'
-               : '<button type="button" class="btn petit" data-a="copier" data-id="' + esc(id) + '">Copier dans un paquet perso</button>') +
-      '<button type="button" class="btn petit" data-a="exporter" data-id="' + esc(id) + '">Exporter (Anki, Quizlet)</button>' +
-      '<button type="button" class="btn petit" data-a="zero" data-id="' + esc(id) + '">Remettre à zéro</button>' +
-      (p.perso ? '<button type="button" class="btn petit danger" data-a="supprimer-paquet" data-id="' + esc(id) + '">Supprimer le paquet</button>' : '') +
-      '</div>';
-    html += '<section class="fc-panneau">' + panneau + outils + '</section>';
-
-    if (p.perso) {
-      html += '<section class="fc-panneau"><h2 style="font-size:1.2rem">Ajouter une carte</h2><form class="form-carte" data-f="ajout" data-id="' + esc(id) + '">' +
-        '<div class="champ"><label for="f-r">Recto (question, mot en français…)</label><textarea id="f-r" name="r" rows="2" required></textarea></div>' +
-        '<div class="champ"><label for="f-v">Verso (réponse, traduction…)</label><textarea id="f-v" name="v" rows="2" required></textarea></div>' +
-        '<div class="champ large"><label for="f-x">Exemple ou remarque (facultatif)</label><input id="f-x" name="x" autocomplete="off"></div>' +
-        '<div class="pied"><small>' + t('Ctrl + Entrée pour ajouter et enchaîner') + '</small><button type="submit" class="btn plein">' + ICO.plus + 'Ajouter la carte</button></div></form></section>';
-    }
-
-    html += '<section><div class="fc-liste-tete"><h2>' + pl(toutes.length, 'carte') + '</h2>' +
-      (toutes.length > 8 ? '<input type="search" class="recherche" data-a="chercher" placeholder="Chercher une carte" value="' + esc(recherche) + '" aria-label="Chercher une carte">' : '') +
-      '</div><div class="cartes-liste" id="liste" style="margin-top:14px"></div></section>';
-    app.innerHTML = html;
+    var ajout = !p.perso ? '' :
+      '<section class="bloc"><div class="bloc-tete"><h2>Ajouter une carte</h2><button type="button" class="lien" data-a="importer" data-id="' + esc(id) + '">Coller une liste</button></div>' +
+      '<form class="ajout-carte" data-f="ajout" data-id="' + esc(id) + '"><div class="champ"><label for="a-r">Question</label><textarea id="a-r" name="r" rows="2" required></textarea></div>' +
+      '<div class="champ"><label for="a-v">Réponse</label><textarea id="a-v" name="v" rows="2" required></textarea></div><button type="submit" class="btn plein">Ajouter</button></form></section>';
+    var bas = (p.lien ? '<a class="btn" href="../' + esc(p.lien) + '">' + (p.type === 'cours' ? 'Ouvrir le cours' : 'Ouvrir les textes du jour') + '</a>' : '') +
+      (p.perso ? '<button type="button" class="btn" data-a="renommer" data-id="' + esc(id) + '">Renommer</button>' : '') +
+      (s.total - s.nouv ? '<button type="button" class="btn" data-a="zero" data-id="' + esc(id) + '">Recommencer à zéro</button>' : '') +
+      (p.perso ? '<button type="button" class="btn danger" data-a="supprimer-paquet" data-id="' + esc(id) + '">Supprimer ce paquet</button>'
+        : estMien(id) ? '<button type="button" class="btn danger" data-a="retirer" data-id="' + esc(id) + '">Retirer de mes paquets</button>'
+        : '<button type="button" class="btn" data-a="ajouter" data-id="' + esc(id) + '">Ajouter à mes paquets</button>');
+    app.innerHTML =
+      '<section class="paquet-haut"><div><a class="retour" href="#">← Mes paquets</a><div class="sur">' + t(etiquette(p)) + '</div><h1>' + t(p.titre) + '</h1></div>' +
+      '<div class="paquet-actions">' + actions + '</div></section>' +
+      (s.total ? '<section class="trois"><div class="a"><b>' + s.a + '</b><strong>' + (s.a > 1 ? 'Acquises' : 'Acquise') + '</strong><span>' + t('Tu les sais. Elles reviennent de loin en loin.') + '</span></div>' +
+        '<div class="e"><b>' + s.e + '</b><strong>En cours</strong><span>' + t('Déjà vues, pas encore solides. Elles reviennent souvent.') + '</span></div>' +
+        '<div><b>' + s.nouv + '</b><strong>' + (s.nouv > 1 ? 'Pas encore vues' : 'Pas encore vue') + '</strong><span>' + t('Elles arrivent petit à petit, selon ton rythme.') + '</span></div></section>' : '') +
+      parties + ajout +
+      '<section class="bloc"><div class="bloc-tete"><h2 id="titre-liste">' + (toutes.length ? 'Les ' + pl(toutes.length, 'carte') : 'Aucune carte pour l’instant') + '</h2>' +
+      (toutes.length > 8 ? '<label class="chercher">' + ICO.loupe + '<input type="search" data-a="chercher" placeholder="Chercher une carte" aria-label="Chercher une carte" value="' + esc(recherche) + '"></label>' : '') + '</div>' +
+      '<div class="cartes" id="liste"></div></section>' +
+      '<section class="bas">' + bas + '</section>';
     dessinerListe(p);
   }
-  function etatCarte(id, c) {
-    if (D.ign[id + '/' + c.i]) return '<span class="etat i">Ignorée</span>';
-    var st = D.srs[id + '/' + c.i];
-    if (!st || !st.s) return '<span class="etat">Nouvelle</span>';
-    if (st.d <= finJour(Date.now())) return '<span class="etat d">À réviser</span>';
-    if (st.s === 2 && st.i >= MAITRISE) return '<span class="etat m" title="Prochaine révision le ' + dateCourte(st.d) + '">Maîtrisée</span>';
-    return '<span class="etat e">Le ' + dateCourte(st.d) + '</span>';
-  }
-  var limiteListe = 150;
   function dessinerListe(p) {
     var box = document.getElementById('liste');
     if (!box) return;
-    var id = p.id, q = norme(recherche), toutes = cartesDe(id);
+    var id = p.id, toutes = cartesDe(id), q = norme(recherche);
     var cs = q ? toutes.filter(function (c) { return norme(c.r + ' ' + c.v + ' ' + (c.x || '')).indexOf(q) !== -1; }) : toutes;
-    if (!cs.length) { box.innerHTML = '<div class="carte-ligne"><span class="v">' + (toutes.length ? 'Aucune carte ne correspond.' : t(p.perso ? 'Ce paquet est vide : ajoute ta première carte ci-dessus, ou importe une liste.' : 'Ce paquet est vide.')) + '</span></div>'; return; }
+    box.hidden = !toutes.length;
     box.innerHTML = cs.slice(0, limiteListe).map(function (c) {
-      var ign = !!D.ign[id + '/' + c.i];
-      var outils = p.perso
-        ? '<button type="button" class="ico" data-a="modifier" data-id="' + esc(id) + '" data-c="' + esc(c.i) + '" title="Modifier" aria-label="Modifier">' + ICO.crayon + '</button>' +
-          '<button type="button" class="ico danger" data-a="supprimer-carte" data-id="' + esc(id) + '" data-c="' + esc(c.i) + '" title="Supprimer" aria-label="Supprimer">' + ICO.poubelle + '</button>'
-        : c.g === 'mes' ? '' : '<button type="button" class="ico" data-a="ignorer" data-id="' + esc(id) + '" data-c="' + esc(c.i) + '" title="' + (ign ? 'Remettre dans les révisions' : 'Ne plus réviser cette carte') + '" aria-label="' + (ign ? 'Rétablir' : 'Ignorer') + '">' + (ign ? ICO.oeil : ICO.barre) + '</button>';
-      return '<div class="carte-ligne' + (ign ? ' ignoree' : '') + '" data-c="' + esc(c.i) + '"><div class="r">' + t(c.r) + '</div>' +
-        '<div class="v">' + t(c.v) + (c.x ? '<span class="x">' + t(c.x) + '</span>' : '') + '</div>' +
-        '<div class="meta">' + etatCarte(id, c) + '<div class="outils">' + outils + '</div></div></div>';
-    }).join('') + (cs.length > limiteListe ? '<div class="plus-de"><button type="button" class="lien" data-a="plus" data-id="' + esc(id) + '">Afficher les ' + (cs.length - limiteListe) + ' autres cartes</button></div>' : '');
+      var st = etat(id, c);
+      return '<div class="carte-ligne"><div class="q">' + t(c.r) + '</div><div class="r">' + t(c.v.replace(/\n/g, ' · ')) + '</div>' +
+        '<div class="etat ' + (acquise(st) ? 'a' : vue(st) ? 'e' : '') + '">' + t(retourDe(st)) + '</div>' +
+        (p.perso ? '<div class="outils"><button type="button" class="ico" data-a="modifier" data-id="' + esc(id) + '" data-c="' + esc(c.i) + '" aria-label="Modifier la carte">' + ICO.crayon + '</button>' +
+          '<button type="button" class="ico" data-a="supprimer-carte" data-id="' + esc(id) + '" data-c="' + esc(c.i) + '" aria-label="Supprimer la carte">' + ICO.poubelle + '</button></div>' : '') + '</div>';
+    }).join('') +
+      (cs.length > limiteListe ? '<button type="button" class="voir-plus" data-a="plus" data-id="' + esc(id) + '">Voir les ' + pl(cs.length - limiteListe, 'autre carte', 'autres cartes') + '</button>' : '') +
+      (!cs.length && q ? '<p class="fc-vide">Aucune carte ne correspond.</p>' : '');
   }
 
   /* ─── Séance ─── */
-  function lancer(ids, mode, plus) {
+  function lancer(ids, mode, plus, parts) {
     ids = ids.filter(function (id) { return paquet(id); });
     if (mode === 'srs') ids.forEach(function (id) { if (!estMien(id)) { D.mes.unshift(id); sauver(); } });
     return chargerCartes(ids).then(function () {
-      var now = Date.now(), fin = finJour(now), file = [], attente = [];
+      var fin = finJour(Date.now()), file = [];
       if (mode === 'libre') {
         ids.forEach(function (id) { selection(id).forEach(function (c) { file.push({ p: id, c: c }); }); });
-        melanger(file);
       } else {
-        var rev = [], nouv = [];
+        var rev = [], nouv = [], Q = parts || quota(ids, plus);
         ids.forEach(function (id) {
-          var reste = plus || nouvRestantes(id);
+          var reste = Q[id] || 0;
           selection(id).forEach(function (c) {
-            var st = D.srs[id + '/' + c.i];
-            if (!st || !st.s) { if (reste > 0) { nouv.push({ p: id, c: c }); reste--; } }
-            else if (st.d <= fin) (st.s === 2 ? rev : attente).push({ p: id, c: c, d: st.d });
+            var st = etat(id, c);
+            if (!vue(st)) { if (reste > 0) { nouv.push({ p: id, c: c }); reste--; } }
+            else if (st.d <= fin) rev.push({ p: id, c: c, d: debutJour(st.d) });
           });
         });
         melanger(rev);
+        rev.sort(function (a, b) { return a.d - b.d; });        // les plus en retard d'abord
+        if (ids.length > 1) melanger(nouv);
         var ratio = nouv.length ? rev.length / nouv.length : 0, r = 0;
         nouv.forEach(function (x, k) { var cible = Math.floor((k + 1) * ratio); while (r < cible && r < rev.length) file.push(rev[r++]); file.push(x); });
         while (r < rev.length) file.push(rev[r++]);
       }
-      if (!file.length && !attente.length) { toast(mode === 'libre' ? 'Aucune carte dans ce paquet.' : 'Rien à réviser pour l’instant.'); return; }
-      var titre = ids.length === 1 ? paquet(ids[0]).titre : 'Tous mes paquets';
-      S = { ids: ids, mode: mode, file: file, attente: attente, fait: 0, vues: 0, bonnes: 0, rates: 0, debut: now,
-            carte: null, retournee: false, annuler: null, titre: titre, retour: (S && S.retour) || location.hash || '#', verdict: null };
+      if (!file.length) { toast(mode === 'libre' ? 'Aucune carte dans ce paquet.' : 'Rien à revoir pour l’instant.'); return; }
+      S = { ids: ids, mode: mode, file: file, pos: 0, total: file.length, fait: 0, vues: 0, premier: 0, rates: {}, debut: Date.now(),
+            carte: null, retournee: false, annuler: null, titre: ids.length === 1 ? paquet(ids[0]).titre : 'Tous mes paquets',
+            retour: (S && S.retour) || location.hash || '#' };
       suivante(true);
       if (location.hash !== '#seance') location.hash = 'seance'; else rendre();
     });
   }
-  function choisirSens(id) {
-    var p = paquet(id);
-    if (!bidirectionnel(p)) return 'normal';
-    var s = D.prefs.sens[id] || 'normal';
-    return s === 'mixte' ? (Math.random() < 0.5 ? 'normal' : 'inverse') : s;
-  }
   function suivante(silence) {
-    var now = Date.now();
-    S.attente.sort(function (a, b) { return a.d - b.d; });
-    S.carte = S.attente.length && S.attente[0].d <= now ? S.attente.shift()
-      : S.file.length ? S.file.shift() : S.attente.length ? S.attente.shift() : null;
-    S.retournee = false; S.verdict = null; S.saisi = '';
-    if (S.carte) S.carte.sens = choisirSens(S.carte.p);
+    S.carte = S.mode === 'libre' ? (S.file[S.pos] || null) : (S.file.shift() || null);
+    S.retournee = false;
     if (!silence) rendreSeance();
   }
-  function compteurs() {
-    var n = 0, a = S.attente.length, r = 0;
-    S.file.forEach(function (it) {
-      var st = D.srs[it.p + '/' + it.c.i];
-      if (S.mode === 'libre' || !st || !st.s) n++; else if (st.s === 2) r++; else a++;
-    });
-    return { n: n, a: a, r: r };
-  }
-  function typeCourant() {
-    if (!S.carte || S.mode === 'libre') return '';
-    var st = D.srs[S.carte.p + '/' + S.carte.c.i];
-    return !st || !st.s ? 'n' : st.s === 2 ? 'r' : 'a';
-  }
-  function faces(it) {
-    var c = it.c, inv = it.sens === 'inverse';
-    return { recto: inv ? c.v : c.r, verso: inv ? c.r : c.v };
-  }
+  function taille(s) { var n = s.length; return n < 50 ? 'xl' : n < 110 ? 'l' : n < 220 ? 'm' : 's'; }
   function rendreSeance() {
     document.body.classList.add('etude');
     if (!S.carte) return finSeance();
-    var it = S.carte, p = paquet(it.p), f = faces(it), now = Date.now();
-    var restant = S.file.length + S.attente.length + 1, total = S.fait + restant;
-    var cpt = compteurs(), cur = typeCourant();
-    if (cur) cpt[cur]++;
-    var saisie = bidirectionnel(p) && D.prefs.saisie[it.p];
-    var st = D.srs[it.p + '/' + it.c.i];
-    var badge = S.mode === 'libre' ? '' : !st || !st.s ? '<span class="badge nouv">Nouvelle</span>' : st.s === 3 ? '<span class="badge rev">Oubliée</span>' : st.s === 1 ? '<span class="badge">Apprentissage</span>' : '<span class="badge">Révision</span>';
-    var long = f.recto.length > 90, longV = f.verso.length > 60 || f.verso.indexOf('\n') !== -1;
-    var verdict = '';
-    if (S.retournee && S.verdict) {
-      verdict = '<div class="verdict ' + S.verdict + '">' + (S.verdict === 'juste' ? 'Exact\u00a0!' : S.verdict === 'presque' ? 'Presque\u00a0: tu as écrit «\u00a0' + esc(S.saisi) + '\u00a0»' : (S.saisi ? 'Ta réponse\u00a0: <s>' + esc(S.saisi) + '</s>' : 'Pas de réponse')) + '</div>';
-    }
-    var sensTxt = bidirectionnel(p) ? (it.sens === 'inverse' ? p.verso + ' → ' + p.recto : p.recto + ' → ' + p.verso) : '';
+    var it = S.carte, p = paquet(it.p), c = it.c, now = Date.now(), libre = S.mode === 'libre';
+    var k = it.p + '/' + c.i, st = D.srs[k];
+    var num = libre ? S.pos + 1 : Math.min(S.total, S.fait + 1);
+    var badge = libre ? '' : S.rates[k] ? '<span class="badge r">On la retente</span>' : !vue(st) ? '<span class="badge n">Nouvelle carte</span>'
+      : '<span class="badge">' + t('Revient pour la ' + st.n + (st.n === 1 ? 're' : 'e') + ' fois') + '</span>';
+    var lignes = c.v.split('\n').filter(Boolean);
     var html = '<div class="seance">' +
-      '<div class="seance-haut"><button type="button" class="ico" data-a="quitter" title="Quitter (Échap)" aria-label="Quitter la séance">' + ICO.fermer + '</button>' +
-      '<div class="titre"><b>' + t(S.titre) + '</b> · ' + (S.mode === 'libre' ? 'entraînement libre' : 'révision') + '</div>' +
-      (S.mode === 'libre' ? '<div class="seance-compte"><span class="n">' + restant + ' restante' + (restant > 1 ? 's' : '') + '</span></div>'
-        : '<div class="seance-compte" title="Nouvelles · en apprentissage · révisions"><span class="n' + (cur === 'n' ? ' cur' : '') + '">' + cpt.n + '</span><span class="a' + (cur === 'a' ? ' cur' : '') + '">' + cpt.a + '</span><span class="r' + (cur === 'r' ? ' cur' : '') + '">' + cpt.r + '</span></div>') +
-      '</div><div class="seance-jauge"><i style="width:' + Math.round(100 * S.fait / total) + '%"></i></div>' +
+      '<div class="seance-haut"><button type="button" class="ico rond" data-a="quitter" title="Quitter (Échap)" aria-label="Quitter la révision">' + ICO.fermer + '</button>' +
+      '<div class="seance-prog"><div><span>' + t(S.titre) + '</span><span><b>Carte ' + num + '</b> sur ' + S.total + '</span></div>' +
+      '<div class="seance-jauge"><i style="width:' + Math.round(100 * (libre ? S.pos : S.fait) / S.total) + '%"></i></div></div></div>' +
       '<div class="carte' + (S.retournee ? ' retournee' : '') + '" tabindex="0" data-a="retourner" role="button" aria-label="' + (S.retournee ? 'Carte retournée' : 'Retourner la carte') + '">' +
-      '<div class="carte-haut"><span>' + t(S.ids.length > 1 ? (p.court || p.titre) : (it.c.s || p.court || '')) + '</span>' + badge + '</div>' +
-      '<div class="carte-corps"><div class="carte-recto' + (long ? ' long' : '') + '">' + t(f.recto) + '</div>' +
-      '<div class="carte-verso">' + verdict + '<div class="trad' + (longV ? ' long' : '') + '">' + (longV ? paragraphes(f.verso) : t(f.verso)) + '</div>' +
-      (it.c.x ? '<div class="ex">' + t(it.c.x) + '</div>' : '') + '</div></div>' +
-      (sensTxt ? '<div class="carte-sens">' + t(sensTxt) + '</div>' : '') + '</div>';
-    if (!S.retournee) {
-      html += saisie ? '<form class="saisie" data-f="saisie"><input name="rep" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Ta réponse en ' + esc((it.sens === 'inverse' ? p.recto : p.verso).toLowerCase()) + '" aria-label="Ta réponse"><button type="submit" class="btn plein">Vérifier</button></form>'
-        : '<button type="button" class="montrer" data-a="retourner">Voir la réponse</button>';
-    } else if (S.mode === 'libre') {
-      html += '<div class="notes deux"><button type="button" class="note n1' + (S.verdict && S.verdict !== 'juste' ? ' suggere' : '') + '" data-a="libre-note" data-v="0"><b>À revoir</b><small>revient vite</small></button>' +
-        '<button type="button" class="note n3' + (S.verdict === 'juste' ? ' suggere' : '') + '" data-a="libre-note" data-v="1"><b>Je savais</b><small>carte suivante</small></button></div>';
+      '<div class="carte-haut"><span>' + t(S.ids.length > 1 ? p.titre : (c.s || p.court || '')) + '</span>' + badge + '</div>' +
+      '<div class="carte-corps"><div class="recto ' + taille(c.r) + '">' + t(c.r) + '</div>' +
+      (S.retournee ? '<div class="verso ' + (lignes.length > 1 || c.v.length > 90 ? 'long' : 'court') + (c.v.length > 420 ? ' tres' : '') + '">' + lignes.map(function (l) { return '<p>' + t(l) + '</p>'; }).join('') +
+        (c.x ? '<p class="ex">' + t(c.x) + '</p>' : '') + '</div>'
+        : '<div class="invite">' + t('Réponds dans ta tête, puis clique sur la carte ou appuie sur Espace') + '</div>') +
+      '</div></div>';
+    if (libre) {
+      html += '<div class="reponses deux"><button type="button" class="rep" data-a="precedente"' + (S.pos ? '' : ' disabled') + '><b>← Précédente</b></button>' +
+        '<button type="button" class="rep plein" data-a="' + (S.retournee ? 'passer' : 'retourner') + '"><b>' + (S.retournee ? 'Suivante →' : 'Voir la réponse') + '</b></button></div>';
+    } else if (!S.retournee) {
+      html += '<div class="reponses une"><button type="button" class="rep plein" data-a="retourner"><b>Voir la réponse</b></button></div>';
     } else {
-      var sug = S.verdict === 'juste' ? 3 : S.verdict === 'presque' ? 2 : S.verdict === 'faux' ? 1 : 0;
-      html += '<div class="notes">' + [[1, 'À revoir'], [2, 'Difficile'], [3, 'Bien'], [4, 'Facile']].map(function (x) {
-        return '<button type="button" class="note n' + x[0] + (sug === x[0] ? ' suggere' : '') + '" data-a="note" data-v="' + x[0] + '"><b>' + x[1] + '</b><small>' + delai(noter(st, x[0], now), now) + '</small></button>';
-      }).join('') + '</div>';
+      var apres = noter(st, 3, now);
+      html += '<div class="reponses"><button type="button" class="rep n1" data-a="note" data-v="1"><b>Je ne savais pas</b><small>Elle revient dans cette séance</small></button>' +
+        '<button type="button" class="rep n2" data-a="note" data-v="2"><b>J’ai hésité</b><small>Elle revient demain</small></button>' +
+        '<button type="button" class="rep n3" data-a="note" data-v="3"><b>Je savais</b><small>' + t('Elle revient ' + dansJours(apres.i)) + '</small></button></div>';
     }
-    html += '<div class="seance-aide"><span class="clavier">' + (S.retournee ? (S.mode === 'libre' ? '<kbd>←</kbd> à revoir · <kbd>→</kbd> je savais' : '<kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd> pour noter') : '<kbd>Espace</kbd> pour retourner') + ' · <kbd>Échap</kbd> pour quitter</span>' +
-      (S.annuler ? '<button type="button" class="lien" data-a="annuler">↶ Annuler la dernière réponse</button>' : '<span></span>') + '</div></div>';
+    html += '<div class="seance-aide"><span>' + (libre ? 'Clavier : Espace, ← et →' : S.retournee ? 'Clavier : 1, 2 ou 3' : 'Clavier : Espace') + '</span>' +
+      (S.annuler ? '<button type="button" class="lien" data-a="annuler">Annuler ma dernière réponse</button>' : '') + '</div></div>';
     app.innerHTML = html;
-    var champ = app.querySelector('.saisie input');
-    if (champ) champ.focus(); else if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
-  }
-  function sansAccents(s) { return s.normalize ? s.normalize('NFD').replace(/[\u0300-\u036f]/g, '') : s; }
-  function leven(a, b) {
-    if (Math.abs(a.length - b.length) > 3) return 9;
-    var v = []; for (var j = 0; j <= b.length; j++) v[j] = j;
-    for (var i = 1; i <= a.length; i++) {
-      var prec = v[0]; v[0] = i;
-      for (j = 1; j <= b.length; j++) { var tmp = v[j]; v[j] = Math.min(v[j] + 1, v[j - 1] + 1, prec + (a[i - 1] === b[j - 1] ? 0 : 1)); prec = tmp; }
-    }
-    return v[b.length];
-  }
-  function comparer(saisi, attendu) {
-    function n(s) { return s.toLowerCase().replace(/[’`]/g, '\'').replace(/[.,;:!?¡¿"«»…]/g, ' ').replace(/\s+/g, ' ').trim(); }
-    var a = n(saisi);
-    if (!a) return 'faux';
-    var brut = attendu.replace(/\([^)]*\)/g, ' ');
-    var options = [n(brut)].concat(brut.split(/[,;/]| ou | or /).map(n)).filter(Boolean);
-    var opt = /^(to|a|an|the) /;
-    var art = /^(der|die|das|ein|eine|el|la|los|las|un|una|le|les|l') ?/;
-    if (options.some(function (o) { return o === a || o.replace(opt, '') === a.replace(opt, ''); })) return 'juste';
-    if (options.some(function (o) {
-      var x = sansAccents(o.replace(opt, '')), y = sansAccents(a.replace(opt, ''));
-      return x === y || x.replace(art, '') === y.replace(art, '') || leven(x, y) <= (x.length > 6 ? 2 : 1);
-    })) return 'presque';
-    return 'faux';
+    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+    window.scrollTo(0, 0);
   }
   function retourner() {
-    if (!S || !S.carte || S.retournee) return;
-    var champ = app.querySelector('.saisie input');
-    if (champ) {
-      S.saisi = champ.value.trim();
-      S.verdict = comparer(S.saisi, faces(S.carte).verso);
-    }
-    S.retournee = true;
+    if (!S || !S.carte) return;
+    if (S.retournee && S.mode !== 'libre') return;
+    S.retournee = !S.retournee;
     rendreSeance();
   }
   function instantane() {
     var it = S.carte, k = it.p + '/' + it.c.i, auj = jourCle(), l = LIB[it.p];
-    return { it: it, k: k, srs: D.srs[k] ? Object.assign({}, D.srs[k]) : null, file: S.file.slice(), attente: S.attente.slice(),
-             fait: S.fait, vues: S.vues, bonnes: S.bonnes, rates: S.rates, hist: D.hist[auj] || 0,
+    return { it: it, k: k, srs: D.srs[k] ? Object.assign({}, D.srs[k]) : null, file: S.file.slice(), rates: Object.assign({}, S.rates),
+             fait: S.fait, vues: S.vues, premier: S.premier, hist: D.hist[auj] || 0,
              nouv: (D.nouv[auj] || {})[it.p] || 0, revoir: l && l.revoir ? localStorage.getItem(l.revoir) : null };
   }
   function repondre(note) {
-    if (!S || !S.carte || !S.retournee) return;
+    if (!S || !S.carte || !S.retournee || S.mode === 'libre') return;
     var it = S.carte, k = it.p + '/' + it.c.i, now = Date.now(), auj = jourCle();
     S.annuler = instantane();
-    var avant = D.srs[k], st = noter(avant, note, now);
-    D.srs[k] = st;
-    if (!avant || !avant.s) { D.nouv[auj] = D.nouv[auj] || {}; D.nouv[auj][it.p] = (D.nouv[auj][it.p] || 0) + 1; }
+    var avant = D.srs[k];
+    D.srs[k] = noter(avant, note, now);
+    if (!vue(avant)) { D.nouv[auj] = D.nouv[auj] || {}; D.nouv[auj][it.p] = (D.nouv[auj][it.p] || 0) + 1; }
     D.hist[auj] = (D.hist[auj] || 0) + 1;
     S.vues++;
-    if (note >= 3) S.bonnes++; else if (note === 1) S.rates++;
-    if (st.s !== 2) S.attente.push({ p: it.p, c: it.c, d: st.d }); else S.fait++;
+    if (note === 1) { S.rates[k] = 1; S.file.splice(Math.min(RETOUR, S.file.length), 0, it); }
+    else { S.fait++; if (note === 3 && !S.rates[k]) S.premier++; }
     synchroRevoir(it, note);
-    sauver(); suivante();
-  }
-  function repondreLibre(sait) {
-    if (!S || !S.carte || !S.retournee) return;
-    var it = S.carte, auj = jourCle();
-    S.annuler = instantane();
-    D.hist[auj] = (D.hist[auj] || 0) + 1;
-    S.vues++;
-    if (sait) { S.fait++; S.bonnes++; }
-    else { S.rates++; S.file.splice(Math.min(3, S.file.length), 0, { p: it.p, c: it.c }); synchroRevoir(it, 1); }
     sauver(); suivante();
   }
   function annuler() {
@@ -727,23 +585,22 @@
     D.hist[auj] = a.hist;
     if (D.nouv[auj]) D.nouv[auj][a.it.p] = a.nouv;
     if (l && l.revoir) { try { if (a.revoir == null) localStorage.removeItem(l.revoir); else localStorage.setItem(l.revoir, a.revoir); } catch (e) { /* rien */ } }
-    S.file = a.file; S.attente = a.attente; S.fait = a.fait; S.vues = a.vues; S.bonnes = a.bonnes; S.rates = a.rates;
+    S.file = a.file; S.rates = a.rates; S.fait = a.fait; S.vues = a.vues; S.premier = a.premier;
     S.carte = a.it; S.retournee = true; S.annuler = null;
     sauver(); rendreSeance();
   }
   function finSeance() {
-    var duree = Math.max(1, Math.round((Date.now() - S.debut) / MIN));
-    var taux = S.vues ? Math.round(100 * S.bonnes / S.vues) : 0;
-    var prev = prevision(S.ids);
-    var encore = S.mode !== 'libre' && S.ids.some(function (id) { return stats(id).nouv > 0; });
-    app.innerHTML = '<div class="seance"><div class="seance-haut"><button type="button" class="ico" data-a="quitter" aria-label="Fermer">' + ICO.fermer + '</button><div class="titre"><b>' + t(S.titre) + '</b></div></div>' +
-      '<div class="fin"><h2>' + (S.vues ? 'Séance terminée' : 'Rien à réviser') + '</h2>' +
-      '<div class="fin-chiffres"><div><b>' + S.vues + '</b><span>réponse' + (S.vues > 1 ? 's' : '') + '</span></div><div><b>' + taux + '\u00a0%</b><span>de réussite</span></div><div><b>' + duree + '\u00a0min</b><span>de travail</span></div></div>' +
-      '<p>' + (S.mode === 'libre' ? t(S.rates ? 'Les cartes ratées ont été revues jusqu’à ce que tu les saches.' : 'Aucune erreur, bravo.')
-        : t(prev[1] ? 'Prochaine révision demain : ' + pl(prev[1], 'carte') + '. Reviens chaque jour, quelques minutes suffisent.' : 'Les cartes reviendront d’elles-mêmes au bon moment.')) + '</p>' +
-      '<div class="fin-actions"><button type="button" class="btn plein" data-a="quitter">Terminer</button>' +
-      (encore ? '<button type="button" class="btn" data-a="encore">10 nouvelles cartes de plus</button>' : '') +
-      (S.mode === 'libre' ? '<button type="button" class="btn" data-a="refaire">Recommencer</button>' : '') + '</div></div></div>';
+    var libre = S.mode === 'libre';
+    var duree = Math.max(1, Math.round((Date.now() - S.debut) / 60000));
+    var prev = prevision(D.mes);
+    var encore = !libre && S.ids.some(function (id) { return stats(id).nouv > 0; });
+    app.innerHTML = '<div class="seance"><div class="fin"><h1>' + (libre ? 'Tu as tout parcouru' : 'Révision terminée') + '</h1>' +
+      (libre ? '<p>' + t(pl(S.total, 'carte') + ' feuilletée' + (S.total > 1 ? 's' : '') + '. Rien n’a été noté : ta révision du jour ne change pas.') + '</p>'
+        : '<div class="fin-chiffres"><div><b>' + S.total + '</b><span>' + (S.total > 1 ? 'cartes revues' : 'carte revue') + '</span></div><div><b>' + S.premier + '</b><span>' + (S.premier > 1 ? 'sues' : 'sue') + ' du premier coup</span></div><div><b>' + duree + ' min</b><span>de travail</span></div></div>' +
+          '<p>' + t(prev[0] ? 'Demain : ' + pl(prev[0], 'carte prévue', 'cartes prévues') + '. Reviens chaque jour, quelques minutes suffisent.' : 'Les cartes reviendront d’elles-mêmes au bon moment.') + '</p>') +
+      '<div class="fin-actions"><button type="button" class="btn plein gros" data-a="quitter">Terminer</button>' +
+      (encore ? '<button type="button" class="btn gros" data-a="encore">10 nouvelles cartes de plus</button>' : '') +
+      (libre ? '<button type="button" class="btn gros" data-a="refaire">Recommencer</button>' : '') + '</div></div></div>';
   }
   function quitter() {
     var retour = S ? S.retour : '#';
@@ -791,55 +648,25 @@
   function confirmer(titre, texte, libelle, action) {
     fenetre(titre, '<p>' + t(texte) + '</p>', [{ libelle: 'Annuler' }, { libelle: libelle, classe: 'danger', action: action }]);
   }
-  function choixCouleur(actuelle) {
-    return '<div class="champ"><label>Couleur</label><div class="couleurs">' + COULEURS.map(function (c) {
-      return '<button type="button" style="--c:' + c + '" data-couleur="' + c + '" class="' + (c === actuelle ? 'actif' : '') + '" aria-label="Couleur ' + c + '"></button>';
-    }).join('') + '</div></div>';
-  }
-  function brancherCouleurs(f) {
-    f.querySelectorAll('[data-couleur]').forEach(function (b) {
-      b.addEventListener('click', function () { f.querySelectorAll('[data-couleur]').forEach(function (x) { x.classList.toggle('actif', x === b); }); });
-    });
-  }
-  function couleurChoisie(f) { var b = f.querySelector('[data-couleur].actif'); return b ? b.getAttribute('data-couleur') : COULEURS[0]; }
   function annulable(msg) {
     var avant = JSON.stringify(D);
     return function () { toast(msg, 'Annuler', function () { D = JSON.parse(avant); sauver(); rendre(); }); };
   }
 
   /* ─── Paquets perso ─── */
-  function creerPaquet(cartes, titreDefaut, ensuite) {
-    var c0 = COULEURS[D.perso.length % COULEURS.length];
-    fenetre(cartes ? 'Copier ' + pl(cartes.length, 'carte') : 'Nouveau paquet',
-      (cartes && D.perso.length ? '<div class="champ"><label for="f-dest">Destination</label><select id="f-dest"><option value="">Un nouveau paquet</option>' +
-        D.perso.map(function (q) { return '<option value="' + esc(q.id) + '">' + t(q.titre) + '</option>'; }).join('') + '</select></div>' : '') +
-      '<div class="champ" data-nom><label for="f-titre">Nom du paquet</label><input id="f-titre" maxlength="80" value="' + esc(titreDefaut || '') + '" placeholder="Ex. Dates de la guerre froide, verbes irréguliers…"></div>' +
-      '<div data-nom>' + choixCouleur(c0) + '</div>',
-      [{ libelle: 'Annuler' }, { libelle: cartes ? 'Copier' : 'Créer', classe: 'plein', action: function (f) {
-        var dest = f.querySelector('#f-dest'), q;
-        if (dest && dest.value) {
-          q = perso(dest.value);
-        } else {
-          var titre = f.querySelector('#f-titre').value.trim();
-          if (!titre) { f.querySelector('#f-titre').focus(); return false; }
-          q = { id: uid('p-'), titre: titre, couleur: couleurChoisie(f), cree: Date.now(), cartes: [] };
-          D.perso.unshift(q); D.mes.unshift(q.id);
-        }
-        if (cartes) {
-          var deja = {};
-          q.cartes.forEach(function (c) { deja[norme(c.r) + '|' + norme(c.v)] = 1; });
-          cartes.forEach(function (c) { if (!deja[norme(c.r) + '|' + norme(c.v)]) q.cartes.push({ i: uid('c-'), r: c.r, v: c.v, x: c.x || '' }); });
-        }
-        sauver();
-        if (ensuite) ensuite(q); else aller('paquet/' + q.id);
-        if (cartes) toast(pl(cartes.length, 'carte') + ' copiée' + (cartes.length > 1 ? 's' : '') + ' dans « ' + q.titre + ' ».');
+  function nommer(q) {
+    fenetre(q ? 'Renommer le paquet' : 'Créer un paquet',
+      '<div class="champ"><label for="f-titre">Nom du paquet</label><input id="f-titre" maxlength="80" value="' + esc(q ? q.titre : '') + '" placeholder="Ex. Dates de la guerre froide, verbes irréguliers…"></div>',
+      [{ libelle: 'Annuler' }, { libelle: q ? 'Enregistrer' : 'Créer', classe: 'plein', action: function (f) {
+        var titre = f.querySelector('#f-titre').value.trim();
+        if (!titre) { f.querySelector('#f-titre').focus(); return false; }
+        if (q) { q.titre = titre; sauver(); rendre(); return; }
+        q = { id: uid('p-'), titre: titre, cree: Date.now(), cartes: [] };
+        D.perso.unshift(q); D.mes.unshift(q.id);
+        sauver(); aller('paquet/' + q.id);
       } }],
       function (f) {
-        brancherCouleurs(f);
-        var dest = f.querySelector('#f-dest');
-        if (dest) dest.addEventListener('change', function () { f.querySelectorAll('[data-nom]').forEach(function (x) { x.hidden = !!dest.value; }); });
-        var champ = f.querySelector('#f-titre');
-        champ.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); f.querySelector('.btn.plein').click(); } });
+        f.querySelector('#f-titre').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); f.querySelector('.btn.plein').click(); } });
       });
   }
   function lireListe(texte) {
@@ -850,13 +677,13 @@
   }
   function importer(id) {
     var q = perso(id);
-    fenetre('Importer une liste',
-      '<p>' + t('Une carte par ligne : le recto, puis le verso, séparés par une tabulation (copier-coller depuis un tableur, Anki ou Quizlet), un point-virgule, une barre | ou un tiret entouré d’espaces. Un troisième champ facultatif sert d’exemple.') + '</p>' +
-      '<div class="champ"><textarea id="f-liste" rows="9" placeholder="la frontière ; the border&#10;négocier ; to negotiate ; They negotiated a deal."></textarea></div><p id="f-apercu">0 carte détectée</p>',
-      [{ libelle: 'Annuler' }, { libelle: 'Importer', classe: 'plein', action: function (f) {
+    fenetre('Coller une liste',
+      '<p>' + t('Une carte par ligne : la question, puis la réponse, séparées par un point-virgule, une tabulation (copier-coller depuis un tableur) ou une barre |.') + '</p>' +
+      '<div class="champ"><textarea id="f-liste" rows="9" placeholder="la frontière ; the border&#10;négocier ; to negotiate"></textarea></div><p id="f-apercu">0 carte détectée</p>',
+      [{ libelle: 'Annuler' }, { libelle: 'Ajouter ces cartes', classe: 'plein', action: function (f) {
         var cs = lireListe(f.querySelector('#f-liste').value);
         if (!cs.length) { f.querySelector('#f-liste').focus(); return false; }
-        var annul = annulable(pl(cs.length, 'carte') + ' importée' + (cs.length > 1 ? 's' : '') + '.');
+        var annul = annulable(pl(cs.length, 'carte') + ' ajoutée' + (cs.length > 1 ? 's' : '') + '.');
         cs.forEach(function (c) { q.cartes.push({ i: uid('c-'), r: c.r, v: c.v, x: c.x }); });
         sauver(); rendre(); annul();
       } }],
@@ -867,14 +694,6 @@
           ap.innerHTML = '<b>' + pl(cs.length, 'carte') + '</b> détectée' + (cs.length > 1 ? 's' : '') + (cs[0] ? typo(' : « ') + esc(cs[0].r) + ' » → « ' + esc(cs[0].v) + typo(' »') : '');
         });
       });
-  }
-  function exporter(id) {
-    var p = paquet(id), cs = cartesDe(id);
-    var txt = cs.map(function (c) {
-      return [c.r, c.v, c.x || ''].map(function (s) { return String(s).replace(/\t/g, ' ').replace(/\n/g, '<br>'); }).join('\t');
-    }).join('\n');
-    telecharger((p.titre || 'flashcards').replace(/[^\wÀ-ÿ -]+/g, '').trim().replace(/\s+/g, '-').toLowerCase() + '.txt', txt, 'text/plain');
-    toast('Fichier créé : importe-le dans Anki (Fichier › Importer) ou Quizlet.');
   }
   function telecharger(nom, contenu, type) {
     var a = document.createElement('a');
@@ -915,47 +734,30 @@
   /* ─── Actions ─── */
   app.addEventListener('click', function (e) {
     var b = e.target.closest('[data-a]');
-    if (!b || b.disabled || b.tagName === 'SELECT' || b.tagName === 'INPUT') return;
+    if (!b || b.disabled || b.tagName === 'INPUT') return;
     var a = b.getAttribute('data-a'), id = b.getAttribute('data-id'), q, annul;
     switch (a) {
       case 'tout': lancer(D.mes.slice(), 'srs'); break;
-      case 'reviser': lancer([id], 'srs'); break;
+      case 'reviser':
+        q = null;
+        if (b.hasAttribute('data-n')) { q = {}; q[id] = +b.getAttribute('data-n'); }
+        lancer([id], 'srs', 0, q); break;
+      case 'avance': lancer([id], 'srs', 10); break;
       case 'libre': lancer([id], 'libre'); break;
-      case 'creer': creerPaquet(); break;
+      case 'creer': nommer(null); break;
+      case 'renommer': nommer(perso(id)); break;
+      case 'rythme': D.prefs.nouv = +b.getAttribute('data-v'); sauver(); rendre(); break;
       case 'ajouter':
-        if (!estMien(id)) D.mes.unshift(id);
+        if (!estMien(id)) D.mes.push(id);
         sauver(); rendre(); toast('« ' + paquet(id).titre + ' » ajouté à tes paquets.'); break;
       case 'tout-ajouter':
-        b.getAttribute('data-ids').split(',').reverse().forEach(function (x) { if (!estMien(x)) D.mes.unshift(x); });
-        sauver(); rendre(); toast('Paquets ajoutés à tes révisions.'); break;
+        b.getAttribute('data-ids').split(',').forEach(function (x) { if (LIB[x] && !estMien(x)) D.mes.push(x); });
+        sauver(); rendre(); toast('Paquets ajoutés à ta révision.'); break;
       case 'retirer':
         annul = annulable('« ' + paquet(id).titre + ' » retiré de tes paquets (ta progression est gardée).');
         D.mes = D.mes.filter(function (x) { return x !== id; });
         sauver(); rendre(); annul(); break;
-      case 'partie':
-        var g = b.getAttribute('data-g'), sel = (partiesChoisies(id) || []).slice();
-        if (!g) sel = [];
-        else if (sel.indexOf(g) !== -1) sel.splice(sel.indexOf(g), 1);
-        else sel.push(g);
-        if (sel.length) D.prefs.parties[id] = sel; else delete D.prefs.parties[id];
-        sauver(); rendre(); break;
-      case 'sens': D.prefs.sens[id] = b.getAttribute('data-v'); sauver(); rendre(); break;
-      case 'saisie': if (b.getAttribute('data-v') === '1') D.prefs.saisie[id] = 1; else delete D.prefs.saisie[id]; sauver(); rendre(); break;
       case 'importer': importer(id); break;
-      case 'exporter': exporter(id); break;
-      case 'copier':
-        q = selection(id);
-        creerPaquet(q.length ? q : cartesDe(id), paquet(id).titre + (partiesChoisies(id) ? ' (sélection)' : ''), function () { rendre(); });
-        break;
-      case 'renommer':
-        q = perso(id);
-        fenetre('Renommer le paquet', '<div class="champ"><label for="f-titre">Nom du paquet</label><input id="f-titre" maxlength="80" value="' + esc(q.titre) + '"></div>' + choixCouleur(q.couleur),
-          [{ libelle: 'Annuler' }, { libelle: 'Enregistrer', classe: 'plein', action: function (f) {
-            var v = f.querySelector('#f-titre').value.trim();
-            if (!v) return false;
-            q.titre = v; q.couleur = couleurChoisie(f); sauver(); rendre();
-          } }], brancherCouleurs);
-        break;
       case 'supprimer-paquet':
         q = perso(id);
         confirmer('Supprimer « ' + q.titre + ' » ?', 'Ses ' + pl(q.cartes.length, 'carte') + ' et leur progression seront effacées.', 'Supprimer', function () {
@@ -967,7 +769,7 @@
         });
         break;
       case 'zero':
-        confirmer('Remettre ce paquet à zéro ?', 'Toutes ses cartes redeviennent nouvelles : leur historique de révision est effacé.', 'Remettre à zéro', function () {
+        confirmer('Recommencer ce paquet à zéro ?', 'Toutes ses cartes redeviennent « pas encore vues ».', 'Recommencer à zéro', function () {
           annul = annulable('Progression du paquet effacée.');
           Object.keys(D.srs).forEach(function (k) { if (k.indexOf(id + '/') === 0) delete D.srs[k]; });
           sauver(); rendre(); annul();
@@ -977,13 +779,12 @@
         var cid = b.getAttribute('data-c'), carte = perso(id).cartes.filter(function (c) { return c.i === cid; })[0];
         if (!carte) break;
         fenetre('Modifier la carte',
-          '<div class="champ"><label for="m-r">Recto</label><textarea id="m-r" rows="2">' + esc(carte.r) + '</textarea></div>' +
-          '<div class="champ"><label for="m-v">Verso</label><textarea id="m-v" rows="3">' + esc(carte.v) + '</textarea></div>' +
-          '<div class="champ"><label for="m-x">Exemple ou remarque</label><input id="m-x" value="' + esc(carte.x || '') + '"></div>',
+          '<div class="champ"><label for="m-r">Question</label><textarea id="m-r" rows="2">' + esc(carte.r) + '</textarea></div>' +
+          '<div class="champ"><label for="m-v">Réponse</label><textarea id="m-v" rows="3">' + esc(carte.v) + '</textarea></div>',
           [{ libelle: 'Annuler' }, { libelle: 'Enregistrer', classe: 'plein', action: function (f) {
             var r = f.querySelector('#m-r').value.trim(), v = f.querySelector('#m-v').value.trim();
             if (!r || !v) return false;
-            carte.r = r; carte.v = v; carte.x = f.querySelector('#m-x').value.trim();
+            carte.r = r; carte.v = v;
             sauver(); dessinerListe(paquet(id));
           } }]);
         break;
@@ -993,18 +794,16 @@
         q.cartes = q.cartes.filter(function (c) { return c.i !== b.getAttribute('data-c'); });
         delete D.srs[id + '/' + b.getAttribute('data-c')];
         sauver(); rendre(); annul(); break;
-      case 'ignorer':
-        var k = id + '/' + b.getAttribute('data-c');
-        if (D.ign[k]) delete D.ign[k]; else D.ign[k] = 1;
-        sauver(); rendre(); break;
       case 'plus': limiteListe = 100000; dessinerListe(paquet(id)); break;
+      case 'parties-plus': partiesOuvertes = true; rendre(); break;
       case 'sauvegarde':
         telecharger('flashcards-ecg-prepa-' + jourCle() + '.json', JSON.stringify(D), 'application/json');
         break;
       case 'restaurer': restaurer(); break;
-      case 'retourner': if (!e.target.closest('.saisie')) retourner(); break;
+      case 'retourner': retourner(); break;
       case 'note': repondre(+b.getAttribute('data-v')); break;
-      case 'libre-note': repondreLibre(b.getAttribute('data-v') === '1'); break;
+      case 'passer': S.pos++; suivante(); break;
+      case 'precedente': if (S.pos) { S.pos--; suivante(); } break;
       case 'annuler': annuler(); break;
       case 'quitter': quitter(); break;
       case 'encore': lancer(S.ids, 'srs', 10); break;
@@ -1012,7 +811,16 @@
     }
   });
   app.addEventListener('change', function (e) {
-    if (e.target.getAttribute('data-a') === 'nouv') { D.prefs.nouv = +e.target.value; sauver(); rendre(); }
+    var b = e.target;
+    if (b.getAttribute('data-a') !== 'partie') return;
+    var id = b.getAttribute('data-id'), p = paquet(id);
+    var sel = partiesChoisies(id) || p.parties.map(function (g) { return g.id; });
+    var g = b.getAttribute('data-g');
+    sel = sel.filter(function (x) { return x !== g; });
+    if (b.checked) sel.push(g);
+    if (!sel.length) { b.checked = true; toast('Garde au moins une partie.'); return; }
+    if (sel.length >= p.parties.length) delete D.prefs.parties[id]; else D.prefs.parties[id] = sel;
+    sauver(); rendre();
   });
   app.addEventListener('input', function (e) {
     if (e.target.getAttribute('data-a') === 'chercher') {
@@ -1022,47 +830,41 @@
     }
   });
   app.addEventListener('submit', function (e) {
-    var f = e.target, type = f.getAttribute('data-f');
-    if (!type) return;
+    var f = e.target;
+    if (f.getAttribute('data-f') !== 'ajout') return;
     e.preventDefault();
-    if (type === 'saisie') return retourner();
-    if (type === 'ajout') {
-      var q = perso(f.getAttribute('data-id'));
-      var r = f.r.value.trim(), v = f.v.value.trim();
-      if (!r || !v) return;
-      q.cartes.push({ i: uid('c-'), r: r, v: v, x: f.x.value.trim() });
-      sauver();
-      f.reset();
-      var p = paquet(q.id);
-      var titre = app.querySelector('.fc-liste-tete h2');
-      if (titre) titre.textContent = pl(q.cartes.length, 'carte');
-      dessinerListe(p);
-      f.r.focus();
-      toast('Carte ajoutée.');
-    }
+    var q = perso(f.getAttribute('data-id'));
+    var r = f.r.value.trim(), v = f.v.value.trim();
+    if (!r || !v) return;
+    q.cartes.push({ i: uid('c-'), r: r, v: v, x: '' });
+    sauver(); rendre();
+    var champ = document.getElementById('a-r');
+    if (champ) champ.focus();
+    toast('Carte ajoutée.');
   });
   app.addEventListener('keydown', function (e) {
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && e.target.closest('form[data-f="ajout"]')) {
       e.preventDefault();
-      e.target.closest('form').requestSubmit ? e.target.closest('form').requestSubmit() : e.target.closest('form').dispatchEvent(new Event('submit', { cancelable: true }));
+      var f = e.target.closest('form');
+      if (f.requestSubmit) f.requestSubmit(); else f.dispatchEvent(new Event('submit', { cancelable: true }));
     }
   });
   document.addEventListener('keydown', function (e) {
     if (!S || document.querySelector('.fenetre-fond') || e.ctrlKey || e.metaKey || e.altKey) return;
-    var dansChamp = /INPUT|TEXTAREA|SELECT/.test(e.target.tagName);
     if (e.key === 'Escape') { e.preventDefault(); quitter(); return; }
-    if (dansChamp) return;
-    if (!S.carte) return;
+    if (/INPUT|TEXTAREA|SELECT/.test(e.target.tagName) || !S.carte) return;
+    if (S.mode === 'libre') {
+      if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); retourner(); }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); S.pos++; suivante(); }
+      else if (e.key === 'ArrowLeft' && S.pos) { e.preventDefault(); S.pos--; suivante(); }
+      return;
+    }
     if ((e.key === 'z' || e.key === 'Backspace') && S.annuler) { e.preventDefault(); annuler(); return; }
     if (!S.retournee) {
       if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); retourner(); }
       return;
     }
-    if (S.mode === 'libre') {
-      if (e.key === 'ArrowLeft' || e.key === '1') { e.preventDefault(); repondreLibre(false); }
-      else if (e.key === 'ArrowRight' || e.key === '2' || e.key === ' ') { e.preventDefault(); repondreLibre(true); }
-    } else if (/^[1-4]$/.test(e.key)) { e.preventDefault(); repondre(+e.key); }
-    else if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); repondre(S.verdict === 'presque' ? 2 : S.verdict === 'faux' ? 1 : 3); }
+    if (/^[1-3]$/.test(e.key)) { e.preventDefault(); repondre(+e.key); }
   });
 
   if (!CATALOGUE.length) console.warn('[flashcards] catalogue introuvable (donnees/catalogue.js)');
