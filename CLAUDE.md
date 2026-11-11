@@ -299,6 +299,18 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   défilement horizontal, toutes les images chargées (faire défiler la page : elles sont en
   `loading="lazy"`), titre du héros lisible, colonnes de l'analyse égales.
 
+### Actualiser un article déjà en ligne
+
+Demande type, copiée depuis la page admin « Idées pour le site » (type « Actualiser un article ») :
+« Actualise l'article « <titre> » (<adresse>) : <le fait nouveau> ». On **complète** l'article, on ne le refait pas :
+même fichier, même photo, même palette, mêmes schémas, rien de neuf dans `ACTU_DATA` (la carte garde sa place).
+Vérifier le fait nouveau par recherche web, puis l'intégrer là où il a sa place : chapô, section concernée (ou une
+nouvelle section numérotée), `a-chiffres` si un chiffre change, chronologie (nouvelle date à gauche, `li.recent`),
+`a-essentiel` et l'analyse si le fait change le fond, une source de plus ; dans les deux langues pour les éditions
+bilingues. Corriger ce que le fait rend faux, sans tiret cadratin. Les contrôles ci-dessus restent valables
+(colonnes de l'analyse égales). Mise en ligne : `images-partage.py --refaire <page>` seulement si le titre change,
+puis `recherche.py`.
+
 ### Image
 
 Enregistrer la photo de une fournie en WebP sous `actualites/<code>/images/<slug>.webp`, en largeur 1600 px maximum :
