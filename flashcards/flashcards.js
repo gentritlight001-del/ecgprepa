@@ -10,7 +10,9 @@
      Les nouvelles cartes arrivent selon le rythme choisi (10, 20 ou 40 par jour, tous paquets
      confondus). « Tout parcourir » feuillette un paquet sans rien noter.
    - Tout est gardé dans le navigateur (localStorage « ecg-flashcards:v1:<e-mail> », lu aussi par
-     auth.js pour la pastille du menu), avec sauvegarde et restauration en fichier. Le paquet
+     auth.js pour la pastille du menu) et synchronisé avec le compte de l'élève (synchro.js, table
+     Supabase « flashcards ») : mêmes paquets et même progression sur tous ses appareils. Sauvegarde
+     et restauration en fichier en plus. Le paquet
      « À revoir » des pages du jour de langues (ecg-<langue>-quotidien-a-revoir) reste synchronisé.
    - Les cartes perso créées dans un chapitre (« + Ma carte ») rejoignent le paquet du chapitre. */
 (function () {
@@ -75,18 +77,11 @@
   };
 
   /* ─── Données de l'élève ─── */
-  function cleStock() {
-    var u = null;
-    try { u = window.ECGAuth && window.ECGAuth.current && window.ECGAuth.current(); } catch (e) { u = null; }
-    return 'ecg-flashcards:v1' + (u && u.email ? ':' + u.email : '');
-  }
-  var CLE = cleStock();
-  function neuf() {
-    return { v: 1, mes: [], perso: [], srs: {}, ign: {}, hist: {}, nouv: {},
-             prefs: { nouv: 20, parties: {}, sens: {}, saisie: {} } };
-  }
+  var SYNC = window.ECGFlashSync;      // synchro.js : navigateur + compte
+  var CLE = SYNC.cle();
+  function neuf() { return SYNC.neuf(); }
   function lireDonnees() {
-    var d = lireJSON(CLE, null), n = neuf(), k;
+    var d = SYNC.charger(), n = neuf(), k;
     if (!d || typeof d !== 'object') return n;
     for (k in n) if (d[k] == null || typeof d[k] !== typeof n[k] || Array.isArray(d[k]) !== Array.isArray(n[k])) d[k] = n[k];
     for (k in n.prefs) if (d.prefs[k] == null) d.prefs[k] = n.prefs[k];
@@ -98,11 +93,24 @@
   }
   var D = lireDonnees();
   function sauver() {
-    try { localStorage.setItem(CLE, JSON.stringify(D)); }
-    catch (e) { toast('Le navigateur n’a pas pu enregistrer ta progression (stockage plein ou bloqué).'); }
+    if (!SYNC.enregistrer(D)) toast('Le navigateur n’a pas pu enregistrer ta progression (stockage plein ou bloqué).');
+  }
+  /* Une synchronisation a apporté ce qui a été fait sur un autre appareil */
+  SYNC.surChangement(function () {
+    D = lireDonnees();
+    if (!S) rendre();
+  });
+  SYNC.surEtat(function (e) {
+    var el = document.getElementById('fc-synchro');
+    if (el) el.textContent = typo(texteSynchro(e));
+  });
+  function texteSynchro(e) {
+    if (e === 'hors-ligne') return 'Hors ligne : ta progression est gardée sur cet appareil et rejoindra ton compte au retour du réseau.';
+    if (e === 'non-connecte') return 'Ta progression est gardée dans ce navigateur.';
+    return 'Ta progression est enregistrée dans ton compte : tu la retrouves sur tous tes appareils.';
   }
   window.addEventListener('storage', function (e) {
-    if (e.key === CLE && !S) { D = lireDonnees(); rendre(); }
+    if (e.key === CLE) { D = lireDonnees(); if (!S) rendre(); }
   });
 
   function perso(id) { for (var i = 0; i < D.perso.length; i++) if (D.perso[i].id === id) return D.perso[i]; return null; }
@@ -376,7 +384,7 @@
         '<div class="choix" role="group" aria-label="Mon rythme">' + RYTHMES.map(function (x) {
           return '<button type="button" data-a="rythme" data-v="' + x[0] + '" class="' + (x[0] === r ? 'actif' : '') + '" aria-pressed="' + (x[0] === r) + '">' + x[1] + ' · ' + x[0] + '</button>';
         }).join('') + '</div></section>' +
-        '<p class="sauvegarde">' + t('Ta progression est gardée dans ce navigateur.') + ' <button type="button" class="lien" data-a="sauvegarde">Télécharger une sauvegarde</button> · <button type="button" class="lien" data-a="restaurer">Restaurer</button></p>';
+        '<p class="sauvegarde"><span id="fc-synchro">' + t(texteSynchro(SYNC.etat())) + '</span> <button type="button" class="lien" data-a="sauvegarde">Télécharger une sauvegarde</button> · <button type="button" class="lien" data-a="restaurer">Restaurer</button></p>';
     });
   }
 
@@ -869,4 +877,5 @@
 
   if (!CATALOGUE.length) console.warn('[flashcards] catalogue introuvable (donnees/catalogue.js)');
   rendre();
+  SYNC.synchroniser();
 })();
