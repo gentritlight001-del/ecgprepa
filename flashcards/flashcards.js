@@ -7,7 +7,7 @@
    - Révision : trois réponses. « Je ne savais pas » : la carte revient dans la même séance,
      quelques cartes plus loin. « J'ai hésité » : elle revient demain. « Je savais » : son délai
      s'allonge (1, 3, 7, 16, 37 jours…). Une carte est « acquise » à partir de 7 jours de délai.
-     Les nouvelles cartes arrivent selon le rythme choisi (10, 20 ou 40 par jour, tous paquets
+     Les nouvelles cartes arrivent selon le rythme choisi (20, 30 ou 40 par jour, tous paquets
      confondus). « Tout parcourir » feuillette un paquet sans rien noter.
    - Tout est gardé dans le navigateur (localStorage « ecg-flashcards:v1:<e-mail> », lu aussi par
      auth.js pour la pastille du menu) et synchronisé avec le compte de l'élève (synchro.js, table
@@ -33,7 +33,7 @@
   var MAT = {};
   MATIERES.forEach(function (m) { MAT[m.id] = m; });
   var ANNEE = { 0: '', 1: '1re année', 2: '2e année' };
-  var RYTHMES = [[10, 'Tranquille'], [20, 'Normal'], [40, 'Intensif']];
+  var RYTHMES = [[20, 'Tranquille'], [30, 'Normal'], [40, 'Intensif']];
 
   var JOUR = 86400000;
   var ACQUISE = 7;          // délai (jours) à partir duquel une carte est « acquise »
@@ -84,6 +84,8 @@
     var d = SYNC.charger(), n = neuf(), k;
     if (!d || typeof d !== 'object') return n;
     for (k in n) if (d[k] == null || typeof d[k] !== typeof n[k] || Array.isArray(d[k]) !== Array.isArray(n[k])) d[k] = n[k];
+    /* Rythmes passés de 10 / 20 / 40 à 20 / 30 / 40 (novembre 2026) : chacun garde son niveau */
+    if (d.prefs && !d.prefs.r2) { var r = +d.prefs.nouv || 20; d.prefs.nouv = r <= 10 ? 20 : r <= 20 ? 30 : r; d.prefs.r2 = 1; }
     for (k in n.prefs) if (d.prefs[k] == null) d.prefs[k] = n.prefs[k];
     var auj = jourCle();
     for (k in d.nouv) if (k !== auj) delete d.nouv[k];
@@ -207,7 +209,7 @@
   function vue(st) { return !!(st && st.s); }
   function acquise(st) { return vue(st) && st.s === 2 && st.i >= ACQUISE; }
   function rythme() {
-    var n = D.prefs.nouv || 20, mieux = RYTHMES[0][0];
+    var n = D.prefs.nouv || 30, mieux = RYTHMES[0][0];
     RYTHMES.forEach(function (r) { if (Math.abs(r[0] - n) < Math.abs(mieux - n)) mieux = r[0]; });
     return mieux;
   }

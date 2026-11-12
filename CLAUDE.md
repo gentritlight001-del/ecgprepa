@@ -1116,7 +1116,7 @@ du jour). L'ancienne adresse `premiere_annee/langues/flashcards/index.html` renv
 - **Refonte de novembre 2026** (maquette validée par le propriétaire, qui trouvait l'ancien espace incompréhensible :
   ne pas rajouter d'options). Quatre écrans seulement, fond noir, carte crème, accent doré `#e2b866` :
   **accueil** (nombre de cartes à revoir aujourd'hui et bouton « Commencer la révision », série de jours, « Mes paquets »
-  en lignes avec jauge acquises / en cours / pas encore vues, « Mon rythme » : 10, 20 ou 40 nouvelles cartes par jour
+  en lignes avec jauge acquises / en cours / pas encore vues, « Mon rythme » : Tranquille 20, Normal 30 ou Intensif 40 nouvelles cartes par jour
   **tous paquets confondus**, sauvegarde en fichier), **ajouter un paquet** (`#ajouter/<matière>`, un bouton « Ajouter »
   par chapitre, « Mes propres cartes » : cartes écrites une à une ou liste collée), **un paquet** (`#paquet/<id>` :
   « Réviser », « Tout parcourir, sans noter », trois compteurs, parties à cocher, liste des cartes avec leur date de
