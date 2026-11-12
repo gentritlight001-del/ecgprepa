@@ -4,6 +4,15 @@ window.ECG_NOUVEAUTES = [
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne",
+"titre": "Allemagne : l'armée renonce aux drones chinois à l'entraînement, au profit de modèles européens",
+"url": "actualites/de/articles/allemagne-bundeswehr-fin-drones-chinois-entrainement-2026.html",
+"image": "actualites/de/images/allemagne-bundeswehr-fin-drones-chinois-entrainement-2026.webp",
+"date": "2026-11-12T17:25:38+00:00"
+},
+{
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
 "titre": "Allemagne : le cabinet approuve une réserve stratégique de gaz de 24 TWh, soit 10 % du stockage",
 "url": "actualites/de/articles/allemagne-reserve-strategique-gaz-cabinet-2026.html",
 "image": "actualites/de/images/allemagne-reserve-strategique-gaz-cabinet-2026.webp",
@@ -1982,15 +1991,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Merz prépare un « automne des réformes » : retraites, impôts et compétitivité au menu de la rentrée",
 "url": "actualites/de/articles/merz-automne-reformes.html",
 "image": "actualites/de/images/merz-automne-reformes.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "L'Allemagne durcit encore sa politique migratoire et sécuritaire",
-"url": "actualites/de/articles/durcissement-migratoire-securitaire.html",
-"image": "actualites/de/images/durcissement-migratoire-securitaire.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
