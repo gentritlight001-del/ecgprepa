@@ -207,6 +207,12 @@
   }
   /* Parties décochées (D.prefs.exclues) : une partie qui apparaît plus tard (le texte du jour suivant,
      une nouvelle partie de chapitre) est donc cochée d'office. */
+  /* Un mot présent dans plusieurs jours a la même carte (même identifiant) dans chacun : il ne compte et ne sort
+     qu'une fois (la copie du jour le plus récent parmi ceux retenus). */
+  function uniques(cs) {
+    var vus = {};
+    return cs.filter(function (c) { if (vus[c.i]) return false; vus[c.i] = 1; return true; });
+  }
   function partiesChoisies(id) {
     var ex = D.prefs.exclues[id], p = paquet(id);
     if (!Array.isArray(ex) || !ex.length || !p) return null;
@@ -217,9 +223,9 @@
   function selection(id) {
     var sel = partiesChoisies(id);
     var cs = cartesDe(id);
-    if (!sel) return cs;
+    if (!sel) return uniques(cs);
     var dans = cs.filter(function (c) { return sel.indexOf(c.g) !== -1; });
-    return dans.length ? dans : cs;
+    return uniques(dans.length ? dans : cs);
   }
 
   /* ─── Les cartes qui reviennent ─── */
@@ -460,7 +466,7 @@
     avecCartes([id], function () { dessinerPaquet(paquet(id)); });
   }
   function dessinerPaquet(p) {
-    var id = p.id, s = stats(id), toutes = cartesDe(id), q = quota([id])[id], n = s.due + q;
+    var id = p.id, s = stats(id), brutes = cartesDe(id), toutes = uniques(brutes), q = quota([id])[id], n = s.due + q;
     fil(p.titre);
     var actions = '';
     if (s.total) {
@@ -474,7 +480,7 @@
       var sel = partiesChoisies(id), limite = partiesOuvertes ? 1000 : 6;
       parties = '<section class="bloc"><div class="bloc-tete"><h2>Ce que je révise</h2><p>' + t('Décoche une partie pas encore vue en classe.') + '</p></div>' +
         p.parties.slice(0, limite).map(function (g) {
-          var sg = stats(id, toutes.filter(function (c) { return c.g === g.id; }));
+          var sg = stats(id, brutes.filter(function (c) { return c.g === g.id; }));
           return '<label class="partie"><input type="checkbox" data-a="partie" data-id="' + esc(id) + '" data-g="' + esc(g.id) + '"' + (!sel || sel.indexOf(g.id) !== -1 ? ' checked' : '') + '>' +
             '<span class="partie-nom">' + t(g.nom) + '</span>' + jauge(sg) + '<span class="partie-n">' + pl(sg.total, 'carte') + '</span></label>';
         }).join('') +
@@ -506,7 +512,7 @@
   function dessinerListe(p) {
     var box = document.getElementById('liste');
     if (!box) return;
-    var id = p.id, toutes = cartesDe(id), q = norme(recherche);
+    var id = p.id, toutes = uniques(cartesDe(id)), q = norme(recherche);
     var cs = q ? toutes.filter(function (c) { return norme(c.r + ' ' + c.v + ' ' + (c.x || '')).indexOf(q) !== -1; }) : toutes;
     box.hidden = !toutes.length;
     box.innerHTML = cs.slice(0, limiteListe).map(function (c) {

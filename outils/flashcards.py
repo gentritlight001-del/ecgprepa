@@ -106,6 +106,12 @@ def base(reponse):
     return re.sub(r'\s+', ' ', b).strip(' .;').lower()
 
 
+def forme(mot):
+    """Clé d'un mot étranger : sans ce qui est entre parenthèses (« der Landtag (-e) » = « der Landtag »),
+    mais « while + V-ing » reste distinct de « while » (deux emplois)."""
+    return re.sub(r'\s+', ' ', re.sub(r'\([^)]*\)', ' ', mot)).strip(' .;').lower()
+
+
 def regrouper(carte, autre):
     """Ajoute à la carte (la plus récente) les réponses d'une carte plus ancienne qui a la même question.
     Une même réponse écrite deux fois garde sa forme la plus complète."""
@@ -129,28 +135,51 @@ def paquets_langues():
         if not jours:
             continue
         jours.sort(key=lambda j: j['date'], reverse=True)
-        cartes, vus, parties = [], set(), []
-        par_question = {}   # même question en français : une seule carte, réponses regroupées
-        for j in jours:   # le plus récent d'abord : un mot revenu garde son dernier exemple
-            gid = j['date']
-            n = 0
+        # Un même mot peut revenir d'un jour à l'autre : chaque jour garde sa liste complète, mais toutes
+        # les copies d'un mot portent le même identifiant (i), donc une seule progression, et l'espace ne le
+        # montre qu'une fois en révision. Même mot = même mot étranger (aux parenthèses près), ou carte qui affiche la même question en
+        # français ; ses réponses sont regroupées (« erstmals · zum ersten Mal »). Le plus récent d'abord :
+        # l'identifiant, la question et l'exemple sont ceux de sa dernière apparition.
+        occ = []
+        for j in jours:
             for rub, liste in (('Essentiel', j['essentiels']), (j['theme']['titre'] or 'Thème', j['theme']['mots'])):
                 for m in liste:
                     mot = propre(m['en'])
-                    if not mot or mot.lower() in vus:
-                        continue
-                    vus.add(mot.lower())
-                    q = re.sub(r'\s+', ' ', propre(m['fr'])).strip().lower()
-                    if q and q in par_question:
-                        regrouper(par_question[q], mot)
-                        continue
-                    carte = {'i': cle(mot), 'r': propre(m['fr']), 'v': mot, 'x': propre(m['ex']),
-                             'g': gid, 's': rub}
-                    if q:
-                        par_question[q] = carte
-                    cartes.append(carte)
-                    n += 1
-            parties.append({'id': gid, 'nom': 'Jour %d · %s' % (j['numero'], j['titre']), 'n': n,
+                    if mot:
+                        occ.append((j, rub, mot, propre(m['fr']), propre(m['ex'])))
+        # 1. Par mot étranger ; 2. deux mots dont la carte affiche la même question n'en font qu'un
+        # (sans enchaînement : « frente a » = « devant » et « contre », « ante » = « devant », restent deux cartes).
+        groupe, mots_ = {}, {}   # forme du mot → clé de sa carte ; clé → carte commune
+        for _, _, mot, fr, ex in occ:
+            k = forme(mot)
+            if k not in groupe:
+                groupe[k] = k
+                mots_[k] = {'i': cle(mot), 'r': fr, 'v': mot, 'x': ex}
+            else:
+                regrouper(mots_[groupe[k]], mot)
+        par_q = {}
+        for k in list(mots_):
+            q = re.sub(r'\s+', ' ', mots_[k]['r']).strip().lower()
+            if q and q in par_q:
+                regrouper(mots_[par_q[q]], mots_[k]['v'])
+                for f, g in groupe.items():
+                    if g == k:
+                        groupe[f] = par_q[q]
+                del mots_[k]
+            elif q:
+                par_q[q] = k
+        cartes, parties = [], []
+        for j in jours:
+            gid, dans = j['date'], set()
+            for jj, rub, mot, _, _ in occ:
+                if jj is not j:
+                    continue
+                k = groupe[forme(mot)]
+                if k in dans:
+                    continue
+                dans.add(k)
+                cartes.append(dict(mots_[k], g=gid, s=rub))
+            parties.append({'id': gid, 'nom': 'Jour %d · %s' % (j['numero'], j['titre']), 'n': len(dans),
                             'date': j['date']})
         paquets.append({
             'id': langue, 'matiere': 'langues', 'annee': 1, 'type': 'vocabulaire',
@@ -333,7 +362,7 @@ def main():
     gardes = {'catalogue.js'}
     for p in paquets:
         cartes = p.pop('cartes')
-        p['n'] = len(cartes)
+        p['n'] = len({c['i'] for c in cartes})   # un mot présent dans plusieurs jours compte une fois
         p['v'] = cle(json.dumps(cartes, ensure_ascii=False))   # change quand le paquet change
         catalogue.append(p)
         nom = p['id'] + '.js'

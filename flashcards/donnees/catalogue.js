@@ -35,114 +35,114 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-11-09",
     "nom": "Jour 18 · Carney's Second Budget Spends Canada's Oil Windfall",
-    "n": 29,
+    "n": 30,
     "date": "2026-11-09"
    },
    {
     "id": "2026-11-08",
     "nom": "Jour 17 · US Measles Cases Reach Their Highest Level Since 1991",
-    "n": 29,
+    "n": 30,
     "date": "2026-11-08"
    },
    {
     "id": "2026-10-27",
     "nom": "Jour 16 · Parti Québécois Returns to Power as the CAQ Is Wiped Out",
-    "n": 28,
+    "n": 30,
     "date": "2026-10-27"
    },
    {
     "id": "2026-10-26",
     "nom": "Jour 15 · Trump Says Iran Could “Take Out” Los Angeles or San Diego",
-    "n": 28,
+    "n": 30,
     "date": "2026-10-26"
    },
    {
     "id": "2026-10-25",
     "nom": "Jour 14 · Zelenskyy in London as Burnham Pledges Unwavering Support",
-    "n": 28,
+    "n": 30,
     "date": "2026-10-25"
    },
    {
     "id": "2026-10-23",
     "nom": "Jour 13 · Ireland's Biggest Public Sector Strike Since 2009",
-    "n": 29,
+    "n": 30,
     "date": "2026-10-23"
    },
    {
     "id": "2026-10-22",
     "nom": "Jour 12 · Severe Drought Declared in Southern England",
-    "n": 28,
+    "n": 30,
     "date": "2026-10-22"
    },
    {
     "id": "2026-10-21",
     "nom": "Jour 11 · Alberta Votes 75% to Stay in Canada",
-    "n": 24,
+    "n": 30,
     "date": "2026-10-21"
    },
    {
     "id": "2026-10-20",
     "nom": "Jour 10 · Trump Waives New Sanctions on Russia",
-    "n": 27,
+    "n": 30,
     "date": "2026-10-20"
    },
    {
     "id": "2026-10-19",
     "nom": "Jour 9 · “No Kings” Swaps Marches for Early Voting",
-    "n": 24,
+    "n": 30,
     "date": "2026-10-19"
    },
    {
     "id": "2026-10-18",
     "nom": "Jour 8 · The White House Press Secretary Who Lasted Five Days",
-    "n": 29,
+    "n": 30,
     "date": "2026-10-18"
    },
    {
     "id": "2026-10-17",
     "nom": "Jour 7 · The Pentagon Plans to Livestream a Military Execution",
-    "n": 28,
+    "n": 30,
     "date": "2026-10-17"
    },
    {
     "id": "2026-10-16",
     "nom": "Jour 6 · Burnham in Berlin as the Kensington Treaty Takes Effect",
-    "n": 20,
+    "n": 30,
     "date": "2026-10-16"
    },
    {
     "id": "2026-10-15",
     "nom": "Jour 5 · Burnham Says Russia Meddled in the Brexit Vote",
-    "n": 26,
+    "n": 30,
     "date": "2026-10-15"
    },
    {
     "id": "2026-10-13",
     "nom": "Jour 4 · Four Animals for the Next Bank of England Notes",
-    "n": 28,
+    "n": 30,
     "date": "2026-10-13"
    },
    {
     "id": "2026-10-12",
     "nom": "Jour 3 · Hurricane Isaias Hits Florida",
-    "n": 26,
+    "n": 30,
     "date": "2026-10-12"
    },
    {
     "id": "2026-10-11",
     "nom": "Jour 2 · Trump Strikes a Diesel Deal with Putin",
-    "n": 24,
+    "n": 30,
     "date": "2026-10-11"
    },
    {
     "id": "2026-10-10",
     "nom": "Jour 1 · Trump Renames AI “Super Intelligence”",
-    "n": 21,
+    "n": 30,
     "date": "2026-10-10"
    }
   ],
-  "n": 566,
-  "v": "c37e60046c"
+  "n": 558,
+  "v": "23e99a72e5"
  },
  {
   "id": "espagnol",
@@ -173,13 +173,13 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-25",
     "nom": "Jour 14 · España: la DANA Adam inunda la Safor y la Marina Alta",
-    "n": 26,
+    "n": 28,
     "date": "2026-10-25"
    },
    {
     "id": "2026-10-23",
     "nom": "Jour 13 · Chile: siete años después del estallido, miles marchan contra Kast",
-    "n": 27,
+    "n": 30,
     "date": "2026-10-23"
    },
    {
@@ -191,72 +191,72 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-21",
     "nom": "Jour 11 · EE. UU. y Cuba: Florida ordena el arresto de Raúl Castro",
-    "n": 28,
+    "n": 30,
     "date": "2026-10-21"
    },
    {
     "id": "2026-10-20",
     "nom": "Jour 10 · Colombia: De la Espriella retira treinta obras del Museo Nacional",
-    "n": 27,
+    "n": 30,
     "date": "2026-10-20"
    },
    {
     "id": "2026-10-19",
     "nom": "Jour 9 · Costa Rica y El Salvador: un acuerdo contra el crimen transnacional",
-    "n": 29,
+    "n": 30,
     "date": "2026-10-19"
    },
    {
     "id": "2026-10-18",
     "nom": "Jour 8 · Chile y Bolivia: Kast en La Paz, primera visita oficial en 71 años",
-    "n": 28,
+    "n": 32,
     "date": "2026-10-18"
    },
    {
     "id": "2026-10-17",
     "nom": "Jour 7 · Venezuela: Delcy Rodríguez lleva a la FAO el plan «Venezuela Alimenta»",
-    "n": 25,
+    "n": 30,
     "date": "2026-10-17"
    },
    {
     "id": "2026-10-16",
     "nom": "Jour 6 · España: Felipe VI y Letizia, una visita histórica a Ceuta",
-    "n": 26,
+    "n": 30,
     "date": "2026-10-16"
    },
    {
     "id": "2026-10-15",
     "nom": "Jour 5 · Costa Rica: el CACCO, una megacárcel al estilo Bukele",
-    "n": 24,
+    "n": 30,
     "date": "2026-10-15"
    },
    {
     "id": "2026-10-13",
     "nom": "Jour 4 · España: Puigdemont ya puede volver sin ser detenido",
-    "n": 25,
+    "n": 30,
     "date": "2026-10-13"
    },
    {
     "id": "2026-10-12",
     "nom": "Jour 3 · España: Maricarmen, símbolo de la crisis de la vivienda",
-    "n": 25,
+    "n": 30,
     "date": "2026-10-12"
    },
    {
     "id": "2026-10-11",
     "nom": "Jour 2 · Panamá: un terremoto de magnitud 7,7 sacude el país",
-    "n": 26,
+    "n": 30,
     "date": "2026-10-11"
    },
    {
     "id": "2026-10-10",
     "nom": "Jour 1 · México: las madres buscadoras, certificadas",
-    "n": 26,
+    "n": 30,
     "date": "2026-10-10"
    }
   ],
   "n": 432,
-  "v": "d880af6bd4"
+  "v": "8bdd78d3fa"
  },
  {
   "id": "allemand",
@@ -287,61 +287,61 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-25",
     "nom": "Jour 14 · Die Unionsfraktion stellt sich hinter Merz",
-    "n": 29,
+    "n": 30,
     "date": "2026-10-25"
    },
    {
     "id": "2026-10-23",
     "nom": "Jour 13 · Berlin zieht seine Olympia-Bewerbung zurück",
-    "n": 28,
+    "n": 30,
     "date": "2026-10-23"
    },
    {
     "id": "2026-10-22",
     "nom": "Jour 12 · Die Schweiz sagt Nein zur Neutralitätsinitiative",
-    "n": 29,
+    "n": 30,
     "date": "2026-10-22"
    },
    {
     "id": "2026-10-21",
     "nom": "Jour 11 · Berlin wirbt um Investoren",
-    "n": 29,
+    "n": 30,
     "date": "2026-10-21"
    },
    {
     "id": "2026-10-20",
     "nom": "Jour 10 · Der Bundestag beschließt die Notfallreform",
-    "n": 28,
+    "n": 30,
     "date": "2026-10-20"
    },
    {
     "id": "2026-10-19",
     "nom": "Jour 9 · Merz und Macron lockern das Verbrenner-Aus",
-    "n": 28,
+    "n": 30,
     "date": "2026-10-19"
    },
    {
     "id": "2026-10-18",
     "nom": "Jour 8 · BioNTech schließt drei Standorte",
-    "n": 30,
+    "n": 32,
     "date": "2026-10-18"
    },
    {
     "id": "2026-10-17",
     "nom": "Jour 7 · Ein Extremjahr für die Gletscher",
-    "n": 30,
+    "n": 32,
     "date": "2026-10-17"
    },
    {
     "id": "2026-10-16",
     "nom": "Jour 6 · Bremen feiert die Deutsche Einheit",
-    "n": 27,
+    "n": 30,
     "date": "2026-10-16"
    },
    {
     "id": "2026-10-15",
     "nom": "Jour 5 · Schweitzer folgt auf Bärbel Bas",
-    "n": 27,
+    "n": 30,
     "date": "2026-10-15"
    },
    {
@@ -353,13 +353,13 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-12",
     "nom": "Jour 3 · Ein AfD-Politiker an der Spitze des Landtags",
-    "n": 23,
+    "n": 30,
     "date": "2026-10-12"
    },
    {
     "id": "2026-10-11",
     "nom": "Jour 2 · Die deutsche Wirtschaft wächst wieder",
-    "n": 24,
+    "n": 30,
     "date": "2026-10-11"
    },
    {
@@ -369,8 +369,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 452,
-  "v": "f29d265542"
+  "n": 448,
+  "v": "05f4e4c45c"
  },
  {
   "id": "hgg1-ch1",
