@@ -33,7 +33,7 @@
   }
   function neuf() {
     return { v: 1, mes: [], perso: [], srs: {}, ign: {}, hist: {}, nouv: {},
-             prefs: { nouv: 20, parties: {}, sens: {}, saisie: {} } };
+             prefs: { nouv: 30, r2: 1, parties: {}, sens: {}, saisie: {} } };
   }
   function objet(x) { return x && typeof x === 'object' && !Array.isArray(x); }
 
@@ -68,7 +68,7 @@
       else if (type === 'po') { j = reste.indexOf('/'); (D.prefs[reste.slice(0, j)] = D.prefs[reste.slice(0, j)] || {})[reste.slice(j + 1)] = v; }
       else if (type === 'p') D.prefs[reste] = v;
     });
-    if (D.prefs.nouv == null) D.prefs.nouv = 20;
+    if (D.prefs.nouv == null) D.prefs.nouv = 30;
     D.mes = mes.sort(function (a, b) { return (a[0] - b[0]) || (a[1] < b[1] ? -1 : 1); }).map(function (x) { return x[1]; });
     D.perso.sort(function (a, b) { return (b.cree || 0) - (a.cree || 0); });
     return D;
