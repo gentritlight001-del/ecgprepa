@@ -82,6 +82,45 @@ def lire_jour(chemin):
     }
 
 
+def morceaux(reponse):
+    """Les réponses d'une carte, séparées par « · » ou par une virgule hors parenthèses."""
+    out, prof, cur = [], 0, ''
+    for ch in reponse.replace(' · ', '\x00'):
+        if ch == '(':
+            prof += 1
+        elif ch == ')':
+            prof = max(0, prof - 1)
+        if ch == '\x00' or (ch == ',' and prof == 0):
+            out.append(cur.strip()); cur = ''
+        else:
+            cur += ch
+    out.append(cur.strip())
+    return [m for m in out if m]
+
+
+def base(reponse):
+    """Forme nue d'une réponse, pour reconnaître deux écritures du même mot :
+    « der Rücktritt (-e) » = « der Rücktritt », « dejar de + infinitif » = « dejar de »."""
+    b = re.sub(r'\([^)]*\)', ' ', reponse)
+    b = re.sub(r'\+\s*(infinitif|subjonctif|indicatif|gérondif|v-ing|ving|datif|accusatif|génitif)\b.*$', ' ', b, flags=re.I)
+    return re.sub(r'\s+', ' ', b).strip(' .;').lower()
+
+
+def regrouper(carte, autre):
+    """Ajoute à la carte (la plus récente) les réponses d'une carte plus ancienne qui a la même question.
+    Une même réponse écrite deux fois garde sa forme la plus complète."""
+    parts = morceaux(carte['v'])
+    for m in morceaux(autre):
+        for k, p in enumerate(parts):
+            if base(p) == base(m):
+                if len(m) > len(p):
+                    parts[k] = m
+                break
+        else:
+            parts.append(m)
+    carte['v'] = ' · '.join(parts)
+
+
 def paquets_langues():
     paquets = []
     for langue, nom in LANGUES.items():
@@ -91,6 +130,7 @@ def paquets_langues():
             continue
         jours.sort(key=lambda j: j['date'], reverse=True)
         cartes, vus, parties = [], set(), []
+        par_question = {}   # même question en français : une seule carte, réponses regroupées
         for j in jours:   # le plus récent d'abord : un mot revenu garde son dernier exemple
             gid = j['date']
             n = 0
@@ -100,8 +140,15 @@ def paquets_langues():
                     if not mot or mot.lower() in vus:
                         continue
                     vus.add(mot.lower())
-                    cartes.append({'i': cle(mot), 'r': propre(m['fr']), 'v': mot, 'x': propre(m['ex']),
-                                   'g': gid, 's': rub})
+                    q = re.sub(r'\s+', ' ', propre(m['fr'])).strip().lower()
+                    if q and q in par_question:
+                        regrouper(par_question[q], mot)
+                        continue
+                    carte = {'i': cle(mot), 'r': propre(m['fr']), 'v': mot, 'x': propre(m['ex']),
+                             'g': gid, 's': rub}
+                    if q:
+                        par_question[q] = carte
+                    cartes.append(carte)
                     n += 1
             parties.append({'id': gid, 'nom': 'Jour %d · %s' % (j['numero'], j['titre']), 'n': n,
                             'date': j['date']})
