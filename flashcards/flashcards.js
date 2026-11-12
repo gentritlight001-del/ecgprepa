@@ -238,6 +238,25 @@
     }
     return q;
   }
+  /* Ordre d'arrivée des cartes jamais vues d'un paquet : d'abord celles des parties déjà commencées
+     (une carte au moins vue), pour les finir, de la plus ancienne à la plus récente ; puis les parties
+     neuves, dans l'ordre du paquet (langues : le jour le plus récent d'abord ; chapitres : partie I d'abord). */
+  function ordreNouvelles(id) {
+    var cs = selection(id), vues = {}, rang = {}, n = 0;
+    cs.forEach(function (c) {
+      if (!(c.g in rang)) rang[c.g] = n++;
+      if (vue(etat(id, c))) vues[c.g] = 1;
+    });
+    var l = LIB[id], parDate = !!(l && l.type === 'vocabulaire');
+    function cle(g) {
+      if (!vues[g]) return [1, rang[g]];
+      return [0, parDate ? -rang[g] : rang[g]];   // langues : jours rangés du plus récent au plus ancien
+    }
+    return cs.filter(function (c) { return !vue(etat(id, c)); })
+      .map(function (c, k) { return { c: c, k: k, o: cle(c.g) }; })
+      .sort(function (a, b) { return (a.o[0] - b.o[0]) || (a.o[1] - b.o[1]) || (a.k - b.k); })
+      .map(function (x) { return x.c; });
+  }
   /* Nouvel état d'une carte après une réponse : 1 je ne savais pas, 2 j'ai hésité, 3 je savais */
   function noter(avant, note, now) {
     var st = vue(avant) ? Object.assign({}, avant) : { s: 0, p: 0, i: 0, e: 230, n: 0, l: 0, d: 0 };
@@ -498,9 +517,9 @@
           var reste = Q[id] || 0;
           selection(id).forEach(function (c) {
             var st = etat(id, c);
-            if (!vue(st)) { if (reste > 0) { nouv.push({ p: id, c: c }); reste--; } }
-            else if (st.d <= fin) rev.push({ p: id, c: c, d: debutJour(st.d) });
+            if (vue(st) && st.d <= fin) rev.push({ p: id, c: c, d: debutJour(st.d) });
           });
+          ordreNouvelles(id).forEach(function (c) { if (reste > 0) { nouv.push({ p: id, c: c }); reste--; } });
         });
         melanger(rev);
         rev.sort(function (a, b) { return a.d - b.d; });        // les plus en retard d'abord

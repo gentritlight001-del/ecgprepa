@@ -1124,7 +1124,9 @@ du jour). L'ancienne adresse `premiere_annee/langues/flashcards/index.html` renv
 - **Les cartes qui reviennent** : trois réponses, chacune dit ce qui va se passer. « Je ne savais pas » : la carte revient
   dans la même séance, 4 cartes plus loin, jusqu'à ce qu'elle soit sue. « J'ai hésité » : elle revient demain. « Je
   savais » : son délai s'allonge (3 jours pour une carte sue du premier coup, puis 7, 16, 37…, 365 au plus). « Acquise » =
-  délai de 7 jours ou plus. Les cartes en retard passent en premier. Plus de délais en minutes ni de quatrième bouton.
+  délai de 7 jours ou plus. Les cartes en retard passent en premier. Nouvelles cartes (`ordreNouvelles`) : d'abord celles
+  des parties déjà commencées, pour les finir (langues : du jour le plus ancien au plus récent), puis les parties neuves dans
+  l'ordre du paquet (langues : le jour le plus récent d'abord ; chapitres : partie I d'abord). Plus de délais en minutes ni de quatrième bouton.
   Retirés à la refonte : couleurs des paquets, copie dans un paquet perso, bouton « ignorer », export Anki, sens inversé,
   réponse tapée. Données dans `localStorage` `ecg-flashcards:v1:<e-mail>` (même format qu'avant : la progression des
   élèves est gardée ; `auth.js` y lit la pastille du menu).
