@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Italie",
+"titre": "Italie : plus de 6 000 écoles visées par des alertes à la bombe, aussi au Royaume-Uni et en France",
+"url": "actualites/monde/articles/italie-alertes-bombe-ecoles-europe-2026.html",
+"image": "actualites/monde/images/italie-alertes-bombe-ecoles-europe-2026.webp",
+"date": "2026-11-12T17:44:42+00:00"
+},
+{
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne",
@@ -1371,15 +1380,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/es/articles/espagne-reyes-visite-ceuta-2026.html",
 "image": "actualites/es/images/espagne-reyes-visite-ceuta-2026.webp",
 "date": "2026-10-14T17:43:56+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "France",
-"titre": "Nvidia entre au capital de Doctolib pour accélérer l'intelligence artificielle médicale en Europe",
-"url": "actualites/monde/articles/nvidia-investit-doctolib.html",
-"image": "actualites/monde/images/nvidia-investit-doctolib.webp",
-"date": "2026-10-14T17:38:18+00:00"
 },
 {
 "t": "en",
