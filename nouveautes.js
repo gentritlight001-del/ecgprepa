@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "cg",
+"rubrique": "Culture générale",
+"meta": "Histoire",
+"titre": "Mustafa Kemal Atatürk : du soldat de Gallipoli au père de la Turquie moderne",
+"url": "Culture-Generale/ataturk.html",
+"image": "Culture-Generale/images/ataturk.webp",
+"date": "2026-11-12T19:30:30+00:00"
+},
+{
 "t": "humanite",
 "rubrique": "Humanité",
 "meta": "Littérature",
@@ -2234,15 +2243,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Alexandre le Grand : la conquête d'un monde",
 "url": "Culture-Generale/alexandre-le-grand.html",
 "image": "Culture-Generale/images/alexandre-le-grand.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Philosophie",
-"titre": "Hannah Arendt et la banalité du mal",
-"url": "Culture-Generale/hannah-arendt.html",
-"image": "Culture-Generale/images/hannah-arendt.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
