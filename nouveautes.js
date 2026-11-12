@@ -1,6 +1,16 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Littérature",
+"titre": "L'Espèce humaine",
+"url": "humanite/litterature/espece-humaine.html",
+"image": "humanite/litterature/images/espece-humaine-couverture.webp",
+"portrait": true,
+"date": "2026-11-12T18:00:03+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Espagne",
@@ -1136,16 +1146,6 @@ window.ECG_NOUVEAUTES = [
 "image": "humanite/art/images/migrant-mother-oeuvre.webp",
 "portrait": false,
 "date": "2026-10-20T08:21:07+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Art",
-"titre": "Girl with Balloon",
-"url": "humanite/art/girl-with-balloon.html",
-"image": "humanite/art/images/girl-with-balloon-oeuvre.webp",
-"portrait": false,
-"date": "2026-10-20T08:17:58+00:00"
 },
 {
 "t": "en",
