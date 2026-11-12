@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
+"titre": "Allemagne : pour le budget 2027, l'Union et le SPD font des compromis, sauf sur l'électricité",
+"url": "actualites/de/articles/allemagne-budget-2027-compromis-coalition-2026.html",
+"image": "actualites/de/images/allemagne-budget-2027-compromis-coalition-2026.webp",
+"date": "2026-11-12T17:07:39+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Haïti",
@@ -1982,15 +1991,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Le drone piégé de Leipzig/Halle : anatomie d'une tentative d'attentat inédite en Allemagne",
 "url": "actualites/de/articles/drone-explosif-leipzig-halle.html",
 "image": "actualites/de/images/drone-explosif-leipzig-halle.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "Sécheresse historique : le niveau extrêmement bas du Rhin bouleverse le transport et l'industrie allemande",
-"url": "actualites/de/articles/rhin-secheresse-industrie.html",
-"image": "actualites/de/images/rhin-secheresse-industrie.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
