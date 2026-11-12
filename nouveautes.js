@@ -4,6 +4,15 @@ window.ECG_NOUVEAUTES = [
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne",
+"titre": "Allemagne : le cabinet approuve une réserve stratégique de gaz de 24 TWh, soit 10 % du stockage",
+"url": "actualites/de/articles/allemagne-reserve-strategique-gaz-cabinet-2026.html",
+"image": "actualites/de/images/allemagne-reserve-strategique-gaz-cabinet-2026.webp",
+"date": "2026-11-12T17:17:25+00:00"
+},
+{
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
 "titre": "Allemagne : pour le budget 2027, l'Union et le SPD font des compromis, sauf sur l'électricité",
 "url": "actualites/de/articles/allemagne-budget-2027-compromis-coalition-2026.html",
 "image": "actualites/de/images/allemagne-budget-2027-compromis-coalition-2026.webp",
@@ -1982,15 +1991,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "L'Allemagne durcit encore sa politique migratoire et sécuritaire",
 "url": "actualites/de/articles/durcissement-migratoire-securitaire.html",
 "image": "actualites/de/images/durcissement-migratoire-securitaire.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "Le drone piégé de Leipzig/Halle : anatomie d'une tentative d'attentat inédite en Allemagne",
-"url": "actualites/de/articles/drone-explosif-leipzig-halle.html",
-"image": "actualites/de/images/drone-explosif-leipzig-halle.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
