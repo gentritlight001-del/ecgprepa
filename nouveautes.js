@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Espagne",
+"titre": "Espagne : grève générale pour le logement et les salaires, la première depuis 14 ans",
+"url": "actualites/es/articles/espagne-greve-generale-logement-11n-2026.html",
+"image": "actualites/es/images/espagne-greve-generale-logement-11n-2026.webp",
+"date": "2026-11-12T17:53:47+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Italie",
@@ -1667,15 +1676,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Argentine : Milei annonce un « passeport doré » pour étrangers fortunés",
 "url": "actualites/es/articles/argentine-passeport-dore.html",
 "image": "actualites/es/images/argentine-passeport-dore.webp",
-"date": "2026-10-04T07:18:03+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Mexique",
-"titre": "Mexique : 58 ans après Tlatelolco, marche vers le Zócalo et promesse de « plus jamais »",
-"url": "actualites/es/articles/mexique-tlatelolco-58-ans.html",
-"image": "actualites/es/images/mexique-tlatelolco-58-ans.webp",
 "date": "2026-10-04T07:18:03+00:00"
 },
 {
