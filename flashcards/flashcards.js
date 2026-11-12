@@ -1,14 +1,15 @@
 /* Espace flashcards d'ECG Prépa (flashcards/index.html).
 
-   - Accueil : les cartes à revoir aujourd'hui (tous paquets confondus) et « Mes paquets ».
+   - Accueil : les cartes à revoir aujourd'hui et « Mes paquets ». Chaque paquet se révise à part
+     (anglais seul, HGG seule…) : jamais de séance qui mélange plusieurs paquets.
    - Ajouter un paquet : paquets prêts à l'emploi lus dans donnees/catalogue.js (généré par
      outils/flashcards.py) ; les cartes d'un paquet (donnees/<id>.js) sont chargées à la demande.
      On peut aussi créer un paquet perso (cartes écrites une à une ou liste collée).
    - Révision : trois réponses. « Je ne savais pas » : la carte revient dans la même séance,
      quelques cartes plus loin. « J'ai hésité » : elle revient demain. « Je savais » : son délai
      s'allonge (1, 3, 7, 16, 37 jours…). Une carte est « acquise » à partir de 7 jours de délai.
-     Les nouvelles cartes arrivent selon le rythme choisi (20, 30 ou 40 par jour, tous paquets
-     confondus). « Tout parcourir » feuillette un paquet sans rien noter.
+     Les nouvelles cartes arrivent selon le rythme choisi (20, 30 ou 40 par jour, pour
+     chaque paquet). « Tout parcourir » feuillette un paquet sans rien noter.
    - Tout est gardé dans le navigateur (localStorage « ecg-flashcards:v1:<e-mail> », lu aussi par
      auth.js pour la pastille du menu) et synchronisé avec le compte de l'élève (synchro.js, table
      Supabase « flashcards ») : mêmes paquets et même progression sur tous ses appareils. Sauvegarde
@@ -213,10 +214,10 @@
     RYTHMES.forEach(function (r) { if (Math.abs(r[0] - n) < Math.abs(mieux - n)) mieux = r[0]; });
     return mieux;
   }
-  function nouvReste() {
-    var j = D.nouv[jourCle()] || {}, faites = 0;
-    Object.keys(j).forEach(function (k) { faites += j[k] || 0; });
-    return Math.max(0, rythme() - faites);
+  /* Nouvelles cartes encore permises aujourd'hui dans un paquet (le rythme vaut pour chaque paquet) */
+  function nouvReste(id) {
+    var j = D.nouv[jourCle()] || {};
+    return Math.max(0, rythme() - (j[id] || 0));
   }
   function stats(id, cartes) {
     var fin = finJour(Date.now());
@@ -230,14 +231,10 @@
     });
     return o;
   }
-  /* Nouvelles cartes du jour réparties entre les paquets, une à une */
+  /* Nouvelles cartes du jour de chaque paquet : son rythme, moins celles déjà vues aujourd'hui */
   function quota(ids, plus) {
-    var reste = plus || nouvReste(), dispo = {}, q = {}, encore = true;
-    ids.forEach(function (id) { dispo[id] = stats(id).nouv; q[id] = 0; });
-    while (reste > 0 && encore) {
-      encore = false;
-      ids.forEach(function (id) { if (reste > 0 && q[id] < dispo[id]) { q[id]++; reste--; encore = true; } });
-    }
+    var q = {};
+    ids.forEach(function (id) { q[id] = Math.min(stats(id).nouv, plus || nouvReste(id)); });
     return q;
   }
   /* Ordre d'arrivée des cartes jamais vues d'un paquet : d'abord celles des parties déjà commencées
@@ -363,11 +360,11 @@
   function pageAccueil() {
     avecCartes(D.mes, function () {
       fil('');
-      var Q = quota(D.mes), due = 0, nouv = 0, actifs = 0, lignes = '';
+      var Q = quota(D.mes), due = 0, nouv = 0, actifs = 0, premier = '', lignes = '';
       D.mes.forEach(function (id) {
         var p = paquet(id), s = stats(id), n = s.due + Q[id];
         due += s.due; nouv += Q[id];
-        if (n) actifs++;
+        if (n) { actifs++; if (!premier) premier = id; }
         lignes += '<div class="ligne"><a class="ligne-nom" href="#paquet/' + esc(id) + '"><small>' + t(etiquette(p)) + '</small><b>' + t(p.titre) + '</b></a>' +
           '<div class="ligne-prog">' + jauge(s) + '<span>' + t(s.total ? pl(s.a, 'acquise') + ' · ' + s.e + ' en cours · ' + (s.nouv ? pl(s.nouv, 'pas encore vue', 'pas encore vues') : 'tout a été vu') : 'Aucune carte pour l’instant') + '</span></div>' +
           (n ? '<button type="button" class="btn plein" data-a="reviser" data-id="' + esc(id) + '" data-n="' + Q[id] + '">Réviser · ' + n + '</button>'
@@ -383,8 +380,9 @@
         hero = '<h1 class="compte"><b>' + total + '</b> ' + (total > 1 ? 'cartes à revoir' : 'carte à revoir') + '</h1>' +
           '<p class="hero-txt">' + t('Environ ' + pl(Math.max(1, Math.round(total / 5)), 'minute') + '. ' +
             (due && nouv ? pl(due, 'carte') + ' qui ' + (due > 1 ? 'reviennent' : 'revient') + ' et ' + pl(nouv, 'nouvelle') : due ? pl(due, 'carte') + ' qui ' + (due > 1 ? 'reviennent' : 'revient') : pl(nouv, 'nouvelle carte', 'nouvelles cartes')) +
-            (actifs > 1 ? ', dans ' + actifs + ' paquets.' : '.')) + '</p>' +
-          '<div><button type="button" class="btn plein gros" data-a="tout">' + ICO.jouer + 'Commencer la révision</button></div>';
+            (actifs > 1 ? ', dans ' + actifs + ' paquets. Chacun se révise à part.' : '.')) + '</p>' +
+          '<div><button type="button" class="btn plein gros" data-a="reviser" data-id="' + esc(premier) + '" data-n="' + Q[premier] + '">' + ICO.jouer +
+            t((actifs > 1 ? 'Commencer par « ' : 'Réviser « ') + (paquet(premier).court || paquet(premier).titre) + ' »') + '</button></div>';
       } else {
         hero = '<h1>' + t('Tout est à jour') + '</h1><p class="hero-txt">' + t(prev[0] ? 'Rien d’autre à revoir aujourd’hui. Demain : ' + pl(prev[0], 'carte prévue', 'cartes prévues') + '.' : 'Rien à revoir aujourd’hui. Les cartes reviendront d’elles-mêmes au bon moment.') + '</p>' +
           '<div><a class="btn gros" href="#ajouter">' + ICO.plus + 'Ajouter un paquet</a></div>';
@@ -401,7 +399,7 @@
         '<p>' + t(prev[0] || prev[1] ? 'Demain : ' + pl(prev[0], 'carte prévue', 'cartes prévues') + '. Après-demain : ' + prev[1] + '.' : 'Quelques minutes par jour suffisent.') + '</p></aside></section>' +
         '<section class="bloc"><div class="bloc-tete"><h2>Mes paquets</h2>' + (D.mes.length ? '<div class="legende"><span class="a">Acquises</span><span class="e">En cours</span><span>Pas encore vues</span></div>' : '') + '</div>' +
         lignes + '<a class="ajout" href="#ajouter">' + ICO.plus + 'Ajouter un paquet</a></section>' +
-        '<section class="pied-accueil"><div><b>Mon rythme</b><span>' + t('Le nombre de nouvelles cartes par jour, tous paquets confondus.') + '</span></div>' +
+        '<section class="pied-accueil"><div><b>Mon rythme</b><span>' + t('Le nombre de nouvelles cartes par jour, dans chaque paquet.') + '</span></div>' +
         '<div class="choix" role="group" aria-label="Mon rythme">' + RYTHMES.map(function (x) {
           return '<button type="button" data-a="rythme" data-v="' + x[0] + '" class="' + (x[0] === r ? 'actif' : '') + '" aria-pressed="' + (x[0] === r) + '">' + x[1] + ' · ' + x[0] + '</button>';
         }).join('') + '</div></section>' +
@@ -766,7 +764,6 @@
     if (!b || b.disabled || b.tagName === 'INPUT') return;
     var a = b.getAttribute('data-a'), id = b.getAttribute('data-id'), q, annul;
     switch (a) {
-      case 'tout': lancer(D.mes.slice(), 'srs'); break;
       case 'reviser':
         q = null;
         if (b.hasAttribute('data-n')) { q = {}; q[id] = +b.getAttribute('data-n'); }
