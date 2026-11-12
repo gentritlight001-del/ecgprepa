@@ -407,7 +407,9 @@
           var D = S.charger() || S.neuf();
           if (!Array.isArray(D.mes)) D.mes = [];
           if (D.mes.indexOf(LANGUE) === -1) D.mes.push(LANGUE);
-          /* Parties choisies dans l'espace : le jour présent en fait partie */
+          /* Jours décochés dans l'espace : le jour présent est recoché (ancien format : jours cochés) */
+          var ex = D.prefs && D.prefs.exclues && D.prefs.exclues[LANGUE];
+          if (Array.isArray(ex) && J.date) D.prefs.exclues[LANGUE] = ex.filter(function (g) { return g !== J.date; });
           var parts = D.prefs && D.prefs.parties && D.prefs.parties[LANGUE];
           if (Array.isArray(parts) && parts.length && J.date && parts.indexOf(J.date) === -1) parts.push(J.date);
           S.enregistrer(D);

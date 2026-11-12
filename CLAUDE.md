@@ -1120,7 +1120,8 @@ du jour). L'ancienne adresse `premiere_annee/langues/flashcards/index.html` renv
   en lignes avec jauge acquises / en cours / pas encore vues, « Mon rythme » : Tranquille 20, Normal 30 ou Intensif 40 nouvelles cartes par jour
   **dans chaque paquet**, sauvegarde en fichier), **ajouter un paquet** (`#ajouter/<matière>`, un bouton « Ajouter »
   par chapitre, « Mes propres cartes » : cartes écrites une à une ou liste collée), **un paquet** (`#paquet/<id>` :
-  « Réviser », « Tout parcourir, sans noter », trois compteurs, parties à cocher, liste des cartes avec leur date de
+  « Réviser », « Tout parcourir, sans noter », trois compteurs, parties à cocher (on garde les parties **décochées**,
+  `D.prefs.exclues` : un nouveau jour de langue ou une nouvelle partie est donc cochée d'office), liste des cartes avec leur date de
   retour) et **la révision** (grande carte de 1 100 px sur ordinateur, question en très gros).
 - **Les cartes qui reviennent** : trois réponses, chacune dit ce qui va se passer. « Je ne savais pas » : la carte revient
   dans la même séance, 4 cartes plus loin, jusqu'à ce qu'elle soit sue. « J'ai hésité » : elle revient demain. « Je

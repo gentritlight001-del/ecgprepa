@@ -88,6 +88,19 @@
     /* Rythmes passés de 10 / 20 / 40 à 20 / 30 / 40 (novembre 2026) : chacun garde son niveau */
     if (d.prefs && !d.prefs.r2) { var r = +d.prefs.nouv || 20; d.prefs.nouv = r <= 10 ? 20 : r <= 20 ? 30 : r; d.prefs.r2 = 1; }
     for (k in n.prefs) if (d.prefs[k] == null) d.prefs[k] = n.prefs[k];
+    /* Ancien format (novembre 2026) : liste des parties cochées → liste des parties décochées.
+       Langues : un jour plus récent que le dernier jour coché est un jour sorti depuis, il est coché. */
+    Object.keys(d.prefs.parties || {}).forEach(function (id) {
+      var sel = d.prefs.parties[id], l = LIB[id];
+      if (Array.isArray(sel) && sel.length && l) {
+        var max = sel.slice().sort().pop();
+        var ex = l.parties.map(function (g) { return g.id; }).concat(l.type === 'cours' ? ['mes'] : []).filter(function (g) {
+          return sel.indexOf(g) === -1 && !(l.type === 'vocabulaire' && g > max);
+        });
+        if (ex.length) d.prefs.exclues[id] = ex;
+      }
+      delete d.prefs.parties[id];
+    });
     var auj = jourCle();
     for (k in d.nouv) if (k !== auj) delete d.nouv[k];
     d.mes = d.mes.filter(function (id) { return LIB[id] || d.perso.some(function (p) { return p.id === id; }); });
@@ -192,9 +205,13 @@
     else cs = ((window.ECG_FC_CARTES || {})[id] || []).concat(cartesDuChapitre(id));
     return cs.filter(function (c) { return !D.ign[id + '/' + c.i]; });
   }
+  /* Parties décochées (D.prefs.exclues) : une partie qui apparaît plus tard (le texte du jour suivant,
+     une nouvelle partie de chapitre) est donc cochée d'office. */
   function partiesChoisies(id) {
-    var sel = D.prefs.parties[id];
-    return Array.isArray(sel) && sel.length ? sel : null;
+    var ex = D.prefs.exclues[id], p = paquet(id);
+    if (!Array.isArray(ex) || !ex.length || !p) return null;
+    var sel = p.parties.map(function (g) { return g.id; }).filter(function (g) { return ex.indexOf(g) === -1; });
+    return sel.length ? sel : null;
   }
   /* Cartes retenues pour réviser : limitées aux parties cochées */
   function selection(id) {
@@ -840,12 +857,11 @@
     var b = e.target;
     if (b.getAttribute('data-a') !== 'partie') return;
     var id = b.getAttribute('data-id'), p = paquet(id);
-    var sel = partiesChoisies(id) || p.parties.map(function (g) { return g.id; });
     var g = b.getAttribute('data-g');
-    sel = sel.filter(function (x) { return x !== g; });
-    if (b.checked) sel.push(g);
-    if (!sel.length) { b.checked = true; toast('Garde au moins une partie.'); return; }
-    if (sel.length >= p.parties.length) delete D.prefs.parties[id]; else D.prefs.parties[id] = sel;
+    var ex = (D.prefs.exclues[id] || []).filter(function (x) { return x !== g; });
+    if (!b.checked) ex.push(g);
+    if (ex.length >= p.parties.length) { b.checked = true; toast('Garde au moins une partie.'); return; }
+    if (ex.length) D.prefs.exclues[id] = ex; else delete D.prefs.exclues[id];
     sauver(); rendre();
   });
   app.addEventListener('input', function (e) {

@@ -33,7 +33,7 @@
   }
   function neuf() {
     return { v: 1, mes: [], perso: [], srs: {}, ign: {}, hist: {}, nouv: {},
-             prefs: { nouv: 30, r2: 1, parties: {}, sens: {}, saisie: {} } };
+             prefs: { nouv: 30, r2: 1, parties: {}, exclues: {}, sens: {}, saisie: {} } };
   }
   function objet(x) { return x && typeof x === 'object' && !Array.isArray(x); }
 
@@ -58,7 +58,7 @@
   }
   function reconstruire(o) {
     var D = neuf(), mes = [];
-    D.prefs = { parties: {}, sens: {}, saisie: {} };
+    D.prefs = { parties: {}, exclues: {}, sens: {}, saisie: {} };
     Object.keys(o).forEach(function (k) {
       var i = k.indexOf('/'), type = k.slice(0, i), reste = k.slice(i + 1), v = o[k], j;
       if (type === 'mes') mes.push([v, reste]);
