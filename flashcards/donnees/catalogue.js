@@ -89,7 +89,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-19",
     "nom": "Jour 9 · “No Kings” Swaps Marches for Early Voting",
-    "n": 25,
+    "n": 24,
     "date": "2026-10-19"
    },
    {
@@ -131,18 +131,18 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-11",
     "nom": "Jour 2 · Trump Strikes a Diesel Deal with Putin",
-    "n": 25,
+    "n": 24,
     "date": "2026-10-11"
    },
    {
     "id": "2026-10-10",
     "nom": "Jour 1 · Trump Renames AI “Super Intelligence”",
-    "n": 23,
+    "n": 21,
     "date": "2026-10-10"
    }
   ],
-  "n": 570,
-  "v": "db1da52743"
+  "n": 566,
+  "v": "c37e60046c"
  },
  {
   "id": "espagnol",
@@ -221,7 +221,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-16",
     "nom": "Jour 6 · España: Felipe VI y Letizia, una visita histórica a Ceuta",
-    "n": 27,
+    "n": 26,
     "date": "2026-10-16"
    },
    {
@@ -233,19 +233,19 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-13",
     "nom": "Jour 4 · España: Puigdemont ya puede volver sin ser detenido",
-    "n": 26,
+    "n": 25,
     "date": "2026-10-13"
    },
    {
     "id": "2026-10-12",
     "nom": "Jour 3 · España: Maricarmen, símbolo de la crisis de la vivienda",
-    "n": 26,
+    "n": 25,
     "date": "2026-10-12"
    },
    {
     "id": "2026-10-11",
     "nom": "Jour 2 · Panamá: un terremoto de magnitud 7,7 sacude el país",
-    "n": 27,
+    "n": 26,
     "date": "2026-10-11"
    },
    {
@@ -255,8 +255,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 436,
-  "v": "f137675d4c"
+  "n": 432,
+  "v": "d880af6bd4"
  },
  {
   "id": "allemand",
@@ -287,7 +287,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-25",
     "nom": "Jour 14 · Die Unionsfraktion stellt sich hinter Merz",
-    "n": 30,
+    "n": 29,
     "date": "2026-10-25"
    },
    {
@@ -311,7 +311,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-20",
     "nom": "Jour 10 · Der Bundestag beschließt die Notfallreform",
-    "n": 30,
+    "n": 28,
     "date": "2026-10-20"
    },
    {
@@ -341,7 +341,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-15",
     "nom": "Jour 5 · Schweitzer folgt auf Bärbel Bas",
-    "n": 28,
+    "n": 27,
     "date": "2026-10-15"
    },
    {
@@ -353,7 +353,7 @@ window.ECG_FC_CATALOGUE = [
    {
     "id": "2026-10-12",
     "nom": "Jour 3 · Ein AfD-Politiker an der Spitze des Landtags",
-    "n": 24,
+    "n": 23,
     "date": "2026-10-12"
    },
    {
@@ -369,8 +369,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 457,
-  "v": "8851a35b54"
+  "n": 452,
+  "v": "f29d265542"
  },
  {
   "id": "hgg1-ch1",
