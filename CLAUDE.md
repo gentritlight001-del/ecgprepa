@@ -1128,6 +1128,14 @@ du jour). L'ancienne adresse `premiere_annee/langues/flashcards/index.html` renv
   Retirés à la refonte : couleurs des paquets, copie dans un paquet perso, bouton « ignorer », export Anki, sens inversé,
   réponse tapée. Données dans `localStorage` `ecg-flashcards:v1:<e-mail>` (même format qu'avant : la progression des
   élèves est gardée ; `auth.js` y lit la pastille du menu).
+- **Synchronisée entre appareils** (novembre 2026) : `flashcards/synchro.js` (`ECGFlashSync`) garde la copie du navigateur
+  et une ligne par élève dans la table Supabase `flashcards` (`supabase/flashcards-synchro.sql`, déjà appliqué, RLS : chacun
+  sa ligne). Fusion clé par clé (`mes/`, `srs/`, `perso/`, `prefs`…) avec l'heure de chaque modification (`D.tps`) : la plus
+  récente gagne, une suppression compte comme une modification ; synchronisation à l'ouverture, au retour sur l'onglet et
+  3 s après un changement. Toute écriture de ces données passe par `ECGFlashSync.enregistrer(D)` (jamais
+  `localStorage.setItem` direct, sinon le changement n'est pas daté et se perd à la fusion).
+- **Pages du jour de langues** : sous le module « Mémoriser », le cadre `.fc-ajout` (`quotidien.js`, `quotidien.css`) ajoute
+  le paquet de la langue à « Mes paquets » d'un clic (bouton « Ajouter à mes paquets », puis « Réviser mes flashcards → »).
 - **Bibliothèque** : générée par `python3 outils/flashcards.py` dans `flashcards/donnees/` (`catalogue.js`
   + un fichier par paquet, chargé à la demande ; ne jamais les modifier à la main). Il lit le vocabulaire
   des pages du jour de langues (un paquet par langue, une partie par jour) et le tableau `const DECK`

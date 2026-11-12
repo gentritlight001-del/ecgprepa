@@ -292,6 +292,7 @@
       cleRevoir: CLE_REVOIR,
       date: J.date
     }));
+    s3.appendChild(ajoutFlashcards());
     main.appendChild(s3);
 
     /* 4. La traduction : onglets Version / Thème */
@@ -367,6 +368,64 @@
     fin.appendChild(ret);
     s5.appendChild(fin);
     main.appendChild(s5);
+  }
+
+  /* Bouton sous « Mémoriser » : ajoute le paquet de la langue (tout le vocabulaire des textes du jour,
+     outils/flashcards.py) à « Mes paquets » de l'espace flashcards, synchronisé avec le compte
+     (flashcards/synchro.js, chargé à la demande). */
+  var RACINE = '../../../../';
+  var syncPret = null;
+  function chargerSync() {
+    if (window.ECGFlashSync) return Promise.resolve(window.ECGFlashSync);
+    if (!syncPret) syncPret = new Promise(function (ok, ko) {
+      var s = document.createElement('script');
+      s.src = RACINE + 'flashcards/synchro.js';
+      s.onload = function () { if (window.ECGFlashSync) ok(window.ECGFlashSync); else ko(); };
+      s.onerror = function () { syncPret = null; ko(); };
+      document.head.appendChild(s);
+    });
+    return syncPret;
+  }
+  function ajoutFlashcards() {
+    var nom = LANGUE.charAt(0).toUpperCase() + LANGUE.slice(1) + ' au quotidien';
+    var lien = RACINE + 'flashcards/index.html#paquet/' + LANGUE;
+    var box = el('div', 'fc-ajout');
+    function dedans(D) { return !!(D && Array.isArray(D.mes) && D.mes.indexOf(LANGUE) !== -1); }
+    function afficher(ajoute, juste) {
+      box.classList.toggle('fait', ajoute);
+      box.innerHTML = ajoute
+        ? '<div class="fc-ajout-texte"><b>' + typo(juste ? 'Paquet ajouté à vos flashcards' : 'Ce paquet est dans vos flashcards') + '</b>' +
+          '<span>' + typo('« ' + nom + ' » : les mots de tous les jours reviennent au bon moment, sur tous vos appareils.') + '</span></div>' +
+          '<a class="fc-ajout-btn" href="' + lien + '">' + typo('Réviser mes flashcards →') + '</a>'
+        : '<div class="fc-ajout-texte"><b>' + typo('Garder ces mots en mémoire') + '</b>' +
+          '<span>' + typo('Ajoutez le paquet « ' + nom + ' » à vos flashcards : le vocabulaire de chaque jour y revient au bon moment.') + '</span></div>' +
+          '<button type="button" class="fc-ajout-btn">' + typo('Ajouter à mes paquets') + '</button>';
+      var b = box.querySelector('button');
+      if (b) b.addEventListener('click', function () {
+        b.disabled = true;
+        chargerSync().then(function (S) {
+          var D = S.charger() || S.neuf();
+          if (!Array.isArray(D.mes)) D.mes = [];
+          if (D.mes.indexOf(LANGUE) === -1) D.mes.push(LANGUE);
+          /* Parties choisies dans l'espace : le jour présent en fait partie */
+          var parts = D.prefs && D.prefs.parties && D.prefs.parties[LANGUE];
+          if (Array.isArray(parts) && parts.length && J.date && parts.indexOf(J.date) === -1) parts.push(J.date);
+          S.enregistrer(D);
+          S.synchroniser();
+          afficher(true, true);
+        }, function () {
+          b.disabled = false;
+          b.textContent = 'Réessayer';
+        });
+      });
+    }
+    var D0 = null;
+    try {
+      var u = window.ECGAuth && window.ECGAuth.current && window.ECGAuth.current();
+      D0 = JSON.parse(localStorage.getItem('ecg-flashcards:v1' + (u && u.email ? ':' + u.email : '')) || 'null');
+    } catch (e) { D0 = null; }
+    afficher(dedans(D0), false);
+    return box;
   }
 
   /* Index : jours terminés, compteurs, carte « Demain » */
