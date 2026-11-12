@@ -1142,9 +1142,11 @@ du jour). L'ancienne adresse `premiere_annee/langues/flashcards/index.html` renv
   le paquet de la langue à « Mes paquets » d'un clic (bouton « Ajouter à mes paquets », puis « Réviser mes flashcards → »).
 - **Bibliothèque** : générée par `python3 outils/flashcards.py` dans `flashcards/donnees/` (`catalogue.js`
   + un fichier par paquet, chargé à la demande ; ne jamais les modifier à la main). Il lit le vocabulaire
-  des pages du jour de langues (un paquet par langue, une partie par jour ; un mot n'y est qu'une fois, et les cartes
-  qui ont la même question en français n'en font qu'une, réponses regroupées « erstmals · zum ersten Mal », la forme la plus
-  complète gardée pour une même réponse : « der Rücktritt (-e) ») et le tableau `const DECK`
+  des pages du jour de langues (un paquet par langue, une partie par jour ; **chaque jour garde sa liste complète**,
+  et un mot présent dans plusieurs jours y a **la même carte** (même identifiant `i`, une seule progression) : l'espace ne le
+  compte et ne le montre qu'une fois (`uniques` dans `flashcards.js`). Même mot = même mot étranger aux parenthèses près
+  (« der Landtag (-e) » = « der Landtag », mais « while + V-ing » ≠ « while »), ou carte qui affiche la même question en français ;
+  ses réponses sont regroupées, « erstmals · zum ersten Mal », sans enchaînement d'un sens à l'autre) et le tableau `const DECK`
   (+ `const PARTS`) de toute page de `premiere_annee/`, `deuxieme_annee/` et `humanite/` (cartes
   « prêtes à l'emploi » des chapitres d'HGG et du cours d'Humanité). Un chapitre d'ESH, de maths ou de
   philo qui reçoit un `DECK` (même format : `[partie, rubrique, question, réponse]`) entre seul dans la
