@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "Royaume-Uni",
+"titre": "Royaume-Uni : à la COP31, première représentante spéciale du pays pour la sécurité climatique",
+"url": "actualites/en/articles/uk-alessandri-securite-climatique-cop31-2026.html",
+"image": "actualites/en/images/uk-alessandri-securite-climatique-cop31-2026.webp",
+"date": "2026-11-13T19:24:37+00:00"
+},
+{
 "t": "cg",
 "rubrique": "Culture générale",
 "meta": "Histoire",
@@ -1748,15 +1757,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Normes automobiles : Washington ramène l'objectif de consommation moyenne à 34,9 mpg en 2031",
 "url": "actualites/en/articles/us-vehicle-efficiency-standards-2026.html",
 "image": "actualites/en/images/us-vehicle-efficiency-standards-2026.webp",
-"date": "2026-10-01T13:52:44+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "Irak : les derniers soldats américains ont quitté Erbil, 23 ans après l'invasion de 2003",
-"url": "actualites/en/articles/us-iraq-withdrawal-complete-2026.html",
-"image": "actualites/en/images/us-iraq-withdrawal-complete-2026.webp",
 "date": "2026-10-01T13:52:44+00:00"
 },
 {
