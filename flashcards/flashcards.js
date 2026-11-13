@@ -88,15 +88,12 @@
     /* Rythmes passés de 10 / 20 / 40 à 20 / 30 / 40 (novembre 2026) : chacun garde son niveau */
     if (d.prefs && !d.prefs.r2) { var r = +d.prefs.nouv || 20; d.prefs.nouv = r <= 10 ? 20 : r <= 20 ? 30 : r; d.prefs.r2 = 1; }
     for (k in n.prefs) if (d.prefs[k] == null) d.prefs[k] = n.prefs[k];
-    /* Ancien format (novembre 2026) : liste des parties cochées → liste des parties décochées.
-       Langues : un jour plus récent que le dernier jour coché est un jour sorti depuis, il est coché. */
+    SYNC.migrer(d, CATALOGUE);   // langues : jours cochés (synchro.js)
+    /* Chapitres, ancien format (novembre 2026) : liste des parties cochées → liste des parties décochées */
     Object.keys(d.prefs.parties || {}).forEach(function (id) {
       var sel = d.prefs.parties[id], l = LIB[id];
       if (Array.isArray(sel) && sel.length && l) {
-        var max = sel.slice().sort().pop();
-        var ex = l.parties.map(function (g) { return g.id; }).concat(l.type === 'cours' ? ['mes'] : []).filter(function (g) {
-          return sel.indexOf(g) === -1 && !(l.type === 'vocabulaire' && g > max);
-        });
+        var ex = l.parties.map(function (g) { return g.id; }).concat(['mes']).filter(function (g) { return sel.indexOf(g) === -1; });
         if (ex.length) d.prefs.exclues[id] = ex;
       }
       delete d.prefs.parties[id];
@@ -213,7 +210,18 @@
     var vus = {};
     return cs.filter(function (c) { if (vus[c.i]) return false; vus[c.i] = 1; return true; });
   }
+  function estVocab(id) { var l = LIB[id]; return !!(l && l.type === 'vocabulaire'); }
+  /* Ajouter un paquet à « Mes paquets ». Langue : seul le texte le plus récent est coché, les autres jours se
+     cochent à la main (ou avec le bouton de leur page). */
+  function ajouterPaquet(id) {
+    if (!estMien(id)) D.mes.push(id);
+    if (estVocab(id) && !Array.isArray(D.prefs.jours[id])) {
+      var g = LIB[id].parties[0];
+      D.prefs.jours[id] = g ? [g.id] : [];
+    }
+  }
   function partiesChoisies(id) {
+    if (estVocab(id)) { var j = D.prefs.jours[id]; return Array.isArray(j) ? j : []; }   // langues : jours cochés
     var ex = D.prefs.exclues[id], p = paquet(id);
     if (!Array.isArray(ex) || !ex.length || !p) return null;
     var sel = p.parties.map(function (g) { return g.id; }).filter(function (g) { return ex.indexOf(g) === -1; });
@@ -223,6 +231,7 @@
   function selection(id) {
     var sel = partiesChoisies(id);
     var cs = cartesDe(id);
+    if (estVocab(id)) return uniques(cs.filter(function (c) { return sel.indexOf(c.g) !== -1; }));
     if (!sel) return uniques(cs);
     var dans = cs.filter(function (c) { return sel.indexOf(c.g) !== -1; });
     return uniques(dans.length ? dans : cs);
@@ -389,7 +398,7 @@
         due += s.due; nouv += Q[id];
         if (n) { actifs++; if (!premier) premier = id; }
         lignes += '<div class="ligne"><a class="ligne-nom" href="#paquet/' + esc(id) + '"><small>' + t(etiquette(p)) + '</small><b>' + t(p.titre) + '</b></a>' +
-          '<div class="ligne-prog">' + jauge(s) + '<span>' + t(s.total ? pl(s.a, 'acquise') + ' · ' + s.e + ' en cours · ' + (s.nouv ? pl(s.nouv, 'pas encore vue', 'pas encore vues') : 'tout a été vu') : 'Aucune carte pour l’instant') + '</span></div>' +
+          '<div class="ligne-prog">' + jauge(s) + '<span>' + t(s.total ? pl(s.a, 'acquise') + ' · ' + s.e + ' en cours · ' + (s.nouv ? pl(s.nouv, 'pas encore vue', 'pas encore vues') : 'tout a été vu') : estVocab(id) ? 'Aucun jour coché : ouvre le paquet pour choisir tes jours' : 'Aucune carte pour l’instant') + '</span></div>' +
           (n ? '<button type="button" class="btn plein" data-a="reviser" data-id="' + esc(id) + '" data-n="' + Q[id] + '">Réviser · ' + n + '</button>'
              : '<a class="btn" href="#paquet/' + esc(id) + '">' + (s.total ? 'À jour' : 'Ouvrir') + '</a>') + '</div>';
       });
@@ -478,7 +487,7 @@
     var parties = '';
     if (p.parties.length > 1) {
       var sel = partiesChoisies(id), limite = partiesOuvertes ? 1000 : 6;
-      parties = '<section class="bloc"><div class="bloc-tete"><h2>Ce que je révise</h2><p>' + t('Décoche une partie pas encore vue en classe.') + '</p></div>' +
+      parties = '<section class="bloc"><div class="bloc-tete"><h2>Ce que je révise</h2><p>' + t(estVocab(id) ? 'Coche les jours à réviser : un nouveau texte n’entre que si tu le coches, ici ou sur sa page.' : 'Décoche une partie pas encore vue en classe.') + '</p></div>' +
         p.parties.slice(0, limite).map(function (g) {
           var sg = stats(id, brutes.filter(function (c) { return c.g === g.id; }));
           return '<label class="partie"><input type="checkbox" data-a="partie" data-id="' + esc(id) + '" data-g="' + esc(g.id) + '"' + (!sel || sel.indexOf(g.id) !== -1 ? ' checked' : '') + '>' +
@@ -529,7 +538,7 @@
   /* ─── Séance ─── */
   function lancer(ids, mode, plus, parts) {
     ids = ids.filter(function (id) { return paquet(id); });
-    if (mode === 'srs') ids.forEach(function (id) { if (!estMien(id)) { D.mes.unshift(id); sauver(); } });
+    if (mode === 'srs') ids.forEach(function (id) { if (!estMien(id)) { ajouterPaquet(id); D.mes.unshift(D.mes.pop()); sauver(); } });
     return chargerCartes(ids).then(function () {
       var fin = finJour(Date.now()), file = [];
       if (mode === 'libre') {
@@ -797,10 +806,10 @@
       case 'renommer': nommer(perso(id)); break;
       case 'rythme': D.prefs.nouv = +b.getAttribute('data-v'); sauver(); rendre(); break;
       case 'ajouter':
-        if (!estMien(id)) D.mes.push(id);
+        ajouterPaquet(id);
         sauver(); rendre(); toast('« ' + paquet(id).titre + ' » ajouté à tes paquets.'); break;
       case 'tout-ajouter':
-        b.getAttribute('data-ids').split(',').forEach(function (x) { if (LIB[x] && !estMien(x)) D.mes.push(x); });
+        b.getAttribute('data-ids').split(',').forEach(function (x) { if (LIB[x] && !estMien(x)) ajouterPaquet(x); });
         sauver(); rendre(); toast('Paquets ajoutés à ta révision.'); break;
       case 'retirer':
         annul = annulable('« ' + paquet(id).titre + ' » retiré de tes paquets (ta progression est gardée).');
@@ -864,6 +873,12 @@
     if (b.getAttribute('data-a') !== 'partie') return;
     var id = b.getAttribute('data-id'), p = paquet(id);
     var g = b.getAttribute('data-g');
+    if (estVocab(id)) {
+      var js = (D.prefs.jours[id] || []).filter(function (x) { return x !== g; });
+      if (b.checked) js.push(g);
+      D.prefs.jours[id] = js;
+      sauver(); rendre(); return;
+    }
     var ex = (D.prefs.exclues[id] || []).filter(function (x) { return x !== g; });
     if (!b.checked) ex.push(g);
     if (ex.length >= p.parties.length) { b.checked = true; toast('Garde au moins une partie.'); return; }

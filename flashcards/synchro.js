@@ -33,7 +33,7 @@
   }
   function neuf() {
     return { v: 1, mes: [], perso: [], srs: {}, ign: {}, hist: {}, nouv: {},
-             prefs: { nouv: 30, r2: 1, parties: {}, exclues: {}, sens: {}, saisie: {} } };
+             prefs: { nouv: 30, r2: 1, parties: {}, exclues: {}, jours: {}, sens: {}, saisie: {} } };
   }
   function objet(x) { return x && typeof x === 'object' && !Array.isArray(x); }
 
@@ -58,7 +58,7 @@
   }
   function reconstruire(o) {
     var D = neuf(), mes = [];
-    D.prefs = { parties: {}, exclues: {}, sens: {}, saisie: {} };
+    D.prefs = { parties: {}, exclues: {}, jours: {}, sens: {}, saisie: {} };
     Object.keys(o).forEach(function (k) {
       var i = k.indexOf('/'), type = k.slice(0, i), reste = k.slice(i + 1), v = o[k], j;
       if (type === 'mes') mes.push([v, reste]);
@@ -203,7 +203,36 @@
   });
   window.addEventListener('online', function () { synchroniser(); });
 
+  /* Paquets de langues : jours cochés (D.prefs.jours[<langue>]). Un nouveau texte n'y entre que si l'élève le
+     coche (dans l'espace, ou avec le bouton sous « Mémoriser » de sa page). Conversion des anciens réglages :
+     jours cochés (prefs.parties) gardés tels quels ; jours décochés (prefs.exclues, 12 novembre 2026) : les autres,
+     sauf ceux sortis après ce réglage ; paquet sans réglage : tous les jours sortis avant aujourd'hui. */
+  function deux(n) { return (n < 10 ? '0' : '') + n; }
+  function jourCle(ms) { var d = new Date(ms == null ? Date.now() : ms); return d.getFullYear() + '-' + deux(d.getMonth() + 1) + '-' + deux(d.getDate()); }
+  function migrer(d, catalogue) {
+    if (!objet(d)) return d;
+    if (!objet(d.prefs)) d.prefs = neuf().prefs;
+    ['parties', 'exclues', 'jours'].forEach(function (k) { if (!objet(d.prefs[k])) d.prefs[k] = {}; });
+    var auj = jourCle(), mes = Array.isArray(d.mes) ? d.mes : [];
+    (catalogue || []).forEach(function (l) {
+      var id = l.id;
+      if (l.type !== 'vocabulaire' || Array.isArray(d.prefs.jours[id])) return;
+      var ids = (l.parties || []).map(function (g) { return g.id; });
+      var sel = d.prefs.parties[id], ex = d.prefs.exclues[id], j = null;
+      if (Array.isArray(sel) && sel.length) j = sel.filter(function (g) { return ids.indexOf(g) !== -1; });
+      else if (Array.isArray(ex)) {
+        var t = objet(d.tps) && d.tps['po/exclues/' + id], lim = t ? jourCle(t) : null;
+        j = ids.filter(function (g) { return ex.indexOf(g) === -1 && (lim ? g <= lim : g < auj); });
+      } else if (mes.indexOf(id) !== -1) j = ids.filter(function (g) { return g < auj; });
+      if (j) d.prefs.jours[id] = j;
+      delete d.prefs.parties[id];
+      delete d.prefs.exclues[id];
+    });
+    return d;
+  }
+
   window.ECGFlashSync = {
+    migrer: migrer,
     cle: cle,
     neuf: neuf,
     charger: charger,
