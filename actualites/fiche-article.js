@@ -25,6 +25,11 @@
    #article-complet ; le Retour du navigateur ramène à la fiche).
    Un lien avec ancre ou une arrivée par la recherche du site ouvre
    directement l'article complet. Une fiche par section de langue.
+   Fiche seule (articles écrits à partir du 13 novembre 2026, choix du
+   propriétaire) : <meta name="fiche-seule"> dans le <head>. La page ne
+   contient que les blocs de la fiche ; pas de bouton « Lire l'article
+   complet », la fiche reste affichée même avec une ancre ou depuis la
+   recherche.
    Rien à écrire à la main.
    ══════════════════════════════════════════════════════════════ */
 (function () {
@@ -36,6 +41,8 @@
   if (!main) return;
 
   var ANCRE = 'article-complet';
+  var SEULE = !!document.querySelector('meta[name="fiche-seule"]');
+  if (SEULE) body.classList.add('fx-seule');
   var T = {
     fr: { reperes: 'Rep\u00e8res', fiche: 'Fiche de 2 min', ess: 'L’essentiel', analyse: 'L’analyse', complet: 'Lire l’article complet', video: 'En vidéo', lire: 'À lire', retour: '← Revenir à la fiche', reviser: 'Réviser : ', copie: 'Dans une copie', chrono: 'Chronologie', tous: '← Tous les articles' },
     en: { reperes: 'Key facts', fiche: '2-minute fact sheet', ess: 'The essentials', analyse: 'Analysis', complet: 'Read the full article', video: 'Video', lire: 'Read', retour: '← Back to the fact sheet', reviser: 'Revise: ', copie: 'In an essay', chrono: 'Timeline', tous: '← All articles' },
@@ -359,11 +366,13 @@
       droite.appendChild(bR);
     }
     var plus = el('div', 'fx-plus');
-    var ouvrir = el('a', 'fx-ouvrir');
-    ouvrir.href = '#' + ANCRE;
-    ouvrir.textContent = t.complet + (d.minutes ? ' · ' + d.minutes + ' min' : '') + ' →';
-    ouvrir.addEventListener('click', function (e) { e.preventDefault(); afficher(true, true); });
-    plus.appendChild(ouvrir);
+    if (!SEULE) {
+      var ouvrir = el('a', 'fx-ouvrir');
+      ouvrir.href = '#' + ANCRE;
+      ouvrir.textContent = t.complet + (d.minutes ? ' · ' + d.minutes + ' min' : '') + ' →';
+      ouvrir.addEventListener('click', function (e) { e.preventDefault(); afficher(true, true); });
+      plus.appendChild(ouvrir);
+    }
     if (video) {
       var lv = el('a', 'fx-video');
       lv.href = video.url;
@@ -409,7 +418,7 @@
       la.appendChild(ta);
       plus.appendChild(la);
     }
-    droite.appendChild(plus);
+    if (plus.children.length) droite.appendChild(plus);
 
     /* Chronologie : 4 dates, la plus récente à gauche */
     if (d.dates.length) {
@@ -496,6 +505,7 @@
   if (!nouveau) body.classList.add('fx-ancien');
 
   function afficher(complet, defiler) {
+    if (SEULE) complet = false;
     body.classList.toggle('fx-fiche', !complet);
     body.classList.toggle('fx-complet', complet);
     if (complet && defiler && location.hash !== '#' + ANCRE) {
