@@ -12,8 +12,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-11-12",
+  "maj": "2026-11-13",
   "parties": [
+   {
+    "id": "2026-11-13",
+    "nom": "Jour 22 · Pete Hegseth Escapes Impeachment as the House Shelves Massie's Eight Articles",
+    "n": 30,
+    "date": "2026-11-13"
+   },
    {
     "id": "2026-11-12",
     "nom": "Jour 21 · Drones, Sensors, AI: London Invests £90 Million Against Russian Submarines",
@@ -141,8 +147,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 558,
-  "v": "23e99a72e5"
+  "n": 582,
+  "v": "a217f1f1be"
  },
  {
   "id": "espagnol",
