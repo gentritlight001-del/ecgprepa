@@ -12,8 +12,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-11-13",
+  "maj": "2026-11-14",
   "parties": [
+   {
+    "id": "2026-11-14",
+    "nom": "Jour 23 · UK Names Dame Madeleine Alessandri Its First Special Representative for Climate Security",
+    "n": 30,
+    "date": "2026-11-14"
+   },
    {
     "id": "2026-11-13",
     "nom": "Jour 22 · Pete Hegseth Escapes Impeachment as the House Shelves Massie's Eight Articles",
@@ -147,8 +153,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 582,
-  "v": "a217f1f1be"
+  "n": 602,
+  "v": "cbdafb007f"
  },
  {
   "id": "espagnol",
