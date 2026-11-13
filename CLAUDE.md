@@ -159,13 +159,6 @@ type est « Rédige un article d'actualité sur le sujet suivant : … » + phot
 parfait du premier coup (faits vérifiés, mise en page, listes, mise en ligne). Les prompts
 n°5 à 9 (pages 5 à 7) sont les newsletters : voir la section 5.
 
-**Depuis le 13 novembre 2026, un nouvel article est une « fiche seule »** (choix du propriétaire : seule la
-fiche d'actualité est vraiment utile) : on n'écrit plus l'article complet, seulement les blocs que la fiche
-affiche. Voir « Fiche seule » juste après la liste des règles ; les règles ci-dessous qui portent sur le corps de
-l'article (sections, chapô, schémas, citation, chronologie de 6 dates, colonnes égales de l'analyse, « Lire aussi »,
-longueur de 1 100 à 1 300 mots) ne valent plus que pour les anciens articles, qui gardent leur article complet et leur
-bouton « Lire l'article complet ».
-
 Plusieurs articles à la fois : un sous-agent par article, chacun avec **son propre dossier de
 travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichiers partagés
 (`tous-<code>.html`, pages pays) sont modifiés par une seule personne, à la fin.
@@ -312,29 +305,6 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
 - **Contrôles** avec Playwright à 1280 et 390 px, dans chaque langue : aucune erreur JS, pas de
   défilement horizontal, toutes les images chargées (faire défiler la page : elles sont en
   `loading="lazy"`), titre du héros lisible, colonnes de l'analyse égales.
-
-### Fiche seule (tous les nouveaux articles)
-
-Même gabarit (copie de l'article Burnham, mêmes classes, même `<style>`, palette propre à l'article, éditions de
-langue bilingues avec l'interrupteur FR / langue), avec `<meta name="fiche-seule">` juste après le `<title>` :
-`fiche-article.js` n'affiche alors que la fiche, sans bouton « Lire l'article complet », même avec une ancre ou
-depuis la recherche (l'adresse avec `#article-complet` montre encore la fiche). Dans chaque section de langue, on garde
-seulement :
-- le héros `a-hero` (tags, titre, sous-titre dans l'autre langue, `a-meta`, photo `a-hero-img`) ;
-- `a-essentiel` (3 points) ;
-- dans `<article class="a-carte a-article">` : `a-chiffres` (4 chiffres, le plus marquant en `rouge`), la chronologie
-  `a-chrono-bloc` avec **4 dates** (la fiche n'en montre que 4, la plus récente en premier), l'analyse `a-analyse`
-  (étiquette, titre original, **2 paragraphes d'environ 250 mots en tout**, dans chaque langue : la version étrangère
-  sert de texte du jour aux langues de 1re année) et « Dans une copie » `a-copie` (accroche, idée-force, 3 sujets,
-  piège) ;
-- `a-plus` avec seulement « Réviser le cours » `a-cours` (s'il y a un chapitre vraiment proche) et « Sources »
-  `a-sources` (3 à 5, pas affichées par la fiche mais gardées pour vérifier les faits) ;
-- `a-fin`.
-Plus de chapô, de sections numérotées, de schémas, de citation ni de « Lire aussi ». La vidéo (`fiche-video`) ou,
-à défaut, le lien de référence (`fiche-lien`) est d'autant plus important qu'il remplit le bas de la colonne de
-droite : en mettre un à chaque fiche. Faits vérifiés, typographie française, pas de tiret cadratin, carte dans
-`ACTU_DATA` et page du pays, puis mise en ligne comme pour un article. Contrôles à 1280 et 390 px : aucune erreur JS,
-pas de défilement horizontal, photo chargée, pas de bouton « Lire l'article complet ».
 
 ### Actualiser un article déjà en ligne
 
@@ -948,8 +918,7 @@ jusqu'à la mise en ligne :
 6. Mise en ligne complète (commit, PR, merge, branche remise sur `main`).
 
 Contenu d'un jour (le bloc de données du 10 octobre 2026 sert de modèle) :
-- **Texte** : l'article choisi à l'étape 2, dans la langue étudiée (section du tableau ; pour une fiche seule,
-  « L'essentiel » et l'analyse de la version étrangère, à compléter au besoin par les dates et les chiffres). Extrait
+- **Texte** : l'article choisi à l'étape 2, dans la langue étudiée (section du tableau). Extrait
   de 250 à 350 mots en 4 à 6 paragraphes, légèrement adapté pour qu'il se lise seul. Balises :
   `[n|…]` = repère du point de grammaire n (dans l'ordre du texte ; un même n peut revenir),
   `{mot|traduction}` = aide au vocabulaire (8 à 15 mots).
