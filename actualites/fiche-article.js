@@ -25,11 +25,12 @@
    #article-complet ; le Retour du navigateur ramène à la fiche).
    Un lien avec ancre ou une arrivée par la recherche du site ouvre
    directement l'article complet. Une fiche par section de langue.
-   Fiche seule (articles écrits à partir du 13 novembre 2026, choix du
-   propriétaire) : <meta name="fiche-seule"> dans le <head>. La page ne
-   contient que les blocs de la fiche ; pas de bouton « Lire l'article
-   complet », la fiche reste affichée même avec une ancre ou depuis la
-   recherche.
+   Fiche seule : <meta name="fiche-seule"> dans le <head> (pas de bouton
+   « Lire l'article complet », la fiche reste affichée même avec une ancre).
+   Essai abandonné à la demande du propriétaire (novembre 2026) : les
+   nouveaux articles gardent leur article complet. Seul l'article
+   uk-alessandri-securite-climatique-cop31-2026, écrit sans article complet,
+   l'utilise encore ; retirer la balise si on lui écrit son article.
    Rien à écrire à la main.
    ══════════════════════════════════════════════════════════════ */
 (function () {
