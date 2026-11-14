@@ -1,4 +1,4 @@
-/* Fiches auteurs (Cours Humanité) : comportements communs, repris de l'HGG au quotidien.
+/* Fiches auteurs (Cours Humanité) : comportements communs, repris de l'ancien espace « HGG au quotidien ».
    - fiche : mots expliqués au survol,
      bouton « J'ai lu cette fiche ».
    - index (fiches-auteurs.html) : marque « Lue » sur les fiches déjà lues.

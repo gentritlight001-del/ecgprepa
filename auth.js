@@ -581,12 +581,12 @@
   function infoActu(id) {
     var m = /^actualites\/(en|es|de|monde)\/articles\/([^/]+?)(?:\.html)?$/.exec(id || '');
     if (m) return { code: m[1], slug: m[2] };
-    /* Espaces « au quotidien » (langues et HGG de 1re année) : seul le
-       dernier jour (ou la dernière fiche) est gratuit, celui vers lequel
-       pointe la carte du haut (.une ou .i-une) de l'index de l'espace. */
-    var q = /^premiere_annee\/(langues\/[^/]+|hgg)\/quotidien\/([^/]+?)(?:\.html)?$/.exec(id || '');
+    /* Espaces « au quotidien » (langues de 1re année) : seul le dernier
+       jour est gratuit, celui vers lequel pointe la carte du haut (.une)
+       de l'index de l'espace. */
+    var q = /^premiere_annee\/(langues\/[^/]+)\/quotidien\/([^/]+?)(?:\.html)?$/.exec(id || '');
     if (q && q[2] !== 'index') {
-      return { code: 'q-' + q[1], slug: q[2], quotidien: q[1] === 'hgg' ? 'fiche' : 'jour',
+      return { code: 'q-' + q[1], slug: q[2], quotidien: 'jour',
                dossier: 'premiere_annee/' + q[1] + '/quotidien/' };
     }
     /* Culture générale : un dossier par fiche, la dernière ajoutée
@@ -2070,12 +2070,9 @@
     var quot = actu && actu.quotidien;
     var titre = rub.nom
       ? 'La rubrique « ' + rub.nom + (rub.niveau === 3 ? ' (' + rub.groupe + ')' : '') + ' » est réservée aux abonnés'
-      : quot === 'fiche' ? 'Cette fiche est réservée aux abonnés'
       : quot ? 'Ce texte est réservé aux abonnés'
       : (actu ? 'Cet article est réservé aux abonnés' : 'Ce contenu est réservé aux abonnés');
-    var texte = quot === 'fiche'
-      ? 'Seule la fiche du jour est gratuite. Avec Premium, tu retrouves toutes les fiches précédentes, à partir de ' + prix + ' par mois.'
-      : quot
+    var texte = quot
       ? 'Seul le texte du jour est gratuit. Avec Premium, tu retrouves tous les jours précédents, à partir de ' + prix + ' par mois.'
       : actu
       ? 'Seul l\u2019article le plus récent est gratuit. Avec Premium, tu lis tous les autres, à partir de ' + prix + ' par mois.'
@@ -2083,7 +2080,7 @@
     ecranRefus(titre, texte,
       'Déjà abonné·e ? Recharge la page dans un instant.',
       TARIFS_URL + '?depuis=' + encodeURIComponent(location.pathname), 'Débloquer avec Premium',
-      { libelle: quot === 'fiche' ? 'Retour aux fiches' : quot ? 'Retour aux textes du jour' : actu ? 'Retour aux articles' : 'Retour',
+      { libelle: quot ? 'Retour aux textes du jour' : actu ? 'Retour aux articles' : 'Retour',
         url: BASE + rub.retour }, true);
   }
 
