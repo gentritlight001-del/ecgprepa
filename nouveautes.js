@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Paraguay",
+"titre": "Paraguay : Peña destitué par le Sénat et placé en détention, Pedro Alliana lui succède",
+"url": "actualites/es/articles/paraguay-destitution-pena-alliana-2026.html",
+"image": "actualites/es/images/paraguay-destitution-pena-alliana-2026.webp",
+"date": "2026-11-14T09:23:31+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "Irlande",
@@ -1712,15 +1721,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "LNG Canada double sa capacité à Kitimat, Ottawa désigne le pipeline Pacific Link",
 "url": "actualites/en/articles/canada-lng-phase-2-pipeline-2026.html",
 "image": "actualites/en/images/canada-lng-phase-2-pipeline-2026.webp",
-"date": "2026-10-04T07:18:03+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Chili",
-"titre": "Chili : le Festival de la Mémoire (MUDA) s'ouvre au Parque Estadio Nacional de Santiago",
-"url": "actualites/es/articles/chili-festival-memoire-muda.html",
-"image": "actualites/es/images/chili-festival-memoire-muda.webp",
 "date": "2026-10-04T07:18:03+00:00"
 },
 {
