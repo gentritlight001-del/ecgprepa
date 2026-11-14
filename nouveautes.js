@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Espagne",
+"titre": "Espagne : 33 200 Colombiens et 19 000 Vénézuéliens arrivés au troisième trimestre, selon l'INE",
+"url": "actualites/es/articles/espagne-ine-population-immigration-3t-2026.html",
+"image": "actualites/es/images/espagne-ine-population-immigration-3t-2026.webp",
+"date": "2026-11-14T08:38:02+00:00"
+},
+{
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne",
@@ -1703,15 +1712,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Chili : le Festival de la Mémoire (MUDA) s'ouvre au Parque Estadio Nacional de Santiago",
 "url": "actualites/es/articles/chili-festival-memoire-muda.html",
 "image": "actualites/es/images/chili-festival-memoire-muda.webp",
-"date": "2026-10-04T07:18:03+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Argentine",
-"titre": "Argentine : Milei annonce un « passeport doré » pour étrangers fortunés",
-"url": "actualites/es/articles/argentine-passeport-dore.html",
-"image": "actualites/es/images/argentine-passeport-dore.webp",
 "date": "2026-10-04T07:18:03+00:00"
 },
 {
