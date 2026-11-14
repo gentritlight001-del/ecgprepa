@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Irlande",
+"titre": "Irlande : première marche nationale contre les data centers, dans une mobilisation européenne",
+"url": "actualites/monde/articles/irlande-manifestation-data-centers-2026.html",
+"image": "actualites/monde/images/irlande-manifestation-data-centers-2026.webp",
+"date": "2026-11-14T08:55:16+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Monde",
 "titre": "Microsoft : une panne majeure paralyse Outlook, Teams, Microsoft 365 et Copilot dans le monde",
 "url": "actualites/monde/articles/monde-panne-microsoft-365-outlook-teams-2026.html",
@@ -1398,15 +1407,6 @@ window.ECG_NOUVEAUTES = [
 "url": "deuxieme_annee/hgg/chapitre-3-hgg.html",
 "image": "deuxieme_annee/hgg/images/avenida-paulista-sao-paulo.webp",
 "date": "2026-10-15T06:42:59+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "FMI",
-"titre": "Le FMI relève légèrement sa prévision de croissance mondiale pour 2026, à 3,1 %",
-"url": "actualites/monde/articles/fmi-perspectives-octobre-2026.html",
-"image": "actualites/monde/images/fmi-perspectives-octobre-2026.webp",
-"date": "2026-10-14T18:06:08+00:00"
 },
 {
 "t": "de",
