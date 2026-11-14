@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "États-Unis",
+"titre": "États-Unis : la FAA cloue au sol tous les départs, une panne de communications paralyse le ciel",
+"url": "actualites/en/articles/us-faa-arret-au-sol-national-2026.html",
+"image": "actualites/en/images/us-faa-arret-au-sol-national-2026.webp",
+"date": "2026-11-14T09:38:19+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Paraguay",
@@ -1757,15 +1766,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Tennessee : l'exécution de Christa Pike échoue après deux injections, le gouverneur enquête",
 "url": "actualites/en/articles/us-tennessee-execution-ratee-2026.html",
 "image": "actualites/en/images/us-tennessee-execution-ratee-2026.webp",
-"date": "2026-10-02T06:16:22+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "Royaume-Uni",
-"titre": "Brexit : le Premier ministre Andy Burnham n'exclut plus un retour du Royaume-Uni dans l'UE",
-"url": "actualites/en/articles/uk-burnham-retour-union-europeenne-2026.html",
-"image": "actualites/en/images/uk-burnham-retour-union-europeenne-2026.webp",
 "date": "2026-10-02T06:16:22+00:00"
 },
 {
