@@ -452,7 +452,7 @@
       d.setAttribute('role', 'region');
       d.setAttribute('aria-label', 'Information sur les cookies');
       d.innerHTML = '<b>Un mot sur les cookies</b>' +
-        '<p>Ce site n\'utilise ni cookies publicitaires ni traceurs : seulement le stockage nécessaire pour te garder connecté·e et retrouver tes favoris. ' +
+        '<p>Ce site n\'utilise ni cookies publicitaires ni traceurs tiers : seulement le stockage nécessaire pour te garder connecté·e, retrouver tes favoris et compter les visites de façon anonyme. ' +
         '<a href="' + BASE + 'confidentialite.html">En savoir plus</a></p>' +
         '<button type="button">J\'ai compris</button>';
       d.querySelector('button').addEventListener('click', function () {
@@ -933,6 +933,7 @@
           if (/rate limit|too many/i.test(m)) throw 'Trop de tentatives. Réessaie dans quelques minutes.';
           throw 'Inscription impossible : ' + m;
         }
+        Stats.evenement('inscription');
         return { email: email, prenom: prenom, nom: nom };
       }, function (e) { throw typeof e === 'string' ? e : 'Connexion au serveur impossible.'; });
     },
@@ -1176,6 +1177,166 @@
   window.ECGAuth = Auth;
 
   /* ══════════════════════════════════════════════════════════════
+     Statistiques de fréquentation (onglet « Statistiques » de l'admin)
+     Une ligne par page ouverte, y compris les pages publiques et par
+     les visiteurs sans compte : chemin, titre, téléphone ou
+     ordinateur, système, temps de lecture actif (onglet visible et
+     geste dans les 90 dernières secondes), part de la page parcourue,
+     source de la visite (Google, Instagram, direct…).
+     Le visiteur est reconnu par un identifiant tiré au hasard et gardé
+     dans le navigateur (ecg_visiteur, 13 mois), jamais par son compte :
+     on compte des navigateurs sans savoir à qui ils sont. Une visite =
+     des pages sans pause de plus de 30 minutes (ecg_visite).
+     Événements : mur Premium, clic « payer », inscription, recherche.
+     L'administrateur n'est pas compté. Base :
+     supabase/statistiques-lecture.sql
+     ══════════════════════════════════════════════════════════════ */
+  var Stats = (function () {
+    var K_VISITEUR = 'ecg_visiteur', K_VISITE = 'ecg_visite';
+    var nouveau = false;
+    function hasard() {
+      return (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
+        : 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g, function () { return (Math.random() * 16 | 0).toString(16); });
+    }
+    function estAdmin() { var p = profilLocal(); return !!(p && p.role === 'admin'); }
+    var visiteur = (function () {
+      try {
+        var v = JSON.parse(localStorage.getItem(K_VISITEUR) || 'null');
+        if (v && v.id && Date.now() - v.t < 395 * 864e5) return v.id;
+        v = { id: hasard(), t: Date.now() };
+        localStorage.setItem(K_VISITEUR, JSON.stringify(v));
+        nouveau = true;
+        return v.id;
+      } catch (e) { return hasard(); }
+    })();
+    function visite() {
+      var v = null, entree = false;
+      try { v = JSON.parse(sessionStorage.getItem(K_VISITE) || 'null'); } catch (e) {}
+      if (!v || !v.id || Date.now() - v.t > 30 * 60000) { v = { id: hasard() }; entree = true; }
+      v.t = Date.now();
+      try { sessionStorage.setItem(K_VISITE, JSON.stringify(v)); } catch (e) {}
+      return { id: v.id, entree: entree };
+    }
+    function source() {
+      try {
+        var u = new URLSearchParams(location.search).get('utm_source');
+        if (u) return u.slice(0, 40);
+        if (!document.referrer) return 'Accès direct';
+        var h = new URL(document.referrer).hostname.replace(/^www\./, '').toLowerCase();
+        if (h === location.hostname.replace(/^www\./, '').toLowerCase()) return 'Lien du site';
+        var R = [[/(^|\.)google\./, 'Google'], [/bing\.com$/, 'Bing'], [/(duckduckgo|qwant|ecosia|yahoo|brave)\./, 'Autre moteur'],
+                 [/instagram\.com$/, 'Instagram'], [/tiktok\.com$/, 'TikTok'], [/(facebook\.com|fb\.com)$/, 'Facebook'],
+                 [/(^|\.)(t\.co|twitter\.com|x\.com)$/, 'X (Twitter)'], [/(youtube\.com|youtu\.be)$/, 'YouTube'],
+                 [/linkedin\.com$|lnkd\.in$/, 'LinkedIn'], [/snapchat\.com$/, 'Snapchat'], [/discord(app)?\.com$/, 'Discord'],
+                 [/(whatsapp\.com|wa\.me)$/, 'WhatsApp'], [/reddit\.com$/, 'Reddit'], [/(chatgpt\.com|openai\.com|perplexity\.ai|claude\.ai)$/, 'Assistant IA'],
+                 [/(mail\.|outlook\.|gmail\.)/, 'E-mail']];
+        for (var i = 0; i < R.length; i++) if (R[i][0].test(h)) return R[i][1];
+        return h.slice(0, 60);
+      } catch (e) { return 'Inconnue'; }
+    }
+    function systeme() {
+      var ua = navigator.userAgent || '';
+      if (/iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) return 'iOS';
+      if (/Android/.test(ua)) return 'Android';
+      if (/CrOS/.test(ua)) return 'ChromeOS';
+      if (/Windows/.test(ua)) return 'Windows';
+      if (/Macintosh|Mac OS X/.test(ua)) return 'macOS';
+      if (/Linux/.test(ua)) return 'Linux';
+      return 'Autre';
+    }
+    function cheminPage() {
+      var page = cheminActuelBrut();
+      if (!page) return null;
+      if (page.slice(-1) === '/') page += 'index.html';
+      else if (page.split('/').pop().indexOf('.') === -1) page += '.html';
+      return page.slice(0, 300);
+    }
+
+    var lancee = false;
+    function mesurer() {
+      if (lancee || estAdmin()) return;
+      lancee = true;
+      try {
+        var page = cheminPage();
+        if (!page) return;
+        var titre = window.ECG_PAGE_404 === true ? 'Page introuvable'
+          : (document.title || '').replace(/^\s*ECG Pr[ée]pa\s*[—–·|-]\s*/i, '').replace(/\s*[—–·|-]\s*ECG Pr[ée]pa\s*$/i, '').trim();
+        var mobile = (window.matchMedia && matchMedia('(max-width: 760px)').matches) ||
+          /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent || '');
+        var appli = !!((window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone);
+        var vis = visite();
+        var cle = hasard();
+        var id = null, actif = 0, geste = Date.now(), defil = 0, envoye = -1;
+
+        var mesurerDefil = function () {
+          var h = document.documentElement.scrollHeight || 1;
+          var vu = Math.round(((window.scrollY || 0) + window.innerHeight) / h * 100);
+          if (vu > defil) defil = Math.min(100, vu);
+        };
+        var bouger = function () { geste = Date.now(); };
+        ['scroll', 'mousemove', 'keydown', 'touchstart', 'click'].forEach(function (t) {
+          window.addEventListener(t, bouger, { passive: true });
+        });
+        window.addEventListener('scroll', mesurerDefil, { passive: true });
+        setTimeout(mesurerDefil, 1500);
+        setInterval(function () {
+          if (!document.hidden && Date.now() - geste < 90000) actif += 5;
+        }, 5000);
+
+        /* Requête « simple » (texte brut, clé dans l'adresse) : pas de
+           vérification préalable, donc elle part même quand l'élève
+           quitte la page (sendBeacon). */
+        var envoyer = function () {
+          if (!id || envoye === actif * 1000 + defil) return;
+          envoye = actif * 1000 + defil;
+          var url = SUPABASE_URL + '/rest/v1/rpc/finir_vue_texte?apikey=' + encodeURIComponent(SUPABASE_ANON_KEY);
+          var corps = id + ';' + cle + ';' + actif + ';' + defil;
+          try {
+            if (navigator.sendBeacon && navigator.sendBeacon(url, new Blob([corps], { type: 'text/plain;charset=UTF-8' }))) return;
+            fetch(url, { method: 'POST', keepalive: true, headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body: corps })
+              .catch(function () {});
+          } catch (e) {}
+        };
+        document.addEventListener('visibilitychange', function () { if (document.hidden) envoyer(); });
+        window.addEventListener('pagehide', envoyer);
+        /* Filet de sécurité : la fermeture n'est pas toujours signalée
+           (téléphone mis en veille, navigateur tué) ; on perd au plus 30 s. */
+        setInterval(function () { if (!document.hidden) envoyer(); }, 30000);
+
+        sb().then(function (c) {
+          return c.rpc('noter_page', { p: {
+            page: page, titre: titre.slice(0, 200), appareil: mobile ? 'mobile' : 'ordinateur',
+            cle: cle, visiteur: visiteur, visite: vis.id, entree: vis.entree,
+            source: vis.entree ? source() : null, nouveau: nouveau, systeme: systeme(), appli: appli
+          } });
+        }).then(function (r) { id = (r && !r.error && r.data) || null; }).catch(function () {});
+      } catch (e) {}
+    }
+
+    /* Événement : type parmi mur_premium, clic_payer, inscription,
+       recherche. Renvoie une promesse qui ne échoue jamais. */
+    function evenement(type, detail, nombre, page) {
+      if (estAdmin()) return Promise.resolve();
+      return sb().then(function (c) {
+        return c.rpc('noter_evenement', { p: {
+          type: type, page: page || cheminPage(), detail: detail == null ? null : String(detail).slice(0, 120),
+          nombre: nombre == null ? null : nombre, visiteur: visiteur
+        } });
+      }).catch(function () {});
+    }
+
+    return { mesurer: mesurer, evenement: evenement };
+  })();
+  Auth.stat = Stats.evenement;
+  function mesurerLecture() { Stats.mesurer(); }
+  /* Pages publiques : la mesure attend la fin du chargement, pour ne
+     rien retarder à l'affichage. */
+  function mesurerPlusTard() {
+    var go = function () { setTimeout(mesurerLecture, 300); };
+    if (document.readyState === 'complete') go(); else window.addEventListener('load', go);
+  }
+
+  /* ══════════════════════════════════════════════════════════════
      API d'administration — utilisée par admin.html
      Tout est en plus verrouillé côté base par les règles RLS :
      un membre qui appellerait ces méthodes n'obtiendrait rien.
@@ -1296,8 +1457,8 @@
 
     /* Codes d'accès au Premium : liste avec, pour chacun, { id, code, libelle,
        actif, limite, cree_le, utilisations, en_cours, derniere, membres[] } */
-    statsLecture: function (jours) {
-      return sb().then(function (c) { return T(c.rpc('stats_lecture', { p_jours: jours || 30 })); });
+    statsLecture: function (jours, public_) {
+      return sb().then(function (c) { return T(c.rpc('stats_lecture', { p_jours: jours || 30, p_public: public_ || 'tous' })); });
     },
 
     codesAcces: function () {
@@ -1737,6 +1898,7 @@
       alerteReseau('Impossible de joindre le serveur de comptes. Vérifie ta connexion.');
       return false;
     });
+    mesurerPlusTard();
     return;
   }
 
@@ -1745,7 +1907,7 @@
      appel réseau. window.ECGAuth reste disponible pour lire le
      profil éventuellement mis en cache (bouton « continuer »).
      ══════════════════════════════════════════════════════════════ */
-  if (pagePublique) return;
+  if (pagePublique) { mesurerPlusTard(); return; }
 
   /* ══════════════════════════════════════════════════════════════
      Pages protégées : vérification, puis badge utilisateur
@@ -1886,7 +2048,12 @@
         if (ferme) { versLogin(); return; }
         return appliquerRegleActu(prem, lignes, [cheminActuel]).then(function () {
           var payant = ids.some(function (id) { return prem[id]; });
-          if (payant) { location.replace(TARIFS_URL); return; }
+          if (payant) {
+            var partir = function () { location.replace(TARIFS_URL); };
+            Stats.evenement('mur_premium').then(partir);
+            setTimeout(partir, 900);
+            return;
+          }
           leverVoile();
           mesurerLecture(null);
         });
@@ -2065,6 +2232,7 @@
   /* Contenu réservé aux abonnés : même écran, mais le bouton
      principal mène à l'offre plutôt qu'en arrière. */
   function refuserPremium(rub) {
+    Stats.evenement('mur_premium');
     var prix = (OFFRES_PREMIUM[0] && OFFRES_PREMIUM[0].prix || 1.99).toFixed(2).replace('.', ',') + ' €';
     var actu = !rub.nom && infoActu(cheminActuel);
     var quot = actu && actu.quotidien;
@@ -2140,73 +2308,6 @@
     };
     if (document.body) poser();
     else document.addEventListener('DOMContentLoaded', poser);
-  }
-
-  /* ══════════════════════════════════════════════════════════════
-     Statistiques de lecture (onglet « Lecture » de l'admin)
-     Une ligne par page ouverte, sans rien qui identifie l'élève :
-     chemin, titre, téléphone ou ordinateur, temps de lecture actif
-     (onglet visible et geste dans les 90 dernières secondes) et part
-     de la page parcourue. L'administrateur n'est pas compté.
-     Base : supabase/statistiques-lecture.sql
-     ══════════════════════════════════════════════════════════════ */
-  var _lectureLancee = false;
-  function mesurerLecture(profil) {
-    if (_lectureLancee || (profil && profil.role === 'admin')) return;
-    _lectureLancee = true;
-    try {
-      var page = cheminActuelBrut();
-      if (!page) return;
-      if (page.slice(-1) === '/') page += 'index.html';
-      else if (page.split('/').pop().indexOf('.') === -1) page += '.html';
-      var titre = (document.title || '').replace(/^\s*ECG Pr[ée]pa\s*[—–·|-]\s*/i, '')
-        .replace(/\s*[—–·|-]\s*ECG Pr[ée]pa\s*$/i, '').trim();
-      var mobile = (window.matchMedia && matchMedia('(max-width: 760px)').matches) ||
-        /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent || '');
-      var cle = (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
-        : 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g, function () { return (Math.random() * 16 | 0).toString(16); });
-      var id = null, actif = 0, geste = Date.now(), defil = 0, envoye = -1;
-
-      var mesurerDefil = function () {
-        var h = document.documentElement.scrollHeight || 1;
-        var vu = Math.round(((window.scrollY || 0) + window.innerHeight) / h * 100);
-        if (vu > defil) defil = Math.min(100, vu);
-      };
-      var bouger = function () { geste = Date.now(); };
-      ['scroll', 'mousemove', 'keydown', 'touchstart', 'click'].forEach(function (t) {
-        window.addEventListener(t, bouger, { passive: true });
-      });
-      window.addEventListener('scroll', mesurerDefil, { passive: true });
-      setTimeout(mesurerDefil, 1500);
-      setInterval(function () {
-        if (!document.hidden && Date.now() - geste < 90000) actif += 5;
-      }, 5000);
-
-      var envoyer = function () {
-        if (!id || envoye === actif * 1000 + defil) return;
-        envoye = actif * 1000 + defil;
-        /* Requête « simple » (texte brut, clé dans l'adresse) : pas de
-           vérification préalable, donc elle part même quand l'élève
-           quitte la page (sendBeacon). */
-        var url = SUPABASE_URL + '/rest/v1/rpc/finir_vue_texte?apikey=' + encodeURIComponent(SUPABASE_ANON_KEY);
-        var corps = id + ';' + cle + ';' + actif + ';' + defil;
-        try {
-          if (navigator.sendBeacon && navigator.sendBeacon(url, new Blob([corps], { type: 'text/plain;charset=UTF-8' }))) return;
-          fetch(url, { method: 'POST', keepalive: true, headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body: corps })
-            .catch(function () {});
-        } catch (e) {}
-      };
-      document.addEventListener('visibilitychange', function () { if (document.hidden) envoyer(); });
-      window.addEventListener('pagehide', envoyer);
-      /* Filet de sécurité : la fermeture n'est pas toujours signalée
-         (téléphone mis en veille, navigateur tué) ; on perd au plus 30 s. */
-      setInterval(function () { if (!document.hidden) envoyer(); }, 30000);
-
-      sb().then(function (c) {
-        return c.rpc('noter_vue', { p_page: page.slice(0, 300), p_titre: titre.slice(0, 200),
-                                    p_appareil: mobile ? 'mobile' : 'ordinateur', p_cle: cle });
-      }).then(function (r) { id = (r && !r.error && r.data) || null; }).catch(function () {});
-    } catch (e) {}
   }
 
   function battreRegulierement() {

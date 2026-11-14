@@ -36,12 +36,16 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   qui n'existent pas encore, œuvres `a-venir`, fiches auteurs sans fiche…), tous deux écrits par `outils/recherche.py`
   (ne jamais les modifier à la main). Une nouvelle page admin s'ajoute à cette
   liste et au menu admin de `auth.js`, dans le même style que `idees-articles.html`.
-- **Statistiques de lecture** (novembre 2026) : `mesurerLecture()` dans `auth.js` note chaque page ouverte (chemin, titre,
-  téléphone ou ordinateur, temps de lecture actif, part de la page parcourue ; envoi final par `sendBeacon`) dans la table
-  Supabase `pages_vues` (`supabase/statistiques-lecture.sql`, déjà appliqué ; aucune donnée qui identifie l'élève, 13 mois de
-  conservation, l'administrateur n'est pas compté). Onglet « Lecture » de `admin.html`, construit par `lecture-admin.js`
-  (rubriques déduites du chemin dans `rubrique()`). En test Playwright avec le vrai `auth.js`, des lignes de test arrivent
-  dans la base : les supprimer ensuite.
+- **Statistiques de fréquentation** (novembre 2026) : module `Stats` de `auth.js` (juste après `window.ECGAuth = Auth`),
+  sur toutes les pages, publiques comprises (accueil, tarifs, connexion, 404), avec ou sans compte : `noter_page` (chemin,
+  titre, appareil, système, appli installée, temps de lecture actif, défilement, visite, source d'arrivée ; envoi final par
+  `sendBeacon` vers `finir_vue_texte`) et `ECGAuth.stat(type, détail, nombre)` pour les événements (`mur_premium`,
+  `clic_payer` dans `tarifs.html`, `inscription`, `recherche` dans `recherche.js`). Un visiteur = un navigateur
+  (`localStorage` `ecg_visiteur`, identifiant au hasard, empreinte salée en base, jamais l'identifiant du compte) ; une visite
+  = `sessionStorage` `ecg_visite` (30 min). Tables `pages_vues` et `evenements_site` (`supabase/statistiques-lecture.sql`, déjà
+  appliqué ; 13 mois de conservation ; l'administrateur n'est pas compté). Onglet « Statistiques » de `admin.html`
+  (`lecture-admin.js`, fonction `stats_lecture(jours, public)` : tous, sans compte, membres). En test Playwright avec le vrai
+  `auth.js`, poser un `ecg_visiteur` connu et effacer ensuite ses lignes (`lecteur = stats_empreinte('<id>')`).
 - Tester une page avec Playwright : `NODE_PATH=$(npm root -g)` pour Node, Chromium dans
   `/opt/pw-browsers/chromium`. Remplacer `auth.js` par un script vide (sinon redirection
   vers la connexion).
