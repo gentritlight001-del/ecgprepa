@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "États-Unis",
+"titre": "Nvidia : Jensen Huang démissionne, sa directrice financière Colette Kress prend l'intérim",
+"url": "actualites/monde/articles/nvidia-jensen-huang-demission-colette-kress-2026.html",
+"image": "actualites/monde/images/nvidia-jensen-huang-demission-colette-kress-2026.webp",
+"date": "2026-11-14T09:05:46+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Irlande",
 "titre": "Irlande : première marche nationale contre les data centers, dans une mobilisation européenne",
 "url": "actualites/monde/articles/irlande-manifestation-data-centers-2026.html",
@@ -1362,15 +1371,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/en/articles/uk-burnham-zelensky-londres-2026.html",
 "image": "actualites/en/images/uk-burnham-zelensky-londres-2026.webp",
 "date": "2026-10-17T20:32:10+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Groenland",
-"titre": "Groenland : Trump annonce une « exploration massive » de pétrole, gaz et minéraux, Nuuk tempère",
-"url": "actualites/monde/articles/groenland-trump-exploration-massive-2026.html",
-"image": "actualites/monde/images/groenland-trump-exploration-massive-2026.webp",
-"date": "2026-10-17T20:23:58+00:00"
 },
 {
 "t": "es",
