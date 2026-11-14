@@ -5,7 +5,7 @@ stockage sur Supabase). Ce fichier est relu au début de **chaque** conversation
 toutes les règles valables d'une conversation à l'autre sont ici.
 
 Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualité ·
-4. Cours (chapitres, colles, HGG au quotidien, DS, dossiers de culture générale) · 5. Newsletters PDF
+4. Cours (chapitres, colles, DS, dossiers de culture générale) · 5. Newsletters PDF
 
 ---
 
@@ -23,15 +23,15 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
 - **Verrouillage** : ne jamais verrouiller une page ni la rendre Premium. Le propriétaire du
   site le fait lui-même (`auth.js`). Seule exception, automatique et voulue par le propriétaire
   (`infoActu` / `dernierActu` dans `auth.js`) : dans les actualités, la culture générale et les
-  espaces « au quotidien » (langues et HGG de 1re année), seul le contenu le plus récent est
+  espaces « au quotidien » (langues de 1re année), seul le contenu le plus récent est
   gratuit, tous les autres passent Premium d'eux-mêmes. Pour les espaces « au quotidien », le
-  plus récent est celui de la carte du haut de l'index (`.une` ou `.i-une`) : la mettre à jour
+  plus récent est celui de la carte du haut de l'index (`.une`) : la mettre à jour
   suffit, rien d'autre à faire.
 - Pages réservées à l'administrateur : `PAGES_ADMIN` dans `auth.js` (`admin.html`,
   `idees-articles.html`, `mes-newsletters.html`, `mon-planning.html`). `mon-planning.html` : agenda
   personnel du propriétaire (habillage « carnet pointillé » + grille horaire, **pas d'italique**),
   synchronisé dans `planning/planning.json` du bucket privé `newsletters` (photos attachées dans `planning/photos/`) ; interrupteurs « Au quotidien »
-  (anglais, espagnol, allemand, fiche HGG) qui ajoutent une ligne par jour. Sa recherche « Depuis le site » lit
+  (anglais, espagnol, allemand) qui ajoutent une ligne par jour. Sa recherche « Depuis le site » lit
   `recherche-index.json` (7e champ : image de la page) et `a-faire.json` (« Contenus à créer » : liens vers des pages
   qui n'existent pas encore, œuvres `a-venir`, fiches auteurs sans fiche…), tous deux écrits par `outils/recherche.py`
   (ne jamais les modifier à la main). Une nouvelle page admin s'ajoute à cette
@@ -831,7 +831,7 @@ Procédure de A à Z, sans poser de question jusqu'à la mise en ligne :
   après une insertion, corriger aussi ceux écrits dans la page (`.fr-num`, `N° …` de `.fr-meta`) et le
   « Fiche auteur n° » des fiches déjà faites (`grep -n 'f-num' *.html`). Demande type : « Fais la fiche auteur de Kant ».
 - Une fiche = `<slug>.html`, copiée de `rousseau.html` (n° = rang chronologique dans la frise). Gabarit repris de
-  l'HGG au quotidien mais habillé « sauge et prune », choisi par le propriétaire sur maquette : fond sauge
+  l'ancien espace « HGG au quotidien » (supprimé en novembre 2026) mais habillé « sauge et prune », choisi par le propriétaire sur maquette : fond sauge
   pâle sans quadrillage, coins arrondis, numéros de section en
   pastilles, nom de l'auteur dans la couleur de la fiche, **sans italique**. **Chaque auteur a ses deux couleurs**
   (`--accent`, `--accent2` sur `<body>`, jamais déjà prises) : Rousseau prune `#6b2d5c` / olive `#55702f`,
@@ -968,94 +968,6 @@ Contenu d'un jour (le bloc de données du 10 octobre 2026 sert de modèle) :
 - Pas de questions de compréhension.
 - Vérifier avec `outils/quotidien-controle.py` (aucune erreur JS, listes à jour, renvois valides…). Typographie française gérée par `quotidien.js` pour les champs en français.
 
-### L'HGG au quotidien (fiches du jour)
-
-Un espace de **1re année seulement** : `premiere_annee/hgg/quotidien/`, accessible par le bouton et la
-carte « La fiche du jour » de `premiere_annee/hgg/index.html` (rien dans l'index HGG de 2e année). Chaque jour, une fiche développée
-et illustrée sur un **lieu**, une **notion**, un **auteur**, un **ouvrage** ou un **événement**.
-Demande type : « Fais la fiche HGG du jour sur … ».
-
-- Fichiers communs : `fiche.css` (gabarit « planche d'atlas », papier clair) et `fiche.js` (cartes à
-  onglets et repères cliquables, bouton « J'ai lu cette fiche » gardé dans
-  `localStorage` `ecg-hgg-quotidien-lues`). Ne pas les réécrire pour une fiche : les compléter si besoin.
-- Une fiche = `<slug>.html` (ex. `detroit-d-ormuz.html`), copiée de la dernière fiche. Sur `<body>` :
-  `data-type="Lieu|Notion|Auteur|Ouvrage|Événement"` et la couleur propre de la fiche
-  (`--accent`, `--accent2`, différentes d'une fiche à l'autre). `<title>` :
-  `ECG Prépa — <Titre> · HGG au quotidien`. Supprimer de la copie les balises `og:`, `twitter:`,
-  `canonical` et réécrire la description.
-- Structure (garder l'ordre, adapter le contenu au type) : cartouche (n°, type, date, durée, titre,
-  coordonnées ou dates, définition en 2 phrases, « Fiche d'identité » ; **pas** de « Au programme »),
-  **pas** de sommaire sous le cartouche, puis 01 L'essentiel (3 idées), 02 Carte ou schéma commenté (repères numérotés
-  cliquables ; pour un auteur ou une notion : schéma SVG, carte des lieux liés ou document). Un schéma
-  **seulement s'il est pertinent** pour le sujet (sinon pas de section 02, et les suivantes sont
-  renumérotées). **Deux** cartes ou schémas (avec onglets) seulement quand le sujet s'y prête vraiment,
-  comme pour le détroit d'Ormuz (le détroit, puis la région) ; sinon un seul, quitte à l'enrichir (ex. le
-  smart power ajouté aux ressources de la puissance). Pas de formule ni de texte annexe sous le dessin ;
-  03 Comprendre (4 à 5 parties sur une colonne, **sans** plan latéral, avec citation et encadrés),
-  04 Les chiffres (4 chiffres sourcés + 2 ou 3 graphiques SVG), 05 Qui veut quoi ? (acteurs) ou
-  équivalent (débats, héritiers, critiques), 06 Dans une copie (accroche, idée-force, sujets,
-  références, erreurs à éviter ; les deux colonnes finissent alignées en bas, le CSS allonge le
-  dernier cadre de chacune, mais équilibrer aussi le contenu, par exemple en ajoutant un sujet), 07 Plus loin (liens du site + sources), puis une fin de page sobre `.f-fin` (« ← Toutes les fiches » et bouton « J'ai lu cette fiche », pas de bandeau sombre ni de texte « Demain… »). **Pas** de frise, de
-  glossaire (« Les mots pour le dire ») ni de quiz (« Testez-vous »).
-- **Vidéo** (si le propriétaire en donne une) : lien `.f-video` sous la définition du cartouche
-  (« En vidéo », titre exact de la vidéo, chaîne), adresse courte sans paramètre de suivi
-  (`https://youtu.be/<id>`), et la même vidéo en tête des sources (07).
-- **Mots expliqués au survol** dans « Comprendre » : chaque mot, lieu, personnage, sigle ou notion
-  un peu difficile (première occurrence seulement, 40 à 50 par fiche) est balisé
-  `<span class="gl" tabindex="0" data-def="…">mot</span>`. La définition fait une ou deux phrases
-  vérifiées, sans tiret cadratin ; `fiche.js` affiche la bulle (survol, clavier, toucher sur mobile).
-- Titres **sans italique**, jamais `<em>`. Titre d'une fiche : la fin garde la couleur de la fiche
-  avec `<span class="ac">` (ex. « Le détroit <span class="ac">d'Ormuz</span> »). Titre de l'index
-  (« L'HGG au quotidien ») : tout en noir.
-- Durée affichée (cartouche et carte de l'index) : 10 min.
-- Cartouche centré verticalement face à la « Fiche d'identité » ; texte de « Comprendre » en une
-  colonne centrée dans la page ; citations en taille modeste (style `f-citation` tel quel).
-- Faits vérifiés par recherche web, chiffres datés et sourcés, rien d'inventé ; sources listées en 07.
-  Attribuer chaque notion à son véritable auteur (ex. smart power : Suzanne Nossel, 2004, reprise par Nye).
-- Accroche de « Dans une copie » : un fait ou un chiffre actuel et vérifié qui pose la question du sujet,
-  plutôt qu'une anecdote célèbre mais attribuée de seconde main.
-- Illustrations : images libres de droits stockées en WebP dans `images/` (1600 px maximum), par
-  exemple les vues satellite NASA Worldview (`wvs.earthdata.nasa.gov/api/v1/snapshot`, couche
-  `MODIS_Terra_CorrectedReflectance_TrueColor` ou `BlueMarble_ShadedRelief_Bathymetry`, projection
-  EPSG:4326 : les repères SVG se placent alors par simple règle de trois sur la longitude et la
-  latitude). Regarder chaque image avant de l'utiliser, vérifier la place des repères en capture.
-- Seule la fiche la plus récente (carte `.i-une` de l'index) est gratuite ; les précédentes passent
-  Premium automatiquement (voir section 1).
-- `index.html` : carte `.i-une` sur la nouvelle fiche, nouvelle carte `.i-fiche` (avec `data-slug` et
-  `data-date`) **en tête** de `.i-grille`, compteur `0 / N` mis à jour. Carte « La fiche du jour »
-  de l'index HGG de 1re année mise à jour.
-- « Plus loin », sur ECG Prépa : **5 ou 6 liens au maximum**, seulement les plus pertinents, chercher dans les chapitres
-  d'HGG des **deux années** (ex. 2e année, chapitre 2 sur les États-Unis, pour la puissance) et dans les
-  dossiers de culture générale (`grep -il <mot> Culture-Generale/*.html`) ; jamais de lien de remplissage.
-  **Un même chapitre n'apparaît qu'une fois** : choisir sa section la plus proche du sujet.
-- Liens vers les chapitres : vérifier (grep) que la section `id` visée traite bien le sujet.
-- Vérifier à 390 et 1280 px (pas de défilement horizontal, aucune erreur JS), puis mise en ligne.
-  Les fiches **n'apparaissent pas** dans les nouveautés (`outils/nouveautes.py` les ignore).
-
-**Sujets à venir** : `outils/hgg-quotidien-sujets.json`, une entrée par date (`date`, `sujet`, `type`,
-`video`, `video_titre`, `video_chaine`, `consignes`, puis `fiche` = nom du fichier une fois faite). Quand le propriétaire donne un
-sujet à l'avance (« Sujet HGG de demain : … », « le 14 : … »), l'ajouter à ce fichier (date de Paris)
-et mettre en ligne tout de suite : la routine de minuit le lira.
-
-**Procédure d'une nouvelle fiche** (routine automatique tous les jours à 0 h, heure de Paris, ou
-demande directe), sans poser de question jusqu'à la mise en ligne :
-1. Date = `TZ=Europe/Paris date +%F`. Sujet = entrée de cette date dans `outils/hgg-quotidien-sujets.json`.
-   S'il n'y en a pas, ou si l'index a déjà une fiche `data-date` à cette date : ne rien faire.
-2. Recherches web poussées (plusieurs sources, chiffres datés, rien d'inventé). Type = champ `type`,
-   sinon le déduire (Lieu, Notion, Auteur, Ouvrage, Événement).
-3. Copier la dernière fiche en `<slug>.html` et tout réécrire selon les règles ci-dessus : n° = dernier
-   + 1, date, type, durée 10 min, nouvelle couleur (`--accent`/`--accent2` jamais déjà prises), titre,
-   cartouche, sections 01 à 07, 40 à 50 mots expliqués au survol, vidéo si `video` est rempli, sources.
-   Supprimer les balises `og:`, `twitter:`, `canonical` et réécrire la description.
-4. Illustrations regardées une à une ; repères des cartes vérifiés en capture.
-5. `index.html` de l'espace (carte `.i-une`, nouvelle carte en tête de `.i-grille`, compteur `0 / N`) et
-   carte « La fiche du jour » de `premiere_annee/hgg/index.html`. Remplir `fiche` dans l'entrée du jour.
-6. Contrôles Playwright à 390 et 1280 px : aucune erreur JS, pas de défilement horizontal, bulles qui
-   s'ouvrent, cadres de « Dans une copie » alignés en bas, aucun tiret cadratin hors `<title>`.
-7. Mise en ligne complète (section 2). La routine des langues tourne à la même heure : juste avant le
-   commit, repartir du `main` le plus récent ; en cas de conflit sur un fichier généré (`sitemap.xml`,
-   `nouveautes.js`, `outils/nouveautes-dates.json`), reprendre la version de `main` et relancer les scripts.
-
 ### Cours de civilisation (langues, 2e année) : gabarit « Manuel »
 
 Les cours de civilisation (`deuxieme_annee/langues/<langue>/<pays>/civi-*.html`) passent un à un du vieux
@@ -1174,6 +1086,13 @@ du jour). L'ancienne adresse `premiere_annee/langues/flashcards/index.html` renv
   créées dans un chapitre (« + Ma carte ») rejoignent le paquet du chapitre.
 - `donnees/catalogue.js` est chargé avec `?v=<minute>` ; les fichiers de paquet avec l'empreinte de
   leur contenu (`?v=<v du catalogue>`), qui change à chaque modification (voir la section 2).
+
+### L'HGG au quotidien
+
+- **Supprimé le 14 novembre 2026 à la demande du propriétaire** : l'espace `premiere_annee/hgg/quotidien/` (8 fiches,
+  index, `fiche.css`, `fiche.js`), ses images de partage, `outils/hgg-quotidien-sujets.json`, le bouton et la carte « La fiche
+  du jour » de l'index HGG de 1re année et l'interrupteur « Fiche HGG » de `mon-planning.html`. Ne plus faire de fiche HGG du
+  jour. L'ancien contenu reste dans l'historique git.
 
 ### Dossiers de langues (DS)
 

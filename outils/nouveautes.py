@@ -8,7 +8,7 @@
 
 Contenus suivis : articles d'actualité des quatre éditions (listes ACTU_DATA), dossiers de
 culture générale (CG_DATA), fiches et cours de l'Humanité (cinéma, littérature, cours) et chapitres de cours
-(chapitres et notions de philosophie, 1re et 2e année). Les fiches de l'HGG au quotidien n'y figurent pas.
+(chapitres et notions de philosophie, 1re et 2e année).
 
 La date de mise en ligne d'une page est retenue une fois pour toutes dans
 `outils/nouveautes-dates.json` : date du commit qui a ajouté le fichier, ou maintenant pour
