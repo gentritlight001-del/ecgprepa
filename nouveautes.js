@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "en",
 "rubrique": "Actu Anglais",
+"meta": "Canada",
+"titre": "Canada : Carney conclut un accord de libre-échange avec les Philippines au sommet de l'ASEAN",
+"url": "actualites/en/articles/canada-carney-asean-philippines-accord-commercial-2026.html",
+"image": "actualites/en/images/canada-carney-asean-philippines-accord-commercial-2026.webp",
+"date": "2026-11-14T09:49:32+00:00"
+},
+{
+"t": "en",
+"rubrique": "Actu Anglais",
 "meta": "États-Unis",
 "titre": "États-Unis : la FAA cloue au sol tous les départs, une panne de communications paralyse le ciel",
 "url": "actualites/en/articles/us-faa-arret-au-sol-national-2026.html",
@@ -1758,15 +1767,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/de/articles/suisse-glaciers-annee-catastrophique-2026.html",
 "image": "actualites/de/images/suisse-glaciers-annee-catastrophique-2026.webp",
 "date": "2026-10-02T06:40:14+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "Tennessee : l'exécution de Christa Pike échoue après deux injections, le gouverneur enquête",
-"url": "actualites/en/articles/us-tennessee-execution-ratee-2026.html",
-"image": "actualites/en/images/us-tennessee-execution-ratee-2026.webp",
-"date": "2026-10-02T06:16:22+00:00"
 },
 {
 "t": "de",
