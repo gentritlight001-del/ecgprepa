@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Monde",
+"titre": "Microsoft : une panne majeure paralyse Outlook, Teams, Microsoft 365 et Copilot dans le monde",
+"url": "actualites/monde/articles/monde-panne-microsoft-365-outlook-teams-2026.html",
+"image": "actualites/monde/images/monde-panne-microsoft-365-outlook-teams-2026.webp",
+"date": "2026-11-14T08:44:58+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Espagne",
@@ -1398,15 +1407,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/monde/articles/fmi-perspectives-octobre-2026.html",
 "image": "actualites/monde/images/fmi-perspectives-octobre-2026.webp",
 "date": "2026-10-14T18:06:08+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Hongrie",
-"titre": "Hongrie : le Parlement abroge les dispositions anti-LGBTQ de la loi de 2021 voulue par Orbán",
-"url": "actualites/monde/articles/hongrie-abrogation-loi-anti-lgbt.html",
-"image": "actualites/monde/images/hongrie-abrogation-loi-anti-lgbt.webp",
-"date": "2026-10-14T18:01:29+00:00"
 },
 {
 "t": "de",
