@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
+"titre": "Allemagne : Mercedes arrête tous ses nouveaux investissements et examine des fermetures d'usines",
+"url": "actualites/de/articles/allemagne-mercedes-arret-investissements-2026.html",
+"image": "actualites/de/images/allemagne-mercedes-arret-investissements-2026.webp",
+"date": "2026-11-14T08:30:03+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "Canada",
@@ -1991,15 +2000,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "L'Allemagne attribue à la Russie la tentative d'attentat au drone de Leipzig",
 "url": "actualites/de/articles/attribution-russie-leipzig.html",
 "image": "actualites/de/images/attribution-russie-leipzig.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "Merz prépare un « automne des réformes » : retraites, impôts et compétitivité au menu de la rentrée",
-"url": "actualites/de/articles/merz-automne-reformes.html",
-"image": "actualites/de/images/merz-automne-reformes.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
