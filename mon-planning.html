@@ -524,8 +524,7 @@
   var ESPACES = {
     anglais:  { court: 'Anglais', nom: 'Anglais au quotidien',  c: '#1d2a5c', dossier: 'premiere_annee/langues/anglais/quotidien/' },
     espagnol: { court: 'Espagnol', nom: 'Espagnol au quotidien', c: '#b33a20', dossier: 'premiere_annee/langues/espagnol/quotidien/' },
-    allemand: { court: 'Allemand', nom: 'Allemand au quotidien', c: '#a8661a', dossier: 'premiere_annee/langues/allemand/quotidien/' },
-    hgg:      { court: 'Fiche HGG', nom: 'Fiche HGG du jour',     c: '#2f7a55', dossier: 'premiere_annee/hgg/quotidien/', fiches: true }
+    allemand: { court: 'Allemand', nom: 'Allemand au quotidien', c: '#a8661a', dossier: 'premiere_annee/langues/allemand/quotidien/' }
   };
 
   function $(s) { return document.querySelector(s); }
@@ -712,23 +711,12 @@
   /* ─── Au quotidien : une ligne par jour et par espace activé ───
      Identifiant fixe (q-<espace>-<date>) : deux appareils créent la même ligne sans doublon.
      Lignes créées pour les jours affichés, à partir d'aujourd'hui (et du jour d'activation). */
-  var fichesHgg = null;
-  function chargerFichesHgg() {
-    if (fichesHgg) return Promise.resolve(fichesHgg);
-    return fetch(ESPACES.hgg.dossier + 'index.html', { cache: 'no-cache' }).then(function (r) { return r.text(); })
-      .then(function (t) {
-        fichesHgg = {};
-        t.replace(/data-slug="([^"]+)"\s+data-date="(\d{4}-\d{2}-\d{2})"/g, function (m, slug, date) { fichesHgg[date] = slug; return m; });
-        return fichesHgg;
-      }).catch(function () { fichesHgg = {}; return fichesHgg; });
-  }
   function pageIndex(url) { return pages && pages.filter(function (p) { return p.url === url; })[0]; }
   function lienQuotidien(k, s) {
     var e = ESPACES[k], auj = aujourdhui(), url;
-    if (e.fiches) url = fichesHgg && fichesHgg[s] ? e.dossier + fichesHgg[s] + '.html' : e.dossier + 'index.html';
-    else url = s <= auj || pageIndex(e.dossier + 'jour-' + s + '.html') ? e.dossier + 'jour-' + s + '.html' : e.dossier + 'index.html';
+    url = s <= auj || pageIndex(e.dossier + 'jour-' + s + '.html') ? e.dossier + 'jour-' + s + '.html' : e.dossier + 'index.html';
     var p = pageIndex(url), n = p && p.titre.match(/jour (\d+)/i);
-    var rub = /index\.html$/.test(url) ? 'Ouvrir l’espace' : n ? 'Jour ' + n[1] : p ? typo(p.titre.replace(/^.*?:\s*/, '')) : e.fiches ? 'Fiche du jour' : 'Texte du jour';
+    var rub = /index\.html$/.test(url) ? 'Ouvrir l’espace' : n ? 'Jour ' + n[1] : p ? typo(p.titre.replace(/^.*?:\s*/, '')) : 'Texte du jour';
     return { url: url, titre: p ? p.titre : e.nom, rub: rub, sec: 'langues', image: '' };
   }
   function joursAffiches() {
@@ -772,7 +760,6 @@
     }
     enregistrer(); rendre();
     if (oui) chargerPages().then(rendre);
-    if (oui && ESPACES[k].fiches) chargerFichesHgg().then(rendre);
   }
   function rendreQuotidien() {
     var q = etat.reglages.quotidien;
@@ -1445,7 +1432,6 @@
   rendre();
   /* Les images des pages du site viennent de l'index. */
   if (etat.items.some(function (x) { return x.site && !x.site.image; }) || Object.keys(etat.reglages.quotidien).some(function (k) { return etat.reglages.quotidien[k]; })) chargerPages().then(rendre);
-  if (etat.reglages.quotidien.hgg) chargerFichesHgg().then(rendre);
   fetch('a-faire.json', { cache: 'no-cache' }).then(function (r) { return r.json(); })
     .then(function (d) { if (!pages && d.pages) $('#nb-afaire').textContent = '(' + d.pages.length + ')'; }).catch(function () {});
 

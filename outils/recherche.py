@@ -174,8 +174,6 @@ def rubrique(rel):
         if p[1] == 'langues':
             langue = MATIERES.get(p[2], 'Langues') if len(p) > 3 else 'Langues'
             return 'langues', '%s · %s' % (langue, annee)
-        if p[1] == 'hgg' and len(p) > 3 and p[2] == 'quotidien':
-            return 'cours', 'HGG au quotidien'
         return 'cours', '%s · %s' % (MATIERES.get(p[1], p[1].capitalize()), annee)
     return 'autre', 'ECG Prépa'
 
