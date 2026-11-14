@@ -309,14 +309,20 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
 ### Actualiser un article déjà en ligne
 
 Demande type, copiée depuis la page admin « Idées pour le site » (type « Actualiser un article ») :
-« Actualise l'article « <titre> » (<adresse>) : <le fait nouveau> ». On **complète** l'article, on ne le refait pas :
-même fichier, même photo, même palette, mêmes schémas, rien de neuf dans `ACTU_DATA` (la carte garde sa place).
-Vérifier le fait nouveau par recherche web, puis l'intégrer là où il a sa place : chapô, section concernée (ou une
-nouvelle section numérotée), `a-chiffres` si un chiffre change, chronologie (nouvelle date à gauche, `li.recent`),
-`a-essentiel` et l'analyse si le fait change le fond, une source de plus ; dans les deux langues pour les éditions
-bilingues. Corriger ce que le fait rend faux, sans tiret cadratin. Les contrôles ci-dessus restent valables
-(colonnes de l'analyse égales). Mise en ligne : `images-partage.py --refaire <page>` seulement si le titre change,
-puis `recherche.py`.
+« Actualise l'article « <titre> » (<adresse>) : <le fait nouveau> » (+ « Photo : »). **Règle du propriétaire (novembre 2026) :
+on ne modifie plus l'ancien article, on écrit un NOUVEL article** (nouveau fichier, nouveau slug, nouvelle carte en tête de
+`ACTU_DATA`, nouvelle palette, nouvelle photo, mise en ligne complète) qui raconte le nouveau fait, avec sa propre fiche
+d'actualité (`fiche-article.js`, tout le gabarit de la section 3). L'ancien article reste tel quel.
+- **Fiche d'actualité** (`a-essentiel`, `a-chiffres`, chronologie, « Dans une copie »…) : écrite comme pour tout article,
+  autour du nouveau fait, complète et lisible seule.
+- **Article complet** : **ne pas rappeler ce qui a déjà été dit** dans l'article précédent. Le lien vers lui suffit : un
+  renvoi `<a href="<ancien-slug>.html" class="a-lien">…</a>` posé directement sur les mots qui portent l'information (voir
+  « Renvois vers d'autres articles »), dans le chapô ou la première section, puis on ne parle que des **nouveautés**, ce qui
+  n'était pas dans l'ancien article. Pas de résumé des épisodes précédents, pas de reprise des mêmes chiffres, citations
+  ou schémas. L'ancien article figure aussi dans « Lire aussi » (en premier) ; la longueur de 1 100 à 1 300 mots se fait
+  avec du contenu neuf (recherche web poussée), jamais en recopiant l'ancien.
+- La chronologie ne reprend que les dates nouvelles (au plus une date de l'ancien article, en repère).
+- Vérifier le fait nouveau par recherche web (sources primaires d'abord : communiqué, dépôt officiel).
 
 ### Image
 
