@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Suisse",
+"titre": "Suisse : nouveau record pour le chômage des jeunes, 12,6 % des 15-24 ans au 3e trimestre",
+"url": "actualites/de/articles/suisse-chomage-jeunes-record-2026.html",
+"image": "actualites/de/images/suisse-chomage-jeunes-record-2026.webp",
+"date": "2026-11-14T10:00:13+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "Canada",
@@ -1991,15 +2000,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Berlin se montre davantage favorable à un rapprochement entre UniCredit et Commerzbank",
 "url": "actualites/de/articles/berlin-unicredit-commerzbank.html",
 "image": "actualites/de/images/berlin-unicredit-commerzbank.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "L'Allemagne attribue à la Russie la tentative d'attentat au drone de Leipzig",
-"url": "actualites/de/articles/attribution-russie-leipzig.html",
-"image": "actualites/de/images/attribution-russie-leipzig.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
