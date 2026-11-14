@@ -12,8 +12,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-11-14",
+  "maj": "2026-11-15",
   "parties": [
+   {
+    "id": "2026-11-15",
+    "nom": "Jour 24 · Carney in Manila: Canada Concludes a Free Trade Deal With the Philippines",
+    "n": 30,
+    "date": "2026-11-15"
+   },
    {
     "id": "2026-11-14",
     "nom": "Jour 23 · UK Names Dame Madeleine Alessandri Its First Special Representative for Climate Security",
@@ -153,8 +159,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 602,
-  "v": "cbdafb007f"
+  "n": 629,
+  "v": "0132a3cb4d"
  },
  {
   "id": "espagnol",
