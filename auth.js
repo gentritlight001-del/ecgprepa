@@ -1296,6 +1296,10 @@
 
     /* Codes d'accès au Premium : liste avec, pour chacun, { id, code, libelle,
        actif, limite, cree_le, utilisations, en_cours, derniere, membres[] } */
+    statsLecture: function (jours) {
+      return sb().then(function (c) { return T(c.rpc('stats_lecture', { p_jours: jours || 30 })); });
+    },
+
     codesAcces: function () {
       return sb().then(function (c) { return T(c.rpc('codes_acces_admin')); })
         .then(function (d) { return d || []; });
@@ -1795,6 +1799,7 @@
         leverVoile();
         demarrerBadge(profil);
         battreRegulierement();
+        mesurerLecture(profil);
         document.dispatchEvent(new CustomEvent('ecg:pret', { detail: profil }));
       }
 
@@ -1883,6 +1888,7 @@
           var payant = ids.some(function (id) { return prem[id]; });
           if (payant) { location.replace(TARIFS_URL); return; }
           leverVoile();
+          mesurerLecture(null);
         });
       })
       .catch(function () { leverVoile(); })
@@ -2137,6 +2143,73 @@
     };
     if (document.body) poser();
     else document.addEventListener('DOMContentLoaded', poser);
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     Statistiques de lecture (onglet « Lecture » de l'admin)
+     Une ligne par page ouverte, sans rien qui identifie l'élève :
+     chemin, titre, téléphone ou ordinateur, temps de lecture actif
+     (onglet visible et geste dans les 90 dernières secondes) et part
+     de la page parcourue. L'administrateur n'est pas compté.
+     Base : supabase/statistiques-lecture.sql
+     ══════════════════════════════════════════════════════════════ */
+  var _lectureLancee = false;
+  function mesurerLecture(profil) {
+    if (_lectureLancee || (profil && profil.role === 'admin')) return;
+    _lectureLancee = true;
+    try {
+      var page = cheminActuelBrut();
+      if (!page) return;
+      if (page.slice(-1) === '/') page += 'index.html';
+      else if (page.split('/').pop().indexOf('.') === -1) page += '.html';
+      var titre = (document.title || '').replace(/^\s*ECG Pr[ée]pa\s*[—–·|-]\s*/i, '')
+        .replace(/\s*[—–·|-]\s*ECG Pr[ée]pa\s*$/i, '').trim();
+      var mobile = (window.matchMedia && matchMedia('(max-width: 760px)').matches) ||
+        /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent || '');
+      var cle = (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
+        : 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g, function () { return (Math.random() * 16 | 0).toString(16); });
+      var id = null, actif = 0, geste = Date.now(), defil = 0, envoye = -1;
+
+      var mesurerDefil = function () {
+        var h = document.documentElement.scrollHeight || 1;
+        var vu = Math.round(((window.scrollY || 0) + window.innerHeight) / h * 100);
+        if (vu > defil) defil = Math.min(100, vu);
+      };
+      var bouger = function () { geste = Date.now(); };
+      ['scroll', 'mousemove', 'keydown', 'touchstart', 'click'].forEach(function (t) {
+        window.addEventListener(t, bouger, { passive: true });
+      });
+      window.addEventListener('scroll', mesurerDefil, { passive: true });
+      setTimeout(mesurerDefil, 1500);
+      setInterval(function () {
+        if (!document.hidden && Date.now() - geste < 90000) actif += 5;
+      }, 5000);
+
+      var envoyer = function () {
+        if (!id || envoye === actif * 1000 + defil) return;
+        envoye = actif * 1000 + defil;
+        /* Requête « simple » (texte brut, clé dans l'adresse) : pas de
+           vérification préalable, donc elle part même quand l'élève
+           quitte la page (sendBeacon). */
+        var url = SUPABASE_URL + '/rest/v1/rpc/finir_vue_texte?apikey=' + encodeURIComponent(SUPABASE_ANON_KEY);
+        var corps = id + ';' + cle + ';' + actif + ';' + defil;
+        try {
+          if (navigator.sendBeacon && navigator.sendBeacon(url, new Blob([corps], { type: 'text/plain;charset=UTF-8' }))) return;
+          fetch(url, { method: 'POST', keepalive: true, headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body: corps })
+            .catch(function () {});
+        } catch (e) {}
+      };
+      document.addEventListener('visibilitychange', function () { if (document.hidden) envoyer(); });
+      window.addEventListener('pagehide', envoyer);
+      /* Filet de sécurité : la fermeture n'est pas toujours signalée
+         (téléphone mis en veille, navigateur tué) ; on perd au plus 30 s. */
+      setInterval(function () { if (!document.hidden) envoyer(); }, 30000);
+
+      sb().then(function (c) {
+        return c.rpc('noter_vue', { p_page: page.slice(0, 300), p_titre: titre.slice(0, 200),
+                                    p_appareil: mobile ? 'mobile' : 'ordinateur', p_cle: cle });
+      }).then(function (r) { id = (r && !r.error && r.data) || null; }).catch(function () {});
+    } catch (e) {}
   }
 
   function battreRegulierement() {
