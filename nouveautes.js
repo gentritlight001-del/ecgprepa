@@ -1,6 +1,16 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "humanite",
+"rubrique": "Humanité",
+"meta": "Art",
+"titre": "Le Voyageur contemplant une mer de nuages",
+"url": "humanite/art/le-voyageur-mer-de-nuages.html",
+"image": "humanite/art/images/le-voyageur-mer-de-nuages-oeuvre.webp",
+"portrait": false,
+"date": "2026-11-14T08:01:25+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "Royaume-Uni",
@@ -1154,16 +1164,6 @@ window.ECG_NOUVEAUTES = [
 "image": "humanite/art/images/fillette-au-napalm-oeuvre.webp",
 "portrait": false,
 "date": "2026-10-20T08:24:47+00:00"
-},
-{
-"t": "humanite",
-"rubrique": "Humanité",
-"meta": "Art",
-"titre": "Migrant Mother",
-"url": "humanite/art/migrant-mother.html",
-"image": "humanite/art/images/migrant-mother-oeuvre.webp",
-"portrait": false,
-"date": "2026-10-20T08:21:07+00:00"
 },
 {
 "t": "en",
