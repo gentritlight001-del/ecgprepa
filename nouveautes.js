@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "Irlande",
+"titre": "Irlande : première marche nationale contre les data centers, dans une mobilisation européenne",
+"url": "actualites/en/articles/irlande-manifestation-data-centers-2026.html",
+"image": "actualites/en/images/irlande-manifestation-data-centers-2026.webp",
+"date": "2026-11-14T09:10:56+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "États-Unis",
@@ -8,15 +17,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/monde/articles/nvidia-jensen-huang-demission-colette-kress-2026.html",
 "image": "actualites/monde/images/nvidia-jensen-huang-demission-colette-kress-2026.webp",
 "date": "2026-11-14T09:05:46+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Irlande",
-"titre": "Irlande : première marche nationale contre les data centers, dans une mobilisation européenne",
-"url": "actualites/monde/articles/irlande-manifestation-data-centers-2026.html",
-"image": "actualites/monde/images/irlande-manifestation-data-centers-2026.webp",
-"date": "2026-11-14T08:55:16+00:00"
 },
 {
 "t": "monde",
@@ -1373,6 +1373,15 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-10-17T20:32:10+00:00"
 },
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Groenland",
+"titre": "Groenland : Trump annonce une « exploration massive » de pétrole, gaz et minéraux, Nuuk tempère",
+"url": "actualites/monde/articles/groenland-trump-exploration-massive-2026.html",
+"image": "actualites/monde/images/groenland-trump-exploration-massive-2026.webp",
+"date": "2026-10-17T20:23:58+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Chili",
@@ -1757,15 +1766,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Brexit : le Premier ministre Andy Burnham n'exclut plus un retour du Royaume-Uni dans l'UE",
 "url": "actualites/en/articles/uk-burnham-retour-union-europeenne-2026.html",
 "image": "actualites/en/images/uk-burnham-retour-union-europeenne-2026.webp",
-"date": "2026-10-02T06:16:22+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "Canada",
-"titre": "Journée de la vérité et de la réconciliation : Mark Carney reconnaît que le chemin reste long",
-"url": "actualites/en/articles/canada-journee-verite-reconciliation-2026.html",
-"image": "actualites/en/images/canada-journee-verite-reconciliation-2026.webp",
 "date": "2026-10-02T06:16:22+00:00"
 },
 {
