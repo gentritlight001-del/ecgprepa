@@ -397,6 +397,20 @@
     derniere = chercher(q, catActive);
     derniere.q = q;
     afficher(derniere);
+    noterRecherche(q, (derniere.comptes && derniere.comptes['']) || 0);
+  }
+
+  /* Statistiques (onglet « Statistiques » de l'admin) : la recherche est
+     notée quand on arrête de taper 1,5 s, une fois par texte. */
+  var minuteurStat = null, derniereNotee = '';
+  function noterRecherche(q, n) {
+    clearTimeout(minuteurStat);
+    minuteurStat = setTimeout(function () {
+      var cle = q.toLowerCase();
+      if (q.length < 2 || cle === derniereNotee) return;
+      derniereNotee = cle;
+      try { if (window.ECGAuth && ECGAuth.stat) ECGAuth.stat('recherche', q, n); } catch (e) {}
+    }, 1500);
   }
 
   function afficher(res) {

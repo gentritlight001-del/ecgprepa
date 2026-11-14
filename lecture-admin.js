@@ -1,11 +1,14 @@
 /* ══════════════════════════════════════════════════════════════════
-   ECG Prépa : statistiques de lecture, côté administration
+   ECG Prépa : statistiques de fréquentation, côté administration
 
-   Construit l'onglet « Lecture » de la page d'admin : pages vues,
-   lecteurs, temps de lecture, pages les plus lues, rubriques, heures.
-   Les données viennent de la fonction stats_lecture
-   (supabase/statistiques-lecture.sql), remplie par mesurerLecture()
-   dans auth.js. Aucune donnée qui identifie un élève.
+   Construit l'onglet « Statistiques » de la page d'admin : visiteurs
+   (avec ou sans compte), pages vues, visites, temps de lecture, envie
+   de Premium (murs, page Tarifs, clics « payer »), sources, pages
+   d'entrée, rubriques, appareils, heures, recherches, pages
+   introuvables, pages les plus lues.
+   Données : fonction stats_lecture (supabase/statistiques-lecture.sql),
+   remplie par le module Stats de auth.js. Aucune donnée qui identifie
+   un élève : un visiteur = un navigateur.
 
    Chargé par admin.html, après auth.js.
    ══════════════════════════════════════════════════════════════════ */
@@ -26,6 +29,12 @@
   var GRANDES = ['Actualité', 'Culture générale', 'L\'Humanité', 'Cours de 1re année',
                  'Cours de 2e année', 'Flashcards', 'Accueil et autres pages'];
   var COULEURS = ['#e08a8a', '#c8a96e', '#c97c9e', '#7c9ec9', '#9ecba0', '#b39ddb', '#8a8880'];
+  var C_MEMBRES = '#c8a96e', C_SANS = '#7c9ec9';
+  var JOURS_SEMAINE = ['Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.', 'Dim.'];
+  var PAGES_SPECIALES = {
+    'index.html': 'Accueil (élèves)', 'accueil.html': 'Accueil (vitrine)', 'login.html': 'Connexion',
+    'tarifs.html': 'Tarifs Premium', 'cours-ecg.html': 'Cours ECG'
+  };
 
   function $(s) { return document.querySelector(s); }
   function esc(s) {
@@ -34,16 +43,17 @@
     });
   }
   function nb(n) { return Number(n || 0).toLocaleString('fr-FR'); }
+  function pc(a, b) { return b ? Math.round(100 * a / b) : 0; }
+  function virgule(x) { return String(x).replace('.', ','); }
   function duree(s) {
     s = Math.round(s || 0);
     if (!s) return '—';
     if (s < 60) return s + ' s';
+    if (s >= 3600) { var h = Math.floor(s / 3600); return h + ' h ' + ('0' + Math.round((s % 3600) / 60)).slice(-2); }
     var m = Math.floor(s / 60), r = s % 60;
     return m + ' min' + (r ? ' ' + (r < 10 ? '0' : '') + r : '');
   }
-  function jourCourt(d) {
-    return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
-  }
+  function jourCourt(d) { return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }); }
   function cleJour(d) {
     return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
   }
@@ -68,8 +78,14 @@
     if (p.indexOf('premiere_annee/') === 0) return { grande: 'Cours de 1re année', fine: 'Index des cours' };
     if (p.indexOf('deuxieme_annee/') === 0) return { grande: 'Cours de 2e année', fine: 'Index des cours' };
     if (p === 'cours-ecg.html') return { grande: 'Accueil et autres pages', fine: 'Index des cours' };
+    if (p === 'tarifs.html' || p === 'abonnement.html') return { grande: 'Accueil et autres pages', fine: 'Premium' };
+    if (p === 'login.html' || p === 'accueil.html') return { grande: 'Accueil et autres pages', fine: 'Vitrine et connexion' };
     return { grande: 'Accueil et autres pages', fine: 'Accueil et autres pages' };
   }
+  function titrePage(p) {
+    return PAGES_SPECIALES[p.page] || p.titre || p.page;
+  }
+  var base = location.href.replace(/[^/]*([?#].*)?$/, '');
 
   function poserStyles() {
     if (document.getElementById('ecg-lecture-css')) return;
@@ -79,43 +95,83 @@
       '#p-lecture .bloc{background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-bottom:20px;overflow:hidden}',
       '#p-lecture .bloc>header{padding:20px 22px 6px;margin:0;display:block}',
       '#p-lecture .bloc>header h3{font-family:"Playfair Display",serif;font-size:1.2rem;font-weight:700}',
-      '#p-lecture .bloc>header p{color:var(--dim);font-size:.8rem;font-weight:300;line-height:1.65;margin-top:6px;max-width:680px}',
-      '#p-lecture .entete{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:18px}',
-      '#p-lecture .entete p{color:var(--dim);font-size:.8rem;font-weight:300;line-height:1.6;flex:1;min-width:240px}',
-      '#p-lecture .periodes{display:flex;gap:6px;flex-wrap:wrap}',
-      '#p-lecture .periodes button{background:var(--surface);border:1px solid var(--border);color:var(--dim);font-family:"DM Mono",monospace;font-size:.7rem;letter-spacing:.06em;padding:8px 13px;border-radius:999px;cursor:pointer}',
-      '#p-lecture .periodes button:hover{color:var(--text)}',
-      '#p-lecture .periodes button.on{border-color:var(--accent);color:var(--accent);background:rgba(200,169,110,.08)}',
+      '#p-lecture .bloc>header p{color:var(--dim);font-size:.8rem;font-weight:300;line-height:1.65;margin-top:6px;max-width:720px}',
+      '#p-lecture .entete{display:flex;gap:12px 18px;align-items:center;flex-wrap:wrap;margin-bottom:18px}',
+      '#p-lecture .entete p{color:var(--dim);font-size:.8rem;font-weight:300;line-height:1.6;flex:1 1 320px}',
+      '#p-lecture .filtres{display:flex;flex-direction:column;gap:8px;align-items:flex-end}',
+      '#p-lecture .seg{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}',
+      '#p-lecture .seg button{background:var(--surface);border:1px solid var(--border);color:var(--dim);font-family:"DM Mono",monospace;font-size:.7rem;letter-spacing:.06em;padding:8px 13px;border-radius:999px;cursor:pointer}',
+      '#p-lecture .seg button:hover{color:var(--text)}',
+      '#p-lecture .seg button.on{border-color:var(--accent);color:var(--accent);background:rgba(200,169,110,.08)}',
+      '#p-lecture .seg.pub button.on{border-color:var(--blue);color:var(--blue);background:rgba(124,158,201,.1)}',
       '#p-lecture .stats{margin-bottom:20px}',
       '#p-lecture .stat small{display:block;color:var(--faint);font-size:.72rem;margin-top:6px;font-weight:300}',
-      /* Pages vues par jour */
+      /* Comparaison sans compte / membres */
+      '#p-lecture .vs{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:14px 22px 22px}',
+      '#p-lecture .vs-c{border:1px solid var(--border);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden}',
+      '#p-lecture .vs-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c)}',
+      '#p-lecture .vs-c h4{font-family:"DM Mono",monospace;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--c);font-weight:400;margin-bottom:12px}',
+      '#p-lecture .vs-c dl{display:grid;grid-template-columns:1fr auto;gap:8px 12px;font-size:.84rem}',
+      '#p-lecture .vs-c dt{color:var(--dim);font-weight:300}',
+      '#p-lecture .vs-c dd{font-family:"DM Mono",monospace;font-size:.8rem;text-align:right;color:var(--text)}',
+      '#p-lecture .vs-c dd.gros{font-family:"Playfair Display",serif;font-size:1.5rem;font-weight:700;color:var(--c);line-height:1}',
+      '#p-lecture .part{margin:0 22px 22px;height:10px;border-radius:99px;overflow:hidden;display:flex;background:var(--surface2)}',
+      '#p-lecture .part i{display:block;height:100%}',
+      '#p-lecture .phrase{padding:0 22px 6px;font-size:.9rem;line-height:1.6}',
+      '#p-lecture .phrase b{color:var(--blue);font-weight:500}',
+      /* Barres par jour */
       '#p-lecture .jours{display:flex;align-items:flex-end;gap:3px;height:180px;padding:18px 22px 0}',
       '#p-lecture .jours .j{flex:1;min-width:2px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;position:relative;cursor:default}',
-      '#p-lecture .jours .j i{display:block;background:var(--accent);border-radius:3px 3px 0 0;min-height:2px;opacity:.85}',
-      '#p-lecture .jours .j.vide i{background:var(--border);opacity:1}',
-      '#p-lecture .jours .j:hover i{opacity:1;background:#e2c48a}',
-      '#p-lecture .jours .j b{position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);font-family:"DM Mono",monospace;font-size:.6rem;font-weight:400;color:var(--dim);white-space:nowrap}',
+      '#p-lecture .jours .j i{display:block;min-height:0}',
+      '#p-lecture .jours .j i.m{background:' + C_MEMBRES + '}',
+      '#p-lecture .jours .j i.s{background:' + C_SANS + ';border-radius:3px 3px 0 0}',
+      '#p-lecture .jours .j i.m:only-child,#p-lecture .jours .j i.m:first-child{border-radius:3px 3px 0 0}',
+      '#p-lecture .jours .j i.s+i.m{border-radius:0}',
+      '#p-lecture .jours .j i.vide{background:var(--border);height:2px;border-radius:2px}',
+      '#p-lecture .jours .j:hover i{filter:brightness(1.15)}',
+      '#p-lecture .legende{display:flex;gap:16px;flex-wrap:wrap;font-size:.76rem;color:var(--dim);padding:6px 22px 0}',
+      '#p-lecture .legende i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}',
       '#p-lecture .axe{display:flex;justify-content:space-between;padding:8px 22px 18px;font-family:"DM Mono",monospace;font-size:.62rem;color:var(--faint);letter-spacing:.06em}',
       '#p-lecture .bulle{position:fixed;z-index:50;pointer-events:none;background:#0d0d0f;border:1px solid var(--border);border-radius:8px;padding:7px 10px;font-size:.76rem;color:var(--text);white-space:nowrap;display:none}',
+      /* Premium */
+      '#p-lecture .prem{border-color:rgba(200,169,110,.35)}',
+      '#p-lecture .chiffres{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;padding:14px 22px 6px}',
+      '#p-lecture .ch{background:var(--surface2);border-radius:10px;padding:14px 16px}',
+      '#p-lecture .ch b{display:block;font-family:"Playfair Display",serif;font-size:1.8rem;font-weight:700;line-height:1;color:var(--accent)}',
+      '#p-lecture .ch span{display:block;font-size:.78rem;color:var(--text);margin-top:8px;line-height:1.35}',
+      '#p-lecture .ch small{display:block;font-size:.7rem;color:var(--faint);margin-top:4px;font-weight:300;line-height:1.4}',
+      '#p-lecture .sous-t{font-family:"DM Mono",monospace;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);padding:18px 22px 6px}',
       /* Deux colonnes */
       '#p-lecture .duo{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}',
       '#p-lecture .duo .bloc{margin-bottom:0;display:flex;flex-direction:column}',
-      '#p-lecture .duo .heures{flex:1;min-height:150px;height:auto}',
       '#p-lecture .rubs{padding:14px 22px 22px;display:flex;flex-direction:column;gap:12px}',
       '#p-lecture .rub .l{display:flex;justify-content:space-between;gap:10px;font-size:.84rem;margin-bottom:6px}',
+      '#p-lecture .rub .l em{font-style:normal;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
       '#p-lecture .rub .l span{font-family:"DM Mono",monospace;font-size:.72rem;color:var(--dim);white-space:nowrap}',
       '#p-lecture .rub .b{height:8px;background:var(--surface2);border-radius:99px;overflow:hidden}',
       '#p-lecture .rub .b i{display:block;height:100%;border-radius:99px}',
-      '#p-lecture .heures{display:flex;align-items:flex-end;gap:3px;height:150px;padding:18px 22px 0}',
+      '#p-lecture .heures{display:flex;align-items:flex-end;gap:3px;flex:1;min-height:150px;padding:18px 22px 0}',
       '#p-lecture .heures .j{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end}',
       '#p-lecture .heures .j i{display:block;background:var(--blue);border-radius:3px 3px 0 0;min-height:2px;opacity:.85}',
+      '#p-lecture .heures.semaine .j i{background:var(--green)}',
       '#p-lecture .heures .j:hover i{opacity:1}',
+      '#p-lecture .axe.sem{justify-content:space-around}',
+      '#p-lecture .liste{list-style:none;padding:8px 22px 18px;margin:0}',
+      '#p-lecture .liste li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid rgba(42,42,53,.55);font-size:.84rem;align-items:baseline}',
+      '#p-lecture .liste li:last-child{border-bottom:0}',
+      '#p-lecture .liste li a{color:var(--text);text-decoration:none;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+      '#p-lecture .liste li a:hover{color:var(--accent)}',
+      '#p-lecture .liste li em{font-style:normal;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+      '#p-lecture .liste li span{font-family:"DM Mono",monospace;font-size:.74rem;color:var(--dim);white-space:nowrap}',
+      '#p-lecture .liste li span b{color:var(--accent);font-weight:400}',
+      '#p-lecture .rien{padding:22px;color:var(--faint);font-size:.84rem;text-align:center}',
       /* Tableau des pages */
       '#p-lecture .outils{display:flex;gap:10px;flex-wrap:wrap;padding:12px 22px 16px}',
       '#p-lecture .outils input{flex:1;min-width:200px}',
       '#p-lecture td.num,#p-lecture th.num{text-align:right;white-space:nowrap}',
       '#p-lecture td.num{font-family:"DM Mono",monospace;font-size:.8rem}',
       '#p-lecture td.vues{font-family:"Playfair Display",serif;font-size:1.15rem;font-weight:700;color:var(--accent)}',
+      '#p-lecture td.sans{color:var(--blue)}',
       '#p-lecture .pg a{color:var(--text);text-decoration:none;font-weight:500}',
       '#p-lecture .pg a:hover{color:var(--accent)}',
       '#p-lecture .pg .mono{display:block;margin-top:3px;white-space:normal;word-break:break-all;color:var(--faint)}',
@@ -126,17 +182,24 @@
       '#p-lecture .plus{display:block;margin:0 auto 18px}',
       '@media(max-width:860px){#p-lecture .duo{grid-template-columns:1fr}}',
       '@media(max-width:640px){' +
+        '#p-lecture .vs{grid-template-columns:1fr}' +
+        '#p-lecture .filtres{align-items:flex-start}#p-lecture .seg{justify-content:flex-start}' +
         '#p-lecture .tpages th:nth-child(2),#p-lecture .tpages td:nth-child(2),' +
         '#p-lecture .tpages th:nth-child(4),#p-lecture .tpages td:nth-child(4),' +
-        '#p-lecture .tpages th:nth-child(6),#p-lecture .tpages td:nth-child(6){display:none}' +
+        '#p-lecture .tpages th:nth-child(5),#p-lecture .tpages td:nth-child(5),' +
+        '#p-lecture .tpages th:nth-child(7),#p-lecture .tpages td:nth-child(7){display:none}' +
         '#p-lecture .jours{gap:1px;padding:18px 16px 0}#p-lecture .axe{padding:8px 16px 18px}' +
-        '#p-lecture .jours .j b{display:none}' +
       '}'
     ].join('\n');
     document.head.appendChild(s);
   }
 
-  var etat = { jours: 30, donnees: null, filtre: '', rub: '', tout: false, charge: false };
+  var etat = { jours: 30, public: 'tous', donnees: null, filtre: '', rub: '', tout: false, charge: false };
+
+  function bloc(id, titre, texte, corps, classe) {
+    return '<div class="bloc' + (classe ? ' ' + classe : '') + '"' + (id ? ' id="' + id + '"' : '') + '><header><h3>' + titre + '</h3>' +
+      (texte ? '<p>' + texte + '</p>' : '') + '</header>' + corps + '</div>';
+  }
 
   function batir() {
     var hote = document.getElementById('p-lecture');
@@ -145,58 +208,93 @@
     poserStyles();
     hote.innerHTML =
       '<div class="entete">' +
-        '<p>Pages consultées par les élèves et les visiteurs. Tes propres visites ne sont pas comptées, ' +
-        'et rien ne permet de savoir qui a lu quoi. Mesure démarrée le ' + DEBUT_MESURE + '.</p>' +
-        '<div class="periodes" id="lc-periodes">' +
-          '<button type="button" data-j="1">Aujourd\'hui</button>' +
-          '<button type="button" data-j="7">7 jours</button>' +
-          '<button type="button" data-j="30" class="on">30 jours</button>' +
-          '<button type="button" data-j="90">3 mois</button>' +
-          '<button type="button" data-j="365">1 an</button>' +
+        '<p>Toutes les visites du site, avec ou sans compte. Un visiteur = un navigateur (téléphone ou ordinateur), ' +
+        'reconnu sans savoir à qui il appartient. Tes propres visites ne sont pas comptées. Mesure démarrée le ' + DEBUT_MESURE + '.</p>' +
+        '<div class="filtres">' +
+          '<div class="seg" id="lc-periodes">' +
+            '<button type="button" data-j="1">Aujourd\'hui</button>' +
+            '<button type="button" data-j="7">7 jours</button>' +
+            '<button type="button" data-j="30" class="on">30 jours</button>' +
+            '<button type="button" data-j="90">3 mois</button>' +
+            '<button type="button" data-j="365">1 an</button>' +
+          '</div>' +
+          '<div class="seg pub" id="lc-public">' +
+            '<button type="button" data-p="tous" class="on">Tout le monde</button>' +
+            '<button type="button" data-p="sans_compte">Sans compte</button>' +
+            '<button type="button" data-p="membres">Membres</button>' +
+          '</div>' +
         '</div>' +
       '</div>' +
       '<div class="stats" id="lc-stats"></div>' +
-      '<div class="bloc" id="lc-bloc-jours"><header><div><h3>Pages vues par jour</h3></div></header>' +
-        '<div class="jours" id="lc-jours"></div><div class="axe" id="lc-axe"></div></div>' +
+      bloc('lc-bloc-vs', 'Sans compte ou membres ?',
+        'Toujours sur tout le monde, quel que soit le filtre. « Sans compte » : personne connectée au moment de la visite.',
+        '<div class="phrase" id="lc-phrase"></div><div class="part" id="lc-part"></div><div class="vs" id="lc-vs"></div>') +
+      bloc('lc-bloc-jours', 'Pages vues par jour', '',
+        '<div class="legende"><span><i style="background:' + C_SANS + '"></i>Sans compte</span>' +
+        '<span><i style="background:' + C_MEMBRES + '"></i>Membres</span></div>' +
+        '<div class="jours" id="lc-jours"></div><div class="axe" id="lc-axe"></div>') +
+      bloc('', 'Envie de Premium',
+        'Le paiement n\'est pas encore ouvert : chaque clic sur « payer » est quelqu\'un qui aurait voulu s\'abonner. ' +
+        'Un « mur Premium » est l\'écran qui arrête un visiteur sur un contenu réservé.',
+        '<div class="chiffres" id="lc-prem"></div>' +
+        '<div class="sous-t">Contenus réservés qui ont arrêté le plus de monde</div><ul class="liste" id="lc-prem-pages"></ul>', 'prem') +
       '<div class="duo">' +
-        '<div class="bloc"><header><div><h3>Par rubrique</h3>' +
-          '<p>Part des pages vues de chaque grande partie du site.</p></div></header>' +
-          '<div class="rubs" id="lc-rubs"></div></div>' +
-        '<div class="bloc"><header><div><h3>Heures de lecture</h3>' +
-          '<p>Pages ouvertes selon l\'heure de Paris.</p></div></header>' +
-          '<div class="heures" id="lc-heures"></div>' +
-          '<div class="axe"><span>0 h</span><span>6 h</span><span>12 h</span><span>18 h</span><span>23 h</span></div></div>' +
+        bloc('', 'D\'où viennent les visiteurs', 'Site d\'où arrive chaque visite. « Accès direct » : adresse tapée, favori, application ou lien sans origine (souvent WhatsApp et Snapchat).',
+          '<div class="rubs" id="lc-sources"></div>') +
+        bloc('', 'Pages d\'arrivée', 'Première page de chaque visite.', '<ul class="liste" id="lc-entrees"></ul>') +
       '</div>' +
-      '<div class="bloc"><header><div><h3>Pages les plus lues</h3>' +
-        '<p>« Temps moyen » : temps passé à lire la page (onglet ouvert et élève actif). ' +
-        '« Jusqu\'au bout » : part des visites qui ont atteint le bas de la page.</p></div></header>' +
+      '<div class="duo">' +
+        bloc('', 'Par rubrique', 'Part des pages vues de chaque grande partie du site.', '<div class="rubs" id="lc-rubs"></div>') +
+        bloc('', 'Appareils', '', '<div class="rubs" id="lc-appareils"></div>') +
+      '</div>' +
+      '<div class="duo">' +
+        bloc('', 'Heures de lecture', 'Pages ouvertes selon l\'heure de Paris.',
+          '<div class="heures" id="lc-heures"></div>' +
+          '<div class="axe"><span>0 h</span><span>6 h</span><span>12 h</span><span>18 h</span><span>23 h</span></div>') +
+        bloc('', 'Jours de la semaine', 'Pages ouvertes selon le jour.',
+          '<div class="heures semaine" id="lc-semaine"></div>' +
+          '<div class="axe sem">' + JOURS_SEMAINE.map(function (j) { return '<span>' + j + '</span>'; }).join('') + '</div>') +
+      '</div>' +
+      '<div class="duo">' +
+        bloc('', 'Ce qu\'ils cherchent', 'Recherches tapées dans la loupe du site.', '<ul class="liste" id="lc-rech"></ul>') +
+        bloc('', 'Recherches sans résultat', 'Ce que le site n\'a pas : des idées de contenus à créer.', '<ul class="liste" id="lc-rech-vides"></ul>') +
+      '</div>' +
+      bloc('lc-bloc-404', 'Pages introuvables', 'Adresses demandées qui n\'existent pas : un lien cassé quelque part.', '<ul class="liste" id="lc-404"></ul>') +
+      bloc('', 'Pages les plus lues',
+        '« Temps moyen » : temps passé à lire la page (onglet ouvert et visiteur actif). « Jusqu\'au bout » : part des visites qui ont atteint le bas de la page.',
         '<div class="outils">' +
           '<input type="text" id="lc-q" placeholder="Chercher une page…" aria-label="Chercher une page">' +
           '<select id="lc-rub" aria-label="Rubrique"><option value="">Toutes les rubriques</option></select>' +
         '</div>' +
         '<div class="scroll"><table class="tpages"><thead><tr>' +
-          '<th>Page</th><th>Rubrique</th><th class="num">Vues</th><th class="num">Lecteurs</th>' +
+          '<th>Page</th><th>Rubrique</th><th class="num">Vues</th><th class="num">Sans compte</th><th class="num">Visiteurs</th>' +
           '<th class="num">Temps moyen</th><th class="num">Jusqu\'au bout</th>' +
         '</tr></thead><tbody id="lc-pages"></tbody></table></div>' +
         '<div class="empty" id="lc-vide" style="display:none"></div>' +
-        '<button class="btn ghost plus" type="button" id="lc-plus" style="display:none"></button>' +
-      '</div>' +
+        '<button class="btn ghost plus" type="button" id="lc-plus" style="display:none"></button>') +
       '<div class="bulle" id="lc-bulle"></div>';
 
-    hote.querySelectorAll('#lc-periodes button').forEach(function (b) {
-      b.addEventListener('click', function () {
-        hote.querySelectorAll('#lc-periodes button').forEach(function (x) { x.classList.remove('on'); });
-        b.classList.add('on');
-        etat.jours = +b.dataset.j;
-        etat.tout = false;
-        charger();
-      });
-    });
+    segment('#lc-periodes', function (b) { etat.jours = +b.dataset.j; });
+    segment('#lc-public', function (b) { etat.public = b.dataset.p; });
     $('#lc-q').addEventListener('input', function () { etat.filtre = this.value; etat.tout = false; rendrePages(); });
     $('#lc-rub').addEventListener('change', function () { etat.rub = this.value; etat.tout = false; rendrePages(); });
     $('#lc-plus').addEventListener('click', function () { etat.tout = true; rendrePages(); });
     bulles('#lc-jours');
     bulles('#lc-heures');
+    bulles('#lc-semaine');
+  }
+
+  function segment(sel, choisir) {
+    var boutons = document.querySelectorAll(sel + ' button');
+    boutons.forEach(function (b) {
+      b.addEventListener('click', function () {
+        boutons.forEach(function (x) { x.classList.remove('on'); });
+        b.classList.add('on');
+        choisir(b);
+        etat.tout = false;
+        charger();
+      });
+    });
   }
 
   function bulles(sel) {
@@ -214,7 +312,7 @@
 
   function charger() {
     etat.charge = true;
-    return Ad.statsLecture(etat.jours).then(function (d) {
+    return Ad.statsLecture(etat.jours, etat.public).then(function (d) {
       etat.donnees = d || {};
       rendre();
     }).catch(function (err) {
@@ -224,40 +322,60 @@
     });
   }
 
+  function carte(c, valeur, libelle, sous) {
+    return '<div class="stat" style="--c:' + c + '"><b>' + esc(valeur) + '</b><span>' + esc(libelle) + '</span>' +
+      (sous ? '<small>' + esc(sous) + '</small>' : '') + '</div>';
+  }
+
   function rendre() {
     var d = etat.donnees || {};
     var em = document.getElementById('c-lecture');
     if (em) em.textContent = nb(d.aujourdhui);
-    var total = d.total || 0;
-    var joursActifs = Math.max(1, Math.min(etat.jours, (d.par_jour || []).length ? joursDepuis(d) : 1));
-    var parJour = Math.round((d.lecteurs || 0) / joursActifs * 10) / 10;
-    var mobile = total ? Math.round(100 * (d.mobile || 0) / total) : 0;
+    var periode = etat.jours === 1 ? 'aujourd\'hui' : 'sur ' + etat.jours + ' jours';
     $('#lc-stats').innerHTML =
-      carte('var(--accent)', nb(total), 'Pages vues', etat.jours === 1 ? 'aujourd\'hui' : 'sur ' + etat.jours + ' jours') +
-      carte('var(--blue)', String(parJour).replace('.', ','), 'Lecteurs par jour', 'en moyenne') +
-      carte('var(--green)', duree(d.duree_moy), 'Temps moyen', 'par page lue') +
-      carte('var(--pink)', (d.jusquau_bout || 0) + ' %', 'Jusqu\'au bout', 'des pages ouvertes') +
-      carte('var(--dim)', mobile + ' %', 'Sur téléphone', nb(d.mobile) + ' pages vues');
+      carte('var(--blue)', nb(d.visiteurs), 'Visiteurs', d.nouveaux ? nb(d.nouveaux) + ' venus pour la première fois' : periode) +
+      carte('var(--accent)', nb(d.total), 'Pages vues', periode) +
+      carte('var(--pink)', nb(d.visites), 'Visites', virgule(d.pages_par_visite || 0) + ' pages par visite') +
+      carte('var(--green)', duree(d.duree_moy), 'Temps moyen', 'par page · ' + duree(d.duree_totale) + ' de lecture en tout') +
+      carte('var(--dim)', (d.rebond || 0) + ' %', 'Partis aussitôt', 'visites d\'une seule page');
     $('#lc-bloc-jours').style.display = etat.jours === 1 ? 'none' : '';
+    rendreComparaison(d);
     rendreJours(d);
+    rendrePremium(d);
+    rendreSources(d);
+    rendreEntrees(d);
     rendreRubriques(d);
+    rendreAppareils(d);
     rendreHeures(d);
+    rendreSemaine(d);
+    rendreRecherches(d);
+    rendre404(d);
     rendreSelect(d);
     rendrePages();
   }
 
-  /* Nombre de jours de la période où la mesure existait déjà. */
-  function joursDepuis(d) {
-    var premier = (d.par_jour || [])[0];
-    if (!premier) return 1;
-    var t0 = new Date(premier.jour + 'T00:00:00');
-    var auj = new Date(); auj.setHours(0, 0, 0, 0);
-    return Math.round((auj - t0) / 864e5) + 1;
-  }
-
-  function carte(c, valeur, libelle, sous) {
-    return '<div class="stat" style="--c:' + c + '"><b>' + esc(valeur) + '</b><span>' + esc(libelle) + '</span>' +
-      (sous ? '<small>' + esc(sous) + '</small>' : '') + '</div>';
+  function rendreComparaison(d) {
+    var g = { sans: {}, membres: {} };
+    (d.groupes || []).forEach(function (x) { g[x.membre ? 'membres' : 'sans'] = x; });
+    var vs = (g.sans.visiteurs || 0), vm = (g.membres.visiteurs || 0);
+    var tot = vs + vm;
+    $('#lc-phrase').innerHTML = tot
+      ? '<b>' + pc(vs, tot) + ' %</b> des visiteurs n\'avaient pas de compte (' + nb(vs) + ' sur ' + nb(tot) + ').'
+      : 'Pas encore de visite sur cette période.';
+    $('#lc-part').innerHTML = tot
+      ? '<i style="width:' + pc(vs, tot) + '%;background:' + C_SANS + '"></i><i style="width:' + (100 - pc(vs, tot)) + '%;background:' + C_MEMBRES + '"></i>'
+      : '';
+    function col(nom, c, x) {
+      var ppv = x.visites ? Math.round(10 * x.vues / x.visites) / 10 : 0;
+      return '<div class="vs-c" style="--c:' + c + '"><h4>' + nom + '</h4><dl>' +
+        '<dt>Visiteurs</dt><dd class="gros">' + nb(x.visiteurs) + '</dd>' +
+        '<dt>Pages vues</dt><dd>' + nb(x.vues) + '</dd>' +
+        '<dt>Pages par visite</dt><dd>' + (ppv ? virgule(ppv) : '—') + '</dd>' +
+        '<dt>Temps moyen par page</dt><dd>' + duree(x.duree_moy) + '</dd>' +
+        '<dt>Sur téléphone</dt><dd>' + (x.vues ? (x.mobile || 0) + ' %' : '—') + '</dd>' +
+        '</dl></div>';
+    }
+    $('#lc-vs').innerHTML = col('Sans compte', C_SANS, g.sans) + col('Membres', C_MEMBRES, g.membres);
   }
 
   function rendreJours(d) {
@@ -266,23 +384,66 @@
     var jours = [], auj = new Date(); auj.setHours(12, 0, 0, 0);
     for (var i = etat.jours - 1; i >= 0; i--) {
       var t = new Date(auj); t.setDate(auj.getDate() - i);
-      var k = cleJour(t), x = index[k] || { vues: 0, lecteurs: 0 };
-      jours.push({ date: t, vues: x.vues, lecteurs: x.lecteurs });
+      var x = index[cleJour(t)] || { vues: 0, vues_membres: 0, vues_sans: 0, visiteurs: 0 };
+      jours.push({ date: t, vues: x.vues, m: x.vues_membres, s: x.vues_sans, visiteurs: x.visiteurs });
     }
     var max = Math.max.apply(null, jours.map(function (j) { return j.vues; }).concat([1]));
-    var montrerNb = jours.length <= 31;
     $('#lc-jours').innerHTML = jours.map(function (j) {
-      var h = Math.round(j.vues / max * 100);
-      return '<div class="j' + (j.vues ? '' : ' vide') + '" data-info="' + esc('<b>' + jourCourt(j.date) + '</b> · ' +
-        nb(j.vues) + ' page' + (j.vues > 1 ? 's' : '') + ' vue' + (j.vues > 1 ? 's' : '') + ' · ' +
-        nb(j.lecteurs) + ' lecteur' + (j.lecteurs > 1 ? 's' : '')) + '">' +
-        (montrerNb && j.vues && jours.length <= 14 ? '<b style="bottom:calc(' + h + '% + 4px)">' + j.vues + '</b>' : '') +
-        '<i style="height:' + h + '%"></i></div>';
+      var info = '<b>' + jourCourt(j.date) + '</b> · ' + nb(j.vues) + ' pages vues (' + nb(j.s) + ' sans compte) · ' +
+        nb(j.visiteurs) + ' visiteur' + (j.visiteurs > 1 ? 's' : '');
+      return '<div class="j" data-info="' + esc(info) + '">' +
+        (j.vues ? (j.s ? '<i class="s" style="height:' + (j.s / max * 100) + '%"></i>' : '') +
+                  (j.m ? '<i class="m" style="height:' + (j.m / max * 100) + '%"></i>' : '')
+                : '<i class="vide"></i>') +
+        '</div>';
     }).join('');
     var milieu = jours[Math.floor(jours.length / 2)];
     $('#lc-axe').innerHTML = '<span>' + jourCourt(jours[0].date) + '</span>' +
       (jours.length > 2 ? '<span>' + jourCourt(milieu.date) + '</span>' : '') +
       '<span>' + jourCourt(jours[jours.length - 1].date) + '</span>';
+  }
+
+  function ch(valeur, libelle, sous) {
+    return '<div class="ch"><b>' + esc(valeur) + '</b><span>' + esc(libelle) + '</span>' + (sous ? '<small>' + esc(sous) + '</small>' : '') + '</div>';
+  }
+
+  function rendrePremium(d) {
+    var p = d.premium || {};
+    var detail = (p.clics_detail || []).map(function (c) { return c.detail + ' : ' + nb(c.n); }).join(' · ');
+    $('#lc-prem').innerHTML =
+      ch(nb(p.murs), 'murs Premium vus', nb(p.murs_visiteurs) + ' visiteurs, dont ' + nb(p.murs_sans_compte) + ' fois sans compte') +
+      ch(nb(p.tarifs), 'visites de la page Tarifs', nb(p.tarifs_visiteurs) + ' visiteurs') +
+      ch(nb(p.clics), 'clics sur « payer »', p.clics ? nb(p.clics_visiteurs) + ' visiteurs · ' + detail : 'personne pour l\'instant') +
+      ch(nb(p.connexion), 'visiteurs sans compte passés par la connexion', 'ils ont ouvert la page de connexion ou d\'inscription') +
+      ch(nb(p.inscriptions), 'inscriptions', 'comptes créés depuis le site');
+    var l = p.pages || [];
+    $('#lc-prem-pages').innerHTML = l.length ? l.map(function (x) {
+      return '<li><a href="' + esc(base + x.page) + '" target="_blank" rel="noopener">' + esc(x.titre || x.page) + '</a>' +
+        '<span><b>' + nb(x.n) + '</b> fois · ' + nb(x.visiteurs) + ' visiteur' + (x.visiteurs > 1 ? 's' : '') + '</span></li>';
+    }).join('') : '<li class="rien" style="display:block">Aucun mur Premium sur cette période.</li>';
+  }
+
+  function barres(sel, liste, total, unite) {
+    var max = liste.length ? Math.max.apply(null, liste.map(function (x) { return x.v; })) : 1;
+    $(sel).innerHTML = liste.length ? liste.map(function (x, i) {
+      return '<div class="rub"><div class="l"><em>' + esc(x.nom) + '</em><span>' + nb(x.v) + (unite ? ' ' + unite : '') +
+        (total ? ' · ' + pc(x.v, total) + ' %' : '') + '</span></div>' +
+        '<div class="b"><i style="width:' + Math.max(2, Math.round(100 * x.v / (max || 1))) + '%;background:' + (x.c || COULEURS[i % COULEURS.length]) + '"></i></div></div>';
+    }).join('') : '<div class="rien">Rien pour l\'instant.</div>';
+  }
+
+  function rendreSources(d) {
+    var l = (d.sources || []).map(function (s) { return { nom: s.source, v: s.visites }; });
+    var tot = l.reduce(function (a, x) { return a + x.v; }, 0);
+    barres('#lc-sources', l.slice(0, 12), tot, 'visites');
+  }
+
+  function rendreEntrees(d) {
+    var l = d.entrees || [];
+    $('#lc-entrees').innerHTML = l.length ? l.map(function (x) {
+      return '<li><a href="' + esc(base + x.page) + '" target="_blank" rel="noopener">' + esc(titrePage(x)) + '</a>' +
+        '<span><b>' + nb(x.visites) + '</b></span></li>';
+    }).join('') : '<li class="rien" style="display:block">Rien pour l\'instant.</li>';
   }
 
   function rendreRubriques(d) {
@@ -291,26 +452,68 @@
       var g = rubrique(p.page).grande;
       tot[g] = (tot[g] || 0) + p.vues;
     });
-    var total = d.total || 0;
-    var liste = GRANDES.map(function (g, i) { return { nom: g, vues: tot[g] || 0, c: COULEURS[i] }; })
-      .filter(function (x) { return x.vues; })
-      .sort(function (a, b) { return b.vues - a.vues; });
-    var max = liste.length ? liste[0].vues : 1;
-    $('#lc-rubs').innerHTML = liste.length ? liste.map(function (x) {
-      var pc = total ? Math.round(100 * x.vues / total) : 0;
-      return '<div class="rub"><div class="l">' + esc(x.nom) + '<span>' + nb(x.vues) + ' · ' + pc + ' %</span></div>' +
-        '<div class="b"><i style="width:' + Math.max(2, Math.round(100 * x.vues / max)) + '%;background:' + x.c + '"></i></div></div>';
-    }).join('') : '<div class="empty" style="padding:30px 0">Rien pour l\'instant.</div>';
+    var liste = GRANDES.map(function (g, i) { return { nom: g, v: tot[g] || 0, c: COULEURS[i] }; })
+      .filter(function (x) { return x.v; })
+      .sort(function (a, b) { return b.v - a.v; });
+    barres('#lc-rubs', liste, d.total || 0, '');
   }
 
-  function rendreHeures(d) {
-    var h = [];
-    for (var i = 0; i < 24; i++) h.push(0);
-    (d.par_heure || []).forEach(function (x) { h[x.heure] = x.vues; });
-    var max = Math.max.apply(null, h.concat([1]));
-    $('#lc-heures').innerHTML = h.map(function (v, i) {
-      return '<div class="j" data-info="' + esc('<b>' + i + ' h – ' + (i + 1) + ' h</b> · ' + nb(v) + ' page' + (v > 1 ? 's' : '') + ' vue' + (v > 1 ? 's' : '')) + '">' +
+  function rendreAppareils(d) {
+    var total = d.total || 0;
+    var l = [
+      { nom: 'Téléphone', v: d.mobile || 0, c: '#7c9ec9' },
+      { nom: 'Ordinateur', v: total - (d.mobile || 0), c: '#c8a96e' }
+    ].filter(function (x) { return x.v; });
+    var sys = (d.systemes || []).map(function (s, i) { return { nom: s.systeme, v: s.visiteurs, c: COULEURS[(i + 3) % COULEURS.length] }; });
+    var totSys = sys.reduce(function (a, x) { return a + x.v; }, 0);
+    barres('#lc-appareils', l, total, 'pages');
+    if (!total) return;
+    var h = $('#lc-appareils');
+    var tmp = document.createElement('div');
+    tmp.id = 'lc-sys';
+    h.insertAdjacentHTML('beforeend', '<div class="sous-t" style="padding:10px 0 0">Systèmes (visiteurs)</div>');
+    h.appendChild(tmp);
+    barres('#lc-sys', sys, totSys, '');
+    tmp.style.display = 'flex'; tmp.style.flexDirection = 'column'; tmp.style.gap = '12px';
+    h.insertAdjacentHTML('beforeend', '<div class="sous-t" style="padding:10px 0 0">Application installée</div>' +
+      '<div class="rub"><div class="l"><em>Visiteurs qui ont ajouté le site à leur écran d\'accueil</em><span>' + nb(d.appli) + ' · ' +
+      pc(d.appli, d.visiteurs) + ' %</span></div></div>');
+  }
+
+  function histo(sel, valeurs, libelle) {
+    var max = Math.max.apply(null, valeurs.concat([1]));
+    $(sel).innerHTML = valeurs.map(function (v, i) {
+      return '<div class="j" data-info="' + esc('<b>' + libelle(i) + '</b> · ' + nb(v) + ' page' + (v > 1 ? 's' : '') + ' vue' + (v > 1 ? 's' : '')) + '">' +
         '<i style="height:' + Math.round(v / max * 100) + '%"></i></div>';
+    }).join('');
+  }
+  function rendreHeures(d) {
+    var h = []; for (var i = 0; i < 24; i++) h.push(0);
+    (d.par_heure || []).forEach(function (x) { h[x.heure] = x.vues; });
+    histo('#lc-heures', h, function (i) { return i + ' h – ' + (i + 1) + ' h'; });
+  }
+  function rendreSemaine(d) {
+    var h = [0, 0, 0, 0, 0, 0, 0];
+    (d.par_semaine || []).forEach(function (x) { h[x.jour - 1] = x.vues; });
+    histo('#lc-semaine', h, function (i) { return ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'][i]; });
+  }
+
+  function rendreRecherches(d) {
+    var l = d.recherches || [];
+    $('#lc-rech').innerHTML = l.length ? l.map(function (x) {
+      return '<li><em>' + esc(x.q) + '</em><span><b>' + nb(x.n) + '</b> fois · ' + nb(x.resultats) + ' résultat' + (x.resultats > 1 ? 's' : '') + '</span></li>';
+    }).join('') : '<li class="rien" style="display:block">Aucune recherche sur cette période.</li>';
+    var v = d.recherches_vides || [];
+    $('#lc-rech-vides').innerHTML = v.length ? v.map(function (x) {
+      return '<li><em>' + esc(x.q) + '</em><span><b>' + nb(x.n) + '</b> fois</span></li>';
+    }).join('') : '<li class="rien" style="display:block">Aucune recherche sans résultat.</li>';
+  }
+
+  function rendre404(d) {
+    var l = d.introuvables || [];
+    $('#lc-bloc-404').style.display = l.length ? '' : 'none';
+    $('#lc-404').innerHTML = l.map(function (x) {
+      return '<li><em>' + esc(x.page) + '</em><span><b>' + nb(x.vues) + '</b> fois</span></li>';
     }).join('');
   }
 
@@ -338,19 +541,19 @@
     var liste = (d.pages || []).filter(function (p) {
       var r = rubrique(p.page);
       if (etat.rub && r.fine !== etat.rub) return false;
-      if (q && sansAccents((p.titre || '') + ' ' + p.page).indexOf(q) === -1) return false;
+      if (q && sansAccents(titrePage(p) + ' ' + p.page).indexOf(q) === -1) return false;
       return true;
     });
     var montrees = etat.tout ? liste : liste.slice(0, PAR_PAGE);
-    var base = location.href.replace(/[^/]*([?#].*)?$/, '');
     $('#lc-pages').innerHTML = montrees.map(function (p) {
       var r = rubrique(p.page);
       return '<tr>' +
-        '<td class="pg"><a href="' + esc(base + p.page) + '" target="_blank" rel="noopener">' + esc(p.titre || p.page) + '</a>' +
+        '<td class="pg"><a href="' + esc(base + p.page) + '" target="_blank" rel="noopener">' + esc(titrePage(p)) + '</a>' +
           '<span class="mono">' + esc(p.page) + '</span></td>' +
         '<td class="rg"><i style="background:' + (couleur[r.grande] || 'var(--dim)') + '"></i>' + esc(r.fine) + '</td>' +
         '<td class="num vues">' + nb(p.vues) + '</td>' +
-        '<td class="num">' + nb(p.lecteurs) + '</td>' +
+        '<td class="num sans">' + nb(p.sans_compte) + '</td>' +
+        '<td class="num">' + nb(p.visiteurs) + '</td>' +
         '<td class="num">' + duree(p.duree_moy) + '</td>' +
         '<td class="num"><span class="jauge"><i style="width:' + (p.bout || 0) + '%"></i></span>' + (p.bout || 0) + ' %</td>' +
         '</tr>';
@@ -384,7 +587,7 @@
     var p = A.current && A.current();
     if (p && p.role === 'admin') demarrer(p);
   }, 1500);
-  /* Actualisation quand on revient sur l'onglet « Lecture ». */
+  /* Actualisation quand on revient sur l'onglet. */
   document.addEventListener('click', function (e) {
     var t = e.target.closest && e.target.closest('.tab[data-p="lecture"]');
     if (t && etat.charge) charger();
