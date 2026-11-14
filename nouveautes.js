@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "Canada",
+"titre": "Canada : Mark Carney, seul non-Européen à s'exprimer au sommet de la CPE à Dublin",
+"url": "actualites/en/articles/canada-carney-dublin-cpe-2026.html",
+"image": "actualites/en/images/canada-carney-dublin-cpe-2026.webp",
+"date": "2026-11-14T08:20:56+00:00"
+},
+{
 "t": "humanite",
 "rubrique": "Humanité",
 "meta": "Art",
@@ -1749,15 +1758,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/en/articles/canada-journee-verite-reconciliation-2026.html",
 "image": "actualites/en/images/canada-journee-verite-reconciliation-2026.webp",
 "date": "2026-10-02T06:16:22+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "Normes automobiles : Washington ramène l'objectif de consommation moyenne à 34,9 mpg en 2031",
-"url": "actualites/en/articles/us-vehicle-efficiency-standards-2026.html",
-"image": "actualites/en/images/us-vehicle-efficiency-standards-2026.webp",
-"date": "2026-10-01T13:52:44+00:00"
 },
 {
 "t": "de",
