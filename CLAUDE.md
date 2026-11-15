@@ -643,7 +643,10 @@ s'ouvrent, liens de la frise valides, `grep -c '—'` à 0 dans le texte.
   - **Vidéo de méthode** (demande type : « Fais une vidéo motion design pour expliquer comment trouver X ») : même moteur
     et même voix Piper, source `outils/video/maths2-<sujet>.html`. Fait : `maths2-rang.html` (rang d'une matrice par le
     pivot de Gauss, 10 écrans, 3 min 40 avec voix, novembre 2026) ; matrices animées `.mat` dont les lignes changent
-    quand la voix annonce l'opération (repères `.etape-m`).
+    quand la voix annonce l'opération (repères `.etape-m`). Fait aussi : `maths2-survie.html` (« La fiche de survie en
+    exemples » : les 13 points de la fiche de révision du concours blanc, méthode à gauche et exemple simple à droite,
+    22 écrans, 12 min 50 avec voix). Whisper coupe les élisions (« l'exemple », « s'écrit ») et écorche certains mots
+    (« triambulaire », « factorial ») : prendre comme repère un mot simple, ou le début d'un mot (`coordonn`).
 
 ### Index des cours (`cours-ecg.html`)
 
