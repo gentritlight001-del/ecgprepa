@@ -639,6 +639,11 @@ s'ouvrent, liens de la frise valides, `grep -c '—'` à 0 dans le texte.
     5 axiomes cochée en bas d'écran) et 7 (4 min, vecteur qui tourne pour cos θ, barres E(X)² / E(X²)), voix Piper.
     Whisper écorche souvent les nombres (« 0,89 » pour 0,81) : vérifier la prononciation de Piper avec
     `EspeakPhonemizer().phonemize('fr', …)` de `piper.phonemize_espeak` plutôt qu'avec la transcription.
+    Whisper écrit les nombres en chiffres (« zéros » devient « 0 ») : ne jamais prendre un nombre comme mot repère `data-v`.
+  - **Vidéo de méthode** (demande type : « Fais une vidéo motion design pour expliquer comment trouver X ») : même moteur
+    et même voix Piper, source `outils/video/maths2-<sujet>.html`. Fait : `maths2-rang.html` (rang d'une matrice par le
+    pivot de Gauss, 10 écrans, 3 min 40 avec voix, novembre 2026) ; matrices animées `.mat` dont les lignes changent
+    quand la voix annonce l'opération (repères `.etape-m`).
 
 ### Index des cours (`cours-ecg.html`)
 

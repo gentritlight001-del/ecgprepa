@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Méthode · Le rang d'une matrice (vidéo)</title>
+<!--
+  Vidéo « motion design » de méthode (maths, 2e année) : trouver le rang d'une matrice par le pivot de Gauss.
+  Même moteur que maths2-colle7-ex3.html (window.VIDEO) ; voix off : maths2-rang-voix.txt (Piper, voix fr_FR-tom-medium).
+    python3 outils/video/voix.py synthese outils/video/maths2-rang-voix.txt --dossier <scratchpad>/voix --piper <fr_FR-tom-medium.onnx>
+    python3 outils/video/generer.py outils/video/maths2-rang.html --controle --voix <scratchpad>/voix/voix.json
+    python3 outils/video/generer.py outils/video/maths2-rang.html <scratchpad>/rang.mp4 --voix <scratchpad>/voix/voix.json
+    python3 outils/video/voix.py poser outils/video/maths2-rang.html <scratchpad>/rang.mp4 <scratchpad>/rang-voix.mp4 --dossier <scratchpad>/voix
+  Matrices animées : <div class="mat" data-m="1,2,1;2,3,1;3,5,2">, cellules créées par le script ; un repère
+  <i class="etape-m anim" data-row="1" data-vals="0,-1,-1" data-v="…"> surligne la ligne quand la voix dit son mot,
+  puis remplace ses valeurs 2,4 s plus tard. Anneaux de pivot : <i class="ring anim" data-rc="ligne,colonne">.
+  KaTeX : outils/colles/.katex (ignoré par git). Le MP4 n'est jamais versionné.
+-->
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../colles/.katex/katex.min.css">
+<script src="../colles/.katex/katex.min.js"></script>
+<script src="../colles/.katex/contrib/auto-render.min.js"></script>
+<style>
+:root {
+  --bg: #0d1214; --or: #5cc8b8; --creme: #eef4f1; --dim: #93a6a2;
+  --vert: #8fd27a; --rouge: #ef6a55; --bleu: #e9b44c; --ligne: rgba(92,200,184,.24);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); }
+body { font-family: 'IBM Plex Sans', sans-serif; color: var(--creme); -webkit-font-smoothing: antialiased; }
+#stage { position: relative; width: 1920px; height: 1080px; overflow: hidden;
+  background: radial-gradient(ellipse at 30% 20%, #15221f 0%, var(--bg) 60%); }
+#grille { position: absolute; inset: -80px; opacity: .55;
+  background-image: linear-gradient(rgba(92,200,184,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(92,200,184,.06) 1px, transparent 1px);
+  background-size: 80px 80px; }
+#logo { position: absolute; left: 80px; top: 52px; font: 700 30px 'Playfair Display', serif; color: var(--creme); z-index: 5; }
+#logo b { color: var(--or); }
+#etiq { position: absolute; right: 80px; top: 58px; font: 500 20px 'IBM Plex Mono', monospace; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--dim); z-index: 5; }
+#etiq span { color: var(--or); }
+#etapes { position: absolute; left: 80px; bottom: 50px; display: flex; gap: 36px; z-index: 5;
+  font: 500 19px 'IBM Plex Mono', monospace; letter-spacing: .1em; text-transform: uppercase; color: rgba(147,166,162,.55); }
+#etapes .on { color: var(--or); }
+#etapes i { font-style: normal; display: inline-block; width: 30px; height: 30px; line-height: 28px; text-align: center;
+  border: 1.5px solid currentColor; border-radius: 50%; margin-right: 10px; font-size: 16px; }
+#barre { position: absolute; left: 0; bottom: 0; height: 6px; background: var(--or); z-index: 5; }
+#piste { position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: rgba(92,200,184,.12); }
+
+.scene { position: absolute; inset: 0; padding: 150px 120px 120px; display: block; }
+.kick { font: 500 22px 'IBM Plex Mono', monospace; letter-spacing: .16em; text-transform: uppercase; color: var(--or); margin-bottom: 22px; }
+.kick b { display: inline-block; background: var(--or); color: var(--bg); padding: 4px 12px; border-radius: 6px; margin-right: 14px; font-weight: 600; }
+h2.titre { font: 600 64px/1.1 'Fraunces', serif; margin-bottom: 40px; letter-spacing: -.01em; }
+h2.titre em { font-style: normal; color: var(--or); }
+.ligne { font-size: 38px; line-height: 1.45; margin-bottom: 26px; }
+.ligne.petit { font-size: 32px; color: var(--dim); }
+.big { font-size: 50px; text-align: center; margin: 26px 0 34px; }
+.carte { background: rgba(255,255,255,.035); border: 1.5px solid var(--ligne); border-radius: 22px; padding: 30px 40px; }
+.carte.or { border-color: var(--or); background: rgba(92,200,184,.07); }
+.carte.ko { border-color: var(--rouge); background: rgba(239,106,85,.07); }
+.carte .kick { margin-bottom: 12px; font-size: 19px; }
+.carte.ko .kick { color: var(--rouge); }
+.coche { display: inline-flex; align-items: center; gap: 16px; font: 600 36px 'IBM Plex Sans'; color: var(--vert);
+  border: 2px solid var(--vert); border-radius: 60px; padding: 12px 34px; background: rgba(143,210,122,.08); }
+.coche::before { content: '✓'; font-size: 38px; }
+.coche.non { color: var(--rouge); border-color: var(--rouge); background: rgba(239,106,85,.08); }
+.coche.non::before { content: '✗'; }
+.cols { display: grid; grid-template-columns: 1fr 640px; gap: 80px; align-items: start; }
+.katex { font-size: 1.08em; }
+.anim { will-change: opacity, transform; }
+svg text { font-family: 'IBM Plex Sans', sans-serif; }
+
+/* titre */
+.s-titre { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding-top: 80px; }
+.s-titre h1 { font: 600 150px/1 'Fraunces', serif; letter-spacing: -.02em; margin: 10px 0 44px; }
+.s-titre h1 span { color: var(--or); }
+.s-titre .big { font-size: 60px; margin: 0 0 40px; }
+.s-titre .sous { font-size: 36px; color: var(--dim); }
+
+/* matrices animées */
+.mat { position: relative; display: inline-grid; grid-template-columns: repeat(3, 150px); grid-auto-rows: 105px; padding: 6px 40px; }
+.mat::before, .mat::after { content: ''; position: absolute; top: 0; bottom: 0; width: 30px; border: 5px solid var(--creme); }
+.mat::before { left: 0; border-right: none; border-radius: 34px 0 0 34px / 50% 0 0 50%; }
+.mat::after { right: 0; border-left: none; border-radius: 0 34px 34px 0 / 0 50% 50% 0; }
+.mat .c { display: flex; align-items: center; justify-content: center; font: 500 62px 'IBM Plex Sans'; position: relative; z-index: 1;
+  font-variant-numeric: tabular-nums; }
+.mat .c.zero { color: rgba(147,166,162,.55); }
+.mat .c.etoile { color: var(--or); }
+.mat .c.qcq { color: var(--dim); }
+.mat .rl { position: absolute; left: -84px; font: 500 34px 'IBM Plex Sans'; color: var(--dim); height: 105px; display: flex; align-items: center; }
+.mat .bande { position: absolute; left: 22px; right: 22px; height: 99px; border-radius: 16px; background: rgba(233,180,76,.16);
+  border: 2px solid rgba(233,180,76,.7); opacity: 0; z-index: 0; }
+.mat .ring { position: absolute; width: 104px; height: 104px; border: 5px solid var(--or); border-radius: 50%; z-index: 2;
+  box-shadow: 0 0 30px rgba(92,200,184,.35); }
+.mat .cpt { position: absolute; left: calc(100% + 34px); height: 105px; display: flex; align-items: center; white-space: nowrap;
+  font: 600 30px 'IBM Plex Mono', monospace; color: var(--or); }
+.mat .cpt.non { color: var(--rouge); }
+.etape-m { display: none; }
+
+/* exemple */
+.ex { display: grid; grid-template-columns: 660px 1fr; gap: 70px; align-items: start; }
+.ex .gauche { padding: 30px 0 0 84px; }
+.op { background: rgba(255,255,255,.035); border-left: 5px solid var(--bleu); border-radius: 0 16px 16px 0; padding: 14px 28px; margin-bottom: 20px; }
+.op .opn { font-size: 38px; }
+.op .opc { font-size: 26px; color: var(--dim); margin-top: 4px; font-family: 'IBM Plex Mono', monospace; }
+.etiq-m { margin-top: 26px; text-align: center; font: 500 22px 'IBM Plex Mono'; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
+
+/* opérations */
+.ops3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; margin-bottom: 40px; }
+.ops3 .carte { min-height: 270px; display: flex; flex-direction: column; }
+.ops3 .num { font: 600 54px/1 'Fraunces', serif; color: var(--or); margin-bottom: 14px; }
+.ops3 .t { font-size: 34px; line-height: 1.3; margin-bottom: 18px; }
+.ops3 .f { font-size: 40px; margin-top: auto; }
+
+/* réflexes */
+.grille4 { display: grid; grid-template-columns: 1fr 1fr; gap: 34px 50px; margin-top: 10px; }
+.reflexe { display: flex; gap: 26px; align-items: stretch; font-size: 36px; line-height: 1.4; }
+.reflexe b.n { font: 600 56px/1 'Fraunces', serif; color: var(--or); flex: none; width: 54px; padding-top: 26px; }
+.reflexe .carte { padding: 26px 34px; flex: 1; min-height: 210px; display: flex; align-items: center; }
+
+/* résultat */
+.cadre { border: 3px solid var(--or); border-radius: 26px; padding: 26px 60px; font-size: 64px; background: rgba(92,200,184,.07);
+  box-shadow: 0 0 80px rgba(92,200,184,.15); display: inline-block; }
+.s-fin { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.s-fin .logo { font: 700 120px 'Playfair Display', serif; }
+.s-fin .logo b { color: var(--or); }
+.s-fin .ligne { color: var(--dim); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="grille"></div>
+  <div id="logo">ECG <b>Prépa</b></div>
+  <div id="etiq">Méthode · <span>Le rang</span></div>
+  <div id="piste"></div><div id="barre"></div>
+  <div id="etapes"><span data-p="1"><i>1</i>Définition</span><span data-p="2"><i>2</i>Méthode</span><span data-p="3"><i>3</i>Exemple</span><span data-p="4"><i>4</i>Usages</span></div>
+
+  <!-- 1. Titre -->
+  <section class="scene s-titre" data-dur="9">
+    <div class="kick anim" data-in="0.3">Méthode · Maths · 2e année</div>
+    <h1 class="anim" data-v="rang" data-in="0.8" data-a="pop" data-d="0.9">Le rang d'une <span>matrice</span></h1>
+    <div class="big anim" data-v="pivots" data-in="3" data-a="wipe" data-d="1.2">\(\mathrm{rg}(A)\) = nombre de pivots</div>
+    <div class="sous anim" data-v="methode" data-in="5.5">La méthode du pivot de Gauss, pas à pas</div>
+  </section>
+
+  <!-- 2. Définition -->
+  <section class="scene" data-dur="22" data-part="1">
+    <div class="kick anim" data-in="0.2"><b>1</b>Définition</div>
+    <h2 class="titre anim" data-in="0.4">Le rang, <em>c'est quoi</em>&nbsp;?</h2>
+    <div class="cols">
+      <div>
+        <div class="carte or anim" data-v="maximal" data-in="1.5" style="margin-bottom:24px">
+          <div class="ligne" style="margin:0">\(\mathrm{rg}(A)\) = nombre maximal de colonnes <b>linéairement indépendantes</b></div>
+        </div>
+        <div class="ligne petit anim" data-v="dimension" data-in="5">= la dimension de l'espace engendré par les colonnes</div>
+        <div class="ligne anim" data-v="exemple" data-in="8.5">Exemple&nbsp;: \(A = \begin{pmatrix} 1 &amp; 2 \\ 2 &amp; 4 \end{pmatrix}\)</div>
+        <div class="ligne anim" data-v="double" data-in="12">\(C_2 = 2\,C_1\)&nbsp;: une seule direction</div>
+        <div class="anim" data-v="donc" data-in="16" data-a="pop"><span class="coche">\(\mathrm{rg}(A) = 1\)</span></div>
+      </div>
+      <svg viewBox="0 0 640 600" width="640" height="600" class="anim" data-in="1" data-a="fade">
+        <defs>
+          <marker id="flo" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5cc8b8"/></marker>
+          <marker id="flb" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#e9b44c"/></marker>
+        </defs>
+        <line class="anim" data-a="draw" data-in="1.2" x1="40" y1="500" x2="620" y2="500" stroke="#93a6a2" stroke-width="2.5"/>
+        <line class="anim" data-a="draw" data-in="1.2" x1="120" y1="580" x2="120" y2="20" stroke="#93a6a2" stroke-width="2.5"/>
+        <line class="anim" data-v="seule" data-in="14" data-a="draw" x1="80" y1="580" x2="350" y2="40" stroke="#eef4f1" stroke-width="2.5" stroke-dasharray="12 10" opacity=".7"/>
+        <path class="anim" data-v="double" data-in="12" data-a="draw" d="M120 500 L330 80" stroke="#e9b44c" stroke-width="14" stroke-linecap="round" marker-end="url(#flb)" fill="none"/>
+        <path class="anim" data-v="colonne" data-in="10" data-a="draw" d="M120 500 L220 300" stroke="#5cc8b8" stroke-width="8" stroke-linecap="round" marker-end="url(#flo)" fill="none"/>
+        <text class="anim" data-v="colonne" data-in="10" data-a="fade" x="240" y="330" fill="#5cc8b8" font-size="34" font-style="italic">C₁ = (1, 2)</text>
+        <text class="anim" data-v="double" data-in="12" data-a="fade" x="350" y="120" fill="#e9b44c" font-size="34" font-style="italic">C₂ = (2, 4)</text>
+        <text class="anim" data-v="seule" data-in="14" data-a="fade" x="140" y="580" fill="#eef4f1" font-size="28">une seule droite</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- 3. L'idée -->
+  <section class="scene" data-dur="22" data-part="2">
+    <div class="kick anim" data-in="0.2"><b>2</b>Méthode</div>
+    <h2 class="titre anim" data-in="0.4">L'idée&nbsp;: <em>échelonner</em>, puis compter</h2>
+    <div class="cols">
+      <div>
+        <div class="carte anim" data-v="transforme" data-in="3" style="margin-bottom:30px">
+          <div class="kick">Étape 1</div>
+          <div class="ligne" style="margin:0">Transformer \(A\) en <b>matrice échelonnée</b> par des opérations sur les lignes&nbsp;: le rang ne change pas.</div>
+        </div>
+        <div class="carte or anim" data-v="compte" data-in="15">
+          <div class="kick">Étape 2</div>
+          <div class="ligne" style="margin:0">Compter les pivots&nbsp;: le rang, c'est <b>leur nombre</b>.</div>
+        </div>
+      </div>
+      <div style="padding:40px 0 0 84px">
+        <div class="mat anim" data-v="escalier" data-in="9" data-a="fade" data-m="p,q,q;0,p,q;0,0,0" data-lab="1">
+          <i class="ring anim" data-a="pop" data-v="pivot" data-in="11" data-rc="0,0"></i>
+          <i class="ring anim" data-a="pop" data-v="pivot" data-in="11.6" data-rc="1,1"></i>
+        </div>
+        <div class="etiq-m anim" data-v="escalier" data-in="9.2" style="margin-left:-84px">Une matrice échelonnée&nbsp;: 2 pivots</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Les opérations -->
+  <section class="scene" data-dur="24" data-part="2">
+    <div class="kick anim" data-in="0.2"><b>2</b>Méthode</div>
+    <h2 class="titre anim" data-in="0.4">Les <em>3 opérations</em> autorisées</h2>
+    <div class="ops3">
+      <div class="carte anim" data-v="echanger" data-in="2.5"><div class="num">1</div><div class="t">Échanger deux lignes</div><div class="f">\(L_i \leftrightarrow L_j\)</div></div>
+      <div class="carte anim" data-v="multiplier" data-in="5"><div class="num">2</div><div class="t">Multiplier une ligne par un réel non nul</div><div class="f">\(L_i \leftarrow a\,L_i,\ a \neq 0\)</div></div>
+      <div class="carte or anim" data-v="ajouter" data-in="8"><div class="num">3</div><div class="t">Ajouter à une ligne un multiple d'une autre</div><div class="f">\(L_i \leftarrow L_i + b\,L_j\)</div></div>
+    </div>
+    <div class="carte ko anim" data-v="jamais" data-in="15" style="max-width:1300px;margin:0 auto">
+      <div class="kick">Piège</div>
+      <div class="ligne" style="margin:0">Jamais \(L_i \leftarrow 0 \times L_i\)&nbsp;: on effacerait une ligne, et le rang changerait.</div>
+    </div>
+  </section>
+
+  <!-- 5. Exemple : échelonnement -->
+  <section class="scene" data-dur="46" data-part="3" data-fn="mat">
+    <div class="kick anim" data-in="0.2"><b>3</b>Exemple</div>
+    <h2 class="titre anim" data-in="0.4">Un exemple, <em>pas à pas</em></h2>
+    <div class="ex">
+      <div class="gauche">
+        <div class="mat anim" data-in="1.5" data-a="fade" data-m="1,2,1;2,3,1;3,5,2" data-lab="1" data-etapes="1">
+          <i class="ring anim" data-a="pop" data-v="pivot" data-in="4" data-rc="0,0"></i>
+          <i class="ring anim" data-a="pop" data-v="nouveau pivot" data-in="28" data-rc="1,1"></i>
+          <i class="etape-m anim" data-v="premiere operation" data-in="8" data-row="1" data-vals="0,-1,-1"></i>
+          <i class="etape-m anim" data-v="deuxieme operation" data-in="16" data-row="2" data-vals="0,-1,-1"></i>
+          <i class="etape-m anim" data-v="derniere operation" data-in="31" data-row="2" data-vals="0,0,0"></i>
+        </div>
+        <div class="etiq-m anim" data-in="1.5" style="margin-left:-84px">\(A\), matrice de taille 3</div>
+      </div>
+      <div>
+        <div class="op anim" data-v="premiere operation" data-in="8"><div class="opn">\(L_2 \leftarrow L_2 - 2\,L_1\)</div><div class="opc">(2, 3, 1) − 2 × (1, 2, 1) = (0, −1, −1)</div></div>
+        <div class="op anim" data-v="deuxieme operation" data-in="16"><div class="opn">\(L_3 \leftarrow L_3 - 3\,L_1\)</div><div class="opc">(3, 5, 2) − 3 × (1, 2, 1) = (0, −1, −1)</div></div>
+        <div class="anim" data-v="plus que" data-in="23" data-a="pop" style="margin:4px 0 24px"><span class="coche">Sous le 1&nbsp;: que des zéros</span></div>
+        <div class="op anim" data-v="derniere operation" data-in="31"><div class="opn">\(L_3 \leftarrow L_3 - L_2\)</div><div class="opc">(0, −1, −1) − (0, −1, −1) = (0, 0, 0)</div></div>
+        <div class="anim" data-v="echelon" data-in="39" data-a="pop" style="margin-top:4px"><span class="coche">Matrice échelonnée</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Compter -->
+  <section class="scene" data-dur="26" data-part="3">
+    <div class="kick anim" data-in="0.2"><b>3</b>Exemple</div>
+    <h2 class="titre anim" data-in="0.4">On <em>compte</em> les pivots</h2>
+    <div class="ex" style="grid-template-columns:860px 1fr">
+      <div class="gauche">
+        <div class="mat anim" data-in="0.8" data-a="fade" data-m="1,2,1;0,-1,-1;0,0,0" data-lab="1">
+          <i class="ring anim" data-a="pop" data-v="premier pivot" data-in="2" data-rc="0,0"></i>
+          <i class="ring anim" data-a="pop" data-v="deuxieme sur" data-in="4" data-rc="1,1"></i>
+          <b class="cpt anim" data-v="premier pivot" data-in="2.2" data-row="0">pivot 1</b>
+          <b class="cpt anim" data-v="deuxieme sur" data-in="4.2" data-row="1">pivot 2</b>
+          <b class="cpt non anim" data-v="nul" data-in="6.5" data-row="2">ligne nulle</b>
+        </div>
+      </div>
+      <div>
+        <div class="cadre anim" data-v="rang vaut" data-in="9.5" data-a="pop">\(\mathrm{rg}(A) = 2\)</div>
+        <div class="ligne anim" data-v="verification" data-in="13" style="margin-top:44px">Vérification&nbsp;: dans \(A\), \(L_3 = L_1 + L_2\).</div>
+        <div class="ligne anim" data-v="inversible" data-in="18">\(\mathrm{rg}(A) = 2 &lt; 3\)&nbsp;: \(A\) n'est <b>pas inversible</b>.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Raccourcis -->
+  <section class="scene" data-dur="26" data-part="4">
+    <div class="kick anim" data-in="0.2"><b>4</b>Usages</div>
+    <h2 class="titre anim" data-in="0.4">Les <em>réflexes</em> qui font gagner du temps</h2>
+    <div class="grille4">
+      <div class="reflexe anim" data-v="jamais plus" data-in="2"><b class="n">1</b><div class="carte"><div>\(\mathrm{rg}(A) \leqslant\) nombre de lignes, et \(\leqslant\) nombre de colonnes.</div></div></div>
+      <div class="reflexe anim" data-v="inversible" data-in="7"><b class="n">2</b><div class="carte"><div>\(A \in \mathcal{M}_n(\mathbb{R})\) inversible \(\iff \mathrm{rg}(A) = n\).</div></div></div>
+      <div class="reflexe anim" data-v="colonnes" data-in="12"><b class="n">3</b><div class="carte"><div>\(\mathrm{rg}({}^t\!A) = \mathrm{rg}(A)\)&nbsp;: on peut aussi travailler sur les colonnes.</div></div></div>
+      <div class="reflexe anim" data-v="proportion" data-in="17"><b class="n">4</b><div class="carte"><div>Deux colonnes proportionnelles&nbsp;: on en retire une, le rang ne change pas.</div></div></div>
+    </div>
+  </section>
+
+  <!-- 8. Valeurs propres -->
+  <section class="scene" data-dur="40" data-part="4">
+    <div class="kick anim" data-in="0.2"><b>4</b>Usages</div>
+    <h2 class="titre anim" data-in="0.4">Le rang pour les <em>valeurs propres</em></h2>
+    <div class="cols" style="grid-template-columns:1fr 760px">
+      <div>
+        <div class="carte or anim" data-v="inversible" data-in="3" style="margin-bottom:26px">
+          <div class="ligne" style="margin:0">\(\lambda\) valeur propre de \(A\) \(\iff \mathrm{rg}(A - \lambda I) &lt; n\)</div>
+        </div>
+        <div class="carte anim" data-v="theoreme" data-in="11">
+          <div class="kick">Théorème du rang</div>
+          <div class="ligne" style="margin:0">\(\dim E_\lambda(A) = n - \mathrm{rg}(A - \lambda I)\)</div>
+        </div>
+      </div>
+      <div>
+        <div class="ligne petit anim" data-v="concours" data-in="18">Concours blanc 2025, exercice 1</div>
+        <div class="ligne anim" data-v="concours" data-in="18.3">\(A = \begin{pmatrix} 1 &amp; 1 &amp; 1 \\ 0 &amp; 1 &amp; 2 \\ 0 &amp; 0 &amp; 1 \end{pmatrix}\)</div>
+        <div class="ligne anim" data-v="retire" data-in="21">\(A - I = \begin{pmatrix} 0 &amp; 1 &amp; 1 \\ 0 &amp; 0 &amp; 2 \\ 0 &amp; 0 &amp; 0 \end{pmatrix}\), 2 pivots</div>
+        <div class="ligne anim" data-v="donc le" data-in="26">\(\dim E_1(A) = 3 - 2 = 1\)</div>
+        <div class="anim" data-v="diagonalisable" data-in="32" data-a="pop"><span class="coche non">\(A\) n'est pas diagonalisable</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. À retenir -->
+  <section class="scene" data-dur="22">
+    <div class="kick anim" data-in="0.2">Pour demain</div>
+    <h2 class="titre anim" data-in="0.4">Les <em>4 réflexes</em> à retenir</h2>
+    <div class="grille4">
+      <div class="reflexe anim" data-v="echelonner" data-in="1.5"><b class="n">1</b><div class="carte"><div>Échelonner avec le pivot de Gauss, puis compter les pivots.</div></div></div>
+      <div class="reflexe anim" data-v="ecrire" data-in="6"><b class="n">2</b><div class="carte"><div>Écrire chaque opération sur la copie&nbsp;: \(L_2 \leftarrow L_2 - 2L_1\).</div></div></div>
+      <div class="reflexe anim" data-v="une ligne" data-in="11"><b class="n">3</b><div class="carte"><div>Une ligne nulle n'a pas de pivot&nbsp;: elle ne compte pas.</div></div></div>
+      <div class="reflexe anim" data-v="valeur" data-in="15"><b class="n">4</b><div class="carte"><div>\(\lambda\) valeur propre \(\iff \mathrm{rg}(A - \lambda I) &lt; n\).</div></div></div>
+    </div>
+  </section>
+
+  <!-- 10. Fin -->
+  <section class="scene s-fin" data-dur="7">
+    <div class="logo anim" data-in="0.3" data-a="pop">ECG <b>Prépa</b></div>
+    <div class="ligne anim" data-v="retrouvez" data-in="1.5" style="margin-top:20px">Cours et colles corrigées sur ecg-prepa.fr</div>
+    <div class="ligne anim" data-v="courage" data-in="3.5" style="color:var(--or)">Bon courage&nbsp;!</div>
+  </section>
+</div>
+
+<script>
+(() => {
+  renderMathInElement(document.body, {
+    delimiters: [{ left: '\\[', right: '\\]', display: true }, { left: '\\(', right: '\\)', display: false }],
+    trust: true, strict: false, throwOnError: false,
+  });
+
+  const clamp = v => Math.max(0, Math.min(1, v));
+  const easeOut = p => 1 - Math.pow(1 - p, 3);
+  const easeInOut = p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+  const back = p => { const c = 1.7; return 1 + (c + 1) * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2); };
+
+  // Matrices : cellules, noms des lignes, bandes, anneaux et compteurs placés d'après data-rc / data-row.
+  const CW = 150, RH = 105, PX = 40, PY = 6;
+  const texte = v => v === 'p' ? '★' : v === 'q' ? '∗' : String(v).replace('-', '−');
+  function poser(c, v) {
+    c.textContent = texte(v);
+    c.classList.toggle('zero', String(v) === '0');
+    c.classList.toggle('etoile', v === 'p'); c.classList.toggle('qcq', v === 'q');
+  }
+  document.querySelectorAll('.mat').forEach(m => {
+    const lignes = m.dataset.m.split(';').map(l => l.split(','));
+    m._base = lignes;
+    m._cells = lignes.map((l, i) => l.map(v => {
+      const c = document.createElement('div'); c.className = 'c'; poser(c, v); m.appendChild(c); return c;
+    }));
+    lignes.forEach((l, i) => {
+      if (m.dataset.lab) { const r = document.createElement('div'); r.className = 'rl'; r.style.top = (PY + i * RH) + 'px'; r.innerHTML = `L<sub>${i + 1}</sub>`; m.appendChild(r); }
+      if (m.dataset.etapes) { const b = document.createElement('div'); b.className = 'bande'; b.style.top = (PY + 3 + i * RH) + 'px'; m.appendChild(b); }
+    });
+    m.querySelectorAll('.ring').forEach(r => {
+      const [i, j] = r.dataset.rc.split(',').map(Number);
+      r.style.left = (PX + j * CW + (CW - 104) / 2) + 'px'; r.style.top = (PY + i * RH + (RH - 104) / 2) + 'px';
+    });
+    m.querySelectorAll('.cpt').forEach(c => { c.style.top = (PY + +c.dataset.row * RH) + 'px'; });
+  });
+
+  const FN = {
+    mat(sc, l) {   // chaque repère : bande sur la ligne à son instant, nouvelles valeurs 2,4 s plus tard (éclair)
+      sc.querySelectorAll('.mat[data-etapes]').forEach(m => {
+        const cur = m._base.map(r => [...r]), bandes = m.querySelectorAll('.bande');
+        const flash = new Map();
+        bandes.forEach(b => b.style.opacity = 0);
+        m.querySelectorAll('.etape-m').forEach(e => {
+          const T = e._t ?? +e.dataset.in, r = +e.dataset.row;
+          if (l >= T) bandes[r].style.opacity = Math.min(easeOut(clamp((l - T) / .4)), 1 - clamp((l - T - 4.2) / .5));
+          if (l >= T + 2.4) { cur[r] = e.dataset.vals.split(','); flash.set(r, clamp((l - T - 2.4) / .8)); }
+        });
+        cur.forEach((row, i) => row.forEach((v, j) => {
+          const c = m._cells[i][j]; poser(c, v);
+          const f = flash.has(i) ? flash.get(i) : 1;
+          c.style.transform = `scale(${1 + .25 * Math.sin(Math.PI * f)})`;
+          c.style.color = f < 1 ? '#e9b44c' : '';
+        }));
+      });
+    },
+  };
+
+  const scenes = [...document.querySelectorAll('.scene')];
+  const plans = scenes.map(el => {
+    const p = { el, dur: +el.dataset.dur, hl: JSON.parse(el.dataset.hl || '{}'), part: el.dataset.part || '', decal: 0, manque: [] };
+    p.items = [...el.querySelectorAll('[data-in]')].map(e => ({
+      e, t: +e.dataset.in, a: e.dataset.a || (e.classList.contains('mark') ? 'mark' : 'up'),
+      d: +(e.dataset.d || (e.dataset.a === 'draw' ? 1.4 : e.dataset.a === 'pop' ? .7 : e.dataset.a === 'wipe' ? 1 : .6)),
+      out: e.dataset.out ? +e.dataset.out : null,
+    }));
+    return p;
+  });
+
+  // Voix off (voix.py synthese) : chaque écran dure le temps de sa voix, et chaque élément data-v apparaît quand la
+  // voix prononce son mot repère (mots.json, transcrit par Whisper) ; les autres éléments suivent au prorata.
+  const DEPART = .4;
+  const norm = w => w.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  function trouve(mots, cle, depuis) {
+    const k = cle.split(' ').map(norm);
+    for (let j = depuis; j <= mots.length - k.length; j++)
+      if (k.every((x, q) => norm(mots[j + q][0]).startsWith(x))) return j;
+    return -1;
+  }
+  if (window.VOIX) plans.forEach((p, i) => {
+    const voix = window.VOIX[i + 1], mots = (window.VOIX_MOTS || {})[i + 1] || [];
+    if (voix == null) return;
+    const k = (DEPART + voix) / Math.max(1, p.dur - 1.5);
+    let curseur = 0;
+    [...p.items].sort((a, b) => a.t - b.t).forEach(it => {
+      const cle = it.e.dataset.v, j = cle ? trouve(mots, cle, curseur) : -1;
+      if (cle && j < 0) p.manque.push(cle);
+      if (j >= 0) { it.t = DEPART + mots[j][1] - .15; curseur = j; } else it.t *= k;
+    });
+    p.dur = Math.max(4, DEPART + voix + .9, ...p.items.map(it => it.t + it.d + .8),
+      ...p.items.filter(it => it.e.classList.contains('etape-m')).map(it => it.t + 4));
+  });
+  plans.forEach(p => p.items.forEach(it => { it.e._t = it.t; }));
+  let debut = 0;
+  plans.forEach(p => { p.start = debut; debut += p.dur; });
+  const DUREE = debut + .5;
+  const longueurs = new Map();
+  plans.forEach(p => { p.el.style.display = ''; });
+  plans.forEach(p => p.items.forEach(it => { if (it.a === 'draw' && it.e.getTotalLength) longueurs.set(it.e, it.e.getTotalLength()); }));
+  plans.forEach(p => { p.el.style.display = 'none'; });
+
+  const barre = document.getElementById('barre'), grille = document.getElementById('grille');
+  const etapes = [...document.querySelectorAll('#etapes [data-p]')], etapesBox = document.getElementById('etapes');
+
+  function anim(it, l) {
+    const p = clamp((l - it.t) / it.d), e = it.e;
+    let o = 1, tr = '';
+    if (it.a === 'up') { o = easeOut(p); tr = `translateY(${(1 - easeOut(p)) * 34}px)`; }
+    else if (it.a === 'fade') o = easeOut(p);
+    else if (it.a === 'pop') { o = clamp(p * 2.5); tr = `scale(${.82 + .18 * back(p)})`; }
+    else if (it.a === 'wipe') { o = clamp(p * 4); e.style.clipPath = `inset(-30px ${(1 - easeInOut(p)) * 100}% -30px -30px)`; }
+    else if (it.a === 'draw') { const L = longueurs.get(e) || 1; e.style.strokeDasharray = L; e.style.strokeDashoffset = L * (1 - easeInOut(p)); o = p > 0 ? 1 : 0; }
+    if (it.out != null) o *= 1 - clamp((l - it.out) / .4);
+    if (e.classList.contains('etape-m')) return;
+    e.style.opacity = o;
+    if (e instanceof SVGElement) { if (tr) e.style.transformBox = 'fill-box', e.style.transformOrigin = 'center'; }
+    e.style.transform = tr;
+  }
+
+  function render(t) {
+    barre.style.width = (100 * clamp(t / (DUREE - .5))) + '%';
+    grille.style.transform = `translate(${-(t * 6) % 80}px, ${-(t * 3) % 80}px)`;
+    let actif = null;
+    plans.forEach(p => {
+      const l = t - p.start;
+      const vis = l >= 0 && (l < p.dur || (p === plans[plans.length - 1] && l < p.dur + 1));
+      p.el.style.display = vis ? '' : 'none';
+      if (!vis) return;
+      actif = p;
+      const fin = p === plans[plans.length - 1] ? 1 : 1 - clamp((l - (p.dur - .4)) / .4);
+      const ent = clamp(l / .45);
+      p.el.style.opacity = Math.min(easeOut(ent), fin);
+      p.el.style.transform = `translateY(${(1 - easeOut(ent)) * 18 - (1 - fin) * 18}px)`;
+      p.items.forEach(it => anim(it, l));
+      if (p.el.dataset.fn) FN[p.el.dataset.fn](p.el, l - p.decal);
+    });
+    const part = actif ? actif.part : '';
+    etapesBox.style.opacity = part ? 1 : 0;
+    etapes.forEach(s => s.classList.toggle('on', s.dataset.p === part));
+  }
+
+  function controle() {
+    const err = [];
+    plans.forEach((p, i) => p.manque.forEach(m => err.push(`plan ${i + 1} : repère de voix « ${m} » introuvable`)));
+    document.querySelectorAll('.katex-error').forEach(e => err.push('KaTeX : ' + (e.title || e.textContent)));
+    plans.forEach((p, i) => {
+      render(p.start + p.dur - .5);
+      p.el.querySelectorAll('.anim, .ligne, .carte, .eq, .big, .cadre, .cpt').forEach(e => {
+        const r = e.getBoundingClientRect();
+        if (!r.width || e instanceof SVGElement && e.tagName !== 'svg') return;
+        if (r.left < 40 || r.right > 1880 || r.top < 110 || r.bottom > 1020)
+          err.push(`plan ${i + 1} : « ${(e.textContent || e.id).trim().slice(0, 40)} » sort du cadre (${Math.round(r.left)}, ${Math.round(r.top)}, ${Math.round(r.right)}, ${Math.round(r.bottom)})`);
+        if (!e.classList.contains('mat') && e.scrollWidth > e.clientWidth + 2 && getComputedStyle(e).display !== 'inline')
+          err.push(`plan ${i + 1} : « ${(e.textContent || '').trim().slice(0, 40)} » déborde en largeur`);
+      });
+    });
+    return [...new Set(err)];
+  }
+
+  render(0);
+  window.VIDEO = { render, duree: DUREE, controle, plans: plans.map(p => ({ start: p.start, dur: p.dur, voix: DEPART })) };
+})();
+</script>
+</body>
+</html>
