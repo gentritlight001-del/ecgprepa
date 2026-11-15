@@ -93,11 +93,16 @@ as $$
 declare
   v text[] := string_to_array($1, ';');
 begin
-  if array_length(v, 1) <> 4 or v[1] !~ '^\d{1,18}$' or v[3] !~ '^\d{1,6}$' or v[4] !~ '^\d{1,3}$'
+  if array_length(v, 1) not in (4, 5) or v[1] !~ '^\d{1,18}$' or v[3] !~ '^\d{1,6}$' or v[4] !~ '^\d{1,3}$'
      or v[2] !~ '^[0-9a-f-]{36}$' then
     return;
   end if;
   perform public.finir_vue(v[1]::bigint, v[2]::uuid, v[3]::int, v[4]::int);
+  -- 5e champ (version 3) : « 1 » si le visiteur a fait un geste.
+  if array_length(v, 1) = 5 and v[5] = '1' then
+    update public.pages_vues set geste = true
+     where id = v[1]::bigint and cle = v[2]::uuid and cree > now() - interval '12 hours';
+  end if;
 end;
 $$;
 
@@ -278,6 +283,14 @@ revoke all on function public.noter_evenement(jsonb) from public;
 grant execute on function public.noter_page(jsonb) to anon, authenticated;
 grant execute on function public.noter_evenement(jsonb) to anon, authenticated;
 
+-- ─── Robots (version 3, 15 novembre 2026) ─────────────────────────
+-- La page ne mesure pas les robots déclarés (navigator.webdriver, nom
+-- de robot dans l'agent : Googlebot, Bingbot, Lighthouse…). Pour les
+-- autres, « geste » passe à vrai au premier défilement, toucher, clic,
+-- mouvement de souris ou touche (5e champ de finir_vue_texte), et
+-- stats_lecture écarte les visiteurs sans aucun signe de vie.
+alter table public.pages_vues add column if not exists geste boolean not null default false;
+
 -- ─── Statistiques (administrateur) ─────────────────────────────────
 -- p_public : 'tous', 'sans_compte' ou 'membres'.
 drop function if exists public.stats_lecture(integer);
@@ -303,9 +316,21 @@ begin
   v_debut := ((now() at time zone 'Europe/Paris')::date - (p_jours - 1))::timestamp at time zone 'Europe/Paris';
 
   with
+  -- Robots probables écartés : un visiteur compte s'il a fait au moins un
+  -- geste (défilement, toucher, clic, souris, clavier), était connecté, ou a
+  -- cherché, cliqué sur « payer » ou créé un compte. Avant le 15 novembre
+  -- 2026 à 8 h 30 (gestes pas encore notés), un temps de lecture suffit.
+  humains as (
+    select lecteur from public.pages_vues
+     where cree >= v_debut
+       and (geste or membre or (duree > 0 and cree < timestamptz '2026-11-15 08:30:00+01'))
+    union
+    select lecteur from public.evenements_site
+     where cree >= v_debut and lecteur is not null and type in ('recherche', 'clic_payer', 'inscription')
+  ),
   tout as (
     select *, (cree at time zone 'Europe/Paris') as local
-      from public.pages_vues where cree >= v_debut
+      from public.pages_vues where cree >= v_debut and lecteur in (select lecteur from humains)
   ),
   v as (
     select * from tout
@@ -317,6 +342,7 @@ begin
     select *, (cree at time zone 'Europe/Paris') as local
       from public.evenements_site
      where cree >= v_debut
+       and (lecteur is null or lecteur in (select lecteur from humains))
        and (p_public = 'tous' or (p_public = 'membres' and membre) or (p_public = 'sans_compte' and not membre))
   ),
   visites as (
@@ -340,6 +366,10 @@ begin
     'mobile', (select count(*) from v where appareil = 'mobile'),
     'appli', (select count(distinct lecteur) from v where appli),
     'aujourdhui', (select count(*) from tout where local::date = (now() at time zone 'Europe/Paris')::date),
+    'robots', (select count(distinct lecteur) from public.pages_vues
+                where cree >= v_debut and lecteur not in (select lecteur from humains)),
+    'robots_vues', (select count(*) from public.pages_vues
+                where cree >= v_debut and lecteur not in (select lecteur from humains)),
     'groupes', (select coalesce(json_agg(g), '[]'::json) from (
         select membre,
                count(*) as vues,
