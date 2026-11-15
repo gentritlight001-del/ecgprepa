@@ -104,7 +104,9 @@
       '#p-lecture .seg button:hover{color:var(--text)}',
       '#p-lecture .seg button.on{border-color:var(--accent);color:var(--accent);background:rgba(200,169,110,.08)}',
       '#p-lecture .seg.pub button.on{border-color:var(--blue);color:var(--blue);background:rgba(124,158,201,.1)}',
-      '#p-lecture .stats{margin-bottom:20px}',
+      '#p-lecture .stats{margin-bottom:12px}',
+      '#p-lecture .robots{color:var(--faint);font-size:.76rem;font-weight:300;line-height:1.6;margin:0 0 20px}',
+      '#p-lecture .robots b{color:var(--dim);font-weight:500}',
       '#p-lecture .stat small{display:block;color:var(--faint);font-size:.72rem;margin-top:6px;font-weight:300}',
       /* Comparaison sans compte / membres */
       '#p-lecture .vs{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:14px 22px 22px}',
@@ -226,6 +228,7 @@
         '</div>' +
       '</div>' +
       '<div class="stats" id="lc-stats"></div>' +
+      '<p class="robots" id="lc-robots"></p>' +
       bloc('lc-bloc-vs', 'Sans compte ou membres ?',
         'Toujours sur tout le monde, quel que soit le filtre. « Sans compte » : personne connectée au moment de la visite.',
         '<div class="phrase" id="lc-phrase"></div><div class="part" id="lc-part"></div><div class="vs" id="lc-vs"></div>') +
@@ -338,6 +341,11 @@
       carte('var(--pink)', nb(d.visites), 'Visites', virgule(d.pages_par_visite || 0) + ' pages par visite') +
       carte('var(--green)', duree(d.duree_moy), 'Temps moyen', 'par page · ' + duree(d.duree_totale) + ' de lecture en tout') +
       carte('var(--dim)', (d.rebond || 0) + ' %', 'Partis aussitôt', 'visites d\'une seule page');
+    $('#lc-robots').innerHTML = d.robots
+      ? '<b>' + nb(d.robots) + ' visiteur' + (d.robots > 1 ? 's' : '') + '</b> écarté' + (d.robots > 1 ? 's' : '') +
+        ' comme robots probables (' + nb(d.robots_vues) + ' page' + (d.robots_vues > 1 ? 's' : '') + ') : aucun geste sur la page ' +
+        '(ni défilement, ni toucher, ni clic, ni souris), pas connecté, aucune recherche. Les robots déclarés (Google, Bing…) ne sont pas comptés du tout.'
+      : 'Les robots ne sont pas comptés : ni les robots déclarés (Google, Bing…), ni les visiteurs sans aucun geste sur la page.';
     $('#lc-bloc-jours').style.display = etat.jours === 1 ? 'none' : '';
     rendreComparaison(d);
     rendreJours(d);

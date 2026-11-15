@@ -44,8 +44,12 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   (`localStorage` `ecg_visiteur`, identifiant au hasard, empreinte salée en base, jamais l'identifiant du compte) ; une visite
   = `sessionStorage` `ecg_visite` (30 min). Tables `pages_vues` et `evenements_site` (`supabase/statistiques-lecture.sql`, déjà
   appliqué ; 13 mois de conservation ; l'administrateur n'est pas compté). Onglet « Statistiques » de `admin.html`
-  (`lecture-admin.js`, fonction `stats_lecture(jours, public)` : tous, sans compte, membres). En test Playwright avec le vrai
-  `auth.js`, poser un `ecg_visiteur` connu et effacer ensuite ses lignes (`lecteur = stats_empreinte('<id>')`).
+  (`lecture-admin.js`, fonction `stats_lecture(jours, public)` : tous, sans compte, membres). **Robots** : `estRobot()` ne
+  mesure pas les robots déclarés (`navigator.webdriver`, nom de robot dans l'agent) ; les autres sont écartés par
+  `stats_lecture` (colonne `geste` : premier défilement, toucher, clic, souris ou touche ; un visiteur sans geste, sans compte et
+  sans recherche n'est pas compté, nombre affiché sous les chiffres de l'onglet). En test Playwright avec le vrai `auth.js` :
+  Playwright est un robot déclaré, donc poser un agent normal et `Navigator.prototype.webdriver` à `false`, plus un
+  `ecg_visiteur` connu, et effacer ensuite ses lignes (`lecteur = stats_empreinte('<id>')`).
 - Tester une page avec Playwright : `NODE_PATH=$(npm root -g)` pour Node, Chromium dans
   `/opt/pw-browsers/chromium`. Remplacer `auth.js` par un script vide (sinon redirection
   vers la connexion).

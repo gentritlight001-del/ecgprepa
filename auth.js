@@ -1252,9 +1252,21 @@
       return page.slice(0, 300);
     }
 
+    /* Robots déclarés : navigateur piloté par un programme
+       (navigator.webdriver) ou nom de robot dans l'agent. Ils ne sont
+       pas mesurés du tout. Les autres robots sont écartés en base :
+       aucun geste (défilement, toucher, clic, souris, clavier). */
+    function estRobot() {
+      try {
+        if (navigator.webdriver) return true;
+        return /bot\b|bot\/|crawl|spider|slurp|headless|lighthouse|pagespeed|prerender|preview|facebookexternalhit|embedly|quora|pinterest|vkshare|w3c_validator|whatsapp|telegram|discord|skype|gtmetrix|pingdom|uptime|monitor|curl|wget|python|java\/|go-http|axios|node-fetch|phantom|selenium|puppeteer|playwright/i
+          .test(navigator.userAgent || '');
+      } catch (e) { return false; }
+    }
+
     var lancee = false;
     function mesurer() {
-      if (lancee || estAdmin()) return;
+      if (lancee || estAdmin() || estRobot()) return;
       lancee = true;
       try {
         var page = cheminPage();
@@ -1266,14 +1278,20 @@
         var appli = !!((window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone);
         var vis = visite();
         var cle = hasard();
-        var id = null, actif = 0, geste = Date.now(), defil = 0, envoye = -1;
+        var id = null, actif = 0, geste = Date.now(), defil = 0, envoye = '', aBouge = false;
 
         var mesurerDefil = function () {
           var h = document.documentElement.scrollHeight || 1;
           var vu = Math.round(((window.scrollY || 0) + window.innerHeight) / h * 100);
           if (vu > defil) defil = Math.min(100, vu);
         };
-        var bouger = function () { geste = Date.now(); };
+        var bouger = function (e) {
+          geste = Date.now();
+          /* Un vrai geste : le défilement automatique du chargement
+             (ancre, restauration) n'en est pas un. */
+          if (!aBouge && (!e || e.isTrusted !== false) && Date.now() - debut > 400) { aBouge = true; envoyer(); }
+        };
+        var debut = Date.now();
         ['scroll', 'mousemove', 'keydown', 'touchstart', 'click'].forEach(function (t) {
           window.addEventListener(t, bouger, { passive: true });
         });
@@ -1287,10 +1305,10 @@
            vérification préalable, donc elle part même quand l'élève
            quitte la page (sendBeacon). */
         var envoyer = function () {
-          if (!id || envoye === actif * 1000 + defil) return;
-          envoye = actif * 1000 + defil;
+          var corps = id + ';' + cle + ';' + actif + ';' + defil + ';' + (aBouge ? 1 : 0);
+          if (!id || envoye === corps) return;
+          envoye = corps;
           var url = SUPABASE_URL + '/rest/v1/rpc/finir_vue_texte?apikey=' + encodeURIComponent(SUPABASE_ANON_KEY);
-          var corps = id + ';' + cle + ';' + actif + ';' + defil;
           try {
             if (navigator.sendBeacon && navigator.sendBeacon(url, new Blob([corps], { type: 'text/plain;charset=UTF-8' }))) return;
             fetch(url, { method: 'POST', keepalive: true, headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body: corps })
@@ -1309,7 +1327,10 @@
             cle: cle, visiteur: visiteur, visite: vis.id, entree: vis.entree,
             source: vis.entree ? source() : null, nouveau: nouveau, systeme: systeme(), appli: appli
           } });
-        }).then(function (r) { id = (r && !r.error && r.data) || null; }).catch(function () {});
+        }).then(function (r) {
+          id = (r && !r.error && r.data) || null;
+          if (aBouge) envoyer();
+        }).catch(function () {});
       } catch (e) {}
     }
 
