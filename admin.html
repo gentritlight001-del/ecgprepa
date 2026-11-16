@@ -484,7 +484,7 @@
 
       <div class="rangee">
         <section class="boite" aria-labelledby="t-top">
-          <div class="boite-t"><h2 id="t-top">Pages les plus lues · 7 jours</h2></div>
+          <div class="boite-t"><div><h2 id="t-top">Contenus les plus lus · 7 jours</h2><p>En lecteurs, index et listes écartés</p></div></div>
           <div id="ov-top" style="display:flex;flex-direction:column;gap:14px"></div>
           <button type="button" class="lien" data-aller="lecture">Toutes les statistiques →</button>
         </section>
@@ -633,7 +633,7 @@
       <div class="setting">
         <div>
           <h3>Statistiques de fréquentation</h3>
-          <p>Gardées 13 mois, puis effacées d'elles-mêmes. Aucune ne permet de savoir qui est qui ; tes propres visites ne sont pas comptées.</p>
+          <p>Gardées 13 mois, puis effacées d'elles-mêmes. Comptées par compte sous une empreinte chiffrée, elles ne donnent que des totaux, jamais qui a lu quoi ; tes propres visites ne sont pas comptées.</p>
         </div>
         <span class="mono">Mesure depuis le 14 nov. 2026</span>
       </div>
@@ -881,13 +881,16 @@
 
     /* Pages les plus lues */
     var L = window.ECGLectureAdmin || {};
-    var pages = ((s7 && s7.pages) || []).slice(0, 6), pmx = pages.length ? pages[0].vues : 1;
+    var estC = L.estContenu || function(){ return true; };
+    var pages = ((s7 && s7.pages) || []).filter(function(p){ return estC(p.page); })
+      .sort(function(a, b){ return (b.visiteurs || 0) - (a.visiteurs || 0); }).slice(0, 6);
+    var pmx = pages.length ? (pages[0].visiteurs || 1) : 1;
     $('#ov-top').innerHTML = attendu ? '<div class="rien">Chargement…</div>' : pages.length ? pages.map(function(p){
       var t = String(L.titre ? L.titre(p) : (p.titre || p.page)).replace(/\s+[\u2014|·-]\s+ECG Prépa\s*$/, '');
-      var r = L.rubrique ? L.rubrique(p.page).fine : '';
-      return '<div class="top-p"><div class="r1"><span>' + esc(t) + (r ? ' <small>· ' + esc(r) + '</small>' : '') + '</span><b>' + nbfr(p.vues) + '</b></div>' +
-        '<div class="jauge"><i style="width:' + Math.max(2, Math.round(100 * p.vues / pmx)) + '%"></i></div></div>';
-    }).join('') : '<div class="rien">Pas encore de visite sur 7 jours.</div>';
+      var r = L.infos ? L.infos(p.page).detail : '';
+      return '<div class="top-p"><div class="r1"><span>' + esc(t) + (r ? ' <small>· ' + esc(r) + '</small>' : '') + '</span><b>' + nbfr(p.visiteurs) + '</b></div>' +
+        '<div class="jauge"><i style="width:' + Math.max(2, Math.round(100 * (p.visiteurs || 0) / pmx)) + '%"></i></div></div>';
+    }).join('') : '<div class="rien">Pas encore de lecture sur 7 jours.</div>';
 
     /* Journal */
     $('#ov-journal').innerHTML = D.journal.length ? D.journal.slice(0, 7).map(function(e){

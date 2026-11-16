@@ -1482,6 +1482,11 @@
       return sb().then(function (c) { return T(c.rpc('stats_lecture', { p_jours: jours || 30, p_public: public_ || 'tous' })); });
     },
 
+    /* Statistiques par contenu et par compte, sans nom (supabase/statistiques-comptes.sql). */
+    statsContenus: function (jours, public_) {
+      return sb().then(function (c) { return T(c.rpc('stats_contenus', { p_jours: jours || 30, p_public: public_ || 'tous' })); });
+    },
+
     codesAcces: function () {
       return sb().then(function (c) { return T(c.rpc('codes_acces_admin')); })
         .then(function (d) { return d || []; });
