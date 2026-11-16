@@ -41,6 +41,14 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   Statistiques, Premium, Newsletter, Réglages, et liens vers les 3 autres pages admin ; rangée qui défile sur téléphone),
   **« Vue d'ensemble »** à l'ouverture (À traiter, chiffres de 7 jours, pages vues sur 30 jours, en ligne, pages les plus
   lues, journal, comptes à valider), adresse `admin.html#comptes`, `#lecture`… Une nouvelle page admin s'ajoute aussi à ce menu.
+  Menu non collant (pas de barre de défilement propre). Onglets refaits sur maquettes validées (novembre 2026) : **Comptes**
+  (pastilles de filtre, cases à cocher et actions groupées, fiche du membre à droite, plein écran sur téléphone),
+  **Sessions** (appareils en ligne en cartes, inactives en liste), **Journal** (alerte de connexions refusées, activité sur
+  15 jours, fil par jour en phrases, export CSV), **Statistiques** (`lecture-admin.js` : Audience, Contenus, Envie de
+  Premium, Recherche ; comparaison à la période précédente ; « Ajouter aux idées » écrit dans la liste de
+  `idees-articles.html`), **Premium** (`premium-admin.js` : revenu, abonnés filtrés, codes en cartes), **Newsletter**
+  (`newsletter.js` : 3 étapes, aperçu du courriel, PDF choisi dans « Mes newsletters », « Réutiliser » un envoi),
+  **Réglages** (inscriptions, administrateurs, données, zone sensible).
 - **Statistiques de fréquentation** (novembre 2026) : module `Stats` de `auth.js` (juste après `window.ECGAuth = Auth`),
   sur toutes les pages, publiques comprises (accueil, tarifs, connexion, 404), avec ou sans compte : `noter_page` (chemin,
   titre, appareil, système, appli installée, temps de lecture actif, défilement, visite, source d'arrivée ; envoi final par

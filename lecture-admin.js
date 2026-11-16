@@ -183,6 +183,33 @@
       '#p-lecture .jauge i{display:block;height:100%;background:var(--green)}',
       '#p-lecture .plus{display:block;margin:0 auto 18px}',
       '@media(max-width:860px){#p-lecture .duo{grid-template-columns:1fr}}',
+      /* Refonte (maquette validée, novembre 2026) */
+      '#p-lecture .lc-barre{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;padding:10px 12px;margin-bottom:22px;background:var(--surface);border:1px solid var(--border);border-radius:16px;z-index:20}',
+      '@media(min-width:961px){#p-lecture .lc-barre{position:sticky;top:68px;box-shadow:0 10px 30px rgba(0,0,0,.35)}}',
+      '#p-lecture .lc-barre .seg{gap:4px;padding:4px;background:var(--bg);border-radius:999px;justify-content:flex-start}',
+      '#p-lecture .lc-barre .seg button{border:0;background:none;font-family:"DM Sans",sans-serif;font-size:13px;letter-spacing:0;padding:0 14px;min-height:34px;color:var(--dim)}',
+      '#p-lecture .lc-barre .seg button.on,#p-lecture .lc-barre .seg.pub button.on{background:var(--accent);color:#0d0d0f;font-weight:600}',
+      '#p-lecture .lc-nav{display:flex;gap:16px;margin-left:auto}',
+      '#p-lecture .lc-nav button{background:none;border:0;padding:0;color:var(--accent);font-family:inherit;font-size:14px}',
+      '#p-lecture .lc-nav button:hover{color:#e3c88f}',
+      '#p-lecture .lc-sec{margin-bottom:34px;scroll-margin-top:140px}',
+      '#p-lecture .lc-sec>h2{font-family:"Playfair Display",serif;font-size:28px;font-weight:700;margin-bottom:14px}',
+      '#p-lecture .kpis{margin-bottom:10px}#p-lecture .kpi .v b{font-size:32px;white-space:nowrap}',
+      '#p-lecture .kpi .e.haut{color:var(--green)}#p-lecture .kpi .e.bas{color:var(--danger)}#p-lecture .kpi .e.neutre{color:var(--dim)}',
+      '#p-lecture .trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:20px}',
+      '#p-lecture .trio .bloc{margin-bottom:0;display:flex;flex-direction:column}',
+      '#p-lecture .quand .heures{min-height:110px}',
+      '#p-lecture .entonnoir{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:14px 22px 6px}',
+      '#p-lecture .et{display:flex;flex-direction:column;gap:6px}',
+      '#p-lecture .et .barre{height:96px;display:flex;align-items:flex-end;background:var(--bg);border-radius:10px;overflow:hidden}',
+      '#p-lecture .et .barre i{display:block;width:100%;border-radius:8px 8px 0 0;background:var(--accent);min-height:4px}',
+      '#p-lecture .et b{font-family:"Playfair Display",serif;font-size:28px;line-height:1}',
+      '#p-lecture .et span{font-size:14px}',
+      '#p-lecture .et small{font-size:13px;color:var(--accent)}',
+      '#p-lecture .prem-plus{padding:8px 22px 4px;font-size:13px;color:var(--dim);line-height:1.6}',
+      '#p-lecture .liste li .mini{margin-left:10px;min-height:28px;padding:0 10px;font-size:12px;font-family:"DM Sans",sans-serif}',
+      '@media(max-width:1100px){#p-lecture .trio{grid-template-columns:1fr 1fr}}',
+      '@media(max-width:700px){#p-lecture .trio{grid-template-columns:1fr}#p-lecture .entonnoir{grid-template-columns:1fr}#p-lecture .et .barre{height:60px}#p-lecture .lc-nav{margin-left:0}}',
       '@media(max-width:640px){' +
         '#p-lecture .vs{grid-template-columns:1fr}' +
         '#p-lecture .filtres{align-items:flex-start}#p-lecture .seg{justify-content:flex-start}' +
@@ -196,7 +223,7 @@
     document.head.appendChild(s);
   }
 
-  var etat = { jours: 30, public: 'tous', donnees: null, filtre: '', rub: '', tout: false, charge: false };
+  var etat = { jours: 30, public: 'tous', donnees: null, avant: null, filtre: '', rub: '', tout: false, charge: false };
 
   function bloc(id, titre, texte, corps, classe) {
     return '<div class="bloc' + (classe ? ' ' + classe : '') + '"' + (id ? ' id="' + id + '"' : '') + '><header><h3>' + titre + '</h3>' +
@@ -209,74 +236,93 @@
     hote.dataset.pret = '1';
     poserStyles();
     hote.innerHTML =
-      '<div class="entete">' +
-        '<p>Toutes les visites du site, avec ou sans compte. Un visiteur = un navigateur (téléphone ou ordinateur), ' +
-        'reconnu sans savoir à qui il appartient. Tes propres visites ne sont pas comptées. Mesure démarrée le ' + DEBUT_MESURE + '.</p>' +
-        '<div class="filtres">' +
-          '<div class="seg" id="lc-periodes">' +
-            '<button type="button" data-j="1">Aujourd\'hui</button>' +
-            '<button type="button" data-j="7">7 jours</button>' +
-            '<button type="button" data-j="30" class="on">30 jours</button>' +
-            '<button type="button" data-j="90">3 mois</button>' +
-            '<button type="button" data-j="365">1 an</button>' +
-          '</div>' +
-          '<div class="seg pub" id="lc-public">' +
-            '<button type="button" data-p="tous" class="on">Tout le monde</button>' +
-            '<button type="button" data-p="sans_compte">Sans compte</button>' +
-            '<button type="button" data-p="membres">Membres</button>' +
-          '</div>' +
+      '<div class="lc-barre">' +
+        '<div class="seg" id="lc-periodes" role="group" aria-label="Période">' +
+          '<button type="button" data-j="1">Aujourd\'hui</button>' +
+          '<button type="button" data-j="7">7 jours</button>' +
+          '<button type="button" data-j="30" class="on">30 jours</button>' +
+          '<button type="button" data-j="90">3 mois</button>' +
+          '<button type="button" data-j="365">1 an</button>' +
         '</div>' +
-      '</div>' +
-      '<div class="stats" id="lc-stats"></div>' +
-      '<p class="robots" id="lc-robots"></p>' +
-      bloc('lc-bloc-vs', 'Sans compte ou membres ?',
-        'Toujours sur tout le monde, quel que soit le filtre. « Sans compte » : personne connectée au moment de la visite.',
-        '<div class="phrase" id="lc-phrase"></div><div class="part" id="lc-part"></div><div class="vs" id="lc-vs"></div>') +
-      bloc('lc-bloc-jours', 'Pages vues par jour', '',
-        '<div class="legende"><span><i style="background:' + C_SANS + '"></i>Sans compte</span>' +
-        '<span><i style="background:' + C_MEMBRES + '"></i>Membres</span></div>' +
-        '<div class="jours" id="lc-jours"></div><div class="axe" id="lc-axe"></div>') +
-      bloc('', 'Envie de Premium',
-        'Le paiement n\'est pas encore ouvert : chaque clic sur « payer » est quelqu\'un qui aurait voulu s\'abonner. ' +
-        'Un « mur Premium » est l\'écran qui arrête un visiteur sur un contenu réservé.',
-        '<div class="chiffres" id="lc-prem"></div>' +
-        '<div class="sous-t">Contenus réservés qui ont arrêté le plus de monde</div><ul class="liste" id="lc-prem-pages"></ul>', 'prem') +
-      '<div class="duo">' +
-        bloc('', 'D\'où viennent les visiteurs', 'Site d\'où arrive chaque visite. « Accès direct » : adresse tapée, favori, application ou lien sans origine (souvent WhatsApp et Snapchat).',
-          '<div class="rubs" id="lc-sources"></div>') +
-        bloc('', 'Pages d\'arrivée', 'Première page de chaque visite.', '<ul class="liste" id="lc-entrees"></ul>') +
-      '</div>' +
-      '<div class="duo">' +
-        bloc('', 'Par rubrique', 'Part des pages vues de chaque grande partie du site.', '<div class="rubs" id="lc-rubs"></div>') +
-        bloc('', 'Appareils', '', '<div class="rubs" id="lc-appareils"></div>') +
-      '</div>' +
-      '<div class="duo">' +
-        bloc('', 'Heures de lecture', 'Pages ouvertes selon l\'heure de Paris.',
-          '<div class="heures" id="lc-heures"></div>' +
-          '<div class="axe"><span>0 h</span><span>6 h</span><span>12 h</span><span>18 h</span><span>23 h</span></div>') +
-        bloc('', 'Jours de la semaine', 'Pages ouvertes selon le jour.',
-          '<div class="heures semaine" id="lc-semaine"></div>' +
-          '<div class="axe sem">' + JOURS_SEMAINE.map(function (j) { return '<span>' + j + '</span>'; }).join('') + '</div>') +
-      '</div>' +
-      '<div class="duo">' +
-        bloc('', 'Ce qu\'ils cherchent', 'Recherches tapées dans la loupe du site.', '<ul class="liste" id="lc-rech"></ul>') +
-        bloc('', 'Recherches sans résultat', 'Ce que le site n\'a pas : des idées de contenus à créer.', '<ul class="liste" id="lc-rech-vides"></ul>') +
-      '</div>' +
-      bloc('lc-bloc-404', 'Pages introuvables', 'Adresses demandées qui n\'existent pas : un lien cassé quelque part.', '<ul class="liste" id="lc-404"></ul>') +
-      bloc('', 'Pages les plus lues',
-        '« Temps moyen » : temps passé à lire la page (onglet ouvert et visiteur actif). « Jusqu\'au bout » : part des visites qui ont atteint le bas de la page.',
-        '<div class="outils">' +
-          '<input type="text" id="lc-q" placeholder="Chercher une page…" aria-label="Chercher une page">' +
-          '<select id="lc-rub" aria-label="Rubrique"><option value="">Toutes les rubriques</option></select>' +
+        '<div class="seg pub" id="lc-public" role="group" aria-label="Public">' +
+          '<button type="button" data-p="tous" class="on">Tout le monde</button>' +
+          '<button type="button" data-p="sans_compte">Sans compte</button>' +
+          '<button type="button" data-p="membres">Membres</button>' +
         '</div>' +
-        '<div class="scroll"><table class="tpages"><thead><tr>' +
-          '<th>Page</th><th>Rubrique</th><th class="num">Vues</th><th class="num">Sans compte</th><th class="num">Visiteurs</th>' +
-          '<th class="num">Temps moyen</th><th class="num">Jusqu\'au bout</th>' +
-        '</tr></thead><tbody id="lc-pages"></tbody></table></div>' +
-        '<div class="empty" id="lc-vide" style="display:none"></div>' +
-        '<button class="btn ghost plus" type="button" id="lc-plus" style="display:none"></button>') +
+        '<nav class="lc-nav" aria-label="Parties des statistiques">' +
+          '<button type="button" data-sec="lc-s-audience">Audience</button>' +
+          '<button type="button" data-sec="lc-s-contenus">Contenus</button>' +
+          '<button type="button" data-sec="lc-s-premium">Premium</button>' +
+          '<button type="button" data-sec="lc-s-recherche">Recherche</button>' +
+        '</nav>' +
+      '</div>' +
+
+      '<section class="lc-sec" id="lc-s-audience" aria-labelledby="lc-t-aud"><h2 id="lc-t-aud">Audience</h2>' +
+        '<div class="kpis" id="lc-stats"></div>' +
+        '<p class="robots" id="lc-robots"></p>' +
+        bloc('lc-bloc-jours', 'Pages vues par jour', '',
+          '<div class="legende"><span><i style="background:' + C_SANS + '"></i>Sans compte</span>' +
+          '<span><i style="background:' + C_MEMBRES + '"></i>Membres</span></div>' +
+          '<div class="jours" id="lc-jours"></div><div class="axe" id="lc-axe"></div>') +
+        bloc('lc-bloc-vs', 'Sans compte ou membres ?',
+          'Toujours sur tout le monde, quel que soit le filtre. « Sans compte » : personne connectée au moment de la visite.',
+          '<div class="phrase" id="lc-phrase"></div><div class="part" id="lc-part"></div><div class="vs" id="lc-vs"></div>') +
+        '<div class="trio">' +
+          bloc('', 'D\'où ils viennent', '« Accès direct » : adresse tapée, favori, application ou lien sans origine (souvent WhatsApp et Snapchat).',
+            '<div class="rubs" id="lc-sources"></div>') +
+          bloc('', 'Quand ils lisent', 'Pages ouvertes selon l\'heure de Paris, puis selon le jour.',
+            '<div class="heures" id="lc-heures"></div>' +
+            '<div class="axe"><span>0 h</span><span>6 h</span><span>12 h</span><span>18 h</span><span>23 h</span></div>' +
+            '<div class="heures semaine" id="lc-semaine" style="min-height:80px"></div>' +
+            '<div class="axe sem">' + JOURS_SEMAINE.map(function (j) { return '<span>' + j + '</span>'; }).join('') + '</div>', 'quand') +
+          bloc('', 'Sur quoi', '', '<div class="rubs" id="lc-appareils"></div>') +
+        '</div>' +
+      '</section>' +
+
+      '<section class="lc-sec" id="lc-s-contenus" aria-labelledby="lc-t-cont"><h2 id="lc-t-cont">Contenus</h2>' +
+        '<div class="duo">' +
+          bloc('', 'Par rubrique', 'Part des pages vues de chaque grande partie du site.', '<div class="rubs" id="lc-rubs"></div>') +
+          bloc('', 'Pages d\'arrivée', 'Première page de chaque visite.', '<ul class="liste" id="lc-entrees"></ul>') +
+        '</div>' +
+        bloc('', 'Pages les plus lues',
+          '« Temps moyen » : temps passé à lire la page (onglet ouvert et visiteur actif). « Jusqu\'au bout » : part des visites qui ont atteint le bas de la page.',
+          '<div class="outils">' +
+            '<input type="text" id="lc-q" placeholder="Chercher une page…" aria-label="Chercher une page">' +
+            '<select id="lc-rub" aria-label="Rubrique"><option value="">Toutes les rubriques</option></select>' +
+          '</div>' +
+          '<div class="scroll"><table class="tpages"><thead><tr>' +
+            '<th>Page</th><th>Rubrique</th><th class="num">Vues</th><th class="num">Sans compte</th><th class="num">Visiteurs</th>' +
+            '<th class="num">Temps moyen</th><th class="num">Jusqu\'au bout</th>' +
+          '</tr></thead><tbody id="lc-pages"></tbody></table></div>' +
+          '<div class="empty" id="lc-vide" style="display:none"></div>' +
+          '<button class="btn ghost plus" type="button" id="lc-plus" style="display:none"></button>') +
+      '</section>' +
+
+      '<section class="lc-sec" id="lc-s-premium" aria-labelledby="lc-t-prem"><h2 id="lc-t-prem">Envie de Premium</h2>' +
+        bloc('', 'Du contenu réservé au clic sur « payer »',
+          'À chaque marche, combien de visiteurs restent. Un « mur Premium » est l\'écran qui arrête un visiteur sur un contenu réservé.',
+          '<div id="lc-prem"></div>' +
+          '<div class="sous-t">Contenus réservés qui ont arrêté le plus de monde</div><ul class="liste" id="lc-prem-pages"></ul>', 'prem') +
+      '</section>' +
+
+      '<section class="lc-sec" id="lc-s-recherche" aria-labelledby="lc-t-rech"><h2 id="lc-t-rech">Recherche et liens cassés</h2>' +
+        '<div class="trio">' +
+          bloc('', 'Ce qu\'ils cherchent', 'Recherches tapées dans la loupe du site.', '<ul class="liste" id="lc-rech"></ul>') +
+          bloc('', 'Sans résultat', 'Ce que le site n\'a pas : des idées de contenus à créer.', '<ul class="liste" id="lc-rech-vides"></ul>') +
+          bloc('lc-bloc-404', 'Pages introuvables', 'Adresses demandées qui n\'existent pas : un lien cassé quelque part.', '<ul class="liste" id="lc-404"></ul>') +
+        '</div>' +
+      '</section>' +
       '<div class="bulle" id="lc-bulle"></div>';
 
+    hote.querySelector('.lc-nav').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-sec]'); if (!b) return;
+      var cible = document.getElementById(b.dataset.sec);
+      if (cible) cible.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    $('#lc-rech-vides').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-idee]'); if (!b) return;
+      if (ajouterIdee(b.dataset.idee, +b.dataset.n)) { b.textContent = 'Ajoutée'; b.disabled = true; }
+    });
     segment('#lc-periodes', function (b) { etat.jours = +b.dataset.j; });
     segment('#lc-public', function (b) { etat.public = b.dataset.p; });
     $('#lc-q').addEventListener('input', function () { etat.filtre = this.value; etat.tout = false; rendrePages(); });
@@ -315,8 +361,12 @@
 
   function charger() {
     etat.charge = true;
-    return Ad.statsLecture(etat.jours, etat.public).then(function (d) {
+    var avant = (etat.jours > 1 && etat.jours < 365)
+      ? Ad.statsLecture(etat.jours * 2, etat.public).catch(function () { return null; }) : Promise.resolve(null);
+    return Promise.all([Ad.statsLecture(etat.jours, etat.public), avant]).then(function (r) {
+      var d = r[0];
       etat.donnees = d || {};
+      etat.avant = r[1];
       rendre();
     }).catch(function (err) {
       var s = $('#lc-stats');
@@ -325,9 +375,20 @@
     });
   }
 
-  function carte(c, valeur, libelle, sous) {
-    return '<div class="stat" style="--c:' + c + '"><b>' + esc(valeur) + '</b><span>' + esc(libelle) + '</span>' +
-      (sous ? '<small>' + esc(sous) + '</small>' : '') + '</div>';
+  function carte(c, valeur, libelle, sous, evol) {
+    return '<div class="kpi"><div class="l">' + esc(libelle) + '</div><div class="v"><b>' + esc(valeur) + '</b></div>' +
+      (evol ? '<div class="e ' + evol.cls + '">' + esc(evol.t) + '</div>' : '') +
+      (sous ? '<div class="e neutre">' + esc(sous) + '</div>' : '') + '</div>';
+  }
+  /* Évolution par rapport à la période précédente de même durée (stats sur le double de la période,
+     moins la période). Rien quand la période précédente est vide (avant le début de la mesure). */
+  function evolution(cle) {
+    var d = etat.donnees || {}, a = etat.avant;
+    if (!a) return null;
+    var avant = (a[cle] || 0) - (d[cle] || 0);
+    if (avant <= 0) return null;
+    var v = Math.round(100 * ((d[cle] || 0) - avant) / avant);
+    return { cls: v > 0 ? 'haut' : v < 0 ? 'bas' : 'neutre', t: (v > 0 ? '↑ ' : v < 0 ? '↓ ' : '') + Math.abs(v) + ' % par rapport aux ' + etat.jours + ' jours d\u2019avant' };
   }
 
   function rendre() {
@@ -337,8 +398,8 @@
     var periode = etat.jours === 1 ? 'aujourd\'hui' : 'sur ' + etat.jours + ' jours';
     $('#lc-stats').innerHTML =
       carte('var(--blue)', nb(d.visiteurs), 'Visiteurs', d.nouveaux ? nb(d.nouveaux) + ' venus pour la première fois' : periode) +
-      carte('var(--accent)', nb(d.total), 'Pages vues', periode) +
-      carte('var(--pink)', nb(d.visites), 'Visites', virgule(d.pages_par_visite || 0) + ' pages par visite') +
+      carte('var(--accent)', nb(d.total), 'Pages vues', periode, evolution('total')) +
+      carte('var(--pink)', nb(d.visites), 'Visites', virgule(d.pages_par_visite || 0) + ' pages par visite', evolution('visites')) +
       carte('var(--green)', duree(d.duree_moy), 'Temps moyen', 'par page · ' + duree(d.duree_totale) + ' de lecture en tout') +
       carte('var(--dim)', (d.rebond || 0) + ' %', 'Partis aussitôt', 'visites d\'une seule page');
     $('#lc-robots').innerHTML = d.robots
@@ -417,13 +478,21 @@
 
   function rendrePremium(d) {
     var p = d.premium || {};
-    var detail = (p.clics_detail || []).map(function (c) { return c.detail + ' : ' + nb(c.n); }).join(' · ');
-    $('#lc-prem').innerHTML =
-      ch(nb(p.murs), 'murs Premium vus', nb(p.murs_visiteurs) + ' visiteurs, dont ' + nb(p.murs_sans_compte) + ' fois sans compte') +
-      ch(nb(p.tarifs), 'visites de la page Tarifs', nb(p.tarifs_visiteurs) + ' visiteurs') +
-      ch(nb(p.clics), 'clics sur « payer »', p.clics ? nb(p.clics_visiteurs) + ' visiteurs · ' + detail : 'personne pour l\'instant') +
-      ch(nb(p.connexion), 'visiteurs sans compte passés par la connexion', 'ils ont ouvert la page de connexion ou d\'inscription') +
-      ch(nb(p.inscriptions), 'inscriptions', 'comptes créés depuis le site');
+    var et = [
+      [p.murs_visiteurs, 'visiteurs arrêtés par un contenu réservé', nb(p.murs) + ' murs Premium vus, dont ' + nb(p.murs_sans_compte) + ' sans compte'],
+      [p.tarifs_visiteurs, 'ont ouvert la page Tarifs', nb(p.tarifs) + ' visites'],
+      [p.clics_visiteurs, 'ont cliqué sur « payer »', (p.clics_detail || []).map(function (c) { return c.detail + ' : ' + nb(c.n); }).join(' · ')]
+    ];
+    var max = Math.max.apply(null, et.map(function (x) { return x[0] || 0; }).concat([1]));
+    $('#lc-prem').innerHTML = '<div class="entonnoir">' + et.map(function (x, i) {
+      var precedent = i ? et[i - 1][0] : 0;
+      return '<div class="et"><div class="barre"><i style="height:' + Math.max(4, Math.round(100 * (x[0] || 0) / max)) + '%;opacity:' + (1 - i * .18) + '"></i></div>' +
+        '<b>' + nb(x[0]) + '</b><span>' + esc(x[1]) + '</span>' +
+        '<small>' + (i && precedent ? pc(x[0], precedent) + ' % du nombre de l’étape d’avant' : esc(x[2] || ' ')) + '</small></div>';
+    }).join('') + '</div>' +
+      '<p class="prem-plus"><b style="color:var(--text);font-weight:600">' + nb(p.inscriptions) + '</b> inscription' + (p.inscriptions > 1 ? 's' : '') +
+      ' sur la période · <b style="color:var(--text);font-weight:600">' + nb(p.connexion) + '</b> visiteur' + (p.connexion > 1 ? 's' : '') +
+      ' sans compte passé' + (p.connexion > 1 ? 's' : '') + ' par la page de connexion.</p>';
     var l = p.pages || [];
     $('#lc-prem-pages').innerHTML = l.length ? l.map(function (x) {
       return '<li><a href="' + esc(base + x.page) + '" target="_blank" rel="noopener">' + esc(x.titre || x.page) + '</a>' +
@@ -512,9 +581,33 @@
       return '<li><em>' + esc(x.q) + '</em><span><b>' + nb(x.n) + '</b> fois · ' + nb(x.resultats) + ' résultat' + (x.resultats > 1 ? 's' : '') + '</span></li>';
     }).join('') : '<li class="rien" style="display:block">Aucune recherche sur cette période.</li>';
     var v = d.recherches_vides || [];
+    var deja = titresIdees();
     $('#lc-rech-vides').innerHTML = v.length ? v.map(function (x) {
-      return '<li><em>' + esc(x.q) + '</em><span><b>' + nb(x.n) + '</b> fois</span></li>';
+      var dans = deja[titreIdee(x.q).toLowerCase()];
+      return '<li><em>' + esc(x.q) + '</em><span><b>' + nb(x.n) + '</b> fois' +
+        '<button type="button" class="mini or" data-idee="' + esc(x.q) + '" data-n="' + (x.n || 0) + '"' + (dans ? ' disabled>Dans les idées' : '>Ajouter aux idées') + '</button></span></li>';
     }).join('') : '<li class="rien" style="display:block">Aucune recherche sans résultat.</li>';
+  }
+
+  /* Idées pour le site (idees-articles.html, localStorage « ecg-articles ») */
+  function titreIdee(q) { return 'Contenu sur « ' + String(q).trim() + ' »'; }
+  function lireIdees() {
+    try { var l = JSON.parse(localStorage.getItem('ecg-articles') || '[]'); return Array.isArray(l) ? l : []; } catch (e) { return []; }
+  }
+  function titresIdees() {
+    var t = {}; lireIdees().forEach(function (a) { if (a && a.title) t[String(a.title).toLowerCase()] = 1; }); return t;
+  }
+  function ajouterIdee(q, n) {
+    var l = lireIdees(), titre = titreIdee(q);
+    if (titresIdees()[titre.toLowerCase()]) return true;
+    l.unshift({ id: Date.now(), title: titre,
+      note: 'Recherche tapée ' + n + ' fois dans la loupe du site, sans aucun résultat (statistiques, ' + new Date().toLocaleDateString('fr-FR') + ').',
+      link: '', sec: 'autre', sub: 'autre', prio: 'med', done: false, date: new Date().toISOString() });
+    try { localStorage.setItem('ecg-articles', JSON.stringify(l)); }
+    catch (e) { return false; }
+    var t = document.getElementById('toast');
+    if (t) { t.textContent = 'Ajoutée aux idées pour le site.'; t.className = 'show ok'; clearTimeout(t._h); t._h = setTimeout(function () { t.className = ''; }, 3600); }
+    return true;
   }
 
   function rendre404(d) {
