@@ -2239,10 +2239,10 @@
   /* ══════════════════════════════════════════════════════════════
      3 contenus Premium au choix par mois (maquettes validées par le
      propriétaire, novembre 2026 ; supabase/deblocages.sql)
-     • Visiteur sans compte, page de contenu lue jusqu'au bout :
-       fenêtre « Crée ton compte gratuit et débloque 3 contenus Premium
-       chaque mois » (une fois par visite, « Continuer sans compte » la
-       cache 7 jours).
+     • Visiteur sans compte qui ouvre un contenu gratuit : fenêtre « Crée
+       ton compte gratuit et débloque 3 contenus Premium chaque mois »,
+       juste après l'arrivée (une fois par visite, « Continuer sans
+       compte » la cache 7 jours).
      • Visiteur sans compte sur un contenu Premium : écran « Crée ton
        compte et débloque » (plus de renvoi vers la page Tarifs).
      • Membre sans abonnement sur un contenu Premium : déblocages
@@ -2275,11 +2275,11 @@
     }
     function genre(c) {
       c = String(c || '').toLowerCase();
-      if (/^actualites\//.test(c)) return 'Article lu jusqu’au bout';
-      if (/^culture-generale\//.test(c)) return 'Dossier lu jusqu’au bout';
-      if (/\/quotidien\/jour-/.test(c)) return 'Texte du jour lu jusqu’au bout';
-      if (/^humanite\//.test(c)) return 'Fiche lue jusqu’au bout';
-      return 'Chapitre lu jusqu’au bout';
+      if (/^actualites\//.test(c)) return 'Article en accès libre';
+      if (/^culture-generale\//.test(c)) return 'Dossier en accès libre';
+      if (/\/quotidien\/jour-/.test(c)) return 'Texte du jour en accès libre';
+      if (/^humanite\//.test(c)) return 'Fiche en accès libre';
+      return 'Chapitre en accès libre';
     }
     function titrePage() {
       var t = String(document.title || '').replace(/\s+[—|·–-]\s+ECG Prépa\s*$/i, '').replace(/^ECG Prépa\s+[—|·–-]\s+/i, '').trim();
@@ -2404,7 +2404,7 @@
     var BETA = '<div class="beta"><b>Premium n’est pas encore disponible :</b> le site est en version bêta. ' +
       'Pour avoir plus d’accès, écris-nous via le <a class="lien" href="' + CONTACT_URL + '">formulaire de contact</a>.</div>';
 
-    /* ─── Visiteur sans compte : fenêtre en fin de lecture ─── */
+    /* ─── Visiteur sans compte : fenêtre dès l'ouverture d'un contenu gratuit ─── */
     function inviter() {
       if (!cheminActuel || !estContenu(cheminActuel)) return;
       try {
@@ -2412,15 +2412,7 @@
         var t = +localStorage.getItem(K_PLUS_TARD) || 0;
         if (t && Date.now() < t) return;
       } catch (e) { return; }
-      var debut = Date.now(), fait = false, minuteur = null;
-      function verifier() {
-        if (fait) { clearInterval(minuteur); return; }
-        var h = document.documentElement, haut = Math.max(h.scrollHeight, document.body ? document.body.scrollHeight : 0);
-        var bas = (window.scrollY || h.scrollTop) + window.innerHeight;
-        if (haut > window.innerHeight * 1.3 && bas >= haut * 0.9 && Date.now() - debut > 15000) { fait = true; ouvrir(); }
-      }
-      window.addEventListener('scroll', verifier, { passive: true });
-      minuteur = setInterval(verifier, 4000);
+      setTimeout(ouvrir, 1200);
     }
     function ouvrir() {
       if (document.getElementById('ecg-invite') || document.getElementById('ecg-refus') || profilLocal()) return;
