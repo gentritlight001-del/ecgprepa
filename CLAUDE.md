@@ -31,7 +31,7 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   module `Deblocages` de `auth.js`) : chaque compte gratuit reçoit 3 déblocages le 1er du mois (à partir de novembre 2026),
   **cumulés sans plafond** ; un contenu débloqué reste ouvert pour toujours ; tout est compté par la base (`mes_deblocages`,
   `debloquer`, table `deblocages`). Visiteur sans compte : fenêtre « Crée ton compte gratuit et débloque 3 contenus Premium
-  chaque mois » quand il a lu un contenu jusqu'au bout (une fois par visite, « Continuer sans compte » la cache 7 jours), et
+  chaque mois » dès qu'il ouvre un contenu gratuit (juste après l'arrivée, une fois par visite, « Continuer sans compte » la cache 7 jours), et
   sur un contenu Premium l'écran « Crée ton compte et débloque » (plus de renvoi vers `tarifs.html`). Membre sans abonnement :
   sur un contenu Premium, le nombre de déblocages et « Débloquer ce contenu » ; à chaque connexion (ou au 1er du mois),
   l'encadré « N contenus Premium à débloquer » sous le compte. **Premium payant pas encore ouvert** (choix du propriétaire,
