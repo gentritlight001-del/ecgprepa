@@ -12,8 +12,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-11-16",
+  "maj": "2026-11-17",
   "parties": [
+   {
+    "id": "2026-11-17",
+    "nom": "Jour 26 · Ireland: First National Protest Against Data Centres, Part of a Europe-Wide Mobilisation",
+    "n": 30,
+    "date": "2026-11-17"
+   },
    {
     "id": "2026-11-16",
     "nom": "Jour 25 · The FAA Orders a Rare Nationwide Ground Stop Over a Communications Outage",
@@ -165,8 +171,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 653,
-  "v": "1c97bf2c65"
+  "n": 679,
+  "v": "313dde86ae"
  },
  {
   "id": "espagnol",
