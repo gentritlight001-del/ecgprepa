@@ -2075,13 +2075,13 @@
         return appliquerRegleActu(prem, lignes, [cheminActuel]).then(function () {
           var payant = ids.some(function (id) { return prem[id]; });
           if (payant) {
-            var partir = function () { location.replace(TARIFS_URL); };
-            Stats.evenement('mur_premium').then(partir);
-            setTimeout(partir, 900);
+            Stats.evenement('mur_premium');
+            Deblocages.ecranVisiteur();
             return;
           }
           leverVoile();
           mesurerLecture(null);
+          Deblocages.inviter();
         });
       })
       .catch(function () { leverVoile(); })
@@ -2111,7 +2111,10 @@
     if (profil.role === 'admin') { terminer(); bandeauPremiumAdmin(rubPremium); return; }
     return statutPremium(true).then(function (st) {
       if (st.premium) { terminer(); return; }
-      refuserPremium(rubPremium);
+      return Deblocages.etat().then(function (e) {
+        if (e && cheminActuel && (e.pages || []).indexOf(cheminActuel) !== -1) { terminer(); return; }
+        Deblocages.ecranMembre(rubPremium, e, terminer);
+      }, function () { Deblocages.ecranMembre(rubPremium, null, terminer); });
     });
   }
 
@@ -2135,6 +2138,7 @@
 
   function ecranRefus(titre, texte, sousTexte, urlRetour, libelleBouton, secondaire, premium) {
     var css = document.createElement('style');
+    css.id = 'ecg-refus-css';
     css.textContent =
       'html{visibility:hidden!important}' +
       '#ecg-refus,#ecg-refus *{visibility:visible!important}' +
@@ -2231,6 +2235,348 @@
     if (document.body) poser();
     else document.addEventListener('DOMContentLoaded', poser);
   }
+
+  /* ══════════════════════════════════════════════════════════════
+     3 contenus Premium au choix par mois (maquettes validées par le
+     propriétaire, novembre 2026 ; supabase/deblocages.sql)
+     • Visiteur sans compte, page de contenu lue jusqu'au bout :
+       fenêtre « Crée ton compte gratuit et débloque 3 contenus Premium
+       chaque mois » (une fois par visite, « Continuer sans compte » la
+       cache 7 jours).
+     • Visiteur sans compte sur un contenu Premium : écran « Crée ton
+       compte et débloque » (plus de renvoi vers la page Tarifs).
+     • Membre sans abonnement sur un contenu Premium : déblocages
+       disponibles et bouton « Débloquer ce contenu » ; Premium payant
+       pas encore ouvert (site en version bêta, formulaire de contact).
+     • Membre sans abonnement, à chaque connexion ou au 1er du mois :
+       encadré « N contenus Premium à débloquer ».
+     Chaque compte reçoit 3 déblocages par mois, cumulés sans plafond ;
+     un contenu débloqué reste ouvert pour toujours. Tout est compté par
+     la base (mes_deblocages, debloquer), jamais dans le navigateur.
+     ══════════════════════════════════════════════════════════════ */
+  var Deblocages = (function () {
+    var K_PLUS_TARD = 'ecg-invite-plus-tard';
+    var K_VUE = 'ecg-invite-vue';
+    var K_CARTE = 'ecg-deblocages-carte';
+    var CONTACT_URL = BASE + 'contact.html';
+
+    function esc(t) {
+      return String(t == null ? '' : t).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+    function estContenu(c) {
+      c = String(c || '').toLowerCase();
+      if (/^actualites\/[^/]+\/articles\/[^/]+\.html$/.test(c)) return true;
+      if (/^culture-generale\/[^/]+\.html$/.test(c)) return true;
+      if (/^humanite\/.+\.html$/.test(c)) return !/\/(art|cinema|litterature|musique|cours|cours-humanite|fiches-auteurs|index)\.html$/.test(c);
+      if (/^(premiere|deuxieme)_annee\/.+\.html$/.test(c)) return !/(^|\/)index\.html$/.test(c) && c.indexOf('/flashcards/') === -1;
+      return false;
+    }
+    function genre(c) {
+      c = String(c || '').toLowerCase();
+      if (/^actualites\//.test(c)) return 'Article lu jusqu’au bout';
+      if (/^culture-generale\//.test(c)) return 'Dossier lu jusqu’au bout';
+      if (/\/quotidien\/jour-/.test(c)) return 'Texte du jour lu jusqu’au bout';
+      if (/^humanite\//.test(c)) return 'Fiche lue jusqu’au bout';
+      return 'Chapitre lu jusqu’au bout';
+    }
+    function titrePage() {
+      var t = String(document.title || '').replace(/\s+[—|·–-]\s+ECG Prépa\s*$/i, '').replace(/^ECG Prépa\s+[—|·–-]\s+/i, '').trim();
+      return t || 'Ce contenu';
+    }
+    function versInscription() { return LOGIN_URL + '?next=' + encodeURIComponent(location.pathname + location.search) + '#inscription'; }
+    function versConnexion() { return LOGIN_URL + '?next=' + encodeURIComponent(location.pathname + location.search); }
+    function retour() {
+      var ia = cheminActuel && infoActu(cheminActuel);
+      var r = ia ? (ia.quotidien ? ia.dossier + 'index.html' : ia.code === 'cg' ? 'culture-generale.html' : 'actualites/' + ia.code + '/tous-' + ia.code + '.html')
+                 : String(cheminActuel || '').replace(/[^/]*$/, 'index.html');
+      return BASE + (r || 'index.html');
+    }
+    function nomMois(decalage) {
+      var d = new Date(); d.setDate(1); d.setMonth(d.getMonth() + (decalage || 0));
+      return d.toLocaleDateString('fr-FR', { month: 'long' });
+    }
+    function detail(e) {
+      var n = e.disponibles || 0, r = e.reportes || 0;
+      if (!r) return n === (e.mensuel || 3) ? 'les 3 de ' + nomMois(0) : 'il t’en reste ' + n + ' sur les 3 de ' + nomMois(0);
+      return (n - r) + ' de ' + nomMois(0) + ' + ' + r + ' reporté' + (r > 1 ? 's' : '') + ' des mois précédents';
+    }
+
+    function etat() {
+      return sb().then(function (c) { return c.rpc('mes_deblocages'); }).then(function (r) {
+        if (!r || r.error) throw (r && r.error) || new Error('mes_deblocages');
+        return r.data;
+      });
+    }
+    function debloquer(page) {
+      return sb().then(function (c) { return c.rpc('debloquer', { p_page: page }); }).then(function (r) {
+        if (!r || r.error) throw (r && r.error) || new Error('debloquer');
+        return r.data;
+      });
+    }
+
+    /* Habillage commun (fenêtre, écrans, encadré). */
+    function poserStyles() {
+      if (document.getElementById('ecg-deb-css')) return;
+      var s = document.createElement('style');
+      s.id = 'ecg-deb-css';
+      s.textContent =
+        '.ecg-deb{font-family:"DM Sans",system-ui,sans-serif;color:#f1efe9;box-sizing:border-box}' +
+        '.ecg-deb *{box-sizing:border-box}' +
+        '.ecg-deb .k{font-family:"DM Mono",monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#e2c48a;font-weight:500}' +
+        '.ecg-deb .x{width:36px;height:36px;border-radius:50%;border:1px solid #33302a;background:none;color:#b9b6ad;font-size:15px;cursor:pointer;flex:none}' +
+        '.ecg-deb .x:hover{color:#f1efe9;border-color:#6a6860}' +
+        '.ecg-deb .b1{display:flex;align-items:center;justify-content:center;width:100%;min-height:50px;border-radius:999px;border:0;background:#e2c48a;color:#111113;font:600 16px/1.25 "DM Sans",system-ui,sans-serif;cursor:pointer;text-align:center;text-decoration:none;padding:10px 18px}' +
+        '.ecg-deb .b1:hover{background:#ecd3a1}' +
+        '.ecg-deb .b1[disabled]{opacity:.6;cursor:wait}' +
+        '.ecg-deb .b2{display:flex;align-items:center;justify-content:center;width:100%;min-height:46px;border-radius:999px;border:1px solid #3a3a46;background:none;color:#e8e6e0;font:500 15px/1.25 "DM Sans",system-ui,sans-serif;cursor:pointer;text-align:center;text-decoration:none;padding:10px 16px}' +
+        '.ecg-deb .b2:hover{border-color:#e2c48a;color:#e2c48a}' +
+        '.ecg-deb .lien{color:#e2c48a;font-weight:600;text-decoration:none}' +
+        '.ecg-deb .lien:hover{text-decoration:underline}' +
+        '.ecg-deb .petit{font-size:13px;color:#b9b6ad}' +
+        /* Fenêtre de fin de lecture (visiteur) */
+        '#ecg-invite{position:fixed;inset:0;z-index:2147483600;background:rgba(10,10,11,.62);display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;transition:opacity .25s}' +
+        '#ecg-invite.on{opacity:1}' +
+        '#ecg-invite .boite{position:relative;width:100%;max-width:560px;max-height:calc(100vh - 32px);overflow:auto;padding:32px;border-radius:22px;background:#111113;box-shadow:0 30px 90px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:16px;text-align:left}' +
+        '#ecg-invite .boite>.x{position:absolute;right:18px;top:18px}' +
+        '#ecg-invite h2{margin:0;font-family:"Playfair Display",Georgia,serif;font-size:32px;font-weight:700;line-height:1.1;color:#f1efe9;padding-right:36px}' +
+        '#ecg-invite p{margin:0;font-size:15px;color:#c9c6be;line-height:1.5}' +
+        '#ecg-invite .tuiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}' +
+        '#ecg-invite .tuile{padding:14px;border-radius:14px;background:#1c1b1e;display:flex;flex-direction:column;gap:6px}' +
+        '#ecg-invite .tuile svg{color:#e2c48a}' +
+        '#ecg-invite .tuile b{font-size:14px;font-weight:600;color:#f1efe9}' +
+        '#ecg-invite .tuile span{font-size:13px;color:#b9b6ad}' +
+        '#ecg-invite .bas{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}' +
+        '#ecg-invite .bas button{background:none;border:0;padding:0;color:#b9b6ad;font:400 13px "DM Sans",system-ui,sans-serif;cursor:pointer}' +
+        '#ecg-invite .bas button:hover{color:#f1efe9}' +
+        '@media(max-width:640px){#ecg-invite{align-items:flex-end;padding:0}' +
+          '#ecg-invite .boite{max-width:none;border-radius:20px 20px 0 0;padding:24px 18px 22px;border-top:2px solid #d8b878}' +
+          '#ecg-invite h2{font-size:25px}#ecg-invite .tuiles{grid-template-columns:1fr}' +
+          '#ecg-invite .tuile{flex-direction:row;align-items:center;gap:12px;padding:10px 12px}#ecg-invite .tuile span{display:none}}' +
+        /* Encart de déblocage dans l'écran Premium (membre) */
+        '#ecg-refus .voile{align-items:flex-start}#ecg-refus .carte-p{margin:auto}' +
+        '#ecg-refus .carte-p .deb{width:100%;margin-top:4px;padding:18px;border-radius:16px;background:#1f1c16;border:1px solid #4a3f2a;display:flex;flex-direction:column;gap:12px;text-align:left}' +
+        '#ecg-refus .carte-p .deb .n{display:flex;align-items:center;gap:16px}' +
+        '#ecg-refus .carte-p .deb .n b{font-family:"Playfair Display",Georgia,serif;font-size:44px;line-height:1;color:#e2c48a;display:inline}' +
+        '#ecg-refus .carte-p .deb .n strong{display:block;font-size:16px;font-weight:600;color:#f1efe9}' +
+        '#ecg-refus .carte-p .deb .n span{font-size:13px;color:#a9a79f}' +
+        '#ecg-refus .carte-p .deb p{margin:0;font-size:14px;color:#c9c6be;text-align:left}' +
+        '#ecg-refus .carte-p .ou{width:100%;display:flex;align-items:center;gap:12px;color:#6a6860;font-size:13px}' +
+        '#ecg-refus .carte-p .ou::before,#ecg-refus .carte-p .ou::after{content:"";flex:1;height:1px;background:#2a2a35}' +
+        '#ecg-refus .carte-p .beta{width:100%;padding:14px 16px;border-radius:14px;border:1px dashed #3a3a46;font-size:14px;color:#c9c6be;line-height:1.55;text-align:left}' +
+        '#ecg-refus .carte-p .beta b{color:#f1efe9}' +
+        '#ecg-refus .carte-p ul.av{list-style:none;margin:4px 0 0;padding:0;display:grid;gap:8px;text-align:left;width:100%}' +
+        '#ecg-refus .carte-p ul.av li{color:#a9a79f;font-size:14px;line-height:1.5;padding-left:24px;position:relative}' +
+        '#ecg-refus .carte-p ul.av li::before{content:"\\2713";position:absolute;left:0;color:#c8a96e;font-weight:700}' +
+        '#ecg-refus .carte-p .ecg-deb{width:100%;display:flex;flex-direction:column;gap:12px;align-items:center}' +
+        /* Encadré de connexion (membre) */
+        '#ecg-deb-carte{position:fixed;right:18px;top:76px;z-index:99998;width:380px;max-width:calc(100vw - 24px);padding:22px;border-radius:18px;background:#16161a;border:1px solid #4a3f2a;box-shadow:0 24px 60px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:14px;opacity:0;transform:translateY(-6px);transition:opacity .25s,transform .25s}' +
+        '#ecg-deb-carte.on{opacity:1;transform:none}' +
+        '#ecg-deb-carte .h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}' +
+        '#ecg-deb-carte .n{display:flex;align-items:center;gap:16px}' +
+        '#ecg-deb-carte .n b{font-family:"Playfair Display",Georgia,serif;font-size:56px;line-height:1;color:#e2c48a}' +
+        '#ecg-deb-carte h2{margin:0;font:600 18px/1.25 "DM Sans",system-ui,sans-serif;color:#f1efe9}' +
+        '#ecg-deb-carte .n span{font-size:13px;color:#a9a79f}' +
+        '#ecg-deb-carte p{margin:0;font-size:14px;color:#c9c6be;line-height:1.55}' +
+        '#ecg-deb-carte .bt{display:flex;gap:8px}' +
+        '#ecg-deb-carte .bt>*{flex:1;min-height:44px;font-size:14px;padding:8px 12px}' +
+        '#ecg-deb-carte .liste{display:flex;flex-direction:column;gap:2px;max-height:220px;overflow:auto}' +
+        '#ecg-deb-carte .liste a{display:block;padding:8px 0;border-top:1px solid #2a2a35;color:#e8e6e0;font-size:14px;text-decoration:none}' +
+        '#ecg-deb-carte .liste a:hover{color:#e2c48a}' +
+        '@media(max-width:640px){#ecg-deb-carte{top:auto;bottom:0;right:0;left:0;width:auto;max-width:none;border-radius:20px 20px 0 0;border-width:2px 0 0;border-color:#d8b878;padding:18px 16px 20px}' +
+          '#ecg-deb-carte .n b{font-size:44px}}';
+      (document.head || document.documentElement).appendChild(s);
+    }
+
+    var IC = {
+      cle: 'M5 11h14v10H5zM8 11V7a4 4 0 0 1 7.5-2',
+      cartes: 'M4 6h12v12H4zM8 3h12v12',
+      lettre: 'M3 5h18v14H3zM3 6l9 7 9-7'
+    };
+    function svg(d) {
+      return '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + d + '"/></svg>';
+    }
+    var AVANTAGES =
+      '<li>Le contenu débloqué reste ouvert pour toi, et les déblocages non utilisés s’ajoutent au mois suivant</li>' +
+      '<li>Tes flashcards et tes favoris sur tous tes appareils</li>' +
+      '<li>Newsletters et Actualités : les éditions que tu choisis</li>';
+    var BETA = '<div class="beta"><b>Premium n’est pas encore disponible :</b> le site est en version bêta. ' +
+      'Pour avoir plus d’accès, écris-nous via le <a class="lien" href="' + CONTACT_URL + '">formulaire de contact</a>.</div>';
+
+    /* ─── Visiteur sans compte : fenêtre en fin de lecture ─── */
+    function inviter() {
+      if (!cheminActuel || !estContenu(cheminActuel)) return;
+      try {
+        if (sessionStorage.getItem(K_VUE)) return;
+        var t = +localStorage.getItem(K_PLUS_TARD) || 0;
+        if (t && Date.now() < t) return;
+      } catch (e) { return; }
+      var debut = Date.now(), fait = false, minuteur = null;
+      function verifier() {
+        if (fait) { clearInterval(minuteur); return; }
+        var h = document.documentElement, haut = Math.max(h.scrollHeight, document.body ? document.body.scrollHeight : 0);
+        var bas = (window.scrollY || h.scrollTop) + window.innerHeight;
+        if (haut > window.innerHeight * 1.3 && bas >= haut * 0.9 && Date.now() - debut > 15000) { fait = true; ouvrir(); }
+      }
+      window.addEventListener('scroll', verifier, { passive: true });
+      minuteur = setInterval(verifier, 4000);
+    }
+    function ouvrir() {
+      if (document.getElementById('ecg-invite') || document.getElementById('ecg-refus') || profilLocal()) return;
+      try { sessionStorage.setItem(K_VUE, '1'); } catch (e) {}
+      poserStyles();
+      var d = document.createElement('div');
+      d.id = 'ecg-invite';
+      d.className = 'ecg-deb';
+      d.innerHTML =
+        '<section class="boite" role="dialog" aria-modal="true" aria-labelledby="ecg-invite-t">' +
+          '<button type="button" class="x" data-fermer aria-label="Fermer">✕</button>' +
+          '<span class="k">' + genre(cheminActuel) + '</span>' +
+          '<h2 id="ecg-invite-t">Crée ton compte gratuit et débloque 3 contenus Premium chaque mois</h2>' +
+          '<p>Les anciens articles, dossiers et textes du jour sont réservés aux abonnés. Avec un compte, tu en choisis 3 par mois, gratuitement : ils restent ouverts pour toi.</p>' +
+          '<div class="tuiles">' +
+            '<div class="tuile">' + svg(IC.cle) + '<b>3 contenus Premium</b><span>Au choix, chaque mois</span></div>' +
+            '<div class="tuile">' + svg(IC.cartes) + '<b>Flashcards et favoris</b><span>Sur tous tes appareils</span></div>' +
+            '<div class="tuile">' + svg(IC.lettre) + '<b>Newsletters et Actualités</b><span>Les éditions que tu choisis</span></div>' +
+          '</div>' +
+          '<a class="b1" href="' + esc(versInscription()) + '">Créer mon compte gratuit</a>' +
+          '<div class="bas"><span class="petit">Déjà un compte ? <a class="lien" href="' + esc(versConnexion()) + '">Se connecter</a></span>' +
+            '<button type="button" data-plus-tard>Continuer sans compte</button></div>' +
+        '</section>';
+      var avant = document.activeElement;
+      function fermer(plusTard) {
+        if (plusTard) { try { localStorage.setItem(K_PLUS_TARD, String(Date.now() + 7 * 86400000)); } catch (e) {} }
+        document.removeEventListener('keydown', clavier);
+        d.classList.remove('on');
+        setTimeout(function () { if (d.parentNode) d.parentNode.removeChild(d); }, 250);
+        if (avant && avant.focus) avant.focus();
+      }
+      function clavier(e) { if (e.key === 'Escape') fermer(true); }
+      d.addEventListener('click', function (e) {
+        if (e.target === d || e.target.closest('[data-fermer]') || e.target.closest('[data-plus-tard]')) fermer(true);
+      });
+      document.addEventListener('keydown', clavier);
+      document.body.appendChild(d);
+      requestAnimationFrame(function () { d.classList.add('on'); var b = d.querySelector('.b1'); if (b) b.focus(); });
+    }
+
+    /* ─── Écran Premium : visiteur sans compte ─── */
+    function ecranVisiteur() {
+      ecranRefus(esc(titrePage()),
+        'Crée ton compte gratuit et débloque-le tout de suite : <b style="color:#e2c48a">3 contenus Premium au choix chaque mois</b>, sans payer.',
+        '', versInscription(), 'Créer mon compte et débloquer', { libelle: 'Retour', url: retour() }, true);
+      var poser = function () {
+        var c = document.querySelector('#ecg-refus .carte-p'); if (!c) return setTimeout(poser, 50);
+        poserStyles();
+        var av = c.querySelector('.avantages'); if (av) { av.className = 'av'; av.innerHTML = AVANTAGES; }
+        var of = c.querySelector('.offres'); if (of) of.parentNode.removeChild(of);
+        var pt = c.querySelector('.petit'); if (pt) pt.parentNode.removeChild(pt);
+        var q = document.createElement('div');
+        q.className = 'petit';
+        q.innerHTML = 'Déjà un compte ? <a href="' + esc(versConnexion()) + '" style="color:#c8a96e;font-weight:600;text-decoration:none">Se connecter</a>';
+        c.appendChild(q);
+      };
+      poser();
+    }
+
+    /* ─── Écran Premium : membre sans abonnement ─── */
+    function ecranMembre(rub, e, terminer) {
+      Stats.evenement('mur_premium');
+      ecranRefus(esc(titrePage()), '', '', retour(), 'Retour', null, true);
+      var poser = function () {
+        var c = document.querySelector('#ecg-refus .carte-p'); if (!c) return setTimeout(poser, 50);
+        poserStyles();
+        ['.avantages', '.offres', '.actions', '.petit'].forEach(function (sel) { var x = c.querySelector(sel); if (x) x.parentNode.removeChild(x); });
+        var p0 = c.querySelector('p'); if (p0) p0.parentNode.removeChild(p0);
+        var z = document.createElement('div');
+        z.className = 'ecg-deb';
+        var h = '';
+        if (e && e.disponibles > 0) {
+          h += '<div class="deb"><div class="n"><b>' + e.disponibles + '</b><div><strong>déblocage' + (e.disponibles > 1 ? 's' : '') + ' disponible' + (e.disponibles > 1 ? 's' : '') + '</strong>' +
+            '<span>' + esc(detail(e)) + '</span></div></div>' +
+            '<p>Le contenu débloqué reste ouvert pour toi. Tu en reçois 3 de plus le 1er de chaque mois.</p>' +
+            '<button type="button" class="b1" data-debloquer>Débloquer ce contenu</button></div>';
+        } else if (e) {
+          h += '<div class="deb"><p><b style="color:#f1efe9">Tu as utilisé tous tes déblocages.</b> 3 nouveaux le 1er ' + esc(nomMois(1)) + '.</p></div>';
+        }
+        h += (e ? '<div class="ou">ou</div>' : '') + BETA +
+          '<a class="b2" href="' + CONTACT_URL + '">Écrire via le formulaire de contact</a>' +
+          '<a class="petit lien" style="font-weight:400;color:#8a8880" href="' + esc(retour()) + '">← Retour</a>';
+        z.innerHTML = h;
+        c.appendChild(z);
+        var b = z.querySelector('[data-debloquer]');
+        if (b) b.addEventListener('click', function () {
+          b.disabled = true; b.textContent = 'Déblocage…';
+          debloquer(cheminActuel).then(function (r) {
+            if (r && r.ok) {
+              var f = document.getElementById('ecg-refus'), s = document.getElementById('ecg-refus-css');
+              if (f) f.parentNode.removeChild(f);
+              if (s) s.parentNode.removeChild(s);
+              terminer();
+              return;
+            }
+            b.textContent = r && r.raison === 'epuise' ? 'Plus de déblocage disponible ce mois-ci' : 'Déblocage impossible, réessaie';
+          }).catch(function () { b.disabled = false; b.textContent = 'Déblocage impossible, réessaie'; });
+        });
+      };
+      if (document.body) poser(); else document.addEventListener('DOMContentLoaded', poser);
+    }
+
+    /* ─── Encadré de connexion (membre sans abonnement) ─── */
+    function carteConnexion() {
+      if (document.getElementById('ecg-refus') || document.getElementById('ecg-deb-carte')) return;
+      var cle = (lire(K_SID) || 'session') + '|' + new Date().toISOString().slice(0, 7);
+      if (lire(K_CARTE) === cle) return;
+      statutPremium().then(function (st) {
+        if (st && st.premium) return;
+        return etat().then(function (e) {
+          if (!e || !(e.disponibles > 0) || document.getElementById('ecg-refus') || document.getElementById('ecg-refus-css')) return;
+          ecrire(K_CARTE, cle);
+          poserStyles();
+          var n = e.disponibles;
+          var d = document.createElement('aside');
+          d.id = 'ecg-deb-carte';
+          d.className = 'ecg-deb';
+          d.setAttribute('aria-labelledby', 'ecg-deb-t');
+          d.innerHTML =
+            '<div class="h"><span class="k">' + esc(nomMois(0).charAt(0).toUpperCase() + nomMois(0).slice(1)) + ' · ton compte</span>' +
+              '<button type="button" class="x" data-fermer aria-label="Fermer">✕</button></div>' +
+            '<div class="n"><b>' + n + '</b><div><h2 id="ecg-deb-t">contenu' + (n > 1 ? 's' : '') + ' Premium à débloquer</h2><span>' + esc(detail(e)) + '</span></div></div>' +
+            '<p>Chaque mois, ton compte en reçoit 3. Ceux que tu n’utilises pas s’ajoutent au mois suivant, et un contenu débloqué reste ouvert pour toi.</p>' +
+            '<div class="bt"><button type="button" class="b1" data-fermer>J’ai compris</button>' +
+              ((e.pages || []).length ? '<button type="button" class="b2" data-liste aria-expanded="false">Mes contenus débloqués</button>' : '') + '</div>' +
+            '<div class="liste" hidden></div>';
+          function fermer() {
+            d.classList.remove('on');
+            setTimeout(function () { if (d.parentNode) d.parentNode.removeChild(d); }, 250);
+          }
+          d.addEventListener('click', function (ev) {
+            if (ev.target.closest('[data-fermer]')) return fermer();
+            var l = ev.target.closest('[data-liste]');
+            if (!l) return;
+            var z = d.querySelector('.liste');
+            z.hidden = !z.hidden;
+            l.setAttribute('aria-expanded', z.hidden ? 'false' : 'true');
+            if (z.hidden || z.dataset.pret) return;
+            z.dataset.pret = '1';
+            fetch(BASE + 'recherche-index.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }).catch(function () { return {}; }).then(function (j) {
+              var t = {}, o = {};
+              (j.pages || []).forEach(function (x) { var k = String(x[0] || '').toLowerCase(); t[k] = x[1]; o[k] = x[0]; });
+              z.innerHTML = e.pages.map(function (p) {
+                return '<a href="' + esc(BASE + (o[p] || p)) + '">' + esc(t[p] || p.split('/').pop().replace(/\.html$/, '').replace(/-/g, ' ')) + '</a>';
+              }).join('');
+            });
+          });
+          document.body.appendChild(d);
+          requestAnimationFrame(function () { d.classList.add('on'); });
+        });
+      }).catch(function () { /* table absente ou réseau : pas d'encadré */ });
+    }
+
+    return { etat: etat, debloquer: debloquer, inviter: inviter, ecranVisiteur: ecranVisiteur, ecranMembre: ecranMembre, carteConnexion: carteConnexion };
+  })();
+
 
   function refuserAcces(profil) {
     ecranRefus('Accès réservé', 'Cette page est réservée aux administrateurs du site.',
@@ -2385,6 +2731,7 @@
   function monterBadge(s) {
     if (!s || document.getElementById('ecg-account-badge')) return;
     var admin = s.role === 'admin';
+    if (!admin) setTimeout(function () { Deblocages.carteConnexion(); }, 2500);
 
     var css = document.createElement('style');
     css.textContent =
