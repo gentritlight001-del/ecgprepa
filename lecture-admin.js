@@ -601,5 +601,5 @@
     if (t && etat.charge) charger();
   });
 
-  window.ECGLectureAdmin = { rafraichir: charger };
+  window.ECGLectureAdmin = { rafraichir: charger, titre: titrePage, rubrique: rubrique };
 })();
