@@ -36,6 +36,11 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   qui n'existent pas encore, œuvres `a-venir`, fiches auteurs sans fiche…), tous deux écrits par `outils/recherche.py`
   (ne jamais les modifier à la main). Une nouvelle page admin s'ajoute à cette
   liste et au menu admin de `auth.js`, dans le même style que `idees-articles.html`.
+  `admin.html` : habillage « poste de pilotage » (maquette A validée par le propriétaire, novembre 2026) : barre
+  `sn sn-cours`, **menu latéral** qui regroupe tout l'espace admin (onglets de la page : Comptes, Sessions, Journal,
+  Statistiques, Premium, Newsletter, Réglages, et liens vers les 3 autres pages admin ; rangée qui défile sur téléphone),
+  **« Vue d'ensemble »** à l'ouverture (À traiter, chiffres de 7 jours, pages vues sur 30 jours, en ligne, pages les plus
+  lues, journal, comptes à valider), adresse `admin.html#comptes`, `#lecture`… Une nouvelle page admin s'ajoute aussi à ce menu.
 - **Statistiques de fréquentation** (novembre 2026) : module `Stats` de `auth.js` (juste après `window.ECGAuth = Auth`),
   sur toutes les pages, publiques comprises (accueil, tarifs, connexion, 404), avec ou sans compte : `noter_page` (chemin,
   titre, appareil, système, appli installée, temps de lecture actif, défilement, visite, source d'arrivée ; envoi final par
