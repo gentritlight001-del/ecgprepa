@@ -63,6 +63,14 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   sans recherche n'est pas compté, nombre affiché sous les chiffres de l'onglet). En test Playwright avec le vrai `auth.js` :
   Playwright est un robot déclaré, donc poser un agent normal et `Navigator.prototype.webdriver` à `false`, plus un
   `ecg_visiteur` connu, et effacer ensuite ses lignes (`lecteur = stats_empreinte('<id>')`).
+  **Par compte, sans nom** (choix du propriétaire, novembre 2026 ; `supabase/statistiques-comptes.sql`) : colonne `compte` =
+  `stats_empreinte('compte:' || auth.uid())` remplie par `noter_page` / `noter_evenement` (jamais le nom ni l'identifiant en
+  clair). Une personne = un compte (tous ses appareils) ou un navigateur ; une lecture = une personne × un contenu sur la
+  période ; seuls les contenus comptent (`stats_est_contenu` en SQL, `estContenu` dans `lecture-admin.js` : mêmes règles,
+  index, listes, accueil et flashcards écartés). L'onglet Statistiques lit `stats_contenus(jours, public)` (contenus, matières,
+  membres : actifs, médianes, décrocheurs, gratuit / Premium, lus ensemble, grille jour × heure, Premium, recherche) et se
+  rabat sur `stats_lecture` tant que le script n'est pas appliqué. Aucune fonction ne doit renvoyer qui a lu quoi : seulement
+  des totaux (promesse de `confidentialite.html`).
 - Tester une page avec Playwright : `NODE_PATH=$(npm root -g)` pour Node, Chromium dans
   `/opt/pw-browsers/chromium`. Remplacer `auth.js` par un script vide (sinon redirection
   vers la connexion).
