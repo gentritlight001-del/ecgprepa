@@ -658,8 +658,8 @@
   }
 
   /* Carte d'une rubrique Premium, vue par un membre non abonné :
-     elle reste visible (on voit ce qu'on rate), porte un badge, et
-     mène à la page des tarifs plutôt qu'au contenu. */
+     elle reste visible (on voit ce qu'on rate) et porte un badge ;
+     elle mène au contenu, qui propose de le débloquer. */
   function marquerPremium(el) {
     if (el.querySelector('.ecg-badge-premium')) return;
     if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
@@ -679,15 +679,9 @@
       'color:#12120f;background:#c8a96e;padding:4px 8px;border-radius:20px';
     el.appendChild(b);
   }
-  /* Un seul écouteur, en phase de capture : il passe avant le lien
-     ou le onclick de la carte et renvoie vers les tarifs. */
-  document.addEventListener('click', function (e) {
-    var carte = e.target && e.target.closest && e.target.closest('[data-ecg-premium]');
-    if (!carte) return;
-    e.preventDefault();
-    e.stopPropagation();
-    location.href = TARIFS_URL + '?depuis=' + encodeURIComponent(location.pathname);
-  }, true);
+  /* Le clic sur une carte Premium suit son lien : la page du contenu
+     propose elle-même de le débloquer (membre) ou de créer un compte
+     (visiteur). Plus de renvoi vers les tarifs (Premium pas encore ouvert). */
 
   /* PDF des chapitres (liens « download ») : réservés aux abonnés Premium
      et à l'administrateur. Les autres sont envoyés vers les tarifs. */
@@ -812,11 +806,17 @@
       for (var k in prem) if (prem[k]) auMoinsUnPremium = true;
       var abonne = (admin || !auMoinsUnPremium) ? Promise.resolve({ premium: true }) : statutPremium();
       return abonne.then(function (st) {
+        /* Contenus déjà débloqués par ce membre : pas de badge Premium. */
+        var ouverts = (!admin && !st.premium && profilLocal())
+          ? Deblocages.etat().then(function (e) { return (e && e.pages) || []; }, function () { return []; })
+          : Promise.resolve([]);
+        return ouverts.then(function (pages) {
         noeuds.forEach(function (n) {
           var v = !!etat[n.id], p = !!prem[n.id];
           if (admin) ajouterBoutonAdmin(n.el, n.id, v, p);
           else if (v) griserPourMembre(n.el);
-          else if (p && !st.premium) marquerPremium(n.el);
+          else if (p && !st.premium && pages.indexOf(String(n.id).toLowerCase()) === -1) marquerPremium(n.el);
+        });
         });
       });
       });
