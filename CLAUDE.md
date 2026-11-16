@@ -27,6 +27,17 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   gratuit, tous les autres passent Premium d'eux-mêmes. Pour les espaces « au quotidien », le
   plus récent est celui de la carte du haut de l'index (`.une`) : la mettre à jour
   suffit, rien d'autre à faire.
+- **3 contenus Premium au choix par mois** (novembre 2026, maquettes validées par le propriétaire ; `supabase/deblocages.sql`,
+  module `Deblocages` de `auth.js`) : chaque compte gratuit reçoit 3 déblocages le 1er du mois (à partir de novembre 2026),
+  **cumulés sans plafond** ; un contenu débloqué reste ouvert pour toujours ; tout est compté par la base (`mes_deblocages`,
+  `debloquer`, table `deblocages`). Visiteur sans compte : fenêtre « Crée ton compte gratuit et débloque 3 contenus Premium
+  chaque mois » quand il a lu un contenu jusqu'au bout (une fois par visite, « Continuer sans compte » la cache 7 jours), et
+  sur un contenu Premium l'écran « Crée ton compte et débloque » (plus de renvoi vers `tarifs.html`). Membre sans abonnement :
+  sur un contenu Premium, le nombre de déblocages et « Débloquer ce contenu » ; à chaque connexion (ou au 1er du mois),
+  l'encadré « N contenus Premium à débloquer » sous le compte. **Premium payant pas encore ouvert** (choix du propriétaire,
+  novembre 2026 : site en version bêta) : les écrans disent « Premium n'est pas encore disponible » et renvoient vers
+  `contact.html` ; Stripe viendra plus tard (`MONETISATION.md`). Avantages d'un compte annoncés : seulement les vrais
+  (3 contenus Premium par mois, flashcards et favoris sur tous les appareils, « Newsletters et Actualités »).
 - Pages réservées à l'administrateur : `PAGES_ADMIN` dans `auth.js` (`admin.html`,
   `idees-articles.html`, `mes-newsletters.html`, `mon-planning.html`). `mon-planning.html` : agenda
   personnel du propriétaire (habillage « carnet pointillé » + grille horaire, **pas d'italique**),

@@ -4,6 +4,12 @@ Rien n'est actif tant que les étapes ci-dessous ne sont pas faites. Même une f
 le code en ligne, **aucun contenu ne devient payant** tant que tu n'as pas marqué
 de rubrique « Premium » dans l'admin.
 
+## Où on en est (novembre 2026)
+
+Le paiement n'est **pas encore ouvert** : le site est en version bêta (choix du propriétaire). En attendant, chaque compte
+gratuit débloque **3 contenus Premium au choix par mois**, cumulés sans plafond (`supabase/deblocages.sql`, module
+`Deblocages` de `auth.js`, voir `CLAUDE.md`). Le reste de ce document sert le jour où Stripe sera branché.
+
 ## Comment ça marche
 
 ```
@@ -103,7 +109,9 @@ Premium, gratuitement et sans date de fin.
 - [ ] Prix identiques dans Stripe et dans `OFFRES_PREMIUM` (`auth.js`) et `cgv.html`.
 - [ ] Refaire l'étape 1 en **mode réel** (nouveaux `price_…`, clé `sk_live_…`, nouveau webhook
       et nouveau `whsec_…`), puis mettre à jour les secrets Supabase.
-- [ ] Incrémenter `VERSION` dans `sw.js` au moment de la mise en ligne.
+- [ ] Remettre les offres payantes dans les écrans Premium : pour l'instant (version bêta, novembre 2026), le module
+      `Deblocages` de `auth.js` affiche « Premium n'est pas encore disponible » et renvoie vers le formulaire de contact.
+      `sw.js` n'a plus de numéro de version à changer (réseau d'abord).
 
 ## Limite à connaître
 Les pages du site sont des fichiers HTML statiques : le blocage (verrouillage comme Premium) se fait
