@@ -2293,6 +2293,35 @@
                  : String(cheminActuel || '').replace(/[^/]*$/, 'index.html');
       return BASE + (r || 'index.html');
     }
+    /* « Retour » : la page d'où l'on vient (liste, index…) si elle est
+       sur le site ; sinon la liste de la rubrique (actualités, culture
+       générale, textes du jour) ou le premier index qui existe vraiment en
+       remontant les dossiers (les chapitres sont parfois dans un
+       sous-dossier, et certains dossiers ont des majuscules). */
+    function allerRetour(ev) {
+      if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+      try {
+        var r = document.referrer ? new URL(document.referrer) : null;
+        if (r && r.origin === location.origin && r.pathname !== location.pathname &&
+            !/\/login(\.html)?$/.test(r.pathname) && history.length > 1) { history.back(); return; }
+      } catch (e) { /* on calcule une adresse */ }
+      if (cheminActuel && infoActu(cheminActuel)) { location.href = retour(); return; }
+      var base = new URL(BASE || '/', location.href).pathname;
+      var dossiers = location.pathname.replace(/[^/]*$/, '');
+      var essais = [];
+      while (dossiers.length > base.length && dossiers.indexOf(base) === 0) {
+        essais.push(dossiers + 'index.html');
+        dossiers = dossiers.replace(/[^/]*\/$/, '');
+      }
+      var c = String(cheminActuel || '');
+      essais.push(location.origin + base + (/^humanite\//.test(c) ? 'humanite.html' : /_annee\//.test(c) ? 'cours-ecg.html' : 'index.html'));
+      (function suivant(i) {
+        if (i >= essais.length - 1) { location.href = essais[essais.length - 1]; return; }
+        fetch(essais[i], { method: 'HEAD', cache: 'no-cache' })
+          .then(function (x) { if (x.ok) location.href = essais[i]; else suivant(i + 1); },
+                function () { suivant(i + 1); });
+      })(0);
+    }
     function nomMois(decalage) {
       var d = new Date(); d.setDate(1); d.setMonth(d.getMonth() + (decalage || 0));
       return d.toLocaleDateString('fr-FR', { month: 'long' });
@@ -2464,6 +2493,8 @@
         var av = c.querySelector('.avantages'); if (av) { av.className = 'av'; av.innerHTML = AVANTAGES; }
         var of = c.querySelector('.offres'); if (of) of.parentNode.removeChild(of);
         var pt = c.querySelector('.petit'); if (pt) pt.parentNode.removeChild(pt);
+        var r2 = c.querySelector('button.second');
+        if (r2) { var r3 = r2.cloneNode(true); r2.parentNode.replaceChild(r3, r2); r3.addEventListener('click', allerRetour); }
         var q = document.createElement('div');
         q.className = 'petit';
         q.innerHTML = 'Déjà un compte ? <a href="' + esc(versConnexion()) + '" style="color:#c8a96e;font-weight:600;text-decoration:none">Se connecter</a>';
@@ -2494,9 +2525,10 @@
         }
         h += (e ? '<div class="ou">ou</div>' : '') + BETA +
           '<a class="b2" href="' + CONTACT_URL + '">Écrire via le formulaire de contact</a>' +
-          '<a class="petit lien" style="font-weight:400;color:#8a8880" href="' + esc(retour()) + '">← Retour</a>';
+          '<a class="petit lien" data-retour style="font-weight:400;color:#8a8880" href="' + esc(retour()) + '">← Retour</a>';
         z.innerHTML = h;
         c.appendChild(z);
+        z.querySelector('[data-retour]').addEventListener('click', allerRetour);
         var b = z.querySelector('[data-debloquer]');
         if (b) b.addEventListener('click', function () {
           b.disabled = true; b.textContent = 'Déblocage…';
