@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "es",
 "rubrique": "Actu Espagnol",
+"meta": "Chili",
+"titre": "Chili : Kast rencontre Xi Jinping à Shenzhen et défend une relation d'État à État",
+"url": "actualites/es/articles/chili-kast-xi-jinping-shenzhen-etat-a-etat-2026.html",
+"image": "actualites/es/images/chili-kast-xi-jinping-shenzhen-etat-a-etat-2026.webp",
+"date": "2026-11-17T19:57:37+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
 "meta": "Espagne",
 "titre": "Espagne : le gouvernement porte le SMI à 1 286 euros et augmente les fonctionnaires de 4,5 %",
 "url": "actualites/es/articles/espagne-smi-1286-euros-fonctionnaires-4-5-2026.html",
@@ -1731,15 +1740,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/en/articles/canada-quebec-elections-pq-minoritaire-2026.html",
 "image": "actualites/en/images/canada-quebec-elections-pq-minoritaire-2026.webp",
 "date": "2026-10-06T17:52:05+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Venezuela",
-"titre": "Venezuela : les États-Unis refusent l'immunité à Maduro et maintiennent le procès à New York",
-"url": "actualites/es/articles/venezuela-maduro-immunite-refusee-2026.html",
-"image": "actualites/es/images/venezuela-maduro-immunite-refusee-2026.webp",
-"date": "2026-10-06T04:56:47+00:00"
 },
 {
 "t": "de",
