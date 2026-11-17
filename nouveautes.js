@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "en",
 "rubrique": "Actu Anglais",
+"meta": "Australie",
+"titre": "Australie et Philippines : accord de coopération de défense mis à jour, signé à Manille",
+"url": "actualites/en/articles/australia-philippines-defence-cooperation-arrangement-2026.html",
+"image": "actualites/en/images/australia-philippines-defence-cooperation-arrangement-2026.webp",
+"date": "2026-11-17T19:18:17+00:00"
+},
+{
+"t": "en",
+"rubrique": "Actu Anglais",
 "meta": "Royaume-Uni",
 "titre": "Royaume-Uni : Burnham juge le Brexit perdant et annonce un plan pour les jeunes NEET",
 "url": "actualites/en/articles/uk-burnham-brexit-neet-plan-jeunes-2026.html",
@@ -1713,15 +1722,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/es/articles/venezuela-maduro-immunite-refusee-2026.html",
 "image": "actualites/es/images/venezuela-maduro-immunite-refusee-2026.webp",
 "date": "2026-10-06T04:56:47+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "Royaume-Uni",
-"titre": "Royaume-Uni : les États-Unis retirent leurs bombardiers de Fairford sur fond de menace iranienne",
-"url": "actualites/en/articles/uk-bombers-withdraw-fairford-2026.html",
-"image": "actualites/en/images/uk-bombers-withdraw-fairford-2026.webp",
-"date": "2026-10-05T18:04:14+00:00"
 },
 {
 "t": "es",
