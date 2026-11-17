@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Espagne",
+"titre": "Espagne : Lula reçu par Sánchez à Madrid, message commun contre l'extrême droite avant le 29-N",
+"url": "actualites/es/articles/espagne-lula-sanchez-madrid-extreme-droite-2026.html",
+"image": "actualites/es/images/espagne-lula-sanchez-madrid-extreme-droite-2026.webp",
+"date": "2026-11-17T19:26:37+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "Australie",
@@ -1740,15 +1749,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/de/articles/merz-visite-surprise-kiev.html",
 "image": "actualites/de/images/merz-visite-surprise-kiev.webp",
 "date": "2026-10-05T17:40:18+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Espagne",
-"titre": "Espagne : Sánchez dissout les Cortes et convoque des élections anticipées le 29 novembre",
-"url": "actualites/es/articles/sanchez-dissolution-cortes.html",
-"image": "actualites/es/images/sanchez-dissolution-cortes.webp",
-"date": "2026-10-05T16:32:20+00:00"
 },
 {
 "t": "cours",
