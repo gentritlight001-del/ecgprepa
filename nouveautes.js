@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Estonie",
+"titre": "Estonie : Tallinn annonce la fermeture de ses postes-frontières avec la Russie dès le 1er décembre",
+"url": "actualites/monde/articles/estonie-fermeture-postes-frontieres-russie-sabotage-2026.html",
+"image": "actualites/monde/images/estonie-fermeture-postes-frontieres-russie-sabotage-2026.webp",
+"date": "2026-11-17T18:43:38+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Italie",
 "titre": "Italie : le Garante inflige 805 millions d'euros à Meta pour l'accès aux photos Android",
 "url": "actualites/monde/articles/italie-garante-meta-amende-805-millions-galerie-android-2026.html",
@@ -1389,15 +1398,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/monde/articles/astronomie-etoile-verte-naine-blanche-2026.html",
 "image": "actualites/monde/images/astronomie-etoile-verte-naine-blanche-2026.webp",
 "date": "2026-10-18T06:37:27+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Chine / Corée du Nord",
-"titre": "Chine – Corée du Nord : le nouveau pont sur le Yalou ouvre enfin, douze ans après son achèvement",
-"url": "actualites/monde/articles/chine-coree-nord-pont-yalou-2026.html",
-"image": "actualites/monde/images/chine-coree-nord-pont-yalou-2026.webp",
-"date": "2026-10-18T06:21:40+00:00"
 },
 {
 "t": "en",
