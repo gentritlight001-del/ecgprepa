@@ -4,7 +4,16 @@ window.ECG_NOUVEAUTES = [
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne",
-"titre": "Return Hub au Rwanda : l'Allemagne et quatre partenaires européens visent un centre de retour en 2027",
+"titre": "Taxe sur l'électricité : Union et SPD en comité de coalition pour trancher une baisse à 5,4 Md€",
+"url": "actualites/de/articles/allemagne-stromsteuer-koalitionsausschuss-2026.html",
+"image": "actualites/de/images/allemagne-stromsteuer-koalitionsausschuss-2026.webp",
+"date": "2026-11-17T20:44:56+00:00"
+},
+{
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
+"titre": "Return Hub au Rwanda : l'Allemagne et quatre partenaires visent un centre de retour en 2027",
 "url": "actualites/de/articles/allemagne-return-hub-ruanda-2026.html",
 "image": "actualites/de/images/allemagne-return-hub-ruanda-2026.webp",
 "date": "2026-11-17T20:36:40+00:00"
@@ -1991,15 +2000,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Très mauvaise nouvelle pour l'éducation allemande : nouveau recul au PISA",
 "url": "actualites/de/articles/pisa-2025-recul-education-allemande.html",
 "image": "actualites/de/images/pisa-2025-recul-education-allemande.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "L'AfD remporte une victoire historique aux élections régionales de Saxe-Anhalt",
-"url": "actualites/de/articles/victoire-afd-saxe-anhalt.html",
-"image": "actualites/de/images/victoire-afd-saxe-anhalt.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
