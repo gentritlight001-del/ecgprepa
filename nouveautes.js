@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "en",
 "rubrique": "Actu Anglais",
+"meta": "Canada",
+"titre": "Canada : Carney rencontre Xi à Shenzhen, la Chine baisse ses droits sur le porc et le poisson",
+"url": "actualites/en/articles/canada-carney-xi-shenzhen-droits-douane-porc-2026.html",
+"image": "actualites/en/images/canada-carney-xi-shenzhen-droits-douane-porc-2026.webp",
+"date": "2026-11-17T19:00:40+00:00"
+},
+{
+"t": "en",
+"rubrique": "Actu Anglais",
 "meta": "États-Unis",
 "titre": "États-Unis : Trump arrive à Manille pour l'ASEAN et réunit le Quad, une première depuis son retour",
 "url": "actualites/en/articles/us-trump-manille-asean-quad-2026.html",
@@ -1748,15 +1757,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Affaire Cornell : après une plainte pour viol collectif, New York nomme une procureure spéciale",
 "url": "actualites/en/articles/us-cornell-jane-doe-2026.html",
 "image": "actualites/en/images/us-cornell-jane-doe-2026.webp",
-"date": "2026-10-04T07:18:03+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "Canada",
-"titre": "LNG Canada double sa capacité à Kitimat, Ottawa désigne le pipeline Pacific Link",
-"url": "actualites/en/articles/canada-lng-phase-2-pipeline-2026.html",
-"image": "actualites/en/images/canada-lng-phase-2-pipeline-2026.webp",
 "date": "2026-10-04T07:18:03+00:00"
 },
 {
