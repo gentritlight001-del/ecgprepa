@@ -4,6 +4,15 @@ window.ECG_NOUVEAUTES = [
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Espagne",
+"titre": "Espagne : le gouvernement porte le SMI à 1 286 euros et augmente les fonctionnaires de 4,5 %",
+"url": "actualites/es/articles/espagne-smi-1286-euros-fonctionnaires-4-5-2026.html",
+"image": "actualites/es/images/espagne-smi-1286-euros-fonctionnaires-4-5-2026.webp",
+"date": "2026-11-17T19:34:47+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Espagne",
 "titre": "Espagne : Lula reçu par Sánchez à Madrid, message commun contre l'extrême droite avant le 29-N",
 "url": "actualites/es/articles/espagne-lula-sanchez-madrid-extreme-droite-2026.html",
 "image": "actualites/es/images/espagne-lula-sanchez-madrid-extreme-droite-2026.webp",
@@ -1731,15 +1740,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/es/articles/venezuela-maduro-immunite-refusee-2026.html",
 "image": "actualites/es/images/venezuela-maduro-immunite-refusee-2026.webp",
 "date": "2026-10-06T04:56:47+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Pérou",
-"titre": "Pérou : López Aliaga et Allison au coude-à-coude pour Lima, seconds tours régionaux en vue",
-"url": "actualites/es/articles/perou-elections-regionales-municipales-2026.html",
-"image": "actualites/es/images/perou-elections-regionales-municipales-2026.webp",
-"date": "2026-10-05T17:59:53+00:00"
 },
 {
 "t": "de",
