@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
+"titre": "Mecklembourg-Poméranie : première coalition rouge-rouge-verte de l'histoire du Land",
+"url": "actualites/de/articles/allemagne-mecklembourg-coalition-rouge-rouge-verte-2026.html",
+"image": "actualites/de/images/allemagne-mecklembourg-coalition-rouge-rouge-verte-2026.webp",
+"date": "2026-11-17T20:26:45+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Chili",
@@ -1991,15 +2000,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Isar Aerospace réussit le lancement orbital de sa fusée Spectrum",
 "url": "actualites/de/articles/isar-aerospace-spectrum-orbite.html",
 "image": "actualites/de/images/isar-aerospace-spectrum-orbite.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "Berlin se montre davantage favorable à un rapprochement entre UniCredit et Commerzbank",
-"url": "actualites/de/articles/berlin-unicredit-commerzbank.html",
-"image": "actualites/de/images/berlin-unicredit-commerzbank.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
