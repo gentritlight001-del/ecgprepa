@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Chine",
+"titre": "Trump, Xi et Poutine : une première rencontre à trois attendue en marge de l'APEC à Shenzhen",
+"url": "actualites/monde/articles/monde-trump-xi-poutine-trilaterale-apec-shenzhen-2026.html",
+"image": "actualites/monde/images/monde-trump-xi-poutine-trilaterale-apec-shenzhen-2026.webp",
+"date": "2026-11-17T18:27:41+00:00"
+},
+{
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Suisse",
@@ -1407,15 +1416,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/en/articles/uk-burnham-zelensky-londres-2026.html",
 "image": "actualites/en/images/uk-burnham-zelensky-londres-2026.webp",
 "date": "2026-10-17T20:32:10+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Groenland",
-"titre": "Groenland : Trump annonce une « exploration massive » de pétrole, gaz et minéraux, Nuuk tempère",
-"url": "actualites/monde/articles/groenland-trump-exploration-massive-2026.html",
-"image": "actualites/monde/images/groenland-trump-exploration-massive-2026.webp",
-"date": "2026-10-17T20:23:58+00:00"
 },
 {
 "t": "es",
