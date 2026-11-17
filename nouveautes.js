@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "États-Unis",
+"titre": "États-Unis : Trump arrive à Manille pour l'ASEAN et réunit le Quad, une première depuis son retour",
+"url": "actualites/en/articles/us-trump-manille-asean-quad-2026.html",
+"image": "actualites/en/images/us-trump-manille-asean-quad-2026.webp",
+"date": "2026-11-17T18:52:13+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Estonie",
@@ -1758,15 +1767,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/de/articles/jour-unite-allemande-breme.html",
 "image": "actualites/de/images/jour-unite-allemande-breme.webp",
 "date": "2026-10-04T07:18:03+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "Le Pentagone crée un commandement à quatre étoiles pour les drones et les robots autonomes",
-"url": "actualites/en/articles/us-autowarcom-hegseth-drones-2026.html",
-"image": "actualites/en/images/us-autowarcom-hegseth-drones-2026.webp",
-"date": "2026-10-02T06:40:29+00:00"
 },
 {
 "t": "de",
