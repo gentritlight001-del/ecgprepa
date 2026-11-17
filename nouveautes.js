@@ -4,6 +4,15 @@ window.ECG_NOUVEAUTES = [
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne",
+"titre": "Return Hub au Rwanda : l'Allemagne et quatre partenaires européens visent un centre de retour en 2027",
+"url": "actualites/de/articles/allemagne-return-hub-ruanda-2026.html",
+"image": "actualites/de/images/allemagne-return-hub-ruanda-2026.webp",
+"date": "2026-11-17T20:36:40+00:00"
+},
+{
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
 "titre": "Mecklembourg-Poméranie : première coalition rouge-rouge-verte de l'histoire du Land",
 "url": "actualites/de/articles/allemagne-mecklembourg-coalition-rouge-rouge-verte-2026.html",
 "image": "actualites/de/images/allemagne-mecklembourg-coalition-rouge-rouge-verte-2026.webp",
@@ -1991,15 +2000,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "L'AfD remporte une victoire historique aux élections régionales de Saxe-Anhalt",
 "url": "actualites/de/articles/victoire-afd-saxe-anhalt.html",
 "image": "actualites/de/images/victoire-afd-saxe-anhalt.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "Isar Aerospace réussit le lancement orbital de sa fusée Spectrum",
-"url": "actualites/de/articles/isar-aerospace-spectrum-orbite.html",
-"image": "actualites/de/images/isar-aerospace-spectrum-orbite.webp",
 "date": "2026-09-11T19:03:33+00:00"
 },
 {
