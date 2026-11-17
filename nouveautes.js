@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "en",
 "rubrique": "Actu Anglais",
+"meta": "Royaume-Uni",
+"titre": "Royaume-Uni : Burnham juge le Brexit perdant et annonce un plan pour les jeunes NEET",
+"url": "actualites/en/articles/uk-burnham-brexit-neet-plan-jeunes-2026.html",
+"image": "actualites/en/images/uk-burnham-brexit-neet-plan-jeunes-2026.webp",
+"date": "2026-11-17T19:10:16+00:00"
+},
+{
+"t": "en",
+"rubrique": "Actu Anglais",
 "meta": "Canada",
 "titre": "Canada : Carney rencontre Xi à Shenzhen, la Chine baisse ses droits sur le porc et le poisson",
 "url": "actualites/en/articles/canada-carney-xi-shenzhen-droits-douane-porc-2026.html",
@@ -1749,15 +1758,6 @@ window.ECG_NOUVEAUTES = [
 "url": "deuxieme_annee/hgg/chapitre-2-hgg.html",
 "image": "deuxieme_annee/hgg/images/monument-valley-route.webp",
 "date": "2026-10-04T15:01:52+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "Affaire Cornell : après une plainte pour viol collectif, New York nomme une procureure spéciale",
-"url": "actualites/en/articles/us-cornell-jane-doe-2026.html",
-"image": "actualites/en/images/us-cornell-jane-doe-2026.webp",
-"date": "2026-10-04T07:18:03+00:00"
 },
 {
 "t": "de",
