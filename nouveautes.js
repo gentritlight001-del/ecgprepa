@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Italie",
+"titre": "Italie : le Garante inflige 805 millions d'euros à Meta pour l'accès aux photos Android",
+"url": "actualites/monde/articles/italie-garante-meta-amende-805-millions-galerie-android-2026.html",
+"image": "actualites/monde/images/italie-garante-meta-amende-805-millions-galerie-android-2026.webp",
+"date": "2026-11-17T18:34:11+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Chine",
 "titre": "Trump, Xi et Poutine : une première rencontre à trois attendue en marge de l'APEC à Shenzhen",
 "url": "actualites/monde/articles/monde-trump-xi-poutine-trilaterale-apec-shenzhen-2026.html",
@@ -1389,15 +1398,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/monde/articles/chine-coree-nord-pont-yalou-2026.html",
 "image": "actualites/monde/images/chine-coree-nord-pont-yalou-2026.webp",
 "date": "2026-10-18T06:21:40+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Albanie",
-"titre": "Albanie : cinq jours d'émeutes à Tirana, des étudiants exigent le départ d'Edi Rama",
-"url": "actualites/monde/articles/albanie-emeutes-tirana-2026.html",
-"image": "actualites/monde/images/albanie-emeutes-tirana-2026.webp",
-"date": "2026-10-18T06:07:37+00:00"
 },
 {
 "t": "en",
