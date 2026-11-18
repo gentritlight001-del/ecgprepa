@@ -2699,6 +2699,28 @@
       d.textContent = '🔒 ' + quoi + ' est verrouillée pour les membres — visible uniquement parce que tu es administrateur.';
       d.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:2147483646;background:#2a2416;color:#c8a96e;' +
         'font:500 .8rem/1.5 "DM Sans",system-ui,sans-serif;padding:10px 44px;text-align:center';
+      /* Bouton « Déverrouiller » : rouvre la rubrique (ou la page) pour
+         tout le monde, sans toucher à son réglage Premium. Utile pour les
+         rubriques qui n'ont pas de carte où poser le cadenas (ex.
+         « Langues (2e année) », dont la ligne de cours-ecg.html n'est
+         pas une carte verrouillable). */
+      var ouvrir = document.createElement('button');
+      ouvrir.type = 'button';
+      ouvrir.textContent = 'Déverrouiller';
+      ouvrir.style.cssText = 'margin-left:12px;padding:3px 12px;border:1px solid #c8a96e;border-radius:999px;background:transparent;' +
+        'color:#c8a96e;font:600 .75rem/1.4 "DM Sans",system-ui,sans-serif;cursor:pointer';
+      ouvrir.onclick = function () {
+        ouvrir.disabled = true;
+        ouvrir.textContent = 'Déverrouillage…';
+        Auth.admin.verrouillerRubrique(rub.id, false).then(function () {
+          d.textContent = '🔓 ' + quoi + ' est déverrouillée pour tout le monde.';
+          setTimeout(function () { if (d.parentNode) d.parentNode.removeChild(d); }, 3000);
+        }).catch(function (e) {
+          ouvrir.disabled = false;
+          ouvrir.textContent = 'Échec : ' + ((e && e.message) || 'réessayer');
+        });
+      };
+      d.appendChild(ouvrir);
       croixBandeauAdmin(d);
       document.body.appendChild(d);
     };
