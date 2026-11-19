@@ -12,8 +12,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-11-17",
+  "maj": "2026-11-20",
   "parties": [
+   {
+    "id": "2026-11-20",
+    "nom": "Jour 27 · Carney Meets Trump at APEC in Shenzhen: Trade Deal Discussed, Nothing Announced",
+    "n": 30,
+    "date": "2026-11-20"
+   },
    {
     "id": "2026-11-17",
     "nom": "Jour 26 · Ireland: First National Protest Against Data Centres, Part of a Europe-Wide Mobilisation",
@@ -171,8 +177,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 679,
-  "v": "313dde86ae"
+  "n": 702,
+  "v": "aeb2b16675"
  },
  {
   "id": "espagnol",
