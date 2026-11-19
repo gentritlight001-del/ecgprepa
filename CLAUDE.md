@@ -39,7 +39,7 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   `contact.html` ; Stripe viendra plus tard (`MONETISATION.md`). Avantages d'un compte annoncés : seulement les vrais
   (3 contenus Premium par mois, flashcards et favoris sur tous les appareils, « Newsletters et Actualités »).
 - Pages réservées à l'administrateur : `PAGES_ADMIN` dans `auth.js` (`admin.html`,
-  `idees-articles.html`, `mes-newsletters.html`, `mon-planning.html`). `mon-planning.html` : agenda
+  `idees-articles.html`, `mes-newsletters.html`, `mon-planning.html`, `mes-eleves.html`). `mon-planning.html` : agenda
   personnel du propriétaire (habillage « carnet pointillé » + grille horaire, **pas d'italique**),
   synchronisé dans `planning/planning.json` du bucket privé `newsletters` (photos attachées dans `planning/photos/`) ; interrupteurs « Au quotidien »
   (anglais, espagnol, allemand) qui ajoutent une ligne par jour. Sa recherche « Depuis le site » lit
@@ -60,6 +60,25 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   `idees-articles.html`), **Premium** (`premium-admin.js` : revenu, abonnés filtrés, codes en cartes), **Newsletter**
   (`newsletter.js` : 3 étapes, aperçu du courriel, PDF choisi dans « Mes newsletters », « Réutiliser » un envoi),
   **Réglages** (inscriptions, administrateurs, données, zone sensible).
+- **Espace de cours particuliers de maths (seconde)** (novembre 2026, maquette validée par le propriétaire, qui donne des
+  cours particuliers) : `cours-particuliers.html` (l'espace de l'élève : prochaine séance, devoirs à cocher, dernière séance,
+  PDF, fiches de cours, historique) et tout le dossier `cours-particuliers/` (`espace.css`, `commun.js`, `fiches.js`, fiches
+  `fiche-NN.html`), **invisibles pour tout le monde sauf les élèves autorisés et l'administrateur** : `pageParticuliers` dans
+  `auth.js` renvoie tout autre visiteur, avec ou sans compte, vers `404.html`, comme si l'espace n'existait pas ; pages en
+  `noindex`, dans `robots.txt`, jamais liées depuis le site (ni menus publics, ni recherche, ni `nouveautes.js`, ni sitemap).
+  Le propriétaire veut juste que ce ne soit pas visible sur le site, ce n'est pas « top secret » : les fiches sont des pages
+  normales du dépôt. L'élève voit « Mes cours de maths » dans le menu de son compte (`menuParticuliers`, `cp_est_eleve`).
+  Côté administrateur, `mes-eleves.html` (menu du compte et menu latéral de `admin.html`) : donner l'accès avec l'adresse
+  e-mail du compte gratuit de l'élève, le retirer, noter une séance (date, heure, durée, ce qu'on a vu, à retravailler, le
+  mot du prof), donner un devoir, déposer un PDF (pour un élève ou pour tous), cocher les fiches ouvertes à chaque élève,
+  « Voir son espace » (`cours-particuliers.html?eleve=<id>`). Ce qui se modifie depuis le site est dans Supabase
+  (`supabase/cours-particuliers.sql`, déjà appliqué : tables `cp_eleves`, `cp_seances`, `cp_devoirs`, `cp_documents`,
+  `cp_fiches_ouvertes`, bucket privé `cours-particuliers`, dossiers `eleves/<id>/` et `commun/`). **Fiches de cours : pas
+  encore écrites** (le propriétaire fera le contenu plus tard ; ne pas en écrire sans demande). Une fiche = une page
+  `cours-particuliers/fiche-NN.html` (gabarit de l'écran 3 de la maquette : grand numéro, titre, « L'essentiel » sur fond
+  noir, sections en cartes avec blocs `.bloc.definition` / `.propriete` / `.methode` / `.exemple` / `.piege`, exercices en
+  `<details class="exo">`, vecteurs en `<span class="vec">AB</span>` ; classes dans `espace.css`), avec `../auth.js`, la
+  barre `sn sn-cours sn-particuliers` et `noindex`, plus une ligne dans `CP_FICHES` de `cours-particuliers/fiches.js`.
 - **Statistiques de fréquentation** (novembre 2026) : module `Stats` de `auth.js` (juste après `window.ECGAuth = Auth`),
   sur toutes les pages, publiques comprises (accueil, tarifs, connexion, 404), avec ou sans compte : `noter_page` (chemin,
   titre, appareil, système, appli installée, temps de lecture actif, défilement, visite, source d'arrivée ; envoi final par

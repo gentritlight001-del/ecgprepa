@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>ECG Prépa — Mes élèves</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="cours-particuliers/espace.css">
+<link rel="stylesheet" href="barre-section.css">
+</head>
+<body>
+
+<nav class="sn sn-cours sn-particuliers">
+  <div><a class="sn-logo" href="index.html">ECG Prépa</a></div>
+  <div class="sn-fil"><a href="index.html">Accueil</a><span class="sep">/</span><a href="admin.html">Administration</a><span class="sep">/</span><b aria-current="page">Mes élèves</b></div>
+  <div class="nav-right"></div>
+</nav>
+
+<main class="cp adm" style="max-width:1180px">
+  <div class="adm-tete">
+    <div>
+      <div class="cp-kicker">Cours particuliers · Maths seconde</div>
+      <h1>Mes élèves</h1>
+    </div>
+    <form class="ajout" id="f-ajout">
+      <label for="ajout-mail" style="position:absolute;left:-9999px">Adresse e-mail du compte de l'élève</label>
+      <input id="ajout-mail" type="email" required placeholder="Adresse e-mail du compte de l'élève" autocomplete="off">
+      <button class="btn" type="submit">Donner l'accès</button>
+    </form>
+  </div>
+  <p class="message" id="m-ajout" hidden></p>
+
+  <div class="adm-corps">
+    <aside class="liste-eleves" id="liste" aria-label="Mes élèves"><p class="vide" style="padding:12px">Chargement…</p></aside>
+    <div class="adm-detail" id="detail"></div>
+  </div>
+</main>
+
+<template id="g-eleve">
+  <section class="carte" style="flex-direction:row;justify-content:space-between;align-items:center;flex-wrap:wrap">
+    <div><h2 id="e-nom"></h2><span class="petit gris" id="e-infos"></span></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <a class="btn clair" id="e-voir" href="#">Voir son espace</a>
+      <button class="btn danger" type="button" id="e-acces"></button>
+    </div>
+  </section>
+
+  <div class="duo">
+    <section class="carte" aria-labelledby="t-seance">
+      <h3 id="t-seance">Noter une séance</h3>
+      <form id="f-seance" style="display:flex;flex-direction:column;gap:12px">
+        <div class="rangee">
+          <label>Date<input class="champ" type="date" id="s-date" required></label>
+          <label>Heure<input class="champ" type="time" id="s-heure" required value="17:30"></label>
+          <label>Durée<select id="s-duree"><option value="60">1 h</option><option value="90" selected>1 h 30</option><option value="120">2 h</option><option value="">Non précisée</option></select></label>
+        </div>
+        <label>Ce qu'on a vu (ou ce qu'on verra)<textarea id="s-vu" rows="2"></textarea></label>
+        <label>À retravailler<textarea id="s-retravailler" rows="2"></textarea></label>
+        <label>Le mot du prof<textarea id="s-mot" rows="2"></textarea></label>
+        <div class="rangee" style="align-items:center">
+          <button class="btn bleu" type="submit" id="s-ok" style="flex:0 0 auto">Enregistrer la séance</button>
+          <button class="lien-btn" type="button" id="s-annuler" hidden style="flex:0 0 auto">Annuler la modification</button>
+        </div>
+      </form>
+      <div id="l-seances"></div>
+    </section>
+
+    <section class="carte" aria-labelledby="t-devoir">
+      <h3 id="t-devoir">Donner un devoir</h3>
+      <form id="f-devoir" style="display:flex;flex-direction:column;gap:12px">
+        <label>Le devoir<input class="champ" type="text" id="d-texte" required></label>
+        <label>Pour le<input class="champ" type="date" id="d-pour"></label>
+        <button class="btn bleu" type="submit">Ajouter le devoir</button>
+      </form>
+      <div id="l-devoirs"></div>
+
+      <h3 style="margin-top:10px;padding-top:14px;border-top:1px solid var(--filet-doux)">Déposer un PDF</h3>
+      <div id="zone-pdf"></div>
+    </section>
+  </div>
+
+  <section class="carte" aria-labelledby="t-fiches">
+    <div class="carte-tete"><h3 id="t-fiches">Fiches de cours ouvertes</h3><span class="petit gris">Coche une fiche pour qu'elle apparaisse dans son espace</span></div>
+    <div class="grille-fiches" id="fiches"></div>
+  </section>
+</template>
+
+<template id="g-pdf">
+  <form class="f-pdf" style="display:flex;flex-direction:column;gap:12px">
+    <label class="depot"><input type="file" accept="application/pdf,.pdf" hidden><span class="depot-txt">Glisse un PDF ici ou <b>choisis un fichier</b></span></label>
+    <label>Titre<input class="champ p-titre" type="text" required></label>
+    <div class="rangee">
+      <label>Type<select class="p-type"><option value="exercices">Exercices</option><option value="corrige">Corrigé</option><option value="controle">Contrôle</option><option value="fiche">Fiche</option><option value="autre">Autre</option></select></label>
+      <label class="p-pour-l">Pour<select class="p-pour"><option value="eleve"></option><option value="tous">Tous mes élèves</option></select></label>
+    </div>
+    <button class="btn bleu" type="submit">Déposer le PDF</button>
+    <p class="message" hidden></p>
+  </form>
+  <div class="l-docs"></div>
+</template>
+
+<script src="cours-particuliers/commun.js"></script>
+<script>document.write('<script src="cours-particuliers/fiches.js?v=' + Math.floor(Date.now() / 60000) + '"><\/script>');</script>
+<script>
+(function () {
+  var C = null, ELEVES = [], courant = null, SEANCES = [], DEVOIRS = [], DOCS = [], OUVERTES = [], edition = null;
+  var $ = function (id) { return document.getElementById(id); };
+  var COMMUN = '__tous__';
+
+  function nom(e) { return [e.prenom, e.nom].filter(Boolean).join(' ') || e.email; }
+  function nomCourt(e) { return e.prenom ? e.prenom + (e.nom ? ' ' + e.nom.charAt(0) + '.' : '') : e.email; }
+  function ok(r) { if (r && r.error) throw r.error; return r; }
+  function msg(el, texte, erreur) { el.hidden = !texte; el.textContent = texte || ''; el.className = 'message' + (erreur ? ' erreur' : ' ok'); }
+  function aujourdhui() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+
+  function tout() {
+    return Promise.all([
+      C.rpc('cp_eleves_liste'),
+      C.from('cp_seances').select('*').order('quand', { ascending: false }),
+      C.from('cp_devoirs').select('*').order('pour', { ascending: true, nullsFirst: false }),
+      C.from('cp_documents').select('*').order('depose_le', { ascending: false }),
+      C.from('cp_fiches_ouvertes').select('*')
+    ]).then(function (rs) {
+      rs.forEach(ok);
+      ELEVES = rs[0].data || []; SEANCES = rs[1].data || []; DEVOIRS = rs[2].data || [];
+      DOCS = rs[3].data || []; OUVERTES = rs[4].data || [];
+      liste();
+      if (courant && courant !== COMMUN && !ELEVES.some(function (e) { return e.utilisateur === courant; })) courant = null;
+      if (!courant && ELEVES.length) courant = ELEVES[0].utilisateur;
+      detail();
+    });
+  }
+
+  function resume(e) {
+    var proch = SEANCES.filter(function (s) { return s.eleve === e.utilisateur && new Date(s.quand) >= Date.now() - 3600e3; })
+      .sort(function (a, b) { return new Date(a.quand) - new Date(b.quand); })[0];
+    var n = DEVOIRS.filter(function (d) { return d.eleve === e.utilisateur && !d.fait; }).length;
+    if (!e.actif) return 'Accès retiré';
+    var t = proch ? 'Séance ' + CP.jour(proch.quand) : 'Pas de séance prévue';
+    return t + (n ? ' · ' + n + (n > 1 ? ' devoirs' : ' devoir') : '');
+  }
+
+  function liste() {
+    var nc = DOCS.filter(function (d) { return !d.eleve; }).length;
+    var h = ELEVES.length ? '' : '<p class="vide" style="padding:12px">Aucun élève pour l\'instant. Donne l\'accès avec l\'adresse e-mail de son compte.</p>';
+    ELEVES.forEach(function (e) {
+      h += '<button type="button" data-id="' + e.utilisateur + '" class="' + (e.actif ? '' : 'inactif') + '"' + (courant === e.utilisateur ? ' aria-current="true"' : '') + '><b>' +
+        CP.echap(nomCourt(e)) + '</b><span>' + CP.typo(CP.echap(resume(e))) + '</span></button>';
+    });
+    h += '<div class="sep"><button type="button" class="lien-btn" data-id="' + COMMUN + '"' + (courant === COMMUN ? ' aria-current="true"' : '') + ' style="padding:0">Documents pour tous les élèves : ' + nc + '</button></div>';
+    $('liste').innerHTML = h;
+    Array.prototype.forEach.call($('liste').querySelectorAll('[data-id]'), function (b) {
+      b.addEventListener('click', function () { courant = b.getAttribute('data-id'); edition = null; liste(); detail(); });
+    });
+  }
+
+  function detail() {
+    var d = $('detail');
+    d.innerHTML = '';
+    if (courant === COMMUN) {
+      var c = document.createElement('section');
+      c.className = 'carte';
+      c.innerHTML = '<h2>Documents pour tous les élèves</h2><p class="gris" style="margin:0">Ces PDF apparaissent dans l\'espace de chacun de tes élèves.</p>';
+      d.appendChild(c);
+      zonePdf(c, null);
+      return;
+    }
+    var e = ELEVES.filter(function (x) { return x.utilisateur === courant; })[0];
+    if (!e) return;
+    d.appendChild($('g-eleve').content.cloneNode(true));
+    $('e-nom').textContent = nom(e);
+    $('e-infos').textContent = CP.typo((e.actif ? 'Accès donné le ' : 'Accès retiré · ajouté le ') + CP.jour(e.ajoute_le, false) +
+      (e.derniere_visite ? ' · dernière visite le ' + CP.jour(e.derniere_visite, false) : ' · pas encore venu sur son espace') + ' · ' + e.email);
+    $('e-voir').href = 'cours-particuliers.html?eleve=' + encodeURIComponent(e.utilisateur);
+    var acc = $('e-acces');
+    acc.textContent = e.actif ? 'Retirer l\'accès' : 'Redonner l\'accès';
+    acc.className = 'btn ' + (e.actif ? 'danger' : 'clair');
+    acc.addEventListener('click', function () {
+      if (e.actif && !confirm('Retirer l\'accès de ' + nom(e) + ' ? Son espace disparaît pour lui, mais ses séances et documents sont gardés.')) return;
+      C.from('cp_eleves').update({ actif: !e.actif }).eq('utilisateur', e.utilisateur).then(ok).then(tout).catch(alerte);
+    });
+
+    /* Séances */
+    $('s-date').value = aujourdhui();
+    var fs = $('f-seance');
+    fs.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      var ligne = {
+        eleve: e.utilisateur,
+        quand: new Date($('s-date').value + 'T' + $('s-heure').value).toISOString(),
+        duree_min: $('s-duree').value ? +$('s-duree').value : null,
+        vu: $('s-vu').value.trim() || null,
+        retravailler: $('s-retravailler').value.trim() || null,
+        mot: $('s-mot').value.trim() || null
+      };
+      var q = edition ? C.from('cp_seances').update(ligne).eq('id', edition) : C.from('cp_seances').insert(ligne);
+      $('s-ok').disabled = true;
+      q.then(ok).then(function () { edition = null; return tout(); }).catch(alerte).then(function () { var b = $('s-ok'); if (b) b.disabled = false; });
+    });
+    $('s-annuler').addEventListener('click', function () { edition = null; detail(); });
+    var ss = SEANCES.filter(function (s) { return s.eleve === e.utilisateur; });
+    $('l-seances').innerHTML = ss.length ? ss.map(function (s) {
+      return '<div class="ligne"><div class="txt"><b>' + CP.majuscule(CP.jour(s.quand)) + ', ' + CP.heure(s.quand) + '</b><span>' + (s.vu ? CP.texte(s.vu) : 'Rien de noté') + '</span></div>' +
+        '<button type="button" class="lien-btn" data-modif="' + s.id + '">Modifier</button><button type="button" class="suppr" data-suppr="' + s.id + '">Supprimer</button></div>';
+    }).join('') : '';
+    Array.prototype.forEach.call($('l-seances').querySelectorAll('[data-modif]'), function (b) {
+      b.addEventListener('click', function () {
+        var s = ss.filter(function (x) { return String(x.id) === b.getAttribute('data-modif'); })[0];
+        var dt = new Date(s.quand), p2 = function (n) { return String(n).padStart(2, '0'); };
+        edition = s.id;
+        $('s-date').value = dt.getFullYear() + '-' + p2(dt.getMonth() + 1) + '-' + p2(dt.getDate());
+        $('s-heure').value = p2(dt.getHours()) + ':' + p2(dt.getMinutes());
+        $('s-duree').value = s.duree_min ? String(s.duree_min) : '';
+        if ($('s-duree').value !== String(s.duree_min || '')) $('s-duree').value = '';
+        $('s-vu').value = s.vu || ''; $('s-retravailler').value = s.retravailler || ''; $('s-mot').value = s.mot || '';
+        $('s-ok').textContent = 'Enregistrer les changements'; $('s-annuler').hidden = false;
+        $('t-seance').textContent = 'Modifier la séance';
+        $('t-seance').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+    Array.prototype.forEach.call($('l-seances').querySelectorAll('[data-suppr]'), function (b) {
+      b.addEventListener('click', function () {
+        if (!confirm('Supprimer cette séance ?')) return;
+        C.from('cp_seances').delete().eq('id', b.getAttribute('data-suppr')).then(ok).then(tout).catch(alerte);
+      });
+    });
+
+    /* Devoirs */
+    $('f-devoir').addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      C.from('cp_devoirs').insert({ eleve: e.utilisateur, texte: $('d-texte').value.trim(), pour: $('d-pour').value || null })
+        .then(ok).then(tout).catch(alerte);
+    });
+    var dd = DEVOIRS.filter(function (x) { return x.eleve === e.utilisateur; });
+    $('l-devoirs').innerHTML = dd.map(function (x) {
+      return '<div class="ligne"><div class="txt"><b>' + CP.texte(x.texte) + '</b><span>' + CP.typo((x.pour ? 'Pour le ' + CP.jour(CP.dateSimple(x.pour), false) + ' · ' : '') +
+        (x.fait ? 'Fait' + (x.fait_le ? ' le ' + CP.jour(x.fait_le, false) : '') : 'Pas encore fait')) + '</span></div>' +
+        '<button type="button" class="suppr" data-suppr="' + x.id + '">Supprimer</button></div>';
+    }).join('');
+    Array.prototype.forEach.call($('l-devoirs').querySelectorAll('[data-suppr]'), function (b) {
+      b.addEventListener('click', function () {
+        C.from('cp_devoirs').delete().eq('id', b.getAttribute('data-suppr')).then(ok).then(tout).catch(alerte);
+      });
+    });
+
+    /* PDF */
+    zonePdf($('zone-pdf'), e);
+
+    /* Fiches */
+    var fiches = CP.fiches();
+    var ouv = {}; OUVERTES.forEach(function (o) { if (o.eleve === e.utilisateur) ouv[o.numero] = 1; });
+    $('fiches').innerHTML = fiches.length ? fiches.map(function (f) {
+      return '<label class="' + (ouv[f.n] ? 'coche' : '') + '"><input type="checkbox" data-n="' + f.n + '"' + (ouv[f.n] ? ' checked' : '') + '>' + CP.num(f.n) + ' ' + CP.typo(CP.echap(f.titre)) + '</label>';
+    }).join('') : '<p class="vide">Aucune fiche de cours pour l\'instant : elles apparaîtront ici dès qu\'elles seront écrites.</p>';
+    Array.prototype.forEach.call($('fiches').querySelectorAll('input'), function (i) {
+      i.addEventListener('change', function () {
+        var n = +i.getAttribute('data-n');
+        i.parentNode.classList.toggle('coche', i.checked);
+        var q = i.checked ? C.from('cp_fiches_ouvertes').insert({ eleve: e.utilisateur, numero: n })
+          : C.from('cp_fiches_ouvertes').delete().eq('eleve', e.utilisateur).eq('numero', n);
+        q.then(ok).then(function () {
+          OUVERTES = OUVERTES.filter(function (o) { return !(o.eleve === e.utilisateur && o.numero === n); });
+          if (i.checked) OUVERTES.push({ eleve: e.utilisateur, numero: n });
+        }).catch(function (x) { i.checked = !i.checked; i.parentNode.classList.toggle('coche', i.checked); alerte(x); });
+      });
+    });
+
+  }
+
+  /* Formulaire de dépôt + liste des PDF (pour un élève, ou pour tous si e est null) */
+  function zonePdf(hote, e) {
+    hote.appendChild($('g-pdf').content.cloneNode(true));
+    var f = hote.querySelector('.f-pdf'), fichier = null;
+    var input = f.querySelector('input[type=file]'), depot = f.querySelector('.depot'), m = f.querySelector('.message');
+    var pour = f.querySelector('.p-pour');
+    if (e) pour.options[0].textContent = nomCourt(e) + ' seulement'; else f.querySelector('.p-pour-l').hidden = true;
+    function choisir(x) {
+      if (!x) return;
+      if (x.type !== 'application/pdf' && !/\.pdf$/i.test(x.name)) { msg(m, 'Ce fichier n\'est pas un PDF.', true); return; }
+      fichier = x;
+      f.querySelector('.depot-txt').innerHTML = '<b>' + CP.echap(x.name) + '</b> · ' + Math.round(x.size / 1024) + ' Ko';
+      var t = f.querySelector('.p-titre');
+      if (!t.value) t.value = x.name.replace(/\.pdf$/i, '').replace(/[_-]+/g, ' ');
+      msg(m, '');
+    }
+    input.addEventListener('change', function () { choisir(input.files[0]); });
+    ['dragover', 'dragenter'].forEach(function (t) { depot.addEventListener(t, function (ev) { ev.preventDefault(); depot.classList.add('survol'); }); });
+    ['dragleave', 'drop'].forEach(function (t) { depot.addEventListener(t, function () { depot.classList.remove('survol'); }); });
+    depot.addEventListener('drop', function (ev) { ev.preventDefault(); choisir(ev.dataTransfer.files[0]); });
+    f.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      if (!fichier) { msg(m, 'Choisis d\'abord un PDF.', true); return; }
+      var pourTous = !e || pour.value === 'tous';
+      var propre = fichier.name.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9.]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase() || 'document.pdf';
+      var chemin = (pourTous ? 'commun/' : 'eleves/' + e.utilisateur + '/') + Date.now() + '-' + propre;
+      var b = f.querySelector('button[type=submit]');
+      b.disabled = true; msg(m, 'Envoi en cours…');
+      C.storage.from(CP.BUCKET).upload(chemin, fichier, { contentType: 'application/pdf' }).then(ok).then(function () {
+        return C.from('cp_documents').insert({ eleve: pourTous ? null : e.utilisateur, titre: f.querySelector('.p-titre').value.trim(),
+          type: f.querySelector('.p-type').value, chemin: chemin, taille: fichier.size }).then(ok);
+      }).then(tout).catch(function (x) { b.disabled = false; msg(m, 'Le PDF n\'a pas pu être déposé. Réessaie.', true); console.error(x); });
+    });
+
+    var dl = DOCS.filter(function (x) { return e ? x.eleve === e.utilisateur : !x.eleve; });
+    var l = hote.querySelector('.l-docs');
+    l.innerHTML = dl.map(function (x) {
+      return '<div class="ligne"><div class="txt"><b>' + CP.typo(CP.echap(x.titre)) + '</b><span>' + CP.typo(CP.TYPES[x.type] + ' · déposé le ' + CP.jour(x.depose_le, false)) + '</span></div>' +
+        '<button type="button" class="lien-btn" data-ouvrir="' + x.id + '">Ouvrir</button><button type="button" class="suppr" data-suppr="' + x.id + '">Supprimer</button></div>';
+    }).join('');
+    function trouver(b, a) { return dl.filter(function (x) { return String(x.id) === b.getAttribute(a); })[0]; }
+    Array.prototype.forEach.call(l.querySelectorAll('[data-ouvrir]'), function (b) {
+      b.addEventListener('click', function () { CP.ouvrirPdf(C, trouver(b, 'data-ouvrir').chemin); });
+    });
+    Array.prototype.forEach.call(l.querySelectorAll('[data-suppr]'), function (b) {
+      b.addEventListener('click', function () {
+        var x = trouver(b, 'data-suppr');
+        if (!confirm('Supprimer « ' + x.titre + ' » ?')) return;
+        C.storage.from(CP.BUCKET).remove([x.chemin]).then(ok).then(function () {
+          return C.from('cp_documents').delete().eq('id', x.id).then(ok);
+        }).then(tout).catch(alerte);
+      });
+    });
+  }
+
+  function alerte(x) { console.error(x); alert('L\'opération n\'a pas pu être enregistrée. Réessaie dans un instant.'); }
+
+  $('f-ajout').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var m = $('m-ajout');
+    C.rpc('cp_donner_acces', { p_email: $('ajout-mail').value }).then(ok).then(function (r) {
+      var d = r.data || {};
+      if (!d.ok) { msg(m, 'Aucun compte n\'a cette adresse. L\'élève doit d\'abord créer son compte gratuit sur le site, puis tu lui donnes l\'accès.', true); return; }
+      msg(m, CP.typo('Accès donné à ' + ([d.prenom, d.nom].filter(Boolean).join(' ') || 'cet élève') + ' : « Mes cours de maths » apparaît dans le menu de son compte.'));
+      $('ajout-mail').value = '';
+      courant = d.id;
+      return tout();
+    }).catch(alerte);
+  });
+
+  document.addEventListener('ecg:pret', function () {
+    ECGAuth.client().then(function (c) { C = c; return tout(); })
+      .catch(function () { $('liste').innerHTML = '<p class="vide" style="padding:12px">Impossible de charger tes élèves. Réessaie dans un instant.</p>'; });
+  });
+})();
+</script>
+</body>
+</html>
