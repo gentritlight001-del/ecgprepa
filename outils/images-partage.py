@@ -29,7 +29,8 @@ SITE = 'https://ecg-prepa.fr/'
 # Dossiers (et fichiers) dont les pages ont une image de partage.
 PERIMETRE = ['actualites/**/*.html', 'Culture-Generale/*.html', 'culture-generale.html',
              'humanite.html', 'humanite/**/*.html', 'premiere_annee/**/*.html',
-             'deuxieme_annee/**/*.html', 'flashcards/index.html']
+             'deuxieme_annee/**/*.html', 'flashcards/index.html',
+             'concours.html', 'concours/**/*.html']
 
 ED = {'monde': 'Actualité mondiale', 'en': 'Actualité anglophone',
       'es': 'Actualité hispanophone', 'de': 'Actualité germanophone'}
@@ -397,6 +398,8 @@ def fiche(rel, contenu):
         lab = "L'Humanité" + (' · ' + sous if sous else '')
         t = re.sub(r'^(Littérature|Cinéma|Art|Musique)\s*[—-]\s*', '', t)
         return 'humanite/' + '-'.join(p)[:-5], lab, t or "L'Humanité", '#1c2433', '#e8e6e0', '#7c9ec9', 'accent'
+    if p[0] == 'concours' or rel == 'concours.html':
+        return 'concours/' + '-'.join(p)[:-5], 'Concours', t or 'Concours', '#0e1524', '#e8e6e0', '#7c9ec9', 'accent'
     if p[0] == 'flashcards':
         return 'flashcards', 'Espace de révision', t or 'Flashcards', '#16161a', '#e8e6e0', '#c8a96e', 'accent'
     if p[0] in ('premiere_annee', 'deuxieme_annee'):
