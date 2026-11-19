@@ -1053,6 +1053,48 @@ window.ECG_FC_CATALOGUE = [
   "v": "54248f7170"
  },
  {
+  "id": "philo1-ch4",
+  "matiere": "philo",
+  "annee": 1,
+  "num": 4,
+  "type": "cours",
+  "titre": "Philosophie · L'essor technologique et l'idée de progrès",
+  "court": "Chapitre 4",
+  "sous": "",
+  "recto": "Question",
+  "verso": "Réponse",
+  "lien": "premiere_annee/philosophie/chapitre4.html",
+  "parties": [
+   {
+    "id": "I",
+    "nom": "I · Penser le progrès : naissance d'une idée moderne",
+    "n": 12
+   },
+   {
+    "id": "II",
+    "nom": "II · Les Lumières : la raison, l'histoire et la perfectibilité",
+    "n": 8
+   },
+   {
+    "id": "III",
+    "nom": "III · Le siècle du progrès : industrie, positivisme et foi dans la technique",
+    "n": 8
+   },
+   {
+    "id": "IV",
+    "nom": "IV · Le progrès en procès : de Rousseau à Hiroshima",
+    "n": 11
+   },
+   {
+    "id": "V",
+    "nom": "V · Penser la puissance : responsabilité, limites et intelligence artificielle",
+    "n": 8
+   }
+  ],
+  "n": 47,
+  "v": "e782554f6c"
+ },
+ {
   "id": "philo2-ch6",
   "matiere": "philo",
   "annee": 2,
