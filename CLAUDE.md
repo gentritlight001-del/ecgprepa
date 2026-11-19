@@ -80,16 +80,17 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   `mes-eleves.html`, « Mes cours » liste toutes les fiches (`CP_FICHES` de `cours-particuliers/fiches.js`) ; le propriétaire
   **glisse** une fiche sur un élève de la liste de gauche pour l'ouvrir dans son espace (cases à cocher dans la fiche de
   l'élève, sur téléphone). Un élève ne voit que les fiches ouvertes pour lui (`fiche.js` vérifie `cp_fiches_ouvertes`).
-  **Fiches de cours** (demande type : « Fais-moi un cours sur … ») : gabarit **« manuel interactif »** (maquette B2 validée
-  par le propriétaire, novembre 2026, après deux séries de maquettes : pleine largeur, **pas de sommaire**), feuille
+  **Fiches de cours** (demande type : « Fais-moi un cours sur … ») : gabarit **« manuel interactif », version « tout à la suite »**
+  (maquettes validées par le propriétaire, novembre 2026, après trois séries : **pas de sommaire**, chaque partie de haut en
+  bas, **largeur des cours d'HGG**, 1 120 px au plus, jamais le cours à gauche et les exercices en face), feuille
   `cours-particuliers/fiche.css`, moteur `fiche.js`. Une page `cours-particuliers/<slug>.html`, copiée de `racine-carree.html`
   (n° 01, modèle), avec `<body class="fx" data-fiche="N">`, `noindex`, `../auth.js`, la barre `sn sn-cours sn-particuliers`,
   KaTeX 0.16.9 (`\( … \)` dans le texte, `\[ … \]` en bloc, formules assez étroites pour 390 px : `cases`, `aligned`), puis
   `fiche.js` ; et une ligne dans `CP_FICHES`. En-tête vert `.fx-tete` : badges, titre, phrase, anneau de progression `#score`,
   « Imprimer » et « Effacer mes réponses », « L'essentiel » en 3 points (`ol.fx-ess`). Puis une `section.fx-partie` par
-  partie : en-tête `.fx-p-tete` (numéro, titre, progression `.fx-p-score` remplie par le script), et `.fx-grille` : **le cours
-  à gauche** (`.fx-cours`) et **« À toi de jouer » en face** (`aside.fx-exos`, avec `.fx-reussi` : le panneau se replie en
-  « Partie réussie » quand tous ses exercices sont justes). Dans **chaque partie** : la définition, le théorème, la propriété
+  partie : en-tête `.fx-p-tete` (numéro, titre, progression `.fx-p-score` remplie par le script), et `.fx-grille` : **le cours**
+  (`.fx-cours`) puis **« À toi de jouer » juste en dessous** (`aside.fx-exos`, questions en cartes côte à côte, avec
+  `.fx-reussi` : le panneau se replie en « Partie réussie » quand tous ses exercices sont justes). Dans **chaque partie** : la définition, le théorème, la propriété
   ou la méthode (`.bloc.definition` / `.theoreme` / `.propriete` / `.methode`, titre `.bloc-t`, contenu `.bloc-c`, formules
   en pastilles `.formules > .formule`), la démonstration au programme (`.bloc.demo`), **un exemple** (`.bloc.exemple`, résolu
   en 3 étapes `ol.etapes` quand il s'y prête), le piège et « À retenir » côte à côte (`.notes > .note.piege` / `.note.retenir`),
