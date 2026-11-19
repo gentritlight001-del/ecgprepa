@@ -4,6 +4,15 @@ window.ECG_NOUVEAUTES = [
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "États-Unis",
+"titre": "Espace : Voyager 1 atteint un jour-lumière de la Terre, une première pour un objet humain",
+"url": "actualites/monde/articles/etats-unis-voyager-1-un-jour-lumiere-de-la-terre-2026.html",
+"image": "actualites/monde/images/etats-unis-voyager-1-un-jour-lumiere-de-la-terre-2026.webp",
+"date": "2026-11-19T19:54:15+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "États-Unis",
 "titre": "Sotheby's : un Van Gogh vendu 190,4 millions de dollars à New York, nouveau record pour l'artiste",
 "url": "actualites/monde/articles/etats-unis-van-gogh-chataigniers-en-fleurs-record-sothebys-2026.html",
 "image": "actualites/monde/images/etats-unis-van-gogh-chataigniers-en-fleurs-record-sothebys-2026.webp",
@@ -1515,15 +1524,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/en/articles/ireland-public-sector-strike-2026.html",
 "image": "actualites/en/images/ireland-public-sector-strike-2026.webp",
 "date": "2026-10-18T06:52:56+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Brésil",
-"titre": "Brésil : la déforestation en Amazonie tombe à 3 335 km², son plus bas niveau depuis 1988",
-"url": "actualites/monde/articles/bresil-deforestation-amazonie-plus-bas-2026.html",
-"image": "actualites/monde/images/bresil-deforestation-amazonie-plus-bas-2026.webp",
-"date": "2026-10-18T06:44:07+00:00"
 },
 {
 "t": "en",
