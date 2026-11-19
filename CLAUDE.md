@@ -105,8 +105,10 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   (BO spécial n° 1 du 22 janvier 2019)** : vérifier chaque fiche sur son texte (contenus, capacités, **démonstrations
   exigées**, toutes présentes) ; ce qui n'y figure pas va dans une partie **approfondissement** en fin de fiche
   (`section.fx-partie.approfondissement`, numéro « + », `<h2><small>Approfondissement · pour aller plus loin</small>…`, en
-  violet), ou est retiré. Fiche 01 (racine carrée, revue en novembre 2026) : 4 parties + l'approfondissement « Pas de
-  racine au dénominateur », 9 exercices ; « Comparer x, x² et √x » retiré (la démonstration au programme porte sur x, x², x³).
+  violet), ou est retiré. Fiche 01 (racine carrée, revue en novembre 2026) : 4 parties, l'approfondissement « Pas de
+  racine au dénominateur » et les « Compléments » (résolution graphique de √x = k avec un graphique SVG, √2 irrationnel
+  et sa démonstration, encadrement de √2 par balayage en Python dans `pre.code`), 10 exercices ; tableau large dans
+  `div.defil` ; « Comparer x, x² et √x » retiré (la démonstration au programme porte sur x, x², x³).
   Calculs refaits ; le propriétaire demandera les retouches.
 - **Statistiques de fréquentation** (novembre 2026) : module `Stats` de `auth.js` (juste après `window.ECGAuth = Auth`),
   sur toutes les pages, publiques comprises (accueil, tarifs, connexion, 404), avec ou sans compte : `noter_page` (chemin,
