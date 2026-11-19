@@ -19,15 +19,20 @@
 --  - bucket privé « cours-particuliers » : eleves/<id>/… et commun/…
 --
 --  Déjà appliqué sur la base (migrations « cours_particuliers »,
---  « cours_particuliers_fiches_en_pages » et « cours_particuliers_droits »).
+--  « cours_particuliers_fiches_en_pages », « cours_particuliers_droits »
+--  et « cours_particuliers_proprietaire_seul »).
 -- ══════════════════════════════════════════════════════════════════
 
+-- Seul le propriétaire du site gère cet espace, pas les autres
+-- administrateurs (migration « cours_particuliers_proprietaire_seul »).
 create or replace function public.cp_est_admin()
 returns boolean
 language sql stable security definer set search_path = public
 as $$
   select exists (select 1 from public.profils
-                 where id = auth.uid() and role = 'admin' and statut = 'actif');
+                 where id = auth.uid()
+                   and id = '25e428c1-ca4f-4899-bd09-d9e6c803bf82'::uuid
+                   and role = 'admin' and statut = 'actif');
 $$;
 
 create table if not exists public.cp_eleves (
