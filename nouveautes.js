@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Suisse",
+"titre": "Suisse : Guy Parmelin reçoit l'émir du Qatar à Berne, deux déclarations d'intention signées",
+"url": "actualites/de/articles/suisse-parmelin-emir-qatar-visite-etat-2026.html",
+"image": "actualites/de/images/suisse-parmelin-emir-qatar-visite-etat-2026.webp",
+"date": "2026-11-19T19:34:24+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "Canada",
@@ -2010,15 +2019,6 @@ window.ECG_NOUVEAUTES = [
 "url": "Culture-Generale/amazon.html",
 "image": "Culture-Generale/images/amazon.webp",
 "date": "2026-09-12T10:40:02+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "Très mauvaise nouvelle pour l'éducation allemande : nouveau recul au PISA",
-"url": "actualites/de/articles/pisa-2025-recul-education-allemande.html",
-"image": "actualites/de/images/pisa-2025-recul-education-allemande.webp",
-"date": "2026-09-11T19:03:33+00:00"
 },
 {
 "t": "cg",
