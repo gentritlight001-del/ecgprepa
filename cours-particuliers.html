@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>ECG Prépa — Cours particuliers</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="cours-particuliers/espace.css">
+<link rel="stylesheet" href="barre-section.css">
+</head>
+<body>
+
+<nav class="sn sn-cours sn-particuliers">
+  <div><a class="sn-logo" href="index.html">ECG Prépa</a></div>
+  <div class="sn-fil"><a href="index.html">Accueil</a><span class="sep">/</span><span>Cours particuliers</span><span class="sep">/</span><b aria-current="page">Maths seconde</b></div>
+  <div class="nav-right"></div>
+</nav>
+
+<main class="cp" id="espace">
+  <p class="chargement" id="chargement">Chargement de ton espace…</p>
+</main>
+
+<template id="gabarit">
+  <div class="apercu" id="apercu" hidden><span>Aperçu : l'espace de <b id="ap-nom"></b>, tel que l'élève le voit.</span><a href="mes-eleves.html">← Mes élèves</a></div>
+
+  <div class="tete">
+    <div class="tete-texte">
+      <div class="cp-kicker">Cours particuliers · Maths seconde</div>
+      <h1 id="bonjour">Bonjour</h1>
+      <p id="intro">Ton espace de travail avec ton professeur : tes séances, tes devoirs, tes documents et tes fiches de cours. Seuls toi et ton professeur le voyez.</p>
+    </div>
+    <section class="prochaine" aria-labelledby="t-prochaine">
+      <div class="cp-kicker" id="t-prochaine">Prochaine séance</div>
+      <div id="prochaine"></div>
+    </section>
+  </div>
+
+  <div class="duo">
+    <section class="carte" aria-labelledby="t-devoirs">
+      <div class="carte-tete"><h2 id="t-devoirs">Devoirs à faire</h2><span class="petit gris" id="n-devoirs"></span></div>
+      <div id="devoirs" style="display:flex;flex-direction:column;gap:10px"></div>
+    </section>
+    <section class="carte" aria-labelledby="t-derniere">
+      <div class="carte-tete"><h2 id="t-derniere">Dernière séance</h2><span class="petit gris" id="d-derniere"></span></div>
+      <div id="derniere" style="display:flex;flex-direction:column;gap:14px"></div>
+    </section>
+  </div>
+
+  <section class="carte" aria-labelledby="t-docs">
+    <div class="carte-tete" style="align-items:center"><h2 id="t-docs">Mes documents</h2><div class="filtres" id="filtres"></div></div>
+    <div class="docs" id="docs"></div>
+    <button type="button" class="lien-btn" id="tous-docs" hidden></button>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:16px" aria-labelledby="t-fiches">
+    <div class="carte-tete"><h2 id="t-fiches">Mes fiches de cours</h2><span class="petit gris" id="n-fiches"></span></div>
+    <div class="fiches" id="fiches"></div>
+  </section>
+
+  <section class="carte" aria-labelledby="t-seances" style="gap:4px">
+    <h2 id="t-seances" style="margin-bottom:10px">Toutes mes séances</h2>
+    <div id="seances"></div>
+  </section>
+</template>
+
+<script src="cours-particuliers/commun.js"></script>
+<script>document.write('<script src="cours-particuliers/fiches.js?v=' + Math.floor(Date.now() / 60000) + '"><\/script>');</script>
+<script>
+(function () {
+  var C = null, uid = null, admin = false, DOCS = [], filtre = 'tout', tousDocs = false;
+  var $ = function (id) { return document.getElementById(id); };
+
+  function erreur() {
+    $('espace').innerHTML = '<p class="chargement">Impossible de charger ton espace pour l\'instant. Réessaie dans un instant.</p>';
+  }
+
+  function demarrer(e) {
+    var moi = (e && e.detail) || (window.ECGAuth && ECGAuth.current()) || {};
+    admin = moi.role === 'admin';
+    uid = moi.id;
+    var prenom = moi.prenom || '';
+    var voulu = new URLSearchParams(location.search).get('eleve');
+    ECGAuth.client().then(function (c) {
+      C = c;
+      if (!admin) { C.rpc('cp_moi').then(function () {}, function () {}); return null; }   /* note la visite */
+      if (!voulu) { location.replace('mes-eleves.html'); return Promise.reject('redirige'); }
+      uid = voulu;
+      return C.rpc('cp_eleves_liste').then(function (r) {
+        var el = (r.data || []).filter(function (x) { return x.utilisateur === voulu; })[0];
+        if (!el) { location.replace('mes-eleves.html'); return Promise.reject('redirige'); }
+        prenom = el.prenom || el.email;
+        return el;
+      });
+    }).then(function (el) {
+      return Promise.all([
+        C.from('cp_seances').select('*').eq('eleve', uid).order('quand', { ascending: false }),
+        C.from('cp_devoirs').select('*').eq('eleve', uid).order('pour', { ascending: true, nullsFirst: false }),
+        C.from('cp_documents').select('*').or('eleve.eq.' + uid + ',eleve.is.null').order('depose_le', { ascending: false }),
+        C.from('cp_fiches_ouvertes').select('numero').eq('eleve', uid)
+      ]).then(function (rs) {
+        if (rs.some(function (r) { return r.error; })) throw new Error('lecture');
+        afficher(prenom, el, rs[0].data, rs[1].data, rs[2].data, rs[3].data);
+      });
+    }).catch(function (x) { if (x !== 'redirige') erreur(); });
+  }
+
+  function afficher(prenom, el, seances, devoirs, docs, ouvertes) {
+    $('espace').innerHTML = '';
+    $('espace').appendChild($('gabarit').content.cloneNode(true));
+    $('bonjour').textContent = prenom ? 'Bonjour ' + prenom : 'Bonjour';
+    if (admin) { $('apercu').hidden = false; $('ap-nom').textContent = prenom; }
+
+    var maintenant = Date.now();
+    var aVenir = seances.filter(function (s) { return new Date(s.quand).getTime() >= maintenant - 3600e3; })
+      .sort(function (a, b) { return new Date(a.quand) - new Date(b.quand); });
+    var passees = seances.filter(function (s) { return aVenir.indexOf(s) === -1; });
+    var nonFaits = devoirs.filter(function (d) { return !d.fait; });
+
+    /* Prochaine séance */
+    var p = aVenir[0];
+    if (p) {
+      var h = '<div class="prochaine-date">' + CP.majuscule(CP.jour(p.quand)) + '<br>' + CP.heure(p.quand) + (p.duree_min ? ' · ' + CP.duree(p.duree_min) : '') + '</div>';
+      var plus = '';
+      if (p.vu) plus += '<div><span>Au programme : </span>' + CP.texte(p.vu) + '</div>';
+      if (nonFaits[0]) plus += '<div><span>À préparer : </span>' + CP.texte(nonFaits[0].texte) + '</div>';
+      $('prochaine').innerHTML = h + (plus ? '<div class="prochaine-plus">' + CP.typo(plus) + '</div>' : '');
+    } else {
+      $('prochaine').innerHTML = '<p class="vide">Pas de séance prévue pour l\'instant.</p>';
+    }
+
+    /* Devoirs : à faire d'abord, puis ceux faits ces 14 derniers jours */
+    var recents = devoirs.filter(function (d) { return d.fait && d.fait_le && maintenant - new Date(d.fait_le).getTime() < 14 * 864e5; });
+    $('n-devoirs').textContent = nonFaits.length ? nonFaits.length + ' à faire' : '';
+    var liste = nonFaits.concat(recents);
+    $('devoirs').innerHTML = liste.length ? '' : '<p class="vide">Aucun devoir pour l\'instant.</p>';
+    liste.forEach(function (d) {
+      var l = document.createElement('label');
+      l.className = 'devoir' + (d.fait ? ' fait' : '');
+      var quand = d.fait ? 'Fait le ' + CP.jour(d.fait_le, false)
+        : d.pour ? 'Pour ' + CP.jour(CP.dateSimple(d.pour)) : '';
+      var urgent = !d.fait && d.pour && CP.dateSimple(d.pour).getTime() - maintenant < 2 * 864e5;
+      l.innerHTML = '<input type="checkbox"' + (d.fait ? ' checked' : '') + '><span><span class="txt">' + CP.texte(d.texte) + '</span>' +
+        (quand ? '<span class="quand' + (urgent ? ' urgent' : '') + '">' + CP.typo(quand) + '</span>' : '') + '</span>';
+      l.querySelector('input').addEventListener('change', function (ev) {
+        var oui = ev.target.checked;
+        l.classList.toggle('fait', oui);
+        C.rpc('cp_cocher_devoir', { p_id: d.id, p_fait: oui }).then(function (r) {
+          if (r.error) { ev.target.checked = !oui; l.classList.toggle('fait', !oui); alert('Le devoir n\'a pas pu être enregistré. Réessaie.'); }
+        });
+      });
+      $('devoirs').appendChild(l);
+    });
+
+    /* Dernière séance */
+    var der = passees[0];
+    if (der) {
+      $('d-derniere').textContent = CP.majuscule(CP.jour(der.quand));
+      var blocs = [['Ce qu\'on a vu', der.vu], ['À retravailler', der.retravailler], ['Le mot du prof', der.mot]]
+        .filter(function (b) { return b[1]; });
+      $('derniere').innerHTML = blocs.length ? blocs.map(function (b) {
+        return '<div class="bloc-seance"><div class="etiq">' + CP.typo(b[0]) + '</div><p>' + CP.texte(b[1]) + '</p></div>';
+      }).join('') : '<p class="vide">Pas encore de compte rendu pour cette séance.</p>';
+    } else {
+      $('derniere').innerHTML = '<p class="vide">Le compte rendu de ta première séance apparaîtra ici.</p>';
+    }
+
+    /* Documents */
+    DOCS = docs;
+    filtres();
+    documents();
+
+    /* Fiches */
+    var nums = {}; ouvertes.forEach(function (o) { nums[o.numero] = 1; });
+    var fiches = CP.fiches().filter(function (f) { return nums[f.n]; });
+    $('n-fiches').textContent = fiches.length ? fiches.length + (fiches.length > 1 ? ' fiches ouvertes' : ' fiche ouverte') + ' par ton professeur' : '';
+    $('fiches').innerHTML = fiches.length ? fiches.map(function (f) {
+      return '<a class="fiche-carte" href="' + CP.echap(f.url) + (admin ? '?eleve=' + encodeURIComponent(uid) : '') + '"><span class="num">' + CP.num(f.n) + '</span><b>' + CP.typo(CP.echap(f.titre)) + '</b>' +
+        (f.sous ? '<span>' + CP.typo(CP.echap(f.sous)) + '</span>' : '') + '</a>';
+    }).join('') : '<p class="vide">Ton professeur n\'a pas encore ouvert de fiche de cours.</p>';
+
+    /* Historique */
+    $('seances').innerHTML = passees.length ? passees.map(function (s) {
+      return '<div class="histo"><b>' + CP.jour(s.quand, false) + '</b><span>' + (s.vu ? CP.texte(s.vu) : '<span class="gris">Séance</span>') + '</span></div>';
+    }).join('') : '<p class="vide">Aucune séance passée pour l\'instant.</p>';
+  }
+
+  function filtres() {
+    var n = { tout: DOCS.length };
+    DOCS.forEach(function (d) { n[d.type] = (n[d.type] || 0) + 1; });
+    var ordre = ['tout', 'exercices', 'corrige', 'controle', 'fiche', 'autre'].filter(function (t) { return n[t]; });
+    $('filtres').innerHTML = ordre.length > 2 ? ordre.map(function (t) {
+      var nom = { tout: 'Tout', exercices: 'Exercices', corrige: 'Corrigés', controle: 'Contrôles', fiche: 'Fiches', autre: 'Autres' }[t];
+      return '<button type="button" data-t="' + t + '" aria-pressed="' + (filtre === t) + '">' + nom + ' · ' + n[t] + '</button>';
+    }).join('') : '';
+    Array.prototype.forEach.call($('filtres').querySelectorAll('button'), function (b) {
+      b.addEventListener('click', function () { filtre = b.getAttribute('data-t'); filtres(); documents(); });
+    });
+  }
+
+  function documents() {
+    var liste = DOCS.filter(function (d) { return filtre === 'tout' || d.type === filtre; });
+    var max = tousDocs ? liste.length : 5;
+    $('docs').innerHTML = '';
+    if (!liste.length) $('docs').innerHTML = '<p class="vide">Aucun document pour l\'instant.</p>';
+    liste.slice(0, max).forEach(function (d) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'doc';
+      var neuf = Date.now() - new Date(d.depose_le).getTime() < 7 * 864e5;
+      var sous = d.eleve ? CP.TYPES[d.type] + (d.chapitre ? ' · chapitre ' + CP.num(d.chapitre) : '') : 'Pour tous les élèves';
+      b.innerHTML = '<span class="doc-ico' + (d.eleve ? '' : ' commun') + '">PDF</span>' +
+        '<span class="doc-txt"><b>' + CP.typo(CP.echap(d.titre)) + '</b><span>' + CP.typo(sous + ' · déposé le ' + CP.jour(d.depose_le, false)) + '</span></span>' +
+        (neuf ? '<span class="pastille">Nouveau</span>' : '') + '<span class="ouvrir">Ouvrir →</span>';
+      b.addEventListener('click', function () { CP.ouvrirPdf(C, d.chemin); });
+      $('docs').appendChild(b);
+    });
+    var t = $('tous-docs');
+    t.hidden = liste.length <= 5;
+    t.textContent = tousDocs ? 'Voir moins de documents' : 'Voir les ' + liste.length + ' documents';
+    t.onclick = function () { tousDocs = !tousDocs; documents(); };
+  }
+
+  document.addEventListener('ecg:pret', demarrer);
+})();
+</script>
+</body>
+</html>
