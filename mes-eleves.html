@@ -32,6 +32,11 @@
   </div>
   <p class="message" id="m-ajout" hidden></p>
 
+  <section class="carte biblio" aria-labelledby="t-biblio">
+    <div class="carte-tete"><h2 id="t-biblio">Mes cours</h2><span class="petit gris">Glisse un cours sur un élève, dans la liste de gauche, pour l'ouvrir dans son espace. Sur téléphone, coche-le dans la fiche de l'élève.</span></div>
+    <div class="biblio-liste" id="biblio"></div>
+  </section>
+
   <div class="adm-corps">
     <aside class="liste-eleves" id="liste" aria-label="Mes élèves"><p class="vide" style="padding:12px">Chargement…</p></aside>
     <div class="adm-detail" id="detail"></div>
@@ -101,6 +106,7 @@
   <div class="l-docs"></div>
 </template>
 
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 <script src="cours-particuliers/commun.js"></script>
 <script>document.write('<script src="cours-particuliers/fiches.js?v=' + Math.floor(Date.now() / 60000) + '"><\/script>');</script>
 <script>
@@ -127,6 +133,7 @@
       ELEVES = rs[0].data || []; SEANCES = rs[1].data || []; DEVOIRS = rs[2].data || [];
       DOCS = rs[3].data || []; OUVERTES = rs[4].data || [];
       liste();
+      biblio();
       if (courant && courant !== COMMUN && !ELEVES.some(function (e) { return e.utilisateur === courant; })) courant = null;
       if (!courant && ELEVES.length) courant = ELEVES[0].utilisateur;
       detail();
@@ -153,7 +160,59 @@
     $('liste').innerHTML = h;
     Array.prototype.forEach.call($('liste').querySelectorAll('[data-id]'), function (b) {
       b.addEventListener('click', function () { courant = b.getAttribute('data-id'); edition = null; liste(); detail(); });
+      var id = b.getAttribute('data-id');
+      if (id === COMMUN) return;
+      /* Cible du glisser-déposer : un cours lâché sur un élève s'ouvre dans son espace. */
+      b.addEventListener('dragover', function (ev) { if (glisse) { ev.preventDefault(); ev.dataTransfer.dropEffect = 'copy'; b.classList.add('cible'); } });
+      b.addEventListener('dragleave', function () { b.classList.remove('cible'); });
+      b.addEventListener('drop', function (ev) {
+        ev.preventDefault(); b.classList.remove('cible');
+        var n = +String(ev.dataTransfer.getData('text/plain')).replace('fiche:', '');
+        if (n) ouvrirFiche(id, n);
+      });
     });
+  }
+
+  /* ─── Mes cours : la bibliothèque de fiches, à glisser sur un élève ─── */
+  var glisse = false;
+  function biblio() {
+    var fiches = CP.fiches();
+    $('biblio').innerHTML = fiches.length ? '' : '<p class="vide">Aucun cours pour l\'instant.</p>';
+    fiches.forEach(function (f) {
+      var qui = OUVERTES.filter(function (o) { return o.numero === f.n; }).map(function (o) {
+        return ELEVES.filter(function (e) { return e.utilisateur === o.eleve; })[0];
+      }).filter(Boolean).map(nomCourt);
+      var a = document.createElement('article');
+      a.className = 'cours-carte'; a.draggable = true;
+      a.innerHTML = '<span class="poignee" aria-hidden="true"><svg width="12" height="18" viewBox="0 0 12 18" fill="currentColor"><circle cx="3" cy="3" r="1.6"/><circle cx="9" cy="3" r="1.6"/><circle cx="3" cy="9" r="1.6"/><circle cx="9" cy="9" r="1.6"/><circle cx="3" cy="15" r="1.6"/><circle cx="9" cy="15" r="1.6"/></svg></span>' +
+        '<span class="num">' + CP.num(f.n) + '</span><div class="cours-txt"><b>' + CP.typo(CP.echap(f.titre)) + '</b>' +
+        (f.sous ? '<span>' + CP.typo(CP.echap(f.sous)) + '</span>' : '') +
+        '<span class="qui">' + CP.typo(qui.length ? 'Ouvert à ' + CP.echap(qui.join(', ')) : 'Ouvert à aucun élève pour l\'instant') + '</span></div>' +
+        '<a class="btn clair" href="' + CP.echap(f.url) + '">Aperçu</a>';
+      a.addEventListener('dragstart', function (ev) {
+        ev.dataTransfer.setData('text/plain', 'fiche:' + f.n); ev.dataTransfer.effectAllowed = 'copy';
+        glisse = true; document.body.classList.add('en-glisse'); a.classList.add('saisi');
+      });
+      a.addEventListener('dragend', function () { glisse = false; document.body.classList.remove('en-glisse'); a.classList.remove('saisi'); });
+      $('biblio').appendChild(a);
+    });
+  }
+  function toast(t) {
+    var el = $('toast');
+    el.textContent = CP.typo(t); el.hidden = false;
+    clearTimeout(toast.t); toast.t = setTimeout(function () { el.hidden = true; }, 3200);
+  }
+  function ouvrirFiche(id, n) {
+    var e = ELEVES.filter(function (x) { return x.utilisateur === id; })[0];
+    var f = CP.fiches().filter(function (x) { return x.n === n; })[0];
+    if (!e || !f) return;
+    if (OUVERTES.some(function (o) { return o.eleve === id && o.numero === n; })) { toast('« ' + f.titre + ' » est déjà dans l\'espace de ' + nom(e) + '.'); return; }
+    C.from('cp_fiches_ouvertes').insert({ eleve: id, numero: n }).then(ok).then(function () {
+      OUVERTES.push({ eleve: id, numero: n });
+      toast('« ' + f.titre + ' » est maintenant dans l\'espace de ' + nom(e) + '.');
+      biblio();
+      if (courant === id) detail();
+    }).catch(alerte);
   }
 
   function detail() {
@@ -263,6 +322,7 @@
         q.then(ok).then(function () {
           OUVERTES = OUVERTES.filter(function (o) { return !(o.eleve === e.utilisateur && o.numero === n); });
           if (i.checked) OUVERTES.push({ eleve: e.utilisateur, numero: n });
+          biblio();
         }).catch(function (x) { i.checked = !i.checked; i.parentNode.classList.toggle('coche', i.checked); alerte(x); });
       });
     });

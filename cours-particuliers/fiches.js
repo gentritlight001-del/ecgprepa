@@ -7,5 +7,5 @@
    Chargé avec ?v=<minute> (voir CLAUDE.md, section 2).
    ══════════════════════════════════════════════════════════════ */
 window.CP_FICHES = [
-  /* { n: 6, titre: 'Vecteurs', sous: 'Translation, coordonnées, colinéarité', url: 'cours-particuliers/fiche-06.html' }, */
+  { n: 1, titre: 'La fonction racine carrée', sous: 'Racine d\'un nombre, règles de calcul, variations, équations', url: 'cours-particuliers/racine-carree.html' }
 ];
