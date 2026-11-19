@@ -80,20 +80,27 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   `mes-eleves.html`, « Mes cours » liste toutes les fiches (`CP_FICHES` de `cours-particuliers/fiches.js`) ; le propriétaire
   **glisse** une fiche sur un élève de la liste de gauche pour l'ouvrir dans son espace (cases à cocher dans la fiche de
   l'élève, sur téléphone). Un élève ne voit que les fiches ouvertes pour lui (`fiche.js` vérifie `cp_fiches_ouvertes`).
-  **Fiches de cours** (demande type : « Fais-moi un cours sur … ») : une page `cours-particuliers/<slug>.html`, copiée de
-  `racine-carree.html` (n° 01, novembre 2026, modèle), avec `<body data-fiche="N">`, `noindex`, `../auth.js`, la barre
-  `sn sn-cours sn-particuliers`, KaTeX 0.16.9 (`\( … \)` dans le texte, `\[ … \]` en bloc, formules en bloc assez étroites
-  pour 390 px : `cases`, `aligned` sur plusieurs lignes), puis `fiche.js` ; et une ligne dans `CP_FICHES`. Structure : en-tête
-  (grand numéro, titre, phrase), barre du score, sommaire, « L'essentiel » (3 points), puis des parties `section.carte` numérotées ;
-  dans **chaque partie** : la définition, le théorème, la propriété ou la formule (`.bloc.definition` / `.theoreme` /
-  `.propriete` / `.methode`, démonstration `.bloc.demo` quand elle est au programme), **un exemple** (`.bloc.exemple`), le piège
-  (`.bloc.piege`), puis « À toi de jouer » : **1 ou 2 exercices** `.exo-cp` que l'élève remplit lui-même. Réponse tapée :
+  **Fiches de cours** (demande type : « Fais-moi un cours sur … ») : gabarit **« manuel interactif »** (maquette B2 validée
+  par le propriétaire, novembre 2026, après deux séries de maquettes : pleine largeur, **pas de sommaire**), feuille
+  `cours-particuliers/fiche.css`, moteur `fiche.js`. Une page `cours-particuliers/<slug>.html`, copiée de `racine-carree.html`
+  (n° 01, modèle), avec `<body class="fx" data-fiche="N">`, `noindex`, `../auth.js`, la barre `sn sn-cours sn-particuliers`,
+  KaTeX 0.16.9 (`\( … \)` dans le texte, `\[ … \]` en bloc, formules assez étroites pour 390 px : `cases`, `aligned`), puis
+  `fiche.js` ; et une ligne dans `CP_FICHES`. En-tête vert `.fx-tete` : badges, titre, phrase, anneau de progression `#score`,
+  « Imprimer » et « Effacer mes réponses », « L'essentiel » en 3 points (`ol.fx-ess`). Puis une `section.fx-partie` par
+  partie : en-tête `.fx-p-tete` (numéro, titre, progression `.fx-p-score` remplie par le script), et `.fx-grille` : **le cours
+  à gauche** (`.fx-cours`) et **« À toi de jouer » en face** (`aside.fx-exos`, avec `.fx-reussi` : le panneau se replie en
+  « Partie réussie » quand tous ses exercices sont justes). Dans **chaque partie** : la définition, le théorème, la propriété
+  ou la méthode (`.bloc.definition` / `.theoreme` / `.propriete` / `.methode`, titre `.bloc-t`, contenu `.bloc-c`, formules
+  en pastilles `.formules > .formule`), la démonstration au programme (`.bloc.demo`), **un exemple** (`.bloc.exemple`, résolu
+  en 3 étapes `ol.etapes` quand il s'y prête), le piège et « À retenir » côte à côte (`.notes > .note.piege` / `.note.retenir`),
+  puis **1 ou 2 exercices** `.exo-cp` (titre `.exo-t`). Réponse tapée :
   `<div class="rep" data-attendu="2√5" data-forme="simplifiee|nombre" data-indice="…"><span class="rep-q">\(\sqrt{20} =\)</span></div>`
-  (`fiche.js` ajoute la case, les boutons √, x², a/b, parenthèses, l'aperçu KaTeX et « Vérifier » : valeur comparée, forme
-  contrôlée : racine à réduire, racines à regrouper, racine au dénominateur, fraction à simplifier) ; choix :
-  `<div class="qcm" data-bonne="<n° du bon bouton, dès 1>">` ; correction détaillée dans `<details class="corr">`. Courbe à
-  curseur : `<div class="courbe" data-courbe>` (racine carrée seulement pour l'instant). Réponses gardées dans le navigateur
-  (`ecg-cp-fiche:<n>`). Le contenu est vérifié (calculs refaits) et ne sort pas du programme de seconde.
+  (`fiche.js` ajoute la case, l'aperçu KaTeX dans la case, « Vérifier » (ou Entrée), les touches √, x², a/b, ( ) sous la
+  case active, l'état juste / presque / faux, « Besoin d'un indice ? » ; valeur comparée, forme contrôlée : racine à réduire,
+  à regrouper, au dénominateur, fraction à simplifier) ; choix : `<div class="qcm" data-bonne="<n° du bon bouton, dès 1>">`
+  (`p.qcm-q`, `div.qcm-choix`) ; correction dans `<details class="corr">`. Courbe à curseur : `<div class="courbe"
+  data-courbe>` (racine carrée seulement pour l'instant). Réponses gardées dans le navigateur (`ecg-cp-fiche:<n>`). Le
+  contenu est vérifié (calculs refaits) et ne sort pas du programme de seconde ; le propriétaire demandera les retouches.
 - **Statistiques de fréquentation** (novembre 2026) : module `Stats` de `auth.js` (juste après `window.ECGAuth = Auth`),
   sur toutes les pages, publiques comprises (accueil, tarifs, connexion, 404), avec ou sans compte : `noter_page` (chemin,
   titre, appareil, système, appli installée, temps de lecture actif, défilement, visite, source d'arrivée ; envoi final par

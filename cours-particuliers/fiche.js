@@ -1,10 +1,15 @@
 /* ══════════════════════════════════════════════════════════════
    Fiches de cours de l'espace de cours particuliers (maths seconde).
    - formules en KaTeX : \( … \) dans le texte, \[ … \] en bloc ;
+   - gabarit « manuel interactif » (fiche.css) : une partie = section.fx-partie
+     avec le cours (.fx-cours) et « À toi de jouer » (aside.fx-exos) en face ;
    - exercices où l'élève tape sa réponse (racines carrées, fractions,
-     puissances) : <label class="rep" data-attendu="2√3" data-forme="…"
-     data-indice="…">, aperçu KaTeX en direct, vérification à la demande ;
+     puissances) : <div class="rep" data-attendu="2√3" data-forme="…"
+     data-indice="…"><span class="rep-q">…</span></div>, aperçu KaTeX en direct,
+     vérification à la demande, indice sur demande ;
    - questions à choix : <div class="qcm" data-bonne="<n° du bouton, dès 1>"> ;
+   - progression : anneau de l'en-tête (#score), barres de chaque partie
+     (.fx-p-score), panneau replié quand la partie est réussie ;
    - réponses gardées dans le navigateur (localStorage ecg-cp-fiche:<n>) ;
    - un élève ne voit que les fiches que son professeur lui a ouvertes.
    Formes (data-forme) : « nombre » (sans racine), « simplifiee » (a√b
@@ -163,40 +168,78 @@
     if (window.katex) { try { katex.render(t, el, { throwOnError: false }); return; } catch (e) {} }
     el.textContent = t;
   }
+  function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
 
   /* ─── Mémoire ─────────────────────────────────────────────── */
   var MEM = {};
   try { MEM = JSON.parse(localStorage.getItem(CLE) || '{}') || {}; } catch (e) { MEM = {}; }
   function garder() { try { localStorage.setItem(CLE, JSON.stringify(MEM)); } catch (e) {} }
 
-  /* ─── Exercices ───────────────────────────────────────────── */
-  function retour(el, etat, html) {
-    el.className = 'retour ' + etat;
-    el.innerHTML = html;
-    el.hidden = !html;
-    rendre(el);
+  /* ─── Progression ─────────────────────────────────────────── */
+  function reussi(x) {
+    var items = x.querySelectorAll('.rep, .qcm');
+    return !!items.length && Array.prototype.every.call(items, function (i) { return i.classList.contains('juste'); });
   }
   function compter() {
     var exos = document.querySelectorAll('.exo-cp'), ok = 0;
-    Array.prototype.forEach.call(exos, function (x) {
-      var items = x.querySelectorAll('.rep, .qcm');
-      var tous = items.length && Array.prototype.every.call(items, function (i) { return i.classList.contains('juste'); });
-      x.classList.toggle('reussi', !!tous);
-      if (tous) ok++;
+    Array.prototype.forEach.call(exos, function (x) { var r = reussi(x); x.classList.toggle('reussi', r); if (r) ok++; });
+    var total = exos.length;
+    var sc = document.getElementById('score');
+    if (sc) {
+      var c = sc.querySelector('.arc'), t = sc.querySelector('.pct');
+      var L = 2 * Math.PI * 27;
+      if (c) c.setAttribute('stroke-dasharray', (total ? L * ok / total : 0).toFixed(1) + ' ' + L.toFixed(1));
+      if (t) t.textContent = (total ? Math.round(100 * ok / total) : 0) + ' %';
+      var b = sc.querySelector('b'); if (b) b.textContent = ok + ' sur ' + total;
+      var s = sc.querySelector('.txt'); if (s) s.textContent = ok > 1 ? 'exercices réussis' : 'exercice réussi';
+    }
+    Array.prototype.forEach.call(document.querySelectorAll('.fx-partie'), function (p) {
+      var ex = p.querySelectorAll('.exo-cp'), n = 0;
+      Array.prototype.forEach.call(ex, function (x) { if (x.classList.contains('reussi')) n++; });
+      var z = p.querySelector('.fx-p-score');
+      if (z && ex.length) {
+        z.classList.toggle('fini', n === ex.length);
+        z.innerHTML = n + (n > 1 ? ' exercices réussis' : ' exercice réussi') + ' sur ' + ex.length +
+          ' <span class="fx-barres" aria-hidden="true">' + Array.prototype.map.call(ex, function (x) { return '<i' + (x.classList.contains('reussi') ? ' class="ok"' : '') + '></i>'; }).join('') + '</span>';
+      }
+      var a = p.querySelector('.fx-exos');
+      if (a && ex.length) {
+        var fini = n === ex.length, avant = a.classList.contains('fini');
+        a.classList.toggle('fini', fini);
+        if (!fini) a.classList.remove('ouvert');
+        if (fini && !avant && compter.pret) a.classList.add('ouvert');   /* on vient de finir : on laisse ouvert */
+      }
     });
-    var c = document.getElementById('score');
-    if (c) c.innerHTML = exos.length ? '<b>' + ok + '</b> exercice' + (ok > 1 ? 's' : '') + ' réussi' + (ok > 1 ? 's' : '') + ' sur ' + exos.length : '';
   }
 
-  function champ(lab, id) {
-    var input = document.createElement('input');
+  /* ─── Une réponse à taper ─────────────────────────────────── */
+  function retour(r, etat, html, indice) {
+    r.className = 'retour ' + etat;
+    r.hidden = !html;
+    r.innerHTML = html || '';
+    if (indice) {
+      var b = el('button', 'indice-btn', 'Besoin d\'un indice ?');
+      b.type = 'button';
+      b.addEventListener('click', function () { b.remove(); var d = el('span', 'indice', '<b>Indice :</b> ' + indice); r.appendChild(d); rendre(d); });
+      r.appendChild(b);
+    }
+    rendre(r);
+  }
+  function champ(rep, id) {
+    var z = el('div', 'rep-z');
+    var boite = el('div', 'rep-champ');
+    var input = el('input');
     input.type = 'text'; input.autocomplete = 'off'; input.spellcheck = false;
-    input.setAttribute('autocapitalize', 'off'); input.setAttribute('aria-label', 'Ta réponse');
-    var outils = document.createElement('span');
-    outils.className = 'rep-outils';
-    [['√', '√()', -1, 'Racine carrée'], ['x²', '^2', 0, 'Au carré'], ['a/b', '/', 0, 'Fraction'], ['(', '(', 0, 'Parenthèse ouvrante'], [')', ')', 0, 'Parenthèse fermante']].forEach(function (b) {
-      var bt = document.createElement('button');
-      bt.type = 'button'; bt.textContent = b[0]; bt.setAttribute('aria-label', b[3]);
+    input.setAttribute('autocapitalize', 'off'); input.setAttribute('inputmode', 'text');
+    input.setAttribute('aria-label', 'Ta réponse' + (rep.querySelector('.rep-q') ? ' : ' + rep.querySelector('.rep-q').textContent.replace(/=\s*$/, '').trim() : ''));
+    input.placeholder = 'ta réponse';
+    var ap = el('span', 'rep-apercu'); ap.setAttribute('aria-hidden', 'true');
+    var bouton = el('button', 'verifier', 'Vérifier'); bouton.type = 'button';
+    var etat = el('span', 'etat', 'Juste');
+    boite.appendChild(input); boite.appendChild(ap); boite.appendChild(bouton); boite.appendChild(etat);
+    var outils = el('div', 'rep-outils');
+    [['√', '√()', -1, 'Racine carrée'], ['x²', '^2', 0, 'Au carré'], ['a/b', '/', 0, 'Fraction'], ['( )', '()', -1, 'Parenthèses']].forEach(function (b) {
+      var bt = el('button', '', b[0]); bt.type = 'button'; bt.setAttribute('aria-label', b[3]);
       bt.addEventListener('mousedown', function (e) { e.preventDefault(); });
       bt.addEventListener('click', function () {
         var d = input.selectionStart == null ? input.value.length : input.selectionStart, f = input.selectionEnd == null ? d : input.selectionEnd;
@@ -207,41 +250,35 @@
       });
       outils.appendChild(bt);
     });
-    var bouton = document.createElement('button');
-    bouton.type = 'button'; bouton.className = 'verifier'; bouton.textContent = 'Vérifier';
-    var ap = document.createElement('span'); ap.className = 'rep-apercu'; ap.setAttribute('aria-hidden', 'true');
-    var ret = document.createElement('span'); ret.className = 'retour'; ret.hidden = true; ret.setAttribute('aria-live', 'polite');
+    outils.appendChild(el('span', '', 'Entrée pour vérifier'));
+    var ret = el('div', 'retour'); ret.hidden = true; ret.setAttribute('aria-live', 'polite');
+    z.appendChild(boite); z.appendChild(outils); z.appendChild(ret);
+    rep.appendChild(z);
 
-    var ligne = document.createElement('span'); ligne.className = 'rep-ligne';
-    ligne.appendChild(input); ligne.appendChild(bouton);
-    lab.appendChild(ligne); lab.appendChild(outils); lab.appendChild(ap); lab.appendChild(ret);
-
+    function etats(e) { rep.classList.remove('juste', 'faux', 'presque'); if (e) rep.classList.add(e); }
     function apercu() {
-      lab.classList.remove('juste', 'faux');
-      retour(ret, '', '');
+      etats(''); retour(ret, '', '');
       var v = input.value.trim();
       if (!v) { ap.textContent = ''; return; }
       try { katexDans(ap, tex(lire(v))); ap.classList.remove('illisible'); }
-      catch (e) { ap.textContent = 'Écriture incomplète…'; ap.classList.add('illisible'); }
+      catch (e) { ap.textContent = '…'; ap.classList.add('illisible'); }
     }
     function verifier(silence) {
       var v = input.value.trim();
       MEM[id] = v; garder();
       if (!v) { if (!silence) retour(ret, 'faux', 'Écris ta réponse d\'abord.'); return; }
       var ast;
-      try { ast = lire(v); } catch (e) { retour(ret, 'faux', 'Je n\'arrive pas à lire ta réponse. Pour une racine, utilise le bouton √ (ou écris sqrt(12)).'); return; }
-      var attendu = val(lire(lab.getAttribute('data-attendu'))), x = val(ast);
+      try { ast = lire(v); } catch (e) { etats('faux'); retour(ret, 'faux', 'Je n\'arrive pas à lire ta réponse. Pour une racine, utilise la touche √ (ou écris sqrt(12)).'); compter(); return; }
+      var attendu = val(lire(rep.getAttribute('data-attendu'))), x = val(ast);
       var egal = isFinite(x) && Math.abs(x - attendu) < 1e-9 * Math.max(1, Math.abs(attendu));
       if (!egal) {
-        lab.classList.add('faux'); lab.classList.remove('juste');
-        if (!silence) retour(ret, 'faux', 'Pas encore.' + (lab.getAttribute('data-indice') ? ' <b>Indice :</b> ' + lab.getAttribute('data-indice') : ' Relis la propriété au-dessus.'));
+        etats('faux');
+        retour(ret, 'faux', silence ? '' : 'Pas encore.', silence ? null : (rep.getAttribute('data-indice') || 'relis le cours juste à gauche.'));
         compter(); return;
       }
-      var d = defautForme(ast, lab.getAttribute('data-forme'));
-      if (d) { lab.classList.remove('juste'); lab.classList.add('faux'); if (!silence) retour(ret, 'presque', 'La valeur est juste. ' + d); compter(); return; }
-      lab.classList.add('juste'); lab.classList.remove('faux');
-      retour(ret, 'ok', 'Bravo, c\'est juste.');
-      compter();
+      var d = defautForme(ast, rep.getAttribute('data-forme'));
+      if (d) { etats('presque'); retour(ret, 'presque', silence ? '' : 'La valeur est juste. ' + d); compter(); return; }
+      etats('juste'); retour(ret, '', ''); compter();
     }
     input.addEventListener('input', apercu);
     input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); verifier(); } });
@@ -249,18 +286,19 @@
     if (MEM[id]) { input.value = MEM[id]; apercu(); verifier(true); }
   }
 
+  /* ─── Une question à choix ────────────────────────────────── */
   function qcm(q, id) {
-    var bts = q.querySelectorAll('button');
-    var ret = document.createElement('p'); ret.className = 'retour'; ret.hidden = true; ret.setAttribute('aria-live', 'polite');
+    var bts = q.querySelectorAll('.qcm-choix button');
+    var ret = el('div', 'retour'); ret.hidden = true; ret.setAttribute('aria-live', 'polite');
     q.appendChild(ret);
     function choisir(i, silence) {
       MEM[id] = i; garder();
       Array.prototype.forEach.call(bts, function (b, j) { b.setAttribute('aria-pressed', String(j === i)); b.classList.remove('bon', 'mauvais'); });
       var bonne = +q.getAttribute('data-bonne') - 1;
-      if (i === bonne) { bts[i].classList.add('bon'); q.classList.add('juste'); retour(ret, 'ok', 'Bravo, c\'est juste.'); }
+      if (i === bonne) { bts[i].classList.add('bon'); q.classList.add('juste'); retour(ret, 'ok', silence ? '' : 'Juste.'); }
       else {
         bts[i].classList.add('mauvais'); q.classList.remove('juste');
-        retour(ret, 'faux', silence ? '' : 'Pas encore.' + (q.getAttribute('data-indice') ? ' <b>Indice :</b> ' + q.getAttribute('data-indice') : ''));
+        retour(ret, 'faux', silence ? '' : 'Pas encore.', silence ? null : q.getAttribute('data-indice'));
       }
       compter();
     }
@@ -270,7 +308,7 @@
 
   /* ─── Courbe de la fonction racine carrée (curseur) ───────── */
   function courbe(box) {
-    var L = 360, H = 200, X0 = 34, Y0 = 176, sx = (L - 50) / 9, sy = 40;   /* x de 0 à 9, y de 0 à 3,5 */
+    var L = 400, H = 220, X0 = 34, Y0 = 194, sx = (L - 52) / 9, sy = 46;   /* x de 0 à 9, y de 0 à 3,5 */
     function px(x) { return X0 + x * sx; }
     function py(y) { return Y0 - y * sy; }
     var d = '', i;
@@ -302,15 +340,23 @@
   /* ─── Démarrage ───────────────────────────────────────────── */
   function lancer() {
     rendre(document.getElementById('cours'));
+    rendre(document.querySelector('.fx-tete'));
     Array.prototype.forEach.call(document.querySelectorAll('.rep'), function (l, i) { champ(l, 'r' + i); });
     Array.prototype.forEach.call(document.querySelectorAll('.qcm'), function (q, i) { qcm(q, 'q' + i); });
     Array.prototype.forEach.call(document.querySelectorAll('[data-courbe]'), courbe);
+    Array.prototype.forEach.call(document.querySelectorAll('.fx-exos'), function (a) {
+      var b = a.querySelector('.fx-reussi button');
+      if (b) b.addEventListener('click', function () { a.classList.add('ouvert'); });
+    });
     compter();
+    compter.pret = true;
     var raz = document.getElementById('raz');
     if (raz) raz.addEventListener('click', function () {
       if (!confirm('Effacer toutes tes réponses de cette fiche ?')) return;
       MEM = {}; garder(); location.reload();
     });
+    var imp = document.getElementById('imprimer');
+    if (imp) imp.addEventListener('click', function () { window.print(); });
   }
   function quandKatex(f) {
     if (window.renderMathInElement && window.katex) return f();
@@ -334,7 +380,7 @@
       return c.from('cp_fiches_ouvertes').select('numero').eq('eleve', moi.id).eq('numero', N);
     }).then(function (r) {
       if (r.error || !r.data || !r.data.length) {
-        document.getElementById('cours').innerHTML = '<p class="chargement">Cette fiche n\'est pas encore ouverte dans ton espace.<br><a href="../cours-particuliers.html">← Mon espace</a></p>';
+        document.getElementById('cours').innerHTML = '<p class="fx-ferme">Cette fiche n\'est pas encore ouverte dans ton espace.<br><a href="../cours-particuliers.html">← Mon espace</a></p>';
         return;
       }
       quandKatex(lancer);
