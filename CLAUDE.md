@@ -39,7 +39,8 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   `contact.html` ; Stripe viendra plus tard (`MONETISATION.md`). Avantages d'un compte annoncés : seulement les vrais
   (3 contenus Premium par mois, flashcards et favoris sur tous les appareils, « Newsletters et Actualités »).
 - Pages réservées à l'administrateur : `PAGES_ADMIN` dans `auth.js` (`admin.html`,
-  `idees-articles.html`, `mes-newsletters.html`, `mon-planning.html`, `mes-eleves.html`). `mon-planning.html` : agenda
+  `idees-articles.html`, `mes-newsletters.html`, `mon-planning.html`). Exception : `mes-eleves.html`, fermée par
+  `pageParticuliers` au seul propriétaire (voir « Espace de cours particuliers »). `mon-planning.html` : agenda
   personnel du propriétaire (habillage « carnet pointillé » + grille horaire, **pas d'italique**),
   synchronisé dans `planning/planning.json` du bucket privé `newsletters` (photos attachées dans `planning/photos/`) ; interrupteurs « Au quotidien »
   (anglais, espagnol, allemand) qui ajoutent une ligne par jour. Sa recherche « Depuis le site » lit
@@ -68,7 +69,9 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   `noindex`, dans `robots.txt`, jamais liées depuis le site (ni menus publics, ni recherche, ni `nouveautes.js`, ni sitemap).
   Le propriétaire veut juste que ce ne soit pas visible sur le site, ce n'est pas « top secret » : les fiches sont des pages
   normales du dépôt. L'élève voit « Mes cours de maths » dans le menu de son compte (`menuParticuliers`, `cp_est_eleve`).
-  Côté administrateur, `mes-eleves.html` (menu du compte et menu latéral de `admin.html`) : donner l'accès avec l'adresse
+  **Côté administrateur, seul le compte du propriétaire** (choix du propriétaire, novembre 2026 : `cp_est_admin` vérifie son
+  identifiant, les autres administrateurs du site voient la 404 et n'ont ni menu ni données). `mes-eleves.html` (menu du compte
+  et menu latéral de `admin.html`, affichés par `cp_est_admin`) : donner l'accès avec l'adresse
   e-mail du compte gratuit de l'élève, le retirer, noter une séance (date, heure, durée, ce qu'on a vu, à retravailler, le
   mot du prof), donner un devoir, déposer un PDF (pour un élève ou pour tous), cocher les fiches ouvertes à chaque élève,
   « Voir son espace » (`cours-particuliers.html?eleve=<id>`). Ce qui se modifie depuis le site est dans Supabase

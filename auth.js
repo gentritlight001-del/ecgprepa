@@ -374,7 +374,7 @@
 
   /* Pages réservées aux administrateurs : un membre connecté qui
      connaît l'adresse est arrêté et renvoyé vers l'accueil. */
-  var PAGES_ADMIN = ['admin.html', 'idees-articles.html', 'mes-newsletters.html', 'mon-planning.html', 'mes-eleves.html'];
+  var PAGES_ADMIN = ['admin.html', 'idees-articles.html', 'mes-newsletters.html', 'mon-planning.html'];
 
   var file = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
   if (file.indexOf('.') === -1) file = file + '.html';
@@ -386,9 +386,11 @@
   /* Espace de cours particuliers de maths (cours-particuliers.html et
      tout le dossier cours-particuliers/) : réservé aux élèves autorisés
      depuis mes-eleves.html (table cp_eleves, supabase/cours-particuliers.sql)
-     et à l'administrateur. Tout autre visiteur, avec ou sans compte, voit
-     la page 404 du site, comme si l'espace n'existait pas. */
-  var pageParticuliers = file === 'cours-particuliers.html' || /\/cours-particuliers\//.test(location.pathname);
+     et au seul propriétaire du site (cp_est_admin : pas les autres
+     administrateurs). Tout autre visiteur, avec ou sans compte, voit la page
+     404 du site, comme si l'espace n'existait pas. */
+  var pageParticuliers = file === 'cours-particuliers.html' || file === 'mes-eleves.html' ||
+    /\/cours-particuliers\//.test(location.pathname);
   function introuvable() { location.replace(BASE + '404.html'); }
 
   /* ─── Petit stockage local (miroir seulement) ─── */
@@ -2008,8 +2010,10 @@
          chapitre ou une leçon précise, verrouillée depuis sa carte).
          Un administrateur passe toujours, mais voit un bandeau de
          rappel si l'une d'elles est fermée. */
-      if (pageParticuliers && profil.role !== 'admin') {
-        return client.rpc('cp_est_eleve').then(function (r) {
+      if (pageParticuliers) {
+        /* mes-eleves.html : le propriétaire seulement ; le reste : ses élèves aussi. */
+        var verif = (file === 'mes-eleves.html' || profil.role === 'admin') ? 'cp_est_admin' : 'cp_est_eleve';
+        return client.rpc(verif).then(function (r) {
           if (r && r.data === true) terminer(); else introuvable();
         }, introuvable);
       }
@@ -2060,7 +2064,7 @@
          Une page réservée aux administrateurs reste fermée. */
       var p = profilLocal();
       if (pageReserveeAdmin && (!p || p.role !== 'admin')) { refuserAcces(p); return; }
-      if (pageParticuliers && (!p || p.role !== 'admin')) { introuvable(); return; }
+      if (pageParticuliers) { introuvable(); return; }
       leverVoile();
       alerteReseau('Serveur de comptes injoignable — affichage hors ligne, certaines fonctions sont indisponibles.');
       if (p) demarrerBadge(p);
@@ -2786,27 +2790,30 @@
     });
   }
 
-  /* « Mes cours de maths » dans le menu du compte, seulement pour un élève
-     de cours particuliers : vérifié une fois par visite (cp_est_eleve),
-     gardé en mémoire pour les pages suivantes. */
-  function menuParticuliers(wrap, s) {
-    var cle = 'ecg_cp:' + (s.email || s.id);
+  /* Espace de cours particuliers dans le menu du compte : « Mes cours de
+     maths » pour un élève (cp_est_eleve), « Mes élèves » pour le seul
+     propriétaire du site (cp_est_admin), jamais pour les autres membres ni
+     les autres administrateurs. Vérifié une fois par visite, gardé en
+     mémoire pour les pages suivantes. */
+  function menuParticuliers(wrap, s, admin) {
+    var cle = 'ecg_cp' + (admin ? '_admin:' : ':') + (s.email || s.id);
     function poser(oui) {
       var b = wrap.querySelector('#ecg-cp');
       if (oui && !b) {
         b = document.createElement('button');
         b.type = 'button'; b.id = 'ecg-cp'; b.setAttribute('role', 'menuitem');
-        b.textContent = 'Mes cours de maths';
-        b.addEventListener('click', function () { location.href = BASE + 'cours-particuliers.html'; });
-        var ref = wrap.querySelector('#ecg-favoris');
-        ref.parentNode.insertBefore(b, ref);
+        if (admin) b.className = 'admin';
+        b.textContent = admin ? 'Mes élèves' : 'Mes cours de maths';
+        b.addEventListener('click', function () { location.href = BASE + (admin ? 'mes-eleves.html' : 'cours-particuliers.html'); });
+        var ref = admin ? wrap.querySelector('#ecg-planning') : wrap.querySelector('#ecg-favoris');
+        if (admin) ref.parentNode.insertBefore(b, ref.nextSibling); else ref.parentNode.insertBefore(b, ref);
       } else if (!oui && b) b.parentNode.removeChild(b);
     }
     poser(lire(cle) === '1');
     var vu = null;
     try { vu = sessionStorage.getItem(cle); } catch (e) {}
     if (vu) return;
-    sb().then(function (c) { return c.rpc('cp_est_eleve'); }).then(function (r) {
+    sb().then(function (c) { return c.rpc(admin ? 'cp_est_admin' : 'cp_est_eleve'); }).then(function (r) {
       if (!r || r.error) return;
       var oui = r.data === true;
       ecrire(cle, oui ? '1' : '0');
@@ -2887,7 +2894,6 @@
       (admin ? '<button type="button" id="ecg-idees" class="admin" role="menuitem">Idées pour le site</button>' : '') +
       (admin ? '<button type="button" id="ecg-mes-nl" class="admin" role="menuitem">Mes newsletters</button>' : '') +
       (admin ? '<button type="button" id="ecg-planning" class="admin" role="menuitem">Mon planning</button>' : '') +
-      (admin ? '<button type="button" id="ecg-eleves" class="admin" role="menuitem">Mes élèves</button>' : '') +
       '<div class="sep"></div>' +
       '<button type="button" id="ecg-home" role="menuitem">Retour à l\'accueil</button>' +
       '<button type="button" id="ecg-logout" class="danger" role="menuitem">Se déconnecter</button>' +
@@ -2952,8 +2958,7 @@
     if (admin) wrap.querySelector('#ecg-idees').addEventListener('click', function () { location.href = BASE + 'idees-articles.html'; });
     if (admin) wrap.querySelector('#ecg-mes-nl').addEventListener('click', function () { location.href = BASE + 'mes-newsletters.html'; });
     if (admin) wrap.querySelector('#ecg-planning').addEventListener('click', function () { location.href = BASE + 'mon-planning.html'; });
-    if (admin) wrap.querySelector('#ecg-eleves').addEventListener('click', function () { location.href = BASE + 'mes-eleves.html'; });
-    if (!admin) menuParticuliers(wrap, s);
+    menuParticuliers(wrap, s, admin);
     wrap.querySelector('#ecg-logout').addEventListener('click', function () { Auth.logout(); });
 
     var compteur = wrap.querySelector('#ecg-fav-count');
