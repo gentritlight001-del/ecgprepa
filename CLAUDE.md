@@ -151,7 +151,7 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   (sous la barre sur téléphone, en une ligne qui défile), loupe et compte à droite. Couleurs : Cours ECG
   (`sn-cours`, noir, filet à la couleur de la matière : `sn-maths`, `sn-hgg`…), Actualité (`sn-actu`, noir,
   filet rouge, fil en capitales), Culture générale (`sn-cg`, pleine couleur du dossier, encre sur l'index), L'Humanité (`sn-hum`,
-  blanc, filet rouge brique). Une nouvelle page copiée d'une page existante garde sa barre ; sinon,
+  blanc, filet rouge brique), Concours (`sn-concours`, bleu nuit, filet bleu ciel). Une nouvelle page copiée d'une page existante garde sa barre ; sinon,
   `python3 outils/barre-section.py` marque la `<nav>` (classes `sn`, `sn-logo`, `sn-fil`, `.nav-right`) et
   relie la feuille. Ne pas restyler la barre dans la page.
 
@@ -744,6 +744,24 @@ s'ouvrent, liens de la frise valides, `grep -c '—'` à 0 dans le texte.
 - Rien à y mettre à jour : les scripts lisent le `.ci-compte` et le `.ci-titre` de chaque index de matière (et,
   pour les langues, les leçons de 1re année et le nombre de pays `.ix-pays-tete` de 2e année) et `nouveautes.js`.
   Une nouvelle matière s'ajoute en copiant une ligne `.matiere`, une nouvelle langue en copiant une ligne `.langue`.
+
+### Espace Concours (`concours.html`)
+
+- Carte « 02 Concours » de l'accueil. **But de l'espace** (choix du propriétaire, novembre 2026) : la **méthodologie** des
+  épreuves, à l'écrit et à l'oral, et les **annales corrigées guidées** (un vrai sujet repris pas à pas : lire le sujet,
+  problématique, plan, copie modèle annotée). Seul l'index existe pour l'instant ; les pages viendront dans `concours/`.
+- Habillage : **maquette C « Avril 2027 »** validée par le propriétaire (fond `#f7f6f2`, Inter Tight et DM Sans, bleu
+  `#2a5596`, bleu nuit `#0e1524`, bleu ciel `#7c9ec9` de la carte de l'accueil), barre `sn sn-concours`. Ordre : héros
+  (compte à rebours et calendrier du mois des écrits), « D'ici là » (inscriptions, écrits Ecricome, écrits BCE, oraux),
+  « La méthode, épreuve par épreuve » (6 cartes : maths, HGG, ESH, culture générale, synthèse et résumé, langues ; chacune
+  avec un lien vers les cours du site), « Annales corrigées guidées », « Après les écrits, l'oral » (entretien, langues,
+  épreuves des écoles), « En attendant, réviser les cours ».
+- Compte à rebours, calendrier et frise sont calculés par le script de la page : **changer `DATES` à chaque session**
+  (dates 2027 annoncées par la presse prépa, à confirmer sur concours-bce.com et ecricome.org). Pas de durée ni de
+  coefficient d'épreuve sur l'index (sources contradictoires) : ils iront dans les pages des épreuves, vérifiés.
+- Une méthode ou une annale mise en ligne : sur sa carte, remplacer la pastille `.bientot` « Bientôt en ligne » par un
+  lien vers sa page. Ne jamais annoncer un contenu qui n'existe pas.
+- Page ouverte sans compte (`DOSSIERS_OUVERTS` de `auth.js`), rubrique `concours` dans `RUBRIQUES_SITE`.
 
 ### Index de l'Humanité (`humanite.html`)
 

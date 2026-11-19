@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG Prépa — Concours</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+  /* Index de l'espace Concours : maquette C « Avril 2027 », choisie par le propriétaire (novembre 2026).
+     L'espace réunit la méthodologie des épreuves (écrit et oral) et les annales corrigées guidées.
+     Le calendrier, le compte à rebours et la frise « D'ici là » sont calculés par le script en bas :
+     changer les dates dans DATES à chaque nouvelle session. */
+  :root {
+    --fond: #f7f6f2;
+    --carte: #ffffff;
+    --encre: #121826;
+    --texte: #2b3242;
+    --doux: #4a5263;
+    --discret: #5d6576;
+    --ligne: #e6e4dc;
+    --bleu: #2a5596;
+    --nuit: #0e1524;
+    --ciel: #7c9ec9;
+    --titre: 'Inter Tight', 'DM Sans', system-ui, sans-serif;
+    --sans: 'DM Sans', system-ui, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--fond); color: var(--encre); font-family: var(--sans); min-height: 100vh; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; }
+  .w { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+  h1, h2, h3 { font-family: var(--titre); letter-spacing: -0.03em; }
+  .kicker { font-size: 0.875rem; font-weight: 600; color: var(--bleu); }
+  .sec-t { font-size: 2.5rem; font-weight: 800; line-height: 1.05; }
+  .sec-p { font-size: 1.0625rem; line-height: 1.6; color: var(--doux); margin-top: 10px; max-width: 640px; }
+  .bientot { display: inline-block; font-size: 0.75rem; font-weight: 600; padding: 5px 10px; border-radius: 20px; background: #eef1f6; color: #3d4659; white-space: nowrap; }
+
+  /* ── Héros ── */
+  .heros { padding: 72px 0; }
+  .heros-grille { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 56px; align-items: center; }
+  .heros h1 { font-size: 7.25rem; font-weight: 900; line-height: 0.88; letter-spacing: -0.045em; margin: 16px 0 24px; }
+  .heros-p { font-size: 1.1875rem; line-height: 1.6; color: var(--doux); max-width: 480px; }
+  .rebours { display: flex; gap: 32px; flex-wrap: wrap; margin-top: 28px; }
+  .rebours b { display: block; font-family: var(--titre); font-weight: 800; font-size: 2.75rem; line-height: 1; letter-spacing: -0.03em; }
+  .rebours span { display: block; font-size: 0.8125rem; color: var(--discret); margin-top: 6px; }
+  .ancres { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 30px; }
+  .ancres a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; border-radius: 22px; border: 1px solid #c9d1de; font-weight: 500; font-size: 0.9375rem; transition: background .2s, border-color .2s; }
+  .ancres a:first-child { background: var(--nuit); border-color: var(--nuit); color: #fff; }
+  .ancres a:hover { border-color: var(--bleu); }
+  .ancres a:first-child:hover { background: var(--bleu); border-color: var(--bleu); }
+
+  .cal-carte { background: var(--carte); border-radius: 24px; padding: 28px; box-shadow: 0 1px 0 var(--ligne), 0 30px 60px -36px rgba(14,21,36,.35); }
+  .cal-tete { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+  .cal-tete h2 { font-size: 2.125rem; font-weight: 800; }
+  .legende { display: flex; gap: 14px; font-size: 0.8125rem; color: var(--doux); }
+  .legende span { display: flex; align-items: center; gap: 6px; }
+  .legende i { width: 12px; height: 12px; border-radius: 3px; background: var(--bleu); }
+  .legende i.bce { background: var(--nuit); }
+  .cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+  .cal-j { font-size: 0.75rem; color: #8a90a0; font-weight: 600; text-align: center; margin-bottom: 6px; }
+  .jour { height: 64px; border-radius: 10px; padding: 7px 8px; display: flex; flex-direction: column; justify-content: space-between; background: var(--fond); overflow: hidden; }
+  .jour b { font-family: var(--titre); font-weight: 700; font-size: 1.125rem; line-height: 1; }
+  .jour small { font-size: 0.6875rem; font-weight: 600; line-height: 1.2; }
+  .jour.vide { background: transparent; }
+  .jour.we { background: #f1f0eb; color: #8a90a0; }
+  .jour.ecri { background: var(--bleu); color: #fff; }
+  .jour.bce { background: var(--nuit); color: #fff; }
+  .jour.bce.we { background: #3a4458; }
+  .cal-note { font-size: 0.75rem; color: var(--discret); margin-top: 14px; line-height: 1.5; }
+  .cal-note a { color: var(--bleu); text-decoration: underline; text-underline-offset: 2px; }
+
+  /* ── D'ici là ── */
+  .route { background: var(--nuit); color: #fff; padding: 56px 0 60px; }
+  .route-tete { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 36px; }
+  .route-tete h2 { font-size: 2.25rem; font-weight: 800; }
+  .route-tete span { font-size: 0.875rem; color: #a3afc4; }
+  .barre { position: relative; height: 4px; border-radius: 2px; background: #26324c; }
+  .barre-fait { position: absolute; left: 0; top: 0; height: 4px; border-radius: 2px; background: var(--ciel); width: 0; }
+  .barre-ici { position: absolute; top: -7px; width: 18px; height: 18px; margin-left: -9px; border-radius: 9px; background: var(--ciel); border: 4px solid var(--nuit); left: 0; }
+  .bornes { display: flex; justify-content: space-between; font-size: 0.75rem; color: #8995ab; margin-top: 12px; }
+  .etapes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 26px; }
+  .etapes div { padding-right: 20px; }
+  .etapes b { display: block; font-family: var(--titre); font-weight: 700; font-size: 1.25rem; }
+  .etapes p { font-size: 0.875rem; color: #c3cbd9; line-height: 1.5; margin-top: 6px; }
+  .etapes p strong { color: #fff; font-weight: 600; }
+
+  /* ── La méthode, épreuve par épreuve ── */
+  .bloc { padding-top: 80px; }
+  .cartes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: 28px; }
+  .carte { display: flex; flex-direction: column; background: var(--carte); border-radius: 20px; overflow: hidden; box-shadow: 0 1px 0 var(--ligne); }
+  .carte img, .carte .dessin { width: 100%; height: 190px; object-fit: cover; }
+  .carte .dessin { display: flex; align-items: center; justify-content: center; }
+  .carte-txt { padding: 20px 22px 22px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .carte-sur { font-size: 0.75rem; font-weight: 600; color: var(--c, var(--bleu)); }
+  .carte h3 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
+  .carte p { font-size: 0.9375rem; color: var(--doux); line-height: 1.55; }
+  .carte-pied { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: auto; padding-top: 10px; }
+  .carte-pied a { font-size: 0.875rem; font-weight: 600; color: var(--c, var(--bleu)); }
+  .carte-pied a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  /* ── Annales corrigées guidées ── */
+  .annales { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; align-items: start; }
+  .annales-txt .sec-p { max-width: 520px; }
+  .matieres { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 22px; }
+  .matieres span { font-size: 0.8125rem; font-weight: 500; padding: 7px 12px; border-radius: 20px; background: var(--carte); border: 1px solid var(--ligne); color: var(--texte); }
+  .guide { background: var(--carte); border-radius: 24px; padding: 30px 32px; box-shadow: 0 1px 0 var(--ligne); }
+  .guide-tete { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding-bottom: 18px; border-bottom: 1px solid var(--ligne); }
+  .guide-tete b { font-family: var(--titre); font-weight: 800; font-size: 1.25rem; }
+  .guide ol { list-style: none; counter-reset: e; }
+  .guide li { counter-increment: e; display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 16px; padding: 18px 0; border-bottom: 1px solid var(--ligne); position: relative; }
+  .guide li:last-child { border-bottom: 0; padding-bottom: 0; }
+  .guide li::before { content: counter(e, decimal-leading-zero); width: 44px; height: 44px; border-radius: 22px; background: #eef1f6; color: var(--bleu); font-family: var(--titre); font-weight: 800; display: flex; align-items: center; justify-content: center; }
+  .guide li:last-child::before { background: var(--bleu); color: #fff; }
+  .guide li b { display: block; font-family: var(--titre); font-weight: 700; font-size: 1.0625rem; }
+  .guide li span { display: block; font-size: 0.9375rem; color: var(--doux); line-height: 1.5; margin-top: 3px; }
+
+  /* ── L'oral ── */
+  .oraux { background: var(--carte); border-radius: 24px; overflow: hidden; box-shadow: 0 1px 0 var(--ligne); margin-top: 28px; }
+  .oraux-grille { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .oral { padding: 26px 30px 30px; border-left: 1px solid var(--ligne); display: flex; flex-direction: column; gap: 8px; }
+  .oral:first-child { border-left: 0; }
+  .oral svg { margin-bottom: 6px; }
+  .oral h3 { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; }
+  .oral p { font-size: 0.9375rem; color: var(--doux); line-height: 1.55; flex: 1; }
+  .oral .bientot { align-self: flex-start; margin-top: 8px; }
+
+  /* ── En attendant ── */
+  .attente { margin: 80px 0 96px; background: var(--ciel); border-radius: 24px; padding: 32px 36px; display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; }
+  .attente b { display: block; font-family: var(--titre); font-weight: 800; font-size: 1.5rem; letter-spacing: -0.02em; color: var(--nuit); }
+  .attente p { font-size: 1rem; color: #14233a; margin-top: 6px; max-width: 560px; line-height: 1.5; }
+  .attente-btn { display: flex; gap: 12px; flex-wrap: wrap; }
+  .attente-btn a { display: inline-flex; align-items: center; min-height: 46px; padding: 0 22px; border-radius: 23px; background: var(--nuit); color: #fff; font-weight: 600; }
+  .attente-btn a + a { background: transparent; border: 1.5px solid var(--nuit); color: var(--nuit); }
+
+  @media (max-width: 960px) {
+    .heros-grille, .annales { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+    .cartes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .etapes { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 22px; }
+  }
+  @media (max-width: 640px) {
+    .w { padding: 0 16px; }
+    .heros { padding: 44px 0 56px; }
+    .heros h1 { font-size: 4.5rem; }
+    .heros-p { font-size: 1.0625rem; }
+    .sec-t { font-size: 2rem; }
+    .cal-carte { padding: 20px 16px; border-radius: 20px; }
+    .cal-tete h2 { font-size: 1.75rem; }
+    .cal { gap: 4px; }
+    .jour { height: 48px; padding: 6px; border-radius: 8px; }
+    .jour small { display: none; }
+    .route { padding: 44px 0; }
+    .route-tete h2 { font-size: 1.875rem; }
+    .etapes { grid-template-columns: minmax(0, 1fr); }
+    .bloc { padding-top: 60px; }
+    .cartes, .oraux-grille { grid-template-columns: minmax(0, 1fr); }
+    .oral { border-left: 0; border-top: 1px solid var(--ligne); }
+    .oral:first-child { border-top: 0; }
+    .guide { padding: 22px 18px; }
+    .attente { margin: 60px 0 72px; padding: 26px 22px; }
+  }
+</style>
+<link rel="stylesheet" href="barre-section.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Concours">
+<meta property="og:image" content="https://ecg-prepa.fr/partage/concours/concours.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Concours">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ecg-prepa.fr/partage/concours/concours.jpg">
+<meta name="description" content="Les concours de la prépa ECG (BCE et Ecricome) : la méthode de chaque épreuve, à l'écrit et à l'oral, et des annales corrigées pas à pas.">
+<link rel="canonical" href="https://ecg-prepa.fr/concours.html">
+</head>
+<body>
+
+<nav class="sn sn-concours">
+  <a class="nav-logo sn-logo" href="index.html">ECG Prépa</a>
+  <div class="breadcrumb sn-fil">
+    <a href="index.html">Accueil</a>
+    <span aria-hidden="true">/</span>
+    <span class="current">Concours</span>
+  </div>
+  <div class="nav-right"></div>
+</nav>
+
+<header class="heros">
+  <div class="w heros-grille">
+    <div>
+      <div class="kicker">Session 2027 · voie ECG</div>
+      <h1>Concours</h1>
+      <p class="heros-p">La méthode de chaque épreuve, à l'écrit comme à l'oral, et des annales corrigées pas à pas, pour arriver en avril prêt.</p>
+      <div class="rebours" id="rebours">
+        <div><b data-cible="ecricome">145</b><span>jours avant Ecricome</span></div>
+        <div><b data-cible="bce">153</b><span>jours avant la BCE</span></div>
+      </div>
+      <div class="ancres">
+        <a href="#methode">La méthode</a>
+        <a href="#annales">Les annales corrigées</a>
+        <a href="#oral">L'oral</a>
+      </div>
+    </div>
+
+    <div class="cal-carte">
+      <div class="cal-tete">
+        <h2>Avril 2027</h2>
+        <div class="legende"><span><i></i>Ecricome</span><span><i class="bce"></i>BCE</span></div>
+      </div>
+      <div class="cal" aria-hidden="true">
+        <span class="cal-j">L</span><span class="cal-j">M</span><span class="cal-j">M</span><span class="cal-j">J</span><span class="cal-j">V</span><span class="cal-j">S</span><span class="cal-j">D</span>
+      </div>
+      <div class="cal" id="cal" role="img" aria-label="Calendrier d'avril 2027 : écrits Ecricome du 13 au 15 avril, écrits BCE du 21 au 28 avril"></div>
+      <p class="cal-note">Écrits Ecricome du mardi 13 au jeudi 15 avril, écrits BCE du mercredi 21 au mercredi 28 avril 2027 : dates annoncées, à vérifier sur <a href="https://www.concours-bce.com" target="_blank" rel="noopener">concours-bce.com</a> et <a href="https://www.ecricome.org" target="_blank" rel="noopener">ecricome.org</a>.</p>
+    </div>
+  </div>
+</header>
+
+<section class="route" aria-labelledby="route-t">
+  <div class="w">
+    <div class="route-tete">
+      <h2 id="route-t">D'ici là</h2>
+      <span id="aujourdhui"></span>
+    </div>
+    <div class="barre" aria-hidden="true"><div class="barre-fait" id="barre-fait"></div><span class="barre-ici" id="barre-ici"></span></div>
+    <div class="bornes" aria-hidden="true"><span>Rentrée</span><span>Fin des écrits</span></div>
+    <div class="etapes">
+      <div><b>Inscriptions</b><p>Du <strong>7 décembre 2026</strong> au <strong>11 janvier 2027</strong>, sur le site de la BCE.</p></div>
+      <div><b>Écrits Ecricome</b><p>Du <strong>13 au 15 avril</strong>, trois jours d'épreuves.</p></div>
+      <div><b>Écrits BCE</b><p>Du <strong>21 au 28 avril</strong>, une semaine d'épreuves.</p></div>
+      <div><b>Oraux</b><p>Après l'admissibilité, dans chaque école.</p></div>
+    </div>
+  </div>
+</section>
+
+<main class="w">
+
+  <section class="bloc" id="methode" aria-labelledby="methode-t">
+    <div class="kicker">Méthodologie · l'écrit</div>
+    <h2 class="sec-t" id="methode-t">La méthode, épreuve par épreuve</h2>
+    <p class="sec-p">Pour chaque épreuve&nbsp;: ce que le jury attend, la démarche pas à pas et les erreurs qui coûtent des points. Les mêmes épreuves à Ecricome et à la BCE.</p>
+    <div class="cartes">
+
+      <article class="carte" style="--c:#2e6b40">
+        <div class="dessin" style="background:#e6efe7" aria-hidden="true">
+          <svg width="220" height="130" viewBox="0 0 220 130" fill="none"><path d="M10 120h200M20 125V8" stroke="#2e6b40" stroke-width="2"/><path d="M20 108C60 108 70 30 110 30s50 60 100 60" stroke="#2e6b40" stroke-width="3" stroke-linecap="round"/><circle cx="110" cy="30" r="5" fill="#2e6b40"/><path d="M110 30v90" stroke="#2e6b40" stroke-dasharray="4 5"/></svg>
+        </div>
+        <div class="carte-txt">
+          <span class="carte-sur">Mathématiques approfondies ou appliquées</span>
+          <h3>Rédiger une copie de maths</h3>
+          <p>Justifier chaque étape, conclure clairement, choisir ses questions dans le temps imparti.</p>
+          <div class="carte-pied"><span class="bientot">Bientôt en ligne</span><a href="deuxieme_annee/maths/colles/index.html">Les colles corrigées →</a></div>
+        </div>
+      </article>
+
+      <article class="carte" style="--c:#8a5d14">
+        <img src="premiere_annee/hgg/chapitre-10/images/ever-given-rotterdam.webp" alt="Le porte-conteneurs Ever Given à quai dans le port de Rotterdam" loading="lazy">
+        <div class="carte-txt">
+          <span class="carte-sur">Histoire, géographie et géopolitique</span>
+          <h3>La dissertation d'HGG</h3>
+          <p>Problématiser le sujet, bâtir un plan qui avance, placer les bons exemples et les bons chiffres.</p>
+          <div class="carte-pied"><span class="bientot">Bientôt en ligne</span><a href="premiere_annee/hgg/index.html">Les cours d'HGG →</a></div>
+        </div>
+      </article>
+
+      <article class="carte" style="--c:#2a5596">
+        <img src="deuxieme_annee/langues/anglais/royaume-uni/images/city-bank-of-england.webp" alt="La façade de la Banque d'Angleterre, dans la City de Londres" loading="lazy">
+        <div class="carte-txt">
+          <span class="carte-sur">Économie, sociologie et histoire</span>
+          <h3>La dissertation d'ESH</h3>
+          <p>Définir les termes, mobiliser les auteurs et les mécanismes, argumenter sans réciter le cours.</p>
+          <div class="carte-pied"><span class="bientot">Bientôt en ligne</span><a href="premiere_annee/esh/index.html">Les cours d'ESH →</a></div>
+        </div>
+      </article>
+
+      <article class="carte" style="--c:#8c2f5e">
+        <img src="humanite/cours-humanite/Cours/images/ecole-d-athenes.webp" alt="L'École d'Athènes de Raphaël : des philosophes réunis sous de grandes voûtes" loading="lazy">
+        <div class="carte-txt">
+          <span class="carte-sur">Culture générale</span>
+          <h3>La dissertation de culture générale</h3>
+          <p>Analyser le sujet, construire une vraie réflexion, citer juste et à bon escient.</p>
+          <div class="carte-pied"><span class="bientot">Bientôt en ligne</span><a href="humanite.html">Le cours de l'Humanité →</a></div>
+        </div>
+      </article>
+
+      <article class="carte" style="--c:#4a5263">
+        <div class="dessin" style="background:#eceae3" aria-hidden="true">
+          <svg width="210" height="120" viewBox="0 0 210 120" fill="none" stroke="#5d6576" stroke-width="2" stroke-linecap="round"><rect x="8" y="10" width="54" height="72" rx="4"/><rect x="78" y="10" width="54" height="72" rx="4"/><path d="M18 26h34M18 36h34M18 46h26M88 26h34M88 36h34M88 46h26"/><path d="M62 96l45 14 45-14"/><rect x="148" y="38" width="54" height="72" rx="4" stroke="#121826"/><path d="M158 54h34M158 64h34M158 74h20" stroke="#121826"/></svg>
+        </div>
+        <div class="carte-txt">
+          <span class="carte-sur">Synthèse de textes (BCE) · résumé de texte (Ecricome)</span>
+          <h3>La synthèse et le résumé</h3>
+          <p>Dégager les idées, confronter les textes, reformuler sans trahir et tenir le nombre de mots.</p>
+          <div class="carte-pied"><span class="bientot">Bientôt en ligne</span></div>
+        </div>
+      </article>
+
+      <article class="carte" style="--c:#a2482a">
+        <img src="deuxieme_annee/langues/anglais/royaume-uni/images/brexit-westminster-2019.webp" alt="Des manifestants devant le Parlement de Westminster, l'un tient une pancarte « We Voted Leave »" loading="lazy">
+        <div class="carte-txt">
+          <span class="carte-sur">Langues vivantes A et B</span>
+          <h3>Version, thème, essai</h3>
+          <p>Traduire juste, éviter les pièges classiques, argumenter dans la langue avec des exemples précis.</p>
+          <div class="carte-pied"><span class="bientot">Bientôt en ligne</span><a href="premiere_annee/langues/index.html">Les langues →</a></div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="bloc" id="annales" aria-labelledby="annales-t">
+    <div class="annales">
+      <div class="annales-txt">
+        <div class="kicker">Annales corrigées guidées</div>
+        <h2 class="sec-t" id="annales-t">Un vrai sujet, corrigé pas à pas</h2>
+        <p class="sec-p">Chaque annale part d'un sujet tombé au concours et le reprend étape par étape, du premier regard sur l'énoncé à la copie finale. À chaque étape, ce qu'il fallait voir et pourquoi&nbsp;: de quoi refaire le chemin seul sur le sujet suivant.</p>
+        <div class="matieres" aria-label="Matières prévues">
+          <span>Mathématiques</span><span>HGG</span><span>ESH</span><span>Culture générale</span><span>Synthèse</span><span>Langues</span>
+        </div>
+      </div>
+      <div class="guide">
+        <div class="guide-tete"><b>Le déroulé d'une annale</b><span class="bientot">Premières annales bientôt</span></div>
+        <ol>
+          <li><div><b>Lire le sujet</b><span>Les mots qui comptent, les limites, le piège de l'énoncé.</span></div></li>
+          <li><div><b>Trouver la problématique</b><span>La question que pose vraiment le sujet.</span></div></li>
+          <li><div><b>Construire le plan</b><span>Les parties, les arguments et les exemples à placer.</span></div></li>
+          <li><div><b>Rédiger et comparer</b><span>Une copie modèle, annotée, avec les attentes du jury.</span></div></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloc" id="oral" aria-labelledby="oral-t">
+    <div class="kicker">Méthodologie · l'oral</div>
+    <h2 class="sec-t" id="oral-t">Après les écrits, l'oral</h2>
+    <p class="sec-p">Une fois admissible, chaque école fait passer ses propres épreuves. De quoi les préparer dès maintenant.</p>
+    <div class="oraux">
+      <div class="oraux-grille">
+        <article class="oral">
+          <svg width="34" height="34" viewBox="0 0 48 48" fill="none" stroke="#2a5596" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="17" cy="16" r="7"/><path d="M5 40c0-7 5-12 12-12s12 5 12 12"/><path d="M30 10h13v10h-6l-4 4v-4h-3z"/></svg>
+          <h3>L'entretien de personnalité</h3>
+          <p>Se présenter, raconter son parcours et ses projets, tenir face aux questions du jury.</p>
+          <span class="bientot">Bientôt en ligne</span>
+        </article>
+        <article class="oral">
+          <svg width="34" height="34" viewBox="0 0 48 48" fill="none" stroke="#2a5596" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 10h22v14H14l-6 5v-5H6z"/><path d="M32 18h10v14h-2v5l-6-5h-8v-6"/></svg>
+          <h3>Les oraux de langues</h3>
+          <p>Résumer un document, le commenter, défendre un avis dans la langue.</p>
+          <span class="bientot">Bientôt en ligne</span>
+        </article>
+        <article class="oral">
+          <svg width="34" height="34" viewBox="0 0 48 48" fill="none" stroke="#2a5596" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 40V18l16-10 16 10v22"/><path d="M4 40h40"/><path d="M16 40V26h16v14"/></svg>
+          <h3>Les épreuves des écoles</h3>
+          <p>Ce que chaque école ajoute à l'entretien, et comment s'y préparer.</p>
+          <span class="bientot">Bientôt en ligne</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <aside class="attente">
+    <div>
+      <b>En attendant, réviser les cours</b>
+      <p>Les chapitres des deux années, leurs flashcards et le mode focus pour relire l'essentiel.</p>
+    </div>
+    <div class="attente-btn">
+      <a href="cours-ecg.html">Tous les cours</a>
+      <a href="flashcards/index.html">Mes flashcards</a>
+    </div>
+  </aside>
+
+</main>
+
+<script>
+(function () {
+  /* Dates de la session : à changer chaque année. */
+  var DATES = {
+    rentree: '2026-09-01',
+    ecricome: ['2027-04-13', '2027-04-15'],
+    bce: ['2027-04-21', '2027-04-28'],
+    mois: [2027, 4]
+  };
+  function jour(s) { var p = s.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  /* Date du jour à Paris, sans l'heure. */
+  var aujourdhui = (function () {
+    try {
+      var s = new Intl.DateTimeFormat('fr-CA', { timeZone: 'Europe/Paris', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+      return jour(s);
+    } catch (e) { var d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+  })();
+  function ecart(a, b) { return Math.round((b - a) / 864e5); }
+
+  // ─── Compte à rebours ───
+  document.querySelectorAll('#rebours [data-cible]').forEach(function (el) {
+    var c = DATES[el.getAttribute('data-cible')];
+    var n = ecart(aujourdhui, jour(c[0]));
+    var fin = ecart(aujourdhui, jour(c[1]));
+    var legende = el.nextElementSibling;
+    if (n > 0) { el.textContent = n; legende.textContent = (n > 1 ? 'jours avant ' : 'jour avant ') + legende.textContent.replace(/^jours? avant /, ''); }
+    else if (fin >= 0) { el.textContent = 'En cours'; legende.textContent = legende.textContent.replace(/^jours? avant /, 'Écrits '); }
+    else el.parentNode.hidden = true;
+  });
+
+  // ─── Calendrier du mois des écrits ───
+  var an = DATES.mois[0], m = DATES.mois[1] - 1;
+  var premier = new Date(an, m, 1), nb = new Date(an, m + 1, 0).getDate();
+  var decal = (premier.getDay() + 6) % 7;
+  function dans(d, p) { return d >= jour(p[0]) && d <= jour(p[1]); }
+  var h = '';
+  for (var i = 0; i < decal; i++) h += '<span class="jour vide"></span>';
+  for (var d = 1; d <= nb; d++) {
+    var date = new Date(an, m, d), we = date.getDay() === 0 || date.getDay() === 6;
+    var cl = 'jour' + (we ? ' we' : ''), lbl = '';
+    if (dans(date, DATES.ecricome)) { cl += ' ecri'; lbl = date - jour(DATES.ecricome[0]) === 0 ? 'Ecricome' : ''; }
+    if (dans(date, DATES.bce)) { cl += ' bce'; lbl = date - jour(DATES.bce[0]) === 0 ? 'Début BCE' : (date - jour(DATES.bce[1]) === 0 ? 'Fin BCE' : ''); }
+    h += '<span class="' + cl + '"><b>' + d + '</b><small>' + lbl + '</small></span>';
+  }
+  var reste = (7 - (decal + nb) % 7) % 7;
+  for (var k = 0; k < reste; k++) h += '<span class="jour vide"></span>';
+  document.getElementById('cal').innerHTML = h;
+
+  // ─── D'ici là : où en est l'année ───
+  var debut = jour(DATES.rentree), fin = jour(DATES.bce[1]);
+  var pct = Math.max(0, Math.min(100, (aujourdhui - debut) / (fin - debut) * 100));
+  document.getElementById('barre-fait').style.width = pct + '%';
+  document.getElementById('barre-ici').style.left = pct + '%';
+  document.getElementById('aujourdhui').textContent = 'Aujourd’hui : ' +
+    aujourdhui.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+})();
+</script>
+</body>
+</html>

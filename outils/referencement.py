@@ -19,7 +19,8 @@ SITE = 'https://ecg-prepa.fr/'
 
 PERIMETRE = ['actualites/**/*.html', 'Culture-Generale/*.html', 'culture-generale.html',
              'humanite.html', 'humanite/**/*.html', 'premiere_annee/**/*.html',
-             'deuxieme_annee/**/*.html', 'newsletters.html', 'flashcards/index.html']
+             'deuxieme_annee/**/*.html', 'newsletters.html', 'flashcards/index.html',
+             'concours.html', 'concours/**/*.html']
 PUBLIQUES = ['accueil.html', 'nouveautes.html', 'tarifs.html', 'login.html', 'contact.html', 'cgu.html', 'cgv.html',
              'mentions-legales.html', 'confidentialite.html']
 IGNORER = ('hors-ligne.html', '404.html')
@@ -86,6 +87,8 @@ def description(rel, contenu):
     nom = re.sub(r'^Actualité\s*[—-]\s*', '', t) or 'cette rubrique'
     if p[0] == 'actualites':
         return couper('Les articles d\'actualité sur %s : événements, chronologies et analyses pour nourrir la culture générale en prépa ECG.' % nom)
+    if rel == 'concours.html':
+        return 'Les concours de la prépa ECG (BCE et Ecricome) : la méthode de chaque épreuve, à l\'écrit et à l\'oral, et des annales corrigées pas à pas.'
     if rel == 'culture-generale.html':
         return 'Les dossiers de culture générale pour la prépa ECG : fiches thématiques sur les grands sujets de société, d\'économie et de géopolitique.'
     if p[0] == 'humanite' or rel == 'humanite.html':

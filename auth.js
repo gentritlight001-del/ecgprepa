@@ -264,6 +264,7 @@
     { id: 'culture-generale', niveau: 1, nom: 'Culture Générale',  groupe: 'Page d\u2019accueil', motifs: ['culture-generale.html', 'culture-generale/'], retour: 'index.html' },
     { id: 'humanite',         niveau: 1, nom: 'Humanité',          groupe: 'Page d\u2019accueil', motifs: ['humanite.html', 'humanite/'], retour: 'index.html' },
     { id: 'actualites',       niveau: 1, nom: 'Actualités',        groupe: 'Page d\u2019accueil', motifs: ['actualites/'], retour: 'index.html' },
+    { id: 'concours',         niveau: 1, nom: 'Concours',          groupe: 'Page d\u2019accueil', motifs: ['concours.html', 'concours/'], retour: 'index.html' },
 
     /* Niveau 2 — les deux années, dans Cours ECG */
     { id: 'premiere-annee',   niveau: 2, nom: 'Première année',    groupe: 'Cours ECG', motifs: ['premiere_annee/'], retour: 'cours-ecg.html' },
@@ -357,7 +358,7 @@
      Un visiteur non connecté n'est pas renvoyé vers la connexion ; en
      revanche, une page verrouillée ou Premium reste fermée pour lui.
      Un membre connecté suit le parcours normal (badge, verrous). */
-  var DOSSIERS_OUVERTS = ['index.html', 'humanite.html', 'humanite/', 'cours-ecg.html', 'culture-generale.html', 'premiere_annee/', 'deuxieme_annee/', 'actualites/', 'culture-generale/'];
+  var DOSSIERS_OUVERTS = ['index.html', 'humanite.html', 'humanite/', 'cours-ecg.html', 'concours.html', 'concours/', 'culture-generale.html', 'premiere_annee/', 'deuxieme_annee/', 'actualites/', 'culture-generale/'];
   var pageOuverte = (function () {
     var c = cheminActuelBrut();
     if (c === null) return false;

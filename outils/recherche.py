@@ -169,6 +169,8 @@ def rubrique(rel):
         return 'cg', 'Culture générale'
     if p[0] == 'humanite' or rel == 'humanite.html':
         return 'humanite', 'Humanité'
+    if p[0] == 'concours' or rel == 'concours.html':
+        return 'autre', 'Concours'
     if p[0] in ('premiere_annee', 'deuxieme_annee') and len(p) > 2:
         annee = '1re année' if p[0] == 'premiere_annee' else '2e année'
         if p[1] == 'langues':
