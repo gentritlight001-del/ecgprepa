@@ -8,7 +8,8 @@
 
 Contenus suivis : articles d'actualité des quatre éditions (listes ACTU_DATA), dossiers de
 culture générale (CG_DATA), fiches et cours de l'Humanité (cinéma, littérature, cours) et chapitres de cours
-(chapitres et notions de philosophie, 1re et 2e année).
+(chapitres et notions de philosophie, 1re et 2e année), dossiers thématiques de langues
+(2e année, DS/*.html).
 
 La date de mise en ligne d'une page est retenue une fois pour toutes dans
 `outils/nouveautes-dates.json` : date du commit qui a ajouté le fichier, ou maintenant pour
@@ -140,6 +141,22 @@ def cours():
                'image': premiere_image(chemin, contenu)}
 
 
+def dossiers_langues():
+    """Dossiers thématiques transversaux de langues, 2e année (DS/*.html, gabarit « Manuel »)."""
+    for chemin in sorted(glob.glob(RACINE + 'deuxieme_annee/langues/*/DS/*.html')):
+        chemin = chemin[len(RACINE):]
+        n = re.search(r'ds(\d+)\.html$', chemin)
+        contenu = lire(chemin)
+        t = re.search(r'"titre":\s*\{\s*"fr":\s*"([^"]+)"', contenu)
+        if not (n and t):
+            continue
+        img = re.search(r'"image":\s*\{\s*"src":\s*"([^"]+)"', contenu)
+        image = os.path.join(os.path.dirname(chemin), img.group(1)) if img else ''
+        yield {'t': 'cours', 'rubrique': 'Cours',
+               'meta': '%s 2e année · dossier %s' % (chemin.split('/')[2].capitalize(), int(n.group(1))),
+               'titre': t.group(1), 'url': chemin, 'image': image_si_existe(image)}
+
+
 # ─── Dates de mise en ligne ───
 
 def dates_git():
@@ -168,7 +185,7 @@ def dates_git():
 
 
 def main():
-    elements = list(actualites()) + list(culture_generale()) + list(humanite()) + list(cours())
+    elements = list(actualites()) + list(culture_generale()) + list(humanite()) + list(cours()) + list(dossiers_langues())
     try:
         with open(DATES, encoding='utf-8') as f:
             dates = json.load(f)

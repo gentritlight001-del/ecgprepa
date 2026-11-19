@@ -145,7 +145,7 @@ directement après chaque modification, sans attendre un nouveau « mets en lign
    les mots cherchés sont surlignés à l'arrivée sur la page).
    Ne jamais modifier ce fichier à la main.
    Puis `python3 outils/nouveautes.py` : il régénère `nouveautes.js`, la liste des derniers
-   contenus (articles, dossiers de CG, fiches Humanité, chapitres) affichée sous les 4 cartes de
+   contenus (articles, dossiers de CG, fiches Humanité, chapitres, dossiers thématiques de langues `DS/`) affichée sous les 4 cartes de
    l'accueil et dans la page `nouveautes.html`. Les dates de mise en ligne sont gardées dans
    `outils/nouveautes-dates.json` (ne jamais modifier ces deux fichiers à la main).
    Puis `python3 outils/flashcards.py` : il régénère la bibliothèque de l'espace flashcards

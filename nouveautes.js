@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "cours",
+"rubrique": "Cours",
+"meta": "Espagnol 2e année · dossier 2",
+"titre": "La droitisation de l'Amérique latine",
+"url": "deuxieme_annee/langues/espagnol/DS/esp-ds2.html",
+"image": "deuxieme_annee/langues/espagnol/DS/images/droite-milei-motosierra.webp",
+"date": "2026-11-18T18:24:29+00:00"
+},
+{
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne",
@@ -1967,6 +1976,15 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-09-18T20:00:18+00:00"
 },
 {
+"t": "cours",
+"rubrique": "Cours",
+"meta": "Espagnol 2e année · dossier 1",
+"titre": "Le travail de mémoire",
+"url": "deuxieme_annee/langues/espagnol/DS/esp-ds1.html",
+"image": "deuxieme_annee/langues/espagnol/DS/images/dossier-madre-plaza-de-mayo.webp",
+"date": "2026-09-18T20:00:18+00:00"
+},
+{
 "t": "cg",
 "rubrique": "Culture générale",
 "meta": "Pays",
@@ -2540,24 +2558,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "L'Europe face à la bipolarisation en 1945",
 "url": "premiere_annee/hgg/chapitre-4/chapitre-4-hgg.html",
 "image": "premiere_annee/hgg/chapitre-4/images/reichstag-berlin-1945.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cours",
-"rubrique": "Cours",
-"meta": "HGG 1re année · chapitre 5",
-"titre": "Géopolitique de la guerre froide",
-"url": "premiere_annee/hgg/chapitre-5/chapitre-5-hgg.html",
-"image": "premiere_annee/hgg/chapitre-5/images/checkpoint-charlie-1961.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cours",
-"rubrique": "Cours",
-"meta": "HGG 1re année · chapitre 6",
-"titre": "Décolonisations et Tiers-Monde",
-"url": "premiere_annee/hgg/chapitre-6/chapitre-6-hgg.html",
-"image": "premiere_annee/hgg/chapitre-6/images/conference-bandung-1955.webp",
 "date": "2026-09-11T19:03:33+00:00"
 }
 ];
