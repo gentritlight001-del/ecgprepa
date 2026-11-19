@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "États-Unis",
+"titre": "Sotheby's : un Van Gogh vendu 190,4 millions de dollars à New York, nouveau record pour l'artiste",
+"url": "actualites/monde/articles/etats-unis-van-gogh-chataigniers-en-fleurs-record-sothebys-2026.html",
+"image": "actualites/monde/images/etats-unis-van-gogh-chataigniers-en-fleurs-record-sothebys-2026.webp",
+"date": "2026-11-19T19:48:35+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Venezuela",
@@ -1515,15 +1524,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/monde/articles/bresil-deforestation-amazonie-plus-bas-2026.html",
 "image": "actualites/monde/images/bresil-deforestation-amazonie-plus-bas-2026.webp",
 "date": "2026-10-18T06:44:07+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Astronomie",
-"titre": "Astronomie : la première étoile verte connue est une naine blanche, à 280 années-lumière",
-"url": "actualites/monde/articles/astronomie-etoile-verte-naine-blanche-2026.html",
-"image": "actualites/monde/images/astronomie-etoile-verte-naine-blanche-2026.webp",
-"date": "2026-10-18T06:37:27+00:00"
 },
 {
 "t": "en",
