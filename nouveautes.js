@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "Canada",
+"titre": "Canada : Carney rencontre Trump à Shenzhen, en marge de l'APEC, sans accord commercial annoncé",
+"url": "actualites/en/articles/canada-carney-trump-apec-shenzhen-accord-commercial-2026.html",
+"image": "actualites/en/images/canada-carney-trump-apec-shenzhen-accord-commercial-2026.webp",
+"date": "2026-11-19T19:25:52+00:00"
+},
+{
 "t": "cours",
 "rubrique": "Cours",
 "meta": "Espagnol 2e année · dossier 2",
@@ -1767,15 +1776,6 @@ window.ECG_NOUVEAUTES = [
 "url": "Culture-Generale/farc.html",
 "image": "Culture-Generale/images/farc.webp",
 "date": "2026-10-06T18:08:34+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "Canada",
-"titre": "Élections au Québec : le PQ remporte une majorité relative, la CAQ disparaît de l'Assemblée",
-"url": "actualites/en/articles/canada-quebec-elections-pq-minoritaire-2026.html",
-"image": "actualites/en/images/canada-quebec-elections-pq-minoritaire-2026.webp",
-"date": "2026-10-06T17:52:05+00:00"
 },
 {
 "t": "de",
