@@ -63,8 +63,8 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   **Réglages** (inscriptions, administrateurs, données, zone sensible).
 - **Espace de cours particuliers de maths (seconde)** (novembre 2026, maquette validée par le propriétaire, qui donne des
   cours particuliers) : `cours-particuliers.html` (l'espace de l'élève : prochaine séance, devoirs à cocher, dernière séance,
-  PDF, fiches de cours, historique) et tout le dossier `cours-particuliers/` (`espace.css`, `commun.js`, `fiches.js`, fiches
-  `fiche-NN.html`), **invisibles pour tout le monde sauf les élèves autorisés et l'administrateur** : `pageParticuliers` dans
+  PDF, fiches de cours, historique) et tout le dossier `cours-particuliers/` (`espace.css`, `commun.js`, `fiche.js`, `fiches.js`,
+  fiches `<slug>.html`), **invisibles pour tout le monde sauf les élèves autorisés et le propriétaire** : `pageParticuliers` dans
   `auth.js` renvoie tout autre visiteur, avec ou sans compte, vers `404.html`, comme si l'espace n'existait pas ; pages en
   `noindex`, dans `robots.txt`, jamais liées depuis le site (ni menus publics, ni recherche, ni `nouveautes.js`, ni sitemap).
   Le propriétaire veut juste que ce ne soit pas visible sur le site, ce n'est pas « top secret » : les fiches sont des pages
@@ -76,12 +76,24 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   mot du prof), donner un devoir, déposer un PDF (pour un élève ou pour tous), cocher les fiches ouvertes à chaque élève,
   « Voir son espace » (`cours-particuliers.html?eleve=<id>`). Ce qui se modifie depuis le site est dans Supabase
   (`supabase/cours-particuliers.sql`, déjà appliqué : tables `cp_eleves`, `cp_seances`, `cp_devoirs`, `cp_documents`,
-  `cp_fiches_ouvertes`, bucket privé `cours-particuliers`, dossiers `eleves/<id>/` et `commun/`). **Fiches de cours : pas
-  encore écrites** (le propriétaire fera le contenu plus tard ; ne pas en écrire sans demande). Une fiche = une page
-  `cours-particuliers/fiche-NN.html` (gabarit de l'écran 3 de la maquette : grand numéro, titre, « L'essentiel » sur fond
-  noir, sections en cartes avec blocs `.bloc.definition` / `.propriete` / `.methode` / `.exemple` / `.piege`, exercices en
-  `<details class="exo">`, vecteurs en `<span class="vec">AB</span>` ; classes dans `espace.css`), avec `../auth.js`, la
-  barre `sn sn-cours sn-particuliers` et `noindex`, plus une ligne dans `CP_FICHES` de `cours-particuliers/fiches.js`.
+  `cp_fiches_ouvertes`, bucket privé `cours-particuliers`, dossiers `eleves/<id>/` et `commun/`). **Espace prof** : en haut de
+  `mes-eleves.html`, « Mes cours » liste toutes les fiches (`CP_FICHES` de `cours-particuliers/fiches.js`) ; le propriétaire
+  **glisse** une fiche sur un élève de la liste de gauche pour l'ouvrir dans son espace (cases à cocher dans la fiche de
+  l'élève, sur téléphone). Un élève ne voit que les fiches ouvertes pour lui (`fiche.js` vérifie `cp_fiches_ouvertes`).
+  **Fiches de cours** (demande type : « Fais-moi un cours sur … ») : une page `cours-particuliers/<slug>.html`, copiée de
+  `racine-carree.html` (n° 01, novembre 2026, modèle), avec `<body data-fiche="N">`, `noindex`, `../auth.js`, la barre
+  `sn sn-cours sn-particuliers`, KaTeX 0.16.9 (`\( … \)` dans le texte, `\[ … \]` en bloc, formules en bloc assez étroites
+  pour 390 px : `cases`, `aligned` sur plusieurs lignes), puis `fiche.js` ; et une ligne dans `CP_FICHES`. Structure : en-tête
+  (grand numéro, titre, phrase), barre du score, sommaire, « L'essentiel » (3 points), puis des parties `section.carte` numérotées ;
+  dans **chaque partie** : la définition, le théorème, la propriété ou la formule (`.bloc.definition` / `.theoreme` /
+  `.propriete` / `.methode`, démonstration `.bloc.demo` quand elle est au programme), **un exemple** (`.bloc.exemple`), le piège
+  (`.bloc.piege`), puis « À toi de jouer » : **1 ou 2 exercices** `.exo-cp` que l'élève remplit lui-même. Réponse tapée :
+  `<div class="rep" data-attendu="2√5" data-forme="simplifiee|nombre" data-indice="…"><span class="rep-q">\(\sqrt{20} =\)</span></div>`
+  (`fiche.js` ajoute la case, les boutons √, x², a/b, parenthèses, l'aperçu KaTeX et « Vérifier » : valeur comparée, forme
+  contrôlée : racine à réduire, racines à regrouper, racine au dénominateur, fraction à simplifier) ; choix :
+  `<div class="qcm" data-bonne="<n° du bon bouton, dès 1>">` ; correction détaillée dans `<details class="corr">`. Courbe à
+  curseur : `<div class="courbe" data-courbe>` (racine carrée seulement pour l'instant). Réponses gardées dans le navigateur
+  (`ecg-cp-fiche:<n>`). Le contenu est vérifié (calculs refaits) et ne sort pas du programme de seconde.
 - **Statistiques de fréquentation** (novembre 2026) : module `Stats` de `auth.js` (juste après `window.ECGAuth = Auth`),
   sur toutes les pages, publiques comprises (accueil, tarifs, connexion, 404), avec ou sans compte : `noter_page` (chemin,
   titre, appareil, système, appli installée, temps de lecture actif, défilement, visite, source d'arrivée ; envoi final par
