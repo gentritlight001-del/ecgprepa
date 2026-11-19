@@ -100,8 +100,14 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   case active, l'état juste / presque / faux, « Besoin d'un indice ? » ; valeur comparée, forme contrôlée : racine à réduire,
   à regrouper, au dénominateur, fraction à simplifier) ; choix : `<div class="qcm" data-bonne="<n° du bon bouton, dès 1>">`
   (`p.qcm-q`, `div.qcm-choix`) ; correction dans `<details class="corr">`. Courbe à curseur : `<div class="courbe"
-  data-courbe>` (racine carrée seulement pour l'instant). Réponses gardées dans le navigateur (`ecg-cp-fiche:<n>`). Le
-  contenu est vérifié (calculs refaits) et ne sort pas du programme de seconde ; le propriétaire demandera les retouches.
+  data-courbe>` (racine carrée seulement pour l'instant). Réponses gardées dans le navigateur (`ecg-cp-fiche:<n>`, plus
+  `:v<N>` si `<body data-version="N">` : à augmenter quand on déplace ou retire des exercices). **Programme de seconde
+  (BO spécial n° 1 du 22 janvier 2019)** : vérifier chaque fiche sur son texte (contenus, capacités, **démonstrations
+  exigées**, toutes présentes) ; ce qui n'y figure pas va dans une partie **approfondissement** en fin de fiche
+  (`section.fx-partie.approfondissement`, numéro « + », `<h2><small>Approfondissement · pour aller plus loin</small>…`, en
+  violet), ou est retiré. Fiche 01 (racine carrée, revue en novembre 2026) : 4 parties + l'approfondissement « Pas de
+  racine au dénominateur », 9 exercices ; « Comparer x, x² et √x » retiré (la démonstration au programme porte sur x, x², x³).
+  Calculs refaits ; le propriétaire demandera les retouches.
 - **Statistiques de fréquentation** (novembre 2026) : module `Stats` de `auth.js` (juste après `window.ECGAuth = Auth`),
   sur toutes les pages, publiques comprises (accueil, tarifs, connexion, 404), avec ou sans compte : `noter_page` (chemin,
   titre, appareil, système, appli installée, temps de lecture actif, défilement, visite, source d'arrivée ; envoi final par

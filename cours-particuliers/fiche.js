@@ -17,7 +17,8 @@
    ══════════════════════════════════════════════════════════════ */
 (function () {
   var N = +(document.body.getAttribute('data-fiche') || 0);
-  var CLE = 'ecg-cp-fiche:' + N;
+  var VERSION = document.body.getAttribute('data-version');
+  var CLE = 'ecg-cp-fiche:' + N + (VERSION ? ':v' + VERSION : '');   /* nouvelle version = exercices déplacés : réponses repartent de zéro */
 
   /* ─── Lecture d'une réponse tapée ─────────────────────────── */
   function lexer(s) {
