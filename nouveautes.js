@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Venezuela",
+"titre": "Venezuela : Hegseth signe à Caracas un accord militaire et relance la coopération rompue en 2005",
+"url": "actualites/es/articles/venezuela-hegseth-caracas-cooperacion-militar-2026.html",
+"image": "actualites/es/images/venezuela-hegseth-caracas-cooperacion-militar-2026.webp",
+"date": "2026-11-19T19:40:55+00:00"
+},
+{
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Suisse",
@@ -1767,15 +1776,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/en/articles/us-trump-nebraska-iran-los-angeles-2026.html",
 "image": "actualites/en/images/us-trump-nebraska-iran-los-angeles-2026.webp",
 "date": "2026-10-07T05:26:41+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Espagne",
-"titre": "Le Tribunal suprême lève l'ordre d'arrestation contre Puigdemont, qui peut rentrer en Espagne",
-"url": "actualites/es/articles/puigdemont-levee-ordre-arrestation.html",
-"image": "actualites/es/images/puigdemont-levee-ordre-arrestation.webp",
-"date": "2026-10-07T05:19:00+00:00"
 },
 {
 "t": "cg",
