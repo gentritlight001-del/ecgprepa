@@ -61,7 +61,7 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   `idees-articles.html`), **Premium** (`premium-admin.js` : revenu, abonnés filtrés, codes en cartes), **Newsletter**
   (`newsletter.js` : 3 étapes, aperçu du courriel, PDF choisi dans « Mes newsletters », « Réutiliser » un envoi),
   **Réglages** (inscriptions, administrateurs, données, zone sensible).
-- **Espace de cours particuliers de maths (seconde)** (novembre 2026, maquette validée par le propriétaire, qui donne des
+- **Espace de cours particuliers de maths (tous niveaux : seconde, première…)** (novembre 2026, maquette validée par le propriétaire, qui donne des
   cours particuliers) : `cours-particuliers.html` (l'espace de l'élève : prochaine séance, devoirs à cocher, dernière séance,
   PDF, fiches de cours, historique) et tout le dossier `cours-particuliers/` (`espace.css`, `commun.js`, `fiche.js`, `fiches.js`,
   fiches `<slug>.html`), **invisibles pour tout le monde sauf les élèves autorisés et le propriétaire** : `pageParticuliers` dans
@@ -77,7 +77,7 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   « Voir son espace » (`cours-particuliers.html?eleve=<id>`). Ce qui se modifie depuis le site est dans Supabase
   (`supabase/cours-particuliers.sql`, déjà appliqué : tables `cp_eleves`, `cp_seances`, `cp_devoirs`, `cp_documents`,
   `cp_fiches_ouvertes`, bucket privé `cours-particuliers`, dossiers `eleves/<id>/` et `commun/`). **Espace prof** : en haut de
-  `mes-eleves.html`, « Mes cours » liste toutes les fiches (`CP_FICHES` de `cours-particuliers/fiches.js`) ; le propriétaire
+  `mes-eleves.html`, « Mes cours » liste toutes les fiches (`CP_FICHES` de `cours-particuliers/fiches.js`, où chaque fiche a un `niveau` (« Seconde », « Première »…) affiché en pastille sur sa carte ; l'espace lui-même ne parle plus de « maths seconde » mais de « Mathématiques », car le propriétaire a des élèves de plusieurs niveaux) ; le propriétaire
   **glisse** une fiche sur un élève de la liste de gauche pour l'ouvrir dans son espace (cases à cocher dans la fiche de
   l'élève, sur téléphone). Un élève ne voit que les fiches ouvertes pour lui (`fiche.js` vérifie `cp_fiches_ouvertes`).
   **Fiches de cours** (demande type : « Fais-moi un cours sur … ») : gabarit **« manuel interactif », version « tout à la suite »**
