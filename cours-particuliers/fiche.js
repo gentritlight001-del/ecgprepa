@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════
-   Fiches de cours de l'espace de cours particuliers (maths seconde).
+   Fiches de cours de l'espace de cours particuliers de maths (seconde, première…).
    - formules en KaTeX : \( … \) dans le texte, \[ … \] en bloc ;
    - gabarit « manuel interactif » (fiche.css) : une partie = section.fx-partie
      avec le cours (.fx-cours) et « À toi de jouer » (aside.fx-exos) en face ;
@@ -8,9 +8,17 @@
      data-indice="…"><span class="rep-q">…</span></div>, aperçu KaTeX en direct,
      vérification à la demande, indice sur demande ;
    - questions à choix : <div class="qcm" data-bonne="<n° du bouton, dès 1>"> ;
-   - progression : anneau de l'en-tête (#score), barres de chaque partie
-     (.fx-p-score), panneau replié quand la partie est réussie ;
-   - réponses gardées dans le navigateur (localStorage ecg-cp-fiche:<n>) ;
+   - progression : barres de chaque partie (.fx-p-score), panneau replié quand
+     la partie est réussie ;
+   - UNE SEULE réponse par question : l'élève valide (après confirmation), elle est
+     enregistrée dans Supabase (table cp_reponses, supabase/cp-reponses.sql) et ne
+     peut plus être modifiée ; la correction d'un exercice s'ouvre quand toutes ses
+     questions ont reçu une réponse ;
+   - trois modes : « élève » (réponses enregistrées), « lecture » (le professeur
+     ouvre la fiche avec ?eleve=<id> et voit les réponses de l'élève), « aperçu »
+     (le professeur sans ?eleve : on peut tout refaire, rien n'est enregistré) ;
+   - le numéro de la fiche (« Fiche 1 ») est le rang dans lequel le professeur l'a
+     ouverte à cet élève (cp_fiches_ouvertes.ouverte_le), pas un numéro de bibliothèque ;
    - un élève ne voit que les fiches que son professeur lui a ouvertes.
    Formes (data-forme) : « nombre » (sans racine), « simplifiee » (a√b
    réduit, racines regroupées, pas de racine au dénominateur).
@@ -171,15 +179,68 @@
   }
   function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
 
-  /* ─── Mémoire ─────────────────────────────────────────────── */
+  /* ─── Contexte : qui regarde la fiche ? ─────────────────── */
+  var CTX = { mode: 'apercu', eleve: null, client: null, rows: {} };
+  var ETAT = { juste: 'Juste', presque: 'Presque', faux: 'Pas juste' };
+  /* Aperçu du professeur seulement : réponses gardées dans le navigateur */
   var MEM = {};
   try { MEM = JSON.parse(localStorage.getItem(CLE) || '{}') || {}; } catch (e) { MEM = {}; }
   function garder() { try { localStorage.setItem(CLE, JSON.stringify(MEM)); } catch (e) {} }
+
+  /* Texte d'un énoncé, formules comprises (\( … \)), pour que le professeur le relise */
+  function texteDe(node) {
+    if (!node) return '';
+    var c = node.cloneNode(true);
+    Array.prototype.forEach.call(c.querySelectorAll('.katex'), function (k) {
+      var a = k.querySelector('annotation');
+      k.parentNode.replaceChild(document.createTextNode('\\(' + (a ? a.textContent : k.textContent) + '\\)'), k);
+    });
+    return c.textContent.replace(/\s+/g, ' ').trim();
+  }
+  function enonceDe(item, sel) {
+    var exo = item.closest ? item.closest('.exo-cp') : null, t = exo ? exo.querySelector('.exo-t b') : null;
+    var q = texteDe(item.querySelector(sel));
+    return ((t ? texteDe(t) + ' · ' : '') + q).slice(0, 600);
+  }
+  function safeTex(texte) { try { return tex(lire(texte)); } catch (e) { return String(texte).replace(/[\\{}]/g, ''); } }
+
+  /* Enregistre la réponse (une seule fois : la clé primaire refuse un second essai) */
+  function enregistrer(id, ligne, ok, ko) {
+    var cl = CTX.client;
+    var corps = { eleve: CTX.eleve, fiche: N, question: id, enonce: ligne.enonce, reponse: ligne.reponse, attendu: ligne.attendu, etat: ligne.etat };
+    cl.from('cp_reponses').insert(corps).then(function (r) {
+      if (!r.error) { ok(corps); return; }
+      if (r.error.code === '23505') {        /* déjà répondu (autre onglet, autre appareil) : on montre la réponse déjà enregistrée */
+        cl.from('cp_reponses').select('*').eq('eleve', CTX.eleve).eq('fiche', N).eq('question', id).then(function (s) {
+          if (s.data && s.data[0]) ok(s.data[0]); else ko(r.error);
+        }, ko);
+        return;
+      }
+      ko(r.error);
+    }, ko);
+  }
 
   /* ─── Progression ─────────────────────────────────────────── */
   function reussi(x) {
     var items = x.querySelectorAll('.rep, .qcm');
     return !!items.length && Array.prototype.every.call(items, function (i) { return i.classList.contains('juste'); });
+  }
+  /* La correction d'un exercice s'ouvre quand toutes ses questions ont reçu une réponse (mode élève) */
+  function majCorrections() {
+    if (CTX.mode !== 'eleve') return;
+    Array.prototype.forEach.call(document.querySelectorAll('details.corr'), function (d) {
+      var exo = d.closest('.exo-cp'), s = d.querySelector('summary');
+      if (!exo || !s) return;
+      if (!s.getAttribute('data-orig')) {
+        s.setAttribute('data-orig', s.textContent);
+        s.addEventListener('click', function (e) { if (d.classList.contains('verrou')) e.preventDefault(); });
+      }
+      var items = exo.querySelectorAll('.rep, .qcm');
+      var tout = Array.prototype.every.call(items, function (i) { return i.classList.contains('fige'); });
+      d.classList.toggle('verrou', !tout);
+      if (!tout) { d.open = false; s.textContent = 'Correction : elle s\'ouvre quand tu as répondu à toutes les questions'; }
+      else s.textContent = s.getAttribute('data-orig');
+    });
   }
   function compter() {
     var exos = document.querySelectorAll('.exo-cp'), ok = 0;
@@ -211,22 +272,35 @@
         if (fini && !avant && compter.pret) a.classList.add('ouvert');   /* on vient de finir : on laisse ouvert */
       }
     });
+    majCorrections();
   }
 
-  /* ─── Une réponse à taper ─────────────────────────────────── */
+  /* ─── Retour affiché sous une question ────────────────────── */
   function retour(r, etat, html, indice) {
     r.className = 'retour ' + etat;
-    r.hidden = !html;
+    r.hidden = !html && !indice;
     r.innerHTML = html || '';
     if (indice) {
       var b = el('button', 'indice-btn', 'Besoin d\'un indice ?');
       b.type = 'button';
-      b.addEventListener('click', function () { b.remove(); var d = el('span', 'indice', '<b>Indice :</b> ' + indice); r.appendChild(d); rendre(d); });
+      b.addEventListener('click', function () { b.remove(); var d = el('span', 'indice', '<b>Indice :</b> ' + indice); r.appendChild(d); rendre(d); r.hidden = false; });
       r.appendChild(b);
     }
     rendre(r);
   }
+
+  /* ─── Une réponse à taper ─────────────────────────────────── */
+  function evaluer(rep, v) {
+    var ast;
+    try { ast = lire(v); } catch (e) { return { etat: 'illisible' }; }
+    var attendu = val(lire(rep.getAttribute('data-attendu'))), x = val(ast);
+    var egal = isFinite(x) && Math.abs(x - attendu) < 1e-9 * Math.max(1, Math.abs(attendu));
+    if (!egal) return { etat: 'faux' };
+    var d = defautForme(ast, rep.getAttribute('data-forme'));
+    return d ? { etat: 'presque', defaut: d } : { etat: 'juste' };
+  }
   function champ(rep, id) {
+    var mode = CTX.mode, indice = rep.getAttribute('data-indice');
     var z = el('div', 'rep-z');
     var boite = el('div', 'rep-champ');
     var input = el('input');
@@ -235,7 +309,7 @@
     input.setAttribute('aria-label', 'Ta réponse' + (rep.querySelector('.rep-q') ? ' : ' + rep.querySelector('.rep-q').textContent.replace(/=\s*$/, '').trim() : ''));
     input.placeholder = 'ta réponse';
     var ap = el('span', 'rep-apercu'); ap.setAttribute('aria-hidden', 'true');
-    var bouton = el('button', 'verifier', 'Vérifier'); bouton.type = 'button';
+    var bouton = el('button', 'verifier', mode === 'eleve' ? 'Valider' : 'Vérifier'); bouton.type = 'button';
     var etat = el('span', 'etat', 'Juste');
     boite.appendChild(input); boite.appendChild(ap); boite.appendChild(bouton); boite.appendChild(etat);
     var outils = el('div', 'rep-outils');
@@ -251,60 +325,156 @@
       });
       outils.appendChild(bt);
     });
-    outils.appendChild(el('span', '', 'Entrée pour vérifier'));
+    outils.appendChild(el('span', '', mode === 'eleve' ? 'Entrée pour valider' : 'Entrée pour vérifier'));
     var ret = el('div', 'retour'); ret.hidden = true; ret.setAttribute('aria-live', 'polite');
     z.appendChild(boite); z.appendChild(outils); z.appendChild(ret);
     rep.appendChild(z);
 
+    var figee = false, confirmation = false, minuteur = null;
     function etats(e) { rep.classList.remove('juste', 'faux', 'presque'); if (e) rep.classList.add(e); }
+    function indiceInitial() { if (mode === 'eleve' && indice && !figee) retour(ret, '', '', indice); }
     function apercu() {
+      if (figee) return;
       etats(''); retour(ret, '', '');
+      annuler();
       var v = input.value.trim();
-      if (!v) { ap.textContent = ''; return; }
+      if (!v) { ap.textContent = ''; indiceInitial(); return; }
       try { katexDans(ap, tex(lire(v))); ap.classList.remove('illisible'); }
       catch (e) { ap.textContent = '…'; ap.classList.add('illisible'); }
+      indiceInitial();
     }
-    function verifier(silence) {
+
+    /* Réponse définitive : champ verrouillé, résultat affiché */
+    function figer(ligne) {
+      figee = true; CTX.rows[id] = ligne;
+      clearTimeout(minuteur);
+      input.value = ligne.reponse; input.readOnly = true; input.setAttribute('aria-readonly', 'true');
+      rep.classList.add('fige'); etats(ligne.etat);
+      etat.textContent = ETAT[ligne.etat] || '';
+      outils.hidden = true; bouton.hidden = true;
+      try { katexDans(ap, tex(lire(ligne.reponse))); ap.classList.remove('illisible'); } catch (e) { ap.textContent = ''; }
+      var msg = '';
+      if (ligne.etat === 'presque') { var ev = evaluer(rep, ligne.reponse); msg = 'La valeur est juste. ' + (ev.defaut || ''); }
+      else if (ligne.etat === 'faux') msg = 'Pas juste. La bonne réponse : \\(' + safeTex(rep.getAttribute('data-attendu')) + '\\).';
+      retour(ret, ligne.etat === 'juste' ? '' : ligne.etat, msg);
+      compter();
+    }
+    function annuler() {
+      confirmation = false; clearTimeout(minuteur);
+      bouton.textContent = mode === 'eleve' ? 'Valider' : 'Vérifier'; bouton.classList.remove('confirmer'); bouton.disabled = false;
+    }
+    /* Élève : un premier appui demande confirmation, le second enregistre pour de bon */
+    function valider() {
+      if (figee) return;
+      var v = input.value.trim();
+      if (!v) { retour(ret, 'faux', 'Écris ta réponse d\'abord.'); return; }
+      var ev = evaluer(rep, v);
+      if (ev.etat === 'illisible') { etats('faux'); retour(ret, 'faux', 'Je n\'arrive pas à lire ta réponse. Pour une racine, utilise la touche √ (ou écris sqrt(12)). Rien n\'est enregistré tant que tu ne confirmes pas.'); return; }
+      if (!confirmation) {
+        confirmation = true; bouton.textContent = 'Confirmer'; bouton.classList.add('confirmer');
+        retour(ret, 'presque', 'Une seule réponse possible. Relis-toi : si c\'est bon, appuie sur « Confirmer ».');
+        minuteur = setTimeout(function () { annuler(); apercu(); }, 9000);
+        return;
+      }
+      bouton.disabled = true;
+      enregistrer(id, { enonce: enonceDe(rep, '.rep-q'), reponse: v, attendu: rep.getAttribute('data-attendu'), etat: ev.etat }, figer, function () {
+        annuler(); retour(ret, 'faux', 'Je n\'ai pas pu enregistrer ta réponse. Vérifie ta connexion et réessaie.');
+      });
+    }
+    /* Aperçu du professeur : on peut recommencer */
+    function verifierApercu(silence) {
       var v = input.value.trim();
       MEM[id] = v; garder();
       if (!v) { if (!silence) retour(ret, 'faux', 'Écris ta réponse d\'abord.'); return; }
-      var ast;
-      try { ast = lire(v); } catch (e) { etats('faux'); retour(ret, 'faux', 'Je n\'arrive pas à lire ta réponse. Pour une racine, utilise la touche √ (ou écris sqrt(12)).'); compter(); return; }
-      var attendu = val(lire(rep.getAttribute('data-attendu'))), x = val(ast);
-      var egal = isFinite(x) && Math.abs(x - attendu) < 1e-9 * Math.max(1, Math.abs(attendu));
-      if (!egal) {
-        etats('faux');
-        retour(ret, 'faux', silence ? '' : 'Pas encore.', silence ? null : (rep.getAttribute('data-indice') || 'relis le cours juste à gauche.'));
-        compter(); return;
-      }
-      var d = defautForme(ast, rep.getAttribute('data-forme'));
-      if (d) { etats('presque'); retour(ret, 'presque', silence ? '' : 'La valeur est juste. ' + d); compter(); return; }
+      var ev = evaluer(rep, v);
+      if (ev.etat === 'illisible') { etats('faux'); retour(ret, 'faux', 'Je n\'arrive pas à lire ta réponse. Pour une racine, utilise la touche √ (ou écris sqrt(12)).'); compter(); return; }
+      if (ev.etat === 'faux') { etats('faux'); retour(ret, 'faux', silence ? '' : 'Pas encore.', silence ? null : (indice || 'relis le cours juste à gauche.')); compter(); return; }
+      if (ev.etat === 'presque') { etats('presque'); retour(ret, 'presque', silence ? '' : 'La valeur est juste. ' + ev.defaut); compter(); return; }
       etats('juste'); retour(ret, '', ''); compter();
     }
+
+    if (mode === 'lecture') {
+      outils.hidden = true; bouton.hidden = true; input.readOnly = true;
+      if (CTX.rows[id]) figer(CTX.rows[id]);
+      else { rep.classList.add('sans-reponse'); input.placeholder = 'pas encore répondu'; retour(ret, '', 'Pas encore répondu.'); }
+      return;
+    }
     input.addEventListener('input', apercu);
-    input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); verifier(); } });
-    bouton.addEventListener('click', function () { verifier(); });
-    if (MEM[id]) { input.value = MEM[id]; apercu(); verifier(true); }
+    input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); if (mode === 'eleve') valider(); else verifierApercu(); } });
+    bouton.addEventListener('click', function () { if (mode === 'eleve') valider(); else verifierApercu(); });
+    if (mode === 'eleve') {
+      if (CTX.rows[id]) figer(CTX.rows[id]); else indiceInitial();
+    } else if (MEM[id]) { input.value = MEM[id]; apercu(); verifierApercu(true); }
   }
 
   /* ─── Une question à choix ────────────────────────────────── */
   function qcm(q, id) {
+    var mode = CTX.mode, indice = q.getAttribute('data-indice');
     var bts = q.querySelectorAll('.qcm-choix button');
     var ret = el('div', 'retour'); ret.hidden = true; ret.setAttribute('aria-live', 'polite');
+    var bonne = +q.getAttribute('data-bonne') - 1;
+    var figee = false, choix = -1, confirmation = false, minuteur = null, valider = null;
+    Array.prototype.forEach.call(bts, function (b) { b.type = 'button'; });
     q.appendChild(ret);
-    function choisir(i, silence) {
+    if (mode === 'eleve') { valider = el('button', 'verifier qcm-valider', 'Valider mon choix'); valider.type = 'button'; valider.hidden = true; q.appendChild(valider); }
+    function indiceInitial() { if (mode === 'eleve' && indice && !figee) retour(ret, '', '', indice); }
+
+    function figer(ligne) {
+      figee = true; CTX.rows[id] = ligne; clearTimeout(minuteur);
+      var i = -1;
+      Array.prototype.forEach.call(bts, function (b, j) { b.disabled = true; b.setAttribute('aria-pressed', 'false'); b.classList.remove('bon', 'mauvais'); if (b.textContent.trim() === ligne.reponse) i = j; });
+      if (i >= 0) { bts[i].setAttribute('aria-pressed', 'true'); bts[i].classList.add(i === bonne ? 'bon' : 'mauvais'); }
+      if (bts[bonne]) bts[bonne].classList.add('bon');
+      q.classList.add('fige'); q.classList.toggle('juste', ligne.etat === 'juste');
+      if (valider) valider.hidden = true;
+      retour(ret, ligne.etat === 'juste' ? 'ok' : 'faux', ligne.etat === 'juste' ? 'Juste.' : 'Pas juste. La bonne réponse est en vert.');
+      compter();
+    }
+    function annuler() { confirmation = false; clearTimeout(minuteur); if (valider) { valider.textContent = 'Valider mon choix'; valider.classList.remove('confirmer'); valider.disabled = false; } }
+    function selectionner(i) {
+      choix = i; annuler();
+      Array.prototype.forEach.call(bts, function (b, j) { b.setAttribute('aria-pressed', String(j === i)); });
+      valider.hidden = false;
+      retour(ret, '', '', indice);
+    }
+    function confirmer() {
+      if (figee || choix < 0) return;
+      if (!confirmation) {
+        confirmation = true; valider.textContent = 'Confirmer'; valider.classList.add('confirmer');
+        retour(ret, 'presque', 'Une seule réponse possible. Si ton choix est bon, appuie sur « Confirmer ».');
+        minuteur = setTimeout(function () { annuler(); retour(ret, '', '', indice); }, 9000);
+        return;
+      }
+      valider.disabled = true;
+      enregistrer(id, { enonce: enonceDe(q, '.qcm-q'), reponse: bts[choix].textContent.trim(), attendu: bts[bonne].textContent.trim(), etat: choix === bonne ? 'juste' : 'faux' }, figer, function () {
+        annuler(); retour(ret, 'faux', 'Je n\'ai pas pu enregistrer ta réponse. Vérifie ta connexion et réessaie.');
+      });
+    }
+    /* Aperçu du professeur : on peut recommencer */
+    function choisirApercu(i, silence) {
       MEM[id] = i; garder();
       Array.prototype.forEach.call(bts, function (b, j) { b.setAttribute('aria-pressed', String(j === i)); b.classList.remove('bon', 'mauvais'); });
-      var bonne = +q.getAttribute('data-bonne') - 1;
       if (i === bonne) { bts[i].classList.add('bon'); q.classList.add('juste'); retour(ret, 'ok', silence ? '' : 'Juste.'); }
       else {
         bts[i].classList.add('mauvais'); q.classList.remove('juste');
-        retour(ret, 'faux', silence ? '' : 'Pas encore.', silence ? null : q.getAttribute('data-indice'));
+        retour(ret, 'faux', silence ? '' : 'Pas encore.', silence ? null : indice);
       }
       compter();
     }
-    Array.prototype.forEach.call(bts, function (b, i) { b.type = 'button'; b.addEventListener('click', function () { choisir(i); }); });
-    if (typeof MEM[id] === 'number' && bts[MEM[id]]) choisir(MEM[id], true);
+
+    if (mode === 'lecture') {
+      if (CTX.rows[id]) figer(CTX.rows[id]);
+      else { Array.prototype.forEach.call(bts, function (b) { b.disabled = true; }); q.classList.add('sans-reponse'); retour(ret, '', 'Pas encore répondu.'); }
+      return;
+    }
+    if (mode === 'eleve') {
+      Array.prototype.forEach.call(bts, function (b, i) { b.addEventListener('click', function () { if (!figee) selectionner(i); }); });
+      valider.addEventListener('click', confirmer);
+      if (CTX.rows[id]) figer(CTX.rows[id]); else indiceInitial();
+      return;
+    }
+    Array.prototype.forEach.call(bts, function (b, i) { b.addEventListener('click', function () { choisirApercu(i); }); });
+    if (typeof MEM[id] === 'number' && bts[MEM[id]]) choisirApercu(MEM[id], true);
   }
 
   /* ─── Courbe de la fonction racine carrée (curseur) ───────── */
@@ -339,12 +509,25 @@
   }
 
   /* ─── Démarrage ───────────────────────────────────────────── */
+  function bandeau(html, cls) {
+    var tete = document.querySelector('.fx-tete');
+    if (!tete) return;
+    var d = el('div', 'fx-bandeau ' + (cls || ''), html);
+    tete.parentNode.insertBefore(d, tete);
+  }
   function lancer() {
     rendre(document.getElementById('cours'));
     rendre(document.querySelector('.fx-tete'));
+    if (CTX.mode === 'lecture') bandeau('<b>Réponses de l\'élève</b> · lecture seule. Tu vois ce qu\'il a répondu à chaque question ; rien ne peut être modifié ici.', 'lecture');
+    if (CTX.mode === 'apercu') bandeau('<b>Aperçu du professeur</b> · tu peux tout refaire, rien n\'est enregistré. Pour voir les réponses d\'un élève, ouvre sa fiche depuis « Mes élèves ».', 'apercu');
     Array.prototype.forEach.call(document.querySelectorAll('.rep'), function (l, i) { champ(l, 'r' + i); });
     Array.prototype.forEach.call(document.querySelectorAll('.qcm'), function (q, i) { qcm(q, 'q' + i); });
     Array.prototype.forEach.call(document.querySelectorAll('[data-courbe]'), courbe);
+    if (CTX.mode === 'eleve') {
+      Array.prototype.forEach.call(document.querySelectorAll('.fx-exos-c'), function (c) {
+        c.insertBefore(el('p', 'fx-unique', 'Une seule réponse par question : relis-toi avant de confirmer. Ton professeur peut voir tes réponses.'), c.firstChild);
+      });
+    }
     Array.prototype.forEach.call(document.querySelectorAll('.fx-exos'), function (a) {
       var b = a.querySelector('.fx-reussi button');
       if (b) b.addEventListener('click', function () { a.classList.add('ouvert'); });
@@ -353,6 +536,7 @@
     compter.pret = true;
     var raz = document.getElementById('raz');
     if (raz) raz.addEventListener('click', function () {
+      if (CTX.mode !== 'apercu') return;
       if (!confirm('Effacer toutes tes réponses de cette fiche ?')) return;
       MEM = {}; garder(); location.reload();
     });
@@ -363,29 +547,45 @@
     if (window.renderMathInElement && window.katex) return f();
     var n = 0, t = setInterval(function () { if ((window.renderMathInElement && window.katex) || ++n > 100) { clearInterval(t); f(); } }, 50);
   }
+  function badge(texte) {
+    var b = document.querySelector('.fx-badges .fx-badge');
+    if (b) b.textContent = texte;
+  }
+  function fermee(msg) {
+    document.getElementById('cours').innerHTML = '<p class="fx-ferme">' + msg + '<br><a href="../cours-particuliers.html">← Mon espace</a></p>';
+  }
 
-  /* Un élève ne voit que les fiches ouvertes par son professeur ;
-     le propriétaire voit tout (aperçu). auth.js a déjà fermé la page
-     à tous les autres. */
+  /* Un élève ne voit que les fiches ouvertes par son professeur ; le professeur voit tout.
+     auth.js a déjà fermé la page à tous les autres. */
   document.addEventListener('ecg:pret', function (e) {
     var moi = (e && e.detail) || {};
     var params = new URLSearchParams(location.search), eleve = params.get('eleve');
     var retourLien = document.getElementById('retour-espace');
-    if (moi.role === 'admin') {
+    var admin = moi.role === 'admin';
+    if (admin) {
       if (retourLien) retourLien.href = eleve ? '../cours-particuliers.html?eleve=' + encodeURIComponent(eleve) : '../mes-eleves.html';
       if (retourLien && !eleve) retourLien.textContent = '← Mes élèves';
-      quandKatex(lancer);
-      return;
     }
+    if (admin && !eleve) { CTX.mode = 'apercu'; badge('Aperçu'); quandKatex(lancer); return; }
+    CTX.mode = admin ? 'lecture' : 'eleve';
+    CTX.eleve = admin ? eleve : moi.id;
     ECGAuth.client().then(function (c) {
-      return c.from('cp_fiches_ouvertes').select('numero').eq('eleve', moi.id).eq('numero', N);
-    }).then(function (r) {
-      if (r.error || !r.data || !r.data.length) {
-        document.getElementById('cours').innerHTML = '<p class="fx-ferme">Cette fiche n\'est pas encore ouverte dans ton espace.<br><a href="../cours-particuliers.html">← Mon espace</a></p>';
-        return;
-      }
+      CTX.client = c;
+      return Promise.all([
+        c.from('cp_fiches_ouvertes').select('numero,ouverte_le').eq('eleve', CTX.eleve).order('ouverte_le', { ascending: true }).order('numero', { ascending: true }),
+        c.from('cp_reponses').select('*').eq('eleve', CTX.eleve).eq('fiche', N)
+      ]);
+    }).then(function (rs) {
+      var ouv = rs[0].data || [];
+      var rang = -1;
+      ouv.forEach(function (o, i) { if (o.numero === N) rang = i; });
+      if (!admin && (rs[0].error || rang < 0)) { fermee('Cette fiche n\'est pas encore ouverte dans ton espace.'); return; }
+      if (rs[1].error && !admin) { fermee('Je n\'arrive pas à charger tes réponses. Réessaie dans un instant.'); return; }
+      /* « Fiche 1 » = la première fiche ouverte à cet élève, etc. */
+      badge(rang >= 0 ? 'Fiche ' + (rang + 1) : 'Fiche');
+      (rs[1].data || []).forEach(function (r) { CTX.rows[r.question] = r; });
       quandKatex(lancer);
-    }).catch(function () { quandKatex(lancer); });
+    }).catch(function () { fermee('Je n\'arrive pas à ouvrir cette fiche. Réessaie dans un instant.'); });
   });
 
   window.CPFiche = { lire: lire, val: val, tex: tex, defautForme: defautForme };

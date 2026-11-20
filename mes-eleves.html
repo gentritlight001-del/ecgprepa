@@ -7,6 +7,7 @@
 <meta name="robots" content="noindex,nofollow">
 <title>ECG Prépa — Mes élèves</title>
 <link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
 <link rel="stylesheet" href="cours-particuliers/espace.css">
 <link rel="stylesheet" href="barre-section.css">
 </head>
@@ -91,6 +92,11 @@
     <div class="carte-tete"><h3 id="t-fiches">Fiches de cours ouvertes</h3><span class="petit gris">Coche une fiche pour qu'elle apparaisse dans son espace</span></div>
     <div class="grille-fiches" id="fiches"></div>
   </section>
+
+  <section class="carte" aria-labelledby="t-prog">
+    <div class="carte-tete"><h3 id="t-prog">Progression et réponses</h3><span class="petit gris">Ce que l'élève a répondu, question par question. Une réponse donnée ne peut plus être modifiée par lui.</span></div>
+    <div id="prog"></div>
+  </section>
 </template>
 
 <template id="g-pdf">
@@ -108,11 +114,13 @@
 </template>
 
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 <script src="cours-particuliers/commun.js"></script>
 <script>document.write('<script src="cours-particuliers/fiches.js?v=' + Math.floor(Date.now() / 60000) + '"><\/script>');</script>
 <script>
 (function () {
-  var C = null, ELEVES = [], courant = null, SEANCES = [], DEVOIRS = [], DOCS = [], OUVERTES = [], edition = null;
+  var C = null, ELEVES = [], courant = null, SEANCES = [], DEVOIRS = [], DOCS = [], OUVERTES = [], REPONSES = [], edition = null;
   var $ = function (id) { return document.getElementById(id); };
   var COMMUN = '__tous__';
 
@@ -128,11 +136,12 @@
       C.from('cp_seances').select('*').order('quand', { ascending: false }),
       C.from('cp_devoirs').select('*').order('pour', { ascending: true, nullsFirst: false }),
       C.from('cp_documents').select('*').order('depose_le', { ascending: false }),
-      C.from('cp_fiches_ouvertes').select('*')
+      C.from('cp_fiches_ouvertes').select('*'),
+      C.from('cp_reponses').select('*').order('repondu_le', { ascending: true })
     ]).then(function (rs) {
       rs.forEach(ok);
       ELEVES = rs[0].data || []; SEANCES = rs[1].data || []; DEVOIRS = rs[2].data || [];
-      DOCS = rs[3].data || []; OUVERTES = rs[4].data || [];
+      DOCS = rs[3].data || []; OUVERTES = rs[4].data || []; REPONSES = rs[5].data || [];
       liste();
       biblio();
       if (courant && courant !== COMMUN && !ELEVES.some(function (e) { return e.utilisateur === courant; })) courant = null;
@@ -186,7 +195,7 @@
       var a = document.createElement('article');
       a.className = 'cours-carte'; a.draggable = true;
       a.innerHTML = '<span class="poignee" aria-hidden="true"><svg width="12" height="18" viewBox="0 0 12 18" fill="currentColor"><circle cx="3" cy="3" r="1.6"/><circle cx="9" cy="3" r="1.6"/><circle cx="3" cy="9" r="1.6"/><circle cx="9" cy="9" r="1.6"/><circle cx="3" cy="15" r="1.6"/><circle cx="9" cy="15" r="1.6"/></svg></span>' +
-        '<span class="num">' + CP.num(f.n) + '</span><div class="cours-txt">' + (f.niveau ? '<span class="niveau">' + CP.echap(f.niveau) + '</span>' : '') + '<b>' + CP.typo(CP.echap(f.titre)) + '</b>' +
+        '<div class="cours-txt">' + (f.niveau ? '<span class="niveau">' + CP.echap(f.niveau) + '</span>' : '') + '<b>' + CP.typo(CP.echap(f.titre)) + '</b>' +
         (f.sous ? '<span>' + CP.typo(CP.echap(f.sous)) + '</span>' : '') +
         '<span class="qui">' + CP.typo(qui.length ? 'Ouvert à ' + CP.echap(qui.join(', ')) : 'Ouvert à aucun élève pour l\'instant') + '</span></div>' +
         '<a class="btn clair" href="' + CP.echap(f.url) + '">Aperçu</a>';
@@ -251,6 +260,8 @@
         return chemins.length ? C.storage.from(CP.BUCKET).remove(chemins).catch(function (x) { console.error(x); }) : null;
       }).then(tout).catch(alerte);
     });
+
+    progression(e);
 
     /* Séances */
     $('s-date').value = aujourdhui();
@@ -322,7 +333,7 @@
     var fiches = CP.fiches();
     var ouv = {}; OUVERTES.forEach(function (o) { if (o.eleve === e.utilisateur) ouv[o.numero] = 1; });
     $('fiches').innerHTML = fiches.length ? fiches.map(function (f) {
-      return '<label class="' + (ouv[f.n] ? 'coche' : '') + '"><input type="checkbox" data-n="' + f.n + '"' + (ouv[f.n] ? ' checked' : '') + '>' + CP.num(f.n) + ' ' + CP.typo(CP.echap(f.titre)) + (f.niveau ? ' <small class="niveau-p">' + CP.echap(f.niveau) + '</small>' : '') + '</label>';
+      return '<label class="' + (ouv[f.n] ? 'coche' : '') + '"><input type="checkbox" data-n="' + f.n + '"' + (ouv[f.n] ? ' checked' : '') + '>' + CP.typo(CP.echap(f.titre)) + (f.niveau ? ' <small class="niveau-p">' + CP.echap(f.niveau) + '</small>' : '') + '</label>';
     }).join('') : '<p class="vide">Aucune fiche de cours pour l\'instant : elles apparaîtront ici dès qu\'elles seront écrites.</p>';
     Array.prototype.forEach.call($('fiches').querySelectorAll('input'), function (i) {
       i.addEventListener('change', function () {
@@ -392,6 +403,56 @@
           return C.from('cp_documents').delete().eq('id', x.id).then(ok);
         }).then(tout).catch(alerte);
       });
+    });
+  }
+
+  /* ─── Progression et réponses d'un élève ─── */
+  function rangOuvertes(id) {
+    return OUVERTES.filter(function (o) { return o.eleve === id; })
+      .sort(function (a, b) { return String(a.ouverte_le).localeCompare(String(b.ouverte_le)) || a.numero - b.numero; });
+  }
+  function progression(e) {
+    var cible = $('prog');
+    if (!cible) return;
+    var ouv = rangOuvertes(e.utilisateur);
+    if (!ouv.length) { cible.innerHTML = '<p class="vide">Aucune fiche ouverte pour cet élève.</p>'; return; }
+    cible.innerHTML = '';
+    ouv.forEach(function (o, i) {
+      var f = CP.fiches().filter(function (x) { return x.n === o.numero; })[0];
+      if (!f) return;
+      var rs = REPONSES.filter(function (r) { return r.eleve === e.utilisateur && r.fiche === o.numero; });
+      var nj = rs.filter(function (r) { return r.etat === 'juste'; }).length;
+      var np = rs.filter(function (r) { return r.etat === 'presque'; }).length;
+      var nf = rs.filter(function (r) { return r.etat === 'faux'; }).length;
+      var total = Math.max(f.nbq || 0, rs.length);
+      var pc = function (n) { return total ? (100 * n / total).toFixed(1) : 0; };
+      var bloc = document.createElement('div');
+      bloc.className = 'pf';
+      var lignes = rs.map(function (r) {
+        return '<tr class="e-' + r.etat + '"><td class="q">' + CP.typo(CP.echap(r.enonce || r.question)) + '</td><td><code>' + CP.echap(r.reponse) + '</code></td><td><code>' + CP.echap(r.attendu || '') + '</code></td>' +
+          '<td><span class="pastille ' + r.etat + '">' + ({ juste: 'Juste', presque: 'Presque', faux: 'Pas juste' }[r.etat] || '') + '</span></td><td class="d">' + CP.jour(r.repondu_le, false) + '</td></tr>';
+      }).join('');
+      bloc.innerHTML =
+        '<div class="pf-tete"><b>Fiche ' + (i + 1) + ' · ' + CP.typo(CP.echap(f.titre)) + '</b>' + (f.niveau ? '<span class="niveau-p">' + CP.echap(f.niveau) + '</span>' : '') +
+        '<span class="petit gris">ouverte le ' + CP.jour(o.ouverte_le, false) + '</span></div>' +
+        '<div class="pf-barre" role="img" aria-label="' + nj + ' justes, ' + np + ' presque, ' + nf + ' pas justes sur ' + total + ' questions"><i class="j" style="width:' + pc(nj) + '%"></i><i class="p" style="width:' + pc(np) + '%"></i><i class="f" style="width:' + pc(nf) + '%"></i></div>' +
+        '<div class="pf-chiffres">' + rs.length + ' sur ' + total + ' questions répondues · <b class="j">' + nj + ' justes</b>' + (np ? ' · <b class="p">' + np + ' presque</b>' : '') + (nf ? ' · <b class="f">' + nf + ' pas justes</b>' : '') + '</div>' +
+        '<div class="pf-actions"><button type="button" class="lien-btn" data-voir>' + (rs.length ? 'Voir ses réponses' : 'Aucune réponse pour l\'instant') + '</button>' +
+        '<a class="lien-btn" href="' + CP.echap(f.url) + '?eleve=' + encodeURIComponent(e.utilisateur) + '">Ouvrir la fiche avec ses réponses</a>' +
+        (rs.length ? '<button type="button" class="suppr" data-raz>Remettre à zéro</button>' : '') + '</div>' +
+        '<div class="pf-liste" hidden><div class="defil"><table><thead><tr><th>Question</th><th>Sa réponse</th><th>Bonne réponse</th><th>Résultat</th><th>Le</th></tr></thead><tbody>' + lignes + '</tbody></table></div></div>';
+      var liste = bloc.querySelector('.pf-liste'), voir = bloc.querySelector('[data-voir]');
+      if (voir && rs.length) voir.addEventListener('click', function () {
+        liste.hidden = !liste.hidden;
+        voir.textContent = liste.hidden ? 'Voir ses réponses' : 'Masquer ses réponses';
+        if (!liste.hidden && window.renderMathInElement) renderMathInElement(liste, { delimiters: [{ left: '\\(', right: '\\)', display: false }], throwOnError: false });
+      });
+      var raz = bloc.querySelector('[data-raz]');
+      if (raz) raz.addEventListener('click', function () {
+        if (!confirm('Remettre à zéro les réponses de ' + nom(e) + ' sur « ' + f.titre + ' » ? Il pourra répondre de nouveau, une seule fois par question. Cette action ne se défait pas.')) return;
+        C.from('cp_reponses').delete().eq('eleve', e.utilisateur).eq('fiche', o.numero).then(ok).then(tout).catch(alerte);
+      });
+      cible.appendChild(bloc);
     });
   }
 

@@ -98,15 +98,16 @@
         C.from('cp_seances').select('*').eq('eleve', uid).order('quand', { ascending: false }),
         C.from('cp_devoirs').select('*').eq('eleve', uid).order('pour', { ascending: true, nullsFirst: false }),
         C.from('cp_documents').select('*').or('eleve.eq.' + uid + ',eleve.is.null').order('depose_le', { ascending: false }),
-        C.from('cp_fiches_ouvertes').select('numero').eq('eleve', uid)
+        C.from('cp_fiches_ouvertes').select('numero,ouverte_le').eq('eleve', uid),
+        C.from('cp_reponses').select('fiche,etat').eq('eleve', uid)
       ]).then(function (rs) {
         if (rs.some(function (r) { return r.error; })) throw new Error('lecture');
-        afficher(prenom, el, rs[0].data, rs[1].data, rs[2].data, rs[3].data);
+        afficher(prenom, el, rs[0].data, rs[1].data, rs[2].data, rs[3].data, rs[4].data);
       });
     }).catch(function (x) { if (x !== 'redirige') erreur(); });
   }
 
-  function afficher(prenom, el, seances, devoirs, docs, ouvertes) {
+  function afficher(prenom, el, seances, devoirs, docs, ouvertes, reponses) {
     $('espace').innerHTML = '';
     $('espace').appendChild($('gabarit').content.cloneNode(true));
     $('bonjour').textContent = prenom ? 'Bonjour ' + prenom : 'Bonjour';
@@ -172,12 +173,21 @@
     documents();
 
     /* Fiches */
-    var nums = {}; ouvertes.forEach(function (o) { nums[o.numero] = 1; });
-    var fiches = CP.fiches().filter(function (f) { return nums[f.n]; });
+    /* le numéro d'une fiche est son rang chez cet élève : la première fiche ouverte est la fiche 1 */
+    var ordre = ouvertes.slice().sort(function (x, y) { return String(x.ouverte_le).localeCompare(String(y.ouverte_le)) || x.numero - y.numero; });
+    var fiches = [];
+    ordre.forEach(function (o, i) {
+      var f = CP.fiches().filter(function (x) { return x.n === o.numero; })[0];
+      if (f) fiches.push({ rang: i + 1, n: f.n, titre: f.titre, sous: f.sous, url: f.url, niveau: f.niveau, nbq: f.nbq });
+    });
+    var bilan = {};
+    (reponses || []).forEach(function (r) { var b = bilan[r.fiche] || (bilan[r.fiche] = { n: 0, j: 0 }); b.n++; if (r.etat === 'juste') b.j++; });
     $('n-fiches').textContent = fiches.length ? fiches.length + (fiches.length > 1 ? ' fiches ouvertes' : ' fiche ouverte') + ' par ton professeur' : '';
     $('fiches').innerHTML = fiches.length ? fiches.map(function (f) {
-      return '<a class="fiche-carte" href="' + CP.echap(f.url) + (admin ? '?eleve=' + encodeURIComponent(uid) : '') + '"><span class="num">' + CP.num(f.n) + '</span>' + (f.niveau ? '<span class="niveau">' + CP.echap(f.niveau) + '</span>' : '') + '<b>' + CP.typo(CP.echap(f.titre)) + '</b>' +
-        (f.sous ? '<span>' + CP.typo(CP.echap(f.sous)) + '</span>' : '') + '</a>';
+      var b = bilan[f.n] || { n: 0, j: 0 }, total = f.nbq || 0;
+      var prog = total ? '<span class="prog-fiche" aria-hidden="true"><i style="width:' + Math.min(100, 100 * b.n / total).toFixed(0) + '%"></i></span><span class="prog-txt">' + b.n + ' sur ' + total + ' questions répondues' + (b.n ? ' · ' + b.j + ' justes' : '') + '</span>' : '';
+      return '<a class="fiche-carte" href="' + CP.echap(f.url) + (admin ? '?eleve=' + encodeURIComponent(uid) : '') + '"><span class="num">' + CP.num(f.rang) + '</span>' + (f.niveau ? '<span class="niveau">' + CP.echap(f.niveau) + '</span>' : '') + '<b>' + CP.typo(CP.echap(f.titre)) + '</b>' +
+        (f.sous ? '<span>' + CP.typo(CP.echap(f.sous)) + '</span>' : '') + prog + '</a>';
     }).join('') : '<p class="vide">Ton professeur n\'a pas encore ouvert de fiche de cours.</p>';
 
     /* Historique */
