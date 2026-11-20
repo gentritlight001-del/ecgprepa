@@ -530,14 +530,14 @@
         <legend>Priorité</legend>
         <div class="seg">${['high', 'med', 'low'].map(p => `<button type="button" data-p="${p}" aria-pressed="${a.prio === p}">${PRIOS[p].label}</button>`).join('')}</div>
       </fieldset>
-      <label class="champ">${maj ? 'Ce qu’il y a de nouveau' : 'Note'}<textarea id="f-note" rows="6" placeholder="${maj ? 'Le fait nouveau, avec sa date, ses chiffres et sa source…' : 'Contexte, sources, ce qu’il faut penser à faire…'}">${esc(a.note || '')}</textarea></label>
-      <div class="champ">
+      ${(a.sec !== 'articles' || maj) ? `<label class="champ">${maj ? 'Ce qu’il y a de nouveau' : 'Note'}<textarea id="f-note" rows="6" placeholder="${maj ? 'Le fait nouveau, avec sa date, ses chiffres et sa source…' : 'Contexte, sources, ce qu’il faut penser à faire…'}">${esc(a.note || '')}</textarea></label>` : ''}
+      ${a.sec !== 'articles' ? `<div class="champ">
         <label for="f-lien">Lien</label>
         <div class="lien-ligne">
           <input type="url" id="f-lien" placeholder="https://…" value="${esc(a.link || '')}">
           ${url ? `<a href="${esc(url)}" target="_blank" rel="noopener">Ouvrir<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a>` : ''}
         </div>
-      </div>
+      </div>` : ''}
       ${nouvelArticle ? `<div class="champ">
         <label for="f-photo">Source de la photo</label>
         <div class="lien-ligne">
@@ -564,12 +564,12 @@
       $('f-photo').addEventListener('input', e => { a.photo = e.target.value; enregistrer(); majDemande(); });
       $('f-photo').addEventListener('change', () => rendreFiche());
     }
-    titre.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('f-note').focus(); } });
-    $('f-note').addEventListener('input', e => {
+    titre.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); if ($('f-note')) $('f-note').focus(); } });
+    if ($('f-note')) $('f-note').addEventListener('input', e => {
       a.note = e.target.value; enregistrer();
       if ($('f-demande')) $('f-demande').textContent = demande(a);
     });
-    $('f-lien').addEventListener('change', e => { a.link = e.target.value.trim(); enregistrer(); rendreFiche(); });
+    if ($('f-lien')) $('f-lien').addEventListener('change', e => { a.link = e.target.value.trim(); enregistrer(); rendreFiche(); });
     $('f-partie').addEventListener('change', e => {
       a.sec = e.target.value; a.sub = Object.keys(SECTIONS[a.sec].subs)[0]; enregistrer(); tout();
     });
