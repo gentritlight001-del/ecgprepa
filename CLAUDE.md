@@ -41,7 +41,7 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
 - Pages réservées à l'administrateur : `PAGES_ADMIN` dans `auth.js` (`admin.html`,
   `idees-articles.html`, `mes-newsletters.html`, `mon-planning.html`). Exception : `mes-eleves.html`, fermée par
   `pageParticuliers` au seul propriétaire (voir « Espace de cours particuliers »). `mon-planning.html` : agenda
-  personnel du propriétaire (habillage « carnet pointillé » + grille horaire, **pas d'italique**),
+  personnel du propriétaire (refait en novembre 2026 sur la maquette « agenda épuré » validée : fond crème, cartes blanches, accent **noir**, catégories en pastilles de couleur, vues Jour / Semaine / Mois, panneau de droite Ajouter, Aujourd'hui, En retard, À planifier, « Au quotidien » et « Depuis le site » repliés ; plus de post-it, polaroïds ni mini-calendrier ; **pas d'italique**),
   synchronisé dans `planning/planning.json` du bucket privé `newsletters` (photos attachées dans `planning/photos/`) ; interrupteurs « Au quotidien »
   (anglais, espagnol, allemand) qui ajoutent une ligne par jour. Sa recherche « Depuis le site » lit
   `recherche-index.json` (7e champ : image de la page) et `a-faire.json` (« Contenus à créer » : liens vers des pages
