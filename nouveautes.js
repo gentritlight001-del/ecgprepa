@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "États-Unis",
+"titre": "Bourse : Anthropic entre au Nasdaq, introduction record à 1 500 milliards de dollars",
+"url": "actualites/monde/articles/anthropic-entree-bourse-valorisation-record-2026.html",
+"image": "actualites/monde/images/anthropic-entree-bourse-valorisation-record-2026.webp",
+"date": "2026-11-20T18:53:24+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Chine",
 "titre": "Shenzhen : Trump, Xi et Poutine signent une « déclaration de paix » à l'issue d'un sommet inédit",
 "url": "actualites/monde/articles/shenzhen-sommet-trilateral-etats-unis-russie-chine-2026.html",
@@ -1452,15 +1461,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/en/articles/us-trump-suspend-sanctions-russie-2026.html",
 "image": "actualites/en/images/us-trump-suspend-sanctions-russie-2026.webp",
 "date": "2026-10-18T08:28:47+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "France",
-"titre": "France : 550 000 manifestants contre la vie chère, l'hôtel de ville de Limoges détruit",
-"url": "actualites/monde/articles/france-17-octobre-mobilisation-limoges-2026.html",
-"image": "actualites/monde/images/france-17-octobre-mobilisation-limoges-2026.webp",
-"date": "2026-10-18T08:12:16+00:00"
 },
 {
 "t": "es",
