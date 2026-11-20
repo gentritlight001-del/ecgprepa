@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Chine",
+"titre": "Shenzhen : Trump, Xi et Poutine signent une « déclaration de paix » à l'issue d'un sommet inédit",
+"url": "actualites/monde/articles/shenzhen-sommet-trilateral-etats-unis-russie-chine-2026.html",
+"image": "actualites/monde/images/shenzhen-sommet-trilateral-etats-unis-russie-chine-2026.webp",
+"date": "2026-11-20T18:46:25+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "États-Unis",
 "titre": "Espace : Voyager 1 atteint un jour-lumière de la Terre, une première pour un objet humain",
 "url": "actualites/monde/articles/etats-unis-voyager-1-un-jour-lumiere-de-la-terre-2026.html",
@@ -1452,15 +1461,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/monde/articles/france-17-octobre-mobilisation-limoges-2026.html",
 "image": "actualites/monde/images/france-17-octobre-mobilisation-limoges-2026.webp",
 "date": "2026-10-18T08:12:16+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Brésil",
-"titre": "Brésil : à une semaine du second tour, Lula multiplie les mesures sociales et fiscales",
-"url": "actualites/monde/articles/bresil-lula-mesures-electorales-second-tour-2026.html",
-"image": "actualites/monde/images/bresil-lula-mesures-electorales-second-tour-2026.webp",
-"date": "2026-10-18T08:05:39+00:00"
 },
 {
 "t": "es",
