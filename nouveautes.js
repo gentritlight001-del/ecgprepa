@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Colombie",
+"titre": "Colombie : premier paro national contre De la Espriella et sa loi de sauvetage économique",
+"url": "actualites/es/articles/colombie-paro-nacional-reforme-fiscale-2026.html",
+"image": "actualites/es/images/colombie-paro-nacional-reforme-fiscale-2026.webp",
+"date": "2026-11-20T21:09:25+00:00"
+},
+{
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne",
@@ -1749,15 +1758,6 @@ window.ECG_NOUVEAUTES = [
 "url": "Culture-Generale/revolution-industrielle.html",
 "image": "Culture-Generale/images/revolution-industrielle.webp",
 "date": "2026-10-10T15:41:06+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Mexique",
-"titre": "Mexique : Ceci Flores et sa fille, premières familles certifiées pour rechercher les disparus",
-"url": "actualites/es/articles/mexique-buscadoras-certification.html",
-"image": "actualites/es/images/mexique-buscadoras-certification.webp",
-"date": "2026-10-08T19:05:36+00:00"
 },
 {
 "t": "en",
