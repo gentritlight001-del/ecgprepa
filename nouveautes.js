@@ -4,6 +4,15 @@ window.ECG_NOUVEAUTES = [
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne",
+"titre": "Cybersécurité : le BSI juge la situation « tendue à critique », l'IA accélère les attaques",
+"url": "actualites/de/articles/allemagne-bsi-lagebericht-cyberbedrohung-ki-2026.html",
+"image": "actualites/de/images/allemagne-bsi-lagebericht-cyberbedrohung-ki-2026.webp",
+"date": "2026-11-20T20:45:40+00:00"
+},
+{
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
 "titre": "Berlin : Merz réunit la « Coalition des volontaires » en contrepoids au sommet de Shenzhen",
 "url": "actualites/de/articles/allemagne-koalition-der-willigen-berlin-2026.html",
 "image": "actualites/de/images/allemagne-koalition-der-willigen-berlin-2026.webp",
@@ -1946,15 +1955,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Élections communales en Basse-Saxe : la CDU se maintient de justesse, l'AfD triple son score",
 "url": "actualites/de/articles/elections-communales-basse-saxe.html",
 "image": "actualites/de/images/elections-communales-basse-saxe.webp",
-"date": "2026-09-18T20:00:18+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "Alexander Zverev remporte l'US Open et décroche son deuxième titre du Grand Chelem de l'année",
-"url": "actualites/de/articles/zverev-us-open.html",
-"image": "actualites/de/images/zverev-us-open.webp",
 "date": "2026-09-18T20:00:18+00:00"
 },
 {
