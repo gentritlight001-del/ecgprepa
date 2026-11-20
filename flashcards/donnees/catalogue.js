@@ -12,8 +12,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-11-20",
+  "maj": "2026-11-21",
   "parties": [
+   {
+    "id": "2026-11-21",
+    "nom": "Jour 28 · Australia and the Philippines Sign an Updated Defense Cooperation Arrangement in Manila",
+    "n": 26,
+    "date": "2026-11-21"
+   },
    {
     "id": "2026-11-20",
     "nom": "Jour 27 · Carney Meets Trump at APEC in Shenzhen: Trade Deal Discussed, Nothing Announced",
@@ -177,8 +183,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 702,
-  "v": "aeb2b16675"
+  "n": 722,
+  "v": "76aa64d1de"
  },
  {
   "id": "espagnol",
