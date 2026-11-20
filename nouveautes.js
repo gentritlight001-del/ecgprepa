@@ -1,6 +1,42 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "États-Unis",
+"titre": "GTA VI : record historique, 3,79 milliards de dollars de ventes en un jour selon Take-Two",
+"url": "actualites/monde/articles/gta-vi-lancement-record-2026.html",
+"image": "actualites/monde/images/gta-vi-lancement-record-2026.webp",
+"date": "2026-11-20T21:18:31+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "El Salvador",
+"titre": "Salvador : Bukele dépose sa candidature à un troisième mandat de six ans pour 2027",
+"url": "actualites/es/articles/el-salvador-bukele-candidature-troisieme-mandat-2027.html",
+"image": "actualites/es/images/el-salvador-bukele-candidature-troisieme-mandat-2027.webp",
+"date": "2026-11-20T21:17:03+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Mexique",
+"titre": "Mexique : la Conagua s'allie à Google pour prévoir ouragans et crues éclair grâce à l'IA",
+"url": "actualites/es/articles/mexique-google-conagua-ia-extremos-climaticos-2026.html",
+"image": "actualites/es/images/mexique-google-conagua-ia-extremos-climaticos-2026.webp",
+"date": "2026-11-20T21:16:50+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Myanmar",
+"titre": "CIJ : le Myanmar jugé responsable d'un génocide contre les Rohingya, une première pour la Cour",
+"url": "actualites/monde/articles/cij-myanmar-genocide-rohingya-arret-2026.html",
+"image": "actualites/monde/images/cij-myanmar-genocide-rohingya-arret-2026.webp",
+"date": "2026-11-20T21:16:26+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Colombie",
@@ -1020,15 +1056,6 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-10-27T06:43:54+00:00"
 },
 {
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Roumanie",
-"titre": "Roumanie : le Parlement investit Luca Niculescu Premier ministre après 169 jours de crise politique",
-"url": "actualites/monde/articles/roumanie-niculescu-premier-ministre-2026.html",
-"image": "actualites/monde/images/roumanie-niculescu-premier-ministre-2026.webp",
-"date": "2026-10-22T14:02:05+00:00"
-},
-{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Espagne",
@@ -1063,15 +1090,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/en/articles/canada-alberta-referendum-2026.html",
 "image": "actualites/en/images/canada-alberta-referendum-2026.webp",
 "date": "2026-10-20T18:24:09+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Vietnam / AELE",
-"titre": "Vietnam – AELE : Hanoï signe un accord de libre-échange avec quatre pays européens hors UE",
-"url": "actualites/monde/articles/vietnam-aele-accord-libre-echange-2026.html",
-"image": "actualites/monde/images/vietnam-aele-accord-libre-echange-2026.webp",
-"date": "2026-10-20T18:17:08+00:00"
 },
 {
 "t": "es",
@@ -1697,15 +1715,6 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-10-10T19:28:55+00:00"
 },
 {
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Panama",
-"titre": "Panama : séisme de magnitude 7,7, plus de 400 bâtiments endommagés et aucun mort signalé",
-"url": "actualites/es/articles/panama-seisme-7-7-octobre-2026.html",
-"image": "actualites/es/images/panama-seisme-7-7-octobre-2026.webp",
-"date": "2026-10-10T19:21:53+00:00"
-},
-{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "Royaume-Uni",
@@ -1740,15 +1749,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/en/articles/hasan-execution-livestream-hegseth.html",
 "image": "actualites/en/images/hasan-execution-livestream-hegseth.webp",
 "date": "2026-10-10T18:52:55+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Espagne",
-"titre": "Espagne : mort de Maricarmen, 87 ans, expulsée le 23 septembre et devenue symbole du logement",
-"url": "actualites/es/articles/espagne-mort-maricarmen-symbole.html",
-"image": "actualites/es/images/espagne-mort-maricarmen-symbole.webp",
-"date": "2026-10-10T18:48:57+00:00"
 },
 {
 "t": "cg",
