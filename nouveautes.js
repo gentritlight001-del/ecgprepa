@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
+"titre": "Berlin : Merz réunit la « Coalition des volontaires » en contrepoids au sommet de Shenzhen",
+"url": "actualites/de/articles/allemagne-koalition-der-willigen-berlin-2026.html",
+"image": "actualites/de/images/allemagne-koalition-der-willigen-berlin-2026.webp",
+"date": "2026-11-20T19:05:27+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "États-Unis",
@@ -1946,15 +1955,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Alexander Zverev remporte l'US Open et décroche son deuxième titre du Grand Chelem de l'année",
 "url": "actualites/de/articles/zverev-us-open.html",
 "image": "actualites/de/images/zverev-us-open.webp",
-"date": "2026-09-18T20:00:18+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "Manifestations massives contre l'extrême droite : l'Allemagne se mobilise après la percée de l'AfD",
-"url": "actualites/de/articles/manifestations-anti-extreme-droite.html",
-"image": "actualites/de/images/manifestations-anti-extreme-droite.webp",
 "date": "2026-09-18T20:00:18+00:00"
 },
 {
