@@ -49,6 +49,7 @@
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <a class="btn clair" id="e-voir" href="#">Voir son espace</a>
       <button class="btn danger" type="button" id="e-acces"></button>
+      <button class="btn danger" type="button" id="e-suppr">Supprimer l'élève</button>
     </div>
   </section>
 
@@ -239,6 +240,16 @@
     acc.addEventListener('click', function () {
       if (e.actif && !confirm('Retirer l\'accès de ' + nom(e) + ' ? Son espace disparaît pour lui, mais ses séances et documents sont gardés.')) return;
       C.from('cp_eleves').update({ actif: !e.actif }).eq('utilisateur', e.utilisateur).then(ok).then(tout).catch(alerte);
+    });
+    /* Suppression définitive : l'élève, ses séances, ses devoirs, ses fiches ouvertes
+       et ses PDF. Son compte gratuit sur le site n'est pas touché. */
+    $('e-suppr').addEventListener('click', function () {
+      if (!confirm('Supprimer ' + nom(e) + ' pour de bon ?\n\nSes séances, ses devoirs, ses PDF et les fiches ouvertes pour lui seront effacés, et on ne peut pas revenir en arrière. Son compte gratuit sur le site reste, mais il n\'a plus accès à son espace.\n\nPour seulement fermer son espace, utilise « Retirer l\'accès ».')) return;
+      var chemins = DOCS.filter(function (x) { return x.eleve === e.utilisateur; }).map(function (x) { return x.chemin; });
+      C.from('cp_eleves').delete().eq('utilisateur', e.utilisateur).then(ok).then(function () {
+        courant = null; edition = null;
+        return chemins.length ? C.storage.from(CP.BUCKET).remove(chemins).catch(function (x) { console.error(x); }) : null;
+      }).then(tout).catch(alerte);
     });
 
     /* Séances */
