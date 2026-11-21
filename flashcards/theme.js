@@ -6,7 +6,7 @@
    S'adapte à l'élève à partir de ses flashcards (synchro.js) : un mot dont il a déjà vu la carte est souligné en
    vert, sans aide ; les mots nouveaux pour lui ont une traduction cachée, à révéler. Une seule correction par
    thème : réponses, note et « compter comme juste » sont gardés dans D.prefs.themes["<langue>/<date>"], donc
-   synchronisés avec le compte. Les cartes choisies après la correction vont dans un paquet perso
+   synchronisés avec le compte ; l'historique et la progression sont dans themes.html (themes-espace.js). Les cartes choisies après la correction vont dans un paquet perso
    « Mes thèmes d'<langue> » (id theme-<langue>) ; celles des fautes reviennent dès le lendemain. */
 (function () {
   'use strict';
@@ -378,14 +378,12 @@
 
   /* ─── Thèmes précédents ─── */
   function precedents() {
-    var l = (LISTE[courant.langue] || []).filter(function (x) { return courant.langue + '/' + x.date !== courant.cle; });
-    if (!l.length) return '';
-    return '<section class="th-precedents" aria-label="Thèmes précédents"><h2>' + t('Thèmes précédents') + '</h2><ul>' + l.slice(0, 30).map(function (x) {
-      var R = D.prefs.themes[courant.langue + '/' + x.date];
-      return '<li><a href="#' + courant.langue + '/' + x.date + '"><span class="th-p-date">' + t(dateLongue(x.date)) + '</span><b>' + t(x.titre) + '</b>' +
-        '<span class="th-p-note">' + (R && R.r ? note(R.n || 0) + ' / 20' : 'À faire') + '</span></a></li>';
-    }).join('') + '</ul></section>';
+    var l = LISTE[courant.langue] || [];
+    var faits = l.filter(function (x) { var R = D.prefs.themes[courant.langue + '/' + x.date]; return R && R.r; }).length;
+    return '<a class="th-vers-espace" href="themes.html"><span><b>' + t('Tous mes thèmes') + '</b>' +
+      t(pl(l.length, 'thème', 'thèmes') + ' · ' + pl(faits, 'fait', 'faits') + ' · ta progression et tes fautes les plus fréquentes') + '</span><span aria-hidden="true">→</span></a>';
   }
+
 
   /* ─── Actions ─── */
   app.addEventListener('click', function (e) {

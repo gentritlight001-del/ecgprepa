@@ -402,7 +402,7 @@
       '<h2>' + t(x.titre) + '</h2><p>' + t((x.phrases || 5) + ' phrases · ' + (connus ? pl(connus, 'mot de tes flashcards', 'mots de tes flashcards') + ' · ' : '') + pl(nouveaux, 'mot nouveau', 'mots nouveaux') + ' · 15 min') + '</p></div>' +
       '<div class="th-carte-act"><a class="btn" href="theme.html#anglais/' + esc(x.date) + '">' + (fait ? 'Voir la correction' : 'Faire le thème') + '</a>' +
       (fait ? '<span>' + t('Ta note : ' + String(R.n || 0).replace('.', ',') + ' / 20') + '</span>' : dernier ? '<span>' + t('Dernière note : ' + String(dernier.n || 0).replace('.', ',') + ' / 20') + '</span>' : '') +
-      '</div></section>';
+      '<a class="lien" href="themes.html">' + t('Tous mes thèmes →') + '</a></div></section>';
   }
 
   /* ─── Accueil ─── */
