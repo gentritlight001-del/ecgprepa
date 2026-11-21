@@ -242,21 +242,44 @@
     var phrase = n >= 17 ? 'Excellent thème.' : n >= 14 ? 'Très bon thème.' : n >= 11 ? 'Bon thème.' : n >= 8 ? 'Thème correct, avec des points à reprendre.' : 'Thème difficile : reprends les explications une à une, elles sont faites pour ça.';
     if (pire) phrase += ' Ce qui te coûte le plus de points : ' + (pire === 'orthographe' ? 'l’orthographe' : pire === 'grammaire' ? 'la grammaire' : pire === 'faux' ? 'les passages mal traduits' : 'les ' + (TYPES[pire] || pire).toLowerCase() + 's') + '.';
     if (connus && remployes === connus) phrase += ' Les mots de tes flashcards sont tous en place.';
-    var cases = [
-      ['grammaire', 'faute de grammaire', 'fautes de grammaire'],
-      ['sens', 'faux-sens ou contresens', 'faux-sens ou contresens'],
-      ['forme', 'gallicisme ou barbarisme', 'gallicismes ou barbarismes'],
-      ['orthographe', 'faute de frappe', 'fautes de frappe']
-    ].concat(faux ? [['faux', 'passage mal traduit', 'passages mal traduits']] : []).map(function (c) {
-      var v = c[0] === 'sens' ? (parType['faux-sens'] || 0) + (parType.contresens || 0) + (parType.oubli || 0)
-        : c[0] === 'forme' ? (parType.gallicisme || 0) + (parType.barbarisme || 0) : (parType[c[0]] || 0);
-      return '<div class="th-case"><b class="' + (v ? 'rouge' : 'vert') + '">' + v + '</b><span>' + t(v > 1 ? c[2] : c[1]) + '</span></div>';
+    /* Où sont passés les 20 points : perte réelle de chaque morceau, répartie entre ses fautes */
+    var GROUPE = { grammaire: 'grammaire', 'faux-sens': 'sens', contresens: 'sens', oubli: 'sens', gallicisme: 'forme', barbarisme: 'forme' };
+    var CAT = [
+      ['grammaire', 'Grammaire', 'faute', 'fautes'], ['sens', 'Faux-sens et contresens', 'faute', 'fautes'],
+      ['forme', 'Gallicismes et barbarismes', 'faute', 'fautes'], ['faux', 'Passages mal traduits', 'passage', 'passages'],
+      ['frappe', 'Fautes de frappe', 'faute', 'fautes'], ['vide', 'Phrases pas traduites', 'phrase', 'phrases']
+    ];
+    var perte = {}, nb = {};
+    function compter(c, x, k) { perte[c] = (perte[c] || 0) + x; nb[c] = (nb[c] || 0) + (k == null ? 1 : k); }
+    res.forEach(function (r, i) {
+      var p = T.phrases[i];
+      if (r.vide) { compter('vide', r.total); return; }
+      r.morceaux.forEach(function (m, k) {
+        var mc = p.morceaux[k], perdu = mc.pts - m.pts;
+        if (m.etat === 'inconnu') compter('faux', mc.pts);
+        else if (m.etat === 'faute') {
+          var tot = m.fautes.reduce(function (a, f) { return a + f.pts; }, 0) || 1;
+          m.fautes.forEach(function (f) { compter(GROUPE[f.type] || 'sens', perdu * f.pts / tot); });
+        }
+      });
+      if (r.ortho.length) compter('frappe', C.FRAPPE * r.ortho.length, r.ortho.length);
     });
-    if (connus) cases.push('<div class="th-case"><b class="' + (remployes === connus ? 'vert' : 'or') + '">' + remployes + ' / ' + connus + '</b><span>' + t('mots de tes flashcards remployés') + '</span></div>');
+    var perdu = 20 - n, somme = Object.keys(perte).reduce(function (a, k) { return a + perte[k]; }, 0), ech = somme > perdu && somme ? perdu / somme : 1;
+    var segs = '<i class="nb-ok" style="flex:' + n + '"></i>', leg = '';
+    CAT.forEach(function (c) {
+      var x = (perte[c[0]] || 0) * ech;
+      if (x <= 0) return;
+      segs += '<i class="nb-' + c[0] + '" style="flex:' + x + '"></i>';
+      leg += '<li><span class="pt nb-' + c[0] + '"></span><span class="lg">' + t(c[1]) + '</span><span class="nbf">' + t(pl(nb[c[0]], c[2], c[3])) + '</span><b>−' + note(C.arrondi(x)) + '</b></li>';
+    });
 
     var html = '<header class="th-tete"><div class="sur">' + t('Thème du jour · Corrigé · ' + dateLongue(T.date)) + '</div><h1>' + t(T.titre) + '</h1></header>' +
-      '<section class="th-note" aria-label="Ta note"><div class="th-sur20"><b>' + note(n) + '</b><span>/ 20</span></div>' +
-      '<div class="th-bilan"><p>' + t(phrase) + '</p><div class="th-cases">' + cases.join('') + '</div></div></section>' +
+      '<section class="th-note" aria-label="Ta note">' +
+        '<div class="th-note-haut"><div class="th-sur20"><b>' + note(n) + '</b><span>/ 20</span></div><p>' + t(phrase) + '</p></div>' +
+        '<div class="th-points"><div class="th-barre" role="img" aria-label="' + t(note(n) + ' points gagnés sur 20') + '">' + segs + '</div>' +
+          '<ul class="th-legende-pts"><li class="ok"><span class="pt nb-ok"></span><span class="lg">Points gagnés</span><span class="nbf"></span><b>' + note(n) + '</b></li>' + leg + '</ul>' +
+          (connus ? '<p class="th-remploi">' + t('Mots de tes flashcards remployés : ') + '<b class="' + (remployes === connus ? 'vert' : 'or') + '">' + remployes + ' sur ' + connus + '</b></p>' : '') +
+        '</div></section>' +
       '<section class="th-phrases" aria-label="Phrase par phrase"><h2>Phrase par phrase</h2>' +
       res.map(function (r, i) { return articlePhrase(T.phrases[i], r, i, R, L); }).join('') + '</section>' +
       apres(res, L) + precedents();
