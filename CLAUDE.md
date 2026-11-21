@@ -56,8 +56,8 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   Menu non collant (pas de barre de défilement propre). Onglets refaits sur maquettes validées (novembre 2026) : **Comptes**
   (pastilles de filtre, cases à cocher et actions groupées, fiche du membre à droite, plein écran sur téléphone),
   **Sessions** (appareils en ligne en cartes, inactives en liste), **Journal** (alerte de connexions refusées, activité sur
-  15 jours, fil par jour en phrases, export CSV), **Statistiques** (`lecture-admin.js` : Audience, Contenus, Envie de
-  Premium, Recherche ; comparaison à la période précédente ; « Ajouter aux idées » écrit dans la liste de
+  15 jours, fil par jour en phrases, export CSV), **Statistiques** (`lecture-admin.js`, refait le 21 novembre 2026 sur la maquette « Qui vient, et qu'est-ce
+  qu'on lit ? » validée : voir « Statistiques de fréquentation » ; « Ajouter aux idées » écrit dans la liste de
   `idees-articles.html`), **Premium** (`premium-admin.js` : revenu, abonnés filtrés, codes en cartes), **Newsletter**
   (`newsletter.js` : 3 étapes, aperçu du courriel, PDF choisi dans « Mes newsletters », « Réutiliser » un envoi),
   **Réglages** (inscriptions, administrateurs, données, zone sensible).
@@ -136,6 +136,19 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   sans recherche n'est pas compté, nombre affiché sous les chiffres de l'onglet). En test Playwright avec le vrai `auth.js` :
   Playwright est un robot déclaré, donc poser un agent normal et `Navigator.prototype.webdriver` à `false`, plus un
   `ecg_visiteur` connu, et effacer ensuite ses lignes (`lecteur = stats_empreinte('<id>')`).
+  **Trois mots seulement, plus de « pages vues »** (refonte du 21 novembre 2026, le propriétaire trouvait que « pages
+  vues » comptait « tout et n'importe quoi » : 85 % de pages de passage, 58 % de moins de 5 s) : **visiteur** = une personne
+  (un compte sur tous ses appareils, ou un navigateur sans compte), **lecture** = une personne × un contenu lu au moins
+  10 s de lecture active (seuil `v_seuil` de `stats_site`), **temps de lecture**. Une seule fonction, `stats_site(jours,
+  public)` (`supabase/statistiques-site.sql`, appliqué), lue par l'onglet et par la vue d'ensemble (cartes Visiteurs,
+  Lectures, Membres, Le plus lu ; graphique visiteurs et lectures par jour). Onglet en 6 parties : En bref (chaque
+  chiffre avec sa définition, comparaison à la période d'avant seulement si elle a été mesurée en entier), Jour par jour,
+  Ce qu'ils lisent, Est-ce qu'ils reviennent et d'où ils arrivent, À surveiller (Premium, liens cassés, recherches sans
+  résultat), « Comment on passe de N pages ouvertes à M lectures » (robots, pages de passage, moins de 10 s). Ne pas
+  remettre « pages vues » en avant. Corrigé en même temps : les robots ne notent plus d'événements (`evenement` vérifie
+  `estRobot`), la visite est gardée dans `localStorage` (un nouvel onglet ne compte plus une visite « Lien du site »,
+  exclue des sources), `utm_source` (ChatGPT) est classé comme un référent. `stats_lecture` et `stats_contenus` restent
+  en base mais ne sont plus lues.
   **Par compte, sans nom** (choix du propriétaire, novembre 2026 ; `supabase/statistiques-comptes.sql`) : colonne `compte` =
   `stats_empreinte('compte:' || auth.uid())` remplie par `noter_page` / `noter_evenement` (jamais le nom ni l'identifiant en
   clair). Une personne = un compte (tous ses appareils) ou un navigateur ; une lecture = une personne × un contenu sur la

@@ -101,9 +101,16 @@
   .seg2 button{min-height:34px;padding:0 14px;border-radius:999px;border:0;background:none;color:var(--dim);font-size:13px}
   .seg2 button.on{background:var(--border);color:var(--text)}
   .histo{display:flex;align-items:flex-end;gap:4px;height:180px;border-bottom:1px solid var(--border)}
-  .histo i{flex:1;min-width:2px;border-radius:3px 3px 0 0;background:#3a3a45}
-  .histo i:last-child{background:var(--accent)}
-  .histo i.zero{height:2px!important;background:var(--border)}
+  .histo span{flex:1;min-width:0;display:flex;align-items:flex-end;justify-content:center;gap:1px;height:100%}
+  .histo span i{flex:1;max-width:12px;min-height:2px;border-radius:3px 3px 0 0;background:var(--blue)}
+  .histo span i.l{background:var(--accent)}
+  .histo span.zero i{background:var(--border)}
+  .kpi.or{background:#1c1912;border-color:#5a4a2c}
+  .kpi.or .l,.kpi.or .v b{color:#e2c896}
+  .kpi .v b.txt{font-family:'DM Sans',sans-serif;font-size:17px;line-height:1.3}
+  .spark.or i:last-child{background:#e2c896}
+  .legende3{display:flex;gap:16px;font-size:13px;color:var(--dim)}
+  .legende3 i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
   .axe2{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:11px;color:var(--faint)}
 
   .ligne-u{display:flex;align-items:center;gap:12px}
@@ -466,14 +473,15 @@
       <div class="rangee">
         <section class="boite large" aria-labelledby="t-freq">
           <div class="boite-t">
-            <div><h2 id="t-freq">Pages vues par jour</h2><p>30 derniers jours · robots écartés</p></div>
+            <div><h2 id="t-freq">Visiteurs et lectures par jour</h2><p>30 derniers jours · robots écartés</p></div>
             <div class="seg2" role="group" aria-label="Public" id="ov-public">
-              <button type="button" class="on" data-pub="vues">Tous</button>
-              <button type="button" data-pub="vues_sans">Sans compte</button>
-              <button type="button" data-pub="vues_membres">Membres</button>
+              <button type="button" class="on" data-pub="">Tous</button>
+              <button type="button" data-pub="_sans">Sans compte</button>
+              <button type="button" data-pub="_membres">Membres</button>
             </div>
           </div>
-          <div class="histo" id="ov-histo" role="img" aria-label="Histogramme des pages vues sur 30 jours"></div>
+          <div class="legende3"><span><i style="background:var(--blue)"></i>Visiteurs</span><span><i style="background:var(--accent)"></i>Lectures</span></div>
+          <div class="histo" id="ov-histo" role="img" aria-label="Visiteurs et lectures par jour sur 30 jours"></div>
           <div class="axe2" id="ov-axe"></div>
         </section>
         <section class="boite etroite" aria-labelledby="t-ligne">
@@ -765,12 +773,13 @@
 
   /* ─── Vue d'ensemble ───
      Comptes, sessions et journal : données de la page (D), rafraîchies toutes les 15 s.
-     Fréquentation : stats_lecture sur 7 et 30 jours, rechargée à l'ouverture, sur « Actualiser »
-     et toutes les 5 min. Idées : liste de idees-articles.html (localStorage « ecg-articles »). */
-  var ST = { s7: null, s30: null, pub: 'vues' };
+     Fréquentation : stats_site sur 7 et 30 jours (visiteurs, lectures : voir lecture-admin.js),
+     rechargée à l'ouverture, sur « Actualiser » et toutes les 5 min.
+     Idées : liste de idees-articles.html (localStorage « ecg-articles »). */
+  var ST = { s7: null, s30: null, pub: '' };
   function chargerStats(){
-    if (!Ad.statsLecture) return Promise.resolve();
-    return Promise.all([Ad.statsLecture(7, 'tous'), Ad.statsLecture(30, 'tous')])
+    if (!Ad.statsSite) return Promise.resolve();
+    return Promise.all([Ad.statsSite(7, 'tous'), Ad.statsSite(30, 'tous')])
       .then(function(r){ ST.s7 = r[0] || {}; ST.s30 = r[1] || {}; })
       .catch(function(){ ST.s7 = ST.s7 || {}; ST.s30 = ST.s30 || {}; })
       .then(rendreApercu);
@@ -840,31 +849,38 @@
       var k = cleJour(d);
       return nouveaux.filter(function(u){ return cleJour(new Date(u.cree_le)) === k; }).length;
     });
-    var prem = Object.keys(D.premium), offerts = prem.filter(function(id){ return D.premium[id] === 'offert'; }).length;
-    function kpi(libelle, valeur, detail, vals, vert){
-      return '<div class="kpi"><div class="l">' + esc(libelle) + '</div><div class="v"><b>' + esc(valeur) + '</b>' +
-        (vals ? spark(vals) : '') + '</div><div class="e"' + (vert ? '' : ' style="color:var(--dim)"') + '>' + esc(detail) + '</div></div>';
+    function dureeCourte(s){ s = Math.round(s || 0); return s < 60 ? s + ' s' : Math.floor(s / 60) + ' min' + (s % 60 ? ' ' + ('0' + (s % 60)).slice(-2) : ''); }
+    function kpi(libelle, valeur, detail, vals, vert, genre){
+      return '<div class="kpi' + (genre === 'or' ? ' or' : '') + '"><div class="l">' + esc(libelle) + '</div><div class="v"><b' + (genre === 'txt' ? ' class="txt"' : '') + '>' + esc(valeur) + '</b>' +
+        (vals ? spark(vals).replace('class="spark"', 'class="spark' + (genre === 'or' ? ' or' : '') + '"') : '') + '</div><div class="e"' + (vert ? '' : ' style="color:var(--dim)"') + '>' + esc(detail) + '</div></div>';
     }
+    var b7 = (s7 && s7.bref) || {};
+    var L0 = window.ECGLectureAdmin || {};
+    var top1 = ((s7 && s7.contenus) || [])[0];
+    var ouvre = '';
+    if (top1) ouvre = L0.titre ? L0.titre(top1) : (top1.titre || top1.page);
     $('#ov-kpis').innerHTML =
-      kpi('Visiteurs · 7 jours', attendu ? '…' : nbfr(s7.visiteurs),
-        attendu ? '' : (s7.nouveaux ? 'dont ' + nbfr(s7.nouveaux) + ' venus pour la première fois' : 'sans compte et membres'),
+      kpi('Visiteurs · 7 jours', attendu ? '…' : nbfr(b7.visiteurs),
+        attendu ? '' : 'dont ' + nbfr(b7.visiteurs_membres) + ' ' + pluriel(b7.visiteurs_membres || 0, 'membre'),
         attendu ? null : parJour(s7, 7, 'visiteurs').map(function(x){ return x.v; }), false) +
-      kpi('Pages vues · 7 jours', attendu ? '…' : nbfr(s7.total),
-        attendu ? '' : 'aujourd’hui : ' + nbfr(s7.aujourdhui),
-        attendu ? null : parJour(s7, 7, 'vues').map(function(x){ return x.v; }), false) +
+      kpi('Lectures · 7 jours', attendu ? '…' : nbfr(b7.lectures),
+        'contenus lus ' + ((s7 && s7.seuil) || 10) + ' s ou plus',
+        attendu ? null : parJour(s7, 7, 'lectures').map(function(x){ return x.v; }), false, 'or') +
       kpi('Membres', nbfr(D.users.length),
         nouveaux.length ? '+' + nouveaux.length + ' sur 7 jours' : 'aucune inscription sur 7 jours', inscr, nouveaux.length > 0) +
-      kpi('Premium actifs', nbfr(prem.length),
-        offerts ? 'dont ' + offerts + ' ' + pluriel(offerts, 'offert') : 'abonnements payants', null, false);
+      kpi('Le plus lu · 7 jours', attendu ? '…' : top1 ? ouvre : 'Rien encore',
+        top1 ? nbfr(top1.lecteurs) + ' ' + pluriel(top1.lecteurs, 'lecteur') + ' · ' + dureeCourte(top1.secondes_moy) + ' en moyenne' : 'aucune lecture sur 7 jours',
+        null, false, 'txt');
 
-    /* Pages vues par jour */
-    var jours = parJour(s30, 30, ST.pub), mx = Math.max.apply(null, jours.map(function(x){ return x.v; }).concat([1]));
-    var lib = { vues: 'pages vues', vues_sans: 'pages vues sans compte', vues_membres: 'pages vues par des membres' }[ST.pub];
-    $('#ov-histo').innerHTML = jours.map(function(x){
-      return '<i' + (x.v ? '' : ' class="zero"') + ' style="height:' + Math.round(176 * x.v / mx) + 'px" title="' +
-        esc(jourCourt(x.d) + ' : ' + nbfr(x.v) + ' ' + lib) + '"></i>';
+    /* Visiteurs et lectures par jour */
+    var jv = parJour(s30, 30, 'visiteurs' + ST.pub), jl = parJour(s30, 30, 'lectures' + ST.pub);
+    var mx = Math.max.apply(null, jv.concat(jl).map(function(x){ return x.v; }).concat([1]));
+    $('#ov-histo').innerHTML = jv.map(function(x, k){
+      var l = jl[k].v;
+      return '<span' + (x.v || l ? '' : ' class="zero"') + ' title="' + esc(jourCourt(x.d) + ' : ' + nbfr(x.v) + ' ' + pluriel(x.v, 'visiteur') + ', ' + nbfr(l) + ' ' + pluriel(l, 'lecture')) + '">' +
+        '<i style="height:' + Math.round(170 * x.v / mx) + 'px"></i><i class="l" style="height:' + Math.round(170 * l / mx) + 'px"></i></span>';
     }).join('');
-    $('#ov-axe').innerHTML = '<span>' + jourCourt(jours[0].d) + '</span><span>' + jourCourt(jours[15].d) + '</span><span>' + jourCourt(jours[29].d) + '</span>';
+    $('#ov-axe').innerHTML = '<span>' + jourCourt(jv[0].d) + '</span><span>' + jourCourt(jv[15].d) + '</span><span>' + jourCourt(jv[29].d) + '</span>';
 
     /* En ligne */
     var enl = D.users.filter(function(u){ return userEnLigne(u.id); }).map(function(u){
@@ -883,7 +899,8 @@
     /* Pages les plus lues */
     var L = window.ECGLectureAdmin || {};
     var estC = L.estContenu || function(){ return true; };
-    var pages = ((s7 && s7.pages) || []).filter(function(p){ return estC(p.page); })
+    var pages = ((s7 && s7.contenus) || []).filter(function(p){ return estC(p.page); })
+      .map(function(p){ return { page: p.page, titre: p.titre, visiteurs: p.lecteurs }; })
       .sort(function(a, b){ return (b.visiteurs || 0) - (a.visiteurs || 0); }).slice(0, 6);
     var pmx = pages.length ? (pages[0].visiteurs || 1) : 1;
     $('#ov-top').innerHTML = attendu ? '<div class="rien">Chargement…</div>' : pages.length ? pages.map(function(p){
