@@ -7,7 +7,7 @@
      1. chaque faute prévue trouvée n'importe où dans la phrase retire ses points et affiche son explication
         (les motifs de fautes ne doivent donc jamais toucher une traduction juste : outils/theme-controle.py) ;
      2. sinon, une bonne tournure est trouvée → tous les points ;
-     3. sinon → « Pas reconnu » (l'élève peut le compter juste).
+     3. sinon → faux : 0 point (les bonnes tournures doivent toutes être prévues dans le corrigé).
    Avant de comparer, le texte est mis en forme commune (normaliser) : minuscules, accents, formes contractées
    développées, nombres écrits en chiffres, orthographe britannique ramenée à l'américaine (EQUIV), tirets et
    ponctuation retirés. Les fautes de frappe (une lettre de différence avec un mot du corrigé, mot de 5 lettres

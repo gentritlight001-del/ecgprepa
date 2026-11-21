@@ -1254,8 +1254,9 @@ thème du jour d'anglais » (sinon : routine de minuit, après le texte du jour 
   gérondif…), et **6 à 8 mots nouveaux** (`aides`, repérés `[[…]]`). La page s'adapte à chaque élève : carte déjà vue = souligné
   vert, sans aide ; sinon traduction cachée « Voir en anglais ».
 - **Chaque phrase est découpée en morceaux** (`morceaux` : `fr`, `en`, `pts`) : courts, pour qu'une tournure imprévue ne fasse
-  perdre qu'un passage. `ok` = **un maximum de bonnes tournures** (demande du propriétaire : le « Pas reconnu » doit rester
-  rare) : synonymes, autres constructions, ordre des mots, voix active ou passive, present perfect et prétérit quand les deux
+  perdre qu'un passage. `ok` = **toutes les bonnes tournures** : un passage qui ne correspond à aucune est **compté faux**
+  (0 point, traduction attendue affichée ; plus de « Pas reconnu » ni de « Compter comme juste », choix du propriétaire,
+  novembre 2026 : « t'es censé avoir tout bien mis ») : synonymes, autres constructions, ordre des mots, voix active ou passive, present perfect et prétérit quand les deux
   sont justes. Motifs = expressions régulières sur le texte mis en forme : minuscules, sans accents ni ponctuation ni tiret,
   nombres en chiffres (« twenty » = 20, « 25% » = « 25 percent »), formes contractées développées, orthographe américaine
   (`EQUIV`, `-ise` → `-ize`). Une liste commune d'équivalences s'enrichit dans `theme-correcteur.js`.
@@ -1268,9 +1269,9 @@ thème du jour d'anglais » (sinon : routine de minuit, après le texte du jour 
   une traduction juste.
 - `proposition`, `autres` (« Aussi juste ») et `tests` (2 traductions justes de plus, tournées autrement) doivent obtenir
   4 / 4 : `python3 outils/theme-controle.py flashcards/themes/anglais/<date>.js` jusqu'à ce que tout soit ✅, puis essayer
-  soi-même une dizaine de traductions d'élève variées (justes et fautives) avec `corrigerPhrase` sous Node et ajouter les
-  tournures qui manquent.
-- Côté élève : une seule correction ; réponses, note et « Compter comme juste » dans `D.prefs.themes["anglais/<date>"]`
+  soi-même **au moins six traductions justes par phrase**, tournées autrement (synonymes, ordre, structure, prétérit ou present
+  perfect quand les deux vont), avec `corrigerPhrase` sous Node, et ajouter chaque tournure qui manque jusqu'à 4 / 4 partout.
+- Côté élève : une seule correction ; réponses et note dans `D.prefs.themes["anglais/<date>"]`
   (synchronisé avec le compte) ; « Et maintenant » : **l'élève coche** les mots nouveaux et les cartes de ses fautes à garder
   (rien n'est ajouté d'office), rangées dans le paquet perso « Mes thèmes d'anglais » (`theme-anglais`), celles des fautes à
   revoir dès le lendemain.
