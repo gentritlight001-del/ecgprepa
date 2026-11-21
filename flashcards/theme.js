@@ -5,7 +5,7 @@
    Données : themes/liste.js (ECG_THEMES, chargé par la page) et themes/<langue>/<date>.js (chargé ici).
    S'adapte à l'élève à partir de ses flashcards (synchro.js) : un mot dont il a déjà vu la carte est souligné en
    vert, sans aide ; les mots nouveaux pour lui ont une traduction cachée, à révéler. Une seule correction par
-   thème : réponses, note et « compter comme juste » sont gardés dans D.prefs.themes["<langue>/<date>"], donc
+   thème : réponses et note sont gardées dans D.prefs.themes["<langue>/<date>"], donc
    synchronisés avec le compte ; l'historique et la progression sont dans themes.html (themes-espace.js). Les cartes choisies après la correction vont dans un paquet perso
    « Mes thèmes d'<langue> » (id theme-<langue>) ; celles des fautes reviennent dès le lendemain. */
 (function () {
@@ -166,18 +166,11 @@
   }
 
   /* ─── Correction ─── */
+  /* Un passage qui ne correspond à aucune bonne tournure prévue est faux (choix du propriétaire : les tournures justes
+     sont toutes prévues dans le corrigé) : 0 point, avec la traduction attendue. */
   function resultats(R) {
-    var T = courant.T, j = R.j || {};
-    return T.phrases.map(function (p, i) {
-      var r = C.corrigerPhrase(p, R.r[i] || '');
-      r.morceaux.forEach(function (m, k) {
-        if (m.etat === 'inconnu' && j[i + '-' + k]) { m.etat = 'compte'; m.pts = p.morceaux[k].pts; }
-      });
-      if (r.morceaux.some(function (m) { return m.etat === 'compte'; })) {
-        r.pts = C.arrondi(Math.max(0, r.morceaux.reduce(function (s, m) { return s + m.pts; }, 0) - C.FRAPPE * r.ortho.length));
-      }
-      return r;
-    });
+    var T = courant.T;
+    return T.phrases.map(function (p, i) { return C.corrigerPhrase(p, R.r[i] || ''); });
   }
   function corriger() {
     var T = courant.T, r = [];
@@ -235,11 +228,11 @@
     fil('Thème du jour · Corrigé');
     document.title = 'ECG Prépa — Corrigé : ' + sansReperes(T.titre);
     /* Bilan */
-    var parType = {}, nFautes = 0, perteType = {}, connus = 0, remployes = 0, inconnus = 0;
+    var parType = {}, nFautes = 0, perteType = {}, connus = 0, remployes = 0, faux = 0;
     res.forEach(function (r, i) {
       var p = T.phrases[i];
-      r.morceaux.forEach(function (m) {
-        if (m.etat === 'inconnu') inconnus++;
+      r.morceaux.forEach(function (m, k) {
+        if (m.etat === 'inconnu') { faux++; parType.faux = (parType.faux || 0) + 1; perteType.faux = (perteType.faux || 0) + p.morceaux[k].pts; }
         m.fautes.forEach(function (f) { nFautes++; parType[f.type] = (parType[f.type] || 0) + 1; perteType[f.type] = (perteType[f.type] || 0) + f.pts; });
       });
       if (r.ortho.length) { parType.orthographe = (parType.orthographe || 0) + r.ortho.length; perteType.orthographe = (perteType.orthographe || 0) + C.FRAPPE * r.ortho.length; }
@@ -247,20 +240,19 @@
     });
     var pire = Object.keys(perteType).sort(function (a, b) { return perteType[b] - perteType[a]; })[0];
     var phrase = n >= 17 ? 'Excellent thème.' : n >= 14 ? 'Très bon thème.' : n >= 11 ? 'Bon thème.' : n >= 8 ? 'Thème correct, avec des points à reprendre.' : 'Thème difficile : reprends les explications une à une, elles sont faites pour ça.';
-    if (pire) phrase += ' Ce qui te coûte le plus de points : ' + (pire === 'orthographe' ? 'l’orthographe' : pire === 'grammaire' ? 'la grammaire' : 'les ' + (TYPES[pire] || pire).toLowerCase() + 's') + '.';
+    if (pire) phrase += ' Ce qui te coûte le plus de points : ' + (pire === 'orthographe' ? 'l’orthographe' : pire === 'grammaire' ? 'la grammaire' : pire === 'faux' ? 'les passages mal traduits' : 'les ' + (TYPES[pire] || pire).toLowerCase() + 's') + '.';
     if (connus && remployes === connus) phrase += ' Les mots de tes flashcards sont tous en place.';
     var cases = [
       ['grammaire', 'faute de grammaire', 'fautes de grammaire'],
       ['sens', 'faux-sens ou contresens', 'faux-sens ou contresens'],
       ['forme', 'gallicisme ou barbarisme', 'gallicismes ou barbarismes'],
       ['orthographe', 'faute de frappe', 'fautes de frappe']
-    ].map(function (c) {
+    ].concat(faux ? [['faux', 'passage mal traduit', 'passages mal traduits']] : []).map(function (c) {
       var v = c[0] === 'sens' ? (parType['faux-sens'] || 0) + (parType.contresens || 0) + (parType.oubli || 0)
         : c[0] === 'forme' ? (parType.gallicisme || 0) + (parType.barbarisme || 0) : (parType[c[0]] || 0);
       return '<div class="th-case"><b class="' + (v ? 'rouge' : 'vert') + '">' + v + '</b><span>' + t(v > 1 ? c[2] : c[1]) + '</span></div>';
     });
     if (connus) cases.push('<div class="th-case"><b class="' + (remployes === connus ? 'vert' : 'or') + '">' + remployes + ' / ' + connus + '</b><span>' + t('mots de tes flashcards remployés') + '</span></div>');
-    else if (inconnus) cases.push('<div class="th-case"><b class="or">' + inconnus + '</b><span>' + t(inconnus > 1 ? 'passages pas reconnus' : 'passage pas reconnu') + '</span></div>');
 
     var html = '<header class="th-tete"><div class="sur">' + t('Thème du jour · Corrigé · ' + dateLongue(T.date)) + '</div><h1>' + t(T.titre) + '</h1></header>' +
       '<section class="th-note" aria-label="Ta note"><div class="th-sur20"><b>' + note(n) + '</b><span>/ 20</span></div>' +
@@ -280,13 +272,10 @@
     r.morceaux.forEach(function (m, k) {
       var mc = p.morceaux[k];
       if (m.etat === 'faute') m.fautes.forEach(function (f) { items.push(carteFaute(L, f)); });
-      else if (m.etat === 'inconnu' || m.etat === 'compte') {
-        var compte = m.etat === 'compte';
-        items.push('<li class="th-inconnu' + (compte ? ' compte' : '') + '"><div class="th-f-tete"><span class="th-badge neutre">' + (compte ? 'Compté juste' : 'Pas reconnu') + '</span>' +
-          '<span>' + t('« ' + mc.fr + ' »') + ' → <b lang="' + L.lang + '">' + esc(mc.en) + '</b></span></div>' +
-          '<p>' + t(compte ? 'Tu as compté ta tournure comme juste (+' + note(mc.pts) + ' point' + (mc.pts > 1 ? 's' : '') + ').'
-            : 'Ta traduction de ce passage n’est pas dans les réponses prévues. Compare-la avec la proposition : si elle dit la même chose, dans un anglais correct, compte-la juste.') + '</p>' +
-          '<button type="button" class="btn petit" data-a="compter" data-k="' + i + '-' + k + '">' + (compte ? 'Annuler' : 'Compter comme juste') + '</button></li>');
+      else if (m.etat === 'inconnu') {
+        items.push('<li class="th-faute"><div class="th-f-tete"><span class="th-badge grave">' + t('Faux · −' + note(mc.pts)) + '</span>' +
+          '<span class="th-f-corr">' + t('« ' + mc.fr + ' »') + ' → <b lang="' + L.lang + '">' + esc(mc.en) + '</b></span></div>' +
+          '<p>' + t('Ta traduction de ce passage ne convient pas : le sens ou la construction n’est pas juste. Compare-la mot à mot avec la traduction attendue et repère ce qui change.') + '</p></li>');
       }
     });
     r.ortho.forEach(function (o) {
@@ -318,8 +307,12 @@
         if (!vus[k]) { vus[k] = 1; nouveaux.push({ r: a.fr, v: a.en, x: '', faute: false, deja: !!deja[k] }); }
       });
     });
-    res.forEach(function (r) {
-      r.morceaux.forEach(function (m) {
+    res.forEach(function (r, i) {
+      r.morceaux.forEach(function (m, k) {
+        if (m.etat === 'inconnu') {
+          var mc = T.phrases[i].morceaux[k], kk = norme(mc.en);
+          if (!vus[kk]) { vus[kk] = 1; fautes.push({ r: mc.fr, v: mc.en, x: '', faute: true, deja: !!deja[kk] }); }
+        }
         m.fautes.forEach(function (f) {
           if (!f.carte) return;
           var k = norme(f.carte.en);
@@ -399,14 +392,7 @@
       s.innerHTML = '<span>' + t(x.fr) + '\u00a0: <span lang="' + lang + '">' + esc(x.en) + '</span></span>';
       b.replaceWith(s);
     } else if (a === 'corriger') corriger();
-    else if (a === 'compter') {
-      var R = D.prefs.themes[courant.cle], k = b.getAttribute('data-k');
-      R.j = R.j || {};
-      if (R.j[k]) delete R.j[k]; else R.j[k] = 1;
-      R.n = total(resultats(R));
-      sauver();
-      rendre(true);
-    } else if (a === 'ajouter') ajouter(false);
+    else if (a === 'ajouter') ajouter(false);
     else if (a === 'rien') ajouter(true);
   });
   app.addEventListener('change', function (e) {
