@@ -1223,27 +1223,33 @@
     })();
     function visite() {
       var v = null, entree = false;
-      try { v = JSON.parse(sessionStorage.getItem(K_VISITE) || 'null'); } catch (e) {}
+      /* Gardée dans localStorage (et plus sessionStorage) : un lien ouvert
+         dans un nouvel onglet continue la même visite au lieu d'en
+         compter une nouvelle venue du « Lien du site ». */
+      try { v = JSON.parse(localStorage.getItem(K_VISITE) || sessionStorage.getItem(K_VISITE) || 'null'); } catch (e) {}
       if (!v || !v.id || Date.now() - v.t > 30 * 60000) { v = { id: hasard() }; entree = true; }
       v.t = Date.now();
-      try { sessionStorage.setItem(K_VISITE, JSON.stringify(v)); } catch (e) {}
+      try { localStorage.setItem(K_VISITE, JSON.stringify(v)); } catch (e) {}
       return { id: v.id, entree: entree };
     }
     function source() {
       try {
+        /* utm_source (ChatGPT ajoute « utm_source=chatgpt.com ») : lu comme
+           une adresse, pour tomber dans la même famille que le référent. */
         var u = new URLSearchParams(location.search).get('utm_source');
-        if (u) return u.slice(0, 40);
-        if (!document.referrer) return 'Accès direct';
-        var h = new URL(document.referrer).hostname.replace(/^www\./, '').toLowerCase();
-        if (h === location.hostname.replace(/^www\./, '').toLowerCase()) return 'Lien du site';
+        var h = u ? u.replace(/^https?:\/\//, '').split('/')[0].replace(/^www\./, '').toLowerCase()
+          : document.referrer ? new URL(document.referrer).hostname.replace(/^www\./, '').toLowerCase() : '';
+        if (!h) return 'Accès direct';
+        if (!u && h === location.hostname.replace(/^www\./, '').toLowerCase()) return 'Lien du site';
         var R = [[/(^|\.)google\./, 'Google'], [/bing\.com$/, 'Bing'], [/(duckduckgo|qwant|ecosia|yahoo|brave)\./, 'Autre moteur'],
                  [/instagram\.com$/, 'Instagram'], [/tiktok\.com$/, 'TikTok'], [/(facebook\.com|fb\.com)$/, 'Facebook'],
                  [/(^|\.)(t\.co|twitter\.com|x\.com)$/, 'X (Twitter)'], [/(youtube\.com|youtu\.be)$/, 'YouTube'],
                  [/linkedin\.com$|lnkd\.in$/, 'LinkedIn'], [/snapchat\.com$/, 'Snapchat'], [/discord(app)?\.com$/, 'Discord'],
                  [/(whatsapp\.com|wa\.me)$/, 'WhatsApp'], [/reddit\.com$/, 'Reddit'], [/(chatgpt\.com|openai\.com|perplexity\.ai|claude\.ai)$/, 'Assistant IA'],
-                 [/(mail\.|outlook\.|gmail\.)/, 'E-mail']];
+                 [/(mail\.|outlook\.|gmail\.)/, 'E-mail'], [/^(chatgpt|openai|perplexity|claude|copilot|gemini)\b/, 'Assistant IA'],
+                 [/^(google)$/, 'Google'], [/^(instagram|ig)$/, 'Instagram'], [/^(newsletter|email|mail)$/, 'E-mail']];
         for (var i = 0; i < R.length; i++) if (R[i][0].test(h)) return R[i][1];
-        return h.slice(0, 60);
+        return (u || h).slice(0, 60);
       } catch (e) { return 'Inconnue'; }
     }
     function systeme() {
@@ -1349,7 +1355,8 @@
     /* Événement : type parmi mur_premium, clic_payer, inscription,
        recherche. Renvoie une promesse qui ne échoue jamais. */
     function evenement(type, detail, nombre, page) {
-      if (estAdmin()) return Promise.resolve();
+      /* Robots exclus ici aussi : ils déclenchaient 9 murs Premium sur 10. */
+      if (estAdmin() || estRobot()) return Promise.resolve();
       return sb().then(function (c) {
         return c.rpc('noter_evenement', { p: {
           type: type, page: page || cheminPage(), detail: detail == null ? null : String(detail).slice(0, 120),
@@ -1492,6 +1499,12 @@
        actif, limite, cree_le, utilisations, en_cours, derniere, membres[] } */
     statsLecture: function (jours, public_) {
       return sb().then(function (c) { return T(c.rpc('stats_lecture', { p_jours: jours || 30, p_public: public_ || 'tous' })); });
+    },
+
+    /* Statistiques de l'onglet et de la vue d'ensemble : visiteurs,
+       lectures, temps de lecture (supabase/statistiques-site.sql). */
+    statsSite: function (jours, public_) {
+      return sb().then(function (c) { return T(c.rpc('stats_site', { p_jours: jours || 7, p_public: public_ || 'tous' })); });
     },
 
     /* Statistiques par contenu et par compte, sans nom (supabase/statistiques-comptes.sql). */
