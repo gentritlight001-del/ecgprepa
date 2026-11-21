@@ -1071,6 +1071,8 @@ jusqu'à la mise en ligne :
    `python3 outils/quotidien-controle.py premiere_annee/langues/<langue>/quotidien/jour-<date>.html` :
    corriger jusqu'à ce que tout soit ✅.
 6. Mise en ligne complète (commit, PR, merge, branche remise sur `main`).
+7. **Anglais seulement** : écrire aussi le **thème du jour** (voir « Thème du jour » dans « Espace flashcards »), après
+   `outils/flashcards.py` pour que les cartes du jour existent ; même mise en ligne.
 
 Contenu d'un jour (le bloc de données du 10 octobre 2026 sert de modèle) :
 - **Texte** : l'article choisi à l'étape 2, dans la langue étudiée (section du tableau). Extrait
@@ -1225,6 +1227,46 @@ du jour). L'ancienne adresse `premiere_annee/langues/flashcards/index.html` renv
   créées dans un chapitre (« + Ma carte ») rejoignent le paquet du chapitre.
 - `donnees/catalogue.js` est chargé avec `?v=<minute>` ; les fichiers de paquet avec l'empreinte de
   leur contenu (`?v=<v du catalogue>`), qui change à chaque modification (voir la section 2).
+
+### Thème du jour (flashcards, anglais)
+
+Un thème journalistique à traduire chaque jour, corrigé et noté sur 20 automatiquement, **sans IA ni coût** (choix du
+propriétaire, novembre 2026, maquette validée) : `flashcards/theme.html` (`theme.js`, `theme.css`), moteur de correction
+`flashcards/theme-correcteur.js`, données `flashcards/themes/liste.js` (une entrée par thème, **en tête**, avec le même titre,
+les identifiants des cartes employées et le nombre de mots nouveaux) et `flashcards/themes/anglais/<AAAA-MM-JJ>.js` (copier le
+dernier). Carte « Thème du jour » sur l'accueil des flashcards (`carteTheme` de `flashcards.js`). Demande type : « Fais le
+thème du jour d'anglais » (sinon : routine de minuit, après le texte du jour d'anglais).
+- **Sujet libre** : n'importe quel sujet de société, d'économie, d'environnement, de culture, de sciences… pas forcément
+  l'actualité du jour (le propriétaire a cité la déforestation de l'Amazonie) ; ne pas reprendre le sujet des thèmes récents.
+  Titre de presse en français, sur 2 lignes. **Faits vérifiés** (article du site ou recherche web, citée en tête du fichier),
+  rien d'inventé.
+- **5 phrases de 4 points** (total 20), de 20 à 35 mots, style journalistique, logiques et enchaînées. Elles remploient les
+  mots des cartes du paquet d'anglais des 5 derniers jours (`flashcards/donnees/anglais.js`, champ `i` = identifiant ;
+  `cartes` de la phrase, repérés `((…))` dans `fr`, chacune avec un motif `re` qui la retrouve dans la traduction), la
+  grammaire des jours et des leçons de 1re année (present perfect et since, prétérit, hypothèse, génitif, articles, relatives,
+  gérondif…), et **6 à 8 mots nouveaux** (`aides`, repérés `[[…]]`). La page s'adapte à chaque élève : carte déjà vue = souligné
+  vert, sans aide ; sinon traduction cachée « Voir en anglais ».
+- **Chaque phrase est découpée en morceaux** (`morceaux` : `fr`, `en`, `pts`) : courts, pour qu'une tournure imprévue ne fasse
+  perdre qu'un passage. `ok` = **un maximum de bonnes tournures** (demande du propriétaire : le « Pas reconnu » doit rester
+  rare) : synonymes, autres constructions, ordre des mots, voix active ou passive, present perfect et prétérit quand les deux
+  sont justes. Motifs = expressions régulières sur le texte mis en forme : minuscules, sans accents ni ponctuation ni tiret,
+  nombres en chiffres (« twenty » = 20, « 25% » = « 25 percent »), formes contractées développées, orthographe américaine
+  (`EQUIV`, `-ise` → `-ize`). Une liste commune d'équivalences s'enrichit dans `theme-correcteur.js`.
+- **Fautes prévues** (`fautes`, 2 au moins par phrase) : les erreurs typiques d'un francophone sur ce passage (temps, since/for,
+  faux amis, calques, articles, prépositions, place des mots), avec `re`, `type` (grammaire, faux-sens, contresens, gallicisme,
+  barbarisme, oubli), `pts`, `faux`, `juste`, **`pourquoi` (ce que la phrase de l'élève fait comprendre à un anglophone, pourquoi
+  c'est faux), `regle` (la règle générale), `ex` + `exfr`** (le propriétaire veut des explications vraiment claires et
+  explicatives), `lecon` quand une leçon traite le point (section vérifiée), `carte` (la carte « À revoir » proposée) et `test`
+  (une traduction qui contient la faute). Les fautes passent avant les bonnes tournures : leur motif ne doit **jamais** toucher
+  une traduction juste.
+- `proposition`, `autres` (« Aussi juste ») et `tests` (2 traductions justes de plus, tournées autrement) doivent obtenir
+  4 / 4 : `python3 outils/theme-controle.py flashcards/themes/anglais/<date>.js` jusqu'à ce que tout soit ✅, puis essayer
+  soi-même une dizaine de traductions d'élève variées (justes et fautives) avec `corrigerPhrase` sous Node et ajouter les
+  tournures qui manquent.
+- Côté élève : une seule correction ; réponses, note et « Compter comme juste » dans `D.prefs.themes["anglais/<date>"]`
+  (synchronisé avec le compte) ; « Et maintenant » : **l'élève coche** les mots nouveaux et les cartes de ses fautes à garder
+  (rien n'est ajouté d'office), rangées dans le paquet perso « Mes thèmes d'anglais » (`theme-anglais`), celles des fautes à
+  revoir dès le lendemain.
 
 ### L'HGG au quotidien
 

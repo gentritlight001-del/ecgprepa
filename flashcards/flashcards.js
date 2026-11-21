@@ -388,6 +388,23 @@
     return '<span class="jauge"><i class="a" style="width:' + (100 * s.a / tt) + '%"></i><i class="e" style="width:' + (100 * s.e / tt) + '%"></i></span>';
   }
 
+  /* ─── Carte « Thème du jour » (theme.html, themes/liste.js) ─── */
+  function carteTheme() {
+    var l = window.ECG_THEMES && window.ECG_THEMES.anglais;
+    if (!l || !l[0]) return '';
+    var x = l[0], th = (D.prefs.themes || {}), R = th['anglais/' + x.date];
+    var connus = (x.cartes || []).filter(function (id) { var st = D.srs['anglais/' + id]; return st && st.s; }).length;
+    var nouveaux = (x.aides || 0) + (x.cartes || []).length - connus;
+    var dernier = null;
+    l.slice(1).some(function (y) { var r = th['anglais/' + y.date]; if (r && r.r) { dernier = r; return true; } return false; });
+    var fait = R && R.r;
+    return '<section class="th-carte" aria-label="Thème du jour"><div class="th-carte-txt"><div class="sur">' + t('Thème du jour · Anglais') + '</div>' +
+      '<h2>' + t(x.titre) + '</h2><p>' + t((x.phrases || 5) + ' phrases · ' + (connus ? pl(connus, 'mot de tes flashcards', 'mots de tes flashcards') + ' · ' : '') + pl(nouveaux, 'mot nouveau', 'mots nouveaux') + ' · 15 min') + '</p></div>' +
+      '<div class="th-carte-act"><a class="btn" href="theme.html#anglais/' + esc(x.date) + '">' + (fait ? 'Voir la correction' : 'Faire le thème') + '</a>' +
+      (fait ? '<span>' + t('Ta note : ' + String(R.n || 0).replace('.', ',') + ' / 20') + '</span>' : dernier ? '<span>' + t('Dernière note : ' + String(dernier.n || 0).replace('.', ',') + ' / 20') + '</span>' : '') +
+      '</div></section>';
+  }
+
   /* ─── Accueil ─── */
   function pageAccueil() {
     avecCartes(D.mes, function () {
@@ -429,6 +446,7 @@
         '<section class="accueil-haut"><div class="hero"><div class="sur">' + t('Aujourd’hui · ' + date) + '</div>' + hero + '</div>' +
         '<aside class="semaine"><div class="serie"><b>' + ser + '</b><span>' + (ser > 1 ? 'jours de suite' : 'jour de suite') + '</span></div><div class="jours">' + jours + '</div>' +
         '<p>' + t(prev[0] || prev[1] ? 'Demain : ' + pl(prev[0], 'carte prévue', 'cartes prévues') + '. Après-demain : ' + prev[1] + '.' : 'Quelques minutes par jour suffisent.') + '</p></aside></section>' +
+        carteTheme() +
         '<section class="bloc"><div class="bloc-tete"><h2>Mes paquets</h2>' + (D.mes.length ? '<div class="legende"><span class="a">Acquises</span><span class="e">En cours</span><span>Pas encore vues</span></div>' : '') + '</div>' +
         lignes + '<a class="ajout" href="#ajouter">' + ICO.plus + 'Ajouter un paquet</a></section>' +
         '<section class="pied-accueil"><div><b>Mon rythme</b><span>' + t('Le nombre de nouvelles cartes par jour, dans chaque paquet.') + '</span></div>' +
