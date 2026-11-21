@@ -1236,6 +1236,13 @@ propriétaire, novembre 2026, maquette validée) : `flashcards/theme.html` (`the
 les identifiants des cartes employées et le nombre de mots nouveaux) et `flashcards/themes/anglais/<AAAA-MM-JJ>.js` (copier le
 dernier). Carte « Thème du jour » sur l'accueil des flashcards (`carteTheme` de `flashcards.js`). Demande type : « Fais le
 thème du jour d'anglais » (sinon : routine de minuit, après le texte du jour d'anglais).
+- **Espace « Mes thèmes d'anglais »** (`flashcards/themes.html`, `themes-espace.js`, CSS `.ts-*` de `theme.css` ; maquette validée,
+  novembre 2026) : le thème du jour, « Ta progression » (moyenne, thèmes faits, évolution sur les 3 derniers, barres des 12
+  derniers thèmes, pointillés = pas fait), « Ce que tu rates le plus » (3 groupes de fautes, par leçon ou par type, recalculés
+  depuis les thèmes corrigés) et « Tous les thèmes » (date, titre, note ou « À faire » / « Pas fait » ; un ancien thème reste
+  faisable). Entrées : carte « Le thème du jour » sous « Le texte du jour » dans `premiere_annee/langues/anglais/quotidien/index.html`
+  (`#theme-jour`, `.theme-jour` de `quotidien.css`) et pastille « Le thème du jour » (`#cc-theme`) dans l'index d'anglais, toutes
+  deux remplies par un petit script qui lit `liste.js` : **rien à mettre à jour à la main** chaque jour.
 - **Sujet libre** : n'importe quel sujet de société, d'économie, d'environnement, de culture, de sciences… pas forcément
   l'actualité du jour (le propriétaire a cité la déforestation de l'Amazonie) ; ne pas reprendre le sujet des thèmes récents.
   Titre de presse en français, sur 2 lignes. **Faits vérifiés** (article du site ou recherche web, citée en tête du fichier),
