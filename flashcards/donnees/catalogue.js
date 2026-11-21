@@ -12,8 +12,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-11-21",
+  "maj": "2026-11-22",
   "parties": [
+   {
+    "id": "2026-11-22",
+    "nom": "Jour 29 · Burnham Says Brexit Cost More Than It Gave and Launches a Plan for Young NEETs",
+    "n": 28,
+    "date": "2026-11-22"
+   },
    {
     "id": "2026-11-21",
     "nom": "Jour 28 · Australia and the Philippines Sign an Updated Defense Cooperation Arrangement in Manila",
@@ -183,8 +189,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 722,
-  "v": "76aa64d1de"
+  "n": 744,
+  "v": "93d15649df"
  },
  {
   "id": "espagnol",
