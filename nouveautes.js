@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "en",
 "rubrique": "Actu Anglais",
+"meta": "Canada",
+"titre": "Canada : Ottawa, Canberra et Wellington condamnent ensemble la guerre de la Russie en Ukraine",
+"url": "actualites/en/articles/canada-australie-nz-declaration-ukraine-apec-2026.html",
+"image": "actualites/en/images/canada-australie-nz-declaration-ukraine-apec-2026.webp",
+"date": "2026-11-22T08:47:26+00:00"
+},
+{
+"t": "en",
+"rubrique": "Actu Anglais",
 "meta": "Royaume-Uni",
 "titre": "Royaume-Uni : accords avec l'UE sur l'alimentation et les jeunes, frais de scolarité en suspens",
 "url": "actualites/en/articles/uk-sommet-ue-bruxelles-reset-2026.html",
@@ -1758,15 +1767,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/en/articles/uk-burnham-berlin-visite.html",
 "image": "actualites/en/images/uk-burnham-berlin-visite.webp",
 "date": "2026-10-10T18:57:42+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "Le Pentagone veut diffuser en direct l'exécution du tireur de Fort Hood, Nidal Hasan, le 3 décembre",
-"url": "actualites/en/articles/hasan-execution-livestream-hegseth.html",
-"image": "actualites/en/images/hasan-execution-livestream-hegseth.webp",
-"date": "2026-10-10T18:52:55+00:00"
 },
 {
 "t": "cg",
