@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "États-Unis",
+"titre": "États-Unis : le Sénat refuse de limiter les pouvoirs de guerre de Trump contre l'Iran",
+"url": "actualites/en/articles/us-senat-pouvoirs-de-guerre-iran-2026.html",
+"image": "actualites/en/images/us-senat-pouvoirs-de-guerre-iran-2026.webp",
+"date": "2026-11-22T08:16:58+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "États-Unis",
@@ -1785,15 +1794,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/de/articles/saxe-anhalt-rausch-president-landtag.html",
 "image": "actualites/de/images/saxe-anhalt-rausch-president-landtag.webp",
 "date": "2026-10-07T06:43:41+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "Nebraska : Trump suggère de laisser l'Iran « détruire » Los Angeles ou San Diego",
-"url": "actualites/en/articles/us-trump-nebraska-iran-los-angeles-2026.html",
-"image": "actualites/en/images/us-trump-nebraska-iran-los-angeles-2026.webp",
-"date": "2026-10-07T05:26:41+00:00"
 },
 {
 "t": "cg",
