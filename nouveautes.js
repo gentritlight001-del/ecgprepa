@@ -1,6 +1,42 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Bangladesh",
+"titre": "Bangladesh : usines fermées et arrestations à Savar",
+"url": "actualites/monde/articles/bangladesh-usines-textiles-savar-ashulia-greves-2026.html",
+"image": "actualites/monde/images/bangladesh-usines-textiles-savar-ashulia-greves-2026.webp",
+"date": "2026-11-22T08:58:22+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Argentine",
+"titre": "Argentine : Tesla lance ses ventes à Buenos Aires, Milei célèbre Musk en « bienfaiteur social »",
+"url": "actualites/es/articles/ar-tesla-arrivee-argentine-milei-musk-2026.html",
+"image": "actualites/es/images/ar-tesla-arrivee-argentine-milei-musk-2026.webp",
+"date": "2026-11-22T08:58:22+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Mexique",
+"titre": "Mexique : l'armée capture « Chapo Isidro », l'un des dix fugitifs les plus recherchés du FBI",
+"url": "actualites/es/articles/mx-chapo-isidro-arrestation-2026.html",
+"image": "actualites/es/images/mx-chapo-isidro-arrestation-2026.webp",
+"date": "2026-11-22T08:58:22+00:00"
+},
+{
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
+"titre": "Métallurgie : l'IG Metall lance des grèves de 24 heures, 151 000 salariés cessent le travail",
+"url": "actualites/de/articles/de-igmetall-warnstreiks-24-stunden-2026.html",
+"image": "actualites/de/images/de-igmetall-warnstreiks-24-stunden-2026.webp",
+"date": "2026-11-22T08:58:22+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "Canada",
@@ -1074,15 +1110,6 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-10-27T06:51:37+00:00"
 },
 {
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Japon",
-"titre": "Japon : la JAXA lance MMX vers Phobos pour en rapporter au moins 10 grammes d'échantillons en 2031",
-"url": "actualites/monde/articles/japon-jaxa-mmx-phobos-2026.html",
-"image": "actualites/monde/images/japon-jaxa-mmx-phobos-2026.webp",
-"date": "2026-10-27T06:43:54+00:00"
-},
-{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Espagne",
@@ -1688,24 +1715,6 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-10-14T17:12:31+00:00"
 },
 {
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Venezuela",
-"titre": "Venezuela : à la FAO, Delcy Rodríguez lance le plan « Venezuela Alimenta » contre la faim",
-"url": "actualites/es/articles/venezuela-plan-venezuela-alimenta-fao.html",
-"image": "actualites/es/images/venezuela-plan-venezuela-alimenta-fao.webp",
-"date": "2026-10-13T18:34:55+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Espagne",
-"titre": "Espagne : une fête nationale sous tension, sifflets contre Sánchez et regards tournés vers Ceuta",
-"url": "actualites/es/articles/espagne-fete-nationale-hispanidad-2026.html",
-"image": "actualites/es/images/espagne-fete-nationale-hispanidad-2026.webp",
-"date": "2026-10-13T18:28:46+00:00"
-},
-{
 "t": "cg",
 "rubrique": "Culture générale",
 "meta": "Entreprise",
@@ -1946,15 +1955,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Merz annule son voyage à l'ONU pour affronter la fronde de son propre camp",
 "url": "actualites/de/articles/merz-annule-onu.html",
 "image": "actualites/de/images/merz-annule-onu.webp",
-"date": "2026-09-18T20:00:18+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "Élections communales en Basse-Saxe : la CDU se maintient de justesse, l'AfD triple son score",
-"url": "actualites/de/articles/elections-communales-basse-saxe.html",
-"image": "actualites/de/images/elections-communales-basse-saxe.webp",
 "date": "2026-09-18T20:00:18+00:00"
 },
 {
