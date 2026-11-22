@@ -1024,6 +1024,33 @@ window.ECG_FC_CATALOGUE = [
   "v": "3b27139cb8"
  },
  {
+  "id": "hgg2-ch4",
+  "matiere": "hgg",
+  "annee": 2,
+  "num": 4,
+  "type": "cours",
+  "titre": "Géopolitique du Proche et du Moyen-Orient",
+  "court": "Chapitre 4",
+  "sous": "",
+  "recto": "Question",
+  "verso": "Réponse",
+  "lien": "deuxieme_annee/hgg/chapitre-4-hgg.html",
+  "parties": [
+   {
+    "id": "I",
+    "nom": "I · Territoires, sociétés et cultures",
+    "n": 69
+   },
+   {
+    "id": "II",
+    "nom": "II · Une région au cœur de la géoéconomie",
+    "n": 22
+   }
+  ],
+  "n": 91,
+  "v": "5274fe77ee"
+ },
+ {
   "id": "humanite-cours1",
   "matiere": "humanite",
   "annee": 0,
