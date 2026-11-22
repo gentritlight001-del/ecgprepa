@@ -12,8 +12,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-11-22",
+  "maj": "2026-11-23",
   "parties": [
+   {
+    "id": "2026-11-23",
+    "nom": "Jour 30 · Canada, Australia and New Zealand Jointly Condemn Russia's War in Ukraine",
+    "n": 30,
+    "date": "2026-11-23"
+   },
    {
     "id": "2026-11-22",
     "nom": "Jour 29 · Burnham Says Brexit Cost More Than It Gave and Launches a Plan for Young NEETs",
@@ -189,8 +195,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 744,
-  "v": "93d15649df"
+  "n": 767,
+  "v": "bc3646fba1"
  },
  {
   "id": "espagnol",
