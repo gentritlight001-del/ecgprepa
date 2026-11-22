@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "en",
 "rubrique": "Actu Anglais",
+"meta": "Royaume-Uni",
+"titre": "Royaume-Uni : accords avec l'UE sur l'alimentation et les jeunes, frais de scolarité en suspens",
+"url": "actualites/en/articles/uk-sommet-ue-bruxelles-reset-2026.html",
+"image": "actualites/en/images/uk-sommet-ue-bruxelles-reset-2026.webp",
+"date": "2026-11-22T08:26:46+00:00"
+},
+{
+"t": "en",
+"rubrique": "Actu Anglais",
 "meta": "États-Unis",
 "titre": "États-Unis : le Sénat refuse de limiter les pouvoirs de guerre de Trump contre l'Iran",
 "url": "actualites/en/articles/us-senat-pouvoirs-de-guerre-iran-2026.html",
@@ -1767,15 +1776,6 @@ window.ECG_NOUVEAUTES = [
 "url": "Culture-Generale/revolution-industrielle.html",
 "image": "Culture-Generale/images/revolution-industrielle.webp",
 "date": "2026-10-10T15:41:06+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "Trump veut bannir « intelligence artificielle » et imposer « super intelligence » partout",
-"url": "actualites/en/articles/trump-super-intelligence-onu.html",
-"image": "actualites/en/images/trump-super-intelligence-onu.webp",
-"date": "2026-10-08T19:01:47+00:00"
 },
 {
 "t": "de",
