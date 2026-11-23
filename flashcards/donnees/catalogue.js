@@ -12,8 +12,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-11-22",
+  "maj": "2026-11-23",
   "parties": [
+   {
+    "id": "2026-11-23",
+    "nom": "Jour 30 · Canada, Australia and New Zealand Jointly Condemn Russia's War in Ukraine",
+    "n": 30,
+    "date": "2026-11-23"
+   },
    {
     "id": "2026-11-22",
     "nom": "Jour 29 · Burnham Says Brexit Cost More Than It Gave and Launches a Plan for Young NEETs",
@@ -189,8 +195,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 744,
-  "v": "93d15649df"
+  "n": 767,
+  "v": "bc3646fba1"
  },
  {
   "id": "espagnol",
@@ -1022,6 +1028,33 @@ window.ECG_FC_CATALOGUE = [
   ],
   "n": 112,
   "v": "3b27139cb8"
+ },
+ {
+  "id": "hgg2-ch4",
+  "matiere": "hgg",
+  "annee": 2,
+  "num": 4,
+  "type": "cours",
+  "titre": "Géopolitique du Proche et du Moyen-Orient",
+  "court": "Chapitre 4",
+  "sous": "",
+  "recto": "Question",
+  "verso": "Réponse",
+  "lien": "deuxieme_annee/hgg/chapitre-4-hgg.html",
+  "parties": [
+   {
+    "id": "I",
+    "nom": "I · Territoires, sociétés et cultures",
+    "n": 69
+   },
+   {
+    "id": "II",
+    "nom": "II · Une région au cœur de la géoéconomie",
+    "n": 22
+   }
+  ],
+  "n": 91,
+  "v": "5274fe77ee"
  },
  {
   "id": "humanite-cours1",
