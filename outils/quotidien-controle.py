@@ -80,6 +80,16 @@ def main():
     # Contenu
     g = J['grammaire']
     regle(5 <= len(g) <= 6, '5 ou 6 cartes de grammaire', str(len(g)))
+    if langue == 'anglais' and date >= '2026-11-23':
+        # Format complet de la grammaire (refonte du 23 novembre 2026 ; jour 30 = modèle)
+        def complet(c):
+            d = c.get('declic') or {}
+            return (bool(c.get('regle')) and 2 <= len(c.get('blocs') or []) <= 5 and bool(d.get('fr')) and bool(d.get('en'))
+                    and len(c.get('etapes') or []) == 3 and 2 <= len(c.get('cas') or []) <= 4
+                    and len(c.get('pieges') or []) >= 2 and all(len(p) == 3 for p in c['pieges']) and bool(c.get('retenir')))
+        incomplets = [c.get('titre', '?') for c in g if not complet(c)]
+        regle(not incomplets, 'Grammaire au format complet (regle, blocs, declic, 3 etapes, cas, 2 pieges, retenir)',
+              ', '.join(incomplets))
     regle(4 <= len(J.get('aussi', [])) <= 8, '4 à 8 points dans « Et aussi »', str(len(J.get('aussi', []))))
     ess, th = J['vocabulaire']['essentiels'], J['vocabulaire']['theme']['mots']
     regle(12 <= len(ess) <= 14 and len(ess) % 2 == 0, '12 à 14 essentiels, nombre pair', str(len(ess)))

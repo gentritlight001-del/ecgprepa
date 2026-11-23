@@ -50,6 +50,9 @@
   var LANGUE = (location.pathname.match(/langues\/([^\/]+)\/quotidien\//) || [])[1] || 'anglais';
   if (!LANGUES[LANGUE]) LANGUE = 'anglais';
   var LECONS = LANGUES[LANGUE].lecons;
+  var CODE = { anglais: 'en', espagnol: 'es', allemand: 'de' }[LANGUE] || 'en';
+  /* Couleur d'un point de grammaire (pc1 … pc6 dans quotidien.css) */
+  function couleur(n) { return ((n - 1) % 6) + 1; }
 
   /* Durée de chaque étape (minutes) ; le total affiché en tête en est la somme */
   var DUREES = { texte: 5, grammaire: 10, vocabulaire: 6, traduction: 7, bilan: 2 };
@@ -155,40 +158,46 @@
     return b;
   }
 
-  var CHEVRON = '<svg class="g-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
-
   function construireJour(J) {
     var total = Object.keys(DUREES).reduce(function (t, k) { return t + DUREES[k]; }, 0);
     var date = new Date(J.date + 'T12:00:00');
     var dateTxt = date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     dateTxt = dateTxt.charAt(0).toUpperCase() + dateTxt.slice(1);
 
-    /* En-tête */
+    /* En-tête : photo de l'article en plein cadre, assombrie vers le bas (maquette validée, novembre 2026) */
     var hero = document.getElementById('hero');
     hero.classList.toggle('sans-image', !J.image);
     hero.innerHTML =
+      (J.image ? '<img class="hero-fond" src="' + J.image + '" alt="' + (J.alt || '').replace(/"/g, '&quot;') + '"><div class="hero-voile"></div>' : '') +
       '<div class="hero-txt"><div class="hero-sur mono"><span>Jour ' + J.numero + '</span><span class="point">·</span><span>' + dateTxt +
       '</span><span class="point">·</span><span>' + total + ' min</span></div>' +
-      '<h1>' + J.titre + '</h1>' +
-      '<p>' + typo(J.chapo) + '</p></div>' +
-      (J.image ? '<div class="hero-img" role="img" aria-label="' + (J.alt || '').replace(/"/g, '&quot;') + '" style="background-image:url(\'' + J.image + '\')"></div>' : '');
+      '<h1 lang="' + CODE + '">' + J.titre + '</h1>' +
+      '<p>' + typo(J.chapo) + '</p></div>';
 
     var main = document.getElementById('jour');
+    var nbG = J.grammaire.length;
+    var cartesG = [];
+    var s2 = null;
 
-    /* 1. Le texte */
+    /* 1. Le texte : chaque point de grammaire a sa couleur (pc1 … pc6) et sa pastille numérotée */
     var s1 = enteteBloc('texte', '1', 'Lire le texte', DUREES.texte);
     var outils = el('div', 'outils');
     var bRep = el('button', 'bouton on', 'Repères de grammaire'); bRep.type = 'button';
     var bGlo = el('button', 'bouton on', 'Aide au vocabulaire'); bGlo.type = 'button';
     outils.appendChild(bRep); outils.appendChild(bGlo);
+    outils.appendChild(el('span', 'outils-note', typo('Chaque couleur = un point de grammaire, expliqué juste après.')));
     s1.appendChild(outils);
     var papier = el('article', 'texte reperes');
     papier.appendChild(el('div', 't-titre', J.texte.titre));
     papier.appendChild(el('div', 't-source', typo('Texte adapté de notre article : ') + '<a href="' + J.texte.url + '">' + typo(J.texte.article) + '</a>'));
     J.texte.paragraphes.forEach(function (p) {
-      papier.appendChild(el('p', null, p
+      var para = el('p', null, p
         .replace(/\{([^{}|]+)\|([^{}]+)\}/g, '<span class="v" tabindex="0">$1<span class="bulle">$2</span></span>')
-        .replace(/\[(\d+)\|([^\]]+)\]/g, '<span class="g" data-g="$1">$2<sup>$1</sup></span>')));
+        .replace(/\[(\d+)\|([^\]]+)\]/g, function (m, n, txt) {
+          return '<span class="g pc' + couleur(+n) + '" data-g="' + n + '"><button type="button" class="g-num" aria-label="Voir le point de grammaire ' + n + '">' + n + '</button>' + txt + '</span>';
+        }));
+      para.lang = CODE;
+      papier.appendChild(para);
     });
     s1.appendChild(papier);
     bRep.addEventListener('click', function () { bRep.classList.toggle('on', papier.classList.toggle('reperes')); });
@@ -198,39 +207,51 @@
       papier.querySelectorAll('.v.ouvert').forEach(function (o) { if (o !== v) o.classList.remove('ouvert'); });
       if (v) { v.classList.toggle('ouvert'); return; }
       var g = ev.target.closest('.g');
-      if (g && papier.classList.contains('reperes')) {
-        var c = document.getElementById('g' + g.getAttribute('data-g'));
-        if (c) { ouvrir(c, true); c.scrollIntoView({ behavior: 'smooth', block: 'start' }); flash(c); }
-      }
+      if (g && papier.classList.contains('reperes')) aller(+g.getAttribute('data-g'));
     });
     main.appendChild(s1);
 
-    /* 2. La grammaire : un point à la fois (pastilles) */
-    var s2 = enteteBloc('grammaire', '2', 'La grammaire du texte', DUREES.grammaire);
+    /* 2. Comprendre la grammaire : un point à la fois, à la couleur du texte.
+       Format complet (regle, blocs, declic, etapes, cas, pieges, retenir) ; les anciens jours (rappel, piege) gardent leur texte. */
+    s2 = enteteBloc('grammaire', '2', 'Comprendre la grammaire', DUREES.grammaire);
     var onglets2 = el('div', 'g-onglets'); onglets2.setAttribute('role', 'tablist');
     s2.appendChild(onglets2);
-    var cartesG = [];
-    function ouvrir(c, oui) {
-      if (!oui) return;
-      cartesG.forEach(function (x) {
-        var sel = x.carte === c;
-        x.carte.classList.toggle('ouvert', sel);
-        x.onglet.setAttribute('aria-selected', sel ? 'true' : 'false');
+    function ouvrir(i) {
+      cartesG.forEach(function (x, k) {
+        x.carte.classList.toggle('ouvert', k === i);
+        x.onglet.setAttribute('aria-selected', k === i ? 'true' : 'false');
       });
+    }
+    function aller(n) {
+      var i = Math.min(Math.max(n - 1, 0), nbG - 1);
+      ouvrir(i);
+      s2.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      flash(cartesG[i].carte);
     }
     J.grammaire.forEach(function (g, i) {
       var n = i + 1;
-      var c = el('article', 'g-carte'); c.id = 'g' + n;
-      var court = g.titre.split(' : ')[0];
-      var onglet = el('button', 'g-onglet', '<i>' + n + '</i><span>' + typo(court) + '</span>');
+      var riche = !!g.regle;
+      var c = el('article', 'g-carte pc' + couleur(n)); c.id = 'g' + n;
+      var court = riche ? g.titre : g.titre.split(' : ')[0];
+      var onglet = el('button', 'g-onglet pc' + couleur(n), '<i>' + n + '</i><span>' + typo(court) + '</span>');
       onglet.type = 'button'; onglet.setAttribute('role', 'tab'); onglet.title = g.titre.replace(/<[^>]+>/g, '');
-      onglet.addEventListener('click', function () { ouvrir(c, true); });
+      onglet.addEventListener('click', function () { ouvrir(i); });
       onglets2.appendChild(onglet);
       cartesG.push({ carte: c, onglet: onglet });
-      c.appendChild(el('h3', 'g-titre', typo(g.titre)));
-      var cols = el('div', 'g-cols seule');
-      var gauche = el('div', 'g-gauche');
-      var cit = el('div', 'citation', '<span class="guillemet" aria-hidden="true">“</span><div class="cit-txt">' + g.citation + '</div>');
+
+      var tete = el('div', 'g-tete');
+      var haut = el('div', 'g-haut', '<span class="g-lbl">Point ' + n + ' sur ' + nbG + '</span>');
+      var liens = el('div', 'liens-lecon');
+      (g.liens || [{ lecon: g.lecon, ancre: g.ancre }]).forEach(function (l) {
+        var a = el('a', 'lien-lecon', 'Revoir la leçon ' + l.lecon + ' · ' + typo(l.libelle || LECONS[l.lecon]) + ' →');
+        a.href = '../lecon' + l.lecon + '.html' + (l.ancre ? '#' + l.ancre : '');
+        liens.appendChild(a);
+      });
+      haut.appendChild(liens);
+      tete.appendChild(haut);
+      tete.appendChild(el('h3', 'g-titre', typo(g.titre)));
+      if (riche) tete.appendChild(el('div', 'g-regle', '<span class="g-regle-t">La règle</span><p>' + typo(g.regle) + '</p>'));
+      var cit = el('div', 'citation', '<span class="g-lbl">Dans le texte</span><div class="cit-txt" lang="' + CODE + '">' + g.citation + '</div>');
       var vers = el('button', 'vers-texte', '↑ dans le texte'); vers.type = 'button';
       vers.addEventListener('click', function () {
         var span = papier.querySelector('.g[data-g="' + n + '"]');
@@ -238,60 +259,90 @@
         span.scrollIntoView({ behavior: 'smooth', block: 'center' }); flash(span);
       });
       cit.appendChild(vers);
-      gauche.appendChild(cit);
-      gauche.appendChild(el('div', 'rappel', typo(g.rappel)));
-      if (g.piege) gauche.appendChild(el('div', 'encadre piege', '<div class="encadre-titre">Piège</div>' + typo(g.piege)));
-      var liens = el('div', 'liens-lecon');
-      (g.liens || [{ lecon: g.lecon, ancre: g.ancre }]).forEach(function (l) {
-        var a = el('a', 'lien-lecon', 'Revoir la leçon ' + l.lecon + ' · ' + typo(l.libelle || LECONS[l.lecon]) + ' →');
-        a.href = '../lecon' + l.lecon + '.html' + (l.ancre ? '#' + l.ancre : '');
-        liens.appendChild(a);
-      });
-      gauche.appendChild(liens);
-      cols.appendChild(gauche);
-      c.appendChild(cols);
+      tete.appendChild(cit);
+      if (!riche && g.rappel) tete.appendChild(el('div', 'rappel', typo(g.rappel)));
+      c.appendChild(tete);
+
+      if (riche && g.blocs && g.blocs.length) {
+        c.appendChild(el('div', 'g-part g-construit', '<span class="g-lbl">Comment c’est construit</span><div class="g-blocs">' +
+          g.blocs.map(function (b) {
+            return '<span class="g-bloc"><b lang="' + CODE + '">' + b[0] + '</b><small>' + typo(b[1]) + '</small></span>';
+          }).join('') + '</div>'));
+      }
+      if (riche && (g.declic || (g.etapes && g.etapes.length))) {
+        var duo = el('div', 'g-part g-duo');
+        if (g.declic) {
+          var d = g.declic;
+          duo.appendChild(el('div', 'g-declic', '<span class="g-lbl">Du français à l’' + LANGUE + '</span>' +
+            '<div class="g-ligne"><span>' + typo(d.de || 'En français') + '</span><span class="g-de">' + typo(d.fr) + '</span></div>' +
+            '<div class="g-fleche" aria-hidden="true">↓</div>' +
+            '<div class="g-ligne"><span>' + typo(d.vers || 'En ' + LANGUE) + '</span><span class="g-vers" lang="' + CODE + '">' + d.en + '</span></div>' +
+            (d.note ? '<p>' + typo(d.note) + '</p>' : '')));
+        }
+        if (g.etapes && g.etapes.length) {
+          duo.appendChild(el('div', 'g-etapes', '<span class="g-lbl">Pas à pas</span><ol>' +
+            g.etapes.map(function (t, k) { return '<li><i>' + (k + 1) + '</i><span>' + typo(t) + '</span></li>'; }).join('') + '</ol>'));
+        }
+        c.appendChild(duo);
+      }
+      if (riche && g.cas && g.cas.length) {
+        c.appendChild(el('div', 'g-part g-cas', '<span class="g-lbl">Les cas à connaître</span>' +
+          g.cas.map(function (x) {
+            return '<div class="g-cas-l"><b>' + typo(x[0]) + '</b><span class="g-cas-ex" lang="' + CODE + '">' + x[1] + '</span><span>' + typo(x[2]) + '</span></div>';
+          }).join('')));
+      }
+      if (riche && g.pieges && g.pieges.length) {
+        c.appendChild(el('div', 'g-part g-pieges', '<span class="g-lbl">Le piège du francophone</span><div class="g-pieges-l">' +
+          g.pieges.map(function (x) {
+            return '<div class="g-piege"><div class="g-faux" lang="' + CODE + '"><b aria-label="Faux">✗</b><s>' + x[0] + '</s></div>' +
+              '<div class="g-juste" lang="' + CODE + '"><b aria-label="Juste">✓</b><span>' + x[1] + '</span></div><p>' + typo(x[2]) + '</p></div>';
+          }).join('') + '</div>'));
+      } else if (g.piege) {
+        c.appendChild(el('div', 'g-part g-pieges', '<span class="g-lbl">Le piège du francophone</span><div class="g-piege seul">' + typo(g.piege) + '</div>'));
+      }
+      var pied = el('div', 'g-pied' + (riche && g.retenir ? '' : ' sans-retenir'),
+        riche && g.retenir ? '<p><b>À retenir.</b> ' + typo(g.retenir) + '</p>' : '');
+      var nav = el('div', 'g-nav');
+      var bP = el('button', 'g-prec', '← Précédent'); bP.type = 'button';
+      var bS = el('button', 'g-suiv', n === nbG ? 'Revenir au point 1' : 'Point suivant →'); bS.type = 'button';
+      bP.addEventListener('click', function () { aller(i === 0 ? nbG : i); });
+      bS.addEventListener('click', function () { aller(n === nbG ? 1 : n + 1); });
+      nav.appendChild(bP); nav.appendChild(bS);
+      pied.appendChild(nav);
+      c.appendChild(pied);
       s2.appendChild(c);
     });
-    ouvrir(cartesG[0].carte, true);
+    ouvrir(0);
     if (J.aussi && J.aussi.length) {
-      s2.appendChild(el('h3', 'sous-titre', 'Et aussi dans le texte'));
-      var liste = el('div', 'aussi');
-      var cat = null;
+      var aussi = el('div', 'aussi', '<span class="g-lbl">Et aussi dans le texte</span>');
+      var grille = el('div', 'aussi-grille');
       J.aussi.forEach(function (a) {
-        if (a.cat && a.cat !== cat) { cat = a.cat; liste.appendChild(el('div', 'aussi-cat', typo(cat))); }
-        var ligne = el('div', 'aussi-ligne');
-        ligne.appendChild(el('div', 'a-ext', a.ext));
-        ligne.appendChild(el('div', 'a-regle', typo(a.regle) + (a.ex ? '<span class="a-ex">' + a.ex + '</span>' : '')));
+        var it = el('div', 'aussi-it');
+        var h = el('div', 'aussi-haut', '<span>' + typo(a.cat || '') + '</span>');
         if (a.lecon) {
           var l = el('a', 'a-lecon', 'Leçon ' + a.lecon + ' →');
           l.href = '../lecon' + a.lecon + '.html' + (a.ancre ? '#' + a.ancre : '');
           l.title = 'Leçon ' + a.lecon + ' : ' + LECONS[a.lecon];
-          ligne.appendChild(l);
+          h.appendChild(l);
         }
-        liste.appendChild(ligne);
+        it.appendChild(h);
+        it.appendChild(el('div', 'a-ext', a.ext));
+        it.appendChild(el('div', 'a-regle', typo(a.regle) + (a.ex ? '<span class="a-ex">' + a.ex + '</span>' : '')));
+        it.lastChild.previousSibling.lang = CODE;
+        grille.appendChild(it);
       });
-      s2.appendChild(liste);
+      aussi.appendChild(grille);
+      s2.appendChild(aussi);
     }
     main.appendChild(s2);
 
-    /* 3. Le vocabulaire : les deux listes, puis les cartes */
+    /* 3. Le vocabulaire : les deux listes, puis l'ajout à l'espace flashcards (plus de module « Mémoriser » sur la page) */
     var s3 = enteteBloc('vocabulaire', '3', 'Le vocabulaire à retenir', DUREES.vocabulaire);
     var listes = el('div', 'listes-vocab');
     var titreTheme = J.vocabulaire.theme.titre;
     listes.appendChild(listeVocab('Les essentiels', J.vocabulaire.essentiels));
     listes.appendChild(listeVocab(titreTheme.charAt(0).toUpperCase() + titreTheme.slice(1), J.vocabulaire.theme.mots));
     s3.appendChild(listes);
-    s3.appendChild(window.ECGCartes.creer({
-      titre: 'Mémoriser · ' + LANGUES[LANGUE].sens.toLowerCase(),
-      sens: LANGUES[LANGUE].sens,
-      paquets: [
-        { id: 'tous', libelle: 'Tous', mots: J.vocabulaire.essentiels.concat(J.vocabulaire.theme.mots) },
-        { id: 'essentiels', libelle: 'Essentiels', mots: J.vocabulaire.essentiels },
-        { id: 'theme', libelle: 'Thème', mots: J.vocabulaire.theme.mots }
-      ],
-      cleRevoir: CLE_REVOIR,
-      date: J.date
-    }));
     s3.appendChild(ajoutFlashcards(J));
     main.appendChild(s3);
 
