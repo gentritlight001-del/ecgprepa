@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "États-Unis",
+"titre": "États-Unis : Trump menace d'une « taxe énorme » les data centers d'IA construits à l'étranger",
+"url": "actualites/en/articles/us-trump-taxe-data-centers-etranger-2026.html",
+"image": "actualites/en/images/us-trump-taxe-data-centers-etranger-2026.webp",
+"date": "2026-11-23T18:23:00+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Bangladesh",
@@ -1767,15 +1776,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/de/articles/allemagne-herbstprojektion-2026.html",
 "image": "actualites/de/images/allemagne-herbstprojektion-2026.webp",
 "date": "2026-10-10T19:03:28+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "Royaume-Uni",
-"titre": "Andy Burnham à Berlin pour sa première visite officielle : le traité de Kensington entre en vigueur",
-"url": "actualites/en/articles/uk-burnham-berlin-visite.html",
-"image": "actualites/en/images/uk-burnham-berlin-visite.webp",
-"date": "2026-10-10T18:57:42+00:00"
 },
 {
 "t": "cg",
