@@ -1076,7 +1076,8 @@ jusqu'à la mise en ligne :
 7. **Anglais seulement** : écrire aussi le **thème du jour** (voir « Thème du jour » dans « Espace flashcards »), après
    `outils/flashcards.py` pour que les cartes du jour existent ; même mise en ligne.
 
-Contenu d'un jour (le bloc de données du 10 octobre 2026 sert de modèle) :
+Contenu d'un jour (modèle : le jour 30 d'anglais, `premiere_annee/langues/anglais/quotidien/jour-2026-11-23.html`, à relire
+en entier avant d'écrire la grammaire ; pour l'espagnol et l'allemand, le dernier jour de la langue) :
 - **Texte** : l'article choisi à l'étape 2, dans la langue étudiée (section du tableau). Extrait
   de 250 à 350 mots en 4 à 6 paragraphes, légèrement adapté pour qu'il se lise seul. Balises :
   `[n|…]` = repère du point de grammaire n (dans l'ordre du texte ; un même n peut revenir),
@@ -1091,7 +1092,27 @@ Contenu d'un jour (le bloc de données du 10 octobre 2026 sert de modèle) :
   traduction]`), `pieges` (2 lignes `[faux, juste, pourquoi]`), `retenir` (une ligne), leçon et ancre (`lecon` + `ancre` =
   `id` d'une `<section>` de `../lecon<N>.html`). Mots étrangers en `<em>` dans les champs en français. Exemples et
   explications vérifiés, aucun piège inventé. Les anciens jours (et l'espagnol, l'allemand, tant que le propriétaire n'a
-  pas demandé le format complet pour eux) gardent `rappel` + `piege`, affichés dans le même panneau. **Pas d'exercice** (choix du propriétaire : `quotidien.js` n'affiche plus les
+  pas demandé le format complet pour eux) gardent `rappel` + `piege`, affichés dans le même panneau.
+  **Comment bien rédiger chaque partie** (niveau attendu : celui du jour 30, que le propriétaire a validé) :
+  - `titre` : le nom du point, court et clair pour un élève (« Whose, le « dont » de possession », « In + durée, un
+    « depuis » »), pas la citation du texte.
+  - `regle` : **une seule phrase** qui dit quand et comment, avec les mots de l'élève (« Pour dire « le X de Y », l'anglais
+    commence par le possesseur Y, ajoute 's, puis nomme ce qu'il possède : Y's X »), sans jargon non expliqué.
+  - `blocs` : les mots **mêmes du texte** (on peut raccourcir la fin de la phrase), découpés selon la mécanique du point ; le
+    rôle de chaque morceau en 2 à 5 mots (« be au prétérit », « l'agent, facultatif », « le relais, jamais where »).
+  - `declic` : choisir la transformation **qui fait comprendre** le point : français → anglais quand l'ordre ou le mot change
+    (génitif, « depuis »), phrase active → passive pour le passif, deux phrases → une relative pour whose, phrase neutre →
+    phrase clivée pour la mise en relief. `note` = 1 ou 2 phrases sur **la logique** (« Le français part de la chose et finit par
+    le possesseur. L'anglais fait l'inverse »), pas une redite de la règle.
+  - `etapes` : 3 gestes concrets que l'élève refait seul sur la phrase du texte (repérer, transformer, vérifier), chacun avec le
+    résultat partiel (« Place-le en premier et ajoute 's : Russia's »).
+  - `cas` : les **variantes à connaître** (singulier / pluriel en -s / pluriel irrégulier ; présent / prétérit / present perfect
+    / modal ; since / for / in), chacune avec un exemple court dans le thème du texte et sa traduction.
+  - `pieges` : les **vraies fautes d'un francophone** sur ce point (calque, article en trop, mauvaise préposition, mauvais temps),
+    la phrase fausse telle qu'un élève l'écrirait, la bonne, et **pourquoi** en une ou deux phrases (« Since se met devant un
+    point de départ, jamais devant une durée »). Au moins un des deux pièges porte sur la phrase du texte.
+  - `retenir` : la formule à mémoriser, en une ligne (« since + date, for + durée, in + durée après first ou un superlatif »).
+  - Tout est vérifié (grammaire de référence, leçon du site) ; rien d'approximatif présenté comme une règle. **Pas d'exercice** (choix du propriétaire : `quotidien.js` n'affiche plus les
   `exercice` des anciens jours, ne pas en écrire). Une carte qui traite deux points renvoie vers deux sections avec
   `liens: [{ lecon, ancre, libelle }, …]`. Puis `aussi` (« Et aussi dans le texte ») : 4 à 8 points courts, **une ligne
   chacune**, groupés par catégorie (`cat` : constructions verbales, noms et articles,
