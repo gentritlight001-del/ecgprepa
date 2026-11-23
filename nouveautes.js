@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "monde",
 "rubrique": "Actu Monde",
+"meta": "Inde",
+"titre": "Inde et Népal : Modi annonce un campus de l'IIT, un incubateur et un hub d'innovation au Népal",
+"url": "actualites/monde/articles/inde-nepal-shah-modi-iit-campus-2026.html",
+"image": "actualites/monde/images/inde-nepal-shah-modi-iit-campus-2026.webp",
+"date": "2026-11-23T21:15:25+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
 "meta": "Monde",
 "titre": "COP31 : la conférence sur le climat s'achève sans accord, bloquée sur les énergies fossiles",
 "url": "actualites/monde/articles/cop31-antalya-echec-energies-fossiles-2026.html",
@@ -1108,15 +1117,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/monde/articles/bresil-lula-reelu-flavio-bolsonaro-2026.html",
 "image": "actualites/monde/images/bresil-lula-reelu-flavio-bolsonaro-2026.webp",
 "date": "2026-10-27T07:07:16+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Serbie",
-"titre": "Serbie : la Liste étudiante remporte les législatives avec environ 53 % des voix, Vučić concède",
-"url": "actualites/monde/articles/serbie-liste-etudiante-victoire-vucic-2026.html",
-"image": "actualites/monde/images/serbie-liste-etudiante-victoire-vucic-2026.webp",
-"date": "2026-10-27T06:59:30+00:00"
 },
 {
 "t": "es",
