@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Monde",
+"titre": "COP31 : la conférence sur le climat s'achève sans accord, bloquée sur les énergies fossiles",
+"url": "actualites/monde/articles/cop31-antalya-echec-energies-fossiles-2026.html",
+"image": "actualites/monde/images/cop31-antalya-echec-energies-fossiles-2026.webp",
+"date": "2026-11-23T18:29:49+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "États-Unis",
@@ -1108,15 +1117,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/monde/articles/serbie-liste-etudiante-victoire-vucic-2026.html",
 "image": "actualites/monde/images/serbie-liste-etudiante-victoire-vucic-2026.webp",
 "date": "2026-10-27T06:59:30+00:00"
-},
-{
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Monde",
-"titre": "Cybersécurité : deux failles critiques dans PHP permettent d'exécuter du code à distance",
-"url": "actualites/monde/articles/php-faille-critique-execution-code-2026.html",
-"image": "actualites/monde/images/php-faille-critique-execution-code-2026.webp",
-"date": "2026-10-27T06:51:37+00:00"
 },
 {
 "t": "es",
