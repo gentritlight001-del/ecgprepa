@@ -1023,8 +1023,7 @@ travailler surtout la grammaire de 1re année. Demandes types : « Fais le texte
 | Allemand | `premiere_annee/langues/allemand/quotidien/` | `actualites/de/` (`tous-de.html`) | `ap-de-section` | `premiere_annee/langues/allemand/lecon<N>.html` (ancres génériques `s1`…`s7`, `formation`, `structures`… : se fier au titre de la section, pas au nom de l'ancre) |
 
 - Code commun : `premiere_annee/langues/commun/quotidien.js` et `quotidien.css` (la langue se lit
-  dans l'adresse ; titres des leçons et sens des cartes dans `LANGUES`) ; cartes :
-  `premiere_annee/langues/flashcards/cartes.js` et `cartes.css` (module « Mémoriser » de la page du jour). Nouvelle langue : l'ajouter à
+  dans l'adresse ; titres des leçons et sens des cartes dans `LANGUES`). Nouvelle langue : l'ajouter à
   `LANGUES` de `quotidien.js` et à `LANGUES` de `outils/flashcards.py`, copier l'index d'une
   langue existante, ajouter le bouton et la carte « Le texte du jour » à l'index de la langue.
 - Dans les données, les champs `en` désignent toujours **la langue étudiée** (mot, phrase de
@@ -1032,9 +1031,14 @@ travailler surtout la grammaire de 1re année. Demandes types : « Fais le texte
 - Habillage « noir et gris », choisi par le propriétaire sur maquette (`quotidien.css`, un seul accent
   bleu, pas de marron ni de doré, pas de fond clair) : index = titre + compteurs, grande carte « texte du jour »
   (photo en 3:2, titre, bouton ; **pas de sous-titre ni de liste d'étapes**), liste des jours à gauche, calendrier du mois + série de jours de
-  suite + record à droite (`<aside id="cote">`, rempli par `quotidien.js`) ; page du jour = hero (texte + photo),
-  puis une colonne : texte, grammaire en pastilles (un point à la fois), vocabulaire, traduction (énoncé à gauche,
-  réponse à droite), bilan. **Pas de sommaire latéral.** Le hero montre la photo de l'article : champ `image` du bloc
+  suite + record à droite (`<aside id="cote">`, rempli par `quotidien.js`). **Page du jour refaite le 23 novembre 2026**
+  (maquette « mélange », version sombre, validée par le propriétaire ; commune aux trois langues) : héros = photo de l'article
+  en plein cadre, assombrie vers le bas, avec « Jour N · date · 30 min », titre et chapeau par-dessus ; puis, sur 1 080 px :
+  1 « Lire le texte » (chaque point de grammaire a **sa couleur**, `pc1`…`pc6`, et une pastille numérotée qui ouvre le point),
+  2 « Comprendre la grammaire » (onglets aux couleurs des points, un grand panneau par point, voir « Grammaire » plus bas ;
+  « Et aussi dans le texte » en grille), 3 vocabulaire (deux listes + cadre « Ajouter ce jour à mes flashcards » ; **plus de
+  module « Mémoriser » sur la page**, retiré à la demande du propriétaire : l'espace flashcards s'en charge), 4 traduction
+  (énoncé à gauche, réponse à droite), 5 bilan. **Pas de sommaire latéral.** Le héros montre la photo de l'article : champ `image` du bloc
   de données (`../../../../actualites/<code>/images/<fichier>`, la même que la carte `.une`).
   `index.html` : la carte « Le texte du jour » (`.une` : image, « Jour N · <jour> <date> », titre)
   et la grille `jours-grid` (le nouveau jour **en tête**, avec `data-date` ; la carte « Demain »
@@ -1048,8 +1052,6 @@ travailler surtout la grammaire de 1re année. Demandes types : « Fais le texte
 - Le compteur « mots à revoir » de l'index mène au paquet de la langue dans l'**espace flashcards**
   (`flashcards/index.html#<langue>`, voir « Espace flashcards » plus bas) : toutes les cartes de tous
   les jours. `python3 outils/flashcards.py` est à lancer à chaque nouveau jour (voir « Mise en ligne »).
-  Paquet « À revoir » : `localStorage` `ecg-<langue>-quotidien-a-revoir`, commun à la page du jour et
-  à l'espace (une carte ratée y entre, une carte sue en sort).
 
 **Procédure d'un nouveau jour**, pour une langue (demande ci-dessus, ou routine automatique tous
 les jours à 0 h, heure de Paris, qui fait l'anglais, puis l'espagnol, puis l'allemand), sans poser de question
@@ -1074,14 +1076,43 @@ jusqu'à la mise en ligne :
 7. **Anglais seulement** : écrire aussi le **thème du jour** (voir « Thème du jour » dans « Espace flashcards »), après
    `outils/flashcards.py` pour que les cartes du jour existent ; même mise en ligne.
 
-Contenu d'un jour (le bloc de données du 10 octobre 2026 sert de modèle) :
+Contenu d'un jour (modèle : le jour 30 d'anglais, `premiere_annee/langues/anglais/quotidien/jour-2026-11-23.html`, à relire
+en entier avant d'écrire la grammaire ; pour l'espagnol et l'allemand, le dernier jour de la langue) :
 - **Texte** : l'article choisi à l'étape 2, dans la langue étudiée (section du tableau). Extrait
   de 250 à 350 mots en 4 à 6 paragraphes, légèrement adapté pour qu'il se lise seul. Balises :
   `[n|…]` = repère du point de grammaire n (dans l'ordre du texte ; un même n peut revenir),
   `{mot|traduction}` = aide au vocabulaire (8 à 15 mots).
-- **Grammaire** : 5 ou 6 cartes, une par repère : titre, citation (forme en `<mark>`), rappel
-  court, piège du francophone, leçon et ancre (`lecon` + `ancre` = `id` d'une `<section>` de
-  `../lecon<N>.html`). **Pas d'exercice** (choix du propriétaire : `quotidien.js` n'affiche plus les
+- **Grammaire** : 5 ou 6 cartes, une par repère, **expliquées pour qu'un élève comprenne tout seul** (demande du propriétaire,
+  novembre 2026). Format complet (obligatoire en anglais depuis le jour 30, 23 novembre 2026, qui sert de modèle ; contrôlé par
+  `quotidien-controle.py`) : `titre` court (« Le passif et son agent », affiché dans l'onglet), `citation` (forme en `<mark>`),
+  `regle` (la règle en une phrase), `blocs` (la phrase du texte en 2 à 5 morceaux `[morceau, rôle]` : « It » / « ce qui subit
+  l'action »…), `declic` (`{ de, fr, vers, en, note }` : passage d'une forme à l'autre, du français à la langue étudiée ou de
+  la phrase active à la passive, `de`/`vers` = étiquettes, par défaut « En français » / « En anglais », et `note` qui explique
+  la différence de logique), `etapes` (3 étapes « pas à pas » pour fabriquer la forme), `cas` (2 à 4 lignes `[forme, exemple,
+  traduction]`), `pieges` (2 lignes `[faux, juste, pourquoi]`), `retenir` (une ligne), leçon et ancre (`lecon` + `ancre` =
+  `id` d'une `<section>` de `../lecon<N>.html`). Mots étrangers en `<em>` dans les champs en français. Exemples et
+  explications vérifiés, aucun piège inventé. Les anciens jours (et l'espagnol, l'allemand, tant que le propriétaire n'a
+  pas demandé le format complet pour eux) gardent `rappel` + `piege`, affichés dans le même panneau.
+  **Comment bien rédiger chaque partie** (niveau attendu : celui du jour 30, que le propriétaire a validé) :
+  - `titre` : le nom du point, court et clair pour un élève (« Whose, le « dont » de possession », « In + durée, un
+    « depuis » »), pas la citation du texte.
+  - `regle` : **une seule phrase** qui dit quand et comment, avec les mots de l'élève (« Pour dire « le X de Y », l'anglais
+    commence par le possesseur Y, ajoute 's, puis nomme ce qu'il possède : Y's X »), sans jargon non expliqué.
+  - `blocs` : les mots **mêmes du texte** (on peut raccourcir la fin de la phrase), découpés selon la mécanique du point ; le
+    rôle de chaque morceau en 2 à 5 mots (« be au prétérit », « l'agent, facultatif », « le relais, jamais where »).
+  - `declic` : choisir la transformation **qui fait comprendre** le point : français → anglais quand l'ordre ou le mot change
+    (génitif, « depuis »), phrase active → passive pour le passif, deux phrases → une relative pour whose, phrase neutre →
+    phrase clivée pour la mise en relief. `note` = 1 ou 2 phrases sur **la logique** (« Le français part de la chose et finit par
+    le possesseur. L'anglais fait l'inverse »), pas une redite de la règle.
+  - `etapes` : 3 gestes concrets que l'élève refait seul sur la phrase du texte (repérer, transformer, vérifier), chacun avec le
+    résultat partiel (« Place-le en premier et ajoute 's : Russia's »).
+  - `cas` : les **variantes à connaître** (singulier / pluriel en -s / pluriel irrégulier ; présent / prétérit / present perfect
+    / modal ; since / for / in), chacune avec un exemple court dans le thème du texte et sa traduction.
+  - `pieges` : les **vraies fautes d'un francophone** sur ce point (calque, article en trop, mauvaise préposition, mauvais temps),
+    la phrase fausse telle qu'un élève l'écrirait, la bonne, et **pourquoi** en une ou deux phrases (« Since se met devant un
+    point de départ, jamais devant une durée »). Au moins un des deux pièges porte sur la phrase du texte.
+  - `retenir` : la formule à mémoriser, en une ligne (« since + date, for + durée, in + durée après first ou un superlatif »).
+  - Tout est vérifié (grammaire de référence, leçon du site) ; rien d'approximatif présenté comme une règle. **Pas d'exercice** (choix du propriétaire : `quotidien.js` n'affiche plus les
   `exercice` des anciens jours, ne pas en écrire). Une carte qui traite deux points renvoie vers deux sections avec
   `liens: [{ lecon, ancre, libelle }, …]`. Puis `aussi` (« Et aussi dans le texte ») : 4 à 8 points courts, **une ligne
   chacune**, groupés par catégorie (`cat` : constructions verbales, noms et articles,
@@ -1094,9 +1125,7 @@ Contenu d'un jour (le bloc de données du 10 octobre 2026 sert de modèle) :
 - **Vocabulaire** : 12 à 14 « essentiels » réutilisables dans n'importe quelle copie (verbes de
   presse, connecteurs, tournures), 12 à 18 mots du thème, chacun avec un exemple. **Nombre pair
   dans chaque liste** (affichée sur deux colonnes : pas de case vide). Pas
-  d'exercice à trous : `quotidien.js` en tire le module « Mémoriser », des cartes
-  **français → langue étudiée** seulement. Les cartes ratées vont dans le paquet « À revoir », gardé
-  dans le navigateur d'un jour à l'autre.
+  d'exercice à trous ; les mots sont révisés dans l'espace flashcards (`outils/flashcards.py`).
 - **Traduction** : version de 3 phrases du texte, thème de **3 phrases** construites avec les
   mots du vocabulaire du jour et la grammaire étudiée (**pas d'indice** pour le thème : champ `indice` non affiché),
   chacune avec traduction proposée et 2 ou 3 remarques. **Quand la phrase admet vraiment plusieurs bonnes traductions**
@@ -1210,7 +1239,7 @@ du jour). L'ancienne adresse `premiere_annee/langues/flashcards/index.html` renv
   récente gagne, une suppression compte comme une modification ; synchronisation à l'ouverture, au retour sur l'onglet et
   3 s après un changement. Toute écriture de ces données passe par `ECGFlashSync.enregistrer(D)` (jamais
   `localStorage.setItem` direct, sinon le changement n'est pas daté et se perd à la fusion).
-- **Pages du jour de langues** : sous le module « Mémoriser », le cadre `.fc-ajout` (`quotidien.js`, `quotidien.css`) **coche
+- **Pages du jour de langues** : sous les listes de vocabulaire, le cadre `.fc-ajout` (`quotidien.js`, `quotidien.css`) **coche
   ce jour** dans le paquet de la langue (et ajoute le paquet à « Mes paquets » s'il n'y est pas) : bouton « Ajouter ce jour à
   mes flashcards », puis « Jour N ajouté à vos flashcards » et « Réviser mes flashcards → ».
 - **Bibliothèque** : générée par `python3 outils/flashcards.py` dans `flashcards/donnees/` (`catalogue.js`
