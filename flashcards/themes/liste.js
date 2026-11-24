@@ -4,6 +4,8 @@
    Chargé avec ?v=<minute> (cache de Cloudflare, voir CLAUDE.md). */
 window.ECG_THEMES = {
   anglais: [
+    { date: "2026-11-25", titre: "Voyager 1 franchit un jour-lumière, quarante-neuf ans après son lancement", phrases: 5,
+      cartes: ["1251e5efbf", "440a3bbc91", "d331381d95", "1e3cce3ca8", "572ba4a331"], aides: 8 },
     { date: "2026-11-24", titre: "États-Unis : la rougeole est de retour, vingt-six ans après avoir été éliminée", phrases: 5,
       cartes: ["496b1a892a", "2f3c448c6b", "17f96e1334", "440a3bbc91", "7cf7050d17", "ccaab6ab98", "64cb40d8ef"], aides: 7 },
     { date: "2026-11-23", titre: "Irlande : les data centers engloutissent près d'un quart de l'électricité du pays", phrases: 5,
