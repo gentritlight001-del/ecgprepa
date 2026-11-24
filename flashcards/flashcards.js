@@ -399,7 +399,7 @@
     l.slice(1).some(function (y) { var r = th['anglais/' + y.date]; if (r && r.r) { dernier = r; return true; } return false; });
     var fait = R && R.r;
     return '<section class="th-carte" aria-label="Thème du jour"><div class="th-carte-txt"><div class="sur">' + t('Thème du jour · Anglais') + '</div>' +
-      '<h2>' + t(x.titre) + '</h2><p>' + t((x.phrases || 5) + ' phrases · ' + (connus ? pl(connus, 'mot de tes flashcards', 'mots de tes flashcards') + ' · ' : '') + pl(nouveaux, 'mot nouveau', 'mots nouveaux') + ' · 15 min') + '</p></div>' +
+      '<h2>' + t(x.titre) + '</h2><p>' + t((function () { var k = Math.max(1, Math.min(x.phrases || 5, +(D.prefs || {}).themeNb || x.phrases || 5)); return pl(k, 'phrase') + ' à traduire · environ ' + (3 * k) + ' min · tu choisis entre 1 et ' + (x.phrases || 5); })()) + '</p></div>' +
       '<div class="th-carte-act"><a class="btn" href="theme.html#anglais/' + esc(x.date) + '">' + (fait ? 'Voir la correction' : 'Faire le thème') + '</a>' +
       (fait ? '<span>' + t('Ta note : ' + String(R.n || 0).replace('.', ',') + ' / 20') + '</span>' : dernier ? '<span>' + t('Dernière note : ' + String(dernier.n || 0).replace('.', ',') + ' / 20') + '</span>' : '') +
       '<a class="lien" href="themes.html">' + t('Tous mes thèmes →') + '</a></div></section>';

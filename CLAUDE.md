@@ -1435,6 +1435,11 @@ thème du jour d'anglais » (sinon : routine de minuit, après le texte du jour 
   4 / 4 : `python3 outils/theme-controle.py flashcards/themes/anglais/<date>.js` jusqu'à ce que tout soit ✅, puis essayer
   soi-même **au moins six traductions justes par phrase**, tournées autrement (synonymes, ordre, structure, prétérit ou present
   perfect quand les deux vont), avec `corrigerPhrase` sous Node, et ajouter chaque tournure qui manque jusqu'à 4 / 4 partout.
+- **L'élève choisit le nombre de phrases** (1 à 5, demande du propriétaire, novembre 2026) : « Combien de phrases
+  aujourd'hui ? » en haut du thème, gardé dans `D.prefs.themeNb` (synchronisé) ; il traduit les N premières, les autres restent
+  en gris dans le texte ; **la note reste sur 20** (points obtenus / points des phrases choisies × 20), `R.nb` = phrases
+  traduites. Les cartes d'accueil disent « N phrases à traduire · environ 3N min ». Chaque thème garde donc 5 phrases, et
+  **les premières doivent se suffire à elles-mêmes** (la phrase 1 pose le sujet).
 - Côté élève : une seule correction ; réponses et note dans `D.prefs.themes["anglais/<date>"]`
   (synchronisé avec le compte) ; « Et maintenant » : **l'élève coche** les mots nouveaux et les cartes de ses fautes à garder
   (rien n'est ajouté d'office), rangées dans le paquet perso « Mes thèmes d'anglais » (`theme-anglais`), celles des fautes à

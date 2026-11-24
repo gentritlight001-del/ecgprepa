@@ -125,8 +125,17 @@
     (p.cartes || []).forEach(function (c) { if (!connue(langue, c.id)) l.push({ fr: c.fr, en: c.en }); });
     return l;
   }
+  /* Nombre de phrases choisi par l'élève (1 à 5, gardé dans ses réglages : D.prefs.themeNb, synchronisé) */
+  function nbChoisi() {
+    var n = +D.prefs.themeNb || courant.T.phrases.length;
+    return Math.max(1, Math.min(courant.T.phrases.length, n));
+  }
+  function nbDe(R) { return Math.max(1, Math.min(courant.T.phrases.length, +R.nb || R.r.length || courant.T.phrases.length)); }
+  function minutes(nb) { return nb * 3; }
   function pageTheme() {
     var T = courant.T, L = LANGUES[courant.langue], brouillon = lire('ecg-theme-brouillon:' + courant.cle) || [];
+    var nb = nbChoisi(), choix = '';
+    for (var c = 1; c <= T.phrases.length; c++) choix += '<button type="button" data-a="nb" data-v="' + c + '" class="' + (c === nb ? 'actif' : '') + '" aria-pressed="' + (c === nb) + '">' + c + '</button>';
     var rev = reveles[courant.cle] = reveles[courant.cle] || {};
     var aConnus = false;
     T.phrases.forEach(function (p) { (p.cartes || []).forEach(function (c) { if (connue(courant.langue, c.id)) aConnus = true; }); });
@@ -134,14 +143,17 @@
     document.title = 'ECG Prépa — Thème : ' + sansReperes(T.titre);
     var html = '<header class="th-tete"><div class="sur">' + t('Thème du jour · ' + L.Nom + ' · ' + dateLongue(T.date)) + '</div>' +
       '<h1>' + t(T.titre) + '</h1>' +
-      '<p class="hero-txt">' + t('Cinq phrases à traduire en ' + L.nom + ', écrites avec les mots de tes flashcards et la grammaire de tes derniers jours. Compte 15 minutes.') + '</p></header>' +
+      '<p class="hero-txt">' + t((nb > 1 ? nb + ' phrases' : 'Une phrase') + ' à traduire en ' + L.nom + ', ' + (nb > 1 ? 'écrites' : 'écrite') + ' avec les mots de tes flashcards et la grammaire de tes derniers jours. Compte environ ' + minutes(nb) + ' minutes.') + '</p>' +
+      '<div class="th-nb"><span>' + t('Combien de phrases aujourd\'hui ?') + '</span><div class="choix" role="group" aria-label="Nombre de phrases à traduire">' + choix + '</div>' +
+      '<span class="th-nb-note">' + t('La note reste sur 20, quel que soit le nombre de phrases.') + '</span></div></header>' +
       '<section class="th-papier" aria-label="Le texte">' +
         '<div class="th-legende">' + (aConnus ? '<span><i class="l-connu"></i>Dans tes flashcards</span>' : '') +
         '<span><i class="l-nouveau"></i>' + t('Mot nouveau : traduction cachée, à révéler si besoin') + '</span></div>' +
-        '<p class="th-texte">' + T.phrases.map(function (p, i) { return '<b class="th-n">' + (i + 1) + '</b>' + texteFr(p, courant.langue); }).join(' ') + '</p>' +
+        '<p class="th-texte">' + T.phrases.map(function (p, i) { return '<span class="' + (i < nb ? 'th-a-faire' : 'th-hors') + '"><b class="th-n">' + (i + 1) + '</b>' + texteFr(p, courant.langue) + '</span>'; }).join(' ') + '</p>' +
+        (nb < T.phrases.length ? '<p class="th-hors-note">' + t('Les phrases en gris complètent l\'article : tu ne les traduis pas aujourd\'hui.') + '</p>' : '') +
       '</section>' +
       '<section class="th-trad" aria-label="Ta traduction"><h2>Ta traduction</h2>' +
-      T.phrases.map(function (p, i) {
+      T.phrases.slice(0, nb).map(function (p, i) {
         var aides = aidesDe(p, courant.langue);
         return '<div class="th-ligne"><div class="th-fr"><b>' + (i + 1) + '</b>' + t(sansReperes(p.fr)) + '</div>' +
           (aides.length ? '<div class="th-aides">' + aides.map(function (a, k) {
@@ -170,15 +182,15 @@
      sont toutes prévues dans le corrigé) : 0 point, avec la traduction attendue. */
   function resultats(R) {
     var T = courant.T;
-    return T.phrases.map(function (p, i) { return C.corrigerPhrase(p, R.r[i] || ''); });
+    return T.phrases.slice(0, nbDe(R)).map(function (p, i) { return C.corrigerPhrase(p, R.r[i] || ''); });
   }
   function corriger() {
-    var T = courant.T, r = [];
-    T.phrases.forEach(function (p, i) { var z = document.getElementById('th-r' + i); r.push(z ? z.value.trim() : ''); });
+    var T = courant.T, r = [], nb = nbChoisi();
+    T.phrases.slice(0, nb).forEach(function (p, i) { var z = document.getElementById('th-r' + i); r.push(z ? z.value.trim() : ''); });
     var vides = r.filter(function (x) { return !x; }).length;
     if (vides === r.length) { var z0 = document.getElementById('th-r0'); if (z0) z0.focus(); return; }
     if (vides && !window.confirm(typo((vides > 1 ? vides + ' phrases ne sont pas traduites' : 'Une phrase n’est pas traduite') + ' : elles compteront zéro. Corriger quand même ?'))) return;
-    var R = { r: r, j: {}, t: Date.now() };
+    var R = { r: r, nb: nb, t: Date.now() };
     R.n = total(resultats(R));
     D.prefs.themes[courant.cle] = R;
     sauver();
@@ -186,7 +198,11 @@
     rendre();
     window.scrollTo(0, 0);
   }
-  function total(res) { return C.arrondi(res.reduce(function (s, r) { return s + r.pts; }, 0)); }
+  /* Note sur 20, quel que soit le nombre de phrases traduites */
+  function total(res) {
+    var pts = res.reduce(function (s, r) { return s + r.pts; }, 0), sur = res.reduce(function (s, r) { return s + r.total; }, 0) || 1;
+    return C.arrondi(pts / sur * 20);
+  }
 
   function surligner(brut, zones) {
     var mots = String(brut || '').split(/(\s+)/), idx = [], k = 0;
@@ -250,7 +266,8 @@
       ['frappe', 'Fautes de frappe', 'faute', 'fautes'], ['vide', 'Phrases pas traduites', 'phrase', 'phrases']
     ];
     var perte = {}, nb = {};
-    function compter(c, x, k) { perte[c] = (perte[c] || 0) + x; nb[c] = (nb[c] || 0) + (k == null ? 1 : k); }
+    var ramene = 20 / (res.reduce(function (s, r) { return s + r.total; }, 0) || 20);   // points ramenés sur 20
+    function compter(c, x, k) { perte[c] = (perte[c] || 0) + x * ramene; nb[c] = (nb[c] || 0) + (k == null ? 1 : k); }
     res.forEach(function (r, i) {
       var p = T.phrases[i];
       if (r.vide) { compter('vide', r.total); return; }
@@ -273,7 +290,7 @@
       leg += '<li><span class="pt nb-' + c[0] + '"></span><span class="lg">' + t(c[1]) + '</span><span class="nbf">' + t(pl(nb[c[0]], c[2], c[3])) + '</span><b>−' + note(C.arrondi(x)) + '</b></li>';
     });
 
-    var html = '<header class="th-tete"><div class="sur">' + t('Thème du jour · Corrigé · ' + dateLongue(T.date)) + '</div><h1>' + t(T.titre) + '</h1></header>' +
+    var html = '<header class="th-tete"><div class="sur">' + t('Thème du jour · Corrigé · ' + dateLongue(T.date) + ' · ' + (res.length > 1 ? res.length + ' phrases' : '1 phrase')) + '</div><h1>' + t(T.titre) + '</h1></header>' +
       '<section class="th-note" aria-label="Ta note">' +
         '<div class="th-note-haut"><div class="th-sur20"><b>' + note(n) + '</b><span>/ 20</span></div><p>' + t(phrase) + '</p></div>' +
         '<div class="th-points"><div class="th-barre" role="img" aria-label="' + t(note(n) + ' points gagnés sur 20') + '">' + segs + '</div>' +
@@ -324,7 +341,7 @@
   function candidats(res) {
     var T = courant.T, q = persoDe(courant.langue), deja = {}, vus = {}, nouveaux = [], fautes = [];
     (q ? q.cartes : []).forEach(function (c) { deja[norme(c.v)] = 1; });
-    T.phrases.forEach(function (p) {
+    T.phrases.slice(0, res.length).forEach(function (p) {
       (p.aides || []).forEach(function (a) {
         var k = norme(a.en);
         if (!vus[k]) { vus[k] = 1; nouveaux.push({ r: a.fr, v: a.en, x: '', faute: false, deja: !!deja[k] }); }
@@ -415,6 +432,11 @@
       s.innerHTML = '<span>' + t(x.fr) + '\u00a0: <span lang="' + lang + '">' + esc(x.en) + '</span></span>';
       b.replaceWith(s);
     } else if (a === 'corriger') corriger();
+    else if (a === 'nb') {
+      D.prefs.themeNb = +b.getAttribute('data-v');
+      sauver();
+      rendre(true);
+    }
     else if (a === 'ajouter') ajouter(false);
     else if (a === 'rien') ajouter(true);
   });

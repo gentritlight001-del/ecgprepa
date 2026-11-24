@@ -85,7 +85,7 @@
     /* Le thème du jour */
     html += '<section class="th-carte" aria-label="Le thème du jour"><div class="th-carte-txt"><div class="sur">' +
       t((dernier.date === aujourdhui() ? 'Aujourd\'hui · ' : 'Dernier thème · ') + jour(dernier.date)) + '</div>' +
-      '<h2>' + t(dernier.titre) + '</h2><p>' + t((dernier.phrases || 5) + ' phrases · ' + (connus ? pl(connus, 'mot de tes flashcards', 'mots de tes flashcards') + ' · ' : '') + pl(nouveaux, 'mot nouveau', 'mots nouveaux') + ' · 15 min') + '</p></div>' +
+      '<h2>' + t(dernier.titre) + '</h2><p>' + t((function () { var k = Math.max(1, Math.min(dernier.phrases || 5, +(D.prefs || {}).themeNb || dernier.phrases || 5)); return pl(k, 'phrase') + ' à traduire · environ ' + (3 * k) + ' min · tu choisis entre 1 et ' + (dernier.phrases || 5); })()) + '</p></div>' +
       '<div class="th-carte-act"><a class="btn" href="theme.html#' + LANGUE + '/' + esc(dernier.date) + '">' + (Rj ? 'Voir la correction' : 'Faire le thème') + '</a>' +
       (Rj ? '<span>' + t('Ta note : ' + note(Rj.n || 0) + ' / 20') + '</span>' : '') + '</div></section>';
 
