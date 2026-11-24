@@ -302,6 +302,22 @@
       apres(res, L) + precedents();
     app.innerHTML = html;
   }
+  /* Passage non reconnu : les mots de la traduction attendue absents de la phrase de l'élève */
+  var VIDES = { the: 1, a: 1, an: 1, that: 1 };
+  function manquants(en, brut, L) {
+    var eleve = {};
+    C.normaliser(brut).split(' ').forEach(function (w) { if (w) eleve[w] = 1; });
+    var vus = {}, abs = [];
+    String(en).split(/\s+/).forEach(function (w) {
+      var mot = w.replace(/^[^\w]+|[^\w%]+$/g, ''), n = C.normaliser(mot).split(' ').filter(Boolean);
+      if (!n.length || vus[mot.toLowerCase()]) return;
+      if (n.every(function (x) { return VIDES[x]; })) return;
+      if (n.some(function (x) { return !eleve[x]; })) { vus[mot.toLowerCase()] = 1; abs.push(mot); }
+    });
+    if (!abs.length) return t('Tous les mots attendus sont dans ta phrase : c’est leur ordre, leur forme ou un mot en trop qui change le sens ou la construction.');
+    return t(abs.length > 1 ? 'Absents de ta traduction : ' : 'Absent de ta traduction : ') +
+      abs.map(function (w) { return '<b lang="' + L.lang + '">' + esc(w) + '</b>'; }).join(', ') + '.';
+  }
   function articlePhrase(p, r, i, R, L) {
     var brut = R.r[i] || '', zones = [], items = [];
     r.morceaux.forEach(function (m, k) {
@@ -315,7 +331,8 @@
       else if (m.etat === 'inconnu') {
         items.push('<li class="th-faute"><div class="th-f-tete"><span class="th-badge grave">' + t('Faux · −' + note(mc.pts)) + '</span>' +
           '<span class="th-f-corr">' + t('« ' + mc.fr + ' »') + ' → <b lang="' + L.lang + '">' + esc(mc.en) + '</b></span></div>' +
-          '<p>' + t('Ta traduction de ce passage ne convient pas : le sens ou la construction n’est pas juste. Compare-la mot à mot avec la traduction attendue et repère ce qui change.') + '</p></li>');
+          '<p>' + manquants(mc.en, brut, L) + '</p>' +
+          (mc.pourquoi ? '<p><b>' + t('Pourquoi cette traduction.') + '</b> ' + h(mc.pourquoi) + '</p>' : '') + '</li>');
       }
     });
     r.ortho.forEach(function (o) {

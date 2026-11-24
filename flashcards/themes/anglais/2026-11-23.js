@@ -16,7 +16,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-23"] = {
     {
       fr: "D'après les chiffres publiés en juillet par [[l'Office central de statistique]], les ((centres de données)) ont ((représenté)) 23 % de l'électricité consommée en Irlande en 2025, contre 5 % en 2015.",
       cartes: [
-        { id: "c604baeb7d", fr: "un centre de données, un data center", en: "a data centre", re: "data centers?" },
+        { id: "d6baff3c71", fr: "un centre de données, un data center", en: "a data centre", re: "data centers?" },
         { id: "6826551a9d", fr: "représenter (une part)", en: "to account for", re: "account(s|ed|ing)? for" }
       ],
       aides: [{ fr: "l'Office central de statistique (Irlande)", en: "the Central Statistics Office (CSO)" }],
@@ -32,6 +32,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-23"] = {
         {
           fr: "D'après les chiffres publiés en juillet par l'Office central de statistique",
           en: "According to figures released in July by the Central Statistics Office",
+          pourquoi: "« D'après » cite une source : according to. « Publiés en juillet » : un participe placé après le nom (figures released) et in devant un mois. Le nom de l'institution se traduit : the Central Statistics Office.",
           pts: 1,
           ok: [
             "according to (the )?(official |latest |new )?(figures|data|statistics|numbers) (released|published|issued|made public|put out|unveiled) in july by (the )?(irish |ireland's )?(central statistics office|central statistical office|cso|national statistics office|irish statistics office|statistics office|official statistics agency)",
@@ -79,6 +80,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-23"] = {
         {
           fr: "les centres de données ont représenté 23 %",
           en: "data centres accounted for 23%",
+          pourquoi: "« Représenter une part » se dit account for + pourcentage. Le fait est daté (en 2025) : prétérit, accounted for. Data centres prend un s au pluriel.",
           pts: 1.5,
           ok: [
             "(data centers|they|these facilities|the country's data centers|ireland's data centers|the data centers|irish data centers) (alone )?(accounted for|represented|made up|consumed|used|took up|absorbed|gobbled up|swallowed up|ate up) (just under |nearly |almost |close to |some )?23 percent",
@@ -132,6 +134,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-23"] = {
         {
           fr: "de l'électricité consommée en Irlande en 2025",
           en: "of the electricity consumed in Ireland in 2025",
+          pourquoi: "« L'électricité consommée » désigne une quantité précise, celle de l'Irlande en 2025 : the electricity consumed, avec le participe après le nom. In devant un pays et devant une année.",
           pts: 1,
           ok: [
             "of (all )?(the )?(electricity|power)( that was| which was)? (consumed|used) (in|across) (ireland|the country)( in 2025)?",
@@ -172,6 +175,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-23"] = {
         {
           fr: "contre 5 % en 2015",
           en: "compared with 5% in 2015",
+          pourquoi: "Pour mettre deux chiffres en regard, l'anglais dit compared with : « contre 5 % » devient compared with 5%.",
           pts: 0.5,
           ok: [
             "(compared (with|to)|up from|versus|vs|against|as against|from|as opposed to|in comparison with|in comparison to) (only |just |a mere )?5 percent (in|for|back in) 2015",
@@ -220,6 +224,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-23"] = {
         {
           fr: "Ils consomment désormais plus d'électricité que",
           en: "They now use more electricity than",
+          pourquoi: "« Désormais » se dit now, placé devant le verbe. « Consommer de l'électricité » : use electricity. « Plus de… que » : more… than.",
           pts: 1.5,
           ok: [
             "(they|data centers|these centers|these facilities|data centers alone|they alone) (now |today |currently |already )?(use|consume|take|absorb|draw|eat up|gobble up|swallow up|need) (even |far |much )?more (electricity|power|energy) than",
@@ -274,6 +279,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-23"] = {
         {
           fr: "que tous les ménages des villes réunis",
           en: "all urban households combined",
+          pourquoi: "« Tous… réunis » se dit all… combined, avec combined après le nom. « Les ménages des villes » devient urban households : l'adjectif se place devant le nom.",
           pts: 1,
           ok: [
             "(all|every) (of )?(the )?(country's |ireland's |irish |the country's )?(urban|city|town) (households|homes|dwellers|residents|consumers)( in ireland| in the country)? (combined|put together|taken together|together)",
@@ -314,6 +320,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-23"] = {
         {
           fr: "et leur consommation, en hausse de 10 % sur un an,",
           en: "and their consumption, up 10% on a year earlier,",
+          pourquoi: "« En hausse de 10 % sur un an » se dit up 10% on a year earlier : le petit mot up remplace toute la proposition. Les virgules encadrent la précision, comme en français.",
           pts: 1,
           ok: [
             "(and )?(their|data centers') (electricity |power |energy )?(consumption|use|usage|demand),? (up|rising|having risen|which rose|which has risen|which increased|which has increased|which grew|which has grown|having grown|growing|increasing|an increase of|a rise of|after a rise of|after an increase of|after rising|after growing|having increased|which went up|which has gone up) (by )?10 percent ((on|from|compared with|compared to|over) (a year earlier|the previous year|the year before|last year|2024)|year on year|in (a|1) year|in 12 months|over (a|1|the past|the last) year|within (a|1) year)",
@@ -353,6 +360,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-23"] = {
         {
           fr: "ne cesse de grimper",
           en: "keeps rising",
+          pourquoi: "« Ne cesser de » + verbe se dit keep + V-ing : keeps rising, avec le s de la troisième personne du singulier.",
           pts: 0.5,
           ok: [
             "(keeps|is still|continues|is continuing) (on )?(rising|climbing|growing|increasing|going up|to rise|to climb|to grow|to increase|to go up)",
@@ -413,6 +421,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-23"] = {
         {
           fr: "Le 7 novembre, à Dublin",
           en: "On 7 November in Dublin",
+          pourquoi: "Une date précise prend on : on 7 November. Une ville prend in : in Dublin.",
           pts: 0.5,
           ok: [
             "on (saturday )?(november 7(th)?|7(th)? (of )?november|the 7(th)? of november),? in dublin",
@@ -454,6 +463,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-23"] = {
         {
           fr: "des centaines de manifestants",
           en: "hundreds of protesters",
+          pourquoi: "« Des centaines de » se dit hundreds of, sans article et avec of. Un manifestant : a protester.",
           pts: 0.5,
           ok: [
             "(several |many |a few )?hundreds of (protesters|demonstrators|marchers|campaigners|activists|people|residents|campaigners and residents)",
@@ -505,6 +515,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-23"] = {
         {
           fr: "ont réclamé un moratoire sur les nouveaux projets",
           en: "called for a moratorium on new projects",
+          pourquoi: "« Réclamer » quelque chose publiquement se dit call for + nom. Le fait est daté (le 7 novembre) : prétérit, called for. Un moratoire sur : a moratorium on.",
           pts: 1.5,
           ok: [
             "(called for|demanded|urged|pressed for|campaigned for|asked for|marched to demand|marched to call for|rallied to demand|rallied to call for|marched for|rallied for|to demand|to call for|demanding|calling for|were calling for|were demanding|protested to demand|took to the streets to demand) (a |an immediate |an urgent )?(moratorium|freeze|halt|pause|stop) on (any |all )?(new|future|further) (data center )?(projects|developments|data centers|facilities|sites|construction|building)",
@@ -556,6 +567,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-23"] = {
         {
           fr: "affirmant que",
           en: "claiming that",
+          pourquoi: "« En affirmant que » : le participe présent claiming that relie l'affirmation au sujet de la phrase.",
           pts: 0.5,
           ok: [
             "(claiming|arguing|saying|insisting|asserting|stating|complaining|pointing out|warning|noting|stressing|affirming|alleging|explaining|maintaining|contending)( that)?",
@@ -580,6 +592,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-23"] = {
         {
           fr: "les prix de gros de l'électricité avaient doublé en un an",
           en: "wholesale electricity prices had doubled in a year",
+          pourquoi: "Le doublement des prix est antérieur à la manifestation : past perfect, had doubled. « Les prix de gros de l'électricité » : wholesale electricity prices, les mots qui précisent se placent devant le nom.",
           pts: 1,
           ok: [
             "(that )?(the )?(wholesale (electricity |power |energy )?prices?|wholesale prices? (of|for) (electricity|power|energy)|(electricity|power) wholesale prices?|price of (electricity|power) on the wholesale market|wholesale market prices? (of|for) (electricity|power)) (had|have|has)( already)? (doubled|risen twofold|gone up twofold|increased twofold|risen by 100 percent|increased by 100 percent) (in (a|1|the past|the last|just a|just 1) (year|12 months)|in (just )?12 months|within (a|1) year|over (the past|the last|a|1) (year|12 months)|in the space of (a|1) year|year on year|since last year)",
@@ -636,6 +649,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-23"] = {
         {
           fr: "Le gouvernement, pour sa part,",
           en: "The government, for its part,",
+          pourquoi: "« Pour sa part » : for its part (le gouvernement est une chose, donc its), entre virgules comme en français.",
           pts: 1,
           ok: [
             "(the )?(irish )?(government|authorities|executive|coalition),? for (its|their) (own )?part",
@@ -677,6 +691,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-23"] = {
         {
           fr: "n'envisage aucun moratoire national",
           en: "is not considering any national moratorium",
+          pourquoi: "« Envisager » une mesure, au sens d'y réfléchir en ce moment : be considering, au présent en -ing. « Aucun » avec un verbe négatif se dit not… any.",
           pts: 1,
           ok: [
             "(is|are) not (even )?(considering|planning|contemplating|envisaging|envisioning|proposing) (any|a) (national|nationwide|countrywide) moratorium",
@@ -724,6 +739,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-23"] = {
         {
           fr: "le ministre de l'Entreprise, Peter Burke,",
           en: "Enterprise Minister Peter Burke",
+          pourquoi: "En anglais, la fonction se place devant le nom, sans article ni virgule : Enterprise Minister Peter Burke.",
           pts: 0.5,
           ok: [
             "(the )?(irish )?(enterprise minister|minister (for|of) enterprise( tourism and employment)?|business minister|minister for business|enterprise and employment minister),? peter burke",
@@ -748,6 +764,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-23"] = {
         {
           fr: "voit dans ces centres une opportunité stratégique",
           en: "sees these centres as a strategic opportunity",
+          pourquoi: "« Voir dans X un Y » se dit see X as Y : sees these centres as a strategic opportunity, au présent simple avec le s de la troisième personne.",
           pts: 1,
           ok: [
             "(sees|regards|views|considers|describes|presents|has described|described|treats|portrays|hails|sees|thinks of|looks on|looks upon) ((these|the|such|ireland's|irish|the country's) )?(data )?(centers|facilities|sites|installations|server farms) (as|to be) (a|an) (major |key |real |genuine )?(strategic|key strategic|major strategic) opportunity",
@@ -787,6 +804,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-23"] = {
         {
           fr: "pour l'économie irlandaise",
           en: "for the Irish economy",
+          pourquoi: "« L'économie irlandaise » : the Irish economy, l'adjectif de nationalité devant le nom, avec une majuscule.",
           pts: 0.5,
           ok: [
             "for (the )?(irish economy|economy of ireland|country's economy|national economy)",
@@ -841,6 +859,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-23"] = {
         {
           fr: "À l'heure où",
           en: "At a time when",
+          pourquoi: "« À l'heure où », au sens de « au moment où », se dit at a time when.",
           pts: 0.5,
           ok: ["at a time when", "^(as|while|with|now that|just as|at a moment when|at a time where)", "at the very moment when"],
           fautes: [
@@ -875,6 +894,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-23"] = {
         {
           fr: "l'intelligence artificielle absorbe toujours plus d'énergie",
           en: "artificial intelligence is absorbing more and more energy",
+          pourquoi: "Une évolution en train de se faire : présent en -ing, is absorbing. « Toujours plus de » se dit more and more.",
           pts: 1.5,
           ok: [
             "(artificial intelligence|ai|the ai boom|the artificial intelligence boom|the rise of (ai|artificial intelligence)|the growth of (ai|artificial intelligence)) (is absorbing|absorbs|is consuming|consumes|is using|uses|is eating up|eats up|is swallowing up|swallows up|is swallowing|swallows|is gobbling up|gobbles up|requires|is requiring|demands|is demanding|needs|is taking|takes|is soaking up|soaks up|draws|is drawing|devours|is devouring|guzzles|is guzzling) (ever more|more and more|ever greater amounts of|ever larger amounts of|increasing amounts of|growing amounts of|an ever growing amount of|an increasing amount of|a growing amount of|increasingly large amounts of|ever increasing amounts of|ever growing amounts of|a growing share of|an ever larger share of|increasing quantities of|growing quantities of|ever more and more) (energy|power|electricity)",
@@ -930,6 +950,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-23"] = {
         {
           fr: "reste à savoir si",
           en: "it remains to be seen whether",
+          pourquoi: "« Reste à savoir si » se traduit par la tournure figée it remains to be seen whether.",
           pts: 1,
           ok: [
             "it (still )?remains to be seen (whether|if)",
@@ -972,6 +993,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-23"] = {
         {
           fr: "si le réseau électrique, déjà sous tension autour de Dublin,",
           en: "whether the power grid, already under strain around Dublin,",
+          pourquoi: "« Le réseau électrique » : the power grid. « Sous tension », au sens de « surchargé », se dit under strain, et la précision reste entre virgules.",
           pts: 0.5,
           ok: [
             "(whether|if) ((the )?(irish |country's |national |ireland's |nation's )?(power|electricity|electrical|electric) (grid|network|system)|the (national |irish )?grid|ireland's grid|the country's grid),? (which is |which was )?(already )?(under (severe |heavy |great |considerable |intense |huge )?(strain|pressure|stress)|stretched|strained|overstretched|stretched to (its|the) limits?|saturated|congested|at (full )?capacity|struggling|overloaded|close to saturation|near capacity|constrained|close to (its )?limits?|at (its|breaking) (limits?|point)) (around|in|near|in and around|in the area around|in the region around|close to) (the )?(greater )?dublin( area| region)?",
@@ -997,6 +1019,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-23"] = {
         {
           fr: "pourra suivre",
           en: "will be able to keep up",
+          pourquoi: "Futur de capacité : will be able to, car can n'a pas de futur. « Suivre » le rythme se dit keep up.",
           pts: 0.5,
           ok: [
             "(will|can|could|would|might) (be able to )?(keep up|cope|keep pace|withstand the pressure|take the strain|stand the strain|meet (the )?(growing |rising )?demand|handle (it|the load|the demand|such demand|this demand|the pressure))( with (it|demand|the demand|them|this demand|the growing demand|the pace))?",

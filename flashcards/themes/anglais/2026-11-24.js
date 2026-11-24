@@ -33,6 +33,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-24"] = {
         {
           fr: "Le 17 novembre,",
           en: "On 17 November",
+          pourquoi: "Une date précise prend on : on 17 November, suivi d'une virgule en début de phrase.",
           pts: 0.5,
           ok: ["on (tuesday )?(november 17(th)?|17(th)? (of )?november|the 17(th)? of november)"],
           fautes: [
@@ -69,6 +70,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-24"] = {
         {
           fr: "l'Organisation panaméricaine de la santé a annoncé",
           en: "the Pan American Health Organization announced",
+          pourquoi: "Le nom de l'organisation se traduit : the Pan American Health Organization. L'annonce est datée : prétérit, announced.",
           pts: 1,
           ok: [
             "(the )?(pan ?american health organization( paho)?|paho) (officially )?(announced|said|declared|stated|confirmed|revealed|reported|ruled|concluded)( officially)?( on (november 17(th)?|17(th)? (of )?november))?( that)?"
@@ -112,6 +114,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-24"] = {
         {
           fr: "que les États-Unis avaient perdu leur statut de pays ayant éliminé la rougeole",
           en: "that the United States had lost its measles elimination status",
+          pourquoi: "La perte a eu lieu avant l'annonce, elle-même passée : past perfect, had lost. « Le statut de pays ayant éliminé la rougeole » se resserre en measles elimination status, avec les noms qui précisent devant ; un pays est une chose, donc its.",
           pts: 1.5,
           ok: [
             "(that )?(the )?(united states( of america)?|us|usa|u s|america|country) ((had|has) )?(officially )?lost (its|their|the) ((official )?measles elimination status|status as (a )?(country|nation) (that had eliminated|that has eliminated|having eliminated|which had eliminated|which has eliminated|free of|free from) measles|status of (a )?(country|nation) (that had eliminated|that has eliminated|having eliminated|which had eliminated|which has eliminated|free of|free from) measles|measles free status|elimination status for measles|status as (a )?measles free (country|nation)|status of having eliminated measles|status as having eliminated measles|(official )?status as a measles free (country|nation))",
@@ -165,6 +168,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-24"] = {
         {
           fr: "qu'ils détenaient depuis 2000",
           en: "which it had held since 2000",
+          pourquoi: "Relatif which pour une chose, et past perfect avec since, car l'action dure jusqu'à un moment du passé (l'annonce) : which it had held since 2000.",
           pts: 1,
           ok: [
             "(which|that|a status|one) (it|they) (had|has|have) (held|had|enjoyed|kept|maintained|retained|possessed) since 2000",
@@ -224,6 +228,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-24"] = {
         {
           fr: "Jusqu'ici,",
           en: "So far",
+          pourquoi: "« Jusqu'ici » se dit so far, une expression qui appelle le present perfect.",
           pts: 0.5,
           ok: ["(so far|thus far|until now|up to now|up until now|to date|as things stand|as of now)"],
           fautes: [
@@ -261,6 +266,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-24"] = {
         {
           fr: "plus de 5 400 cas ont été recensés en 2026",
           en: "more than 5,400 cases have been recorded in 2026",
+          pourquoi: "Bilan au présent avec so far : present perfect passif, have been recorded. Les milliers s'écrivent avec une virgule en anglais : 5,400.",
           pts: 1.5,
           ok: [
             "(more than|over|upwards of|in excess of) 5400 (confirmed )?(measles )?cases (of measles )?(have|had) been (recorded|reported|registered|confirmed|counted|identified|logged|documented|detected|tallied)",
@@ -317,6 +323,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-24"] = {
         {
           fr: "soit plus du double des 2 289 cas de 2025",
           en: "more than double the 2,289 cases of 2025",
+          pourquoi: "« Plus du double de » se dit more than double, sans of, suivi de the : the 2,289 cases of 2025. Le « soit » qui annonce une précision ne se traduit pas mot à mot : une virgule suffit.",
           pts: 1,
           ok: [
             "(more than|over|well over|well above) (double|twice|2 times|2 fold) (the )?((number|total|figure|tally|count) of )?(the )?2289 (cases )?(of|in|recorded in|reported in|registered in|seen in|from|for|throughout|during|in all of|in the whole of) 2025",
@@ -360,6 +367,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-24"] = {
         {
           fr: "et le total annuel le plus élevé depuis 1991",
           en: "and the highest annual total since 1991",
+          pourquoi: "Superlatif de high, un adjectif court : the highest. Avec since + date : « le total le plus élevé depuis 1991 », the highest annual total since 1991.",
           pts: 1,
           ok: [
             "(the )?(highest|largest|biggest|worst|greatest|heaviest) (annual |yearly )?(total|number|figure|tally|count|caseload|level|number of cases|count of cases|toll)( recorded| seen| reported| in a year| for a year| for any year| for a single year)? since 1991",
@@ -436,6 +444,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-24"] = {
         {
           fr: "Ce retour est dû avant tout",
           en: "This comeback is due above all",
+          pourquoi: "« Être dû à » se dit be due to, et « avant tout » se dit above all.",
           pts: 1,
           ok: [
             "((this|the|measles') (comeback|return|resurgence|revival|re emergence|reemergence|rise|surge|upsurge|rebound|resurgence of measles)( of (the )?(disease|measles|virus))?|this|it) (is|was|has been),? ((above all|first and foremost|mainly|primarily|largely|mostly|chiefly|essentially|principally|in large part|for the most part|first of all),? )?(due|attributable|linked|down),? ((above all|first and foremost|mainly|primarily|largely|mostly|chiefly|essentially|principally|in large part|for the most part|first of all),? )?to",
@@ -478,6 +487,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-24"] = {
         {
           fr: "au recul de la vaccination",
           en: "to falling vaccination rates",
+          pourquoi: "« Le recul de la vaccination » se rend naturellement par une forme en -ing devant le nom : falling vaccination rates, « des taux de vaccination en baisse ».",
           pts: 1,
           ok: [
             "(to|by|from|of) (a |the )?(fall|drop|decline|decrease|slump|reduction|dip|slide|downturn|falloff) in (the )?(vaccination|immunization|vaccine|mmr) ?(rates|rate|coverage|uptake|levels)?",
@@ -521,6 +531,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-24"] = {
         {
           fr: "selon les CDC,",
           en: "according to the CDC",
+          pourquoi: "« Selon » cite une source : according to. Les CDC sont une institution désignée par un sigle : the CDC.",
           pts: 0.5,
           ok: [
             "according to (the )?(us )?(cdc|centers for disease control( and prevention)?( cdc)?)( figures| data| statistics)?",
@@ -559,6 +570,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-24"] = {
         {
           fr: "96 % des malades n'étaient pas vaccinés ou avaient un statut vaccinal inconnu",
           en: "96% of patients were unvaccinated or had an unknown vaccination status",
+          pourquoi: "Un état passé décrit : prétérit, were unvaccinated et had an unknown vaccination status. Le verbe s'accorde avec patients, au pluriel.",
           pts: 1.5,
           ok: [
             "96 percent of (the )?(patients|cases|sick people|people who fell ill|those who fell ill|those infected|people infected|infected people|people affected|those affected|people who caught (it|measles|the disease)|those who caught (it|measles|the disease)|sufferers|the sick|people with measles|measles patients|measles cases|people who contracted (it|measles|the disease)|those who contracted (it|measles|the disease))( in 2026| this year)? (were (either )?(not vaccinated|unvaccinated|non vaccinated|not immunized|unimmunized|never vaccinated)|had (either )?(not|never) been (vaccinated|immunized)),? or (had|with|of) (an |a )?(unknown|undocumented|uncertain|unclear) ((vaccination|vaccine|immunization) (status|history|records?)|status)",
@@ -648,6 +660,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-24"] = {
         {
           fr: "La couverture vaccinale des élèves de maternelle",
           en: "Vaccination coverage among kindergarten children",
+          pourquoi: "« La couverture vaccinale » : vaccination coverage. « Des élèves de maternelle » se dit among kindergarten children, among voulant dire « parmi ».",
           pts: 1,
           ok: [
             "(the )?((mmr |measles )?(vaccination|vaccine|immunization|mmr) (coverage|rate|rates|uptake)) (among|for|of|in) (the )?((kindergarten|nursery school|preschool|pre school|kindergarten age) (children|pupils|kids|students)|kindergartners|kindergarteners|(children|pupils|kids|students) (in|at|entering|starting) (kindergarten|nursery school|preschool)|(children|pupils) of kindergarten age|kindergarten)",
@@ -688,6 +701,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-24"] = {
         {
           fr: "est tombée à 92,4 %",
           en: "has fallen to 92.4%",
+          pourquoi: "Résultat présent d'une baisse : present perfect, has fallen to. Les décimales prennent un point en anglais : 92.4%.",
           pts: 1,
           ok: [
             "(has|had)( now)? (fallen|dropped|declined|slipped|sunk|decreased|gone down|slid|dipped|come down|been reduced) to 92 4 percent",
@@ -728,6 +742,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-24"] = {
         {
           fr: "contre 95,2 % il y a six ans",
           en: "compared with 95.2% six years ago",
+          pourquoi: "Pour mettre deux chiffres en regard : compared with. « Il y a six ans » se dit six years ago, ago se plaçant après la durée.",
           pts: 1,
           ok: [
             "(compared (with|to)|down from|versus|vs|against|as against|from|as opposed to|in comparison with|in comparison to) (the )?95 2 percent (recorded |seen |reached |registered )?(6 years ago|6 years earlier|6 years before|in 2019( 2020| 20)?|in the 2019( 2020| 20)? school year|before the pandemic)",
@@ -769,6 +784,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-24"] = {
         {
           fr: "ce qui met en danger environ 280 000 enfants",
           en: "which puts some 280,000 children at risk",
+          pourquoi: "« Ce qui » reprend l'idée qui précède : , which. « Mettre en danger » se dit put… at risk, le complément au milieu, et « environ » devant un chiffre se dit some.",
           pts: 1,
           ok: [
             "(which|this|that|something that) (puts|has put|is putting|places|has placed) (some |about |around |roughly |approximately |an estimated |nearly |almost |close to |up to )?280000 (children|kids|pupils|youngsters|young children|kindergartners|kindergarteners|little ones) (at risk|in danger|at risk of (catching )?(measles|infection|the disease))",
@@ -848,6 +864,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-24"] = {
         {
           fr: "Les CDC s'engagent à retrouver ce statut,",
           en: "The CDC is committed to regaining this status",
+          pourquoi: "« S'engager à faire » se dit be committed to + V-ing (ici to est une préposition) : regaining. Les CDC sont traités comme une institution, au singulier : is.",
           pts: 1,
           ok: [
             "(the )?(us )?(cdc|centers for disease control( and prevention)?( cdc)?) (is|are|remains|remain|has been|have been|says it is|say they are|says it remains|insists it is|insist they are) ((fully|firmly|still) )?committed to (regaining|recovering|winning back|getting back|restoring|reclaiming|retrieving) (this|the|that|its|their|the country's|america's) (measles )?(elimination )?status",
@@ -909,6 +926,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-24"] = {
         {
           fr: "mais on ne sait pas si",
           en: "but it is unclear whether",
+          pourquoi: "« On ne sait pas si » se dit it is unclear whether.",
           pts: 0.5,
           ok: [
             "(it is|it remains|it is still) (unclear|uncertain|not clear|not yet clear|far from clear|far from certain|an open question|doubtful) (whether|if)",
@@ -947,6 +965,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-24"] = {
         {
           fr: "le pays parviendra à enrayer l'épidémie,",
           en: "the country will manage to halt the outbreak",
+          pourquoi: "« Parvenir à » se dit manage to + base verbale, ici au futur : will manage to. « Enrayer une épidémie » : halt the outbreak.",
           pts: 1,
           ok: [
             "(the country|the us|the united states|america|the nation|washington|it|the authorities|they|the us authorities|american authorities) (will|can|would|could) (manage to |succeed in |be able to |actually )?(halt|stop|contain|curb|end|bring an end to|put an end to|stem|check|bring under control|get under control|control|stamp out|quell|eradicate|beat) (the|this|these|its) (measles )?(outbreak|epidemic|outbreaks|epidemics|spread|disease|virus)",
@@ -1002,6 +1021,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-24"] = {
         {
           fr: "puis à rester douze mois d'affilée sans transmission,",
           en: "and then go twelve months in a row without transmission",
+          pourquoi: "« Puis » : and then, et le verbe reste coordonné à manage to : go. « Douze mois d'affilée » : twelve months in a row.",
           pts: 1,
           ok: [
             "(and )?(then )?(go|goes|remain|remains|stay|stays|be|last|keep going|spend) (for )?(a )?(full )?12 (consecutive |straight |successive |full |uninterrupted )?months( in a row| running| straight| on end| in succession| without interruption)? (without|with no|free of|free from|with zero) (any )?(endemic |local |continuous |sustained |ongoing )?(transmission|spread|circulation|cases|measles transmission)( of (the )?(virus|disease|measles))?",
@@ -1061,6 +1081,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-24"] = {
         {
           fr: "comme l'exige l'OPS.",
           en: "as PAHO requires",
+          pourquoi: "« Comme l'exige l'OPS » : as PAHO requires, dans l'ordre sujet puis verbe, sans l'inversion du français.",
           pts: 0.5,
           ok: [
             "as ((the )?(pan ?american health organization( paho)?|paho)|the organization|it|they) (requires|demands|stipulates|insists|rules|has required|requires it|demand|require)",
