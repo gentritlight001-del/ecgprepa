@@ -710,6 +710,76 @@ s'ouvrent, liens de la frise valides, `grep -c '—'` à 0 dans le texte.
 - Graphiques et schémas : SVG en ligne dans `fig-frame fig-schema`, aux couleurs du
   chapitre, avec des données vérifiées et leur source dans la légende.
 
+### Exemplier d'HGG : études de cas en double page
+
+Gabarit « étude de cas, manuel de géographie » validé par le propriétaire (novembre 2026), pour se constituer un
+exemplier par grande région (premier : **Moyen-Orient**, chapitre 4 de 2e année). Demande type : « Fais l'étude de cas
+sur X » ; le propriétaire envoie ensuite son **schéma cartographique** (PNG 1720 × 1048, titre en haut, carte à gauche,
+légende à droite en 3 parties numérotées et colorées).
+
+- **Où** : toile Design privée « Exemplier Moyen-Orient », https://claude.ai/artifact/B6gEq1FLwp4nfVnrke8UgF (une planche
+  2480 × 1754 px par étude, fichiers `project/<Nom>.dc.html`, `project/canvas.json`). Faites : 01 Bab el-Mandeb
+  (`Main.dc.html`), 02 Ormuz, 03 Suez, 04 Jérusalem, 05 Méditerranée orientale (`MedOrientale.dc.html`), toutes avec leur carte. Mis de côté :
+  `Renaissance.dc.html` (barrage de la Renaissance, pour un futur chapitre Afrique, sans carte) et `Promethee.dc.html`
+  (essai d'exemplier pour L'Humanité, à palette brune ; le propriétaire préfère rester sur l'HGG). Pistes proposées et
+  acceptées comme pertinentes : Kurdes, Irak État-mosaïque, Tigre-Euphrate, Golan, Qatar, Liban confessionnel, Iran,
+  Sykes-Picot, Printemps arabes, prix du pétrole.
+- **Pas sur le site pour l'instant** (choix du propriétaire, novembre 2026 : des liens PDF discrets dans le chapitre ont été
+  posés puis retirés). Si on le redemande : PDF d'une page par `outils/exemplier/pdf.js`, rangé dans
+  `deuxieme_annee/hgg/etudes-de-cas/etude-de-cas-NN-<slug>.pdf`, lien discret à la fin du passage du cours (une ligne
+  `a.etude-pdf` en petites capitales mono, icône de document, « Étude de cas : X (PDF) », sans balise `p`/`li`/`h*`).
+- **Nouvelle étude, procédure** :
+  1. Contenu : passage du cours (chapitre 4 de 2e année et chapitres de 1re année liés), articles d'actualité du site,
+     puis **recherche web** pour les faits récents ; tout fait écrit de mémoire est **signalé au propriétaire** dans la réponse.
+  2. Images : photos du site (`deuxieme_annee/hgg/images/`, chapitres de 1re année, `actualites/*/images/`) ou Wikimedia
+     Commons (agent de lecture web pour trouver les noms exacts, puis vignette `thumb/<h0>/<h0h1>/<nom>/1280px-<nom>` ;
+     en cas d'erreur 429, attendre une à deux minutes). **Regarder chaque image** et écrire la légende d'après ce qu'elle montre.
+     Les envoyer sur la toile comme assets (`Artifact publish` avec `asset: true`), puis `/_blob/<id>` dans la page.
+  3. Page : **copier `outils/exemplier/modele.dc.html`** (Méditerranée orientale, référence exacte de toutes les tailles et
+     couleurs) ou lire la dernière planche sur la toile, puis tout remplacer, bloc par bloc (gabarit ci-dessous). Pas de
+     tiret cadratin, espaces insécables (`&nbsp;`) avant `: ; ! ? %` et dans les guillemets.
+  4. Vérifier : `NODE_PATH=$(npm root -g) node outils/exemplier/verifier.js <page.dc.html> <scratchpad>/verif.png`
+     (pages à 1754 px exactement, blanc sous les colonnes 0 à 30 px, titre 3 lignes au plus, encadrés sans vide, 0 tiret
+     cadratin) et **regarder la capture** (étiquettes de la photo bien placées, rien de caché par la légende). Un vide : ajouter
+     une phrase vérifiée ; un débordement : en retirer une.
+  5. Ajouter la planche à `canvas.json` (relire le fichier d'abord ; x = 0, y = 1994 × rang, w 2480, h 1754, titre
+     « Étude de cas NN · X (double page) ») et publier. Relire la planche sur la toile avant toute retouche : le
+     propriétaire modifie et commente directement sur la toile (répondre dans le fil du commentaire).
+  6. Quand la carte arrive : la recadrer, `Image.crop((52, 160, 1672, 1000))` sur le PNG 1720 × 1048 (titre et marges retirés,
+     1620 × 840), l'envoyer en asset et remplacer le cadre pointillé par `<div style="position: relative"><img …>` + le bloc
+     nord-échelle ; titre du Doc. 4 = titre de la carte ; **titres et couleurs des parties 1, 2, 3 = ceux de la légende**.
+- **Gabarit de la double page** (2480 × 1754, deux pages de 1240 × 1754 côte à côte, fond `#fbf8f2`, polices Archivo et
+  Source Serif 4, bleu nuit `#14315c`, bleu `#1f5fa8`, orange `#e07b2c`, rouge `#c62839`) :
+  - **Page de gauche** : photo pleine largeur de 556 px (Doc. 1 : vue satellite ou photo du lieu), étiquettes blanches en
+    capitales espacées posées sur l'image (`span.lab`, ombre portée) ; pastille « ↑ Nord » (ou « ← Nord ») en haut à gauche
+    **seulement** pour une vue satellite dont l'orientation est sûre, jamais pour une photo prise de biais ; légende du Doc. 1
+    dans un cartouche de 520 px collé en bas à droite (ou à gauche si le sujet de la photo y est), crédit de la source
+    seulement pour l'image du Doc. 1. Dessous : ligne de titre « NN » orange 44 px | « Étude de cas » / « Chapitre 4 ·
+    Géopolitique du Proche et du Moyen-Orient », filet orange ; `h1` 50 px bleu nuit, **3 lignes au plus** ; « Problématique »
+    (question en Source Serif 19 px) ; à droite, **fiche d'identité** (`dl.id`, 360 px, 5 lignes : intitulé en capitales bleues,
+    valeur avec chiffres en gras, le chiffre d'alerte en rouge). Puis deux colonnes (1,15 fr / 1 fr) : à gauche les parties
+    **1** et **2** (pastille numérotée de la couleur de la partie, titre 21 px, **2 paragraphes** chacune en Source Serif 16,5 px,
+    renvois « (doc. N) ») ; à droite **Doc. 2** (encadré blanc : graphique en barres, barre empilée, tableau ou texte source cité
+    mot pour mot) et **Doc. 3** (photo qui remplit la hauteur, légende dessous). Pied : « ECG Prépa · HGG 2e année · Exemplier
+    Moyen-Orient » et numéro de page (01, 02… à la suite d'une étude à l'autre).
+  - **Page de droite** : ligne courante « Étude de cas NN · X » / « Le schéma à savoir refaire » ; **Doc. 4** = le schéma
+    cartographique du propriétaire (en attendant : cadre pointillé de 555 px « Schéma cartographique à venir »), source
+    « Schéma réalisé par Gentrit. Situation en <mois année>. », **nord et échelle discrets en bas à gauche de la carte**
+    (flèche N grise de 9 px et barre de 4 px, « ≈ N km », sans encadré ; échelle calculée sur deux ou trois distances réelles
+    entre lieux de la carte, qui doivent concorder ; si la carte grossit un lieu, le dire dans la source). Puis deux colonnes :
+    partie **3** et ses **3 encadrés** titrés (étiquette en capitales de couleur, 3 ou 4 lignes de Source Serif 14,5 px, sans
+    vide dessous) ; à droite **Doc. 5** (chiffres clés, tableau « qui revendique quoi », graphique) et **Doc. 6** (photo).
+    **Doc. 7** : frise de 6 dates sur une ligne, **la plus récente à gauche**, en rouge. Bandeau bleu nuit **« Dans une
+    copie »** sur 3 colonnes : Accroche (fait daté, puis question), Idée-force + « Sujets où la placer » (3 sujets, sans
+    matière), « Piège à éviter » (encadré rouge, l'erreur et le bon chiffre). Pas d'encadré « Activités » (retiré à la demande
+    du propriétaire), pas de ligne « crédit à compléter » sous les photos.
+  - **Avant la carte**, les trois parties s'enchaînent par des points de suspension (« Un verrou du commerce mondial… »,
+    « … cerné par les guerres », « … qui attire les puissances ») en bleu, orange, violet ; **avec la carte**, elles prennent
+    les titres et les couleurs de sa légende.
+- **Autre sujet sans carte** : un Doc. 4 « schéma à savoir refaire » fait par Claude dans la toile (schéma fléché, schéma
+  d'acteurs, organigramme du pouvoir, graphique commenté, tableau comparatif), avec la même logique en trois niveaux
+  (modèle : `Promethee.dc.html`, récit en 4 étapes puis 3 lectures).
+
 ### Colles de maths
 
 - Elles vivent à part, dans `deuxieme_annee/maths/colles/`, jamais dans la liste des
