@@ -715,7 +715,8 @@ s'ouvrent, liens de la frise valides, `grep -c '—'` à 0 dans le texte.
 Gabarit « étude de cas, manuel de géographie » validé par le propriétaire (novembre 2026), pour se constituer un
 exemplier par grande région (premier : **Moyen-Orient**, chapitre 4 de 2e année). Demande type : « Fais l'étude de cas
 sur X » ; le propriétaire envoie ensuite son **schéma cartographique** (PNG 1720 × 1048, titre en haut, carte à gauche,
-légende à droite en 3 parties numérotées et colorées).
+légende à droite en 3 parties numérotées et colorées), ou demande à Claude de le faire : voir « Schémas cartographiques »
+juste après (la capture PNG de `outils/schema-carto/verifier.js` est exactement ce format).
 
 - **Où** : toile Design privée « Exemplier Moyen-Orient », https://claude.ai/artifact/B6gEq1FLwp4nfVnrke8UgF (une planche
   2480 × 1754 px par étude, fichiers `project/<Nom>.dc.html`, `project/canvas.json`). Faites : 01 Bab el-Mandeb
@@ -779,6 +780,70 @@ légende à droite en 3 parties numérotées et colorées).
 - **Autre sujet sans carte** : un Doc. 4 « schéma à savoir refaire » fait par Claude dans la toile (schéma fléché, schéma
   d'acteurs, organigramme du pouvoir, graphique commenté, tableau comparatif), avec la même logique en trois niveaux
   (modèle : `Promethee.dc.html`, récit en 4 étapes puis 3 lectures).
+
+### Schémas cartographiques (Doc. 4 des études de cas)
+
+Gabarit validé par le propriétaire (novembre 2026) au terme d'une longue mise au point sur six schémas. Demande type :
+« Fais le schéma cartographique de l'étude de cas X » (+ la double page de l'exemplier en PDF ou en capture). C'est le
+**Doc. 4 « Le schéma à savoir refaire »** : l'élève doit pouvoir le **refaire à la main en dissertation, en quelques
+minutes**. Un schéma, pas une carte.
+
+- **Où** : toile Design privée « Schémas cartographiques du Proche et Moyen-Orient »,
+  https://claude.ai/artifact/G3uL61N8sxZmqjv3BdpCfd (une planche `project/<Nom>.dc.html` de 1720 × 1048 par schéma, rangées
+  en colonne à x = 3600, w 1720, h 1048, y = rang × 1168). Faits : Bab el-Mandeb (`Troisieme-jet.dc.html`, y 0 ; `Main` et
+  `Premier-jet` sont deux brouillons gardés à la demande du propriétaire), Ormuz (y 1420), Suez (y 2588), barrage de la
+  Renaissance (y 3756), Jérusalem (y 4924), Méditerranée orientale (`Mediterranee.dc.html`, y 6092). Le suivant : y 7260.
+  Relire `project/canvas.json` sur la toile avant d'y ajouter une planche (le propriétaire déplace et commente).
+- **Modèle exact** : `outils/schema-carto/modele.dc.html` (Méditerranée orientale). Le copier dans le dossier de travail de la
+  toile (scratchpad), garder l'en-tête, la carte et la légende à l'identique (positions, tailles, polices, couleurs), et ne
+  remplacer que la géométrie, les étiquettes et les lignes de légende.
+- **Procédure** :
+  1. Lire l'étude de cas : **titre = titre du Doc. 4** ; **les 3 titres de la légende = les 3 parties de l'étude**, numérotés
+     « 1. », « 2. », « 3. », **sans points de suspension** ; couleur de chaque titre = couleur dominante des figurés de sa
+     partie (la double page reprend ensuite ces titres et couleurs, étape 6 de l'exemplier). Sans étude de cas, varier la
+     logique d'un schéma à l'autre (acteurs, échelles, fonctions), jamais toujours les échelles.
+  2. Faits vérifiés par **recherche web** à la date du jour (situation du mois) ; chiffres et dates de l'étude de cas repris
+     tels quels ; tout ce qui vient de la mémoire est signalé au propriétaire.
+  3. Géométrie : choisir un cadre (longitudes, latitudes), projeter les vrais points avec
+     `x = (lon − lon0) × k`, `y = (lat0 − lat) × k / cos(latitude moyenne)` (1000 × 808 px), puis **simplifier chaque côte
+     et chaque frontière en 3 à 10 segments droits**. Les positions relatives restent justes : villes et ports sur la
+     bonne côte, îles et gisements du bon côté des frontières maritimes, chaque pays côtier garde sa façade maritime, aucun
+     nom posé sur un autre pays. Un objet trop petit (vieille ville, détroit) est agrandi, et on le dit au propriétaire.
+  4. `NODE_PATH=$(npm root -g) node outils/schema-carto/verifier.js <schema.dc.html> <scratchpad>/<nom>.png` jusqu'à ce que
+     tout soit ✅ (planche, place de la carte, titre sur une ligne, légende tenue dans la hauteur de la carte, 9 à 14 figurés,
+     un figuré par ligne, encadrés ajustés et centrés, aucun chevauchement, 0 tiret cadratin), puis **regarder la capture**
+     (zoomer avec `clip` sur les zones denses) ; écrit aussi `<nom>-x2.png` en double résolution.
+  5. Publier (index puis planche, voir les règles de la toile) et décrire au propriétaire ce qui a été fait et vérifié.
+     Il commente directement sur la toile : répondre dans le fil, une retouche à la fois.
+- **Gabarit** (planche 1720 × 1048, fond `#fbfaf6`, Inter et Space Grotesk) :
+  - En-tête : « Chapitre 4 : Géopolitique du Proche et du Moyen-Orient » à (64, 82), 13 px, 600, capitales espacées
+    (`.12em`), `#1d5fa6` ; `h1` à (64, 104), Space Grotesk 36/44 px, 700, **une ligne**. Rien d'autre (pas de sous-titre).
+  - **Carte** : bloc (64, 176) de 1000 × 808, `overflow: hidden`, contour 1,5 px `#2b2a27`, mer `#d6e7f0`. Un premier SVG
+    de fond (mer, terres, zones colorées, côtes 2 px `#5f564a`, frontières 1,5 px `#5f564a` en pointillés `6 4`), puis un
+    SVG par famille de figurés (`role="img"` et `aria-label`), puis les symboles et textes en `div` absolues.
+  - **Couleurs** : terre neutre `#eee6d6` (pays hors sujet un ton plus gris, `#e4ded2`) ; acteur principal ou puissance
+    contestataire orange `#f2b27a` (bord `#c9601c`) ; camp opposé ou alliés vert `#cfe6c3` ; pays d'aval ou dépendant jaune
+    `#f4e7a6` ; routes et flux bleu `#1d5fa6` (trait de 8 à 9 px, pointe en `marker`), gaz et gisements bleu nuit `#1b3668` ;
+    menaces, attaques, guerre rouge `#c1272d` (étoiles à 4 branches, hachures) ; puissances extérieures et alliances violet
+    `#4b3f99` ; oléoducs brun `#6b4f2a` (gros point au départ, nommé, flèche à l'arrivée) ; zone revendiquée : pointillés
+    ronds de la couleur de l'acteur sur un aplat léger.
+  - **Textes de la carte** : pays en capitales 800, espacées (`.1em` à `.22em`), 12 à 19 px selon la place ; mers en
+    italique 600 `#1f5a85`, 13 à 15 px, tournées dans l'axe si la mer est étroite ; étiquettes de lieux en **encadré blanc**
+    `rgba(255,255,255,.94)`, coins de 3 px, marge `0 4px`, 11 à 12 px, **texte centré, largeur ajustée au texte** ; l'objet
+    du schéma (« Détroit d'Ormuz », « Bab el-Mandeb », « Canal de Suez ») en encadré blanc 13 px 700, marge `2px 6px`,
+    posé sur l'eau ou sur l'objet lui-même ; « Vers l'Asie », « Vers Suez et l'Europe » en encadré blanc, 12 px 600, bleu.
+  - **Légende** : bloc (1112, 176) de 544 × 808, colonne flex **centrée verticalement** (`justify-content: center`),
+    espacement 8 à 9 px ; « Légende » en Space Grotesk 22 px 700 avec un filet de 2 px dessous ; titres de partie 15/20 px
+    700 de couleur ; chaque ligne : boîte de 50 × 28 avec **un seul figuré** centré, puis le texte en 14/19 px, 2 lignes
+    (3 au plus), qui dit ce que montre le figuré **avec un chiffre ou une date** (les chiffres vont dans la légende).
+- **Règles du propriétaire** :
+  - Formes géométriques et simples, mais justes ; **10 à 13 figurés**, et retirer ce qui ne sert pas l'argument plutôt
+    qu'empiler (flèches secondaires, symboles décoratifs).
+  - Tout figuré de la carte est dans la légende et inversement (un lieu important comme la Knesset a son symbole et sa
+    ligne) ; jamais deux figurés sur une même ligne de légende.
+  - Pas d'encart ni de zoom, pas de bandeau de chiffres, pas de sources ni de sous-titre sur la planche.
+  - Vocabulaire : « houthis » (pas « houthistes ») ; pas de tiret cadratin ; espaces insécables avant `: ; ! ? %` et dans
+    les guillemets.
 
 ### Colles de maths
 
