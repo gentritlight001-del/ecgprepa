@@ -12,8 +12,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-11-23",
+  "maj": "2026-11-24",
   "parties": [
+   {
+    "id": "2026-11-24",
+    "nom": "Jour 31 · Trump Threatens a “Tremendous Tax” on US Companies Building AI Data Centers Abroad",
+    "n": 28,
+    "date": "2026-11-24"
+   },
    {
     "id": "2026-11-23",
     "nom": "Jour 30 · Canada, Australia and New Zealand Jointly Condemn Russia's War in Ukraine",
@@ -195,8 +201,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 767,
-  "v": "bc3646fba1"
+  "n": 784,
+  "v": "e16ac113ba"
  },
  {
   "id": "espagnol",
