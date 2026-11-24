@@ -12,8 +12,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-11-24",
+  "maj": "2026-11-25",
   "parties": [
+   {
+    "id": "2026-11-25",
+    "nom": "Jour 32 · UK-EU Summit: Burnham Announces Deals on Food Trade and Youth Mobility",
+    "n": 30,
+    "date": "2026-11-25"
+   },
    {
     "id": "2026-11-24",
     "nom": "Jour 31 · Trump Threatens a “Tremendous Tax” on US Companies Building AI Data Centers Abroad",
@@ -201,8 +207,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 784,
-  "v": "e16ac113ba"
+  "n": 806,
+  "v": "fb4fefdb9a"
  },
  {
   "id": "espagnol",
