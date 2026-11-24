@@ -22,6 +22,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-21"] = {
       morceaux: [
         {
           fr: "Selon les chiffres publiés le 16 octobre par l'Inpe", en: "According to figures released on 16 October by INPE", pts: 1.5,
+          pourquoi: "« Selon » introduit une source : according to. Une date précise prend on (on 16 October), et « publiés » se rend par un participe placé après le nom : figures released by INPE.",
           ok: [
             "according to (the )?(official )?(figures|data|statistics|numbers|estimates) (released|published|issued|made public|put out|unveiled) (on )(friday )?(october 16(th)?|16(th)? (of )?october|the 16(th)? of october) by (the )?(inpe|brazil's (national )?(institute for space research|space (research )?(agency|institute))|(the )?(brazilian )?national (institute for space research|space research institute))",
             "according to (the )?(official )?(figures|data|statistics|numbers|estimates) (released|published|issued|made public|put out|unveiled) by (the )?(inpe|brazil's (national )?(institute for space research|space (research )?(agency|institute))|(the )?(brazilian )?national (institute for space research|space research institute)) on (friday )?(october 16(th)?|16(th)? (of )?october|the 16(th)? of october)",
@@ -71,6 +72,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-21"] = {
         },
         {
           fr: "la déforestation en Amazonie brésilienne", en: "deforestation in the Brazilian Amazon", pts: 1,
+          pourquoi: "« La déforestation » est prise au sens général : pas d'article en anglais. L'Amazonie, comme les grands fleuves et les grandes forêts, prend the, et l'adjectif se place devant le nom : the Brazilian Amazon.",
           ok: [
             "(the )?deforestation (in|of) the brazilian (amazon|amazonia)( rainforest| forest| region| basin)?",
             "(the )?deforestation (in|of) (brazilian )?amazonia",
@@ -105,6 +107,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-21"] = {
         },
         {
           fr: "est tombée à son plus bas niveau", en: "fell to its lowest level", pts: 1,
+          pourquoi: "Le fait est daté et terminé (le chiffre publié en octobre) : prétérit, fell (fall, fell, fallen). « Son plus bas niveau » est le superlatif de low, un adjectif court : its lowest level, avec its car la déforestation est une chose.",
           ok: [
             "(fell|dropped|declined|plunged|plummeted|sank|slumped|decreased|has fallen|has dropped|has declined|has plunged|has sunk|has decreased) to (its |a )?(lowest|record low|all time low)( level| point| rate| figure)?",
             "(hit|reached|has hit|has reached|was at|is at|stood at|stands at) (its |a )?(lowest( level| point| rate)?|record low|all time low)"
@@ -134,6 +137,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-21"] = {
         },
         {
           fr: "depuis le début des mesures, en 1988", en: "since records began in 1988", pts: 0.5,
+          pourquoi: "Pour une série statistique, « depuis le début des mesures » se dit since records began : since donne le point de départ, et records désigne les relevés (measures veut dire des décisions).",
           ok: [
             "since (records|record keeping|records were first kept|measurements|monitoring|satellite monitoring|data collection|tracking|measuring|official records) (began|started|first began|were first taken)( in 1988)?",
             "since (the )?(start|beginning) of (records|record keeping|measurements|monitoring|satellite monitoring|tracking|the records|the measurements|data collection)( in 1988)?",
@@ -178,6 +182,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-21"] = {
       morceaux: [
         {
           fr: "La baisse dure depuis 2022", en: "The decline has been going on since 2022", pts: 2,
+          pourquoi: "La baisse a commencé en 2022 et continue aujourd'hui : avec since, l'anglais exige le present perfect, ici en -ing pour insister sur la durée (has been going on). Le présent du français ne se traduit jamais par un présent anglais avec since.",
           ok: [
             "(the )?(decline|decrease|fall|drop|downward trend|downturn|reduction) has been (going on|continuing|under way|underway|ongoing|lasting|happening) since 2022",
             "(the )?(decline|decrease|fall|drop|downward trend|downturn|reduction) has (continued|lasted|persisted|gone on) since 2022",
@@ -224,6 +229,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-21"] = {
         },
         {
           fr: "pourtant ce chiffre ne dit rien des forêts", en: "yet this figure says nothing about forests", pts: 1,
+          pourquoi: "« Pourtant » oppose deux idées : yet, ou but. « Ne dit rien de » se dit says nothing about, avec une seule négation (nothing).",
           ok: [
             "(but|yet|however|though|still|nevertheless|and yet) (this|the|that) (figure|number|statistic|data|estimate|indicator|measure|count) (says|tells|tells us|reveals|shows|indicates|reports) nothing (about|of|on|regarding) (the )?(state of (the )?)?forests?",
             "(but|yet|however|though|still|nevertheless|and yet) (this|the|that) (figure|number|statistic|estimate|indicator|count) (does not|did not) (say|tell|tell us|reveal|show|measure|capture|include|count|cover|take into account|account for|reflect|consider) (anything |a thing )?(about |of )?(the )?(state of (the )?)?forests?",
@@ -254,6 +260,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-21"] = {
         },
         {
           fr: "abîmées par le feu et la sécheresse", en: "damaged by fire and drought", pts: 1,
+          pourquoi: "Le participe passé damaged suit directement le nom, comme « abîmées » en français. Fire et drought sont pris au sens général, donc sans article, et « par » se dit by.",
           ok: [
             "(damaged|degraded|harmed|ravaged|weakened|scarred|destroyed|hit|affected|devastated|eroded|depleted) by (fires?|wildfires|blazes|burning|forest fires) and (droughts?|dry spells)",
             "(fires?|wildfires|blazes) and (droughts?|dry spells) (have )?(damaged|degraded|harmed|ravaged|weakened|scarred|destroyed|hit|affected)"
@@ -307,6 +314,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-21"] = {
       morceaux: [
         {
           fr: "Des scientifiques estiment que", en: "Scientists estimate that", pts: 0.5,
+          pourquoi: "« Des scientifiques » au sens général : pluriel sans article (scientists). To estimate that s'emploie comme « estimer que ».",
           ok: [
             "(some |many |several )?(scientists|researchers|experts|climate scientists) (estimate|believe|think|reckon|consider|argue|warn|calculate|say|fear|suggest)",
             "according to (some |many )?(scientists|researchers|experts)"
@@ -335,6 +343,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-21"] = {
         },
         {
           fr: "si la forêt perdait 20 à 25 % de sa surface", en: "if the forest lost 20 to 25% of its area", pts: 1.5,
+          pourquoi: "Hypothèse sur l'avenir (si + imparfait en français) : if + prétérit en anglais, if the forest lost, jamais would juste après if. Le pourcentage s'écrit 20 to 25%, et la surface d'une chose se dit its area.",
           ok: [
             "if (the )?(forest|amazon|rainforest|amazon rainforest|amazon forest) (lost|were to lose|was to lose) (between )?20 (percent )?(to |and )?25 percent of its (area|surface|surface area|size|cover|extent|trees|forest cover|forest)",
             "(a|the) (loss|disappearance|destruction) of (between )?20 (percent )?(to |and )?25 percent of (its|the forest's|the forest|the amazon's|the amazon) (area|surface|cover|trees|forest cover|size|surface area)?",
@@ -385,6 +394,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-21"] = {
         },
         {
           fr: "elle ne produirait plus assez de pluie", en: "it would no longer produce enough rain", pts: 1,
+          pourquoi: "Conséquence de l'hypothèse : would + base verbale (it would). « Ne… plus » dans le temps se dit no longer, placé devant le verbe, et « assez de pluie » se dit enough rain, sans of.",
           ok: [
             "(it|the forest|the amazon) (would|could|might) no longer (produce|generate|create|make|release|bring|provide) enough (rain|rainfall|precipitation)",
             "(it|the forest|the amazon) (would|could|might) (stop|cease) (producing|generating|making|creating|providing|to produce|to generate) enough (rain|rainfall|precipitation)",
@@ -425,6 +435,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-21"] = {
         },
         {
           fr: "ce qui menacerait toute la région", en: "which would put the whole region at risk", pts: 1,
+          pourquoi: "« Ce qui » reprend toute l'idée qui précède : , which. « Menacer » se rend par put… at risk, le complément au milieu : put the whole region at risk.",
           ok: [
             "(which|and this|this|that) would (put|place|leave) (the )?(whole|entire) region (at risk|in danger|under threat)",
             "(which|and this|this) would (put|place) at risk (the )?(whole|entire) region",
@@ -472,6 +483,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-21"] = {
       morceaux: [
         {
           fr: "Pour y parvenir", en: "To achieve this", pts: 0.5,
+          pourquoi: "« Pour » + verbe exprime un but : to + base verbale. « Parvenir à un résultat », c'est to achieve, et « y » renvoie au résultat : to achieve this.",
           ok: [
             "(to|in order to|so as to) (achieve|reach|get|obtain|secure|bring about|accomplish) (this|that|it|this result|these results|such a result|this outcome|such results)",
             "to (do so|do this|get there|make it happen|make this happen|succeed|succeed in this|succeed in doing so|pull this off|pull it off)",
@@ -501,6 +513,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-21"] = {
         },
         {
           fr: "le gouvernement de Lula s'est appuyé avant tout sur", en: "Lula's government has relied above all on", pts: 2,
+          pourquoi: "Possesseur humain : génitif saxon, Lula's government. « S'appuyer sur » au sens figuré se dit rely on (toujours on), « avant tout » se dit above all, et le present perfect dit que cette politique dure encore.",
           ok: [
             "(lula's|the lula|president lula's|the brazilian) (government|administration) (has )?(relied|depended|counted|drawn|leaned|built|focused|bet|banked) (above all|mainly|primarily|chiefly|first and foremost|mostly|largely|first of all|especially|in particular|principally)? ?(up)?on",
             "(lula's|the lula|president lula's|the brazilian) (government|administration) (has )?(above all|mainly|primarily|chiefly|largely|mostly|principally) (relied|depended|counted|drawn|leaned|built|focused) (up)?on",
@@ -549,6 +562,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-21"] = {
         },
         {
           fr: "la surveillance par satellite", en: "satellite monitoring", pts: 0.5,
+          pourquoi: "En anglais, un nom peut en préciser un autre en se plaçant devant lui : satellite monitoring, « la surveillance par satellite ».",
           ok: [
             "satellite (monitoring|surveillance|tracking|imagery|images|observation|data)",
             "(monitoring|surveillance|tracking|observation) (by|via|from|using) satellites?"
@@ -567,6 +581,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-21"] = {
         },
         {
           fr: "les contrôles sur le terrain et les sanctions", en: "on-the-ground inspections and penalties", pts: 0.5,
+          pourquoi: "Un contrôle au sens de vérification sur place, c'est an inspection (control veut dire maîtrise). « Sur le terrain » se dit on the ground, et devant un nom il prend des tirets : on-the-ground inspections. « Les sanctions » : penalties.",
           ok: [
             "(on the ground |field |on site |onsite |ground |on the spot )?(inspections|checks|patrols|raids|operations|enforcement operations|enforcement|controls)( on the ground| in the field)?,? (and|as well as|plus) (the )?(sanctions|penalties|fines|punishments|prosecutions)"
           ],
@@ -593,6 +608,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-21"] = {
         },
         {
           fr: "contre les déboisements illégaux", en: "for illegal clearing", pts: 0.5,
+          pourquoi: "« Le déboisement illégal » : illegal clearing, un nom indénombrable, donc sans s. Une sanction s'applique for une infraction, comme « pour » en français.",
           ok: [
             "(for|against|over|targeting|on|punishing) (the )?(illegal|unlawful) (deforestation|logging|clearing|land clearing|forest clearing|clear cutting|tree felling|felling)"
           ],
@@ -624,6 +640,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-21"] = {
       morceaux: [
         {
           fr: "Environ 15 % de la forêt ont déjà disparu", en: "About 15% of the forest has already disappeared", pts: 1.5,
+          pourquoi: "« Déjà » fait le bilan au présent : present perfect, has already disappeared. Le verbe s'accorde avec the forest, au singulier (has), même si le français accorde avec le pourcentage.",
           ok: [
             "(about|around|some|roughly|approximately|nearly|almost|close to|an estimated) 15 percent of the (amazon |amazon rainforest|forest|rainforest|amazon forest|biome|amazon biome)( biome)? (has|is) already (disappeared|vanished|gone|been (lost|destroyed|cleared|cut down|wiped out))",
             "(about|around|some|roughly|approximately|nearly|almost|close to|an estimated) 15 percent of the (amazon |amazon rainforest|forest|rainforest|amazon forest|biome|amazon biome)( biome)? (has|is) (disappeared|vanished|gone|been (lost|destroyed|cleared|cut down)) already",
@@ -664,6 +681,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-21"] = {
         },
         {
           fr: "pour le Brésil, qui en abrite un peu plus de 60 %", en: "for Brazil, which is home to just over 60% of it", pts: 1.5,
+          pourquoi: "Un pays est une chose pour la grammaire : relatif which, après une virgule. « Abriter » une forêt se dit be home to, « un peu plus de » just over, et of it reprend le « en » du français.",
           ok: [
             "brazil,? which (is home to|contains|hosts|holds|has|houses|shelters|covers|accounts for) (just |slightly |a little |a bit )?(over|more than|above) 60 percent",
             "brazil,? (home to|which has) (just |slightly |a little )?(over|more than|above) 60 percent",
@@ -704,6 +722,7 @@ window.ECG_THEMES_DONNEES["anglais/2026-11-21"] = {
         },
         {
           fr: "le danger n'est pas encore écarté", en: "the danger has not yet been averted", pts: 1,
+          pourquoi: "« Écarter un danger », c'est l'empêcher de se produire : to avert. « N'est pas encore » donne un present perfect passif avec not yet : has not yet been averted.",
           ok: [
             "the (danger|threat|risk) (has|is) not (yet )?(been )?(averted|over|gone|past|removed|eliminated|dispelled|lifted)( yet)?",
             "the (danger|threat|risk) (is|has) still not (been )?(averted|over|gone|past|removed)",

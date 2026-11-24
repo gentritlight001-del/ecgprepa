@@ -1417,13 +1417,14 @@ thème du jour d'anglais » (sinon : routine de minuit, après le texte du jour 
   grammaire des jours et des leçons de 1re année (present perfect et since, prétérit, hypothèse, génitif, articles, relatives,
   gérondif…), et **6 à 8 mots nouveaux** (`aides`, repérés `[[…]]`). La page s'adapte à chaque élève : carte déjà vue = souligné
   vert, sans aide ; sinon traduction cachée « Voir en anglais ».
-- **Chaque phrase est découpée en morceaux** (`morceaux` : `fr`, `en`, `pts`) : courts, pour qu'une tournure imprévue ne fasse
+- **Chaque phrase est découpée en morceaux** (`morceaux` : `fr`, `en`, `pts`, `pourquoi`) : courts, pour qu'une tournure imprévue ne fasse
   perdre qu'un passage. `ok` = **toutes les bonnes tournures** : un passage qui ne correspond à aucune est **compté faux**
   (0 point, traduction attendue affichée ; plus de « Pas reconnu » ni de « Compter comme juste », choix du propriétaire,
   novembre 2026 : « t'es censé avoir tout bien mis ») : synonymes, autres constructions, ordre des mots, voix active ou passive, present perfect et prétérit quand les deux
   sont justes. Motifs = expressions régulières sur le texte mis en forme : minuscules, sans accents ni ponctuation ni tiret,
   nombres en chiffres (« twenty » = 20, « 25% » = « 25 percent »), formes contractées développées, orthographe américaine
   (`EQUIV`, `-ise` → `-ize`). Une liste commune d'équivalences s'enrichit dans `theme-correcteur.js`.
+  `pourquoi` (obligatoire, contrôlé) : 1 à 3 phrases qui expliquent **pourquoi la traduction attendue est la bonne** (mot clé, temps et sa raison, construction, faux ami évité), affichées sous « Pourquoi cette traduction. » quand le passage de l'élève n'est pas reconnu, après la liste des mots attendus absents de sa phrase (calculée par `theme.js`). Ne citer que des tournures acceptées par `ok`. Les identifiants de cartes changent quand `outils/flashcards.py` regroupe un mot de plusieurs jours : `theme-controle.py` le signale (« carte inconnue »), reprendre le nouvel `i` dans le thème et dans `liste.js`.
 - **Fautes prévues** (`fautes`, 2 au moins par phrase) : les erreurs typiques d'un francophone sur ce passage (temps, since/for,
   faux amis, calques, articles, prépositions, place des mots), avec `re`, `type` (grammaire, faux-sens, contresens, gallicisme,
   barbarisme, oubli), `pts`, `faux`, `juste`, **`pourquoi` (ce que la phrase de l'élève fait comprendre à un anglophone, pourquoi

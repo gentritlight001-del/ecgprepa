@@ -36,7 +36,8 @@ try { require(path.join(racine, 'flashcards/donnees/' + T.langue + '.js')); } ca
 const paquet = (window.ECG_FC_CARTES || {})[T.langue] || [];
 const ids = new Set(paquet.map(c => c.i));
 T.phrases.forEach((p, i) => {
-  const r = { n: i + 1, total: p.morceaux.reduce((a, m) => a + m.pts, 0), erreurs: [], marqueurs: [], cartesInconnues: [], fautes: 0, tests: 0, lecons: [] };
+  const r = { n: i + 1, total: p.morceaux.reduce((a, m) => a + m.pts, 0), erreurs: [], marqueurs: [], cartesInconnues: [], fautes: 0, tests: 0, lecons: [], sansPourquoi: [] };
+  p.morceaux.forEach((m, k) => { if (!m.pourquoi || m.pourquoi.length < 30) r.sansPourquoi.push(`morceau ${k + 1} « ${m.fr} »`); });
   const nc = (p.fr.match(/\(\(/g) || []).length, na = (p.fr.match(/\[\[/g) || []).length;
   if (nc !== (p.cartes || []).length) r.marqueurs.push(`${nc} mots ((…)) pour ${(p.cartes || []).length} cartes`);
   if (na !== (p.aides || []).length) r.marqueurs.push(`${na} mots [[…]] pour ${(p.aides || []).length} aides`);
@@ -104,6 +105,8 @@ def main():
           [f"phrase {p['n']} : {p['tests']} test(s)" for p in ph if p['tests'] < 2])
     ligne(all(p['fautes'] >= 2 for p in ph), 'Au moins deux fautes prévues par phrase', None,
           [f"phrase {p['n']} : {p['fautes']} faute(s)" for p in ph if p['fautes'] < 2])
+    ligne(not any(p['sansPourquoi'] for p in ph), 'Chaque morceau explique sa traduction (pourquoi)', None,
+          [f"phrase {p['n']} : {m} sans explication" for p in ph for m in p['sansPourquoi']])
     errs = [f"phrase {p['n']} : {e}" for p in ph for e in p['erreurs']]
     ligne(not errs, 'Traductions justes à 4 / 4, fautes prévues bien détectées et complètes', None, errs)
 
