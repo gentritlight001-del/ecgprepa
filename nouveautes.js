@@ -1,6 +1,60 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Colombie",
+"titre": "Colombie : dix ans après l'accord de paix avec les FARC, une paix toujours inachevée",
+"url": "actualites/es/articles/co-diez-anos-acuerdo-de-paz-2026.html",
+"image": "actualites/es/images/co-diez-anos-acuerdo-de-paz-2026.webp",
+"date": "2026-11-24T05:44:57+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Venezuela",
+"titre": "Venezuela : la quatrième ronde de dialogue s'achève sur huit accords, sans date d'élection",
+"url": "actualites/es/articles/ve-negociaciones-chavismo-oposicion-cuarta-fase-2026.html",
+"image": "actualites/es/images/ve-negociaciones-chavismo-oposicion-cuarta-fase-2026.webp",
+"date": "2026-11-24T05:44:57+00:00"
+},
+{
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
+"titre": "OTAN à Berlin : Rutte promet de défendre « chaque centimètre carré », Merz juge l'erreur de 2008",
+"url": "actualites/de/articles/de-otan-assemblee-parlementaire-berlin-merz-2026.html",
+"image": "actualites/de/images/de-otan-assemblee-parlementaire-berlin-merz-2026.webp",
+"date": "2026-11-24T05:42:47+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "États-Unis",
+"titre": "Nvidia : le conseil réintègre Jensen Huang comme PDG, onze jours après sa démission",
+"url": "actualites/monde/articles/nvidia-jensen-huang-reintegration-pdg-2026.html",
+"image": "actualites/monde/images/nvidia-jensen-huang-reintegration-pdg-2026.webp",
+"date": "2026-11-24T05:41:03+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Cuba",
+"titre": "Cuba : le directeur de l'OMS visite des établissements pédiatriques de La Havane en pleine crise",
+"url": "actualites/es/articles/cu-oms-tedros-visite-la-havane-2026.html",
+"image": "actualites/es/images/cu-oms-tedros-visite-la-havane-2026.webp",
+"date": "2026-11-24T05:41:03+00:00"
+},
+{
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
+"titre": "Alertes à la bombe dans des centaines d'écoles allemandes : la police ne les juge pas sérieuses",
+"url": "actualites/de/articles/de-bombendrohungen-schulen-2026.html",
+"image": "actualites/de/images/de-bombendrohungen-schulen-2026.webp",
+"date": "2026-11-24T05:41:03+00:00"
+},
+{
 "t": "monde",
 "rubrique": "Actu Monde",
 "meta": "Inde",
@@ -1110,15 +1164,6 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-10-27T07:16:08+00:00"
 },
 {
-"t": "monde",
-"rubrique": "Actu Monde",
-"meta": "Brésil",
-"titre": "Brésil : Lula est réélu président avec 52 % des voix contre Flávio Bolsonaro (48 %)",
-"url": "actualites/monde/articles/bresil-lula-reelu-flavio-bolsonaro-2026.html",
-"image": "actualites/monde/images/bresil-lula-reelu-flavio-bolsonaro-2026.webp",
-"date": "2026-10-27T07:07:16+00:00"
-},
-{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Espagne",
@@ -1670,15 +1715,6 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-10-17T18:35:05+00:00"
 },
 {
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Colombie",
-"titre": "Colombie : De la Espriella ouvre une ambassade à Jérusalem et renoue avec Israël",
-"url": "actualites/es/articles/colombie-ambassade-jerusalem.html",
-"image": "actualites/es/images/colombie-ambassade-jerusalem.webp",
-"date": "2026-10-17T17:55:09+00:00"
-},
-{
 "t": "cours",
 "rubrique": "Cours",
 "meta": "HGG 2e année · chapitre 3",
@@ -1695,24 +1731,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/de/articles/allemagne-schweitzer-ministre-travail.html",
 "image": "actualites/de/images/allemagne-schweitzer-ministre-travail.webp",
 "date": "2026-10-14T17:57:31+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Costa Rica",
-"titre": "Costa Rica : Laura Fernández inaugure le CACCO, une méga-prison inspirée du modèle Bukele",
-"url": "actualites/es/articles/costa-rica-cacco-megaprison.html",
-"image": "actualites/es/images/costa-rica-cacco-megaprison.webp",
-"date": "2026-10-14T17:49:24+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Espagne",
-"titre": "Espagne : Felipe VI et Letizia à Ceuta, première visite d'un roi depuis 2007",
-"url": "actualites/es/articles/espagne-reyes-visite-ceuta-2026.html",
-"image": "actualites/es/images/espagne-reyes-visite-ceuta-2026.webp",
-"date": "2026-10-14T17:43:56+00:00"
 },
 {
 "t": "en",
@@ -1937,24 +1955,6 @@ window.ECG_NOUVEAUTES = [
 "titre": "Terrorisme islamiste : Berlin dévoile un plan d'action en dix points après l'attentat du CSD de Berlin",
 "url": "actualites/de/articles/plan-action-terrorisme-islamiste.html",
 "image": "actualites/de/images/plan-action-terrorisme-islamiste.webp",
-"date": "2026-09-18T20:00:18+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "Défense : Berlin et Washington scellent un rapprochement industriel inédit avec les États-Unis",
-"url": "actualites/de/articles/cooperation-armement-usa.html",
-"image": "actualites/de/images/cooperation-armement-usa.webp",
-"date": "2026-09-18T20:00:18+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "Merz annule son voyage à l'ONU pour affronter la fronde de son propre camp",
-"url": "actualites/de/articles/merz-annule-onu.html",
-"image": "actualites/de/images/merz-annule-onu.webp",
 "date": "2026-09-18T20:00:18+00:00"
 },
 {
