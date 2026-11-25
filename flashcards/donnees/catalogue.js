@@ -12,8 +12,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-11-25",
+  "maj": "2026-11-26",
   "parties": [
+   {
+    "id": "2026-11-26",
+    "nom": "Jour 33 · Iran War: The Senate Refuses to Rein In Donald Trump, Two Weeks After the Republican Rout",
+    "n": 30,
+    "date": "2026-11-26"
+   },
    {
     "id": "2026-11-25",
     "nom": "Jour 32 · UK-EU Summit: Burnham Announces Deals on Food Trade and Youth Mobility",
@@ -207,8 +213,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 806,
-  "v": "fb4fefdb9a"
+  "n": 827,
+  "v": "c79979cb76"
  },
  {
   "id": "espagnol",
