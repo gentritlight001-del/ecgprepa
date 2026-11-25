@@ -1877,6 +1877,8 @@ body.focus #cours .content>:not(.bilan){display:none!important}
 #cours.thC .fig figcaption[data-n]::before{content:"Doc. " attr(data-n) " · "}
 #cours.thC .cote>[data-n]{transition:box-shadow .25s,outline-color .25s;outline:3px solid transparent;outline-offset:6px}
 #cours.thC .cote>[data-on]{outline-color:var(--a3)}
+/* Téléphone : pas de numéros, et chaque document vient juste sous le passage qu'il illustre (script « Documents sous leur texte ») */
+@media screen and (max-width:860px){#cours.thC .rn[data-n]{display:none}#cours.thC .cote>[data-n]>h5[data-n]::before{display:none}#cours.thC .cote>figure[data-n]::after{display:none}#cours.thC .fig figcaption[data-n]::before{content:none}#cours.thC .cote.vide{display:none}#cours.thC .cote.mob{margin:6px 0 4px}}
 @media print{#cours{background:#fff}}
 
 /* ═════ Impression / PDF du cours (A4) : mise en page dédiée ═════ */
@@ -5311,6 +5313,40 @@ nav.sn.sn-archive #ecg-avatar{background:#2f242b;border:1px solid #6d2353;color:
     m.addEventListener('click', function () { aller(d, m); });
     m.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); aller(d, m); } });
   });
+})();
+</script>
+<script>
+/* Documents sous leur texte (téléphone) : sur un écran étroit, chaque fiche ou photo de la colonne de côté quitte sa colonne
+   et se place juste après le paragraphe ou la liste qui porte son repère (<span class="rn r-N">), dans l'ordre du texte.
+   Sur grand écran et à l'impression, tout revient à sa place. */
+(function () {
+  var mq = matchMedia('screen and (max-width:860px)'), pris = [];
+  function monter() {
+    if (pris.length) return;
+    var c = document.querySelector('#cours .content'); if (!c) return;
+    c.querySelectorAll('.sp').forEach(function (sp) {
+      var cote = sp.querySelector(':scope > .cote'), corps = sp.querySelector(':scope > .corps'); if (!cote || !corps) return;
+      var derniers = new Map();
+      [].slice.call(cote.children).forEach(function (it) {
+        var r = it.getAttribute('data-r'); if (!r) return;
+        var m = corps.querySelector('.rn.r-' + r); if (!m) return;
+        var bloc = m; while (bloc.parentNode !== corps) { bloc = bloc.parentNode; if (!bloc) return; }
+        var apres = derniers.get(bloc) || bloc;
+        var w = document.createElement('div'); w.className = 'cote mob';
+        apres.parentNode.insertBefore(w, apres.nextSibling); w.appendChild(it);
+        derniers.set(bloc, w);
+        pris.push({ it: it, cote: cote, w: w });
+      });
+      cote.classList.toggle('vide', !cote.children.length);
+    });
+  }
+  function rendre() {
+    pris.forEach(function (o) { o.cote.appendChild(o.it); o.cote.classList.remove('vide'); if (o.w.parentNode) o.w.remove(); });
+    pris = [];
+  }
+  function regler() { if (mq.matches) monter(); else rendre(); }
+  regler();
+  if (mq.addEventListener) mq.addEventListener('change', regler); else mq.addListener(regler);
 })();
 </script>
 <script src="../../../editeur.js" data-racine="#cours" defer></script>
