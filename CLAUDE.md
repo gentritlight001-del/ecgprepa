@@ -690,6 +690,76 @@ encadré coupé, blanc seulement en bas de page). Pas de PDF du cours proposé s
 horizontal, images chargées, titres repérés par le script, mode focus sans colonne vide, onglets de « Mes révisions » qui
 s'ouvrent, liens de la frise valides, `grep -c '—'` à 0 dans le texte.
 
+### Style « chapitre 8 » à reproduire dans tous les chapitres d'HGG
+
+Mis au point avec le propriétaire en novembre 2026 sur **HGG 1re année, chapitre 8** (`premiere_annee/hgg/chapitre-8/chapitre-8-hgg.html`),
+d'abord sur la toile Design « HGG 1re année · Chapitre 8 » (https://claude.ai/artifact/FKhzADaCRH56qsCgUQPhGn, planches « Cours
+complet » et « Mode focus » ; le propriétaire y commente et y fait retoucher, on répond dans le fil), puis mis en ligne. **Demande type :
+« Applique le style du chapitre 8 au chapitre N »** (1re année : chapitres 1 à 16 ; 2e année : chapitres 1 à 4). Le chapitre 8 en ligne est
+la **référence** : copier ses blocs CSS et ses scripts (repérés ci-dessous) plutôt que les réécrire. Ne **jamais** faire autre chose que ce
+qui est demandé (reproche répété du propriétaire) : « supprime » = retirer seulement l'élément désigné ; en cas de doute, revenir
+à l'état d'avant. Repartir du `main` le plus récent (le propriétaire édite sur la page). Tout reste sous **le même nom de fichier**.
+Marche à suivre par chapitre : corriger le contenu (règles « Contenu » plus haut), appliquer chacun des points ci-dessous, mesurer avec
+Playwright (1440 et 390 px, `auth.js` et `editeur.js` remplacés par un script vide), regarder des captures, puis mise en ligne complète
+(section 2). Signaler au propriétaire tout fait ajouté de mémoire ou non vérifié, et toute photo de faible définition.
+
+1. **Paragraphes courts** : au plus **4 lignes** (5 si nécessaire, jamais plus) à 1280 px ; une énumération dans un paragraphe devient
+   une liste à puces `ul.puces` ; une définition tient en **un seul paragraphe** (`.def`, pas de paragraphes séparés).
+2. **Sommaire** `nav.plan` : le titre de chaque partie est le **titre complet** de la partie (celui de `h2.hgg-part-title`), sur 2 lignes ;
+   avec deux parties, deux colonnes sans vide à droite (règle `@media (min-width:861px){#cours.thC .plan .pl-g{grid-template-columns:repeat(2,…)}}`).
+3. **Colonne de côté** (`.cote`) : chaque fiche ou photo **illustre** le texte voisin et ne le répète jamais (une fiche qui redit le
+   paragraphe, ou qui n'apporte rien, est refusée : la remplacer par un graphique, une frise, une photo ou un exemple nouveau, ou la
+   supprimer) ; elle suit **l'ordre du texte** (réordonner les cartes si besoin) et **finit à la même hauteur que le texte**
+   (mesurer `bas du dernier bloc du corps − bas du dernier bloc de la colonne` pour chaque `section.sp` : entre −30 et +60 px ; trop
+   court : ajouter une fiche ou une photo utile, ou étirer les lignes d'un graphique en barres par un `padding-bottom` sur `.br`, la
+   légende restant en bas de la fiche ; trop long : retirer une fiche ou ajouter au texte une phrase vérifiée). Les intertitres `h4.sub`
+   commencent à la hauteur de la première fiche (`h4.sub:first-child{margin-top:4px}`). Photos en paysage (voir « Figures »), jamais
+   écrasées : une photo trop étroite ou déformée est remplacée.
+4. **Fiches de penseurs** (`article.large.portrait`) : **seulement la thèse**, claire et concrète (ce que l'auteur dit, ses notions, au
+   plus un exemple), **pas sa vie** ; 2 paragraphes courts, titre = la thèse en une phrase, kicker « Métier · œuvre, date ». Une fiche
+   vient **après** le passage où l'auteur est cité (jamais avant). Portrait : photo nette du visage et des épaules, en carré, sous un
+   **nouveau nom de fichier** quand on remplace (`portrait-allison-2.webp`).
+5. **Paragraphe sur les deux colonnes** : un paragraphe, une liste ou une définition qui doit courir sur toute la largeur (pour éviter
+   un vide à gauche ou à droite) se met dans une **feuille « trombone »** `<div class="corps suite">` (sur deux colonnes de texte :
+   `corps suite deux`), à placer comme une `section.sp` à part ; une définition pleine largeur : `<div class="def pleine">`. CSS
+   `.corps.suite` et `.def.pleine` en fin de `<style>` du chapitre 8.
+6. **Schémas et graphiques** : seuls les schémas qui servent vraiment restent (le propriétaire a refusé trois schémas de principe et
+   n'a gardé que celui de la guerre hybride) ; un schéma simple et clair vaut mieux qu'un schéma chargé (celui de Clausewitz : trois
+   éléments). Données sourcées et vérifiées (UCDP, SIPRI, Commission européenne…), source et date dans la légende de la fiche.
+7. **Photos** : stockées sur le site en WebP, `images/<nom>.webp`, **nom neuf** à chaque remplacement ; légende « Lieu, date : ce que
+   montre la photo » (le préfixe « Doc. N · » est posé par le script des renvois) ; une photo fournie par le propriétaire passe avant
+   toute photo libre (Wikimedia Commons : vignette `thumb/…/1280px-…`, attendre en cas d'erreur 429 ; agent de lecture web si besoin).
+   **Aucun crédit de photo affiché sur la page** (une ligne de crédits en bas du chapitre a été posée puis retirée à la demande du
+   propriétaire) : ne pas en ajouter, mais **dire dans la réponse** l'auteur et la licence de chaque photo prise sur Commons
+   (CC BY-SA : l'attribution est exigée, le signaler).
+8. **« Vers quel ordre mondial ? » et tout encadré à plusieurs volets** `.large.cp.cp3` : **pas de colonnes étroites** (illisibles) ; une
+   carte blanche par volet, empilées en pleine largeur (`.cp-col`, bande de couleur à gauche `--c`), à gauche pastille, petit schéma SVG
+   et titre (`.cp-l`), à droite la thèse en gras (`.cp-these`) et **trois puces** (`.cp-r`). Sur téléphone une seule colonne
+   (le CSS du chapitre 8 gère aussi les sélecteurs `:first-child` et `:last-child`, sinon la page défile de côté).
+9. **Renvois numérotés** (repris du chapitre 2 de 2e année) : chaque enfant direct de `.cote` porte `data-r="N"` (numéro unique dans le
+   chapitre, dans l'ordre du document) et le texte porte `<span class="rn r-N"></span>` **à la fin de la phrase ou du bloc que la
+   fiche illustre** (une liste : à la fin de l'`li`) ; deux fiches pour un même passage : deux repères. Le script (« Renvois numérotés »
+   en fin de page, avant `editeur.js`) numérote **par grande sous-partie** (reprise à 1 à chaque `h3.hgg-section-title`), pose les pastilles
+   et l'encadrement au survol ou au clic. Les numéros suivent l'ordre de lecture : si ce n'est pas le cas, **réordonner les cartes de la
+   colonne** (pas les repères). Vérifier : autant de `.rn` que de `[data-r]`, aucun repère seul sur sa ligne (envelopper le dernier mot
+   et le repère dans un `<span style="white-space:nowrap">`). Modèle de CSS et de script : chapitre 8 (`/* Renvois numérotés`).
+10. **Téléphone** (`@media screen and (max-width:860px)`) : **pas de numéros** (pastilles du texte et des cartes, « Doc. N » des légendes
+    masqués) et **chaque carte vient juste sous le passage qu'elle illustre**, dans l'ordre du texte, au lieu d'être rangée en bloc
+    après la sous-partie : script « Documents sous leur texte » (chapitre 8) qui déplace chaque `[data-r]` de `.cote` vers un
+    `div.cote.mob` placé après le bloc portant son repère, et remet tout en place sur grand écran et à l'impression
+    (`matchMedia('screen and …')`). À reprendre tel quel avec le CSS qui le précède, juste après le script des renvois.
+11. **Mode focus** : pas de bloc « La réponse » (`.fc-these`) dans l'en-tête `.fc-tete` du cours réécrit (le propriétaire l'a fait retirer
+    au chapitre 8) ; le reste de la formule ne change pas.
+12. **Crédit de l'auteur du cours** (choix du propriétaire, maquettes A et F du 24 novembre 2026) : « Cours de **<Prénom Nom>** » à
+    droite de la ligne du haut de la fiche de titre (`<span class="auteur-cours">` dans `.t-etiq .cote-doc`) et « Cours rédigé par
+    **<Prénom Nom>** » centré entre les deux boutons de `footer.fin2` (`<span class="f-credit">`, sur téléphone sous les boutons,
+    centré). Chapitre 8 : **Tangui Pennec**. **Pour un autre chapitre, demander au propriétaire qui en est l'auteur** (ne jamais
+    deviner), puis reprendre le CSS et le balisage du chapitre 8.
+13. **Contrôles** avant mise en ligne, en plus de ceux de la section précédente : aucun défilement horizontal à 390 px, aucune erreur JS,
+    équilibre de chaque `section.sp` mesuré (point 3), repères `.rn` complets et dans l'ordre (point 9), cartes déplacées sur
+    téléphone puis remises sur ordinateur (point 10), images chargées (faire défiler : elles sont en `loading="lazy"`),
+    `grep -c '—'` à 0 dans le texte neuf.
+
 ### Figures des chapitres d'HGG (photos, graphiques, schémas)
 
 - Anciens chapitres (avant le gabarit « dossier d'archives ») : système des chapitres 2 de 1re année et 1 de 2e année
