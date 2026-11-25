@@ -754,13 +754,16 @@ Playwright (1440 et 390 px, `auth.js` et `editeur.js` remplacés par un script v
     téléphone puis remises sur ordinateur (point 8), images chargées (faire défiler : elles sont en `loading="lazy"`),
     `grep -c '—'` à 0 dans le texte neuf.
 
-**Atelier dissertation (chapitre 8 seulement, novembre 2026)** : l'onglet « Sujets » de « Mes révisions » n'est plus la liste d'accroches
-et le corrigé, mais un atelier en 5 étapes (sujet et problématique, plan, introduction, développement, conclusion et bilan) : l'élève
-écrit dans chaque case, compare avec le corrigé (`ESSAY`), range des outils (`TOOLS`, `HOOKS`) dans son plan, s'auto-évalue sur 10 points,
-puis imprime ou copie sa copie. Maquettes validées sur la toile « HGG 1re année · Chapitre 8 » (planches `Atelier-A1` à `A6`), « on améliorera
-après » (le propriétaire). Code : bloc « Atelier dissertation » du script et CSS `.at-*` de la page ; brouillons dans `localStorage`
-`ecg-atelier:v1:<chemin>` (sur l'appareil, pas synchronisés avec le compte). Les autres chapitres gardent l'ancien onglet ; ne pas l'étendre
-sans demande.
+**Atelier dissertation (chapitre 8 seulement, novembre 2026)** : l'onglet « Sujets » de « Mes révisions » est un atelier en 5 étapes
+(sujet et problématique, plan, introduction, développement, conclusion et bilan) plus un « Corrigé détaillé de A à Z ». Choix du
+propriétaire (retouches du 25 novembre) : l'élève **écrit tout lui-même** (termes, problématique, titres du plan, cases de l'introduction,
+paragraphes) puis compare avec le corrigé (`ESSAY`, `AT_PROBS` : 3 problématiques, `AT_SUBS` : un paragraphe corrigé par sous-partie) ;
+**pas de boîte à outils à l'écran** : le bouton « Besoin d'aide ? » (étapes 2 à 4) ouvre un tiroir de recherche (auteurs, chiffres, dates et
+notions tirés de `DECK` et `EVENTS`, accroches de `HOOKS`) sans jamais dire à quelle partie un outil appartient ; plan présenté **en lignes**
+(une par partie) ; développement = recette **argument + exemple** (méthode officielle) découpée en 5 gestes (idée, explication | fait daté,
+référence | lien), au choix sur n'importe laquelle des 9 sous-parties ; corrigé rédigé de A à Z avec « Pourquoi ça marche » en marge.
+Code : bloc « Atelier dissertation » du script et CSS `.at-*` de la page ; brouillons dans `localStorage` `ecg-atelier:v2:<chemin>`
+(sur l'appareil, pas synchronisés). Les autres chapitres gardent l'ancien onglet ; ne pas l'étendre sans demande.
 
 ### Figures des chapitres d'HGG (photos, graphiques, schémas)
 
