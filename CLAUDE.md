@@ -754,6 +754,14 @@ Playwright (1440 et 390 px, `auth.js` et `editeur.js` remplacés par un script v
     téléphone puis remises sur ordinateur (point 8), images chargées (faire défiler : elles sont en `loading="lazy"`),
     `grep -c '—'` à 0 dans le texte neuf.
 
+**Atelier dissertation (chapitre 8 seulement, novembre 2026)** : l'onglet « Sujets » de « Mes révisions » n'est plus la liste d'accroches
+et le corrigé, mais un atelier en 5 étapes (sujet et problématique, plan, introduction, développement, conclusion et bilan) : l'élève
+écrit dans chaque case, compare avec le corrigé (`ESSAY`), range des outils (`TOOLS`, `HOOKS`) dans son plan, s'auto-évalue sur 10 points,
+puis imprime ou copie sa copie. Maquettes validées sur la toile « HGG 1re année · Chapitre 8 » (planches `Atelier-A1` à `A6`), « on améliorera
+après » (le propriétaire). Code : bloc « Atelier dissertation » du script et CSS `.at-*` de la page ; brouillons dans `localStorage`
+`ecg-atelier:v1:<chemin>` (sur l'appareil, pas synchronisés avec le compte). Les autres chapitres gardent l'ancien onglet ; ne pas l'étendre
+sans demande.
+
 ### Figures des chapitres d'HGG (photos, graphiques, schémas)
 
 - Anciens chapitres (avant le gabarit « dossier d'archives ») : système des chapitres 2 de 1re année et 1 de 2e année
