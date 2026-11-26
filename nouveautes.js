@@ -1,6 +1,15 @@
 /* Généré par outils/nouveautes.py — ne pas modifier à la main. */
 window.ECG_NOUVEAUTES = [
 {
+"t": "en",
+"rubrique": "Actu Anglais",
+"meta": "États-Unis",
+"titre": "États-Unis : Huawei reconnu coupable sur 10 des 12 chefs d'accusation par un jury de Brooklyn",
+"url": "actualites/en/articles/us-huawei-coupable-proces-brooklyn-2026.html",
+"image": "actualites/en/images/us-huawei-coupable-proces-brooklyn-2026.webp",
+"date": "2026-11-26T16:26:47+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Colombie",
@@ -1776,15 +1785,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/en/articles/us-trump-poutine-accord-diesel.html",
 "image": "actualites/en/images/us-trump-poutine-accord-diesel.webp",
 "date": "2026-10-10T19:28:55+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "Royaume-Uni",
-"titre": "Les futurs billets de la Banque d'Angleterre porteront des animaux, pas des figures historiques",
-"url": "actualites/en/articles/uk-boe-billets-animaux.html",
-"image": "actualites/en/images/uk-boe-billets-animaux.webp",
-"date": "2026-10-10T19:06:26+00:00"
 },
 {
 "t": "de",
