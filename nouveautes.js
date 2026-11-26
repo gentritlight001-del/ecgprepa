@@ -3,6 +3,15 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "en",
 "rubrique": "Actu Anglais",
+"meta": "Royaume-Uni",
+"titre": "Royaume-Uni : 5 258 décès liés à la chaleur en 2026, un record qui dépasse celui de 2022",
+"url": "actualites/en/articles/uk-record-heat-deaths-ukhsa-2026.html",
+"image": "actualites/en/images/uk-record-heat-deaths-ukhsa-2026.webp",
+"date": "2026-11-26T16:40:43+00:00"
+},
+{
+"t": "en",
+"rubrique": "Actu Anglais",
 "meta": "États-Unis",
 "titre": "États-Unis : Huawei reconnu coupable sur 10 des 12 chefs d'accusation par un jury de Brooklyn",
 "url": "actualites/en/articles/us-huawei-coupable-proces-brooklyn-2026.html",
@@ -1776,15 +1785,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/en/articles/us-ouragan-isaias-2026.html",
 "image": "actualites/en/images/us-ouragan-isaias-2026.webp",
 "date": "2026-10-11T08:39:06+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "Trump annonce un accord avec Poutine sur des livraisons de diesel russe, sanctions suspendues",
-"url": "actualites/en/articles/us-trump-poutine-accord-diesel.html",
-"image": "actualites/en/images/us-trump-poutine-accord-diesel.webp",
-"date": "2026-10-10T19:28:55+00:00"
 },
 {
 "t": "de",
