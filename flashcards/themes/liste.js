@@ -4,6 +4,8 @@
    Chargé avec ?v=<minute> (cache de Cloudflare, voir CLAUDE.md). */
 window.ECG_THEMES = {
   anglais: [
+    { date: "2026-11-27", titre: "Angleterre : 5 258 décès liés à la chaleur, l'été 2026 pulvérise le record", phrases: 5,
+      cartes: ["fc0c4e6aef", "6427b05eed", "17f96e1334", "2f3c448c6b", "7c81025cf1"], aides: 7 },
     { date: "2026-11-26", titre: "GTA VI : 3,79 milliards de dollars en un jour, un record pour le divertissement", phrases: 5,
       cartes: ["440a3bbc91", "4c969c102c", "9d9c070f01", "572ba4a331", "2816a36cc2"], aides: 7 },
     { date: "2026-11-25", titre: "Voyager 1 franchit un jour-lumière, quarante-neuf ans après son lancement", phrases: 5,
