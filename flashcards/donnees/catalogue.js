@@ -12,8 +12,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-11-26",
+  "maj": "2026-11-27",
   "parties": [
+   {
+    "id": "2026-11-27",
+    "nom": "Jour 34 · US Proposes Tariffs of Up to 25% on Indian Goods, 17% If New Delhi Signs a Deal",
+    "n": 30,
+    "date": "2026-11-27"
+   },
    {
     "id": "2026-11-26",
     "nom": "Jour 33 · Iran War: The Senate Refuses to Rein In Donald Trump, Two Weeks After the Republican Rout",
@@ -213,8 +219,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 827,
-  "v": "c79979cb76"
+  "n": 844,
+  "v": "958360ebe8"
  },
  {
   "id": "espagnol",
