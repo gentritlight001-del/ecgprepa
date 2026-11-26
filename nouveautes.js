@@ -3,6 +3,42 @@ window.ECG_NOUVEAUTES = [
 {
 "t": "en",
 "rubrique": "Actu Anglais",
+"meta": "États-Unis",
+"titre": "États-Unis : Washington propose jusqu'à 25 % de droits de douane sur les produits indiens",
+"url": "actualites/en/articles/us-trump-droits-douane-inde-25-2026.html",
+"image": "actualites/en/images/us-trump-droits-douane-inde-25-2026.webp",
+"date": "2026-11-26T17:02:06+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Amérique latine",
+"titre": "Amérique latine : au 25-N, marches contre les féminicides et 24 victimes par jour selon la CEPAL",
+"url": "actualites/es/articles/latam-25n-feminicides-cepal-2026.html",
+"image": "actualites/es/images/latam-25n-feminicides-cepal-2026.webp",
+"date": "2026-11-26T16:59:32+00:00"
+},
+{
+"t": "es",
+"rubrique": "Actu Espagnol",
+"meta": "Colombie",
+"titre": "Colombie : prise d'otages dans un supermarché Éxito de Carthagène, un assaut met fin à 17 heures",
+"url": "actualites/es/articles/co-toma-rehenes-exito-cartagena-2026.html",
+"image": "actualites/es/images/co-toma-rehenes-exito-cartagena-2026.webp",
+"date": "2026-11-26T16:54:11+00:00"
+},
+{
+"t": "de",
+"rubrique": "Actu Allemand",
+"meta": "Allemagne",
+"titre": "Bundestag : Merz défend le budget record de 2027 et admet « ne plus avoir l'argent pour tout »",
+"url": "actualites/de/articles/allemagne-bundestag-generaldebatte-haushalt-2027-2026.html",
+"image": "actualites/de/images/allemagne-bundestag-generaldebatte-haushalt-2027-2026.webp",
+"date": "2026-11-26T16:53:42+00:00"
+},
+{
+"t": "en",
+"rubrique": "Actu Anglais",
 "meta": "Royaume-Uni",
 "titre": "Royaume-Uni : 5 258 décès liés à la chaleur en 2026, un record qui dépasse celui de 2022",
 "url": "actualites/en/articles/uk-record-heat-deaths-ukhsa-2026.html",
@@ -1715,24 +1751,6 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-10-17T20:32:10+00:00"
 },
 {
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Chili",
-"titre": "Chili : José Antonio Kast à La Paz, première visite officielle d'un chef d'État chilien en 71 ans",
-"url": "actualites/es/articles/chili-kast-visite-la-paz-2026.html",
-"image": "actualites/es/images/chili-kast-visite-la-paz-2026.webp",
-"date": "2026-10-17T18:51:33+00:00"
-},
-{
-"t": "es",
-"rubrique": "Actu Espagnol",
-"meta": "Argentine",
-"titre": "Argentine : cinquième marche universitaire pour exiger que Milei applique la loi de financement",
-"url": "actualites/es/articles/argentine-marche-universitaire-2026.html",
-"image": "actualites/es/images/argentine-marche-universitaire-2026.webp",
-"date": "2026-10-17T18:35:05+00:00"
-},
-{
 "t": "cours",
 "rubrique": "Cours",
 "meta": "HGG 2e année · chapitre 3",
@@ -1776,15 +1794,6 @@ window.ECG_NOUVEAUTES = [
 "url": "Culture-Generale/gaz-naturel-liquefie.html",
 "image": "Culture-Generale/images/gaz-naturel-liquefie.webp",
 "date": "2026-10-11T11:12:37+00:00"
-},
-{
-"t": "en",
-"rubrique": "Actu Anglais",
-"meta": "États-Unis",
-"titre": "L'ouragan Isaias touche la Floride : au moins quatre morts et 880 000 clients sans électricité",
-"url": "actualites/en/articles/us-ouragan-isaias-2026.html",
-"image": "actualites/en/images/us-ouragan-isaias-2026.webp",
-"date": "2026-10-11T08:39:06+00:00"
 },
 {
 "t": "de",
@@ -1947,15 +1956,6 @@ window.ECG_NOUVEAUTES = [
 "url": "deuxieme_annee/hgg/chapitre-1-hgg.html",
 "image": "deuxieme_annee/hgg/images/ameriques-mediterranee-americaine.webp",
 "date": "2026-09-21T19:18:06+00:00"
-},
-{
-"t": "de",
-"rubrique": "Actu Allemand",
-"meta": "Allemagne",
-"titre": "Terrorisme islamiste : Berlin dévoile un plan d'action en dix points après l'attentat du CSD de Berlin",
-"url": "actualites/de/articles/plan-action-terrorisme-islamiste.html",
-"image": "actualites/de/images/plan-action-terrorisme-islamiste.webp",
-"date": "2026-09-18T20:00:18+00:00"
 },
 {
 "t": "cg",
