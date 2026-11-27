@@ -1,7 +1,7 @@
 /* ══════════════════════════════════════════════════════════════
    Schémas interactifs des chapitres de maths (cours-maths.css).
    Moteur repris de cours-particuliers/schema.js (fiche « La dérivation »).
-   <div class="fig" data-schema="secante|reference|trigo|pascal|telescope|produit|transposee|suites|toile|integrale|primitive" data-titre="…"></div>
+   <div class="fig" data-schema="secante|reference|trigo|pascal|telescope|produit|transposee|suites|toile|integrale|primitive|gauss|droites" data-titre="…"></div>
    Le script construit le dessin (SVG), les curseurs, les boutons et les
    valeurs lues. Toutes les écritures mathématiques sont en KaTeX (dans le
    SVG par <foreignObject>). Les couleurs viennent du CSS (classes .fig …).
@@ -478,6 +478,60 @@
     };
   }
 
+
+  /* ─── 10. systèmes : le pivot de Gauss pas à pas, deux droites ─── */
+  var GAUSS = [
+    { L: ['x + y + z = 6', '2x + 3y + z = 11', 'x - y + 2z = 5'], piv: -1, mod: [], op: '',
+      note: 'Le système de départ : trois équations, trois inconnues. On choisit \\(L_1\\) comme ligne pivot pour éliminer \\(x\\).' },
+    { L: ['x + y + z = 6', 'y - z = -1', '-2y + z = -1'], piv: 0, mod: [1, 2], op: ['', 'L_2 \\leftarrow L_2 - 2L_1', 'L_3 \\leftarrow L_3 - L_1'],
+      note: '\\(x\\) a disparu des lignes \\(2\\) et \\(3\\). La nouvelle ligne pivot est \\(L_2\\), pour éliminer \\(y\\) de \\(L_3\\).' },
+    { L: ['x + y + z = 6', 'y - z = -1', '-z = -3'], piv: 1, mod: [2], op: ['', '', 'L_3 \\leftarrow L_3 + 2L_2'],
+      note: 'Le système est triangulaire (échelonné) : il a les mêmes solutions que le système de départ.' },
+    { L: ['x = 6 - y - z = 1', 'y = -1 + z = 2', 'z = 3'], piv: -1, mod: [0, 1, 2], op: ['', '', '\\text{remontée}'],
+      note: 'On remonte : \\(L_3\\) donne \\(z\\), puis \\(L_2\\) donne \\(y\\), puis \\(L_1\\) donne \\(x\\). Solution unique : \\((1, 2, 3)\\).' }
+  ];
+  function gauss(S) {
+    var E = GAUSS[S.e], g = '';
+    for (var i = 0; i < 3; i++) {
+      var y = 60 + i * 86, cls = E.mod.indexOf(i) >= 0 ? 'mod' : (E.piv === i ? 'piv' : '');
+      g += '<rect class="ga ' + cls + '" x="60" y="' + (y - 34) + '" width="520" height="68" rx="14"/>';
+      g += lbl(84, y, 'L_' + (i + 1), { cls: 'g', w: 60 });
+      g += lbl(150, y, E.L[i], { cls: 'ga-t ' + cls, w: 420 });
+      if (E.op && E.op[i]) g += lbl(600, y, E.op[i], { cls: 'o sm', w: 300 });
+      if (E.piv === i) g += lbl(600, y, '\\text{ligne pivot}', { cls: 'b sm', w: 300 });
+    }
+    return {
+      svg: g,
+      infos: [{ lab: 'Étape ' + S.e + ' sur 3', tex: ['\\text{le système}', '\\text{on élimine } x', '\\text{on élimine } y', '\\text{on remonte}'][S.e], cls: '' }],
+      note: E.note
+    };
+  }
+  function droites(S) {
+    var a = S.a, b = S.b, xr = [-3, 5], yr = [-3, 5];
+    var r = repere([60, 20, 600, 420], xr, yr), g = '<defs>' + clip(r) + '</defs>' + axes(r) + '<g clip-path="url(#' + r.cx + ')">';
+    var det = 2 - a, d1 = function (x) { return 2 - x; }, d2 = function (x) { return (b - a * x) / 2; };
+    g += trait(r, xr[0], d1(xr[0]), xr[1], d1(xr[1]), 'cv') + trait(r, xr[0], d2(xr[0]), xr[1], d2(xr[1]), 'cv d2');
+    var verdict, sol = '';
+    if (Math.abs(det) > 1e-9) {
+      var x = (4 - b) / det, y = 2 - x;
+      if (x > xr[0] && x < xr[1] && y > yr[0] && y < yr[1]) g += point(r, x, y);
+      verdict = '\\text{une seule solution}'; sol = '(x, y) = (' + nbT(x, 2) + ', ' + nbT(y, 2) + ')';
+    } else if (Math.abs(b - 4) < 1e-9) { verdict = '\\text{droites confondues : une infinité de solutions}'; sol = 'x + y = 2'; }
+    else { verdict = '\\text{droites parallèles : aucune solution}'; sol = '\\varnothing'; }
+    g += '</g>';
+    g += lbl(620, 60, 'x + y = 2', { cls: 'b', w: 330 });
+    g += lbl(620, 110, nbT(a, 2) + '\\,x + 2y = ' + nbT(b, 2), { cls: 'tgt', w: 330 });
+    g += lbl(620, 190, '\\det = 2 - a = ' + nbT(det, 2), { cls: 'sm', w: 340, h: 44 });
+    return {
+      svg: g,
+      infos: [
+        { lab: 'Nombre de solutions', tex: verdict, cls: Math.abs(det) > 1e-9 ? 'b' : 'o' },
+        { lab: 'Solutions', tex: sol, cls: '' }
+      ],
+      note: 'La matrice du système est \\(\\begin{pmatrix} 1 & 1 \\\\ a & 2 \\end{pmatrix}\\) : si \\(2 - a \\neq 0\\), elle est inversible et le système a une unique solution (système de Cramer). Si \\(a = 2\\), il y en a zéro ou une infinité, selon \\(b\\).'
+    };
+  }
+
   /* ─── fabrique ─── */
   var TYPES = {
     secante: {
@@ -561,6 +615,16 @@
                 { k: 'x', t: 'range', tex: 'x', min: P.x[0], max: P.x[1], step: 0.02 }];
       },
       draw: primitive, hauteur: 350
+    },
+    gauss: {
+      etat: function () { return { e: 0 }; },
+      ctl: function () { return [{ t: 'choix', k: 'e', q: 'Étape', opts: [[0, '0 \\cdot \\text{départ}'], [1, '1 \\cdot \\text{éliminer } x'], [2, '2 \\cdot \\text{éliminer } y'], [3, '3 \\cdot \\text{remonter}']] }]; },
+      draw: gauss, hauteur: 300
+    },
+    droites: {
+      etat: function () { return { a: -1, b: 2 }; },
+      ctl: function () { return [{ k: 'a', t: 'range', tex: 'a', min: -3, max: 5, step: 0.1, aimant: [2] }, { k: 'b', t: 'range', tex: 'b', min: -2, max: 8, step: 0.1, aimant: [4] }]; },
+      draw: droites, hauteur: 440
     }
   };
 
