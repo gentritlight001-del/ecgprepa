@@ -1,7 +1,7 @@
 /* ══════════════════════════════════════════════════════════════
    Schémas interactifs des chapitres de maths (cours-maths.css).
    Moteur repris de cours-particuliers/schema.js (fiche « La dérivation »).
-   <div class="fig" data-schema="secante|reference|trigo|pascal|telescope" data-titre="…"></div>
+   <div class="fig" data-schema="secante|reference|trigo|pascal|telescope|produit|transposee" data-titre="…"></div>
    Le script construit le dessin (SVG), les curseurs, les boutons et les
    valeurs lues. Toutes les écritures mathématiques sont en KaTeX (dans le
    SVG par <foreignObject>). Les couleurs viennent du CSS (classes .fig …).
@@ -283,6 +283,73 @@
     };
   }
 
+
+  /* ─── 6. matrices : dessin d'un tableau de coefficients ─── */
+  var MCW = 66, MCH = 54;
+  function matrice(M, x0, y0, o) {          /* o.on(i, j) → classe de la case ; o.clic : préfixe de data-clic */
+    o = o || {};
+    var n = M.length, p = M[0].length, g = '', h = n * MCH, w = p * MCW;
+    for (var i = 0; i < n; i++) for (var j = 0; j < p; j++) {
+      var c = o.on ? o.on(i, j) : '', x = x0 + j * MCW, y = y0 + i * MCH;
+      g += '<rect class="cel ' + c + '"' + (o.clic ? ' data-clic="' + o.clic + ',' + i + ',' + j + '"' : '') + ' x="' + (x + 3) + '" y="' + (y + 3) + '" width="' + (MCW - 6) + '" height="' + (MCH - 6) + '" rx="8"/>' +
+           lbl(x + MCW / 2, y + MCH / 2, String(M[i][j]).replace('-', '-'), { an: 'middle', cls: 'cel-t ' + c, w: MCW, h: MCH });
+    }
+    /* parenthèses */
+    g += '<path class="par-m" d="M' + (x0 - 2) + ',' + (y0 + 4) + ' q-14,' + (h / 2 - 4) + ' 0,' + (h - 8) + '"/>' +
+         '<path class="par-m" d="M' + (x0 + w + 2) + ',' + (y0 + 4) + ' q14,' + (h / 2 - 4) + ' 0,' + (h - 8) + '"/>';
+    return g;
+  }
+  function signe(v) { return v < 0 ? '(' + v + ')' : String(v); }
+
+  /* produit matriciel en tableau : B en haut, A à gauche, C = A × B dans le tableau */
+  var PA = [[1, 2, 3], [0, -1, 2]], PB = [[2, 1], [0, 3], [1, -1]];
+  function produit(S) {
+    var i = S.i, j = S.j, r = PB.length;
+    var C = PA.map(function (l) { return PB[0].map(function (_, c) { var t = 0; for (var k = 0; k < r; k++) t += l[k] * PB[k][c]; return t; }); });
+    var xb = 330, yb = 46, xa = xb - 3 * MCW - 40, ya = yb + r * MCH + 34;
+    var g = '';
+    g += lbl(xb + 2 * MCW + 28, yb + r * MCH / 2, 'B', { cls: 'b', w: 60 });
+    g += lbl(xa - 28, ya + MCH, 'A', { an: 'end', cls: 'b', w: 60 });
+    g += lbl(xb + 2 * MCW + 28, ya + MCH, 'C = A \\times B', { cls: 'b', w: 220 });
+    g += '<line class="as" x1="' + (xb - 20) + '" y1="' + (yb - 10) + '" x2="' + (xb - 20) + '" y2="' + (ya + 2 * MCH + 6) + '"/>' +
+         '<line class="as" x1="' + (xa - 10) + '" y1="' + (ya - 17) + '" x2="' + (xb + 2 * MCW + 16) + '" y2="' + (ya - 17) + '"/>';
+    g += matrice(PB, xb, yb, { on: function (a, b) { return b === j ? 'lu' : ''; } });
+    g += matrice(PA, xa, ya, { on: function (a) { return a === i ? 'lu' : ''; } });
+    g += matrice(C, xb, ya, { clic: 'c', on: function (a, b) { return a === i && b === j ? 'sel' : 'vide'; } });
+    var termes = [], nums = [];
+    for (var k = 0; k < r; k++) { termes.push('a_{' + (i + 1) + (k + 1) + '}b_{' + (k + 1) + (j + 1) + '}'); nums.push(signe(PA[i][k]) + ' \\times ' + signe(PB[k][j])); }
+    return {
+      svg: g,
+      infos: [
+        { lab: 'Le coefficient choisi', tex: 'c_{' + (i + 1) + (j + 1) + '} = ' + termes.join(' + '), cls: '' },
+        { lab: 'Le calcul', tex: nums.join(' + ') + ' = ' + C[i][j], cls: 'o' }
+      ],
+      note: 'Clique sur une case de \\(C\\) : on la remplit avec la ligne de \\(A\\) à sa gauche et la colonne de \\(B\\) au-dessus d\'elle, terme à terme. \\(A\\) a \\(3\\) colonnes et \\(B\\) a \\(3\\) lignes : le produit est possible.'
+    };
+  }
+
+  /* transposée : le coefficient (i, j) de A devient le coefficient (j, i) de tA */
+  var TA = [[1, 2, 3], [4, 5, 6]];
+  function transposee(S) {
+    var i = S.i, j = S.j, t = TA[0].map(function (_, c) { return TA.map(function (l) { return l[c]; }); });
+    var xa = 90, ya = 80, xt = 450, yt = 40, g = '';
+    g += lbl(xa + 1.5 * MCW, ya - 30, 'A \\in \\mathcal{M}_{2,3}(\\mathbb{R})', { an: 'middle', cls: 'b sm', w: 300, h: 40 });
+    g += lbl(xt + MCW, yt + 3 * MCH + 30, '{}^tA \\in \\mathcal{M}_{3,2}(\\mathbb{R})', { an: 'middle', cls: 'b sm', w: 300, h: 40 });
+    g += '<line class="as" x1="' + (xa + 6) + '" y1="' + (ya + 6) + '" x2="' + (xa + 2 * MCW + 30) + '" y2="' + (ya + 2 * MCH + 30) + '"/>';
+    g += matrice(TA, xa, ya, { clic: 'a', on: function (a, b) { return a === i && b === j ? 'sel' : (a === b ? 'diag' : ''); } });
+    g += matrice(t, xt, yt, { clic: 't', on: function (a, b) { return a === j && b === i ? 'lu' : (a === b ? 'diag' : ''); } });
+    g += '<path class="sc" d="M' + (xa + 3 * MCW + 26) + ',' + (ya + MCH) + ' C' + (xa + 3 * MCW + 90) + ',' + (ya + MCH - 40) + ' ' + (xt - 90) + ',' + (yt + 1.5 * MCH - 40) + ' ' + (xt - 26) + ',' + (yt + 1.5 * MCH) + '" marker-end="url(#fl-t)"/>';
+    g = '<defs><marker id="fl-t" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#c2410c"/></marker></defs>' + g;
+    return {
+      svg: g,
+      infos: [
+        { lab: 'Dans A', tex: 'a_{' + (i + 1) + ',' + (j + 1) + '} = ' + TA[i][j], cls: 'b' },
+        { lab: 'Dans la transposée', tex: '({}^tA)_{' + (j + 1) + ',' + (i + 1) + '} = ' + TA[i][j], cls: 'o' }
+      ],
+      note: 'Clique sur un coefficient : la ligne \\(' + (i + 1) + '\\) de \\(A\\) devient la colonne \\(' + (i + 1) + '\\) de \\({}^tA\\). Les coefficients diagonaux (en couleur pâle) ne bougent pas.'
+    };
+  }
+
   /* ─── fabrique ─── */
   var TYPES = {
     secante: {
@@ -318,6 +385,18 @@
       etat: function () { return { n: 4 }; },
       ctl: function () { return [{ k: 'n', t: 'range', tex: 'n', min: 2, max: 6, step: 1 }]; },
       draw: telescope, hauteur: 400, largeur: 720
+    },
+    produit: {
+      etat: function () { return { i: 0, j: 1 }; },
+      ctl: function () { return []; },
+      clic: function (S, v) { var q = v.split(','); S.i = +q[1]; S.j = +q[2]; },
+      draw: produit, hauteur: 360, largeur: 720
+    },
+    transposee: {
+      etat: function () { return { i: 0, j: 2 }; },
+      ctl: function () { return []; },
+      clic: function (S, v) { var q = v.split(','); if (q[0] === 'a') { S.i = +q[1]; S.j = +q[2]; } else { S.i = +q[2]; S.j = +q[1]; } },
+      draw: transposee, hauteur: 300, largeur: 720
     }
   };
 
