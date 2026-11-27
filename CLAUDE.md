@@ -510,22 +510,22 @@ page pays ou région :
   `.ci-vig`) : chaque ligne montre une vignette (`vignettes/chapitre-N.webp`, 360 px, WebP), à créer pour tout nouveau
   chapitre : l'image du héros en HGG, une photo ou un tableau libre de droits (Commons) qui évoque le chapitre en ESH et en philo.
   Maths et langues gardent le repère numéroté (choix du propriétaire).
-- **Chapitres de maths de 1re année : gabarit « fiche de cours »** (demande du propriétaire, novembre 2026 ; faits : chapitres 1 à 5,
+- **Chapitres de maths de 1re année : gabarit « fiche de cours »** (demande du propriétaire, novembre 2026 ; faits : chapitres 1 à 6,
   à reprendre un par un, demande type : « go chap N »). Style des fiches de l'espace de cours particuliers (fiche 02, la dérivation)
   **sans « À toi de jouer » ni exercice**. Feuille commune `cours-maths.css` (classes de `cours-particuliers/fiche.css` : `fx-tete`,
   `fx-ess`, `fx-partie`, `bloc definition|propriete|theoreme|methode|exemple`, `details.bloc.demo.option`, `notes > note.piege|retenir`,
   `formules > formule`, `tab-val` dans `defil`, `pre.code`, plus `h3.fx-sous` pour les sous-parties « 2.1 »), `cours-maths.js` (KaTeX)
-  et `cours-maths-schemas.js` (schémas interactifs `<div class="fig" data-schema="secante|reference|trigo|pascal|telescope|produit|transposee|suites|toile|integrale|primitive">`, moteur
+  et `cours-maths-schemas.js` (schémas interactifs `<div class="fig" data-schema="secante|reference|trigo|pascal|telescope|produit|transposee|suites|toile|integrale|primitive|gauss|droites">`, moteur
   repris de `cours-particuliers/schema.js`). Jamais de lien vers `cours-particuliers/` depuis ces pages. Refonte = même nom de fichier,
   balises `og:`/description/canonical gardées, tout le texte de l'ancien cours repris (fautes corrigées et signalées), pas de sommaire,
   bas de page `fx-fin` (chapitre précédent, tous les chapitres, chapitre suivant), espaces insécables hors formules, formules qui
-  tiennent à 390 px (couper en `aligned` ou passer la condition dans le texte). **À faire d'office à chaque chapitre** (consigne du
+  tiennent à 390 px (couper en `aligned` ou passer la condition dans le texte ; `.bloc` masque ce qui dépasse : vérifier aussi les formules en ligne des étapes, qui peuvent être coupées sans défilement visible). **À faire d'office à chaque chapitre** (consigne du
   propriétaire) : un exemple résolu en 3 étapes par partie ou sous-partie importante, les démonstrations utiles repliées « à
   dérouler », un ou deux schémas interactifs pertinents (nouveau type = une fonction de dessin et une entrée de `TYPES`), et les
   retouches de contenu évidentes ; signaler dans la réponse ce qui a été ajouté ou corrigé. **Une couleur par chapitre**, jamais deux
   fois la même : classe `pal-<nom>` sur le `<body>`, définie à la fin de `cours-maths.css` (`--vert*` = couleur du chapitre,
   `--bleu*` = couleur des « À retenir », `--tete-p`). Prises : chapitre 1 bleu encre `#1f4e96` (défaut, « À retenir » sarcelle),
-  chapitre 2 vert sapin `#24643a` (`pal-sapin`, « À retenir » bleu), chapitre 3 grenat `#8c1c3c` (`pal-grenat`, « À retenir » sarcelle), chapitre 4 bleu pétrole `#0d5b73` (`pal-petrole`, « À retenir » vert), chapitre 5 vert olive `#566b14` (`pal-olive`, « À retenir » bleu). Éviter le violet (réservé aux blocs « Méthode ») et l'orange
+  chapitre 2 vert sapin `#24643a` (`pal-sapin`, « À retenir » bleu), chapitre 3 grenat `#8c1c3c` (`pal-grenat`, « À retenir » sarcelle), chapitre 4 bleu pétrole `#0d5b73` (`pal-petrole`, « À retenir » vert), chapitre 5 vert olive `#566b14` (`pal-olive`, « À retenir » bleu), chapitre 6 brun cacao `#6b3e26` (`pal-cacao`, « À retenir » sarcelle). Éviter le violet (réservé aux blocs « Méthode ») et l'orange
   (pièges).
 - Un nouveau chapitre reprend la page du chapitre précédent. Par exemple
   `deuxieme_annee/maths/chapitre1.html` : palette sarcelle, titre du héros sur
