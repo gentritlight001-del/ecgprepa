@@ -12,8 +12,14 @@ window.ECG_FC_CATALOGUE = [
   "verso": "Anglais",
   "lien": "premiere_annee/langues/anglais/quotidien/index.html",
   "revoir": "ecg-anglais-quotidien-a-revoir",
-  "maj": "2026-11-27",
+  "maj": "2026-11-28",
   "parties": [
+   {
+    "id": "2026-11-28",
+    "nom": "Jour 35 · UK Heat Deaths Hit a Record 5,258 in 2026, Far Above 2022's Previous High",
+    "n": 30,
+    "date": "2026-11-28"
+   },
    {
     "id": "2026-11-27",
     "nom": "Jour 34 · US Proposes Tariffs of Up to 25% on Indian Goods, 17% If New Delhi Signs a Deal",
@@ -219,8 +225,8 @@ window.ECG_FC_CATALOGUE = [
     "date": "2026-10-10"
    }
   ],
-  "n": 844,
-  "v": "958360ebe8"
+  "n": 871,
+  "v": "a82df0488f"
  },
  {
   "id": "espagnol",
