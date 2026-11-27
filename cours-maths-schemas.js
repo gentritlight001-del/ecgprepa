@@ -1,7 +1,7 @@
 /* ══════════════════════════════════════════════════════════════
    Schémas interactifs des chapitres de maths (cours-maths.css).
    Moteur repris de cours-particuliers/schema.js (fiche « La dérivation »).
-   <div class="fig" data-schema="secante|reference|trigo" data-titre="…"></div>
+   <div class="fig" data-schema="secante|reference|trigo|pascal|telescope" data-titre="…"></div>
    Le script construit le dessin (SVG), les curseurs, les boutons et les
    valeurs lues. Toutes les écritures mathématiques sont en KaTeX (dans le
    SVG par <foreignObject>). Les couleurs viennent du CSS (classes .fig …).
@@ -213,6 +213,76 @@
     };
   }
 
+
+  /* ─── 4. triangle de Pascal : chaque nombre est la somme des deux au-dessus ─── */
+  function binom(n, k) {
+    if (k < 0 || k > n) return 0;
+    var r = 1;
+    for (var i = 1; i <= k; i++) r = r * (n - k + i) / i;
+    return Math.round(r);
+  }
+  var PAS_N = 7, PAS_DX = 84, PAS_DY = 52, PAS_W = 820, PAS_CX = 470;
+  function pasPos(n, k) { return [PAS_CX + (k - n / 2) * PAS_DX, 34 + n * PAS_DY]; }
+  function pascal(S) {
+    var n = S.n, k = S.k, g = '', c = pasPos(n, k);
+    var par = [[n - 1, k - 1], [n - 1, k]].filter(function (q) { return q[1] >= 0 && q[1] <= q[0]; });
+    par.forEach(function (q) {
+      var a = pasPos(q[0], q[1]);
+      g += '<line class="sc" x1="' + a[0].toFixed(1) + '" y1="' + a[1] + '" x2="' + c[0].toFixed(1) + '" y2="' + c[1] + '"/>';
+    });
+    for (var i = 0; i <= PAS_N; i++) {
+      for (var j = 0; j <= i; j++) {
+        var p = pasPos(i, j), sel = (i === n && j === k), pa = par.some(function (q) { return q[0] === i && q[1] === j; });
+        g += '<circle class="pas' + (sel ? ' sel' : pa ? ' par' : '') + '" data-clic="' + i + ',' + j + '" cx="' + p[0].toFixed(1) + '" cy="' + p[1] + '" r="23"/>' +
+             lbl(p[0], p[1], String(binom(i, j)), { an: 'middle', cls: 'pas-t' + (sel ? ' sel' : pa ? ' par' : ''), w: 60, h: 40 });
+      }
+      g += lbl(18, pasPos(i, 0)[1], 'n = ' + i, { cls: 'g sm', w: 110, h: 40 });
+    }
+    var a = binom(n - 1, k - 1), b = binom(n - 1, k);
+    var bord = (k === 0 || k === n);
+    return {
+      svg: g,
+      infos: [
+        { lab: 'Le nombre choisi', tex: '\\dbinom{' + n + '}{' + k + '} = ' + binom(n, k), cls: '' },
+        { lab: 'Formule de Pascal', tex: '\\dbinom{' + (n - 1) + '}{' + (k - 1) + '} + \\dbinom{' + (n - 1) + '}{' + k + '} = ' + a + ' + ' + b + ' = ' + (a + b), cls: 'o' }
+      ],
+      note: bord ? 'Au bord du triangle, un des deux termes est un \\(\\binom{n-1}{-1}\\) ou un \\(\\binom{n-1}{n}\\), qui vaut \\(0\\) : on retrouve \\(1\\).'
+                 : 'Clique sur un nombre (ou utilise les curseurs) : il est la somme des deux nombres situés au-dessus de lui.'
+    };
+  }
+
+  /* ─── 5. somme télescopique : les termes du milieu s'annulent ─── */
+  function telescope(S) {
+    var n = S.n, g = '', y0 = 44, dy = 78, xa = 250, xb = 470;
+    function frac(k) { return k === 1 ? '1' : '\\dfrac{1}{' + k + '}'; }
+    for (var k = 1; k <= n; k++) {
+      var y = y0 + (k - 1) * dy, premier = (k === 1), dernier = (k === n);
+      g += lbl(40, y, 'k = ' + k, { cls: 'g sm', w: 120, h: 44 });
+      g += lbl(xa - 70, y, '\\Big(', { an: 'middle', w: 40, h: 70 }) + lbl(xb + 70, y, '\\Big)', { an: 'middle', w: 40, h: 70 });
+      g += lbl(xa, y, frac(k), { an: 'middle', cls: premier ? 'b' : 'barre', w: 90, h: 70 });
+      g += lbl((xa + xb) / 2, y, '-', { an: 'middle', w: 40, h: 44 });
+      g += lbl(xb, y, frac(k + 1), { an: 'middle', cls: dernier ? 'o' : 'barre', w: 90, h: 70 });
+      if (!premier) g += '<line class="bar" x1="' + (xa - 26) + '" y1="' + (y - 18) + '" x2="' + (xa + 26) + '" y2="' + (y + 18) + '"/>';
+      if (!dernier) {
+        g += '<line class="bar" x1="' + (xb - 26) + '" y1="' + (y - 18) + '" x2="' + (xb + 26) + '" y2="' + (y + 18) + '"/>';
+        g += '<line class="gd" x1="' + (xb - 36) + '" y1="' + (y + 26) + '" x2="' + (xa + 36) + '" y2="' + (y + dy - 26) + '"/>';
+      }
+      if (k < n) g += lbl(xb + 108, y + dy / 2, '+', { an: 'middle', cls: 'g', w: 40, h: 40 });
+    }
+    var yr = y0 + n * dy - 4;
+    g += '<line class="ax" x1="160" y1="' + (yr - 24) + '" x2="580" y2="' + (yr - 24) + '"/>';
+    g += lbl(360, yr + 10, 'S_' + n + ' = 1 - \\dfrac{1}{' + (n + 1) + '} = \\dfrac{' + n + '}{' + (n + 1) + '}', { an: 'middle', cls: 'b', w: 520, h: 60 });
+    return {
+      svg: g,
+      hauteur: yr + 50,
+      infos: [
+        { lab: 'Le premier terme', tex: '1', cls: 'b' },
+        { lab: 'Le dernier terme', tex: '-\\dfrac{1}{' + (n + 1) + '}', cls: 'o' }
+      ],
+      note: 'Chaque \\(-\\frac{1}{k+1}\\) d\'une ligne s\'annule avec le \\(+\\frac{1}{k+1}\\) de la ligne suivante (en pointillés) : il ne reste que le premier et le dernier terme.'
+    };
+  }
+
   /* ─── fabrique ─── */
   var TYPES = {
     secante: {
@@ -236,6 +306,18 @@
                 { k: 't', t: 'range', tex: '\\theta', min: 0, max: +(2 * PI).toFixed(2), step: 0.01, aimant: ANGLES.map(function (a) { return a[0]; }).concat([5 * PI / 6, 2 * PI / 3, 3 * PI / 4, 7 * PI / 6, 5 * PI / 4, 4 * PI / 3, 3 * PI / 2, 5 * PI / 3, 7 * PI / 4, 11 * PI / 6]) }];
       },
       draw: trigo, hauteur: 380
+    },
+    pascal: {
+      etat: function () { return { n: 5, k: 2 }; },
+      ctl: function () { return [{ k: 'n', t: 'range', tex: 'n', min: 1, max: PAS_N, step: 1 }, { k: 'k', t: 'range', tex: 'k', min: 0, max: PAS_N, step: 1 }]; },
+      norm: function (S) { if (S.n < 1) S.n = 1; if (S.k > S.n) S.k = S.n; },
+      clic: function (S, v) { var q = v.split(','); if (+q[0] >= 1) { S.n = +q[0]; S.k = +q[1]; } },
+      draw: pascal, hauteur: 430, largeur: PAS_W
+    },
+    telescope: {
+      etat: function () { return { n: 4 }; },
+      ctl: function () { return [{ k: 'n', t: 'range', tex: 'n', min: 2, max: 6, step: 1 }]; },
+      draw: telescope, hauteur: 400, largeur: 720
     }
   };
 
@@ -252,7 +334,7 @@
 
     function dessiner() {
       var d = TT.draw(S);
-      zone.innerHTML = '<svg viewBox="0 0 960 ' + TT.hauteur + '" role="img" aria-label="Schéma interactif">' + d.svg + '</svg>';
+      zone.innerHTML = '<svg viewBox="0 0 ' + (TT.largeur || 960) + ' ' + (d.hauteur || TT.hauteur) + '" role="img" aria-label="Schéma interactif">' + d.svg + '</svg>';
       infos.innerHTML = d.infos.map(function (x) {
         return '<span class="fig-i1 ' + x.cls + '"><em>' + x.lab + '</em><b>' + K(x.tex) + '</b></span>';
       }).join('');
@@ -262,14 +344,19 @@
     function synchroniser() {
       Object.keys(ins).forEach(function (k) {
         ins[k].value = S[k];
-        if (vals[k]) vals[k].innerHTML = K(ins[k].getAttribute('data-tex') + ' = ' + nbT(+S[k], 2));
+        if (vals[k]) vals[k].innerHTML = K(ins[k].getAttribute('data-tex') + ' = ' + (+ins[k].step >= 1 ? String(S[k]) : nbT(+S[k], 2)));
       });
       puces.forEach(function (p) { p.bt.setAttribute('aria-pressed', egal(p.v, S[p.k]) ? 'true' : 'false'); });
     }
     function maj() {
       if (S.h != null && Math.abs(S.h) < 0.005) S.h = 0.01;     /* h ≠ 0 */
+      if (TT.norm) TT.norm(S);
       synchroniser(); dessiner();
     }
+    if (TT.clic) zone.addEventListener('click', function (e) {
+      var c = e.target.closest ? e.target.closest('[data-clic]') : null;
+      if (c) { TT.clic(S, c.getAttribute('data-clic')); maj(); }
+    });
     function construire() {
       var defs = TT.ctl(S);
       ctl.innerHTML = ''; ins = {}; vals = {}; puces = [];
