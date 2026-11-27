@@ -1,7 +1,7 @@
 /* ══════════════════════════════════════════════════════════════
    Schémas interactifs des chapitres de maths (cours-maths.css).
    Moteur repris de cours-particuliers/schema.js (fiche « La dérivation »).
-   <div class="fig" data-schema="secante|reference|trigo|pascal|telescope|produit|transposee" data-titre="…"></div>
+   <div class="fig" data-schema="secante|reference|trigo|pascal|telescope|produit|transposee|suites|toile" data-titre="…"></div>
    Le script construit le dessin (SVG), les curseurs, les boutons et les
    valeurs lues. Toutes les écritures mathématiques sont en KaTeX (dans le
    SVG par <foreignObject>). Les couleurs viennent du CSS (classes .fig …).
@@ -350,6 +350,72 @@
     };
   }
 
+
+  /* ─── 7. suites : les termes u_n pour n de 0 à 20 ─── */
+  function suites(S) {
+    var q = S.q, geo = S.t === 'geo', xr = [-0.8, 20.8], yr = [-3, 5];
+    var r = repere([70, 20, 930, 300], xr, yr), u = [], g = '';
+    u[0] = geo ? 1 : 0;
+    for (var n = 1; n <= 20; n++) u[n] = geo ? u[n - 1] * q : q * u[n - 1] + 1;
+    var conv = geo ? (Math.abs(q) < 1 || Math.abs(q - 1) < 1e-9) : Math.abs(q) < 1;
+    var lim = geo ? (Math.abs(q - 1) < 1e-9 ? 1 : 0) : 1 / (1 - q);
+    g += '<defs>' + clip(r) + '</defs>' + axes(r);
+    [5, 10, 15, 20].forEach(function (k) {
+      g += '<line class="ax" x1="' + r.X(k).toFixed(1) + '" y1="' + (r.Y(0) - 6).toFixed(1) + '" x2="' + r.X(k).toFixed(1) + '" y2="' + (r.Y(0) + 6).toFixed(1) + '"/>' +
+           lbl(r.X(k), r.Y(0) + 26, String(k), { an: 'middle', cls: 'g sm', w: 60, h: 36 });
+    });
+    g += '<g clip-path="url(#' + r.cx + ')">';
+    if (conv) g += trait(r, xr[0], lim, xr[1], lim, 'gd');
+    for (var k = 0; k <= 20; k++) if (isFinite(u[k]) && u[k] > yr[0] - 1 && u[k] < yr[1] + 1) g += point(r, k, u[k], 'pt-s');
+    g += '</g>';
+    g += lbl(r.x1, r.Y(0) - 22, 'n', { an: 'end', cls: 'g sm', w: 40, h: 36 });
+    if (conv && (!geo || lim !== 0)) g += lbl(r.x1 - 6, r.Y(lim) - 22, (geo ? '' : '\\ell = ') + nbT(lim, 2), { an: 'end', cls: 'b sm', w: 200, h: 36 });
+    var verdict, qt = nbT(q, 2);
+    if (geo) verdict = Math.abs(q - 1) < 1e-9 ? 'q = 1 : \\text{ suite constante, limite } 1' : (Math.abs(q) < 1 ? '|q| < 1 : \\text{ converge vers } 0' : (q > 1 ? 'q > 1 : \\text{ diverge vers } +\\infty' : 'q \\leq -1 : \\text{ pas de limite}'));
+    else verdict = Math.abs(q) < 1 ? '|a| < 1 : \\text{ converge vers } \\ell = \\tfrac{1}{1-a} = ' + nbT(lim, 2) : (Math.abs(q - 1) < 1e-9 ? 'a = 1 : u_n = n \\text{, diverge vers } +\\infty' : (q > 1 ? 'a > 1 : \\text{ diverge vers } +\\infty' : 'a \\leq -1 : \\text{ pas de limite}'));
+    return {
+      svg: g,
+      infos: [
+        { lab: 'La suite', tex: geo ? 'u_0 = 1, \\quad u_{n+1} = ' + qt + '\\, u_n' : 'u_0 = 0, \\quad u_{n+1} = ' + qt + '\\, u_n + 1', cls: '' },
+        { lab: 'Son comportement', tex: verdict, cls: conv ? 'b' : 'o' }
+      ],
+      note: geo ? 'Les points sont les termes \\(u_n = q^n\\). Au-delà de \\(|q| = 1\\), ils sortent vite du cadre ou oscillent sans se rapprocher d\'une valeur.'
+                : 'Le pointillé est le point fixe \\(\\ell\\), solution de \\(\\ell = a\\ell + 1\\). Pour \\(|a| < 1\\), \\(u_n - \\ell\\) est géométrique de raison \\(a\\) et tend vers \\(0\\).'
+    };
+  }
+
+  /* ─── 8. suite u_{n+1} = f(u_n) : l'escalier (ou l'escargot) ─── */
+  var TOILE = {
+    racine: { tex: '\\sqrt{x+2}', f: function (x) { return Math.sqrt(x + 2); }, dom: [-2, Infinity], xr: [-0.6, 3.4], u: [-2, 3.3], u0: 0,
+              note: 'L\'escalier monte vers l\'intersection avec \\(y = x\\) : la limite vérifie \\(L = \\sqrt{L + 2}\\), d\'où \\(L^2 = L + 2\\) et \\(L = 2\\) (l\'autre solution, \\(-1\\), est négative).' },
+    inverse: { tex: '1 + \\dfrac{1}{x}', f: function (x) { return 1 + 1 / x; }, dom: [0.05, Infinity], xr: [0, 3.4], u: [0.35, 3.3], u0: 0.5,
+              note: 'Ici les termes tournent autour de la limite (en escargot). \\(L = 1 + \\frac{1}{L}\\) donne \\(L^2 - L - 1 = 0\\), dont la solution positive est \\(L = \\frac{1 + \\sqrt{5}}{2} \\approx 1{,}618\\).' },
+    carre:  { tex: 'x^2', f: function (x) { return x * x; }, dom: [-Infinity, Infinity], xr: [-0.15, 1.7], u: [0, 1.25], u0: 0.9,
+              note: '\\(L = L^2\\) a deux solutions, \\(0\\) et \\(1\\). Si \\(0 \\leq u_0 < 1\\), la suite tend vers \\(0\\) ; si \\(u_0 > 1\\), elle tend vers \\(+\\infty\\) : l\'équation donne les limites possibles, pas l\'existence.' }
+  };
+  var TOILE_CHOIX = [['racine', 'f(x) = \\sqrt{x+2}'], ['inverse', 'f(x) = 1 + \\frac{1}{x}'], ['carre', 'f(x) = x^2']];
+  function toile(S) {
+    var F = TOILE[S.f], u = S.u0, xr = F.xr;
+    var r = repere([250, 16, 710, 476], xr, xr), g = '<defs>' + clip(r) + '</defs>' + axes(r) + '<g clip-path="url(#' + r.cx + ')">';
+    g += trait(r, xr[0], xr[0], xr[1], xr[1], 'as') + courbe(r, F.f, F.dom);
+    var d = 'M' + r.X(u).toFixed(1) + ',' + r.Y(0).toFixed(1), vals = [u];
+    for (var k = 0; k < 14; k++) {
+      var v = F.f(u);
+      if (!isFinite(v) || v > xr[1] * 4) break;
+      d += ' L' + r.X(u).toFixed(1) + ',' + r.Y(v).toFixed(1) + ' L' + r.X(v).toFixed(1) + ',' + r.Y(v).toFixed(1);
+      u = v; vals.push(v);
+    }
+    g += '<path class="tl" d="' + d + '"/>' + point(r, vals[0], 0) + '</g>';
+    g += lbl(r.X(vals[0]), r.Y(0) + 24, 'u_0', { an: 'middle', cls: 'o sm', w: 60, h: 36 });
+    g += lbl(r.x1 + 8, r.Y(xr[1] * 0.96), 'y = x', { cls: 'g sm', w: 120, h: 36 });
+    g += lbl(r.x1 + 8, r.y0 + 60, 'y = ' + F.tex, { cls: 'b sm', w: 240, h: 50 });
+    return {
+      svg: g,
+      infos: vals.slice(0, 5).map(function (x, i) { return { lab: i === 0 ? 'Les premiers termes' : ' ', tex: 'u_' + i + ' \\approx ' + nbT(x, 3), cls: i === 0 ? 'o' : '' }; }),
+      note: F.note
+    };
+  }
+
   /* ─── fabrique ─── */
   var TYPES = {
     secante: {
@@ -397,6 +463,23 @@
       ctl: function () { return []; },
       clic: function (S, v) { var q = v.split(','); if (q[0] === 'a') { S.i = +q[1]; S.j = +q[2]; } else { S.i = +q[2]; S.j = +q[1]; } },
       draw: transposee, hauteur: 300, largeur: 720
+    },
+    suites: {
+      etat: function () { return { t: 'geo', q: 0.8 }; },
+      ctl: function (S) {
+        return [{ t: 'choix', k: 't', q: 'Choisis une suite', opts: [['geo', '\\text{géométrique}'], ['ag', '\\text{arithmético-géométrique}']], apres: function () { return true; } },
+                { k: 'q', t: 'range', tex: S.t === 'geo' ? 'q' : 'a', min: -1.5, max: 1.5, step: 0.05, aimant: [-1, -0.5, 0, 0.5, 1] }];
+      },
+      draw: suites, hauteur: 330
+    },
+    toile: {
+      etat: function () { return { f: 'racine', u0: 0 }; },
+      ctl: function (S) {
+        var F = TOILE[S.f];
+        return [{ t: 'choix', k: 'f', q: 'Choisis la fonction', opts: TOILE_CHOIX, apres: function () { S.u0 = TOILE[S.f].u0; return true; } },
+                { k: 'u0', t: 'range', tex: 'u_0', min: F.u[0], max: F.u[1], step: 0.01 }];
+      },
+      draw: toile, hauteur: 520
     }
   };
 
