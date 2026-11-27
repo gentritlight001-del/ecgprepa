@@ -1,7 +1,7 @@
 /* ══════════════════════════════════════════════════════════════
    Schémas interactifs des chapitres de maths (cours-maths.css).
    Moteur repris de cours-particuliers/schema.js (fiche « La dérivation »).
-   <div class="fig" data-schema="secante|reference|trigo|pascal|telescope|produit|transposee|suites|toile|integrale|primitive|gauss|droites|venn|fleches|arbre|binomiale" data-titre="…"></div>
+   <div class="fig" data-schema="secante|reference|trigo|pascal|telescope|produit|transposee|suites|toile|integrale|primitive|gauss|droites|venn|fleches|arbre|binomiale|racines|taylor" data-titre="…"></div>
    Le script construit le dessin (SVG), les curseurs, les boutons et les
    valeurs lues. Toutes les écritures mathématiques sont en KaTeX (dans le
    SVG par <foreignObject>). Les couleurs viennent du CSS (classes .fig …).
@@ -28,6 +28,7 @@
     return s.replace('.', ',').replace('-', '−');
   }
   function nbT(v, n) { return nb(v, n).replace(',', '{,}').replace('−', '-'); }
+  function nbC(v) { return nbT(v, 2).replace(/\{,\}00$/, '').replace(/(\{,\}\d)0$/, '$1'); }   /* sans zéros inutiles */
   function html(tag, cls, inner) {
     var e = document.createElement(tag);
     if (cls) e.className = cls;
@@ -643,6 +644,58 @@
     };
   }
 
+
+  /* ─── 13. polynômes : racines et multiplicité, formule de Taylor ─── */
+  function polMul(A, B) { var C = []; for (var i = 0; i < A.length + B.length - 1; i++) C.push(0); A.forEach(function (a, i) { B.forEach(function (b, j) { C[i + j] += a * b; }); }); return C; }
+  function polDer(A) { return A.slice(1).map(function (a, i) { return a * (i + 1); }); }
+  function polVal(A, x) { var v = 0; for (var i = A.length - 1; i >= 0; i--) v = v * x + A[i]; return v; }
+  function racines(S) {
+    var a = S.a, b = S.b, m = S.m, q = S.q, P = [1];
+    for (var i = 0; i < m; i++) P = polMul(P, [-a, 1]);
+    for (i = 0; i < q; i++) P = polMul(P, [-b, 1]);
+    var r = repere([60, 20, 930, 330], [-3, 3.4], [-5, 5]), f = function (x) { return polVal(P, x); };
+    var g = '<defs>' + clip(r) + '</defs>' + axes(r) + '<g clip-path="url(#' + r.cx + ')">' + courbe(r, f, [-Infinity, Infinity]) + point(r, a, 0) + point(r, b, 0, 'pt-t') + '</g>';
+    g += lbl(r.X(a), r.Y(0) + 26, '\\alpha', { an: 'middle', cls: 'o sm', w: 60, h: 36 }) + lbl(r.X(b), r.Y(0) + 26, '\\beta', { an: 'middle', cls: 'tgt sm', w: 60, h: 36 });
+    var fac = function (v, k) { var t = Math.abs(v) < 1e-9 ? 'x' : '(x ' + (v < 0 ? '+ ' + nbC(-v) : '- ' + nbC(v)) + ')'; return k > 1 ? t + '^' + k : t; };
+    var D = P, vals = [];
+    for (var k = 0; k <= m; k++) { var v = polVal(D, a); vals.push({ lab: k === 0 ? 'Les dérivées en \\(\\alpha\\)' : ' ', tex: 'P' + (k === 0 ? '' : '^{(' + k + ')}') + '(\\alpha) = ' + nbC(Math.abs(v) < 1e-9 ? 0 : v), cls: Math.abs(v) < 1e-9 ? 'o' : 'b' }); D = polDer(D); }
+    var nom = ['', 'simple', 'double', 'triple'];
+    return {
+      svg: g,
+      infos: [
+        { lab: 'Le polynôme (degré ' + (m + q) + ')', tex: 'P(x) = ' + fac(a, m) + fac(b, q), cls: '' },
+        { lab: 'Multiplicité de \\(\\alpha\\)', tex: m + ' \\; \\text{(racine ' + nom[m] + ')}', cls: 'o' }
+      ].concat(vals),
+      note: m === 1 ? 'Racine simple : la courbe traverse l\'axe, et \\(P\'(\\alpha) \\neq 0\\).' : (m === 2 ? 'Racine double : la courbe touche l\'axe sans le traverser (tangente horizontale), \\(P(\\alpha) = P\'(\\alpha) = 0\\) et \\(P\'\'(\\alpha) \\neq 0\\).' : 'Racine triple : la courbe traverse l\'axe en s\'aplatissant, \\(P(\\alpha) = P\'(\\alpha) = P\'\'(\\alpha) = 0\\) et \\(P^{(3)}(\\alpha) \\neq 0\\).')
+    };
+  }
+  var TAY_P = [1, -3, 0, 1];                 /* P(x) = x^3 - 3x + 1 */
+  function taylor(S) {
+    var al = S.al, k = S.k, D = TAY_P, c = [], fact = 1;
+    for (var j = 0; j <= 3; j++) { if (j > 0) fact *= j; c.push(polVal(D, al) / fact); D = polDer(D); }
+    var T = function (x) { var v = 0; for (var j = 0; j <= k; j++) v += c[j] * Math.pow(x - al, j); return v; };
+    var r = repere([60, 20, 930, 330], [-2.6, 2.6], [-4, 6]);
+    var g = '<defs>' + clip(r) + '</defs>' + axes(r) + '<g clip-path="url(#' + r.cx + ')">' + courbe(r, function (x) { return polVal(TAY_P, x); }, [-Infinity, Infinity]) +
+      courbe(r, T, [-Infinity, Infinity], 'cv o2 fin') + point(r, al, polVal(TAY_P, al), 'pt fixe') + '</g>';
+    g += lbl(r.x0 + 12, r.y0 + 18, 'P(x) = x^3 - 3x + 1', { cls: 'b sm', w: 360, h: 40 });
+    var terme = function (j) {
+      var cj = c[j]; if (Math.abs(cj) < 1e-9) return '';
+      var base = j === 0 ? '' : (Math.abs(al) < 1e-9 ? 'x' : '(x ' + (al < 0 ? '+ ' + nbC(-al) : '- ' + nbC(al)) + ')') + (j > 1 ? '^' + j : '');
+      return (cj < 0 ? ' - ' : ' + ') + (j > 0 && Math.abs(Math.abs(cj) - 1) < 1e-9 ? '' : nbC(Math.abs(cj))) + base;
+    };
+    var ex = ''; for (j = 0; j <= k; j++) ex += terme(j);
+    ex = ex.replace(/^ \+ /, '').replace(/^ - /, '-') || '0';
+    return {
+      svg: g,
+      infos: [
+        { lab: 'Somme de Taylor jusqu\'à l\'ordre ' + k, tex: ex, cls: 'o' },
+        { lab: 'Coefficients', tex: '\\dfrac{P^{(j)}(\\alpha)}{j!} : \\quad ' + c.map(function (v) { return nbC(v); }).join(' ,\\quad '), cls: '' }
+      ],
+      note: k < 3 ? 'En orange, la somme des termes jusqu\'à l\'ordre ' + k + ' : elle ne colle à \\(P\\) que près de \\(\\alpha\\). Augmente l\'ordre.'
+                  : 'À l\'ordre \\(3 = \\deg P\\), la somme est égale à \\(P\\) partout : c\'est la formule de Taylor, exacte pour un polynôme.'
+    };
+  }
+
   /* ─── fabrique ─── */
   var TYPES = {
     secante: {
@@ -764,6 +817,23 @@
       etat: function () { return { n: 10, p: 0.3 }; },
       ctl: function () { return [{ k: 'n', t: 'range', tex: 'n', min: 1, max: 20, step: 1 }, { k: 'p', t: 'range', tex: 'p', min: 0.05, max: 0.95, step: 0.05 }]; },
       draw: binomiale, hauteur: 320
+    },
+    racines: {
+      etat: function () { return { a: -1, b: 2, m: 2, q: 1 }; },
+      ctl: function () {
+        return [{ t: 'choix', k: 'm', q: 'Multiplicité de \\(\\alpha\\)', opts: [[1, '1'], [2, '2'], [3, '3']] },
+                { k: 'a', t: 'range', tex: '\\alpha', min: -2.5, max: 0, step: 0.1 },
+                { k: 'b', t: 'range', tex: '\\beta', min: 0.5, max: 2.8, step: 0.1 }];
+      },
+      draw: racines, hauteur: 350
+    },
+    taylor: {
+      etat: function () { return { al: 0.5, k: 1 }; },
+      ctl: function () {
+        return [{ t: 'choix', k: 'k', q: 'Ordre de la somme', opts: [[0, '0'], [1, '1'], [2, '2'], [3, '3']] },
+                { k: 'al', t: 'range', tex: '\\alpha', min: -2, max: 2, step: 0.1 }];
+      },
+      draw: taylor, hauteur: 350
     }
   };
 
@@ -782,7 +852,7 @@
       var d = TT.draw(S);
       zone.innerHTML = '<svg viewBox="0 0 ' + (TT.largeur || 960) + ' ' + (d.hauteur || TT.hauteur) + '" role="img" aria-label="Schéma interactif">' + d.svg + '</svg>';
       infos.innerHTML = d.infos.map(function (x) {
-        return '<span class="fig-i1 ' + x.cls + '"><em>' + x.lab + '</em><b>' + K(x.tex) + '</b></span>';
+        return '<span class="fig-i1 ' + x.cls + '"><em>' + T(x.lab) + '</em><b>' + K(x.tex) + '</b></span>';
       }).join('');
       note.innerHTML = T(d.note || '');
     }
@@ -808,7 +878,7 @@
       ctl.innerHTML = ''; ins = {}; vals = {}; puces = [];
       defs.forEach(function (c) {
         if (c.t === 'choix') {
-          var w = html('div', 'fig-c fig-choix', '<span class="fig-q">' + c.q + '</span>');
+          var w = html('div', 'fig-c fig-choix', '<span class="fig-q">' + T(c.q) + '</span>');
           var g = html('div', 'fig-seg');
           c.opts.forEach(function (o) {
             var bt = html('button', 'fig-chip', K(o[1]));
