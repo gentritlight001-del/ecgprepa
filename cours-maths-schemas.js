@@ -1,7 +1,7 @@
 /* ══════════════════════════════════════════════════════════════
    Schémas interactifs des chapitres de maths (cours-maths.css).
    Moteur repris de cours-particuliers/schema.js (fiche « La dérivation »).
-   <div class="fig" data-schema="secante|reference|trigo|pascal|telescope|produit|transposee|suites|toile" data-titre="…"></div>
+   <div class="fig" data-schema="secante|reference|trigo|pascal|telescope|produit|transposee|suites|toile|integrale|primitive" data-titre="…"></div>
    Le script construit le dessin (SVG), les curseurs, les boutons et les
    valeurs lues. Toutes les écritures mathématiques sont en KaTeX (dans le
    SVG par <foreignObject>). Les couleurs viennent du CSS (classes .fig …).
@@ -416,6 +416,68 @@
     };
   }
 
+
+  /* ─── 9. intégrales : aire algébrique, primitive F(x) = ∫ f ─── */
+  function aires(r, f, a, b) {               /* polygones de la partie positive et de la partie négative */
+    var n = 160, lo = Math.min(a, b), hi = Math.max(a, b), pos = [], neg = [];
+    for (var i = 0; i <= n; i++) {
+      var x = lo + (hi - lo) * i / n, y = f(x);
+      pos.push(r.X(x).toFixed(1) + ',' + r.Y(Math.max(y, 0)).toFixed(1));
+      neg.push(r.X(x).toFixed(1) + ',' + r.Y(Math.min(y, 0)).toFixed(1));
+    }
+    var b0 = r.X(hi).toFixed(1) + ',' + r.Y(0).toFixed(1) + ' ' + r.X(lo).toFixed(1) + ',' + r.Y(0).toFixed(1);
+    return '<polygon class="ai-p" points="' + pos.join(' ') + ' ' + b0 + '"/><polygon class="ai-n" points="' + neg.join(' ') + ' ' + b0 + '"/>';
+  }
+  var INTF = {
+    carre: { tex: 't^2', Ftex: '\\frac{t^3}{3}', f: function (t) { return t * t; }, F: function (t) { return t * t * t / 3; }, xr: [-2, 2.6], yr: [-1, 5.5], a: -1, b: 2,
+             note: '\\(t^2 \\geq 0\\) : l\'intégrale est l\'aire sous la courbe. Si \\(a > b\\), elle change de signe : \\(\\int_a^b = -\\int_b^a\\).' },
+    sin:   { tex: '\\sin t', Ftex: '-\\cos t', f: Math.sin, F: function (t) { return -Math.cos(t); }, xr: [-1, 7], yr: [-1.6, 1.6], a: 0, b: 4.5,
+             note: 'L\'aire au-dessus de l\'axe compte en plus (vert), celle au-dessous en moins (rose) : sur \\([0, 2\\pi]\\), elles se compensent et l\'intégrale est nulle.' },
+    cube:  { tex: 't^3 - 3t', Ftex: '\\frac{t^4}{4} - \\frac{3t^2}{2}', f: function (t) { return t * t * t - 3 * t; }, F: function (t) { return t * t * t * t / 4 - 1.5 * t * t; }, xr: [-2.3, 2.3], yr: [-3, 3], a: -1.5, b: 1.5,
+             note: 'La fonction est impaire : sur un intervalle symétrique \\([-a, a]\\), les deux aires sont égales et de signes contraires, l\'intégrale est nulle.' }
+  };
+  var INT_CHOIX = [['carre', 'f(t) = t^2'], ['sin', 'f(t) = \\sin t'], ['cube', 'f(t) = t^3 - 3t']];
+  function integrale(S) {
+    var F = INTF[S.f], a = S.a, b = S.b;
+    var r = repere([60, 20, 930, 330], F.xr, F.yr), g = '<defs>' + clip(r) + '</defs>' + axes(r) + '<g clip-path="url(#' + r.cx + ')">';
+    g += aires(r, F.f, a, b) + courbe(r, F.f, [-Infinity, Infinity]);
+    g += trait(r, a, 0, a, F.f(a), 'gd') + trait(r, b, 0, b, F.f(b), 'gd') + '</g>';
+    g += lbl(r.X(a), r.Y(0) + (F.f(a) >= 0 ? 24 : -24), 'a', { an: 'middle', cls: 'o', w: 40, h: 36 });
+    g += lbl(r.X(b), r.Y(0) + (F.f(b) >= 0 ? 24 : -24), 'b', { an: 'middle', cls: 'o', w: 40, h: 36 });
+    g += lbl(r.x0 + 12, r.y0 + 18, 'f(t) = ' + F.tex, { cls: 'b', w: 360 });
+    var v = F.F(b) - F.F(a);
+    return {
+      svg: g,
+      infos: [
+        { lab: 'Une primitive', tex: 'F(t) = ' + F.Ftex, cls: '' },
+        { lab: 'L\'intégrale', tex: '\\int_{' + nbT(a, 2) + '}^{' + nbT(b, 2) + '} f(t)\\,dt = F(b) - F(a) \\approx ' + nbT(v, 3), cls: v >= 0 ? 'b' : 'o' }
+      ],
+      note: F.note
+    };
+  }
+  var PRIM = {
+    cos: { tex: '\\cos t', Ftex: '\\sin x', f: Math.cos, F: Math.sin, xr: [-0.3, 6.6], yr: [-1.4, 1.4], x: [0, 6.3], x0: 1 },
+    lin: { tex: '1 - t', Ftex: 'x - \\frac{x^2}{2}', f: function (t) { return 1 - t; }, F: function (t) { return t - t * t / 2; }, xr: [-0.3, 3.2], yr: [-2.3, 1.4], x: [0, 3], x0: 0.6 }
+  };
+  var PRIM_CHOIX = [['cos', 'f(t) = \\cos t'], ['lin', 'f(t) = 1 - t']];
+  function primitive(S) {
+    var P = PRIM[S.f], x = S.x;
+    var L = repere([40, 40, 450, 330], P.xr, P.yr), Rr = repere([520, 40, 930, 330], P.xr, P.yr);
+    var fx = P.f(x), Fx = P.F(x), g = '<defs>' + clip(L) + clip(Rr) + '</defs>' + axes(L) + axes(Rr);
+    g += '<g clip-path="url(#' + L.cx + ')">' + aires(L, P.f, 0, x) + courbe(L, P.f, [-Infinity, Infinity]) + trait(L, x, 0, x, fx, 'gd') + point(L, x, fx) + '</g>';
+    g += '<g clip-path="url(#' + Rr.cx + ')">' + courbe(Rr, P.F, [-Infinity, Infinity], 'cv d2') + droite(Rr, x, Fx, fx, 'sc') + trait(Rr, x, 0, x, Fx, 'gd') +
+         '<circle class="pt-t" cx="' + Rr.X(x).toFixed(1) + '" cy="' + Rr.Y(Fx).toFixed(1) + '" r="8"/></g>';
+    g += lbl(50, 22, 'f(t) = ' + P.tex, { cls: 'b sm', w: 380, h: 40 }) + lbl(530, 22, 'F(x) = \\int_0^x f(t)\\,dt = ' + P.Ftex, { cls: 'tgt sm', w: 420, h: 40 });
+    return {
+      svg: g,
+      infos: [
+        { lab: 'L\'aire coloriée à gauche', tex: 'F(' + nbT(x, 2) + ') \\approx ' + nbT(Fx, 3), cls: 'tgt' },
+        { lab: 'La pente de la tangente à droite', tex: 'F\'(' + nbT(x, 2) + ') = f(' + nbT(x, 2) + ') \\approx ' + nbT(fx, 3), cls: 'o' }
+      ],
+      note: 'Quand \\(x\\) avance, l\'aire grandit à la vitesse \\(f(x)\\) : c\'est \\(F\'(x) = f(x)\\). Là où \\(f\\) est négative, l\'aire compte en moins et \\(F\\) décroît.'
+    };
+  }
+
   /* ─── fabrique ─── */
   var TYPES = {
     secante: {
@@ -480,6 +542,25 @@
                 { k: 'u0', t: 'range', tex: 'u_0', min: F.u[0], max: F.u[1], step: 0.01 }];
       },
       draw: toile, hauteur: 520
+    },
+    integrale: {
+      etat: function () { return { f: 'sin', a: INTF.sin.a, b: INTF.sin.b }; },
+      ctl: function (S) {
+        var F = INTF[S.f];
+        return [{ t: 'choix', k: 'f', q: 'Choisis une fonction', opts: INT_CHOIX, apres: function () { S.a = INTF[S.f].a; S.b = INTF[S.f].b; return true; } },
+                { k: 'a', t: 'range', tex: 'a', min: F.xr[0] + 0.1, max: F.xr[1] - 0.1, step: 0.05 },
+                { k: 'b', t: 'range', tex: 'b', min: F.xr[0] + 0.1, max: F.xr[1] - 0.1, step: 0.05 }];
+      },
+      draw: integrale, hauteur: 360
+    },
+    primitive: {
+      etat: function () { return { f: 'cos', x: 1 }; },
+      ctl: function (S) {
+        var P = PRIM[S.f];
+        return [{ t: 'choix', k: 'f', q: 'Choisis une fonction', opts: PRIM_CHOIX, apres: function () { S.x = PRIM[S.f].x0; return true; } },
+                { k: 'x', t: 'range', tex: 'x', min: P.x[0], max: P.x[1], step: 0.02 }];
+      },
+      draw: primitive, hauteur: 350
     }
   };
 
