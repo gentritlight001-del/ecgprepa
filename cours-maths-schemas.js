@@ -1,7 +1,7 @@
 /* ══════════════════════════════════════════════════════════════
    Schémas interactifs des chapitres de maths (cours-maths.css).
    Moteur repris de cours-particuliers/schema.js (fiche « La dérivation »).
-   <div class="fig" data-schema="secante|reference|trigo|pascal|telescope|produit|transposee|suites|toile|integrale|primitive|gauss|droites|venn|fleches" data-titre="…"></div>
+   <div class="fig" data-schema="secante|reference|trigo|pascal|telescope|produit|transposee|suites|toile|integrale|primitive|gauss|droites|venn|fleches|arbre|binomiale" data-titre="…"></div>
    Le script construit le dessin (SVG), les curseurs, les boutons et les
    valeurs lues. Toutes les écritures mathématiques sont en KaTeX (dans le
    SVG par <foreignObject>). Les couleurs viennent du CSS (classes .fig …).
@@ -594,6 +594,55 @@
     };
   }
 
+
+  /* ─── 12. probabilités : arbre de dépistage, loi binomiale ─── */
+  function arbre(S) {
+    var p = S.p, se = S.se, sp = S.sp, g = '';
+    var O = [70, 200], M = [330, 100], N = [330, 300], F = [[600, 50], [600, 150], [600, 250], [600, 350]];
+    var br = function (a, b, tex, cls, haut) {
+      var mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2 + (haut ? -22 : 22);
+      return '<line class="ar-l ' + cls + '" x1="' + (a[0] + 20) + '" y1="' + a[1] + '" x2="' + (b[0] - 22) + '" y2="' + b[1] + '"/>' + lbl(mx, my, tex, { an: 'middle', cls: 'sm ' + cls, w: 140, h: 40 });
+    };
+    var nd = function (c, tex, cls) { return '<circle class="ar-n ' + (cls || '') + '" cx="' + c[0] + '" cy="' + c[1] + '" r="22"/>' + lbl(c[0], c[1], tex, { an: 'middle', cls: 'b sm', w: 50, h: 40 }); };
+    g += br(O, M, nbT(p, 2), '', true) + br(O, N, nbT(1 - p, 2), '', false);
+    g += br(M, F[0], nbT(se, 2), 'tp', true) + br(M, F[1], nbT(1 - se, 2), '', false);
+    g += br(N, F[2], nbT(1 - sp, 2), 'tp', true) + br(N, F[3], nbT(sp, 2), '', false);
+    g += nd(M, 'M') + nd(N, '\\overline{M}') + nd(F[0], 'T', 'tp') + nd(F[1], '\\overline{T}') + nd(F[2], 'T', 'tp') + nd(F[3], '\\overline{T}');
+    var vals = [p * se, p * (1 - se), (1 - p) * (1 - sp), (1 - p) * sp], noms = ['M \\cap T', 'M \\cap \\overline{T}', '\\overline{M} \\cap T', '\\overline{M} \\cap \\overline{T}'];
+    for (var i = 0; i < 4; i++) g += lbl(640, F[i][1], '\\mathbb{P}(' + noms[i] + ') = ' + nbT(vals[i], 4), { cls: 'sm' + (i === 0 || i === 2 ? ' o' : ' g'), w: 320, h: 40 });
+    var pt = vals[0] + vals[2], bay = vals[0] / pt;
+    return {
+      svg: g,
+      infos: [
+        { lab: 'Probabilités totales', tex: '\\mathbb{P}(T) = ' + nbT(vals[0], 4) + ' + ' + nbT(vals[2], 4) + ' = ' + nbT(pt, 4), cls: 'o' },
+        { lab: 'Formule de Bayes', tex: '\\mathbb{P}_T(M) = \\dfrac{' + nbT(vals[0], 4) + '}{' + nbT(pt, 4) + '} \\approx ' + nbT(bay, 3), cls: 'b' }
+      ],
+      note: '\\(M\\) : « être malade », \\(T\\) : « le test est positif ». Quand la maladie est rare (\\(\\mathbb{P}(M)\\) petit), un test positif reste souvent un faux positif, même si le test est fiable.'
+    };
+  }
+  function binomiale(S) {
+    var n = S.n, p = S.p, P = [], mx = 0;
+    for (var k = 0; k <= n; k++) { P[k] = binom(n, k) * Math.pow(p, k) * Math.pow(1 - p, n - k); mx = Math.max(mx, P[k]); }
+    var r = repere([70, 30, 930, 290], [-0.8, n + 0.8], [0, Math.max(mx * 1.18, 0.05)]), g = axes(r), w = Math.min(40, (r.X(1) - r.X(0)) * 0.7);
+    for (k = 0; k <= n; k++) {
+      g += '<rect class="bi-b" x="' + (r.X(k) - w / 2).toFixed(1) + '" y="' + r.Y(P[k]).toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + (r.Y(0) - r.Y(P[k])).toFixed(1) + '"/>';
+      if (n <= 12 || k % 2 === 0) g += lbl(r.X(k), r.Y(0) + 22, String(k), { an: 'middle', cls: 'g sm', w: 50, h: 36 });
+    }
+    var e = n * p;
+    g += '<line class="gd" x1="' + r.X(e).toFixed(1) + '" y1="' + r.y0 + '" x2="' + r.X(e).toFixed(1) + '" y2="' + r.Y(0).toFixed(1) + '"/>';
+    g += lbl(r.X(e) + 8, r.y0 + 6, '\\mathbb{E}(X) = np = ' + nbT(e, 2), { cls: 'o sm', w: 300, h: 40 });
+    var km = 0; for (k = 1; k <= n; k++) if (P[k] > P[km]) km = k;
+    return {
+      svg: g,
+      infos: [
+        { lab: 'La loi', tex: 'X \\hookrightarrow \\mathcal{B}(' + n + ', ' + nbT(p, 2) + ')', cls: '' },
+        { lab: 'La valeur la plus probable', tex: '\\mathbb{P}(X = ' + km + ') \\approx ' + nbT(P[km], 3), cls: 'b' },
+        { lab: 'L\'espérance', tex: '\\mathbb{E}(X) = ' + n + ' \\times ' + nbT(p, 2) + ' = ' + nbT(e, 2), cls: 'o' }
+      ],
+      note: 'Chaque barre est \\(\\mathbb{P}(X = k) = \\binom{n}{k} p^k (1-p)^{n-k}\\) ; leur somme vaut \\(1\\). Avec \\(n = 1\\), on retrouve la loi de Bernoulli.'
+    };
+  }
+
   /* ─── fabrique ─── */
   var TYPES = {
     secante: {
@@ -701,6 +750,20 @@
       },
       clic: function (S, v) { var i = +v; S.f[i] = (S.f[i] + 1) % S.nF; S.p = ''; },
       draw: fleches, hauteur: 400, largeur: 900
+    },
+    arbre: {
+      etat: function () { return { p: 0.02, se: 0.95, sp: 0.9 }; },
+      ctl: function () {
+        return [{ k: 'p', t: 'range', tex: '\\mathbb{P}(M)', min: 0.01, max: 0.5, step: 0.01 },
+                { k: 'se', t: 'range', tex: '\\mathbb{P}_M(T)', min: 0.5, max: 0.99, step: 0.01 },
+                { k: 'sp', t: 'range', tex: '\\mathbb{P}_{\\overline{M}}(\\overline{T})', min: 0.5, max: 0.99, step: 0.01 }];
+      },
+      draw: arbre, hauteur: 400
+    },
+    binomiale: {
+      etat: function () { return { n: 10, p: 0.3 }; },
+      ctl: function () { return [{ k: 'n', t: 'range', tex: 'n', min: 1, max: 20, step: 1 }, { k: 'p', t: 'range', tex: 'p', min: 0.05, max: 0.95, step: 0.05 }]; },
+      draw: binomiale, hauteur: 320
     }
   };
 
