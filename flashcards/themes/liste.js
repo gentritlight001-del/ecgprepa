@@ -4,6 +4,8 @@
    Chargé avec ?v=<minute> (cache de Cloudflare, voir CLAUDE.md). */
 window.ECG_THEMES = {
   anglais: [
+    { date: "2026-11-28", titre: "Un Van Gogh vendu 190,4 millions de dollars à New York, record pour le peintre", phrases: 5,
+      cartes: ["8e02edd52c", "99d9dd5d82", "6826551a9d", "64cb40d8ef", "5409676ccc", "617e19cd01"], aides: 7 },
     { date: "2026-11-27", titre: "Angleterre : 5 258 décès liés à la chaleur, l'été 2026 pulvérise le record", phrases: 5,
       cartes: ["fc0c4e6aef", "6427b05eed", "17f96e1334", "2f3c448c6b", "7c81025cf1"], aides: 7 },
     { date: "2026-11-26", titre: "GTA VI : 3,79 milliards de dollars en un jour, un record pour le divertissement", phrases: 5,
