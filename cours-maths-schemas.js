@@ -1,7 +1,7 @@
 /* ══════════════════════════════════════════════════════════════
    Schémas interactifs des chapitres de maths (cours-maths.css).
    Moteur repris de cours-particuliers/schema.js (fiche « La dérivation »).
-   <div class="fig" data-schema="secante|reference|trigo|pascal|telescope|produit|transposee|suites|toile|integrale|primitive|gauss|droites" data-titre="…"></div>
+   <div class="fig" data-schema="secante|reference|trigo|pascal|telescope|produit|transposee|suites|toile|integrale|primitive|gauss|droites|venn|fleches" data-titre="…"></div>
    Le script construit le dessin (SVG), les curseurs, les boutons et les
    valeurs lues. Toutes les écritures mathématiques sont en KaTeX (dans le
    SVG par <foreignObject>). Les couleurs viennent du CSS (classes .fig …).
@@ -532,6 +532,68 @@
     };
   }
 
+
+  /* ─── 11. ensembles : diagramme de Venn, applications en flèches ─── */
+  var VENN = {
+    inter:  { tex: 'A \\cap B', z: [2], note: 'Les éléments qui sont dans \\(A\\) <b>et</b> dans \\(B\\).' },
+    union:  { tex: 'A \\cup B', z: [1, 2, 3], note: 'Les éléments qui sont dans \\(A\\) <b>ou</b> dans \\(B\\) (ou dans les deux).' },
+    compA:  { tex: '\\overline{A}', z: [3, 4], note: 'Les éléments de \\(E\\) qui ne sont pas dans \\(A\\).' },
+    cunion: { tex: '\\overline{A \\cup B}', z: [4], note: 'Compare avec \\(\\overline{A} \\cap \\overline{B}\\) : c\'est la même zone (loi de De Morgan).' },
+    ccomp:  { tex: '\\overline{A} \\cap \\overline{B}', z: [4], note: 'Hors de \\(A\\) et hors de \\(B\\) : c\'est \\(\\overline{A \\cup B}\\) (loi de De Morgan).' },
+    cinter: { tex: '\\overline{A \\cap B}', z: [1, 3, 4], note: 'Tout sauf l\'intersection : c\'est \\(\\overline{A} \\cup \\overline{B}\\) (loi de De Morgan).' }
+  };
+  var VENN_CHOIX = [['inter', 'A \\cap B'], ['union', 'A \\cup B'], ['compA', '\\overline{A}'], ['cunion', '\\overline{A \\cup B}'], ['ccomp', '\\overline{A} \\cap \\overline{B}'], ['cinter', '\\overline{A \\cap B}']];
+  function venn(S) {
+    var V = VENN[S.e], id = 'vn' + (++uid), on = function (k) { return V.z.indexOf(k) >= 0; };
+    var ca = '<circle cx="300" cy="180" r="120"', cb = '<circle cx="460" cy="180" r="120"';
+    var g = '<defs>' +
+      '<clipPath id="' + id + 'a">' + ca + '/></clipPath><clipPath id="' + id + 'b">' + cb + '/></clipPath>' +
+      '<mask id="' + id + 'na"><rect x="0" y="0" width="760" height="360" fill="#fff"/>' + ca + ' fill="#000"/></mask>' +
+      '<mask id="' + id + 'nb"><rect x="0" y="0" width="760" height="360" fill="#fff"/>' + cb + ' fill="#000"/></mask>' +
+      '<mask id="' + id + 'nab"><rect x="0" y="0" width="760" height="360" fill="#fff"/>' + ca + ' fill="#000"/>' + cb + ' fill="#000"/></mask></defs>';
+    g += '<rect class="vn-e" x="40" y="24" width="680" height="312" rx="18"/>';
+    if (on(4)) g += '<rect class="vn-on" x="40" y="24" width="680" height="312" rx="18" mask="url(#' + id + 'nab)"/>';
+    if (on(1)) g += ca + ' class="vn-on" mask="url(#' + id + 'nb)"/>';
+    if (on(3)) g += cb + ' class="vn-on" mask="url(#' + id + 'na)"/>';
+    if (on(2)) g += ca + ' class="vn-on" clip-path="url(#' + id + 'b)"/>';
+    g += ca + ' class="vn-c"/>' + cb + ' class="vn-c"/>';
+    g += lbl(210, 80, 'A', { an: 'middle', cls: 'b', w: 60 }) + lbl(550, 80, 'B', { an: 'middle', cls: 'b', w: 60 }) + lbl(76, 58, 'E', { an: 'middle', cls: 'g', w: 60 });
+    return { svg: g, infos: [{ lab: 'L\'ensemble colorié', tex: V.tex, cls: 'o' }], note: V.note };
+  }
+
+  var FL_PRESETS = {
+    inj:  { nE: 3, nF: 4, f: [0, 1, 3] },
+    surj: { nE: 4, nF: 3, f: [0, 1, 1, 2] },
+    bij:  { nE: 3, nF: 3, f: [2, 0, 1] },
+    rien: { nE: 3, nF: 3, f: [0, 0, 2] }
+  };
+  function fleches(S) {
+    var nE = S.nE, nF = S.nF, f = S.f, g = '', yE = function (i) { return 200 + (i - (nE - 1) / 2) * 70; }, yF = function (j) { return 200 + (j - (nF - 1) / 2) * 70; };
+    var ant = []; for (var j = 0; j < nF; j++) ant.push(0);
+    f.forEach(function (v) { ant[v]++; });
+    g += '<defs><marker id="fl-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker></defs>';
+    g += '<ellipse class="fl-e" cx="200" cy="200" rx="90" ry="' + (nE * 40 + 30) + '"/><ellipse class="fl-e" cx="560" cy="200" rx="90" ry="' + (nF * 40 + 30) + '"/>';
+    g += lbl(200, 30, 'E', { an: 'middle', cls: 'b', w: 60 }) + lbl(560, 30, 'F', { an: 'middle', cls: 'b', w: 60 });
+    f.forEach(function (v, i) { g += '<line class="fl-l" x1="230" y1="' + yE(i) + '" x2="528" y2="' + yF(v) + '" marker-end="url(#fl-a)"/>'; });
+    for (var i = 0; i < nE; i++) g += '<circle class="fl-p" data-clic="' + i + '" cx="200" cy="' + yE(i) + '" r="26"/>' + lbl(200, yE(i), String(i + 1), { an: 'middle', cls: 'fl-t', w: 40, h: 40 });
+    for (var k = 0; k < nF; k++) {
+      var c = ant[k] === 0 ? ' zero' : (ant[k] > 1 ? ' plus' : '');
+      g += '<circle class="fl-q' + c + '" cx="560" cy="' + yF(k) + '" r="26"/>' + lbl(560, yF(k), 'abcd'.charAt(k), { an: 'middle', cls: 'fl-t', w: 40, h: 40 });
+      if (ant[k] !== 1) g += lbl(600, yF(k), ant[k] === 0 ? '\\text{aucun antécédent}' : '\\text{' + ant[k] + ' antécédents}', { cls: 'sm' + (ant[k] === 0 ? ' o' : ' tgt'), w: 260, h: 40 });
+    }
+    var inj = ant.every(function (n) { return n <= 1; }), surj = ant.every(function (n) { return n >= 1; });
+    var oui = function (b) { return b ? '\\text{oui}' : '\\text{non}'; };
+    return {
+      svg: g,
+      infos: [
+        { lab: 'Injective (au plus un antécédent)', tex: oui(inj), cls: inj ? 'b' : 'o' },
+        { lab: 'Surjective (au moins un antécédent)', tex: oui(surj), cls: surj ? 'b' : 'o' },
+        { lab: 'Bijective (exactement un)', tex: oui(inj && surj), cls: inj && surj ? 'b' : 'o' }
+      ],
+      note: 'Clique sur un élément de \\(E\\) pour changer son image. Chaque élément de \\(E\\) a exactement une image : c\'est ce qui fait de \\(f\\) une application.'
+    };
+  }
+
   /* ─── fabrique ─── */
   var TYPES = {
     secante: {
@@ -625,6 +687,20 @@
       etat: function () { return { a: -1, b: 2 }; },
       ctl: function () { return [{ k: 'a', t: 'range', tex: 'a', min: -3, max: 5, step: 0.1, aimant: [2] }, { k: 'b', t: 'range', tex: 'b', min: -2, max: 8, step: 0.1, aimant: [4] }]; },
       draw: droites, hauteur: 440
+    },
+    venn: {
+      etat: function () { return { e: 'inter' }; },
+      ctl: function () { return [{ t: 'choix', k: 'e', q: 'Choisis un ensemble', opts: VENN_CHOIX }]; },
+      draw: venn, hauteur: 360, largeur: 760
+    },
+    fleches: {
+      etat: function () { var P = FL_PRESETS.inj; return { p: 'inj', nE: P.nE, nF: P.nF, f: P.f.slice() }; },
+      ctl: function (S) {
+        return [{ t: 'choix', k: 'p', q: 'Choisis une application', opts: [['inj', '\\text{injective}'], ['surj', '\\text{surjective}'], ['bij', '\\text{bijective}'], ['rien', '\\text{ni l\'une ni l\'autre}']],
+                  apres: function () { var P = FL_PRESETS[S.p]; S.nE = P.nE; S.nF = P.nF; S.f = P.f.slice(); return false; } }];
+      },
+      clic: function (S, v) { var i = +v; S.f[i] = (S.f[i] + 1) % S.nF; S.p = ''; },
+      draw: fleches, hauteur: 400, largeur: 900
     }
   };
 
