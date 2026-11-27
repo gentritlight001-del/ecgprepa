@@ -1,7 +1,7 @@
 /* ══════════════════════════════════════════════════════════════
    Schémas interactifs des chapitres de maths (cours-maths.css).
    Moteur repris de cours-particuliers/schema.js (fiche « La dérivation »).
-   <div class="fig" data-schema="secante|reference|trigo|pascal|telescope|produit|transposee|suites|toile|integrale|primitive|gauss|droites|venn|fleches|arbre|binomiale|racines|taylor" data-titre="…"></div>
+   <div class="fig" data-schema="secante|reference|trigo|pascal|telescope|produit|transposee|suites|toile|integrale|primitive|gauss|droites|venn|fleches|arbre|binomiale|racines|taylor|plan|coordonnees" data-titre="…"></div>
    Le script construit le dessin (SVG), les curseurs, les boutons et les
    valeurs lues. Toutes les écritures mathématiques sont en KaTeX (dans le
    SVG par <foreignObject>). Les couleurs viennent du CSS (classes .fig …).
@@ -696,6 +696,66 @@
     };
   }
 
+
+  /* ─── 14. espaces vectoriels : combinaison linéaire, coordonnées dans une base ─── */
+  function fleche(r, x0, y0, x1, y1, cls, mk) {
+    return '<line class="' + cls + '" x1="' + r.X(x0).toFixed(1) + '" y1="' + r.Y(y0).toFixed(1) + '" x2="' + r.X(x1).toFixed(1) + '" y2="' + r.Y(y1).toFixed(1) + '" marker-end="url(#' + mk + ')"/>';
+  }
+  function marqueurs(id) {
+    var m = function (n, c) { return '<marker id="' + id + n + '" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="' + c + '"/></marker>'; };
+    return m('u', '#334155') + m('v', '#0f766e') + m('w', '#c2410c');
+  }
+  function plan(S) {
+    var u = [2, 1], v = S.lie ? [-1, -0.5] : [-1, 1.5], l = S.l, m = S.m, id = 'ev' + (++uid);
+    var w = [l * u[0] + m * v[0], l * u[1] + m * v[1]];
+    var r = repere([20, 10, 620, 410], [-6, 6], [-4, 4]), g = '<defs>' + marqueurs(id) + clip(r) + '</defs>';
+    for (var i = -6; i <= 6; i++) g += trait(r, i, -4, i, 4, 'qd') + (i >= -4 && i <= 4 ? trait(r, -6, i, 6, i, 'qd') : '');
+    g += axes(r) + '<g clip-path="url(#' + r.cx + ')">';
+    if (S.lie) g += trait(r, -6 * 2, -6, 6 * 2, 6, 'vect-d');
+    else g += '<rect class="vect-p" x="' + r.x0 + '" y="' + r.y0 + '" width="' + (r.x1 - r.x0) + '" height="' + (r.y1 - r.y0) + '"/>';
+    g += trait(r, l * u[0], l * u[1], w[0], w[1], 'gd') + trait(r, m * v[0], m * v[1], w[0], w[1], 'gd');
+    g += fleche(r, 0, 0, l * u[0], l * u[1], 'vec-u fin', id + 'u') + fleche(r, 0, 0, m * v[0], m * v[1], 'vec-v fin', id + 'v');
+    g += fleche(r, 0, 0, u[0], u[1], 'vec-u', id + 'u') + fleche(r, 0, 0, v[0], v[1], 'vec-v', id + 'v') + fleche(r, 0, 0, w[0], w[1], 'vec-w', id + 'w') + '</g>';
+    g += lbl(r.X(u[0]) + 8, r.Y(u[1]) - 16, '\\vec{u}', { cls: 'b sm', w: 50, h: 40 }) + lbl(r.X(v[0]) - 8, r.Y(v[1]) - 16, '\\vec{v}', { an: 'end', cls: 'tgt sm', w: 50, h: 40 });
+    g += lbl(r.X(w[0]) + (w[0] >= 0 ? 10 : -10), r.Y(w[1]) - 18, '\\vec{w}', { an: w[0] >= 0 ? 'start' : 'end', cls: 'o sm', w: 50, h: 40 });
+    return {
+      svg: g,
+      infos: [
+        { lab: 'La combinaison linéaire', tex: '\\vec{w} = ' + nbC(l) + '.\\vec{u} ' + (m < 0 ? '- ' + nbC(-m) : '+ ' + nbC(m)) + '.\\vec{v} = (' + nbC(w[0]) + ' \\,;\\, ' + nbC(w[1]) + ')', cls: 'o' },
+        { lab: 'La famille \\((\\vec{u}, \\vec{v})\\)', tex: S.lie ? '\\text{liée : } \\vec{v} = -\\tfrac{1}{2}.\\vec{u}' : '\\text{libre, donc base de } \\mathbb{R}^2', cls: S.lie ? 'o' : 'b' }
+      ],
+      note: S.lie ? 'Les deux vecteurs sont colinéaires : toutes leurs combinaisons linéaires restent sur une droite (en couleur). \\(\\text{Vect}(\\vec{u}, \\vec{v})\\) est une droite, de dimension \\(1\\).'
+                  : 'En faisant varier \\(\\lambda\\) et \\(\\mu\\), on atteint tous les points du plan : \\(\\text{Vect}(\\vec{u}, \\vec{v}) = \\mathbb{R}^2\\). Et \\((\\lambda, \\mu)\\) sont les coordonnées de \\(\\vec{w}\\) dans la base \\((\\vec{u}, \\vec{v})\\).'
+    };
+  }
+  var BASES = {
+    can: { u: [1, 0], v: [0, 1], nom: 'base canonique', tu: '\\vec{e}_1', tv: '\\vec{e}_2' },
+    b1:  { u: [1, 1], v: [1, -1], nom: 'base (\\vec{u}, \\vec{v})', tu: '\\vec{u}', tv: '\\vec{v}' },
+    b2:  { u: [2, 1], v: [0, 1], nom: 'base (\\vec{u}\'', tu: '\\vec{u}\'', tv: '\\vec{v}\'' }
+  };
+  function coordonnees(S) {
+    var B = BASES[S.b], u = B.u, v = B.v, w = [3, 2], id = 'co' + (++uid);
+    var det = u[0] * v[1] - u[1] * v[0], a = (w[0] * v[1] - w[1] * v[0]) / det, c = (u[0] * w[1] - u[1] * w[0]) / det;
+    var r = repere([20, 10, 620, 410], [-3, 6], [-3, 4]), g = '<defs>' + marqueurs(id) + clip(r) + '</defs><g clip-path="url(#' + r.cx + ')">';
+    for (var k = -12; k <= 12; k++) {
+      g += trait(r, k * u[0] - 20 * v[0], k * u[1] - 20 * v[1], k * u[0] + 20 * v[0], k * u[1] + 20 * v[1], 'grille');
+      g += trait(r, k * v[0] - 20 * u[0], k * v[1] - 20 * u[1], k * v[0] + 20 * u[0], k * v[1] + 20 * u[1], 'grille');
+    }
+    g += trait(r, a * u[0], a * u[1], w[0], w[1], 'gd') + trait(r, c * v[0], c * v[1], w[0], w[1], 'gd');
+    g += fleche(r, 0, 0, u[0], u[1], 'vec-u', id + 'u') + fleche(r, 0, 0, v[0], v[1], 'vec-v', id + 'v') + fleche(r, 0, 0, w[0], w[1], 'vec-w', id + 'w') + '</g>';
+    g += lbl(r.X(u[0]) + 8, r.Y(u[1]) + 18, B.tu, { cls: 'b sm', w: 60, h: 40 }) + lbl(r.X(v[0]) - 8, r.Y(v[1]) - 14, B.tv, { an: 'end', cls: 'tgt sm', w: 60, h: 40 });
+    g += lbl(r.X(w[0]) + 10, r.Y(w[1]) - 16, '\\vec{w}', { cls: 'o sm', w: 60, h: 40 });
+    return {
+      svg: g,
+      infos: [
+        { lab: 'Le vecteur', tex: '\\vec{w} = (3 \\,;\\, 2)', cls: 'o' },
+        { lab: 'Sa décomposition', tex: '\\vec{w} = ' + nbC(a) + '.' + B.tu + (c < 0 ? ' - ' + nbC(-c) : ' + ' + nbC(c)) + '.' + B.tv, cls: '' },
+        { lab: 'Ses coordonnées dans cette base', tex: '(' + nbC(a) + ' \\,;\\, ' + nbC(c) + ')', cls: 'b' }
+      ],
+      note: 'Le même vecteur \\(\\vec{w}\\) a des coordonnées différentes selon la base : le quadrillage est celui de la base choisie, et les coordonnées se lisent en suivant ses lignes.'
+    };
+  }
+
   /* ─── fabrique ─── */
   var TYPES = {
     secante: {
@@ -834,6 +894,20 @@
                 { k: 'al', t: 'range', tex: '\\alpha', min: -2, max: 2, step: 0.1 }];
       },
       draw: taylor, hauteur: 350
+    },
+    plan: {
+      etat: function () { return { l: 1.5, m: 1, lie: false }; },
+      ctl: function () {
+        return [{ t: 'choix', k: 'lie', q: 'La famille', opts: [[false, '\\text{libre}'], [true, '\\text{liée}']] },
+                { k: 'l', t: 'range', tex: '\\lambda', min: -2, max: 2, step: 0.1 },
+                { k: 'm', t: 'range', tex: '\\mu', min: -2, max: 2, step: 0.1 }];
+      },
+      draw: plan, hauteur: 420, largeur: 640
+    },
+    coordonnees: {
+      etat: function () { return { b: 'can' }; },
+      ctl: function () { return [{ t: 'choix', k: 'b', q: 'Choisis une base', opts: [['can', '(\\vec{e}_1, \\vec{e}_2)'], ['b1', '(\\vec{u}, \\vec{v})'], ['b2', "(\\vec{u}', \\vec{v}')"]] }]; },
+      draw: coordonnees, hauteur: 420, largeur: 640
     }
   };
 
