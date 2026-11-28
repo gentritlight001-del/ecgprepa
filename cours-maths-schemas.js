@@ -1167,6 +1167,116 @@
     };
   }
 
+
+  /* ─── 23. réduction (2e année) : somme directe, vecteurs propres, base propre ─── */
+  function mk3(id, n, c) { return '<marker id="' + id + n + '" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:' + c + '"/></marker>'; }
+  function quad(r) { var g = ''; for (var i = -6; i <= 6; i++) g += trait(r, i, -4, i, 4, 'qd') + (i >= -4 && i <= 4 ? trait(r, -6, i, 6, i, 'qd') : ''); return g; }
+  function somme3(S) {
+    var id = 'sd' + (++uid), trois = S.m === 'trois', th = S.t, x = [3 * Math.cos(th), 3 * Math.sin(th)];
+    var c = trois ? S.c : 0, a = x[0] - c, b = x[1] - c;
+    var r = repere([20, 10, 620, 410], [-6, 6], [-4, 4]);
+    var g = '<defs>' + mk3(id, 'u', '#334155') + mk3(id, 'f', 'var(--vert)') + mk3(id, 'e', 'var(--bleu)') + mk3(id, 'w', '#c2410c') + clip(r) + '</defs>';
+    g += quad(r) + '<g clip-path="url(#' + r.cx + ')">';
+    g += trait(r, -7, 0, 7, 0, 'vect-d') + trait(r, 0, -5, 0, 5, 'g-d');
+    if (trois) g += trait(r, -5, -5, 5, 5, 'ker-d');
+    var A = [a, 0], B = [a, b];
+    if (Math.abs(a) > 0.05) g += fleche(r, 0, 0, a, 0, 'vec-f', id + 'f');
+    if (Math.abs(b) > 0.05) g += fleche(r, A[0], A[1], B[0], B[1], 'vec-e', id + 'e');
+    if (trois && Math.abs(c) > 0.05) g += fleche(r, B[0], B[1], x[0], x[1], 'vec-w', id + 'w');
+    g += fleche(r, 0, 0, x[0], x[1], 'vec-u', id + 'u') + '</g>';
+    g += lbl(r.X(5.4), r.Y(0) - 18, 'F_1', { an: 'middle', cls: 'b sm', w: 50, h: 36 });
+    g += lbl(r.X(0) + 26, r.Y(3.6), 'F_2', { an: 'middle', cls: 'tgt sm', w: 50, h: 36 });
+    if (trois) g += lbl(r.X(3.4) + 26, r.Y(3.4), 'F_3', { an: 'middle', cls: 'o sm', w: 50, h: 36 });
+    var n = Math.hypot(x[0], x[1]);
+    g += lbl(r.X(x[0] - 0.45 * x[1] / n), r.Y(x[1] + 0.45 * x[0] / n), 'x', { an: 'middle', cls: 'sm', w: 40, h: 36 });
+    var infos = [
+      { lab: 'La partie dans \\(F_1\\)', tex: 'x_1 = (' + nbC(a) + ' ;\\ 0)', cls: 'b' },
+      { lab: 'La partie dans \\(F_2\\)', tex: 'x_2 = (0 ;\\ ' + nbC(b) + ')', cls: 'tgt' }
+    ];
+    if (trois) infos.push({ lab: 'La partie dans \\(F_3\\)', tex: 'x_3 = (' + nbC(c) + ' ;\\ ' + nbC(c) + ')', cls: 'o' });
+    return {
+      svg: g, infos: infos,
+      note: trois ? 'Fais glisser \\(c\\) : à chaque valeur, une autre écriture \\(x = x_1 + x_2 + x_3\\) du même vecteur. L\'écriture n\'est pas unique, la somme \\(F_1 + F_2 + F_3\\) n\'est pas directe, alors que les intersections deux à deux sont réduites à \\(\\{0\\}\\).'
+                  : 'Avec deux droites distinctes, chaque vecteur \\(x\\) du plan s\'écrit d\'une seule façon \\(x = x_1 + x_2\\) : \\(\\mathbb{R}^2 = F_1 \\oplus F_2\\). Ajoute une troisième droite pour voir l\'unicité disparaître.'
+    };
+  }
+  var PROP = {
+    sym: { A: [[1, 2], [2, 1]], dirs: [[[1, 1], 3], [[1, -1], -1]], sp: '\\{-1,\\ 3\\}',
+           note: 'Fais tourner \\(u\\) : sur les deux droites en couleur, \\(Au\\) reste sur la droite de \\(u\\). Sur \\(\\text{Vect}\\big((1, 1)\\big)\\), \\(u\\) est multiplié par \\(3\\) ; sur \\(\\text{Vect}\\big((1, -1)\\big)\\), il est retourné : \\(\\lambda = -1\\). Deux directions propres qui forment une base : \\(A\\) est diagonalisable.' },
+    tri: { A: [[2, 1], [0, 1]], dirs: [[[1, 0], 2], [[1, -1], 1]], sp: '\\{1,\\ 2\\}',
+           note: 'Matrice triangulaire : ses valeurs propres \\(2\\) et \\(1\\) se lisent sur la diagonale. Sur l\'axe des abscisses, \\(u\\) est doublé ; sur \\(\\text{Vect}\\big((1, -1)\\big)\\), il ne bouge pas. Deux valeurs propres distinctes en dimension \\(2\\) : diagonalisable.' },
+    rot: { A: [[0, -1], [1, 0]], dirs: [], sp: '\\varnothing',
+           note: 'Rotation d\'un quart de tour : \\(Ru\\) est toujours perpendiculaire à \\(u\\), jamais sur la même droite. Aucune direction n\'est conservée, \\(R\\) n\'a aucune valeur propre réelle : elle n\'est pas diagonalisable.' },
+    nil: { A: [[0, 1], [0, 0]], dirs: [[[1, 0], 0]], sp: '\\{0\\}',
+           note: 'Une seule direction propre, l\'axe des abscisses, où \\(Nu = 0 = 0 \\cdot u\\) (\\(\\lambda = 0\\)). Une droite ne suffit pas à faire une base du plan : \\(N\\) n\'est pas diagonalisable.' }
+  };
+  function angDirs(F) { var t = []; F.dirs.forEach(function (d) { var a = Math.atan2(d[0][1], d[0][0]); if (a < 0) a += 2 * Math.PI; t.push(a, (a + Math.PI) % (2 * Math.PI)); }); return t; }
+  function propres(S) {
+    var F = PROP[S.m], A = F.A, id = 'vp' + (++uid), th = S.t, L = S.m === 'sym' ? 1.4 : 1.8;
+    var u = [L * Math.cos(th), L * Math.sin(th)], Au = [A[0][0] * u[0] + A[0][1] * u[1], A[1][0] * u[0] + A[1][1] * u[1]];
+    var r = repere([20, 10, 620, 410], [-6, 6], [-4, 4]);
+    var g = '<defs>' + mk3(id, 'u', '#334155') + mk3(id, 'f', 'var(--vert)') + clip(r) + '</defs>' + quad(r) + axes(r) + '<g clip-path="url(#' + r.cx + ')">';
+    F.dirs.forEach(function (d) { var v = d[0], k = 9 / Math.hypot(v[0], v[1]); g += trait(r, -k * v[0], -k * v[1], k * v[0], k * v[1], 'vect-d'); });
+    var nA = Math.hypot(Au[0], Au[1]), col = nA < 0.05 || Math.abs(u[0] * Au[1] - u[1] * Au[0]) < 0.04 * L * nA;
+    var lam = nA < 0.05 ? 0 : (u[0] * Au[0] + u[1] * Au[1]) / (L * L);
+    g += fleche(r, 0, 0, u[0], u[1], 'vec-u', id + 'u');
+    g += nA < 0.05 ? point(r, 0, 0) : fleche(r, 0, 0, Au[0], Au[1], 'vec-f', id + 'f');
+    g += '</g>';
+    var cote = function (v) { return v[0] >= 0 ? 'start' : 'end'; }, dx = function (v) { return v[0] >= 0 ? 10 : -10; };
+    var nm = S.m === 'rot' ? 'R' : (S.m === 'nil' ? 'N' : 'A');
+    var memeCote = col && lam > 0;
+    g += lbl(r.X(u[0]) + dx(u), r.Y(u[1]) + (memeCote ? 18 : -16), 'u', { an: cote(u), cls: 'sm', w: 40, h: 36 });
+    if (nA >= 0.05) g += lbl(r.X(Au[0]) + dx(Au), r.Y(Au[1]) + (Au[1] >= 0 ? -16 : 18), nm + 'u', { an: cote(Au), cls: 'b sm', w: 60, h: 36 });
+    var M = nm + ' = \\begin{pmatrix} ' + A[0][0] + ' & ' + A[0][1] + ' \\\\ ' + A[1][0] + ' & ' + A[1][1] + ' \\end{pmatrix}';
+    return {
+      svg: g,
+      infos: [
+        { lab: 'La matrice', tex: M, cls: '' },
+        { lab: 'Le vecteur et son image', tex: 'u = (' + nbC(u[0]) + ' ;\\ ' + nbC(u[1]) + ') \\quad ' + nm + 'u = (' + nbC(Au[0]) + ' ;\\ ' + nbC(Au[1]) + ')', cls: 'b' },
+        col ? { lab: 'Vecteur propre !', tex: nm + 'u = ' + (function (l) { return l === 1 ? 'u' : (l === -1 ? '-u' : (l === 0 ? '0' : nbC(l) + '\\, u')); })(Math.round(lam * 100) / 100) + ' \\quad (\\lambda = ' + nbC(Math.round(lam * 100) / 100) + ')', cls: 'tgt' }
+            : { lab: 'Sur la même droite ?', tex: '\\text{non : } u \\text{ n\'est pas propre}', cls: 'o' },
+        { lab: 'Le spectre', tex: '\\text{Sp}(' + nm + ') = ' + F.sp, cls: '' }
+      ],
+      note: F.note
+    };
+  }
+  function diagbase(S) {
+    var A = [[1, 1], [-2, 4]], v1 = [1, 1], v2 = [1, 2], id = 'db' + (++uid), th = S.t, prop = S.b === 'prop';
+    var ca = 0.45 * Math.cos(th), cb = 0.45 * Math.sin(th), u = [ca * v1[0] + cb * v2[0], ca * v1[1] + cb * v2[1]], fu = [A[0][0] * u[0] + A[0][1] * u[1], A[1][0] * u[0] + A[1][1] * u[1]];
+    var co = function (v) { return [2 * v[0] - v[1], -v[0] + v[1]]; };          /* coordonnées dans (v1, v2) : P^{-1} = (2 -1 ; -1 1) */
+    var cu = co(u), cf = co(fu);
+    var r = repere([20, 10, 620, 410], [-4.5, 4.5], [-3, 3]);
+    var g = '<defs>' + mk3(id, 'u', '#334155') + mk3(id, 'f', 'var(--vert)') + mk3(id, 'e', 'var(--bleu)') + clip(r) + '</defs><g clip-path="url(#' + r.cx + ')">';
+    if (prop) {
+      for (var i = -8; i <= 8; i++) g += trait(r, i * v1[0] - 9 * v2[0], i * v1[1] - 9 * v2[1], i * v1[0] + 9 * v2[0], i * v1[1] + 9 * v2[1], 'qd') + trait(r, i * v2[0] - 9 * v1[0], i * v2[1] - 9 * v1[1], i * v2[0] + 9 * v1[0], i * v2[1] + 9 * v1[1], 'qd');
+      g += trait(r, -9 * v1[0], -9 * v1[1], 9 * v1[0], 9 * v1[1], 'vect-d') + trait(r, -5 * v2[0], -5 * v2[1], 5 * v2[0], 5 * v2[1], 'vect-d');
+      g += trait(r, cf[0] * v1[0], cf[0] * v1[1], fu[0], fu[1], 'gd') + trait(r, cf[1] * v2[0], cf[1] * v2[1], fu[0], fu[1], 'gd');
+      g += fleche(r, 0, 0, v1[0], v1[1], 'vec-e', id + 'e') + fleche(r, 0, 0, v2[0], v2[1], 'vec-e', id + 'e');
+    } else {
+      for (var q = -4; q <= 4; q++) g += trait(r, q, -3, q, 3, 'qd') + (q >= -3 && q <= 3 ? trait(r, -4.5, q, 4.5, q, 'qd') : '');
+      g += axes(r);
+      g += trait(r, fu[0], 0, fu[0], fu[1], 'gd') + trait(r, 0, fu[1], fu[0], fu[1], 'gd');
+      g += fleche(r, 0, 0, 1, 0, 'vec-e', id + 'e') + fleche(r, 0, 0, 0, 1, 'vec-e', id + 'e');
+    }
+    g += fleche(r, 0, 0, u[0], u[1], 'vec-u', id + 'u') + fleche(r, 0, 0, fu[0], fu[1], 'vec-f', id + 'f') + '</g>';
+    var cote = function (v) { return v[0] >= 0 ? 'start' : 'end'; }, dx = function (v) { return v[0] >= 0 ? 10 : -10; };
+    g += lbl(r.X(fu[0]) + dx(fu), r.Y(fu[1]) + (fu[1] >= 0 ? -16 : 18), 'f(u)', { an: cote(fu), cls: 'b sm', w: 70, h: 36 });
+    if (prop) g += lbl(r.X(v1[0]) + 14, r.Y(v1[1]) + 14, 'v_1', { cls: 'tgt sm', w: 40, h: 36 }) + lbl(r.X(v2[0]) - 12, r.Y(v2[1]), 'v_2', { an: 'end', cls: 'tgt sm', w: 40, h: 36 });
+    else g += lbl(r.X(1) + 4, r.Y(0) + 16, 'e_1', { cls: 'tgt sm', w: 40, h: 36 }) + lbl(r.X(0) - 8, r.Y(1), 'e_2', { an: 'end', cls: 'tgt sm', w: 40, h: 36 });
+    var pc = function (v) { return '\\begin{pmatrix} ' + nbC(v[0]) + ' \\\\ ' + nbC(v[1]) + ' \\end{pmatrix}'; };
+    var c1 = prop ? cu : u, c2 = prop ? cf : fu;
+    return {
+      svg: g,
+      infos: [
+        { lab: prop ? 'Dans la base \\((v_1, v_2)\\)' : 'Dans la base canonique', tex: prop ? "D = P^{-1}AP = \\begin{pmatrix} 2 & 0 \\\\ 0 & 3 \\end{pmatrix}" : 'A = \\begin{pmatrix} 1 & 1 \\\\ -2 & 4 \\end{pmatrix}', cls: '' },
+        { lab: 'Coordonnées de \\(u\\)', tex: (prop ? "X' = " : 'X = ') + pc(c1), cls: '' },
+        { lab: 'Coordonnées de \\(f(u)\\)', tex: (prop ? "DX' = " : 'AX = ') + pc(c2), cls: 'b' }
+      ],
+      note: prop ? 'Dans la base de vecteurs propres \\(v_1 = (1, 1)\\), \\(v_2 = (1, 2)\\), \\(f\\) ne fait qu\'étirer : la première coordonnée est multipliée par \\(2\\), la seconde par \\(3\\). C\'est tout l\'intérêt de diagonaliser : la matrice de \\(f\\) devient diagonale, \\(D = P^{-1}AP\\) avec \\(P = \\begin{pmatrix} 1 & 1 \\\\ 1 & 2 \\end{pmatrix}\\).'
+                : 'Dans la base canonique, les coordonnées de \\(f(u)\\) mélangent celles de \\(u\\) : \\(f(x, y) = (x + y,\\ -2x + 4y)\\). Passe dans la base de vecteurs propres pour voir \\(f\\) agir coordonnée par coordonnée.'
+    };
+  }
+
   /* ─── fabrique ─── */
   var TYPES = {
     secante: {
@@ -1347,6 +1457,32 @@
                 { k: 'n', t: 'range', tex: 'n', min: 1, max: 40, step: 1 }];
       },
       draw: riemann, hauteur: 360
+    },
+    somme3: {
+      etat: function () { return { m: 'trois', t: 0.9, c: -1 }; },
+      ctl: function (S) {
+        var c = [{ t: 'choix', k: 'm', q: 'Choisis les sous-espaces', opts: [['deux', 'F_1 + F_2'], ['trois', 'F_1 + F_2 + F_3']], apres: function () { return true; } },
+                 { k: 't', t: 'range', tex: '\\theta_x', min: 0, max: 6.28, step: 0.01 }];
+        if (S.m === 'trois') c.push({ k: 'c', t: 'range', tex: 'c', min: -3, max: 3, step: 0.05, aimant: [0] });
+        return c;
+      },
+      draw: somme3, hauteur: 420, largeur: 640
+    },
+    propres: {
+      etat: function () { return { m: 'sym', t: 0.3 }; },
+      ctl: function (S) {
+        return [{ t: 'choix', k: 'm', q: 'Choisis une matrice', opts: [['sym', '\\begin{pmatrix} 1 & 2 \\\\ 2 & 1 \\end{pmatrix}'], ['tri', '\\begin{pmatrix} 2 & 1 \\\\ 0 & 1 \\end{pmatrix}'], ['rot', '\\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix}'], ['nil', '\\begin{pmatrix} 0 & 1 \\\\ 0 & 0 \\end{pmatrix}']], apres: function () { return true; } },
+                { k: 't', t: 'range', tex: '\\theta_u', min: 0, max: 6.28, step: 0.01, aimant: angDirs(PROP[S.m]) }];
+      },
+      draw: propres, hauteur: 420, largeur: 640
+    },
+    diagbase: {
+      etat: function () { return { b: 'can', t: 0.6 }; },
+      ctl: function () {
+        return [{ t: 'choix', k: 'b', q: 'Choisis la base', opts: [['can', '\\text{base canonique}'], ['prop', '\\text{base de vecteurs propres}']] },
+                { k: 't', t: 'range', tex: 't', min: 0, max: 6.28, step: 0.01 }];
+      },
+      draw: diagbase, hauteur: 420, largeur: 640
     },
     couple: {
       etat: function () { return { m: 'max', i: 2, j: 1, k: 4 }; },
