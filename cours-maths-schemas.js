@@ -967,6 +967,45 @@
     };
   }
 
+
+  /* ─── 19. intégrales impropres : l'aire jusqu'à une borne qui s'éloigne ─── */
+  var IMP = {
+    inv2: { f: function (t) { return 1 / (t * t); }, tex: '\\dfrac{1}{t^2}', inf: true, a: 1, yr: [-0.08, 1.25], x: [1.5, 40], x0: 4,
+            I: function (x) { return 1 - 1 / x; }, Itex: '1 - \\dfrac{1}{x}', lim: '\\int_1^{+\\infty} \\frac{dt}{t^2} = 1', conv: true,
+            note: 'Riemann avec \\(\\alpha = 2 > 1\\) : l\'aire grandit mais reste sous \\(1\\). L\'intégrale converge.' },
+    inv:  { f: function (t) { return 1 / t; }, tex: '\\dfrac{1}{t}', inf: true, a: 1, yr: [-0.08, 1.25], x: [1.5, 40], x0: 4,
+            I: function (x) { return Math.log(x); }, Itex: '\\ln x', lim: '\\ln x \\to +\\infty : \\text{diverge}', conv: false,
+            note: 'Riemann avec \\(\\alpha = 1\\) : la courbe tend vers \\(0\\), et pourtant l\'aire grandit sans limite, comme \\(\\ln x\\). L\'intégrale diverge.' },
+    exp:  { f: function (t) { return Math.exp(-t); }, tex: 'e^{-t}', inf: true, a: 0, yr: [-0.08, 1.2], x: [0.5, 40], x0: 2,
+            I: function (x) { return 1 - Math.exp(-x); }, Itex: '1 - e^{-x}', lim: '\\int_0^{+\\infty} e^{-t}\\,dt = 1', conv: true,
+            note: 'L\'exponentielle décroît si vite que l\'aire se stabilise presque tout de suite à \\(1 = \\frac{1}{\\alpha}\\) (ici \\(\\alpha = 1\\)).' },
+    rac:  { f: function (t) { return 1 / Math.sqrt(t); }, tex: '\\dfrac{1}{\\sqrt{t}}', inf: false, b: 1, yr: [-0.3, 6.5], x: [0.005, 0.9], x0: 0.3,
+            I: function (x) { return 2 - 2 * Math.sqrt(x); }, Itex: '2 - 2\\sqrt{x}', lim: '\\int_0^1 \\frac{dt}{\\sqrt{t}} = 2', conv: true,
+            note: 'Impropre en \\(0\\) : la courbe monte à l\'infini, mais Riemann avec \\(\\alpha = \\frac{1}{2} \\lt 1\\) converge. L\'aire tend vers \\(2\\).' },
+    ln:   { f: function (t) { return Math.log(t); }, tex: '\\ln t', inf: false, b: 1, yr: [-4.6, 0.5], x: [0.005, 0.9], x0: 0.3,
+            I: function (x) { return -1 - x * Math.log(x) + x; }, Itex: '-1 - x\\ln x + x', lim: '\\int_0^1 \\ln t\\,dt = -1', conv: true,
+            note: 'Impropre en \\(0\\) : \\(\\ln t \\to -\\infty\\), mais l\'aire (sous l\'axe, donc négative) tend vers \\(-1\\), car \\(x \\ln x \\to 0\\).' }
+  };
+  var IMP_CHOIX = [['inv2', '\\tfrac{1}{t^2}'], ['inv', '\\tfrac{1}{t}'], ['exp', 'e^{-t}'], ['rac', '\\tfrac{1}{\\sqrt{t}}'], ['ln', '\\ln t']];
+  function impropre(S) {
+    var F = IMP[S.f], x = S.x, a = F.inf ? F.a : x, b = F.inf ? x : F.b;
+    var xr = F.inf ? [-0.4, Math.max(6, x * 1.12)] : [-0.06, 1.15];
+    var r = repere([60, 20, 930, 330], xr, F.yr), g = '<defs>' + clip(r) + '</defs>' + axes(r) + '<g clip-path="url(#' + r.cx + ')">';
+    g += aires(r, F.f, a, b) + courbe(r, F.f, [1e-4, Infinity]);
+    g += trait(r, x, 0, x, F.f(x), 'gd') + '</g>';
+    g += lbl(r.X(x), r.Y(0) + (F.f(x) >= 0 ? 24 : -24), 'x', { an: 'middle', cls: 'o', w: 40, h: 36 });
+    var bornes = F.inf ? '_{' + F.a + '}^{x}' : '_{x}^{1}';
+    return {
+      svg: g,
+      infos: [
+        { lab: 'La fonction', tex: 'f(t) = ' + F.tex, cls: 'b' },
+        { lab: 'L\'intégrale partielle', tex: '\\int' + bornes + ' f(t)\\,dt = ' + F.Itex + ' \\approx ' + nbT(F.I(x), 3), cls: '' },
+        { lab: F.inf ? 'Quand \\(x \\to +\\infty\\)' : 'Quand \\(x \\to 0\\)', tex: F.lim, cls: F.conv ? 'tgt' : 'o' }
+      ],
+      note: 'L\'aire colorée est l\'intégrale sur un segment ; on regarde sa limite quand \\(x\\) va vers la borne impropre. ' + F.note
+    };
+  }
+
   /* ─── fabrique ─── */
   var TYPES = {
     secante: {
@@ -1133,6 +1172,15 @@
                 { k: 'm', t: 'range', tex: '\\mu', min: -2, max: 2, step: 0.1 }];
       },
       draw: plan, hauteur: 420, largeur: 640
+    },
+    impropre: {
+      etat: function () { return { f: 'inv2', x: 4 }; },
+      ctl: function (S) {
+        var F = IMP[S.f];
+        return [{ t: 'choix', k: 'f', q: 'Choisis une fonction', opts: IMP_CHOIX, apres: function () { S.x = IMP[S.f].x0; return true; } },
+                { k: 'x', t: 'range', tex: 'x', min: F.x[0], max: F.x[1], step: F.inf ? 0.5 : 0.005 }];
+      },
+      draw: impropre, hauteur: 360
     },
     lois: {
       etat: function () { return { l: 'geo', a: 0.3 }; },
