@@ -933,6 +933,40 @@
     };
   }
 
+
+  /* ─── 18. lois discrètes infinies : géométrique et Poisson ─── */
+  function lois(S) {
+    var geo = S.l === 'geo', a = S.a, kmax = geo ? 16 : 20, k0 = geo ? 1 : 0, P = [], m, v, pm = 0, fk = 1;
+    for (var k = 0; k <= kmax; k++) {
+      if (k > 0) fk *= k;
+      var q = k < k0 ? 0 : (geo ? Math.pow(1 - a, k - 1) * a : Math.exp(-a) * Math.pow(a, k) / fk);
+      P.push(q); pm = Math.max(pm, q);
+    }
+    m = geo ? 1 / a : a; v = geo ? (1 - a) / (a * a) : a;
+    var sg = Math.sqrt(v), r = repere([60, 20, 930, 330], [-0.8, kmax + 0.8], [0, pm * 1.18]);
+    var g = '<defs>' + clip(r) + '</defs><g clip-path="url(#' + r.cx + ')">';
+    g += '<rect class="vect-p" x="' + r.X(Math.max(-0.8, m - sg)).toFixed(1) + '" y="' + r.y0 + '" width="' + (r.X(Math.min(kmax + 0.8, m + sg)) - r.X(Math.max(-0.8, m - sg))).toFixed(1) + '" height="' + (r.y1 - r.y0) + '"/>';
+    var w = (r.X(1) - r.X(0)) * 0.62;
+    for (k = k0; k <= kmax; k++) {
+      var y = r.Y(P[k]);
+      g += '<rect class="bi-b" x="' + (r.X(k) - w / 2).toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + (r.Y(0) - y).toFixed(1) + '"/>';
+    }
+    g += trait(r, m, 0, m, pm * 1.18, 'bar') + '</g>' + axes(r);
+    for (k = k0; k <= kmax; k += 2) g += lbl(r.X(k), r.y1 + 16, String(k), { an: 'middle', cls: 'g sm', w: 40, h: 30 });
+    g += lbl(r.X(m) + 8, r.y0 + 16, '\\mathbb{E}(X)', { cls: 'o sm', w: 120, h: 40 });
+    return {
+      svg: g,
+      infos: [
+        { lab: 'La loi', tex: geo ? '\\mathbb{P}(X = k) = (1 - p)^{k-1} p' : '\\mathbb{P}(X = k) = e^{-\\lambda} \\dfrac{\\lambda^k}{k!}', cls: '' },
+        { lab: 'Espérance', tex: '\\mathbb{E}(X) = ' + (geo ? '\\dfrac{1}{p} ' : '\\lambda ') + (Math.abs(m - +m.toFixed(2)) > 1e-9 ? '\\approx ' : '= ') + nbC(+m.toFixed(2)), cls: 'o' },
+        { lab: 'Variance', tex: 'V(X) = ' + (geo ? '\\dfrac{1-p}{p^2} ' : '\\lambda ') + (Math.abs(v - +v.toFixed(2)) > 1e-9 ? '\\approx ' : '= ') + nbC(+v.toFixed(2)), cls: 'b' }
+      ],
+      note: (geo ? 'Loi géométrique : la probabilité baisse à chaque rang, multipliée par \\(1 - p\\). Plus \\(p\\) est petit, plus on attend le premier succès longtemps.'
+                 : 'Loi de Poisson : les barres montent puis redescendent, avec un sommet près de \\(\\lambda\\), qui est à la fois l\'espérance et la variance.') +
+            ' La bande colorée va de \\(\\mathbb{E}(X) - \\sigma\\) à \\(\\mathbb{E}(X) + \\sigma\\). Barres affichées jusqu\'à \\(k = ' + kmax + '\\), la loi continue au-delà.'
+    };
+  }
+
   /* ─── fabrique ─── */
   var TYPES = {
     secante: {
@@ -1099,6 +1133,15 @@
                 { k: 'm', t: 'range', tex: '\\mu', min: -2, max: 2, step: 0.1 }];
       },
       draw: plan, hauteur: 420, largeur: 640
+    },
+    lois: {
+      etat: function () { return { l: 'geo', a: 0.3 }; },
+      ctl: function (S) {
+        var geo = S.l === 'geo';
+        return [{ t: 'choix', k: 'l', q: 'Choisis une loi', opts: [['geo', '\\mathcal{G}(p)'], ['poi', '\\mathcal{P}(\\lambda)']], apres: function () { S.a = S.l === 'geo' ? 0.3 : 3; return true; } },
+                geo ? { k: 'a', t: 'range', tex: 'p', min: 0.1, max: 0.9, step: 0.05 } : { k: 'a', t: 'range', tex: '\\lambda', min: 0.5, max: 10, step: 0.5 }];
+      },
+      draw: lois, hauteur: 370
     },
     serie: {
       etat: function () { return { f: 'geo', n: 6 }; },
