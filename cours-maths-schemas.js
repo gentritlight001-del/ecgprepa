@@ -1110,6 +1110,63 @@
     return { svg: g, infos: infos, note: note };
   }
 
+
+  /* ─── 22. accroissements finis ; sommes de Riemann ─── */
+  function accroissements(S) {
+    var f = function (x) { return x * x * x - 3 * x + 1; }, fp = function (x) { return 3 * x * x - 3; };
+    var a = Math.min(S.a, S.b), b = Math.max(S.a, S.b);
+    if (b - a < 0.2) b = a + 0.2;
+    var sl = (f(b) - f(a)) / (b - a), cs = [], q = 1 + sl / 3;
+    if (q >= 0) [Math.sqrt(q), -Math.sqrt(q)].forEach(function (c) { if (c > a + 1e-6 && c < b - 1e-6 && cs.every(function (d) { return Math.abs(d - c) > 1e-6; })) cs.push(c); });
+    cs.sort(function (u, v) { return u - v; });
+    var r = repere([60, 20, 930, 340], [-2.6, 2.6], [-3.4, 5.4]);
+    var g = '<defs>' + clip(r) + '</defs>' + axes(r) + '<g clip-path="url(#' + r.cx + ')">';
+    g += courbe(r, f, [-Infinity, Infinity]);
+    g += droite(r, a, f(a), sl, 'sc');
+    cs.forEach(function (c) { g += droite(r, c, f(c), fp(c), 'tg') + trait(r, c, 0, c, f(c), 'gd') + point(r, c, f(c), 'pt-t'); });
+    g += point(r, a, f(a), 'pt fixe') + point(r, b, f(b), 'pt fixe') + '</g>';
+    g += lbl(r.X(a), r.Y(0) + 22, 'a', { an: 'middle', cls: 'g sm', w: 40, h: 34 }) + lbl(r.X(b), r.Y(0) + 22, 'b', { an: 'middle', cls: 'g sm', w: 40, h: 34 });
+    cs.forEach(function (c, k) { g += lbl(r.X(c), r.Y(0) - 22, cs.length > 1 ? 'c_' + (k + 1) : 'c', { an: 'middle', cls: 'tgt sm', w: 50, h: 34 }); });
+    g += lbl(r.x0 + 12, r.y0 + 18, 'f(x) = x^3 - 3x + 1', { cls: 'b sm', w: 300, h: 40 });
+    var rolle = Math.abs(f(b) - f(a)) < 0.05;
+    return {
+      svg: g,
+      infos: [
+        { lab: 'Pente de la corde', tex: '\\dfrac{f(b) - f(a)}{b - a} = ' + nbT(sl, 2), cls: 'o' },
+        { lab: cs.length > 1 ? 'Les points \\(c\\) trouvés' : 'Le point \\(c\\)', tex: cs.map(function (c, k) { return (cs.length > 1 ? 'c_' + (k + 1) : 'c') + ' \\approx ' + nbT(c, 2); }).join(' \\quad '), cls: 'tgt' },
+        { lab: 'Et en ce point', tex: "f'(c) = " + nbT(sl, 2), cls: '' }
+      ],
+      note: (rolle ? 'Ici \\(f(a) = f(b)\\) : la corde est horizontale, c\'est le théorème de Rolle, \\(f\'(c) = 0\\). '
+                   : '') + 'Entre \\(a\\) et \\(b\\), il existe toujours au moins un point \\(c\\) où la tangente à la courbe est parallèle à la corde (en orange) : \\(f(b) - f(a) = f\'(c)(b - a)\\). Il peut y en avoir plusieurs.'
+    };
+  }
+  var RIEM = {
+    carre: { f: function (x) { return x * x; }, tex: 'x^2', I: 1 / 3, Itex: '\\tfrac{1}{3}', yr: [-0.08, 1.15] },
+    exp:   { f: Math.exp, tex: 'e^x', I: Math.E - 1, Itex: 'e - 1', yr: [-0.15, 2.95] },
+    rac:   { f: Math.sqrt, tex: '\\sqrt{x}', I: 2 / 3, Itex: '\\tfrac{2}{3}', yr: [-0.08, 1.15] }
+  };
+  function riemann(S) {
+    var F = RIEM[S.f], n = S.n, droite_ = S.c === 'T', som = 0;
+    var r = repere([60, 20, 930, 330], [-0.06, 1.08], F.yr), g = '<defs>' + clip(r) + '</defs><g clip-path="url(#' + r.cx + ')">';
+    for (var k = 0; k < n; k++) {
+      var x0 = k / n, x1 = (k + 1) / n, h = F.f(droite_ ? x1 : x0); som += h / n;
+      g += '<rect class="rie-r" x="' + r.X(x0).toFixed(1) + '" y="' + r.Y(h).toFixed(1) + '" width="' + (r.X(x1) - r.X(x0)).toFixed(1) + '" height="' + (r.Y(0) - r.Y(h)).toFixed(1) + '"/>';
+    }
+    g += courbe(r, F.f, [0, Infinity]) + '</g>' + axes(r);
+    g += lbl(r.X(0), r.Y(0) + 20, '0', { an: 'middle', cls: 'g sm', w: 30, h: 30 }) + lbl(r.X(1), r.Y(0) + 20, '1', { an: 'middle', cls: 'g sm', w: 30, h: 30 });
+    g += lbl(r.x0 + 30, r.y0 + 18, 'f(x) = ' + F.tex, { cls: 'b sm', w: 300, h: 40 });
+    var nom = droite_ ? 'T_{' + n + '} = \\frac{1}{' + n + '} \\sum_{k=1}^{' + n + '} f\\big(\\tfrac{k}{' + n + '}\\big)' : 'S_{' + n + '} = \\frac{1}{' + n + '} \\sum_{k=0}^{' + (n - 1) + '} f\\big(\\tfrac{k}{' + n + '}\\big)';
+    return {
+      svg: g,
+      infos: [
+        { lab: 'La somme de Riemann', tex: nom + ' \\approx ' + nbT(som, 4), cls: 'b' },
+        { lab: 'L\'intégrale', tex: '\\int_0^1 f(x)\\,dx = ' + F.Itex + ' \\approx ' + nbT(F.I, 4), cls: 'tgt' },
+        { lab: 'L\'écart', tex: nbT(Math.abs(som - F.I), 4), cls: 'o' }
+      ],
+      note: 'Chaque rectangle a pour largeur \\(\\frac{1}{n}\\) et pour hauteur la valeur de \\(f\\) au bord ' + (droite_ ? 'droit' : 'gauche') + ' de sa tranche. Quand \\(n\\) grandit, la somme de leurs aires tend vers l\'intégrale.'
+    };
+  }
+
   /* ─── fabrique ─── */
   var TYPES = {
     secante: {
@@ -1276,6 +1333,20 @@
                 { k: 'm', t: 'range', tex: '\\mu', min: -2, max: 2, step: 0.1 }];
       },
       draw: plan, hauteur: 420, largeur: 640
+    },
+    accroissements: {
+      etat: function () { return { a: -1.8, b: 1.2 }; },
+      ctl: function () { return [{ k: 'a', t: 'range', tex: 'a', min: -2.4, max: 2.2, step: 0.05, aimant: [-1.732] }, { k: 'b', t: 'range', tex: 'b', min: -2.2, max: 2.4, step: 0.05, aimant: [1.732] }]; },
+      draw: accroissements, hauteur: 360
+    },
+    riemann: {
+      etat: function () { return { f: 'carre', c: 'S', n: 6 }; },
+      ctl: function () {
+        return [{ t: 'choix', k: 'f', q: 'Choisis une fonction', opts: [['carre', 'x^2'], ['exp', 'e^x'], ['rac', '\\sqrt{x}']] },
+                { t: 'choix', k: 'c', q: 'Choisis la somme', opts: [['S', 'S_n \\text{ (gauche)}'], ['T', 'T_n \\text{ (droite)}']] },
+                { k: 'n', t: 'range', tex: 'n', min: 1, max: 40, step: 1 }];
+      },
+      draw: riemann, hauteur: 360
     },
     couple: {
       etat: function () { return { m: 'max', i: 2, j: 1, k: 4 }; },
