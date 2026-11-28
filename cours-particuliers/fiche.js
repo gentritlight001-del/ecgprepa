@@ -22,6 +22,11 @@
    - un élève ne voit que les fiches que son professeur lui a ouvertes.
    Formes (data-forme) : « nombre » (sans racine), « simplifiee » (a√b
    réduit, racines regroupées, pas de racine au dénominateur).
+   Réponse avec la lettre x (calcul littéral) : ajouter data-var à la .rep
+   (<div class="rep" data-var data-attendu="x^2+6x+9" data-forme="developpee">) ;
+   x est alors la variable (le produit s'écrit ×, * ou sans signe : 3x, 2(x+1)),
+   la valeur est comparée en plusieurs points, et les formes « developpee »
+   (développée réduite) et « factorisee » (produit de facteurs réduits) sont contrôlées.
    ══════════════════════════════════════════════════════════════ */
 (function () {
   var N = +(document.body.getAttribute('data-fiche') || 0);
@@ -29,24 +34,28 @@
   var CLE = 'ecg-cp-fiche:' + N + (VERSION ? ':v' + VERSION : '');   /* nouvelle version = exercices déplacés : réponses repartent de zéro */
 
   /* ─── Lecture d'une réponse tapée ─────────────────────────── */
-  function lexer(s) {
-    s = s.replace(/\s+/g, '').replace(/^[a-z]=/i, '').replace(/sqrt|racine|rac/gi, '√').replace(/pi/gi, 'π')
-      .replace(/[−–]/g, '-').replace(/[×·x*]/g, '*').replace(/÷|:/g, '/').replace(/²/g, '^2').replace(/³/g, '^3');
+  function lexer(s, avecX) {
+    s = s.replace(/\s+/g, '');
+    s = avecX ? s.replace(/^[a-zA-Z]\(x\)=/, '').replace(/^[a-wyzA-WYZ]=/, '') : s.replace(/^[a-z]=/i, '');
+    s = s.replace(/sqrt|racine|rac/gi, '√').replace(/pi/gi, 'π')
+      .replace(/[−–]/g, '-').replace(avecX ? /[×·*]/g : /[×·x*]/g, '*').replace(/÷|:/g, '/').replace(/²/g, '^2').replace(/³/g, '^3');
+    if (avecX) s = s.replace(/X/g, 'x');
     var t = [], i = 0, m;
     while (i < s.length) {
       var c = s[i];
       if ((m = /^\d+(?:[.,]\d+)?/.exec(s.slice(i)))) { t.push({ k: 'n', v: parseFloat(m[0].replace(',', '.')), s: m[0].replace('.', ',') }); i += m[0].length; continue; }
       if ('+-*/^()√π'.indexOf(c) !== -1) { t.push({ k: c }); i++; continue; }
+      if (avecX && c === 'x') { t.push({ k: 'x' }); i++; continue; }
       throw new Error('caractère');
     }
     return t;
   }
-  function lire(s) {
-    var t = lexer(s), p = 0;
+  function lire(s, avecX) {
+    var t = lexer(s, avecX), p = 0;
     if (!t.length) throw new Error('vide');
     function voir() { return t[p] && t[p].k; }
     function prendre(k) { if (voir() !== k) throw new Error('attendu ' + k); p++; }
-    function debutAtome() { var k = voir(); return k === 'n' || k === '(' || k === '√' || k === 'π'; }
+    function debutAtome() { var k = voir(); return k === 'n' || k === '(' || k === '√' || k === 'π' || k === 'x'; }
     function expr() {
       var a = terme();
       while (voir() === '+' || voir() === '-') { var o = t[p++].k; a = { t: o, a: a, b: terme() }; }
@@ -74,6 +83,7 @@
       var k = voir();
       if (k === 'n') return { t: 'n', v: t[p].v, s: t[p++].s };
       if (k === 'π') { p++; return { t: 'pi' }; }
+      if (k === 'x') { p++; return { t: 'x' }; }
       if (k === '(') { p++; var e = expr(); prendre(')'); return { t: '()', a: e }; }
       if (k === '√') {
         p++;
@@ -86,24 +96,26 @@
     if (p < t.length) throw new Error('reste');
     return r;
   }
-  function val(n) {
+  function val(n, X) {
     switch (n.t) {
       case 'n': return n.v;
+      case 'x': return X;
       case 'pi': return Math.PI;
-      case '()': return val(n.a);
-      case 'neg': return -val(n.a);
-      case '+': return val(n.a) + val(n.b);
-      case '-': return val(n.a) - val(n.b);
-      case '*': return val(n.a) * val(n.b);
-      case '/': return val(n.a) / val(n.b);
-      case '^': return Math.pow(val(n.a), val(n.b));
-      case '√': var x = val(n.a); return x < 0 ? NaN : Math.sqrt(x);
+      case '()': return val(n.a, X);
+      case 'neg': return -val(n.a, X);
+      case '+': return val(n.a, X) + val(n.b, X);
+      case '-': return val(n.a, X) - val(n.b, X);
+      case '*': return val(n.a, X) * val(n.b, X);
+      case '/': return val(n.a, X) / val(n.b, X);
+      case '^': return Math.pow(val(n.a, X), val(n.b, X));
+      case '√': var x = val(n.a, X); return x < 0 ? NaN : Math.sqrt(x);
     }
   }
   function nu(n) { return n.t === '()' ? nu(n.a) : n; }
   function tex(n) {
     switch (n.t) {
       case 'n': return n.s.replace(',', '{,}');
+      case 'x': return 'x';
       case 'pi': return '\\pi';
       case '()': return '\\left(' + tex(n.a) + '\\right)';
       case 'neg': return '-' + tex(n.a);
@@ -111,7 +123,7 @@
       case '-': return tex(n.a) + '-' + tex(n.b);
       case '*':
         var b = nu(n.b);
-        return tex(n.a) + (n.imp && (b.t === '√' || b.t === 'pi' || n.b.t === '()') ? '' : '\\times ') + tex(n.b);
+        return tex(n.a) + (n.imp && (b.t === '√' || b.t === 'pi' || b.t === 'x' || (b.t === '^' && nu(b.a).t === 'x') || n.b.t === '()') ? '' : '\\times ') + tex(n.b);
       case '/': return '\\dfrac{' + tex(nu(n.a)) + '}{' + tex(nu(n.b)) + '}';
       case '^': return '{' + tex(n.a) + '}^{' + tex(nu(n.b)) + '}';
       case '√': return '\\sqrt{' + tex(nu(n.a)) + '}';
@@ -133,6 +145,7 @@
     n = nu(n);
     if (n.t === 'n') return entier(n.v) ? Math.round(n.v) : null;
     if (n.t === '√') return 1;
+    if (n.t === 'neg') { var c = coef(n.a); return c == null ? null : -c; }
     if (n.t === '*') { var a = coef(n.a), b = coef(n.b); return a == null || b == null ? null : a * b; }
     return null;
   }
@@ -167,6 +180,84 @@
     return null;
   }
 
+  /* ─── Calcul littéral : formes développée et factorisée ───── */
+  var POINTS = [-2.7, -1.3, 0.4, 1.9, 3.6, 5.2];
+  function constante(n) { var a = val(n, 1.7), b = val(n, -2.9); return isFinite(a) && Math.abs(a - b) < 1e-9 * Math.max(1, Math.abs(a)); }
+  /* Termes d'une somme (les parenthèses restent un seul terme) */
+  function termes(n, l) {
+    l = l || [];
+    if (n.t === '+' || n.t === '-') { termes(n.a, l); termes(n.b, l); }
+    else if (n.t === 'neg') termes(n.a, l);
+    else l.push(n);
+    return l;
+  }
+  /* Monôme k·xⁿ : { d: degré, nx: facteurs en x, nk: facteurs numériques } ou null */
+  function monome(n) {
+    n = nu(n);
+    switch (n.t) {
+      case 'n': return { d: 0, nx: 0, nk: 1 };
+      case 'pi': return { d: 0, nx: 0, nk: 1 };
+      case '√': return constante(n.a) ? { d: 0, nx: 0, nk: 1 } : null;
+      case 'x': return { d: 1, nx: 1, nk: 0 };
+      case 'neg': return monome(n.a);
+      case '^':
+        var b = nu(n.a), e = nu(n.b);
+        if (e.t !== 'n' || !entier(e.v)) return null;
+        if (b.t === 'x') return { d: Math.round(e.v), nx: 1, nk: 0 };
+        if (b.t === 'n') return { d: 0, nx: 0, nk: 1 };
+        return null;
+      case '*':
+        var p = monome(n.a), q = monome(n.b);
+        if (!p || !q) return null;
+        return { d: p.d + q.d, nx: p.nx + q.nx, nk: p.nk + q.nk };
+      case '/':
+        var h = monome(n.a);
+        if (!h || !constante(n.b) || monome(n.b) === null) return null;
+        return h;
+    }
+    return null;
+  }
+  var NOMS_DEG = ['les nombres seuls', 'les termes en \\(x\\)', 'les termes en \\(x^2\\)', 'les termes en \\(x^3\\)'];
+  function defautDeveloppee(ast) {
+    var ts = termes(nu(ast)), vus = {};
+    for (var i = 0; i < ts.length; i++) {
+      var m = monome(ts[i]);
+      if (!m) return 'Développe complètement : il reste des parenthèses (ou un produit à calculer).';
+      if (m.nx > 1) return 'Écris \\(x \\times x\\) sous la forme \\(x^2\\) : la réponse doit être réduite.';
+      if (m.nk > 1) return 'Calcule les coefficients : il reste un produit de nombres.';
+      if (Math.abs(val(ts[i], 1.3)) < 1e-12) continue;
+      if (vus[m.d]) return 'Réduis : regroupe ' + (NOMS_DEG[m.d] || 'les termes de même degré') + '.';
+      vus[m.d] = 1;
+    }
+    return null;
+  }
+  /* Facteurs d'un produit ; une puissance (x + 3)² compte deux facteurs */
+  function facteurs(n, l) {
+    l = l || [];
+    var m = nu(n);
+    if (m.t === '*') { facteurs(m.a, l); facteurs(m.b, l); }
+    else if (m.t === 'neg') facteurs(m.a, l);
+    else if (m.t === '^' && nu(m.b).t === 'n' && entier(nu(m.b).v) && nu(m.b).v >= 2 && !constante(m.a)) { for (var k = 0; k < nu(m.b).v; k++) l.push(m.a); }
+    else l.push(m);
+    return l;
+  }
+  function defautFactorisee(ast) {
+    var fs = facteurs(ast), variables = 0, nombres = 0;
+    fs.forEach(function (f) { if (constante(f)) { if (Math.abs(Math.abs(val(f, 0)) - 1) > 1e-9) nombres++; } else variables++; });
+    if (variables < 2 && !(variables === 1 && nombres >= 1)) return 'Ce n\'est pas une forme factorisée : écris un produit de facteurs, par exemple \\((x-1)(x+7)\\) ou \\(3(x+2)\\).';
+    for (var i = 0; i < fs.length; i++) {
+      var f = nu(fs[i]);
+      if (constante(f) || termes(f).length < 2) continue;
+      if (defautDeveloppee(f)) return 'Réduis l\'intérieur de chaque parenthèse.';
+      var c0 = val(f, 0), c1 = (val(f, 1) - val(f, -1)) / 2, c2 = (val(f, 1) + val(f, -1)) / 2 - c0;
+      if (Math.abs(val(f, 2) - (c0 + 2 * c1 + 4 * c2)) > 1e-9) continue;   /* degré 3 ou plus : pas de contrôle */
+      if (Math.abs(c0) < 1e-9) return 'Tu peux encore factoriser : \\(' + tex(f) + '\\) se factorise par \\(x\\).';
+      var cs = [c0, c1, c2].filter(function (c) { return Math.abs(c) > 1e-9; });
+      if (cs.every(entier) && cs.reduce(function (g, c) { return pgcd(g, Math.round(c)); }, 0) > 1) return 'Tu peux encore factoriser : les nombres de \\(' + tex(f) + '\\) ont un facteur commun.';
+    }
+    return null;
+  }
+
   /* ─── KaTeX ───────────────────────────────────────────────── */
   function rendre(el) {
     if (window.renderMathInElement) {
@@ -181,6 +272,7 @@
 
   /* ─── Contexte : qui regarde la fiche ? ─────────────────── */
   var CTX = { mode: 'apercu', eleve: null, client: null, rows: {} };
+  var MSG_X = 'Je n\'arrive pas à lire ta réponse. Écris par exemple 3x^2 - 5x + 2 ou (x+1)(x-4) : touche x² pour un carré.';
   var ETAT = { juste: 'Juste', presque: 'Presque', faux: 'Pas juste' };
   /* Aperçu du professeur seulement : réponses gardées dans le navigateur */
   var MEM = {};
@@ -202,7 +294,7 @@
     var q = texteDe(item.querySelector(sel));
     return ((t ? texteDe(t) + ' · ' : '') + q).slice(0, 600);
   }
-  function safeTex(texte) { try { return tex(lire(texte)); } catch (e) { return String(texte).replace(/[\\{}]/g, ''); } }
+  function safeTex(texte, avecX) { try { return tex(lire(texte, avecX)); } catch (e) { return String(texte).replace(/[\\{}]/g, ''); } }
 
   /* Enregistre la réponse (une seule fois : la clé primaire refuse un second essai) */
   function enregistrer(id, ligne, ok, ko) {
@@ -291,8 +383,21 @@
 
   /* ─── Une réponse à taper ─────────────────────────────────── */
   function evaluer(rep, v) {
-    var ast;
-    try { ast = lire(v); } catch (e) { return { etat: 'illisible' }; }
+    var ast, avecX = rep.hasAttribute('data-var');
+    try { ast = lire(v, avecX); } catch (e) { return { etat: 'illisible' }; }
+    if (avecX) {
+      var ref = lire(rep.getAttribute('data-attendu'), true), compte = 0;
+      for (var i = 0; i < POINTS.length; i++) {
+        var a = val(ref, POINTS[i]), b = val(ast, POINTS[i]);
+        if (!isFinite(a)) continue;
+        if (!isFinite(b) || Math.abs(a - b) > 1e-9 * Math.max(1, Math.abs(a))) return { etat: 'faux' };
+        compte++;
+      }
+      if (!compte) return { etat: 'faux' };
+      var fo = rep.getAttribute('data-forme');
+      var dx = fo === 'developpee' ? defautDeveloppee(ast) : fo === 'factorisee' ? defautFactorisee(ast) : null;
+      return dx ? { etat: 'presque', defaut: dx } : { etat: 'juste' };
+    }
     var attendu = val(lire(rep.getAttribute('data-attendu'))), x = val(ast);
     var egal = isFinite(x) && Math.abs(x - attendu) < 1e-9 * Math.max(1, Math.abs(attendu));
     if (!egal) return { etat: 'faux' };
@@ -300,7 +405,7 @@
     return d ? { etat: 'presque', defaut: d } : { etat: 'juste' };
   }
   function champ(rep, id) {
-    var mode = CTX.mode, indice = rep.getAttribute('data-indice');
+    var mode = CTX.mode, indice = rep.getAttribute('data-indice'), avecX = rep.hasAttribute('data-var');
     var z = el('div', 'rep-z');
     var boite = el('div', 'rep-champ');
     var input = el('input');
@@ -313,7 +418,8 @@
     var etat = el('span', 'etat', 'Juste');
     boite.appendChild(input); boite.appendChild(ap); boite.appendChild(bouton); boite.appendChild(etat);
     var outils = el('div', 'rep-outils');
-    [['√', '√()', -1, 'Racine carrée'], ['x²', '^2', 0, 'Au carré'], ['a/b', '/', 0, 'Fraction'], ['( )', '()', -1, 'Parenthèses']].forEach(function (b) {
+    (avecX ? [['x', 'x', 0, 'La lettre x'], ['x²', '^2', 0, 'Au carré'], ['( )', '()', -1, 'Parenthèses'], ['a/b', '/', 0, 'Fraction']]
+      : [['√', '√()', -1, 'Racine carrée'], ['x²', '^2', 0, 'Au carré'], ['a/b', '/', 0, 'Fraction'], ['( )', '()', -1, 'Parenthèses']]).forEach(function (b) {
       var bt = el('button', '', b[0]); bt.type = 'button'; bt.setAttribute('aria-label', b[3]);
       bt.addEventListener('mousedown', function (e) { e.preventDefault(); });
       bt.addEventListener('click', function () {
@@ -339,7 +445,7 @@
       annuler();
       var v = input.value.trim();
       if (!v) { ap.textContent = ''; indiceInitial(); return; }
-      try { katexDans(ap, tex(lire(v))); ap.classList.remove('illisible'); }
+      try { katexDans(ap, tex(lire(v, avecX))); ap.classList.remove('illisible'); }
       catch (e) { ap.textContent = '…'; ap.classList.add('illisible'); }
       indiceInitial();
     }
@@ -352,10 +458,10 @@
       rep.classList.add('fige'); etats(ligne.etat);
       etat.textContent = ETAT[ligne.etat] || '';
       outils.hidden = true; bouton.hidden = true;
-      try { katexDans(ap, tex(lire(ligne.reponse))); ap.classList.remove('illisible'); } catch (e) { ap.textContent = ''; }
+      try { katexDans(ap, tex(lire(ligne.reponse, avecX))); ap.classList.remove('illisible'); } catch (e) { ap.textContent = ''; }
       var msg = '';
-      if (ligne.etat === 'presque') { var ev = evaluer(rep, ligne.reponse); msg = 'La valeur est juste. ' + (ev.defaut || ''); }
-      else if (ligne.etat === 'faux') msg = 'Pas juste. La bonne réponse : \\(' + safeTex(rep.getAttribute('data-attendu')) + '\\).';
+      if (ligne.etat === 'presque') { var ev = evaluer(rep, ligne.reponse); msg = (avecX ? 'L\'expression est juste. ' : 'La valeur est juste. ') + (ev.defaut || ''); }
+      else if (ligne.etat === 'faux') msg = 'Pas juste. La bonne réponse : \\(' + safeTex(rep.getAttribute('data-attendu'), avecX) + '\\).';
       retour(ret, ligne.etat === 'juste' ? '' : ligne.etat, msg);
       compter();
     }
@@ -369,7 +475,7 @@
       var v = input.value.trim();
       if (!v) { retour(ret, 'faux', 'Écris ta réponse d\'abord.'); return; }
       var ev = evaluer(rep, v);
-      if (ev.etat === 'illisible') { etats('faux'); retour(ret, 'faux', 'Je n\'arrive pas à lire ta réponse. Pour une racine, utilise la touche √ (ou écris sqrt(12)). Rien n\'est enregistré tant que tu ne confirmes pas.'); return; }
+      if (ev.etat === 'illisible') { etats('faux'); retour(ret, 'faux', (avecX ? MSG_X : 'Je n\'arrive pas à lire ta réponse. Pour une racine, utilise la touche √ (ou écris sqrt(12)).') + ' Rien n\'est enregistré tant que tu ne confirmes pas.'); return; }
       if (!confirmation) {
         confirmation = true; bouton.textContent = 'Confirmer'; bouton.classList.add('confirmer');
         retour(ret, 'presque', 'Une seule réponse possible. Relis-toi : si c\'est bon, appuie sur « Confirmer ».');
@@ -387,9 +493,9 @@
       MEM[id] = v; garder();
       if (!v) { if (!silence) retour(ret, 'faux', 'Écris ta réponse d\'abord.'); return; }
       var ev = evaluer(rep, v);
-      if (ev.etat === 'illisible') { etats('faux'); retour(ret, 'faux', 'Je n\'arrive pas à lire ta réponse. Pour une racine, utilise la touche √ (ou écris sqrt(12)).'); compter(); return; }
+      if (ev.etat === 'illisible') { etats('faux'); retour(ret, 'faux', avecX ? MSG_X : 'Je n\'arrive pas à lire ta réponse. Pour une racine, utilise la touche √ (ou écris sqrt(12)).'); compter(); return; }
       if (ev.etat === 'faux') { etats('faux'); retour(ret, 'faux', silence ? '' : 'Pas encore.', silence ? null : (indice || 'relis le cours juste à gauche.')); compter(); return; }
-      if (ev.etat === 'presque') { etats('presque'); retour(ret, 'presque', silence ? '' : 'La valeur est juste. ' + ev.defaut); compter(); return; }
+      if (ev.etat === 'presque') { etats('presque'); retour(ret, 'presque', silence ? '' : (avecX ? 'L\'expression est juste. ' : 'La valeur est juste. ') + ev.defaut); compter(); return; }
       etats('juste'); retour(ret, '', ''); compter();
     }
 
@@ -588,5 +694,5 @@
     }).catch(function () { fermee('Je n\'arrive pas à ouvrir cette fiche. Réessaie dans un instant.'); });
   });
 
-  window.CPFiche = { lire: lire, val: val, tex: tex, defautForme: defautForme };
+  window.CPFiche = { lire: lire, val: val, tex: tex, defautForme: defautForme, defautDeveloppee: defautDeveloppee, defautFactorisee: defautFactorisee };
 })();

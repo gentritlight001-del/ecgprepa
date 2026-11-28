@@ -9,5 +9,6 @@
    ══════════════════════════════════════════════════════════════ */
 window.CP_FICHES = [
   { n: 1, nbq: 41, niveau: 'Seconde', titre: 'La fonction racine carrée', sous: 'Racine d\'un nombre, règles de calcul, variations, équations', url: 'cours-particuliers/racine-carree.html' },
-  { n: 2, nbq: 44, niveau: 'Première', titre: 'La dérivation', sous: 'Taux de variation, nombre dérivé, tangente, dérivées, variations, optimisation', url: 'cours-particuliers/derivation.html' }
+  { n: 2, nbq: 44, niveau: 'Première', titre: 'La dérivation', sous: 'Taux de variation, nombre dérivé, tangente, dérivées, variations, optimisation', url: 'cours-particuliers/derivation.html' },
+  { n: 3, nbq: 52, niveau: 'Seconde', titre: 'Le calcul littéral et les équations', sous: 'Développer, factoriser, identités remarquables, équations, produit nul, quotient, inéquations', url: 'cours-particuliers/calcul-litteral.html' }
 ];
