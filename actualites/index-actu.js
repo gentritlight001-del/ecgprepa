@@ -36,11 +36,21 @@
      compte pour les deux pays. */
   function cles(a) {
     if (parRegion) return a.region ? [a.region] : [];
-    return String(a.pays || '').split(/\s+—\s+/);
+    /* Édition francophone : un article d'Afrique porte aussi region: 'Afrique' (carte « Afrique »). */
+    return String(a.pays || '').split(/\s+—\s+/).concat(a.region ? [a.region] : []);
+  }
+
+  function vide() {
+    var b = document.getElementById('ia-bientot');
+    if (b) b.hidden = false;
+    /* Même règle de colonnes que plus bas : dernière ligne pleine */
+    var g = document.querySelector('.ia-grille');
+    var k = document.querySelectorAll('.ia-pays:not(.grand)').length;
+    if (g && k % 3 !== 0) g.classList.add(k <= 4 && k % 2 === 0 ? 'c2' : k % 4 === 0 ? 'c4' : 'c3');
   }
 
   function remplir(data) {
-    if (!data.length) return;
+    if (!data.length) return vide();
 
     var cartes = Array.prototype.slice.call(document.querySelectorAll('.ia-pays'));
     var groupes = {};
@@ -106,7 +116,7 @@
     .then(function (r) { return r.ok ? r.text() : ''; })
     .then(function (t) {
       var m = /ACTU_DATA\s*=\s*(\[[\s\S]*?\n\s*\]);/.exec(t);
-      if (!m) return;
+      if (!m) return vide();
       remplir(new Function('return ' + m[1])());
     })
     .catch(function () { /* hors ligne : les cartes restent avec leur nom et leur lien */ });

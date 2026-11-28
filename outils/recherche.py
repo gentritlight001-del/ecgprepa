@@ -33,7 +33,7 @@ IGNORER = ('hors-ligne.html', '404.html')
 MATIERES = {'hgg': 'HGG', 'esh': 'ESH', 'maths': 'Maths', 'mathematiques': 'Maths',
             'philosophie': 'Philosophie', 'langues': 'Langues', 'anglais': 'Anglais',
             'espagnol': 'Espagnol', 'allemand': 'Allemand'}
-EDITIONS = {'monde': 'Actu Monde', 'en': 'Actu Anglais', 'es': 'Actu Espagnol', 'de': 'Actu Allemand'}
+EDITIONS = {'monde': 'Actu Monde', 'fr': 'Actu Francophone', 'en': 'Actu Anglais', 'es': 'Actu Espagnol', 'de': 'Actu Allemand'}
 VIDES = {'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param',
          'source', 'track', 'wbr'}
 SAUTER = {'script', 'style', 'nav', 'footer', 'head', 'noscript', 'template', 'svg', 'button',

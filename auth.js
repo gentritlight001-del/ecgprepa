@@ -591,7 +591,7 @@
            /^deuxieme_annee\/langues\/[^/]+\/(?!index\.html$)[^/]+\.html$/.test(id || '');
   }
   function infoActu(id) {
-    var m = /^actualites\/(en|es|de|monde)\/articles\/([^/]+?)(?:\.html)?$/.exec(id || '');
+    var m = /^actualites\/(en|es|de|fr|monde)\/articles\/([^/]+?)(?:\.html)?$/.exec(id || '');
     if (m) return { code: m[1], slug: m[2] };
     /* Espaces « au quotidien » (langues de 1re année) : seul le dernier
        jour est gratuit, celui vers lequel pointe la carte du haut (.une)

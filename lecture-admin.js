@@ -74,7 +74,7 @@
   }
   var MATIERES = { hgg: 'HGG', mathematiques: 'Maths', maths: 'Maths', esh: 'ESH', philosophie: 'Philosophie',
                    anglais: 'Anglais', espagnol: 'Espagnol', allemand: 'Allemand' };
-  var EDITIONS = { en: 'anglophone', es: 'hispanophone', de: 'germanophone', monde: 'mondiale' };
+  var EDITIONS = { fr: 'francophone', en: 'anglophone', es: 'hispanophone', de: 'germanophone', monde: 'mondiale' };
   var HUM = { art: 'art', cinema: 'cinéma', litterature: 'littérature', musique: 'musique' };
   function infos(page) {
     var p = String(page || '').toLowerCase(), m;

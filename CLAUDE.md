@@ -234,7 +234,8 @@ directement après chaque modification, sans attendre un nouveau « mets en lign
    les mots cherchés sont surlignés à l'arrivée sur la page).
    Ne jamais modifier ce fichier à la main.
    Puis `python3 outils/nouveautes.py` : il régénère `nouveautes.js`, la liste des derniers
-   contenus (articles, dossiers de CG, fiches Humanité, chapitres, dossiers thématiques de langues `DS/`) affichée sous les 4 cartes de
+   contenus (articles des cinq éditions, fiches Humanité, chapitres, dossiers thématiques de langues `DS/` ;
+   **plus de dossiers de CG** depuis le 28 novembre 2026, à la demande du propriétaire : leur place revient à l'actu francophone) affichée sous les 4 cartes de
    l'accueil et dans la page `nouveautes.html`. Les dates de mise en ligne sont gardées dans
    `outils/nouveautes-dates.json` (ne jamais modifier ces deux fichiers à la main).
    Puis `python3 outils/flashcards.py` : il régénère la bibliothèque de l'espace flashcards
@@ -282,6 +283,7 @@ l'ancienne jusqu'à 8 jours (constaté pour le portrait de Sartre, novembre 2026
 | Anglophone | `actualites/en/articles/` | `actualites/en/images/` | `tous-en.html` + page du pays (`royaume-uni.html`, `etats-unis.html`, `canada.html`, `irlande.html`, `australie.html`) |
 | Hispanophone | `actualites/es/articles/` | `actualites/es/images/` | `tous-es.html` + page du pays |
 | Germanophone | `actualites/de/articles/` | `actualites/de/images/` | `tous-de.html` + `allemagne.html` / `autriche.html` / `suisse.html` |
+| Francophone | `actualites/fr/articles/` | `actualites/fr/images/` | `tous-fr.html` + `france.html` / `belgique.html` / `suisse.html` / `quebec.html` / `afrique.html` |
 | Mondiale | `actualites/monde/articles/` | `actualites/monde/images/` | `tous-monde.html` + page de la région (`europe.html`, `afrique.html`, `amerique.html`, `asie.html`, `moyen-orient.html`, `arctique.html`, `oceanie.html`) |
 
 ### Modèle
@@ -366,8 +368,8 @@ travail** dans le scratchpad (un dossier partagé se fait écraser) ; les fichie
   cachée), avec le petit interrupteur de la barre `.a-langues` : deux boutons `ap-lang-btn` « FR » et
   « EN » / « ES » / « DE » (`id="ap-btn-fr"`, `id="ap-btn-<code>"`, `aria-label` avec le nom de la
   langue), et la fonction `setLang` du gabarit, adaptée au code de la langue. Jamais de gros boutons
-  « Français / English ». Mondiale : français seulement, un seul bloc, **sans** interrupteur ni section
-  cachée.
+  « Français / English ». Mondiale et **francophone** : français seulement, un seul bloc, **sans** interrupteur ni section
+  cachée (pas de sous-titre `a-sous-titre` traduit, comme les articles du monde).
 - **Citation** (`a-citation`) : filet rouge à gauche, taille de lecture, jamais un grand bloc sombre.
   Citation courte dans sa langue d'origine ; dessous `<b>Nom</b>, fonction, source, date`, et dans la
   version française sa traduction en `<span class="a-trad">`.
@@ -474,7 +476,9 @@ im = Image.open(src).convert("RGB"); im.thumbnail((1600, 1600)); im.save(dst, "W
 ### Accueil de l'actualité (`actualites/actualites.html`)
 
 « Le kiosque », choisi par le propriétaire sur maquette : fond **noir** (`#0b0b0c`), titre « Actualité », puis
-seulement les quatre éditions, chacune en petit journal crème posé de travers (titre de l'édition dans sa langue,
+seulement les cinq éditions, chacune en petit journal crème posé de travers : **« Le monde » en haut, en large
+rectangle sur les deux colonnes** (`.journal.large` : photo à gauche, titre et 3 brèves à droite), puis Monde
+francophone, anglophone, hispanophone et germanophone deux par deux (demande du propriétaire, 28 novembre 2026) (titre de l'édition dans sa langue,
 nombre d'articles, la une avec photo, 2 brèves). **Chaque journal entier est un seul lien vers la page d'accueil
 de son édition** (`<code>/index-<code>.html` : « Le monde », « English-speaking world »…), sans lien à l'intérieur. Le script lit `ACTU_DATA` de
 chaque `tous-<code>.html` : rien à mettre à jour à la main.
@@ -500,6 +504,10 @@ page pays ou région :
 - Couples `theme`/`domain` existants : Géopolitique/geopolitique, Politique/politique,
   Économie/economie, Social/social, Environnement/environnement, Sécurité/securite,
   Numérique/numerique, Défense/defense, Santé/sante.
+- **Édition francophone** (créée le 28 novembre 2026, bandeau violet `#3A2468`) : France, Belgique, Suisse,
+  Québec et Afrique francophone. Un article d'Afrique garde son pays en `pays` (« Sénégal ») et ajoute
+  `region: 'Afrique'` (compté sur la carte « Afrique » de `index-fr.html`) ; il va dans `afrique.html`. Tant que
+  `ACTU_DATA` est vide, le kiosque, `index-fr.html` et les listes affichent « bientôt » tout seuls.
 - Tag `pays` : le sujet principal. Par exemple, une rencontre entre ministres à l'ONU a
   le tag `pays: 'ONU'`, `flag: '🇺🇳'`.
 - **`cardTitle` sur 2 à 3 lignes**, jamais 1 ni 4 : environ **70 à 99 caractères**.
