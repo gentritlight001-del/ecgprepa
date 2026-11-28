@@ -235,7 +235,7 @@ directement après chaque modification, sans attendre un nouveau « mets en lign
    Ne jamais modifier ce fichier à la main.
    Puis `python3 outils/nouveautes.py` : il régénère `nouveautes.js`, la liste des derniers
    contenus (articles des cinq éditions, fiches Humanité, chapitres, dossiers thématiques de langues `DS/` ;
-   **plus de dossiers de CG** depuis le 28 novembre 2026, à la demande du propriétaire : leur place revient à l'actu francophone) affichée sous les 4 cartes de
+   **plus de dossiers de CG** depuis le 28 novembre 2026, à la demande du propriétaire : leur place revient à l'actu francophone, rubrique « Actu Français ») affichée sous les 4 cartes de
    l'accueil et dans la page `nouveautes.html`. Les dates de mise en ligne sont gardées dans
    `outils/nouveautes-dates.json` (ne jamais modifier ces deux fichiers à la main).
    Puis `python3 outils/flashcards.py` : il régénère la bibliothèque de l'espace flashcards

@@ -787,7 +787,7 @@ window.ECG_NOUVEAUTES = [
 },
 {
 "t": "fr",
-"rubrique": "Actu Francophone",
+"rubrique": "Actu Français",
 "meta": "Belgique",
 "titre": "Belgique : démission refusée",
 "url": "actualites/fr/articles/belgique-roi-refuse-demission-de-wever-2026.html",
@@ -1662,7 +1662,7 @@ window.ECG_NOUVEAUTES = [
 },
 {
 "t": "fr",
-"rubrique": "Actu Francophone",
+"rubrique": "Actu Français",
 "meta": "France",
 "titre": "France : 550 000 manifestants contre la vie chère, l'hôtel de ville de Limoges détruit",
 "url": "actualites/fr/articles/france-17-octobre-mobilisation-limoges-2026.html",
@@ -1770,7 +1770,7 @@ window.ECG_NOUVEAUTES = [
 },
 {
 "t": "fr",
-"rubrique": "Actu Francophone",
+"rubrique": "Actu Français",
 "meta": "France",
 "titre": "Nvidia entre au capital de Doctolib pour accélérer l'intelligence artificielle médicale en Europe",
 "url": "actualites/fr/articles/nvidia-investit-doctolib.html",
@@ -1779,7 +1779,7 @@ window.ECG_NOUVEAUTES = [
 },
 {
 "t": "fr",
-"rubrique": "Actu Francophone",
+"rubrique": "Actu Français",
 "meta": "France",
 "titre": "France : une cyberattaque non revendiquée sabote les frigos de centaines de supermarchés",
 "url": "actualites/fr/articles/france-cyberattaque-frigos-supermarches.html",
@@ -1806,7 +1806,7 @@ window.ECG_NOUVEAUTES = [
 },
 {
 "t": "fr",
-"rubrique": "Actu Francophone",
+"rubrique": "Actu Français",
 "meta": "France",
 "titre": "Mistral AI dévoile Large 4, un modèle à 1 000 milliards de paramètres, pour revenir dans la course",
 "url": "actualites/fr/articles/mistral-large-4-retard.html",
@@ -1815,7 +1815,7 @@ window.ECG_NOUVEAUTES = [
 },
 {
 "t": "fr",
-"rubrique": "Actu Francophone",
+"rubrique": "Actu Français",
 "meta": "France",
 "titre": "Air Liquide lance son premier rachat d'actions, 4 milliards d'euros, dans son plan BEYOND",
 "url": "actualites/fr/articles/air-liquide-rachat-actions-4-milliards.html",
@@ -1842,7 +1842,7 @@ window.ECG_NOUVEAUTES = [
 },
 {
 "t": "fr",
-"rubrique": "Actu Francophone",
+"rubrique": "Actu Français",
 "meta": "Québec",
 "titre": "Élections au Québec : le PQ remporte une majorité relative, la CAQ disparaît de l'Assemblée",
 "url": "actualites/fr/articles/canada-quebec-elections-pq-minoritaire-2026.html",
@@ -1887,7 +1887,7 @@ window.ECG_NOUVEAUTES = [
 },
 {
 "t": "fr",
-"rubrique": "Actu Francophone",
+"rubrique": "Actu Français",
 "meta": "France",
 "titre": "France : le blocus des lycées s'étend aux facs, plus de 1 000 interpellations en deux jours",
 "url": "actualites/fr/articles/france-blocus-etudiants.html",
@@ -1914,7 +1914,7 @@ window.ECG_NOUVEAUTES = [
 },
 {
 "t": "fr",
-"rubrique": "Actu Francophone",
+"rubrique": "Actu Français",
 "meta": "France",
 "titre": "France : Léon XIV, premier voyage officiel d'un pape depuis 2008, entre laïcité, Europe et espérance",
 "url": "actualites/fr/articles/pape-leon-xiv-france.html",
@@ -1986,7 +1986,7 @@ window.ECG_NOUVEAUTES = [
 },
 {
 "t": "fr",
-"rubrique": "Actu Francophone",
+"rubrique": "Actu Français",
 "meta": "France",
 "titre": "Choose France 2026 : 93 milliards d'euros d'investissements annoncés au château de Versailles",
 "url": "actualites/fr/articles/choose-france-2026.html",
@@ -1995,7 +1995,7 @@ window.ECG_NOUVEAUTES = [
 },
 {
 "t": "fr",
-"rubrique": "Actu Francophone",
+"rubrique": "Actu Français",
 "meta": "France",
 "titre": "G7 d'Évian : le revirement de Trump sur l'Ukraine et l'accord avec l'Iran",
 "url": "actualites/fr/articles/g7-evian-2026.html",
@@ -2004,7 +2004,7 @@ window.ECG_NOUVEAUTES = [
 },
 {
 "t": "fr",
-"rubrique": "Actu Francophone",
+"rubrique": "Actu Français",
 "meta": "France",
 "titre": "WWF France : Alexandra Palt démissionne de la présidence",
 "url": "actualites/fr/articles/wwf-france-alexandra-palt-demission.html",
@@ -2013,7 +2013,7 @@ window.ECG_NOUVEAUTES = [
 },
 {
 "t": "fr",
-"rubrique": "Actu Francophone",
+"rubrique": "Actu Français",
 "meta": "France",
 "titre": "Amazon : 15 milliards d'euros, le grand pari français du géant de Seattle",
 "url": "actualites/fr/articles/amazon-investissement-france.html",

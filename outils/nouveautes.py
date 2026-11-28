@@ -21,7 +21,7 @@ DATES = RACINE + 'outils/nouveautes-dates.json'
 SORTIE = RACINE + 'nouveautes.js'
 PAR_TYPE = 40  # entrées gardées par type dans nouveautes.js
 
-EDITIONS = {'monde': 'Monde', 'fr': 'Francophone', 'en': 'Anglais', 'es': 'Espagnol', 'de': 'Allemand'}
+EDITIONS = {'monde': 'Monde', 'fr': 'Français', 'en': 'Anglais', 'es': 'Espagnol', 'de': 'Allemand'}
 MATIERES = {'hgg': 'HGG', 'esh': 'ESH', 'maths': 'Maths', 'mathematiques': 'Maths',
             'philosophie': 'Philosophie'}
 ANNEES = {'premiere_annee': '1re année', 'deuxieme_annee': '2e année'}
