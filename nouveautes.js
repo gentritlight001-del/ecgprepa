@@ -560,15 +560,6 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-11-13T19:24:37+00:00"
 },
 {
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Histoire",
-"titre": "Mustafa Kemal Atatürk : du soldat de Gallipoli au père de la Turquie moderne",
-"url": "Culture-Generale/ataturk.html",
-"image": "Culture-Generale/images/ataturk.webp",
-"date": "2026-11-12T19:30:30+00:00"
-},
-{
 "t": "humanite",
 "rubrique": "Humanité",
 "meta": "Littérature",
@@ -1000,15 +991,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/en/articles/commonwealth-chogm-antigua-barbuda-2026.html",
 "image": "actualites/en/images/commonwealth-chogm-antigua-barbuda-2026.webp",
 "date": "2026-11-04T18:45:45+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Société",
-"titre": "Halloween : des feux de Samain à la fête mondialisée",
-"url": "Culture-Generale/halloween.html",
-"image": "Culture-Generale/images/halloween.webp",
-"date": "2026-11-01T12:26:39+00:00"
 },
 {
 "t": "es",
@@ -1778,24 +1760,6 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-10-14T17:12:31+00:00"
 },
 {
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Entreprise",
-"titre": "Nestlé : le géant suisse de l'alimentation se recentre",
-"url": "Culture-Generale/nestle.html",
-"image": "Culture-Generale/images/nestle.webp",
-"date": "2026-10-11T11:15:42+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Économie",
-"titre": "Le gaz naturel liquéfié : l'énergie qui voyage par bateau",
-"url": "Culture-Generale/gaz-naturel-liquefie.html",
-"image": "Culture-Generale/images/gaz-naturel-liquefie.webp",
-"date": "2026-10-11T11:12:37+00:00"
-},
-{
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne",
@@ -1803,15 +1767,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/de/articles/allemagne-herbstprojektion-2026.html",
 "image": "actualites/de/images/allemagne-herbstprojektion-2026.webp",
 "date": "2026-10-10T19:03:28+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Histoire",
-"titre": "La révolution industrielle : quand la machine a transformé le monde",
-"url": "Culture-Generale/revolution-industrielle.html",
-"image": "Culture-Generale/images/revolution-industrielle.webp",
-"date": "2026-10-10T15:41:06+00:00"
 },
 {
 "t": "de",
@@ -1830,15 +1785,6 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/de/articles/saxe-anhalt-rausch-president-landtag.html",
 "image": "actualites/de/images/saxe-anhalt-rausch-president-landtag.webp",
 "date": "2026-10-07T06:43:41+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Géopolitique",
-"titre": "Les FARC : soixante ans de guérilla, un accord de paix et des dissidences",
-"url": "Culture-Generale/farc.html",
-"image": "Culture-Generale/images/farc.webp",
-"date": "2026-10-06T18:08:34+00:00"
 },
 {
 "t": "de",
@@ -1895,15 +1841,6 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-09-27T16:33:13+00:00"
 },
 {
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Environnement",
-"titre": "Le développement durable : concilier croissance, justice et planète",
-"url": "Culture-Generale/developpement-durable.html",
-"image": "Culture-Generale/images/developpement-durable.webp",
-"date": "2026-09-27T12:39:18+00:00"
-},
-{
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne",
@@ -1958,33 +1895,6 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-09-21T19:18:06+00:00"
 },
 {
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Organisations",
-"titre": "Les BRICS : le Sud global à la recherche d'un ordre multipolaire",
-"url": "Culture-Generale/brics.html",
-"image": "Culture-Generale/images/brics.webp",
-"date": "2026-09-18T20:00:18+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Histoire",
-"titre": "Mao Zedong : le fondateur de la Chine nouvelle et son bilan controversé",
-"url": "Culture-Generale/mao-zedong.html",
-"image": "Culture-Generale/images/mao-zedong.webp",
-"date": "2026-09-18T20:00:18+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Économie",
-"titre": "La cryptomonnaie : de l'utopie anti-banques à la classe d'actifs régulée",
-"url": "Culture-Generale/cryptomonnaie.html",
-"image": "Culture-Generale/images/cryptomonnaie.webp",
-"date": "2026-09-18T20:00:18+00:00"
-},
-{
 "t": "cours",
 "rubrique": "Cours",
 "meta": "Espagnol 2e année · dossier 1",
@@ -1992,276 +1902,6 @@ window.ECG_NOUVEAUTES = [
 "url": "deuxieme_annee/langues/espagnol/DS/esp-ds1.html",
 "image": "deuxieme_annee/langues/espagnol/DS/images/dossier-madre-plaza-de-mayo.webp",
 "date": "2026-09-18T20:00:18+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Pays",
-"titre": "Nicaragua : de la révolution sandiniste à la dynastie Ortega-Murillo",
-"url": "Culture-Generale/nicaragua.html",
-"image": "Culture-Generale/images/nicaragua.webp",
-"date": "2026-09-12T19:52:51+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Culture & Arts",
-"titre": "Le street art et Banksy : de la vandale à la salle des ventes",
-"url": "Culture-Generale/street-art-banksy.html",
-"image": "Culture-Generale/images/street-art-banksy.webp",
-"date": "2026-09-12T10:40:02+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Entreprise",
-"titre": "Amazon : la logistique comme arme stratégique",
-"url": "Culture-Generale/amazon.html",
-"image": "Culture-Generale/images/amazon.webp",
-"date": "2026-09-12T10:40:02+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Philosophie",
-"titre": "Socrate : penser par soi-même jusqu'à en mourir",
-"url": "Culture-Generale/socrate.html",
-"image": "Culture-Generale/images/socrate.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Politique",
-"titre": "Les Institutions américaines : anatomie du pouvoir fédéral",
-"url": "Culture-Generale/institutions-americaines.html",
-"image": "Culture-Generale/images/institutions-americaines.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Société",
-"titre": "Le Féminisme : histoire d'une émancipation",
-"url": "Culture-Generale/feminisme.html",
-"image": "Culture-Generale/images/feminisme.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Environnement",
-"titre": "Le Rapport Meadows : les limites d'une planète finie",
-"url": "Culture-Generale/rapport-meadows.html",
-"image": "Culture-Generale/images/rapport-meadows.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Histoire",
-"titre": "La guerre du Péloponnèse : le suicide de la Grèce classique",
-"url": "Culture-Generale/guerre-peloponnese.html",
-"image": "Culture-Generale/images/guerre-peloponnese.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Géopolitique",
-"titre": "La doctrine Monroe : aux origines de l'hégémonie américaine",
-"url": "Culture-Generale/monroe-doctrine.html",
-"image": "Culture-Generale/images/monroe-doctrine.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Économie",
-"titre": "Adam Smith : aux origines du libéralisme économique",
-"url": "Culture-Generale/adam-smith.html",
-"image": "Culture-Generale/images/adam-smith.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Sport",
-"titre": "Roland Garros : le temple de la terre battue",
-"url": "Culture-Generale/roland-garros.html",
-"image": "Culture-Generale/images/roland-garros.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Sciences",
-"titre": "Darwin : la théorie qui a bouleversé l'humanité",
-"url": "Culture-Generale/darwin.html",
-"image": "Culture-Generale/images/darwin.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Culture & Arts",
-"titre": "Picasso : la révolution cubiste",
-"url": "Culture-Generale/picasso.html",
-"image": "Culture-Generale/images/picasso.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Histoire",
-"titre": "Mai 68 : la révolte qui a changé la société française",
-"url": "Culture-Generale/mai-68.html",
-"image": "Culture-Generale/images/mai-68.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Économie",
-"titre": "La crise de 2008 : anatomie d'un effondrement mondial",
-"url": "Culture-Generale/crise-2008.html",
-"image": "Culture-Generale/images/crise-2008.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Sciences",
-"titre": "Nikola Tesla : le génie que l'histoire a failli oublier",
-"url": "Culture-Generale/tesla.html",
-"image": "Culture-Generale/images/tesla.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Politique",
-"titre": "Machiavel : la politique sans la morale",
-"url": "Culture-Generale/machiavel.html",
-"image": "Culture-Generale/images/machiavel.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Géopolitique",
-"titre": "Mackinder : la théorie du Heartland",
-"url": "Culture-Generale/mackinder.html",
-"image": "Culture-Generale/images/mackinder.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Histoire",
-"titre": "Le 11 septembre 2001 : le jour qui a changé le monde",
-"url": "Culture-Generale/11-septembre.html",
-"image": "Culture-Generale/images/11-septembre.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Société",
-"titre": "#MeToo : un tournant dans les rapports de genre",
-"url": "Culture-Generale/metoo.html",
-"image": "Culture-Generale/images/metoo.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Économie",
-"titre": "Bretton Woods : l'architecture monétaire mondiale",
-"url": "Culture-Generale/bretton-woods.html",
-"image": "Culture-Generale/images/bretton-woods.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Sport",
-"titre": "Wimbledon : le sanctuaire du tennis",
-"url": "Culture-Generale/wimbledon.html",
-"image": "Culture-Generale/images/wimbledon.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Organisations",
-"titre": "L'ONU : promesses et impasses du multilatéralisme",
-"url": "Culture-Generale/onu.html",
-"image": "Culture-Generale/images/onu.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Entreprise",
-"titre": "Nvidia : du jeu vidéo à l'empire de l'IA",
-"url": "Culture-Generale/nvidia.html",
-"image": "Culture-Generale/images/nvidia.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Histoire",
-"titre": "Le siècle des Lumières : la raison contre l'obscurantisme",
-"url": "Culture-Generale/lumieres.html",
-"image": "Culture-Generale/images/lumieres.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Entreprise",
-"titre": "LVMH : l'empire du luxe français",
-"url": "Culture-Generale/lvmh.html",
-"image": "Culture-Generale/images/lvmh.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Histoire",
-"titre": "George Washington : l'homme qui refusa d'être roi",
-"url": "Culture-Generale/george-washington.html",
-"image": "Culture-Generale/images/george-washington.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Politique",
-"titre": "ICE : l'agence qui incarne le tournant sécuritaire américain",
-"url": "Culture-Generale/ice-immigration.html",
-"image": "Culture-Generale/images/ice-immigration.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Sport",
-"titre": "Les Jeux Olympiques : de la trêve sacrée à la diplomatie du sport",
-"url": "Culture-Generale/jeux-olympiques.html",
-"image": "Culture-Generale/images/jeux-olympiques.webp",
-"date": "2026-09-11T19:03:33+00:00"
-},
-{
-"t": "cg",
-"rubrique": "Culture générale",
-"meta": "Histoire",
-"titre": "Alexandre le Grand : la conquête d'un monde",
-"url": "Culture-Generale/alexandre-le-grand.html",
-"image": "Culture-Generale/images/alexandre-le-grand.webp",
-"date": "2026-09-11T19:03:33+00:00"
 },
 {
 "t": "cours",

@@ -78,6 +78,10 @@
   function rendu() {
     filtres();
     var arts = filtre(), actif = etat.q || etat.pays || etat.th, h = '';
+    if (!ACTU_DATA.length) {
+      $('actu-grid').innerHTML = '<div class="ta-vide"><h2>Bientôt en ligne</h2><p>Les premiers articles de cette édition arrivent bientôt.</p></div>';
+      return;
+    }
     if (!arts.length) {
       $('actu-grid').innerHTML = '<div class="ta-vide"><h2>Aucun article</h2><p>Rien ne correspond à ces filtres.</p><button type="button" id="ta-raz">Tout afficher</button></div>';
       $('ta-raz').onclick = function () { etat = { q: '', pays: '', th: '' }; $('ta-q').value = ''; $('ta-efface').hidden = true; rendu(); };

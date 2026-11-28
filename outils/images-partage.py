@@ -32,7 +32,7 @@ PERIMETRE = ['actualites/**/*.html', 'Culture-Generale/*.html', 'culture-general
              'deuxieme_annee/**/*.html', 'flashcards/index.html',
              'concours.html', 'concours/**/*.html']
 
-ED = {'monde': 'Actualité mondiale', 'en': 'Actualité anglophone',
+ED = {'monde': 'Actualité mondiale', 'fr': 'Actualité francophone', 'en': 'Actualité anglophone',
       'es': 'Actualité hispanophone', 'de': 'Actualité germanophone'}
 MATIERES = {  # nom du dossier -> (libellé, couleur de fond)
     'mathematiques': ('Mathématiques', '#1F5F5B'), 'maths': ('Mathématiques', '#1F5F5B'),

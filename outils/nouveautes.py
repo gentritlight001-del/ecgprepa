@@ -6,8 +6,7 @@
 Écrit `nouveautes.js` (window.ECG_NOUVEAUTES), lu par l'accueil (`index.html`, section
 « Les nouveautés ») et par la page `nouveautes.html` (fil complet).
 
-Contenus suivis : articles d'actualité des quatre éditions (listes ACTU_DATA), dossiers de
-culture générale (CG_DATA), fiches et cours de l'Humanité (cinéma, littérature, cours) et chapitres de cours
+Contenus suivis : articles d'actualité des cinq éditions (listes ACTU_DATA), fiches et cours de l'Humanité (cinéma, littérature, cours) et chapitres de cours
 (chapitres et notions de philosophie, 1re et 2e année), dossiers thématiques de langues
 (2e année, DS/*.html).
 
@@ -22,7 +21,7 @@ DATES = RACINE + 'outils/nouveautes-dates.json'
 SORTIE = RACINE + 'nouveautes.js'
 PAR_TYPE = 40  # entrées gardées par type dans nouveautes.js
 
-EDITIONS = {'monde': 'Monde', 'en': 'Anglais', 'es': 'Espagnol', 'de': 'Allemand'}
+EDITIONS = {'monde': 'Monde', 'fr': 'Francophone', 'en': 'Anglais', 'es': 'Espagnol', 'de': 'Allemand'}
 MATIERES = {'hgg': 'HGG', 'esh': 'ESH', 'maths': 'Maths', 'mathematiques': 'Maths',
             'philosophie': 'Philosophie'}
 ANNEES = {'premiere_annee': '1re année', 'deuxieme_annee': '2e année'}
@@ -185,7 +184,9 @@ def dates_git():
 
 
 def main():
-    elements = list(actualites()) + list(culture_generale()) + list(humanite()) + list(cours()) + list(dossiers_langues())
+    # Les dossiers de culture générale ne figurent plus dans les nouveautés (choix du propriétaire,
+    # novembre 2026 : leur place revient à l'édition francophone de l'actualité).
+    elements = list(actualites()) + list(humanite()) + list(cours()) + list(dossiers_langues())
     try:
         with open(DATES, encoding='utf-8') as f:
             dates = json.load(f)
