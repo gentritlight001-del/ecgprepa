@@ -756,6 +756,83 @@
     };
   }
 
+
+  /* ─── 15. équivalents : le rapport f/g tend vers 1 ; développements limités en 0 ─── */
+  function nbS(v) {                          /* 4 chiffres significatifs, puissance de 10 si besoin */
+    if (v === 0) return '0';
+    var a = Math.abs(v);
+    if (a >= 0.001 && a < 1e6) {
+      var t = (+v.toPrecision(4)).toString();
+      if (t.indexOf('e') < 0) { var q = t.split('.'); q[0] = q[0].replace(/\B(?=(\d{3})+(?!\d))/g, '\\,'); return q.join('{,}'); }
+    }
+    var e = Math.floor(Math.log10(a)), m = +(v / Math.pow(10, e)).toFixed(2);
+    return String(m).replace('.', '{,}') + ' \\times 10^{' + e + '}';
+  }
+  var EQV = {
+    sin: { f: Math.sin, g: function (x) { return x; }, tf: '\\sin x', tg: 'x', x: [0.01, 2.5], x0: 2, en: 0 },
+    ln:  { f: function (x) { return Math.log(1 + x); }, g: function (x) { return x; }, tf: '\\ln(1+x)', tg: 'x', x: [0.01, 2.5], x0: 2, en: 0, bas: -0.9 },
+    cos: { f: function (x) { return 1 - Math.cos(x); }, g: function (x) { return x * x / 2; }, tf: '1 - \\cos x', tg: '\\tfrac{x^2}{2}', x: [0.01, 2.5], x0: 2.5, en: 0, centre: true },
+    inf: { f: function (x) { return x * x + 10 * x; }, g: function (x) { return x * x; }, tf: 'x^2 + 10x', tg: 'x^2', x: [2, 1000], x0: 5, en: 1 }
+  };
+  var EQV_CHOIX = [['sin', '\\sin x \\sim x'], ['ln', '\\ln(1+x) \\sim x'], ['cos', '1 - \\cos x \\sim \\tfrac{x^2}{2}'], ['inf', 'x^2 + 10x \\underset{+\\infty}{\\sim} x^2']];
+  function equivalent(S) {
+    var F = EQV[S.f], x = S.x, fx = F.f(x), gx = F.g(x), xr, lo = Infinity, hi = -Infinity;
+    xr = F.en ? [0, 1.25 * x] : [-1.25 * x, 1.25 * x];
+    if (F.bas != null) xr[0] = Math.max(F.bas, xr[0]);
+    for (var i = 0; i <= 60; i++) {
+      var t = xr[0] + (xr[1] - xr[0]) * i / 60, a = F.f(t), b = F.g(t);
+      lo = Math.min(lo, a, b); hi = Math.max(hi, a, b);
+    }
+    var pad = (hi - lo) * 0.12;
+    var r = repere([60, 20, 930, 360], xr, [lo - pad, hi + pad]);
+    var g = '<defs>' + clip(r) + '</defs>' + axes(r) + '<g clip-path="url(#' + r.cx + ')">' +
+      courbe(r, F.g, [-Infinity, Infinity], 'cv d2 fin') + courbe(r, F.f, [F.bas != null ? -0.999 : -Infinity, Infinity], 'cv') +
+      trait(r, x, Math.min(0, gx), x, Math.max(fx, gx), 'gd') + point(r, x, gx, 'pt-t') + point(r, x, fx) + '</g>';
+    var lx = F.centre ? r.X(0) + 16 : r.x0 + 12;
+    g += lbl(lx, r.y0 + 18, 'f(x) = ' + F.tf, { cls: 'b sm', w: 400, h: 40 }) + lbl(lx, r.y0 + 56, 'g(x) = ' + F.tg, { cls: 'tgt sm', w: 400, h: 40 });
+    return {
+      svg: g,
+      infos: [
+        { lab: 'Le point', tex: 'x = ' + nbS(x), cls: '' },
+        { lab: 'Les valeurs', tex: 'f(x) = ' + nbS(fx) + ' \\quad g(x) = ' + nbS(gx), cls: '' },
+        { lab: 'Le rapport \\(\\tfrac{f(x)}{g(x)}\\)', tex: nbT(fx / gx, 4), cls: 'o' },
+        { lab: 'L\'écart \\(f(x) - g(x)\\)', tex: nbS(fx - gx), cls: 'tgt' }
+      ],
+      note: F.en ? 'Fais grandir \\(x\\) : le rapport tend vers \\(1\\), alors que l\'écart \\(f(x) - g(x) = 10x\\) tend vers \\(+\\infty\\). Deux fonctions équivalentes ne sont pas forcément proches : c\'est leur <b>rapport</b> qui tend vers \\(1\\).'
+                 : 'Rapproche \\(x\\) de \\(0\\) : le cadre se resserre autour de \\(0\\), les deux courbes se confondent et le rapport \\(\\tfrac{f(x)}{g(x)}\\) tend vers \\(1\\).'
+    };
+  }
+  var DLF = {
+    exp: { f: Math.exp, c: [1, 1, 1 / 2, 1 / 6, 1 / 24, 1 / 120], t: ['1', 'x', '\\tfrac{x^2}{2}', '\\tfrac{x^3}{6}', '\\tfrac{x^4}{24}', '\\tfrac{x^5}{120}'], s: [1, 1, 1, 1, 1, 1], tex: 'e^x', xr: [-3, 3], yr: [-1.5, 8], x0: 1.5 },
+    sin: { f: Math.sin, c: [0, 1, 0, -1 / 6, 0, 1 / 120], t: ['', 'x', '', '\\tfrac{x^3}{6}', '', '\\tfrac{x^5}{120}'], s: [1, 1, 1, -1, 1, 1], tex: '\\sin x', xr: [-4.5, 4.5], yr: [-2.2, 2.2], x0: 2 },
+    cos: { f: Math.cos, c: [1, 0, -1 / 2, 0, 1 / 24, 0], t: ['1', '', '\\tfrac{x^2}{2}', '', '\\tfrac{x^4}{24}', ''], s: [1, 1, -1, 1, 1, 1], tex: '\\cos x', xr: [-4.5, 4.5], yr: [-2.2, 2.2], x0: 2 },
+    ln:  { f: function (x) { return Math.log(1 + x); }, c: [0, 1, -1 / 2, 1 / 3, -1 / 4, 1 / 5], t: ['', 'x', '\\tfrac{x^2}{2}', '\\tfrac{x^3}{3}', '\\tfrac{x^4}{4}', '\\tfrac{x^5}{5}'], s: [1, 1, -1, 1, -1, 1], tex: '\\ln(1+x)', xr: [-0.95, 2.5], yr: [-3, 2], x0: 1, dom: [-0.999, Infinity] }
+  };
+  var DL_CHOIX = [['exp', 'e^x'], ['sin', '\\sin x'], ['cos', '\\cos x'], ['ln', '\\ln(1+x)']];
+  function dl(S) {
+    var F = DLF[S.f], n = S.n, x = S.x;
+    var P = function (u) { var v = 0; for (var j = 0; j <= n; j++) v += F.c[j] * Math.pow(u, j); return v; };
+    var r = repere([60, 20, 930, 360], F.xr, F.yr);
+    var g = '<defs>' + clip(r) + '</defs>' + axes(r) + '<g clip-path="url(#' + r.cx + ')">' +
+      courbe(r, F.f, F.dom || [-Infinity, Infinity], 'cv') + courbe(r, P, [-Infinity, Infinity], 'cv d2 fin') +
+      trait(r, x, F.f(x), x, P(x), 'gd') + point(r, x, P(x), 'pt-t') + point(r, x, F.f(x)) + '</g>';
+    g += lbl(r.x0 + 12, r.y0 + 18, 'y = ' + F.tex, { cls: 'b sm', w: 300, h: 40 });
+    var tm = [];
+    for (var j = 0; j <= n; j++) if (F.c[j] !== 0) tm.push((tm.length === 0 ? (F.s[j] < 0 ? '-' : '') : (F.s[j] < 0 ? ' - ' : ' + ')) + F.t[j]);
+    tm.push(' + o(x' + (n > 1 ? '^' + n : '') + ')');
+    var ex = tm.length > 4 ? '\\begin{aligned} & ' + F.tex + ' = ' + tm.slice(0, 3).join('') + ' \\\\ & \\quad ' + tm.slice(3).join('') + ' \\end{aligned}' : F.tex + ' = ' + tm.join('');
+    var deg = 0; for (j = 0; j <= n; j++) if (F.c[j] !== 0) deg = j;
+    return {
+      svg: g,
+      infos: [
+        { lab: 'Le DL à l\'ordre ' + n + ' en \\(0\\)', tex: ex, cls: 'tgt' },
+        { lab: 'L\'écart en \\(x = ' + nbT(x, 2) + '\\)', tex: '\\left| f(x) - P(x) \\right| = ' + nbS(Math.abs(F.f(x) - P(x))), cls: '' }
+      ],
+      note: deg < n ? 'Ici le polynôme est de degré \\(' + deg + '\\), mais le DL est à l\'ordre \\(' + n + '\\) : l\'ordre se lit sur le reste \\(o(x^' + n + ')\\), pas sur le degré.'
+                    : 'En bleu, le polynôme du DL : il colle à la courbe près de \\(0\\), et de mieux en mieux quand l\'ordre augmente. Loin de \\(0\\), il s\'en écarte : un DL ne renseigne que près de \\(0\\).'
+    };
+  }
+
   /* ─── fabrique ─── */
   var TYPES = {
     secante: {
@@ -894,6 +971,25 @@
                 { k: 'al', t: 'range', tex: '\\alpha', min: -2, max: 2, step: 0.1 }];
       },
       draw: taylor, hauteur: 350
+    },
+    equivalent: {
+      etat: function () { return { f: 'sin', x: 2 }; },
+      ctl: function (S) {
+        var F = EQV[S.f];
+        return [{ t: 'choix', k: 'f', q: 'Choisis un équivalent', opts: EQV_CHOIX, apres: function () { S.x = EQV[S.f].x0; return true; } },
+                { k: 'x', t: 'range', tex: 'x', min: F.x[0], max: F.x[1], step: F.en ? 1 : 0.01 }];
+      },
+      draw: equivalent, hauteur: 380
+    },
+    dl: {
+      etat: function () { return { f: 'exp', n: 1, x: 1.5 }; },
+      ctl: function (S) {
+        var F = DLF[S.f];
+        return [{ t: 'choix', k: 'f', q: 'Choisis une fonction', opts: DL_CHOIX, apres: function () { S.x = DLF[S.f].x0; return true; } },
+                { t: 'choix', k: 'n', q: 'Ordre du DL', opts: [[1, '1'], [2, '2'], [3, '3'], [4, '4'], [5, '5']] },
+                { k: 'x', t: 'range', tex: 'x', min: F.xr[0] + 0.05, max: F.xr[1] - 0.05, step: 0.05 }];
+      },
+      draw: dl, hauteur: 380
     },
     plan: {
       etat: function () { return { l: 1.5, m: 1, lie: false }; },
