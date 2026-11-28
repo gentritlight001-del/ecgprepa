@@ -361,7 +361,7 @@
 
       <section class="carte"><h3>À planifier <em id="nb-bac"></em></h3><div class="liste" id="bac"></div></section>
 
-      <details class="carte"><summary>Au quotidien</summary><div id="quot"></div><p class="aide">Une ligne à cocher chaque jour, avec le lien vers le texte du jour.</p></details>
+      <details class="carte"><summary>Au quotidien</summary><div id="quot"></div><p class="aide">Une ligne à cocher chaque jour, avec le lien vers le texte ou le thème du jour.</p></details>
 
       <details class="carte"><summary>Depuis le site</summary>
         <input class="champ" type="text" id="site-q" placeholder="Article, dossier, chapitre, fiche…" aria-label="Chercher une page du site">
@@ -467,7 +467,8 @@
   var ESPACES = {
     anglais:  { court: 'Anglais', nom: 'Anglais au quotidien',  c: 'var(--c-prepa, #4fd1b5)', dossier: 'premiere_annee/langues/anglais/quotidien/' },
     espagnol: { court: 'Espagnol', nom: 'Espagnol au quotidien', c: 'var(--c-site, #ff8a65)', dossier: 'premiere_annee/langues/espagnol/quotidien/' },
-    allemand: { court: 'Allemand', nom: 'Allemand au quotidien', c: 'var(--c-admin, #f2b955)', dossier: 'premiere_annee/langues/allemand/quotidien/' }
+    allemand: { court: 'Allemand', nom: 'Allemand au quotidien', c: 'var(--c-admin, #f2b955)', dossier: 'premiere_annee/langues/allemand/quotidien/' },
+    theme:    { court: 'Thème', nom: 'Thème d’anglais du jour', c: 'var(--c-rdv, #c79bf2)', theme: 'anglais' }
   };
 
   function $(s) { return document.querySelector(s); }
@@ -674,8 +675,27 @@
      Identifiant fixe (q-<espace>-<date>) : deux appareils créent la même ligne sans doublon.
      Lignes créées pour les jours affichés, à partir d'aujourd'hui (et du jour d'activation). */
   function pageIndex(url) { return pages && pages.filter(function (p) { return p.url === url; })[0]; }
+  /* Thèmes du jour (flashcards/themes/liste.js, chargé à la demande) : lien vers le thème de la date quand il existe,
+     sinon vers l'espace « Mes thèmes d'anglais ». */
+  var themesPromesse = null;
+  function chargerThemes() {
+    if (window.ECG_THEMES) return Promise.resolve();
+    if (!themesPromesse) themesPromesse = new Promise(function (ok) {
+      var sc = document.createElement('script');
+      sc.src = 'flashcards/themes/liste.js?v=' + Math.floor(Date.now() / 60000);
+      sc.onload = sc.onerror = function () { ok(); };
+      document.head.appendChild(sc);
+    });
+    return themesPromesse;
+  }
+  function estEspace(url) { return /(index|themes)\.html$/.test(url); }
   function lienQuotidien(k, s) {
     var e = ESPACES[k], auj = aujourdhui(), url;
+    if (e.theme) {
+      var t = ((window.ECG_THEMES || {})[e.theme] || []).filter(function (x) { return x.date === s; })[0];
+      return t ? { url: 'flashcards/theme.html#' + e.theme + '/' + s, titre: t.titre, rub: 'Thème du jour', sec: 'langues', image: '' }
+        : { url: 'flashcards/themes.html', titre: 'Mes thèmes d’anglais', rub: 'Ouvrir l’espace', sec: 'langues', image: '' };
+    }
     url = s <= auj || pageIndex(e.dossier + 'jour-' + s + '.html') ? e.dossier + 'jour-' + s + '.html' : e.dossier + 'index.html';
     var p = pageIndex(url), n = p && p.titre.match(/jour (\d+)/i);
     var rub = /index\.html$/.test(url) ? 'Ouvrir l’espace' : n ? 'Jour ' + n[1] : p ? typo(p.titre.replace(/^.*?:\s*/, '')) : 'Texte du jour';
@@ -721,7 +741,7 @@
       etat.items = etat.items.filter(function (x) { return !(x.q === k && !x.fait && x.date >= auj); });
     }
     enregistrer(); rendre();
-    if (oui) chargerPages().then(rendre);
+    if (oui) Promise.all([chargerPages(), chargerThemes()]).then(rendre);
   }
   function rendreQuotidien() {
     var q = etat.reglages.quotidien;
@@ -776,7 +796,7 @@
   }
   /* Ligne « au quotidien » : la photo du texte ou de la fiche du jour, quand la page existe. */
   function imgDe(x) {
-    if (x.q) return photoDe(x) || (x.site && !/index\.html$/.test(x.site.url) ? imageDe(x.site) : '');
+    if (x.q) return photoDe(x) || (x.site && !estEspace(x.site.url) ? imageDe(x.site) : '');
     return photoDe(x) || imageDe(x.site);
   }
 
@@ -791,7 +811,7 @@
     return '<span class="coche ' + x.type + '" aria-hidden="true"></span>';
   }
   function lienSite(x) { return x.site ? '<a class="lien" href="' + esc(x.site.url) + '" data-a="lien">↗ ' + esc(x.site.rub || 'Ouvrir la page') + '</a>' : ''; }
-  function lienJour(x) { return x.site && !/index\.html$/.test(x.site.url) ? '<a class="lien" href="' + esc(x.site.url) + '" data-a="lien">' + tx(x.site.rub) + ' ↗</a>' : ''; }
+  function lienJour(x) { return x.site && !estEspace(x.site.url) ? '<a class="lien" href="' + esc(x.site.url) + '" data-a="lien">' + tx(x.site.rub) + ' ↗</a>' : ''; }
   function extras(x) {
     var q = [];
     if (x.rep) q.push('↻');
@@ -1447,6 +1467,7 @@
   rendre();
   /* Les images des pages du site viennent de l'index. */
   if (etat.items.some(function (x) { return x.site && !x.site.image; }) || Object.keys(etat.reglages.quotidien).some(function (k) { return etat.reglages.quotidien[k]; })) chargerPages().then(rendre);
+  if (etat.reglages.quotidien.theme) chargerThemes().then(rendre);
   fetch('a-faire.json', { cache: 'no-cache' }).then(function (r) { return r.json(); })
     .then(function (d) { if (!pages && d.pages) $('#nb-afaire').textContent = '(' + d.pages.length + ')'; }).catch(function () {});
 

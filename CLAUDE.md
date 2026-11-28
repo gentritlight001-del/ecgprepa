@@ -43,7 +43,8 @@ Sommaire : 1. Règles générales · 2. Mise en ligne · 3. Articles d'actualit�
   `pageParticuliers` au seul propriétaire (voir « Espace de cours particuliers »). `mon-planning.html` : agenda
   personnel du propriétaire (refait le 28 novembre 2026 sur la maquette « planning sombre » validée, toile https://claude.ai/artifact/DAo7gwBiTYjq7YXZZcBH9V : fond sombre, cartes gris foncé, une couleur d'accent, catégories en pastilles de couleur, vues Jour / Semaine / Mois, panneau de droite Ajouter, Aujourd'hui, En retard, À planifier, « Au quotidien » et « Depuis le site » repliés ; **pas d'italique** ; bouton « Personnaliser » = tiroir à droite, appliqué en direct et rangé dans `reglages.apparence` de `planning.json`, donc synchronisé : couleur d'accent, fond Noir / Graphite / Ardoise / Nuit, catégories à renommer, recolorer, ajouter ou supprimer (« Autre » reste et reçoit les lignes d'une catégorie supprimée), heures de la journée, vue à l'ouverture, densité, premier jour lundi ou dimanche, week-end affiché, ligne de l'heure ; répétitions : chaque jour, chaque semaine, toutes les 2 semaines, chaque mois),
   synchronisé dans `planning/planning.json` du bucket privé `newsletters` (photos attachées dans `planning/photos/`) ; interrupteurs « Au quotidien »
-  (anglais, espagnol, allemand) qui ajoutent une ligne par jour. Sa recherche « Depuis le site » lit
+  (anglais, espagnol, allemand, et « Thème d'anglais du jour », lien `flashcards/theme.html#anglais/<date>` lu dans
+  `flashcards/themes/liste.js`, sinon vers `flashcards/themes.html`) qui ajoutent une ligne par jour. Sa recherche « Depuis le site » lit
   `recherche-index.json` (7e champ : image de la page) et `a-faire.json` (« Contenus à créer » : liens vers des pages
   qui n'existent pas encore, œuvres `a-venir`, fiches auteurs sans fiche…), tous deux écrits par `outils/recherche.py`
   (ne jamais les modifier à la main). Une nouvelle page admin s'ajoute à cette
