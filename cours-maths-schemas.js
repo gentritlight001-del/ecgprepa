@@ -833,6 +833,60 @@
     };
   }
 
+
+  /* ─── 16. applications linéaires : noyau, image, matrice ─── */
+  var LIN = {
+    iso:  { A: [[1, -1], [1, 1]], ker: null, im: null, aim: [], tex: 'f(x, y) = (x - y,\\ x + y)',
+            note: 'Seul \\(\\vec{0}\\) a pour image \\(\\vec{0}\\) : \\(\\ker f = \\{\\vec{0}\\}\\) et \\(f\\) est injective. Les images remplissent tout le plan (en couleur) : \\(\\text{Im}\\, f = \\mathbb{R}^2\\). \\(f\\) est un isomorphisme.' },
+    rg1:  { A: [[1, -2], [1, -2]], ker: [2, 1], im: [1, 1], aim: [Math.atan2(1, 2), Math.atan2(1, 2) + Math.PI], tex: 'f(x, y) = (x - 2y,\\ x - 2y)',
+            note: 'Quand \\(\\vec{u}\\) passe sur la droite en pointillés, le noyau \\(\\text{Vect}\\big((2, 1)\\big)\\), son image est \\(\\vec{0}\\). Toutes les images tombent sur la droite en couleur, \\(\\text{Im}\\, f = \\text{Vect}\\big((1, 1)\\big)\\), engendrée par \\(f(\\vec{e}_1)\\) et \\(f(\\vec{e}_2)\\).' },
+    proj: { A: [[1, 0], [0, 0]], ker: [0, 1], im: [1, 0], aim: [Math.PI / 2, 3 * Math.PI / 2], tex: 'f(x, y) = (x,\\ 0)',
+            note: 'La projection sur l\'axe des abscisses : l\'axe des ordonnées (en pointillés) est écrasé sur \\(\\vec{0}\\), c\'est le noyau ; l\'image est l\'axe des abscisses (en couleur).' }
+  };
+  function lineaire(S) {
+    var F = LIN[S.m], A = F.A, id = 'li' + (++uid), th = S.t;
+    var u = [2 * Math.cos(th), 2 * Math.sin(th)], fu = [A[0][0] * u[0] + A[0][1] * u[1], A[1][0] * u[0] + A[1][1] * u[1]];
+    var r = repere([20, 10, 620, 410], [-6, 6], [-4, 4]);
+    var mk = function (n, c) { return '<marker id="' + id + n + '" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:' + c + '"/></marker>'; };
+    var g = '<defs>' + mk('u', '#334155') + mk('f', 'var(--vert)') + mk('e', 'var(--bleu)') + clip(r) + '</defs>';
+    for (var i = -6; i <= 6; i++) g += trait(r, i, -4, i, 4, 'qd') + (i >= -4 && i <= 4 ? trait(r, -6, i, 6, i, 'qd') : '');
+    g += axes(r) + '<g clip-path="url(#' + r.cx + ')">';
+    if (!F.im) g += '<rect class="vect-p" x="' + r.x0 + '" y="' + r.y0 + '" width="' + (r.x1 - r.x0) + '" height="' + (r.y1 - r.y0) + '"/>';
+    else g += trait(r, -9 * F.im[0], -9 * F.im[1], 9 * F.im[0], 9 * F.im[1], 'vect-d');
+    if (F.ker) g += trait(r, -9 * F.ker[0], -9 * F.ker[1], 9 * F.ker[0], 9 * F.ker[1], 'ker-d');
+    var e1 = [A[0][0], A[1][0]], e2 = [A[0][1], A[1][1]];
+    [e1, e2].forEach(function (e) { if (Math.hypot(e[0], e[1]) > 1e-9) g += fleche(r, 0, 0, e[0], e[1], 'vec-e', id + 'e'); });
+    g += fleche(r, 0, 0, u[0], u[1], 'vec-u', id + 'u');
+    var nul = Math.hypot(fu[0], fu[1]) < 0.05;
+    g += nul ? point(r, 0, 0) : fleche(r, 0, 0, fu[0], fu[1], 'vec-f', id + 'f');
+    g += '</g>';
+    var cote = function (v) { return v[0] >= 0 ? 'start' : 'end'; }, dx = function (v) { return v[0] >= 0 ? 10 : -10; };
+    g += lbl(r.X(u[0]) + dx(u), r.Y(u[1]) - 16, '\\vec{u}', { an: cote(u), cls: 'sm', w: 50, h: 40 });
+    if (!nul) g += lbl(r.X(fu[0]) + dx(fu), r.Y(fu[1]) + (fu[1] >= 0 ? -16 : 18), 'f(\\vec{u})', { an: cote(fu), cls: 'b sm', w: 90, h: 40 });
+    [[e1, 'f(\\vec{e}_1)'], [e2, 'f(\\vec{e}_2)']].forEach(function (c) {
+      var e = c[0]; if (Math.hypot(e[0], e[1]) < 1e-9) return;
+      g += lbl(r.X(e[0]) + dx(e), r.Y(e[1]) + (e[1] >= 0 ? 4 : -4) + 16, c[1], { an: cote(e), cls: 'tgt sm', w: 90, h: 40 });
+    });
+    var lab = function (v, d, sg, tex, cls) {      /* étiquette le long de la droite Vect(v), décalée sur le côté */
+      var n = Math.hypot(v[0], v[1]), x = d * v[0] / n - sg * 0.55 * v[1] / n, y = d * v[1] / n + sg * 0.55 * v[0] / n;
+      return lbl(r.X(x), r.Y(y), tex, { an: 'middle', cls: cls + ' sm', w: 90, h: 40 });
+    };
+    if (F.ker) g += lab(F.ker, -3.3, 1, '\\ker f', 'o');
+    if (F.im) g += lab(F.im, -3.3, -1, '\\text{Im}\\, f', 'b');
+    var k = F.ker ? 1 : 0, rg = 2 - k;
+    return {
+      svg: g,
+      infos: [
+        { lab: 'L\'application', tex: F.tex, cls: '' },
+        { lab: 'Sa matrice', tex: 'A = \\begin{pmatrix} ' + A[0][0] + ' & ' + A[0][1] + ' \\\\ ' + A[1][0] + ' & ' + A[1][1] + ' \\end{pmatrix}', cls: '' },
+        { lab: 'Le vecteur', tex: '\\vec{u} = (' + nbT(u[0], 2) + ' ;\\ ' + nbT(u[1], 2) + ')', cls: '' },
+        { lab: 'Son image', tex: 'f(\\vec{u}) = (' + nbT(fu[0], 2) + ' ;\\ ' + nbT(fu[1], 2) + ')', cls: 'b' },
+        { lab: 'Théorème du rang', tex: '\\dim \\mathbb{R}^2 = \\dim \\ker f + \\text{rg}\\, f = ' + k + ' + ' + rg, cls: 'o' }
+      ],
+      note: F.note
+    };
+  }
+
   /* ─── fabrique ─── */
   var TYPES = {
     secante: {
@@ -999,6 +1053,14 @@
                 { k: 'm', t: 'range', tex: '\\mu', min: -2, max: 2, step: 0.1 }];
       },
       draw: plan, hauteur: 420, largeur: 640
+    },
+    lineaire: {
+      etat: function () { return { m: 'rg1', t: 1.2 }; },
+      ctl: function (S) {
+        return [{ t: 'choix', k: 'm', q: 'Choisis une application', opts: [['iso', '\\text{isomorphisme}'], ['rg1', '\\text{rang } 1'], ['proj', '\\text{projection}']], apres: function () { return true; } },
+                { k: 't', t: 'range', tex: '\\theta', min: 0, max: 6.28, step: 0.01, aimant: LIN[S.m].aim }];
+      },
+      draw: lineaire, hauteur: 420, largeur: 640
     },
     coordonnees: {
       etat: function () { return { b: 'can' }; },
