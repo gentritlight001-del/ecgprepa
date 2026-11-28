@@ -283,7 +283,7 @@ l'ancienne jusqu'à 8 jours (constaté pour le portrait de Sartre, novembre 2026
 | Anglophone | `actualites/en/articles/` | `actualites/en/images/` | `tous-en.html` + page du pays (`royaume-uni.html`, `etats-unis.html`, `canada.html`, `irlande.html`, `australie.html`) |
 | Hispanophone | `actualites/es/articles/` | `actualites/es/images/` | `tous-es.html` + page du pays |
 | Germanophone | `actualites/de/articles/` | `actualites/de/images/` | `tous-de.html` + `allemagne.html` / `autriche.html` / `suisse.html` |
-| Francophone | `actualites/fr/articles/` | `actualites/fr/images/` | `tous-fr.html` + `france.html` / `belgique.html` / `suisse.html` / `quebec.html` / `afrique.html` |
+| Francophone | `actualites/fr/articles/` | `actualites/fr/images/` | `tous-fr.html` + `france.html` / `belgique.html` / `quebec.html` |
 | Mondiale | `actualites/monde/articles/` | `actualites/monde/images/` | `tous-monde.html` + page de la région (`europe.html`, `afrique.html`, `amerique.html`, `asie.html`, `moyen-orient.html`, `arctique.html`, `oceanie.html`) |
 
 ### Modèle
@@ -504,10 +504,12 @@ page pays ou région :
 - Couples `theme`/`domain` existants : Géopolitique/geopolitique, Politique/politique,
   Économie/economie, Social/social, Environnement/environnement, Sécurité/securite,
   Numérique/numerique, Défense/defense, Santé/sante.
-- **Édition francophone** (créée le 28 novembre 2026, bandeau violet `#3A2468`) : France, Belgique, Suisse,
-  Québec et Afrique francophone. Un article d'Afrique garde son pays en `pays` (« Sénégal ») et ajoute
-  `region: 'Afrique'` (compté sur la carte « Afrique » de `index-fr.html`) ; il va dans `afrique.html`. Tant que
-  `ACTU_DATA` est vide, le kiosque, `index-fr.html` et les listes affichent « bientôt » tout seuls.
+- **Édition francophone** (créée le 28 novembre 2026, bandeau violet `#3A2468`) : France, Belgique, Québec.
+  Un sujet sur la France, la Belgique ou le Québec va ici, plus dans l'édition mondiale ni l'anglophone (les 12 articles
+  France / Belgique du monde et l'article sur les élections au Québec de l'édition anglophone y ont été déplacés, avec une
+  page de renvoi à leur ancienne adresse ; ce dernier garde sa version anglaise, source du texte du jour d'anglais du
+  27 octobre 2026). Un sujet fédéral canadien reste dans l'anglophone. **Pas d'Afrique** (déjà dans le monde) ni de
+  **Suisse** (déjà dans l'édition germanophone, bilingue). Une carte de pays sans article est cachée toute seule.
 - Tag `pays` : le sujet principal. Par exemple, une rencontre entre ministres à l'ONU a
   le tag `pays: 'ONU'`, `flag: '🇺🇳'`.
 - **`cardTitle` sur 2 à 3 lignes**, jamais 1 ni 4 : environ **70 à 99 caractères**.
