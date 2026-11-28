@@ -1006,6 +1006,53 @@
     };
   }
 
+
+  /* ─── 20. projecteur et symétrie associés à E = F ⊕ G ─── */
+  function projecteur(S) {
+    var id = 'pj' + (++uid), th = S.t, ga = S.g * Math.PI / 180, sym = S.m === 'sym';
+    var fv = [2, 1], gv = [Math.cos(ga), Math.sin(ga)], u = [3 * Math.cos(th), 3 * Math.sin(th)];
+    var det = fv[0] * gv[1] - fv[1] * gv[0], a = (u[0] * gv[1] - u[1] * gv[0]) / det, b = (fv[0] * u[1] - fv[1] * u[0]) / det;
+    var xF = [a * fv[0], a * fv[1]], xG = [b * gv[0], b * gv[1]], su = [xF[0] - xG[0], xF[1] - xG[1]];
+    var r = repere([20, 10, 620, 410], [-6, 6], [-4, 4]);
+    var mk = function (n, c) { return '<marker id="' + id + n + '" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:' + c + '"/></marker>'; };
+    var g = '<defs>' + mk('u', '#334155') + mk('f', 'var(--vert)') + mk('g', 'var(--bleu)') + mk('s', '#c2410c') + clip(r) + '</defs>';
+    for (var i = -6; i <= 6; i++) g += trait(r, i, -4, i, 4, 'qd') + (i >= -4 && i <= 4 ? trait(r, -6, i, 6, i, 'qd') : '');
+    g += axes(r) + '<g clip-path="url(#' + r.cx + ')">';
+    g += trait(r, -9 * fv[0], -9 * fv[1], 9 * fv[0], 9 * fv[1], 'vect-d');
+    g += trait(r, -12 * gv[0], -12 * gv[1], 12 * gv[0], 12 * gv[1], 'g-d');
+    g += trait(r, xF[0], xF[1], u[0], u[1], 'gd') + trait(r, xG[0], xG[1], u[0], u[1], 'gd');
+    if (sym) g += trait(r, xF[0], xF[1], su[0], su[1], 'gd');
+    if (Math.hypot(xF[0], xF[1]) > 0.05) g += fleche(r, 0, 0, xF[0], xF[1], 'vec-f', id + 'f');
+    if (Math.hypot(xG[0], xG[1]) > 0.05) g += fleche(r, 0, 0, xG[0], xG[1], 'vec-e', id + 'g');
+    g += fleche(r, 0, 0, u[0], u[1], 'vec-u', id + 'u');
+    if (sym) g += fleche(r, 0, 0, su[0], su[1], 'vec-w', id + 's');
+    g += '</g>';
+    var tag = function (v, tex, cls, dy) {
+      var n = Math.hypot(v[0], v[1]); if (n < 0.05) return '';
+      var x = v[0] + 0.45 * v[0] / n, y = v[1] + 0.45 * v[1] / n;
+      return lbl(r.X(x), r.Y(y) + (dy || 0), tex, { an: 'middle', cls: cls + ' sm', w: 110, h: 40 });
+    };
+    g += tag(u, '\\vec{u}', '') + tag(xF, sym ? '\\vec{x}_F' : 'p(\\vec{u}) = \\vec{x}_F', 'b') + tag(xG, '\\vec{x}_G', 'tgt');
+    if (sym) g += tag(su, 's(\\vec{u})', 'o');
+    g += lbl(r.X(5.3), r.Y(5.3 * fv[1] / fv[0]) - 18, 'F', { an: 'middle', cls: 'b sm', w: 40, h: 40 });
+    var gl = Math.abs(gv[0]) > 0.3 ? [(-5.4) * Math.sign(gv[0]), -5.4 * Math.sign(gv[0]) * gv[1] / gv[0]] : [3.6 * gv[0] / Math.abs(gv[1]), 3.6 * Math.sign(gv[1])];
+    if (Math.abs(gl[1]) > 3.6) gl = [3.6 * gl[0] / Math.abs(gl[1]), 3.6 * Math.sign(gl[1])];
+    g += lbl(r.X(gl[0]) + 18, r.Y(gl[1]), 'G', { an: 'middle', cls: 'tgt sm', w: 40, h: 40 });
+    var cc = function (v) { return '(' + nbT(v[0], 1) + ' ;\\ ' + nbT(v[1], 1) + ')'; };
+    return {
+      svg: g,
+      infos: [
+        { lab: 'La décomposition', tex: '\\vec{u} = \\vec{x}_F + \\vec{x}_G', cls: '' },
+        { lab: 'La partie dans \\(F\\)', tex: '\\vec{x}_F = ' + cc(xF), cls: 'b' },
+        { lab: 'La partie dans \\(G\\)', tex: '\\vec{x}_G = ' + cc(xG), cls: 'tgt' },
+        sym ? { lab: 'La symétrie', tex: 's(\\vec{u}) = \\vec{x}_F - \\vec{x}_G = ' + cc(su), cls: 'o' }
+            : { lab: 'Le projecteur', tex: 'p(\\vec{u}) = \\vec{x}_F', cls: 'b' }
+      ],
+      note: sym ? 'La symétrie par rapport à \\(F\\) parallèlement à \\(G\\) garde \\(\\vec{x}_F\\) et retourne \\(\\vec{x}_G\\) : \\(s = 2p - \\text{Id}_E\\). Refaire la symétrie ramène \\(\\vec{u}\\), donc \\(s \\circ s = \\text{Id}_E\\).'
+                : 'La projection sur \\(F\\) parallèlement à \\(G\\) garde \\(\\vec{x}_F\\) et efface \\(\\vec{x}_G\\). Projeter une seconde fois ne change rien, donc \\(p \\circ p = p\\). Change la direction de \\(G\\) : la projection change aussi.'
+    };
+  }
+
   /* ─── fabrique ─── */
   var TYPES = {
     secante: {
@@ -1172,6 +1219,15 @@
                 { k: 'm', t: 'range', tex: '\\mu', min: -2, max: 2, step: 0.1 }];
       },
       draw: plan, hauteur: 420, largeur: 640
+    },
+    projecteur: {
+      etat: function () { return { m: 'proj', t: 1.1, g: 120 }; },
+      ctl: function () {
+        return [{ t: 'choix', k: 'm', q: 'Choisis l\'application', opts: [['proj', '\\text{le projecteur } p'], ['sym', '\\text{la symétrie } s']] },
+                { k: 't', t: 'range', tex: '\\theta_u', min: 0, max: 6.28, step: 0.01 },
+                { k: 'g', t: 'range', tex: '\\theta_G \\text{ (degrés)}', min: 60, max: 170, step: 1 }];
+      },
+      draw: projecteur, hauteur: 420, largeur: 640
     },
     impropre: {
       etat: function () { return { f: 'inv2', x: 4 }; },
