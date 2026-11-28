@@ -887,6 +887,52 @@
     };
   }
 
+
+  /* ─── 17. séries : termes et sommes partielles ─── */
+  var FACT = [1]; for (var fi = 1; fi <= 60; fi++) FACT.push(FACT[fi - 1] * fi);
+  var SER = {
+    geo:  { u: function (k) { return Math.pow(0.5, k); }, k0: 0, yr: [-0.15, 2.4], lim: 2, limTex: '2', tex: 'u_k = \\left(\\tfrac{1}{2}\\right)^k', som: '\\sum_{k=0}^{+\\infty} \\left(\\tfrac{1}{2}\\right)^k = \\dfrac{1}{1 - \\frac{1}{2}} = 2',
+            note: 'Série géométrique de raison \\(\\frac{1}{2}\\) : chaque terme est la moitié du précédent, et les sommes partielles montent vers \\(2\\) sans jamais le dépasser.' },
+    harm: { u: function (k) { return 1 / k; }, k0: 1, yr: [-0.25, 4.8], lim: null, tex: 'u_k = \\dfrac{1}{k}', som: '\\text{diverge : } S_n \\sim \\ln n', ln: true,
+            note: 'Série harmonique : \\(u_k \\to 0\\), et pourtant les sommes partielles grandissent sans limite, aussi vite que \\(\\ln n\\) (en pointillés). Un terme général qui tend vers \\(0\\) ne suffit pas.' },
+    riem: { u: function (k) { return 1 / (k * k); }, k0: 1, yr: [-0.12, 2], lim: Math.PI * Math.PI / 6, limTex: '\\frac{\\pi^2}{6}', tex: 'u_k = \\dfrac{1}{k^2}', som: '\\text{converge (Riemann, } \\alpha = 2 > 1)',
+            note: 'Série de Riemann avec \\(\\alpha = 2 > 1\\) : elle converge. Sa somme vaut \\(\\frac{\\pi^2}{6} \\approx 1{,}645\\) (résultat hors programme, donné pour la figure).' },
+    exp:  { u: function (k) { return 1 / FACT[k]; }, k0: 0, yr: [-0.18, 3.2], lim: Math.E, limTex: 'e', tex: 'u_k = \\dfrac{1^k}{k!}', som: '\\sum_{k=0}^{+\\infty} \\dfrac{1}{k!} = e^1 = e',
+            note: 'Série exponentielle en \\(x = 1\\) : les termes \\(\\frac{1}{k!}\\) s\'effondrent très vite, et quelques termes suffisent pour approcher \\(e \\approx 2{,}718\\).' },
+    alt:  { u: function (k) { return (k % 2 ? 1 : -1) / k; }, k0: 1, yr: [-0.6, 1.15], lim: Math.LN2, limTex: '\\ln 2', tex: 'u_k = \\dfrac{(-1)^{k+1}}{k}', som: '\\text{converge, mais pas absolument}',
+            note: 'Les termes changent de signe : les sommes partielles oscillent autour de \\(\\ln 2\\) et s\'en rapprochent. Mais \\(\\sum |u_k| = \\sum \\frac{1}{k}\\) diverge : la convergence absolue n\'est qu\'une condition suffisante.' }
+  };
+  var SER_CHOIX = [['geo', '\\left(\\tfrac{1}{2}\\right)^k'], ['harm', '\\tfrac{1}{k}'], ['riem', '\\tfrac{1}{k^2}'], ['exp', '\\tfrac{1}{k!}'], ['alt', '\\tfrac{(-1)^{k+1}}{k}']];
+  function serie(S) {
+    var F = SER[S.f], N = S.n, kmax = 40;
+    var r = repere([60, 20, 930, 340], [-0.8, kmax + 1], F.yr), g = '<defs>' + clip(r) + '</defs>' + axes(r) + '<g clip-path="url(#' + r.cx + ')">';
+    if (F.lim != null) g += trait(r, -1, F.lim, kmax + 2, F.lim, 'as');
+    if (F.ln) g += courbe(r, function (x) { return Math.log(x); }, [1, Infinity], 'as');
+    var Sk = 0, pts = '', Sn = 0, w = (r.X(1) - r.X(0)) * 0.55;
+    for (var k = F.k0; k <= kmax; k++) {
+      var u = F.u(k); Sk += u;
+      if (k <= N) {
+        var y0 = r.Y(0), y1 = r.Y(u);
+        g += '<rect class="ser-u" x="' + (r.X(k) - w / 2).toFixed(1) + '" y="' + Math.min(y0, y1).toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + Math.abs(y1 - y0).toFixed(1) + '"/>';
+        pts += '<circle class="pt-s" cx="' + r.X(k).toFixed(1) + '" cy="' + r.Y(Sk).toFixed(1) + '" r="' + (k === N ? 8 : 5) + '"/>';
+        if (k === N) Sn = Sk;
+      }
+    }
+    g += pts + '</g>';
+    if (F.lim != null) g += lbl(r.x1 - 6, r.Y(F.lim) - 20, F.limTex, { an: 'end', cls: 'g sm', w: 120, h: 40 });
+    if (F.ln) g += lbl(r.x1 - 6, r.Y(Math.log(kmax)) + 24, '\\ln n', { an: 'end', cls: 'g sm', w: 120, h: 40 });
+    return {
+      svg: g,
+      infos: [
+        { lab: 'Le terme général', tex: F.tex, cls: '' },
+        { lab: 'La somme partielle', tex: 'S_{' + N + '} = ' + nbT(Sn, 4), cls: 'b' },
+        { lab: 'Le dernier terme ajouté', tex: 'u_{' + N + '} = ' + nbS(F.u(N)), cls: '' },
+        { lab: 'La série', tex: F.som, cls: 'o' }
+      ],
+      note: 'Les barres sont les termes \\(u_k\\), les points les sommes partielles \\(S_n\\). ' + F.note
+    };
+  }
+
   /* ─── fabrique ─── */
   var TYPES = {
     secante: {
@@ -1053,6 +1099,15 @@
                 { k: 'm', t: 'range', tex: '\\mu', min: -2, max: 2, step: 0.1 }];
       },
       draw: plan, hauteur: 420, largeur: 640
+    },
+    serie: {
+      etat: function () { return { f: 'geo', n: 6 }; },
+      ctl: function () {
+        return [{ t: 'choix', k: 'f', q: 'Choisis une série', opts: SER_CHOIX },
+                { k: 'n', t: 'range', tex: 'n', min: 1, max: 40, step: 1 }];
+      },
+      norm: function (S) { if (S.n < SER[S.f].k0) S.n = SER[S.f].k0; },
+      draw: serie, hauteur: 360
     },
     lineaire: {
       etat: function () { return { m: 'rg1', t: 1.2 }; },
