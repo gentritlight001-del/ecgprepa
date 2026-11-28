@@ -786,12 +786,12 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-11-08T08:16:21+00:00"
 },
 {
-"t": "monde",
-"rubrique": "Actu Monde",
+"t": "fr",
+"rubrique": "Actu Francophone",
 "meta": "Belgique",
 "titre": "Belgique : démission refusée",
-"url": "actualites/monde/articles/belgique-roi-refuse-demission-de-wever-2026.html",
-"image": "actualites/monde/images/belgique-roi-refuse-demission-de-wever-2026.webp",
+"url": "actualites/fr/articles/belgique-roi-refuse-demission-de-wever-2026.html",
+"image": "actualites/fr/images/belgique-roi-refuse-demission-de-wever-2026.webp",
 "date": "2026-11-08T08:00:19+00:00"
 },
 {
@@ -1198,6 +1198,15 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/monde/articles/bulgarie-presidentielle-premier-tour-iotova-gyurov-2026.html",
 "image": "actualites/monde/images/bulgarie-presidentielle-premier-tour-iotova-gyurov-2026.webp",
 "date": "2026-10-27T07:16:08+00:00"
+},
+{
+"t": "monde",
+"rubrique": "Actu Monde",
+"meta": "Brésil",
+"titre": "Brésil : Lula est réélu président avec 52 % des voix contre Flávio Bolsonaro (48 %)",
+"url": "actualites/monde/articles/bresil-lula-reelu-flavio-bolsonaro-2026.html",
+"image": "actualites/monde/images/bresil-lula-reelu-flavio-bolsonaro-2026.webp",
+"date": "2026-10-27T07:07:16+00:00"
 },
 {
 "t": "es",
@@ -1652,6 +1661,15 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-10-18T08:28:47+00:00"
 },
 {
+"t": "fr",
+"rubrique": "Actu Francophone",
+"meta": "France",
+"titre": "France : 550 000 manifestants contre la vie chère, l'hôtel de ville de Limoges détruit",
+"url": "actualites/fr/articles/france-17-octobre-mobilisation-limoges-2026.html",
+"image": "actualites/fr/images/france-17-octobre-mobilisation-limoges-2026.webp",
+"date": "2026-10-18T08:12:16+00:00"
+},
+{
 "t": "es",
 "rubrique": "Actu Espagnol",
 "meta": "Costa Rica",
@@ -1751,6 +1769,24 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-10-14T17:57:31+00:00"
 },
 {
+"t": "fr",
+"rubrique": "Actu Francophone",
+"meta": "France",
+"titre": "Nvidia entre au capital de Doctolib pour accélérer l'intelligence artificielle médicale en Europe",
+"url": "actualites/fr/articles/nvidia-investit-doctolib.html",
+"image": "actualites/fr/images/nvidia-investit-doctolib.webp",
+"date": "2026-10-14T17:38:18+00:00"
+},
+{
+"t": "fr",
+"rubrique": "Actu Francophone",
+"meta": "France",
+"titre": "France : une cyberattaque non revendiquée sabote les frigos de centaines de supermarchés",
+"url": "actualites/fr/articles/france-cyberattaque-frigos-supermarches.html",
+"image": "actualites/fr/images/france-cyberattaque-frigos-supermarches.webp",
+"date": "2026-10-14T17:33:09+00:00"
+},
+{
 "t": "en",
 "rubrique": "Actu Anglais",
 "meta": "Royaume-Uni",
@@ -1769,6 +1805,24 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-10-10T19:03:28+00:00"
 },
 {
+"t": "fr",
+"rubrique": "Actu Francophone",
+"meta": "France",
+"titre": "Mistral AI dévoile Large 4, un modèle à 1 000 milliards de paramètres, pour revenir dans la course",
+"url": "actualites/fr/articles/mistral-large-4-retard.html",
+"image": "actualites/fr/images/mistral-large-4-retard.webp",
+"date": "2026-10-08T18:53:04+00:00"
+},
+{
+"t": "fr",
+"rubrique": "Actu Francophone",
+"meta": "France",
+"titre": "Air Liquide lance son premier rachat d'actions, 4 milliards d'euros, dans son plan BEYOND",
+"url": "actualites/fr/articles/air-liquide-rachat-actions-4-milliards.html",
+"image": "actualites/fr/images/air-liquide-rachat-actions-4-milliards.webp",
+"date": "2026-10-08T17:56:08+00:00"
+},
+{
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne",
@@ -1785,6 +1839,15 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/de/articles/saxe-anhalt-rausch-president-landtag.html",
 "image": "actualites/de/images/saxe-anhalt-rausch-president-landtag.webp",
 "date": "2026-10-07T06:43:41+00:00"
+},
+{
+"t": "fr",
+"rubrique": "Actu Francophone",
+"meta": "Québec",
+"titre": "Élections au Québec : le PQ remporte une majorité relative, la CAQ disparaît de l'Assemblée",
+"url": "actualites/fr/articles/canada-quebec-elections-pq-minoritaire-2026.html",
+"image": "actualites/fr/images/canada-quebec-elections-pq-minoritaire-2026.webp",
+"date": "2026-10-06T17:52:05+00:00"
 },
 {
 "t": "de",
@@ -1823,6 +1886,15 @@ window.ECG_NOUVEAUTES = [
 "date": "2026-10-02T06:40:14+00:00"
 },
 {
+"t": "fr",
+"rubrique": "Actu Francophone",
+"meta": "France",
+"titre": "France : le blocus des lycées s'étend aux facs, plus de 1 000 interpellations en deux jours",
+"url": "actualites/fr/articles/france-blocus-etudiants.html",
+"image": "actualites/fr/images/france-blocus-etudiants.webp",
+"date": "2026-10-01T13:53:18+00:00"
+},
+{
 "t": "de",
 "rubrique": "Actu Allemand",
 "meta": "Allemagne",
@@ -1839,6 +1911,15 @@ window.ECG_NOUVEAUTES = [
 "url": "actualites/de/articles/suisse-initiative-neutralite.html",
 "image": "actualites/de/images/suisse-initiative-neutralite.webp",
 "date": "2026-09-27T16:33:13+00:00"
+},
+{
+"t": "fr",
+"rubrique": "Actu Francophone",
+"meta": "France",
+"titre": "France : Léon XIV, premier voyage officiel d'un pape depuis 2008, entre laïcité, Europe et espérance",
+"url": "actualites/fr/articles/pape-leon-xiv-france.html",
+"image": "actualites/fr/images/pape-leon-xiv-france.webp",
+"date": "2026-09-27T12:49:02+00:00"
 },
 {
 "t": "de",
@@ -1902,6 +1983,42 @@ window.ECG_NOUVEAUTES = [
 "url": "deuxieme_annee/langues/espagnol/DS/esp-ds1.html",
 "image": "deuxieme_annee/langues/espagnol/DS/images/dossier-madre-plaza-de-mayo.webp",
 "date": "2026-09-18T20:00:18+00:00"
+},
+{
+"t": "fr",
+"rubrique": "Actu Francophone",
+"meta": "France",
+"titre": "Choose France 2026 : 93 milliards d'euros d'investissements annoncés au château de Versailles",
+"url": "actualites/fr/articles/choose-france-2026.html",
+"image": "actualites/fr/images/choose-france-2026.webp",
+"date": "2026-09-11T19:03:33+00:00"
+},
+{
+"t": "fr",
+"rubrique": "Actu Francophone",
+"meta": "France",
+"titre": "G7 d'Évian : le revirement de Trump sur l'Ukraine et l'accord avec l'Iran",
+"url": "actualites/fr/articles/g7-evian-2026.html",
+"image": "actualites/fr/images/g7-evian-2026.webp",
+"date": "2026-09-11T19:03:33+00:00"
+},
+{
+"t": "fr",
+"rubrique": "Actu Francophone",
+"meta": "France",
+"titre": "WWF France : Alexandra Palt démissionne de la présidence",
+"url": "actualites/fr/articles/wwf-france-alexandra-palt-demission.html",
+"image": "actualites/fr/images/wwf-france-alexandra-palt-demission.webp",
+"date": "2026-09-11T19:03:33+00:00"
+},
+{
+"t": "fr",
+"rubrique": "Actu Francophone",
+"meta": "France",
+"titre": "Amazon : 15 milliards d'euros, le grand pari français du géant de Seattle",
+"url": "actualites/fr/articles/amazon-investissement-france.html",
+"image": "actualites/fr/images/amazon-investissement-france.webp",
+"date": "2026-09-11T19:03:33+00:00"
 },
 {
 "t": "cours",

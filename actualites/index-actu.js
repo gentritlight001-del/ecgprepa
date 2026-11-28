@@ -36,8 +36,7 @@
      compte pour les deux pays. */
   function cles(a) {
     if (parRegion) return a.region ? [a.region] : [];
-    /* Édition francophone : un article d'Afrique porte aussi region: 'Afrique' (carte « Afrique »). */
-    return String(a.pays || '').split(/\s+—\s+/).concat(a.region ? [a.region] : []);
+    return String(a.pays || '').split(/\s+—\s+/);
   }
 
   function vide() {
@@ -105,9 +104,10 @@
 
     /* Nombre de colonnes choisi pour que la dernière ligne soit pleine */
     var k = actives.filter(function (c) { return !c.classList.contains('grand'); }).length;
-    grille.classList.remove('c2', 'c4');
+    grille.classList.remove('c1', 'c2', 'c4');
     if (k % 3 !== 0) {
-      if (k <= 4 && k % 2 === 0) grille.classList.add('c2');
+      if (k === 1) grille.classList.add('c1');
+      else if (k <= 4 && k % 2 === 0) grille.classList.add('c2');
       else if (k % 4 === 0) grille.classList.add('c4');
     }
   }
