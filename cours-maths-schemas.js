@@ -1053,6 +1053,63 @@
     };
   }
 
+
+  /* ─── 21. couple de variables : tableau de la loi conjointe ─── */
+  function fr9(n) {                          /* n/9 en fraction réduite, en KaTeX */
+    if (n === 0) return '0';
+    var a = n, b = 9; while (b) { var t = b; b = a % b; a = t; }
+    var p = n / a, q = 9 / a;
+    return q === 1 ? String(p) : '\\tfrac{' + p + '}{' + q + '}';
+  }
+  var CPL = {
+    ind: [[1, 1, 1], [1, 1, 1], [1, 1, 1]],
+    max: [[1, 1, 1], [0, 2, 1], [0, 0, 3]]
+  };
+  function couple(S) {
+    var m = S.m, T = CPL[m === 'max' ? 'max' : 'ind'], som = m === 'somme';
+    var mx = T.map(function (r) { return r[0] + r[1] + r[2]; }), my = [0, 1, 2].map(function (j) { return T[0][j] + T[1][j] + T[2][j]; });
+    var x0 = 20, y0 = 14, wh = 150, w = 115, hh = 52, h = 58, g = '';
+    var X = function (c) { return c === 0 ? x0 : x0 + wh + (c - 1) * w; }, W = function (c) { return c === 0 ? wh : w; };
+    var Y = function (l) { return l === 0 ? y0 : y0 + hh + (l - 1) * h; }, H = function (l) { return l === 0 ? hh : h; };
+    var cell = function (l, c, cls, tex) {
+      g += '<rect class="' + cls + '" x="' + X(c) + '" y="' + Y(l) + '" width="' + W(c) + '" height="' + H(l) + '"/>';
+      if (tex) g += lbl(X(c) + W(c) / 2, Y(l) + H(l) / 2, tex, { an: 'middle', w: W(c) - 6, h: H(l) - 4, cls: /=|mathbb/.test(tex) ? 'sm' : '' });
+    };
+    cell(0, 0, 'tc-h', '');
+    g += lbl(X(0) + wh / 2, Y(0) + hh / 2, 'X \\backslash Y', { an: 'middle', w: wh - 6, h: hh - 4, cls: 'g sm' });
+    for (var j = 1; j <= 3; j++) cell(0, j, 'tc-h', 'Y = ' + j);
+    cell(0, 4, 'tc-m', '\\mathbb{P}(X = i)');
+    for (var i = 1; i <= 3; i++) {
+      cell(i, 0, 'tc-h', 'X = ' + i);
+      for (j = 1; j <= 3; j++) {
+        var on = som ? (i + j === S.k) : (i === S.i && j === S.j);
+        cell(i, j, on ? 'tc-s' : (T[i - 1][j - 1] ? 'tc' : 'tc tc-z'), fr9(T[i - 1][j - 1]));
+      }
+      cell(i, 4, (!som && i === S.i) ? 'tc-m tc-ms' : 'tc-m', fr9(mx[i - 1]));
+    }
+    cell(4, 0, 'tc-m', '\\mathbb{P}(Y = j)');
+    for (j = 1; j <= 3; j++) cell(4, j, (!som && j === S.j) ? 'tc-m tc-ms' : 'tc-m', fr9(my[j - 1]));
+    cell(4, 4, 'tc-m', '1');
+    var infos, note;
+    if (som) {
+      var tot = 0, parts = [];
+      for (i = 1; i <= 3; i++) { j = S.k - i; if (j >= 1 && j <= 3) { tot += T[i - 1][j - 1]; parts.push(fr9(T[i - 1][j - 1])); } }
+      infos = [{ lab: 'Les cases où \\(X + Y = ' + S.k + '\\)', tex: '\\mathbb{P}(X + Y = ' + S.k + ') = ' + parts.join(' + ') + (parts.length > 1 ? ' = ' + fr9(tot) : ''), cls: 'b' }];
+      note = 'Deux lancers indépendants d\'un dé à trois faces. Pour la loi de \\(X + Y\\), on additionne les cases de la diagonale où \\(i + j = k\\) : c\'est la formule des probabilités totales avec le s.c.e. \\(\\big((X = i)\\big)_i\\).';
+    } else {
+      var c = T[S.i - 1][S.j - 1], pr = mx[S.i - 1] * my[S.j - 1] / 9, eg = Math.abs(c - pr) < 1e-9;
+      var frp = function (v) { var n = Math.round(v * 81), d = 81, a = n, q = d; if (n === 0) return '0'; while (q) { var t = q; q = a % q; a = t; } n /= a; d /= a; return d === 1 ? String(n) : '\\tfrac{' + n + '}{' + d + '}'; };
+      infos = [
+        { lab: 'La case', tex: '\\mathbb{P}(X = ' + S.i + ', Y = ' + S.j + ') = ' + fr9(c), cls: 'b' },
+        { lab: 'Le produit des marges', tex: '\\mathbb{P}(X = ' + S.i + ')\\, \\mathbb{P}(Y = ' + S.j + ') = ' + frp(pr / 9), cls: 'tgt' },
+        { lab: 'Comparaison', tex: eg ? '\\text{égaux}' : '\\text{différents}', cls: eg ? 'b' : 'o' }
+      ];
+      note = m === 'ind' ? '\\(X\\) et \\(Y\\) sont les résultats de deux lancers indépendants d\'un dé à trois faces : chaque case vaut le produit de ses marges, \\(X\\) et \\(Y\\) sont indépendantes.'
+                         : '\\(X\\) est le premier lancer, \\(Y\\) le plus grand des deux. Il suffit d\'une case différente du produit de ses marges : \\(X\\) et \\(Y\\) ne sont pas indépendantes (par exemple \\(\\mathbb{P}(X = 2, Y = 1) = 0\\)).';
+    }
+    return { svg: g, infos: infos, note: note };
+  }
+
   /* ─── fabrique ─── */
   var TYPES = {
     secante: {
@@ -1219,6 +1276,16 @@
                 { k: 'm', t: 'range', tex: '\\mu', min: -2, max: 2, step: 0.1 }];
       },
       draw: plan, hauteur: 420, largeur: 640
+    },
+    couple: {
+      etat: function () { return { m: 'max', i: 2, j: 1, k: 4 }; },
+      ctl: function (S) {
+        var c = [{ t: 'choix', k: 'm', q: 'Choisis le couple', opts: [['ind', 'Y = \\text{second lancer}'], ['max', 'Y = \\max'], ['somme', 'X + Y']], apres: function () { return true; } }];
+        if (S.m === 'somme') c.push({ k: 'k', t: 'range', tex: 'k', min: 2, max: 6, step: 1 });
+        else c.push({ k: 'i', t: 'range', tex: 'i', min: 1, max: 3, step: 1 }, { k: 'j', t: 'range', tex: 'j', min: 1, max: 3, step: 1 });
+        return c;
+      },
+      draw: couple, hauteur: 330, largeur: 660
     },
     projecteur: {
       etat: function () { return { m: 'proj', t: 1.1, g: 120 }; },
